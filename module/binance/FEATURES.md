@@ -7,14 +7,14 @@
 | Status | Generated from current module SSOT |
 | Last-Updated | 2026-06-26 |
 | Module-Version | v3.7.1 |
-| Module-State | 规格扩展到 v3.7.1（v3.7.0 新增 FR-037~044 + v3.7.1 补齐 FR-012~030 行为规范 + 结构修正）；（发布安全/taosx retention/tracing/资源隔离/审计/成本/合规/Schema 版本策略）对齐 Plan008 S26-S32/G6/S1-S2/M1-M4；当前状态投影对齐 Runtime-Anchor `/home/binance@f046e16`（PR #145 合并含 Plan008 全部 40 Task）与 Issue-Ledger `../../report/binance/issues-sync-20260625.md`，刷新为 **24 Done / 10 Partial / 10 Pending**。Pending FR: FR-037~044（v3.7.0 新增，全部 Pending）。Partial FR: FR-007, FR-007a, FR-011, FR-016, FR-017, FR-023, FR-024, FR-026, FR-027, FR-028。GitHub #1104~#1118 与后续 Plan008 issues 已同步闭合；Release closeout 已由 `../../plans/binance/008-issues-sync-report.md` 归档为 `release_closeable=YES`；剩余风险以保守 FR projection 的 `10 Partial + 10 Pending` 表达。 |
+| Module-State | 规格 v3.7.1：**24 Done / 10 Partial / 13 Pending** + 6 Draft。Pending: FR-037~044（生产标准化）+ FR-045~047（告警消费/优雅关闭/启动验证）。Partial: FR-007/007a/011/016/017/023/024/026/027/028。Draft: FR-031~036（ExchangeInfo）。Runtime-Anchor `/home/binance@756fbc5`。 |
 | Layer | 数据域 / Binance-specific market_data C/S module |
 | Runtime-Repo | `/home/binance` |
-| Source | `goal.md`, `SPEC.md`, `TRACEABILITY.md`, `server/DATA-LIFECYCLE.md`, `STANDARD.md`, `BOUNDARY-GATES.md`, `RUNTIME-MAPPING.md`, `IMPLEMENTATION-PLAN.md`, `client/`, `server/`, `tasks/` |
+| Source | `goal.md`, `SPEC.md`, `TRACEABILITY.md`, `server/docs/DATA-LIFECYCLE.md`, `STANDARD.md`, `BOUNDARY-GATES.md`, `RUNTIME-MAPPING.md`, `IMPLEMENTATION-PLAN.md`, `client/`, `server/`, `tasks/` |
 
 本文档是 `module/binance` 当前规格库的实现投影，不是 runtime 代码验收证据。实际完成状态以 `TRACEABILITY.md`、`client/TRACEABILITY.md`、`server/TRACEABILITY.md` 和 `/home/binance` 的测试证据为准。
 
-> **v3.6.1 状态口径（2026-06-25）**：Done = Runtime-Anchor `/home/binance@f18a329` 下代码、装配与证据闭合；Partial = 代码、子链路或局部证据存在，但 runtime 注入、持久化、外部 E2E/live evidence、FR-specific acceptance evidence 或产品线覆盖未闭合；Pending = 仅规格登记。当前投影以 Issue-Ledger `../../report/binance/issues-sync-20260625.md` 为准，历史 `28 Done / 2 Partial` 仅保留为已撤回历史口径。
+> **v3.6.1 状态口径（2026-06-25，已被 v3.7.1 覆盖）**：该口径的 `0 Pending` 基线已由 v3.7.1 的 `13 Pending`（FR-037~047）替代。历史 `28 Done / 2 Partial` 仅保留为已撤回历史口径。
 
 ## 1. 模块边界
 
@@ -72,7 +72,7 @@
 | FR-029 | Data Quality & Freshness SLA | Done | `sla_window.go` P95/P99 + StaleCount；接入 quality.go + admin 暴露 freshness_millis。 | stale alert 阈值文档化（P2 建议）。 |
 | FR-030 | Options Chain Raw Field Pass-through | Done | Plan007 A7 (`b82d5b1`) `normalize.go:463` rawPassThrough 兜底 + ticker 流支持；EventType fallback tick。 | options testnet 凭据 + Greeks 边界测试（G7）。 |
 
-> **以下 FR-031~036 为 exchangeInfo 同步规格草案（2026-06-25，v3.7.0-draft）**，定义于 [`SPEC-exchangeinfo-sync.md`](SPEC-exchangeinfo-sync.md)。当前状态 **Draft（不计入 v3.6.1 状态投影）**，尚未进入 runtime 实现。经三轮审查修正（FR-036 连接拓扑拆分、StreamsForProductLineTier 分化、control stream LimitsPolicy、diff Updated/SpecUpdated 分离、BR-012 options 到期峰值、FR-024 依赖风险标注）。待 pipeline-arbiter 翻转 Approved 后进入 task-split → code。
+> **以下 FR-031~036 为 exchangeInfo 同步规格草案（2026-06-25，v3.7.0-draft）**，定义于 [`specs/exchangeinfo-sync.md`](specs/exchangeinfo-sync.md)。当前状态 **Draft（不计入 v3.6.1 状态投影）**，尚未进入 runtime 实现。经三轮审查修正（FR-036 连接拓扑拆分、StreamsForProductLineTier 分化、control stream LimitsPolicy、diff Updated/SpecUpdated 分离、BR-012 options 到期峰值、FR-024 依赖风险标注）。待 pipeline-arbiter 翻转 Approved 后进入 task-split → code。
 
 | FR | 名称 | 状态 | 核心内容 | 待闭合 |
 | --- | --- | --- | --- | --- |
@@ -109,7 +109,7 @@
 | **#1115** ClickHouse ETL 持久来源 | 当前 AggSource 是进程内内存窗口（单实例）；ClickHouse ETL 从内存聚合写入 | **明确 Partial**：内存窗口在单实例下功能完整；多实例横向扩展需改为从 taosx 聚合，属后续架构变更 | FR-007a Partial；`clickhouse_olap.go` AggSource 内存实现 |
 | **#1116** 增量 hot reload diff | 当前 hot reload 是全量重连（catalog Reload 替换全部条目 → stream 重建）；非增量 stream add/remove diff | **明确 full reconnect 边界**：`analysis/A10-FR024-HOT-RELOAD-EVAL.md` 评估结论为「全量 hot reload 不推荐，维持 Partial（symbol reload 已够）」；增量 diff 属 FR-036 范围 | analysis/A10-FR024-HOT-RELOAD-EVAL.md §总结；FR-024 Partial |
 | **#1108** Options ticker 字段校验 | `parseOptionTicker` 字段名（`e/E/s/o/c/p/q/d/g/t/v`）基于文档约定；`@optionTicker` WS 报文字段名未经 mainnet 实样确认 | **REST fixture 替代**：使用 eapi exchangeInfo 的 `optionSymbols[]` metadata（symbol/underlying/side/strike/expiry）作为 fixture 校验 `parseOptionSymbolMeta`；WS `@optionTicker` body 字段名待 BINANCE_MAINNET_LIVE 抓样确认（normalize.go:502 TODO） | eapi REST 1,550 symbols 实测；`normalize_option_test.go` 已覆盖 symbol 解析路径 |
-| **#1110** 分布式 tracing | 当前无 OpenTelemetry 集成；trace context 不跨 client→NATS→server→Kafka 传播 | **明确未覆盖链路**：当前可观测性依赖 17 个 Prometheus 指标 + slog JSON 日志（OBSERVABILITY.md）；分布式 tracing 属后续 NFR 增强，不在 v0.2.0 范围 | OBSERVABILITY.md 9 metrics；`metrics.go:153-247` |
+| **#1110** 分布式 tracing | 当前无 OpenTelemetry 集成 | **明确未覆盖链路**：当前可观测性依赖 17 个 Prometheus 指标 + slog JSON 日志（`server/docs/OBSERVABILITY.md`） | `server/docs/OBSERVABILITY.md` 9 metrics |
 | **#1112** storage mock/fake 标准 | 当前测试用 in-memory fake（fakeKafkaProducer、fakeOSSStore 等），无统一的 mock/live 证据分级准则 | **明确测试证据分级**：fake 测试（in-memory mock）标记为 unit；live 测试（真实 infra）需 `*_LIVE` env gate；报告引用需区分 fake vs live | `consumer_integration_test.go` BINANCE_NATSX_INTEGRATION gate；`kafka_broker_test.go` BINANCE_KAFKA_LIVE gate |
 | **#1117** 持久化 backfill progress | backfill progress 当前 in-memory（HistoryRuntime.jobs map）；重启后丢失 | **明确恢复协议**：重启后 backfill 从头开始（coverage 丢失）；持久化到 postgresx 属 FR-032 exchangeInfo 同步的后续工作（catalog_exchange_info_snapshots 表已规划） | `history_lifecycle.go:166` HistoryRuntime in-memory；migration 005 snapshots 表（Draft） |
 | **#1118** 持久 DLQ wiring/replay | `deadletter.FileWriter` 已实现+测试（JSONL 持久写入），但未接线到生产 dispatch 路径（当前用 in-memory DLQ） | **明确实现边界 + replay runbook**：FileWriter 代码就绪（`deadletter.go` NewFileWriter），接线需修改 `ingest.go` dispatch 的 dead letter 处理（加 FileWriter 作为持久 backend）；replay 流程：读取 JSONL → 重新 Publish 到 natsx → 消费重处理 | `deadletter_test.go` TestFileWriter_Write_OK PASS；`ingest.go:268-270` in-memory DLQ |
@@ -147,7 +147,7 @@
 | --- | --- | --- |
 | `goal.md` | 业务目标与模块意图 | 作为实现清单的目标来源。 |
 | `SPEC.md` | v2.0.0 功能与边界规格 | 作为 FR/BR/NFR 语义来源。 |
-| `TRACEABILITY.md` | 根级 FR/AC/TC/Task 追溯 | 作为当前状态与验收编号来源；v3.6.1 当前口径对齐 Runtime-Anchor `/home/binance@f18a329` 与 Issue-Ledger `../../report/binance/issues-sync-20260625.md`。 |
+| `TRACEABILITY.md` | 根级 FR/AC/TC/Task 追溯 | 作为当前状态与验收编号来源；v3.7.1 当前口径对齐 Runtime-Anchor `/home/binance@756fbc5` 与 Issue-Ledger `../../report/binance/issues-sync-20260625.md`。 |
 | `client/TRACEABILITY.md` | Client 子域追溯 | 作为 client active/pending 实现面来源。 |
 | `server/TRACEABILITY.md` | Server 子域追溯 | 作为 server active/pending 实现面来源。 |
 | `BOUNDARY-GATES.md` | 边界漂移防线 | 作为 FR-009 与 BR-001~BR-009 的文档和本地 runtime 证据入口。 |
@@ -160,7 +160,7 @@
 | 检查项 | 状态 | 依据 |
 | --- | --- | --- |
 | v2.0.0 根规格存在 | Done | `SPEC.md` v3.7.1。 |
-| 根级 traceability 存在 | Done | `TRACEABILITY.md` v3.6.1；当前口径对齐 Runtime-Anchor `/home/binance@f18a329` 与 Issue-Ledger `../../report/binance/issues-sync-20260625.md`。 |
+| 根级 traceability 存在 | Done | `TRACEABILITY.md` v3.7.1；当前口径对齐 Runtime-Anchor `/home/binance@756fbc5` 与 Issue-Ledger `../../report/binance/issues-sync-20260625.md`。 |
 | Client/Server 子域 traceability 存在 | Done | `client/TRACEABILITY.md`, `server/TRACEABILITY.md`。 |
 | C/S 独立进程边界已定义 | Done | `README.md`, `SPEC.md`, `BOUNDARY-GATES.md`。 |
 | Boundary gate 文档已形成 | Done | `BOUNDARY-GATES.md` v2.2.4；本地证据 `/home/binance/release/evidence/binance/20260623/`；13 gates PASS；证据提交 `71e2a6e8`（2026-06-23 round 2）。 |

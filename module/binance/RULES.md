@@ -180,53 +180,84 @@ bash scripts/check-binance-docs.sh   # 含 R6 全量版本统一校验
 
 ---
 
-## R9【开】文档存在性
+## R9【开】文档存在性（分层清单）
 
-**规则**：`module/binance/` 必须存在以下文件（缺失即视为治理不完整）：
+**规则**：`module/binance/` 的必存文档按治理等级分层。binance 当前为 **L3 全量治理**（跨模块参考实现）；后续数据域模块（okx/hyperliquid 等）从 L1 起步，按成熟度升级。分层定义详见 `analysis/GOVERNANCE-TIER-PROPOSAL.md`。
+
+### L1 最小可行（8 个，proposed→active 毕业门槛）
 
 | 文件 | 用途 |
 |---|---|
-| `SPEC.md` | 23 节模块规格 |
+| `SPEC.md` | ≥12 节模块规格 |
 | `TRACEABILITY.md` | FR/BR/NFR/TC/AC 追溯矩阵 |
 | `ACCEPTANCE.md` | 验收清单 |
-| `FEATURES.md` | 功能特性总览 |
-| `IMPLEMENTATION-PLAN.md` | 实现计划 |
+| `goal.md` | 业务目标 |
+| `README.md` | 模块索引 |
+| `BOUNDARY-GATES.md` | CI gate 定义（≥5 gates） |
+| `client/SPEC.md` + `server/SPEC.md` | C/S 子规格（若 arch_type: cs_module） |
+
+### L2 标准（+5 个，共 13 个，active 维持门槛）
+
+| 文件 | 用途 |
+|---|---|
+| `IMPLEMENTATION-PLAN.md` | 实现计划 + 阶段门禁 |
 | `RUNTIME-MAPPING.md` | runtime 仓映射 |
-| `BOUNDARY-GATES.md` | CI gate 定义 |
-| `NAMING.md` | 命名 SSOT |
-| `RULES.md` | 治理规则（本文） |
-| `ARCHITECTURE-DRIFT-WATCHLIST.md` | 漂移监控点 |
 | `CHANGELOG.md` | 模块变更历史 |
-| `client/SPEC.md` + `client/TRACEABILITY.md` | 客户端子规格 |
-| `server/SPEC.md` + `server/TRACEABILITY.md` | 服务端子规格 |
-| `server/PERSISTENCE-WIRING.md` | 存储装配契约（server 专属） |
-| `server/ENDPOINTS.md` | REST API 端点（server 专属） |
-| `server/OPERATIONS.md` | 部署与运维（server 为主） |
-| `server/DATA-LIFECYCLE.md` | 数据生命周期正式提案（FR-012~030 impact ledger；runtime pending） |
-| `server/DATA-QUALITY-SLA.md` | 数据质量 SLA（server 专属） |
-| `{client,server}/tasks/archive/README.md` | 归档映射 |
-| `STANDARD.md` | 模块标准入口（runtime control + evidence 薄层索引） |
-| `analysis/DEEP-ANALYSIS.md` | 深度分析归档索引 |
-| `analysis/DEEP-ANALYSIS-INDEX.md` | 深度分析快速跳转索引 |
-| `analysis/DEEP-ANALYSIS-ARCHIVE-*.md` | 深度分析专题归档（×3） |
-| `analysis/A10-FR024-HOT-RELOAD-EVAL.md` | FR-024 热重载评估报告 |
-| `scripts/check-binance-docs.sh` | binance 文档漂移 CI gate（仓库脚本） |
+| `NAMING.md` | 命名 SSOT（product_line × event_type × subject × topic × path） |
+| `server/docs/PERSISTENCE-WIRING.md` | 存储装配契约（server 专属；若有存储） |
+
+### L3 全量治理（+8 个，共 21 个，跨模块参考实现）
+
+| 文件 | 用途 |
+|---|---|
+| `RULES.md` | 单模块治理规则（本文） |
+| `STANDARD.md` | Runtime control standard + evidence gates |
+| `ARCHITECTURE-DRIFT-WATCHLIST.md` | 漂移监控点 |
+| `FEATURES.md` | 功能特性总览 + 实现投影 |
+| `server/docs/ENDPOINTS.md` | REST API 端点（server 专属） |
+| `server/docs/OPERATIONS.md` | 部署与运维（server 为主） |
+| `server/docs/DATA-LIFECYCLE.md` | 数据生命周期（server 专属） |
+| `server/docs/DATA-QUALITY-SLA.md` | 数据质量 SLA（server 专属） |
+
+### 所有等级通用
+
+| 文件 | 用途 |
+|---|---|
+| `{client,server}/tasks/archive/README.md` | 归档映射（有归档 task 时必存） |
+| `{client,server}/TRACEABILITY.md` | 子模块追溯矩阵（有子模块时必存） |
+| `server/docs/OBSERVABILITY.md` | 可观测性（server 专属；推荐） |
+| `server/docs/SECURITY.md` | 安全策略（server 专属；推荐） |
+| `analysis/` | 分析归档（按需；binance L3 含 DEEP-ANALYSIS ×4 + A10-FR024 ×1） |
+| `scripts/check-binance-docs.sh` | 文档漂移 CI gate（L2+ 推荐） |
 
 **检测**：
 ```bash
-for f in SPEC.md TRACEABILITY.md ACCEPTANCE.md FEATURES.md IMPLEMENTATION-PLAN.md \
-         RUNTIME-MAPPING.md BOUNDARY-GATES.md NAMING.md RULES.md \
-         ARCHITECTURE-DRIFT-WATCHLIST.md CHANGELOG.md; do
+# L1 必存
+for f in SPEC.md TRACEABILITY.md ACCEPTANCE.md goal.md README.md \
+         BOUNDARY-GATES.md client/SPEC.md server/SPEC.md; do
   [ -f "module/binance/$f" ] && echo "✓ $f" || echo "✗ $f MISSING"
 done
-for f in server/PERSISTENCE-WIRING.md server/ENDPOINTS.md server/OPERATIONS.md \
-         server/DATA-LIFECYCLE.md server/DATA-QUALITY-SLA.md; do
+# L2 必存
+for f in IMPLEMENTATION-PLAN.md RUNTIME-MAPPING.md CHANGELOG.md NAMING.md \
+         server/docs/PERSISTENCE-WIRING.md; do
+  [ -f "module/binance/$f" ] && echo "✓ $f" || echo "✗ $f MISSING"
+done
+# L3 必存
+for f in RULES.md STANDARD.md ARCHITECTURE-DRIFT-WATCHLIST.md FEATURES.md \
+         server/docs/ENDPOINTS.md server/docs/OPERATIONS.md server/docs/DATA-LIFECYCLE.md \
+         server/docs/DATA-QUALITY-SLA.md; do
+  [ -f "module/binance/$f" ] && echo "✓ $f" || echo "✗ $f MISSING"
+done
+# 通用
+for f in server/docs/OBSERVABILITY.md server/docs/SECURITY.md \
+         client/TRACEABILITY.md server/TRACEABILITY.md \
+         tasks/client/archive/README.md tasks/server/archive/README.md; do
   [ -f "module/binance/$f" ] && echo "✓ $f" || echo "✗ $f MISSING"
 done
 for f in analysis/DEEP-ANALYSIS.md analysis/DEEP-ANALYSIS-INDEX.md \
-         analysis/DEEP-ANALYSIS-ARCHIVE-architecture.md \
-         analysis/DEEP-ANALYSIS-ARCHIVE-integration.md \
-         analysis/DEEP-ANALYSIS-ARCHIVE-operations.md \
+         analysis/archive/DEEP-ANALYSIS-ARCHIVE-architecture.md \
+         analysis/archive/DEEP-ANALYSIS-ARCHIVE-integration.md \
+         analysis/archive/DEEP-ANALYSIS-ARCHIVE-operations.md \
          analysis/A10-FR024-HOT-RELOAD-EVAL.md; do
   [ -f "module/binance/$f" ] && echo "✓ $f" || echo "✗ $f MISSING"
 done
@@ -251,9 +282,55 @@ test -x scripts/check-binance-docs.sh
 
 **检测**：根 TRACEABILITY.md FR-009 实现状态以 boundary-gates.sh 输出为唯一证据
 
+## R11【软】文档历史保留与裁剪策略
+
+**规则**：`module/binance/` 的文档历史摘要必须遵守上限，防止信息过载淹没核心内容：
+
+1. **TRACEABILITY.md §1 前导块** ≤ 10 行（仅保留当前版本 + 上一稳定版本的变更摘要）
+2. **FEATURES.md 前导块** ≤ 8 行
+3. **被覆盖的历史摘要**：移到 `HISTORY/{文件名}-{日期}.md`，在活跃文档中仅保留跳转链接
+4. **CHANGELOG.md 是唯一完整变更历史 SSOT**——其他文档（TRACEABILITY、FEATURES、ACCEPTANCE）不应复制 CHANGELOG 内容
+5. **report/binance/archive/ 自动清理**：超过 60 天的中间迭代版本（如 `deep-analysis-*-v[1-4].md`）移至 `.omc/archive/`（不进 git，本地保留），仅保留最终版
+6. **同主题重复报告合并**：拆分维度的报告（如 `data-maturity-{realtime,history,storage}.md`）若内容高度重叠，合并为 1 个总评报告 + 附录
+
+**检测**：
+```bash
+# 前导块行数检查
+echo "TRACEABILITY 前导块行数:"
+sed -n '/^## §1 FR 追溯表/,/^| FR ID/p' module/binance/TRACEABILITY.md | wc -l
+echo "FEATURES 前导块行数:"
+sed -n '/^## 1\. 模块边界/,/^| 维度/p' module/binance/FEATURES.md | wc -l
+```
+
+**修复义务**：超限 → 裁剪至 HISTORY 目录 → 保留跳转链接 → bump Last-Updated（不 bump 版本号，文档治理）
+
 ---
 
-## 11. 规则违规处理流程
+## R12【硬】数据边界强制 — Client/Server 数据职责不可漂移
+
+**规则**：`module/binance/` 的全量规格文档与 runtime 代码必须遵循 SPEC §4.3 定义的 C/S 数据边界：
+
+1. **C7 Client 不落盘**：client 代码不得 import `redisx/postgresx/taosx/clickhousex/ossx`
+2. **C8 Server 不直连交易所**：server 代码不得 import `binance-connector-go` 或发起 exchange-facing 连接
+3. **唯一例外**：`internal/client/publisher/` 仅允许 `natsx` import；`internal/server/consumer/` 仅允许 `natsx` import
+
+**违规**：`history_state_postgres.go` 在 client 中 import `postgresx`（已知违规，Phase A 待修复）
+
+**检测**：
+```bash
+# C7: client 不得 import 存储层
+rg "redisx|postgresx|taosx|clickhousex|ossx" /home/binance/internal/client --include="*.go" | grep -v "_test.go" | grep -v "natsx"
+# C8: server 不得 import 交易所连接
+rg "binance-connector-go" /home/binance/internal/server /home/binance/cmd/binance-server --include="*.go"
+```
+
+**例外**：`internal/wire`（共享 contract）和 `pkg/`（共享工具）不受 C7/C8 约束。
+
+**修复义务**：发现违规 → Phase A 代码迁移（见 `report/binance/structural-architecture-analysis-20260626.md`）→ 重跑 boundary-gates.sh → bump BOUNDARY-GATES version
+
+---
+
+## 12. 规则违规处理流程
 
 ```
 发现违规
@@ -275,9 +352,10 @@ test -x scripts/check-binance-docs.sh
 
 ---
 
-## 12. 变更历史
+## 13. 变更历史
 
 | 日期 | 版本 | 变更内容 | 作者 |
 |---|---|---|---|
+| 2026-06-26 | v3.7.1 | **R9 分层改造**：平面清单（27 文档）→ L1/L2/L3 三级清单；binance L3 参考实现，后续模块从 L1 起步；配套 `analysis/GOVERNANCE-TIER-PROPOSAL.md`；R11 文档历史保留与裁剪策略；OBSERVABILITY.md / SECURITY.md 从根级归位到 server/ 目录（IMP-2） | ZoneCNH |
 | 2026-06-22 | v1.0.1 | 接入 `scripts/check-binance-docs.sh`，明确 Kafka topic canonical v1 格式，并将状态一致性规则拆分为 L1 boundary gate 与 L2 functional runtime FR | ZoneCNH |
 | 2026-06-22 | v1.0.0 | 首次建立。整合 2026-06-22 治理审计复盘 + binance/SPEC.md §11 NFR 治理章节 + CLAUDE.md 编辑纪律，规则 R1-R10 全部可机器检测 | ZoneCNH |

@@ -4,11 +4,12 @@
 
 - Status: Approved
 - Spec-Version: v3.7.1
-- Last-Updated: 2026-06-26 (v3.7.0→v3.7.1: 补齐 FR-012~030 共 19 条 WHEN/THEN/AND 行为规范——此前仅存在于 FR→AC 映射索引和 TC 矩阵的追溯锚点、缺少可读需求规格；新增 TC-043~049 至 §16 测试矩阵（闭合 TC 总数十进制缺口 61→65）；新增 BNC-017/BNC-018 至 §12 错误码表；新增 FR-031~036 Draft 交叉引用至 §7；FR-021 与运行时对齐——IndexPrice 作为 mark_price 事件字段承载而非独立 event_type；FR-019 MaxConcurrent 默认值对齐运行时 5→4；FR-025 限流拆分对齐运行时 cold_start/repair 命名；更新 Appendix D 弃用声明 FR/AC 计数 30→38/104→130；对齐 Runtime-Anchor `/home/binance@f046e16`；审计覆盖 7 个依赖模块规范无冲突)
+- Last-Updated: 2026-06-26 (v3.7.0→v3.7.1: 补齐 FR-012~030 共 19 条 WHEN/THEN/AND 行为规范——此前仅存在于 FR→AC 映射索引和 TC 矩阵的追溯锚点、缺少可读需求规格；新增 TC-043~049 至 §16 测试矩阵（闭合 TC 总数十进制缺口 61→65）；新增 BNC-017/BNC-018 至 §12 错误码表；新增 FR-031~036 Draft 交叉引用至 §7；FR-021 与运行时对齐——IndexPrice 作为 mark_price 事件字段承载而非独立 event_type；FR-019 MaxConcurrent 默认值对齐运行时 5→4；FR-025 限流拆分对齐运行时 cold_start/repair 命名；更新 Appendix D 弃用声明 FR/AC 计数 30→38/104→130；对齐 Runtime-Anchor `/home/binance@756fbc5`；审计覆盖 7 个依赖模块规范无冲突；新增 SPEC-Runtime 异步演进说明 + 修复 registry.yaml maturity_ref 引用断裂；**同日：新增 Appendix F（SLA 框架）+ Appendix G（DR 要求）+ NFR-028**，补齐 `report/binance/` 数据成熟度评估报告中识别的 spec 缺口）
 - Owner: ZoneCNH
 - Layer: 数据域 · 行情
 - Runtime-Version: v0.2.0
-- Runtime-HEAD: `f046e16` (Plan008 全部 40 Task 代码实现；PR #145 合并)
+- Runtime-HEAD: `756fbc5` (Plan008 全部 40 Task + fix/redis-username-taos-websocket；PR #145 合并)
+- SPEC-Runtime 关系：**异步演进** — SPEC v3.7.1 覆盖全部 47 FR（含 13 Pending + 6 Draft），runtime HEAD 实现了其中 24/37 current FR（65%）。
 - Repository: [github.com/ZoneCNH/binance](https://github.com/ZoneCNH/binance)
 - Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md), `module/domain_market`, `module/natsx`, `module/redisx`, `module/taosx`, `module/kafkax`, `module/ossx`, `module/postgresx`, `module/clickhousex`
 
@@ -85,8 +86,10 @@ Binance 行情集成面临以下问题：
 | C4 | `internal/cs`（旧 in-process C/S bridge）**不能**作为任何 client、server 或 cmd package 的 runtime 依赖存在。 | BOUNDARY-GATES §5。 |
 | C5 | Client 不得 import server internals (`internal/server`)；Server 不得 import client internals (`internal/client`)。 | BOUNDARY-GATES §3, §4。 |
 | C6 | 共享 wire contract 位于 `internal/wire`——canonical 市场语义属于 `domain_market`。 | BOUNDARY-GATES §8。 |
+| C7 | **Client 不落盘**——不直接写入 taosx/postgresx/redisx/clickhousex/ossx（见 §4.3.2 C-D1~C-D6）。 | BOUNDARY-GATES §7；SPEC §4.3.2。 |
+| C8 | **Server 不直连交易所**——不发起 Binance REST/WS 连接，不持有交易所 API key（见 §4.3.3 S-D1~S-D7）。 | BOUNDARY-GATES §7；SPEC §4.3.3。 |
 
-以上约束对任何标记为 "production" 的部署 **不可协商**。`cmd/binance-smoke` 本地 self-test 是 C1 的唯一例外（仅限开发验证）。
+以上约束对任何标记为 "production" 的部署 **不可协商**。`cmd/binance-smoke` 本地 self-test 是 C1 的唯一例外（仅限开发验证）。**C7/C8 是最严格的数据边界约束——任何违反 C7（client 落盘）或 C8（server 直连交易所）的代码改动应被 CI gate 阻断。**
 
 ### 4.2 Production Readiness Gates
 
@@ -104,9 +107,188 @@ Plan008 的 `release_closeable=YES` 只表示 release gate 可关闭；它不自
 
 ---
 
+### 4.3 Data Scope & C/S Boundary — Client/Server Data Responsibilities
+
+> 本节严格定义 client 和 server 各自的数据职责边界。**任何一条数据路径必须明确由 client 或 server 单方拥有**——不可存在"双方都可做"的灰色地带。违反本节边界的代码改动应被 CI gate 阻断。
+
+#### 4.3.1 Data Classification（数据分类）
+
+| 分类 | 定义 | 产生方 | 消费方 | 持久化 | 示例 |
+|------|------|:------:|:------:|:------:|------|
+| **实时行情** | 通过 WebSocket 持续推送的 tick/trade/bar/depth/funding_rate/mark_price | client | server | server→taosx | `BTCUSDT@ticker`、`ETHUSDT@depth20@100ms` |
+| **历史行情** | 通过 REST 按需拉取的历史 klines/aggTrades | client | server | server→taosx | `GET /api/v3/klines?symbol=BTCUSDT&interval=1m` |
+| **参考数据** | 交易所符号目录、合约规格、交易规则 | client | server | server→postgresx | `exchangeInfo` 全量 + 6h diff |
+| **控制面数据** | stream 订阅状态、admin 操作、审计日志 | client+server | client+server | server→postgresx | `control.instruments.changed`、`admin.symbols.reload` |
+| **运维数据** | metrics、logs、traces、alerts | client+server | 外部（Prometheus/Loki/Jaeger） | 外部（不持久化于模块内） | `binance_storage_bytes_total` |
+
+#### 4.3.2 Client Data Boundary（client 数据边界）【硬】
+
+| # | 规则 | 说明 |
+|---|------|------|
+| C-D1 | **client 不落盘** — 不直接写入 taosx/postgresx/redisx/clickhousex/ossx | 唯一例外：cursor 可写入 postgresx，但需经 natsx control subject 由 server 代理 |
+| C-D2 | **实时数据**：connect→parse→normalize→`natsx.Publish()` → 等待 PubAck → 责任结束 | client 不关心 server 是否/何时消费；不缓存已发布消息（JetStream 持久化兜底） |
+| C-D3 | **历史数据**：REST fetch→normalize→`natsx.Publish()` 进入 backfill subject | 与实时数据共用 normalize pipeline；使用独立 subject 标记为 `replay` 事件；不管理 cursor 持久化 |
+| C-D4 | **参考数据**：exchangeInfo REST→parse→diff→`natsx.Publish(control.instruments.changed)` | 6h 定时 diff-only 刷新；全量仅在启动时拉取；不在 client 内存中持久保留 diff 历史 |
+| C-D5 | **product_line 启停**：每条 product_line 的采集可独立启停，不影响其他线 | 由 server 通过 `control.symbols.changed` 控制；client 不自行决定采集范围 |
+| C-D6 | **禁止行为**：client 不得暴露查询 API、不得广播到 kafkax、不得执行对账/归档/retention | 这些全部属于 server 职责 |
+
+#### 4.3.3 Server Data Boundary（server 数据边界）【硬】
+
+| # | 规则 | 说明 |
+|---|------|------|
+| S-D1 | **server 不直连交易所** — 不发起 Binance REST/WS 连接 | 所有交易所数据必须经 natsx 从 client 获取 |
+| S-D2 | **实时数据接收入口**：`natsx.Subscribe(binance.market.*)` → validate→idempotency→store(taosx)+cache(redisx)→Ack | 仅 Ack 在所有写入成功后；失败 NakWithDelay |
+| S-D3 | **历史数据接收入口**：`natsx.Subscribe(binance.market.*.replay)` → 与实时数据共享 validate+idempotency pipeline | `replay` 标记的事件：优先级低于实时（FR-025 80/20 split）；跳过 hot cache（不污染实时缓存） |
+| S-D4 | **存储职责**：taosx（时序行情）、postgresx（元数据/审计/cursor）、redisx（热缓存/幂等/锁）、clickhousex（OLAP ETL）、ossx（归档） | 各存储层独立失败不影响其他层；postgresx 为 cursor/audit 的 persistence-of-record |
+| S-D5 | **查询服务**：Gin REST API 面向 market_data 和下游消费者 | 实时查询走 redisx 热缓存（<5ms），历史查询走 taosx，分析查询走 clickhousex |
+| S-D6 | **广播职责**：kafkax fanout 到 8 个分析域消费者 | topic = `binance.{product_line}.{event_type}.v1`；handoff 成功后 Ack |
+| S-D7 | **禁止行为**：server 不得发起 Binance API 调用、不得管理 WebSocket 连接、不得持有交易所 API key | 这些全部属于 client 职责 |
+
+#### 4.3.4 Historical Data Sync Rules（历史数据同步规则）【硬】
+
+| 规则 | 值 | 说明 |
+|------|-----|------|
+| **ExchangeInfo 同步周期** | 6h（`FOUNDATIONX_BINANCE_EXCHANGE_INFO_REFRESH_INTERVAL`） | 启动时全量拉取，之后 diff-only；仅在发现变更时发布 `instruments.changed` |
+| **Backfill 触发方式** | 按需（admin API `POST /api/v1/admin/backfill`）+ 自动（gap detection 触发） | 不自动全量回填；每次 backfill 创建 job_id 追踪 |
+| **Reconciliation 周期** | 每日 04:00 UTC（FR-026） | 对账 taosx vs Binance REST klines；容差 0.01% |
+| **Archive 周期** | 每日 02:00 UTC（FR-006d） | 扫描 cutoff 前数据→写入 OSS→ETag 校验→删热 |
+| **Retention 清理周期** | 每日 03:00 UTC（FR-006e） | 与 archive 错开 1h；先验证归档完整性后删除 |
+| **Cold rehydration** | 按需（admin API） | OSS→taosx 回热；24h TTL；202 job_id |
+
+#### 4.3.5 Starting Time Point（起始时间点）【硬】
+
+| 数据类型 | 起始点 | 规则 |
+|---------|--------|------|
+| **实时行情（WS）** | 进程启动时刻 `T0` | 无历史补偿——WS 数据从连接建立时刻开始，丢失的 tick/trade 通过 backfill 补齐（如有需要） |
+| **历史 K 线（REST）** | 默认 `T0 - 30d`（可配 `FOUNDATIONX_BINANCE_BACKFILL_WINDOW`） | 首次 starting point 由 admin 指定；cursor 持久化于 postgresx |
+| **ExchangeInfo** | 进程启动时刻 `T0` | 启动拉取全量；之后 6h diff |
+| **Backfill cursor** | 首次 `POST /api/v1/admin/backfill` 指定的 `from_date` | cursor 持久化于 postgresx `backfill_cursors` 表；重启后从上次 cursor 恢复 |
+| **Reconciliation** | 首次运行的 04:00 UTC | 对账范围：上一次 reconciliation 的 `checked_until` 到 `NOW() - 1h` |
+| **Archive** | 首次运行的 02:00 UTC | 归档范围：taosx 中 `event_time < cutoff` 的数据（cutoff = NOW() - retention_period） |
+
+#### 4.3.6 Client/Server 交互数据流字符图
+
+```text
+┌── CLIENT (交易所侧) ──────────────────────────────────┐
+│                                                        │
+│  Binance Exchange                                      │
+│    │ WS (实时)  │ REST (历史/参考)                      │
+│    ▼            ▼                                      │
+│  connector   history_rest / exchangeinfo               │
+│    │            │                                      │
+│    ▼            ▼                                      │
+│  parser → normalize → mapper                           │
+│                  │                                     │
+│                  ▼                                     │
+│  ┌─ natsx.Publish ─────────────────────┐              │
+│  │  binance.market.{pl}.{et}          │              │
+│  │  binance.market.{pl}.{et}.replay   │              │
+│  │  binance.control.instruments.      │              │
+│  │    changed                         │              │
+│  └────────────────────────────────────┘              │
+│                                                        │
+│  ❌ 禁止: 直连 postgresx/taosx/redisx/oss/clickhouse  │
+│  ❌ 禁止: 暴露 REST API                                │
+│  ❌ 禁止: kafkax fanout                                │
+└────────────────────────────────────────────────────────┘
+           │ natsx JetStream (唯一通信通道)
+           ▼
+┌── SERVER (内网侧) ────────────────────────────────────┐
+│                                                        │
+│  ┌─ natsx.Subscribe ────────────────────┐             │
+│  │  binance.market.>                    │             │
+│  │  binance.control.>                   │             │
+│  └──────────────────────────────────────┘             │
+│    │                                                    │
+│    ▼                                                    │
+│  validate → idempotency → processor                    │
+│    │                                                    │
+│    ├→ taosx (时序存储)                                   │
+│    ├→ redisx (热缓存 + 幂等标记 + 分布式锁)              │
+│    ├→ postgresx (元数据 + 审计 + cursor)                 │
+│    ├→ clickhousex (OLAP ETL)                             │
+│    └→ ossx (冷归档)                                      │
+│    │                                                    │
+│    ├→ Gin REST API :8080 (/api/v1/market/*)              │
+│    └→ kafkax fanout (binance.{pl}.{et}.v1)               │
+│                                                        │
+│  ❌ 禁止: 直连 Binance Exchange                         │
+│  ❌ 禁止: 持有交易所 API key                             │
+└────────────────────────────────────────────────────────┘
+```
+
+> 此图与 §2 Summary 的数据流字符图互补——§2 是简化的单线图，本图显式标注了每端的禁止行为和数据分类路径。
+
+---
+
+### 4.4 Client/Server Boundary Contract — 不可协商的硬边界
+
+> **本节是 `module/binance` 的架构宪法条款。** 以下 8 条约束定义了 client 和 server 之间不可逾越的分界线。任何违反本节约束的代码改动应被 CI gate 自动阻断，PR review 直接拒绝。
+
+#### 核心原则
+
+```
+CLIENT = 交易所侧 · 只采集 · 只发布 · 不落盘 · 不查询 · 不广播
+SERVER = 内网侧   · 只消费 · 只存储 · 只查询 · 只广播 · 不直连交易所
+
+CLIENT ──(唯一通道: natsx JetStream)──→ SERVER
+        ←(控制面: natsx control subjects)→
+```
+
+#### 包级别边界映射
+
+| Go Package | 归属 | 允许 Import |
+|-----------|:----:|------------|
+| `cmd/binance-client/` | **CLIENT** | natsx, domain-market, domain-exchange, configx, binance-connector-go |
+| `internal/client/` | **CLIENT** | 同上 + internal/wire |
+| `internal/client/connectors/` | **CLIENT** | 同上 |
+| `internal/client/publisher/` | **CLIENT** | **仅** natsx, domain-market, internal/wire |
+| `cmd/binance-server/` | **SERVER** | natsx, domain-market, domain-exchange, redisx, postgresx, taosx, clickhousex, kafkax, ossx, gin, bootstrap, configx |
+| `internal/server/` | **SERVER** | 同上 + internal/wire |
+| `internal/server/storage/` | **SERVER** | 同上（完整 infra 访问） |
+| `internal/server/api/` | **SERVER** | gin, redisx, taosx, clickhousex, postgresx |
+| `internal/wire/` | **共享** | domain-market, domain-exchange（仅类型定义，无 infra 依赖） |
+| `pkg/` | **共享** | 无限制（通用工具层） |
+
+#### 8 条不可协商约束
+
+| # | 约束 | 违规示例 | 阻断方式 |
+|---|------|---------|---------|
+| ⛔ C1 | **Client 不落盘**：`internal/client/` 禁止 import `redisx/postgresx/taosx/clickhousex/ossx` | `history_state_postgres.go` import postgresx ← **已知违规** | CI `rg` gate（BOUNDARY-GATES §15） |
+| ⛔ C2 | **Server 不直连交易所**：`internal/server/` `cmd/binance-server/` 禁止 import `binance-connector-go` 或 `gorilla/websocket`（exchange-facing） | server 调用 `binance.NewSpotClient()` | CI `rg` gate（BOUNDARY-GATES §16） |
+| ⛔ C3 | **通信仅经 natsx**：client↔server 全部消息（行情+控制+回填）必须经 natsx JetStream subject；禁止 gRPC/HTTP/共享内存 | `gRPC ingest server` 在 server 中监听 | CI wire-contract gate（BOUNDARY-GATES §8） |
+| ⛔ C4 | **Client 不暴露查询 API**：`cmd/binance-client/` 仅暴露 admin `:8081`（/healthz /readyz）；禁止 `/api/v1/market/*` | client 暴露 `GET /api/v1/market/ticks` | CI API surface gate |
+| ⛔ C5 | **Server 不持有交易所凭据**：`cmd/binance-server/` 禁止读取 `FOUNDATIONX_BINANCE_API_KEY/SECRET` | server 从 env 读取 Binance API key | CI secret gate |
+| ⛔ C6 | **Client 不广播**：`internal/client/` 禁止 import `kafkax` | client 直接 kafkax.Send | CI `rg` gate |
+| ⛔ C7 | **Server 不采集**：`internal/server/` 禁止 import `binance-connector-go` 或任何 exchange connector | server 发起 REST klines 请求 | CI `rg` gate（同 C2） |
+| ⛔ C8 | **共享层无 infra**：`internal/wire/` `pkg/` 禁止 import 任何 Foundation 模块（natsx/redisx/kafkax/postgresx/taosx/clickhousex/ossx/gin） | wire 包依赖 postgresx | CI `rg` gate |
+
+#### 违规后果
+
+```
+PR 提交 → CI boundary-gates.sh 扫描
+  ├── 全部 15 gates PASS → ✅ PR 可合并
+  └── 任一 gate FAIL → ❌ PR 阻断
+        └── 修复方式：
+            1. 删除违规 import / 移动代码到正确侧
+            2. 重跑 boundary-gates.sh 验证
+            3. 无法修复 → 提交 ADR 申请边界例外（需架构审查批准）
+```
+
+#### 已知违规与修复计划
+
+| 违规 | 文件 | 计划 | 状态 |
+|------|------|------|:----:|
+| C1 违规 | `internal/client/history_state_postgres.go` import postgresx | Phase A: 移至 `internal/server/storage/` | ⬜ 待执行 |
+| C1 违规（潜在） | `internal/client/history_lifecycle.go` 调用 history_state_postgres | Phase A: 随 history_state_postgres 一起迁移 | ⬜ 待执行 |
+| C1 违规（潜在） | `internal/client/archive_manifest.go` 管理归档状态（应属 server） | Phase A: 移至 server | ⬜ 待执行 |
+| C1 违规（潜在） | `internal/client/cron_reconcile.go` 对账逻辑（应属 server） | Phase A: 移至 server | ⬜ 待执行 |
+
+> 以上 4 项违规的详细迁移方案见 `report/binance/structural-architecture-analysis-20260626.md` Phase A。
+
 ## 5. Non-goals
 
-`module/binance` 明确不做以下事情：
+`module/binance` 明确不做以下事情。数据边界规则详见 §4.3.2（client 禁止行为 C-D6）和 §4.3.3（server 禁止行为 S-D7）。
 
 | 不做 | 原因 |
 |------|------|
@@ -117,6 +299,8 @@ Plan008 的 `release_closeable=YES` 只表示 release gate 可关闭；它不自
 | 作为跨 CEX 通用 ingestion server | 本模块仅处理 Binance |
 | 同进程运行 client + server | **违反分布式约束（见 §4 Goals）** |
 | 保留 `internal/cs` 同进程桥接包为运行时依赖 | **必须删除** |
+| client 直连 postgresx/taosx/redisx/oss/clickhousex | **违反 C7（见 §4.3.2 C-D1）** |
+| server 直连 Binance Exchange（REST/WS） | **违反 C8（见 §4.3.3 S-D1）** |
 
 ---
 
@@ -137,13 +321,16 @@ Plan008 的 `release_closeable=YES` 只表示 release gate 可关闭；它不自
 
 ### FR-001: Product-Line Support
 
-**功能描述**：模块必须支持 Binance 四种产品线的行情数据采集。
+**功能描述**：模块必须支持 Binance 四种产品线的行情数据采集。**数据边界**：全部四产品线的实时行情（WS）和历史行情（REST）采集由 client 独占执行；server 仅通过 natsx 消费已发布事件，不直连交易所（§4.3.3 S-D1）。
 
 **WHEN** 配置启用 Spot 产品线
-**THEN** client 可通过 Spot connector 采集 Binance spot market data
+**THEN** client 通过 Spot connector 采集 Binance spot market data（WS: tick/trade/bar/depth；REST: klines/aggTrades/exchangeInfo）
+**AND** 采集的实时数据通过 `natsx.Publish(binance.market.spot.*)` 发布；历史回填数据通过 `natsx.Publish(binance.market.spot.*.replay)` 发布
+**AND** server 通过 `natsx.Subscribe(binance.market.spot.*)` 消费实时数据，通过 `natsx.Subscribe(binance.market.spot.*.replay)` 消费回填数据
 
 **WHEN** 配置启用 USDⓈ-M 产品线
-**THEN** client 可通过 USDⓈ-M connector 采集 USDT/USDC 保证金合约行情
+**THEN** client 通过 USDⓈ-M connector 采集 USDT/USDC 保证金合约行情
+**AND** subject 前缀为 `binance.market.um_perp.*`（永续）和 `binance.market.um_perp.*.replay`（回填）
 
 **WHEN** 配置启用 COIN-M 产品线
 **THEN** client 可通过 COIN-M connector 采集币本位合约行情
@@ -340,19 +527,22 @@ Plan008 的 `release_closeable=YES` 只表示 release gate 可关闭；它不自
 
 ### FR-009: Boundary Enforcement
 
-**功能描述**：模块边界通过 CI gate 强制执行。
+**功能描述**：模块边界通过 CI gate 强制执行。**需求归类说明**：本条 FR 的行为主体是 CI pipeline（非模块运行时），语义上更接近 Business Rule。保留为 FR 以维持现有 TRACEABILITY FR→AC→TC→Task 追溯链连续性；其对应的 BR 条目为 BR-001~BR-009（见 §8 + `TRACEABILITY.md` §2）。
 
 **WHEN** client 代码尝试 import server internal 包
-**THEN** CI boundary gate 失败
+**THEN** CI boundary gate §3 失败（对应 BR-002）
 
 **WHEN** 任何代码 reintroduce `binance-market` 引用
-**THEN** CI no-legacy gate 失败
+**THEN** CI no-legacy gate §2 失败（对应 BR-001）
 
 **WHEN** 模块内声明存储/query/strategy 所有权
-**THEN** CI ownership gate 失败
+**THEN** CI ownership gate §7 失败（对应 BR-006/BR-007）
 
 **WHEN** 模块内定义本地 proto、gRPC ingest service 或独立 wire schema
-**THEN** CI wire contract externality gate 失败
+**THEN** CI wire contract externality gate §8 失败（对应 BR-008）
+
+**WHEN** runtime `go.mod` 缺失或错误归类边界依赖
+**THEN** CI dependency compliance gate §11 失败（对应 BR-009）
 
 ### FR-010: clickhousex OLAP Storage
 
@@ -803,11 +993,198 @@ Plan008 的 `release_closeable=YES` 只表示 release gate 可关闭；它不自
 
 > 注：Plan007 A7 gap — Options raw field pass-through。Greeks 归分析域负责，透传层不做衍生计算。AC-102~104 / TC-048~049。
 
-### FR-031~036：ExchangeInfo Synchronization（Draft）
+### FR-045: Alert Consumption Layer
 
-> **弃用声明**：FR-031~036 的行为规范定义于 `module/binance/SPEC-exchangeinfo-sync.md`（v3.7.0-draft，第三轮结构性审查后）。这 6 个 FR 当前为 Draft 状态（不计入 v3.7.0 基线投影），覆盖 exchangeInfo 四产品线发现、定时刷新持久化、sync tier 分级、选择性同步白名单、admin 鉴权加固和 tier-aware 连接拓扑。AC-131~154 / TC-066~083。编号已协调：AC-105~130 / TC-050~065 保留给 Current FR-037~044。
->
-> FR-031~036（Draft）和 FR-037~044（Current）已协调编号空间：Current 使用 AC-105~130 / TC-050~065，Draft 使用 AC-131~154 / TC-066~083。FR-031~036 从 Draft 提升为 Active 时无需重新编号。
+**功能描述**：将 FR-014（metrics 暴露）和 FR-029（SLA 检测）的 L1 检测能力提升到 L2 告警——Prometheus metrics 必须有 alerting rules 消费并触发通知。闭合 `report/binance/data-maturity-assessment-20260625.md` 识别的"死信号"缺口。
+
+**WHEN** 任何 FR-029 SLO 违约（stale > 阈值、gap_detected > 0、dlq_size > 0、coverage < 99.99%）
+**THEN** Prometheus alerting rules 触发 Alertmanager 告警
+**AND** Alertmanager 路由到 on-call 通知渠道（PagerDuty/webhook/Slack）
+**AND** 告警含：SLO 名称、当前值、阈值、持续时长、受影响的 product_line
+
+**WHEN** stale alert 触发（spot/um/cm 30s、options 60s）
+**THEN** 自动触发 FR-017 gap detection，评估是否需要 backfill replay
+
+**WHEN** alerting rule 本身不可达（Alertmanager down）
+**THEN** binance-server `/readyz` 返回 503 + `alertmanager_unreachable` 原因
+
+**WHEN** 任何新增 SLO 或修改现有阈值
+**THEN** 同步更新 alerting rule 配置；PR 描述附新旧 rule diff
+
+> 注：附录 F.3 的 10 项 SLO 各需至少 1 条 alerting rule。当前 metrics 已采集但无消费——这是 L1→L2 断裂的根因。
+
+### FR-046: Graceful Shutdown
+
+**功能描述**：client 和 server 进程在收到终止信号时执行优雅关闭，确保数据不丢失、consumer 位点不漂移。
+
+**WHEN** `binance-client` 收到 SIGTERM/SIGINT
+**THEN** 停止 WebSocket 连接（发送 close frame），flush 所有未发送的 natsx publish，等待 PubAck 或超时
+**AND** 30s 超时后强制退出（exit code 0）；超时前完成的消息正常 Ack
+
+**WHEN** `binance-server` 收到 SIGTERM/SIGINT
+**THEN** 进入 drain 模式：natsx consumer 停止接收新消息，完成正在处理的消息（validate→store→fanout），flush kafkax producer buffer
+**AND** `/healthz` 返回 503（就绪探针失败，k8s 停止路由流量）
+**AND** `/readyz` 返回 shutting_down 状态
+
+**WHEN** drain 超时（默认 60s）仍有未完成消息
+**THEN** 记录 warn 日志（含未完成消息数和 idempotency keys）；强制退出（exit code 1）
+**AND** JetStream durable consumer 重启后从上次 Ack 位置恢复（未 Ack 消息自动重投，FR-004 保障）
+
+**WHEN** 关闭过程中 `redisx.DistLock` 持有 coordinator lease
+**THEN** 释放锁（DEL key），防止 coordinator 选举延迟
+
+> 注：AC-131~133 / TC-084~086。
+
+### FR-047: Startup Configuration Validation
+
+**功能描述**：server/client 启动时对全部必需配置做完整性检查，缺失或不可达时 fail-fast，避免部分启动后运行时崩溃。
+
+**WHEN** `binance-server` 进程启动
+**THEN** `validateStorageConfig()` 按序检查全部必需环境变量：
+- `FOUNDATIONX_NATS_URL`（client+server 必需）
+- `FOUNDATIONX_REDIS_PASSWORD`（server 必需）
+- `FOUNDATIONX_POSTGRES_PASSWORD`（server 必需）
+- `FOUNDATIONX_TAOS_PASSWORD`（server 必需）
+- `FOUNDATIONX_CLICKHOUSE_PASSWORD`（server 必需）
+- `FOUNDATIONX_KAFKA_PASSWORD`（server 必需，若 dispatcher=kafkax）
+- `FOUNDATIONX_OSSX_BUCKET`（server 必需）
+**AND** 缺失任一 → fail-fast 退出（exit code 1），stderr 列出所有缺失变量名
+
+**WHEN** infra 连接测试失败（Dial timeout 5s）
+**THEN** 指数退避重试 3 次（间隔 2s/4s/8s），仍失败则退出（exit code 2）
+**AND** 日志记录失败原因（connection refused / timeout / auth error）
+
+**WHEN** 非关键 infra 不可达（如 clickhousex 用于 OLAP 查询、非实时写入路径）
+**THEN** server 可降级启动（log warn + `/readyz` 标记 `clickhousex_unreachable`），不阻塞实时 ingest path
+
+**WHEN** `binance-client` 进程启动
+**THEN** 验证 `FOUNDATIONX_NATS_URL`（必需）和 `FOUNDATIONX_BINANCE_API_KEY`（必需，除非 testnet 模式）
+**AND** 缺失任一 → fail-fast 退出
+
+> 注：AC-134~136 / TC-087~089。
+
+> 注：FR-031~036 为 ExchangeInfo 同步规格草案（完整 WHEN/THEN 见 `specs/exchangeinfo-sync.md`）。当前 Status = Draft——需经 pipeline-arbiter 98 分门禁后翻转 Approved。**已知 spec-code 倒挂**：runtime `internal/client/exchangeinfo.go` / `exchangeinfo_refresh.go` / `exchangeinfo_option.go` 已部分实现 exchangeInfo 拉取逻辑，但 spec 侧仍为 Draft。FR-031~036 不计入当前 FR 状态投影（24 Done / 10 Partial / 13 Pending 的分母不含这 6 条）。阻塞根因：pipeline 四源评分瓶颈，非 FR 质量问题（FR-031~036 质量评级 ⭐⭐⭐⭐）。
+
+### FR-031: ExchangeInfo Discovery (4 Product Lines)（Draft · 来源 `specs/exchangeinfo-sync.md`）
+
+**功能描述**：client 实现四产品线 exchangeInfo 拉取与解析，修复 COIN-M/Options 的已知 API 陷阱。
+
+**WHEN** client 进程启动且 `FOUNDATIONX_BINANCE_EXCHANGE_INFO_URL` 非空（或使用 mainnet 默认值）
+**THEN** client 应分别拉取四产品线的 exchangeInfo endpoint，解析为 `CatalogEntry` 列表
+**AND** 通过 `binance.control.instruments.changed` 发布给 server
+
+**产品线 → endpoint 映射**（实测确认）：
+
+| ProductLine | REST Endpoint | Status 字段 | Symbol 数组字段 | 备注 |
+|-------------|--------------|------------|----------------|------|
+| `spot` | `api.binance.com/api/v3/exchangeInfo` | `status`（`TRADING`） | `symbols` | 现有已实现 |
+| `um_perp` | `fapi.binance.com/fapi/v1/exchangeInfo` | `status`（`TRADING`） | `symbols` | **新增** |
+| `cm_perp` | `dapi.binance.com/dapi/v1/exchangeInfo` | **`contractStatus`**（`TRADING`） | `symbols` | **API 陷阱**：状态字段非 `status` |
+| `options` | **`eapi.binance.com/eapi/v1/exchangeInfo`** | `status`（`TRADING`） | **`optionSymbols`** | **API 陷阱**：endpoint 非 `vapi`，数组非 `symbols` |
+
+**API 陷阱文档化**（从 symbol-sync 实测得出）：COIN-M 用 `contractStatus`（非 `status`），误用返回 0 symbol；Options 用 `eapi.binance.com`（非 `vapi`），数据在 `optionSymbols` 数组（非 `symbols`）。
+
+**扩展 CatalogEntry 字段**：新增 `ContractType`, `ExpiryDate`, `StrikePrice`, `OptionType`, `PricePrecision`, `QtyPrecision`, `MinQty`, `MaxQty`, `TickSize`, `Filters`(JSONB)
+
+> 注：Draft，不计入 v3.7.0 基线投影。AC-131~134 / TC-066~068。
+
+### FR-032: ExchangeInfo Persistence & Scheduled Refresh（Draft）
+
+**功能描述**：server 消费 `instruments.changed` 落库 postgresx；client 每 6h 定时 diff-only 刷新。
+
+**WHEN** server 消费 `binance.control.instruments.changed`
+**THEN** 将 diff 中 Added/Updated 条目 upsert 进 postgresx `catalog_symbols`（扩展后 schema）
+**AND** Removed 条目标记 `status='delisted'`（不物理删除，保留历史）
+
+**WHEN** client 进程运行中
+**THEN** 每 `FOUNDATIONX_BINANCE_EXCHANGE_INFO_REFRESH_INTERVAL`（默认 `6h`）重新拉取四产品线 exchangeInfo
+**AND** 与本地 catalog 做 diff，**仅在发现变更时**发布 `instruments.changed`（diff-only，避免 PubAck 风暴）
+
+**natsx control stream 声明**：当前 JetStream stream 仅声明 `binance.market.*.*`，`binance.control.*` 无对应 stream。server 启动时需 `AddStream` 声明 control stream（subject `binance.control.>`，retention=**LimitsPolicy**——非 WorkQueue，multi-server 广播语义）。
+
+**diff 引擎**：`DiffCatalog(prev, next)` 基于复合键 `product_line:symbol`。`Updated` 判定收窄到采集决策字段（`status`/`sync_tier`/`base_asset`/`quote_asset`/`expiry_date`）；合约规格字段变化计为 `SpecUpdated`（单独标记，不触发 catalog reload）。
+
+> 注：Draft。AC-135~138 + AC-112a~112c / TC-069~073。
+
+### FR-033: Sync Tier Classification（Draft · 分类与字段，不含连接拓扑）
+
+**功能描述**：定义 symbol 分级分类。连接拓扑部分见 FR-036。
+
+**WHEN** 一个 symbol 被写入 `catalog_symbols`
+**THEN** `sync_tier ∈ {L1_core, L2_extended, L3_full, disabled}`，默认 `disabled`（安全默认：未显式分级不同步）
+
+| sync_tier | 意图流（spot/um/cm） | 意图流（options） | backfill 优先级 |
+|-----------|---------------------|-------------------|----------------|
+| `L1_core` | trade + bookTicker + kline_1m + depth20@100ms | optionTicker | P0 cold_start |
+| `L2_extended` | trade + kline_1m + bookTicker | optionTicker | P1 cold_start |
+| `L3_full` | trade + kline_1m | optionTicker | P2 cold_start |
+| `disabled` | 无 | 无 | 不 backfill |
+
+> options 仅有 `@optionTicker` 流，tier 差异化不体现在流类型，仅控制是否采集 + backfill 优先级。
+
+**WHEN** admin 调用 `PATCH /api/v1/admin/symbols/{product_line}/{symbol}`
+**THEN** `sync_tier` 可热更新，触发 stream drain/rebuild（复用 FR-024 + FR-036）
+
+> 注：Draft。AC-139~142 / TC-074~076。连接拓扑拆分至 FR-036（第三轮审查）。
+
+### FR-034: Selective Sync Whitelist（Draft）
+
+**功能描述**：`product_lines` / `symbols.allow` / `symbols.deny` 三层过滤，优先级 deny>allow>tier。
+
+**WHEN** client 启动或 admin reload 触发 catalog 刷新
+**THEN** 最终采集决策按以下优先级裁决（deny 永远赢）：`deny → allow非空白名单 → status≠TRADING → product_lines未启用 → DB.sync_tier`
+
+**配置字段**（`binancecfg.Config` 新增）：`ProductLines []string` / `SymbolsAllow []string` / `SymbolsDeny []string`，从 `FOUNDATIONX_BINANCE_*` 环境变量解析。
+
+**WHEN** `POST /api/v1/admin/symbols/reload` 接受 `sync_tier`
+**THEN** reload 后立即应用白名单过滤
+
+> 注：Draft。AC-143~146 / TC-077~080。
+
+### FR-035: Admin Surface Auth Hardening（Draft · FR-033/034 写操作的安全前置）
+
+**功能描述**：client `AdminServer` 写操作鉴权加固。当前 `admin.go:58` 裸 `http.ServeMux` 无任何鉴权。
+
+**WHEN** `AdminServer` 收到 `/api/v1/admin/*` 写请求（POST/PATCH/DELETE）
+**THEN** 校验 `Authorization: Bearer <token>`（从 `FOUNDATIONX_BINANCE_ADMIN_TOKEN` 读取）
+**AND** 空 token 时仅允许 localhost，拒绝远程写请求
+
+**WHEN** `GET /healthz`、`GET /readyz`、`GET /api/v1/admin/streams`（只读）
+**THEN** 不受鉴权影响，保持公开
+
+**WHEN** 鉴权失败（401/403）
+**THEN** 写入 `audit_log`（`action='admin_auth_denied'`、含 remote_addr 与 path）
+
+> 注：Draft。AC-147~150 / TC-081~083。
+
+### FR-036: Tier-Aware Connection Topology（Draft · 需前置 ADR）
+
+**功能描述**：stream manager 按 `(productLine, tier)` 分组 WS 连接，不同 tier 用不同流组合。connector 架构从「1 线 1 连接」演进为「1 线 N tier 连接组」。
+
+**WHEN** stream manager 为某 productLine 构建 WS 连接
+**THEN** 按 sync_tier 分组，每组独立 WS 连接，不同 tier 的 symbol 不混入同一连接
+
+**tier × productLine → 流组合映射**（`StreamsForProductLineTier`）：L1=trade+bookTicker+kline_1m+depth20@100ms；L2=trade+kline_1m+bookTicker；L3=trade+kline_1m。options 统一 `optionTicker`（按 symbol 数分批，单连接 1024 上限）。
+
+**WHEN** tier 降级（L1→L3）
+**THEN** 旧连接先 drain（NakWithDelay+DLQ）再 unsubscribe（BR-011）；升级异步不阻塞
+
+**WHEN** 单组 symbol 数超限
+**THEN** 拆分多连接（分批边界：spot L1=256 sym/conn，L3=512 sym/conn，options=1024 sym/conn）
+
+> **FR-024 依赖风险**：增量 drain 依赖 FR-024 增量 diff（FR-024 当前 Partial 全量重连）。推荐方案：FR-036 自建 per-tier 增量 diff（解耦）。
+
+> 注：Draft，建议前置 ADR。AC-151~154 / TC-074~076（与 FR-033 共享 TC）。
+
+### FR-031~036 相关的业务规则（BR-010~BR-012，Draft）
+
+| BR ID | 业务规则 | 验证方式 |
+|-------|----------|----------|
+| BR-010 | ExchangeInfo Diff-Only Publication：定时刷新须 diff 后发布，全量快照 24h 一次 | CI gate + 单元测试 |
+| BR-011 | Tier Reassignment Safety：降级先 drain 再 unsubscribe，升级异步不阻塞 | 集成测试 |
+| BR-012 | Options Expiry Batch Drain Smoothing：批量到期分批错峰（每批 20 个，间隔 2s） | 集成测试 |
+
+> FR-031~036（Draft）和 FR-037~044（Current）已协调编号空间：Current 使用 AC-105~130 / TC-050~065，Draft 使用 AC-131~154 / TC-066~083。从 Draft 提升为 Active 时无需重新编号。完整设计讨论与 DB schema 扩展见 `specs/exchangeinfo-sync.md`。
 
 ### FR-037: Release Safety Net（P0 · 来源 S26）
 
@@ -827,11 +1204,11 @@ Plan008 的 `release_closeable=YES` 只表示 release gate 可关闭；它不自
 **WHEN** 未配置 feature flag 的新代码路径被调用
 **THEN** 默认关闭；返回 "feature not enabled" 而非静默执行
 
-### FR-038: taosx Data Retention Lifecycle（P0 · 来源 G6/S1/S2）
+### FR-038: taosx Data Retention Lifecycle（P0 · 来源 G6/S1/S2 · 规格见 FR-006e）
 
-**功能描述**：对 taosx 热数据执行主动删除生命周期管理。与 FR-006d（OSS 归档）严格协同——先归档校验通过，后删热数据。FR-006e 已在 §7 FR-006 扩展中定义（taosx Data Retention Lifecycle），本条为 Plan008 要求的 P0 独立 FR 完整规格。
+**功能描述**：对 taosx 热数据执行主动删除生命周期管理。与 FR-006d（OSS 归档）严格协同——先归档校验通过，后删热数据。**完整 WHEN/THEN 行为规范已定义于 FR-006e**（taosx Data Retention Lifecycle，FR-006 子条款），本条为 Plan008 要求的 P0 独立 FR 编号锚点，确保 G6 缺口在 TRACEABILITY 中有独立追溯行。
 
-> 注：FR-006e 的完整 WHEN/THEN 规格已在 FR-006d 之后定义。本条 FR-038 是对应追溯矩阵的独立编号锚点，避免 G6 缺口在 TRACEABILITY 中无独立 FR 行。详细验收标准见 AC-108~111 / TC-051~052。
+> 注：FR-006e（§7 FR-006 扩展）已定义 taosx retention 的完整行为规范（定时 DELETE + OSS ETag 前置校验 + 删除审计 + DB KEEP）。本条不重复 WHEN/THEN，引用 FR-006e 作为规范来源。详细验收标准见 AC-108~111 / TC-051~052。
 
 ### FR-039: Distributed Tracing — OpenTelemetry（P1 · 来源 S28）
 
@@ -983,7 +1360,7 @@ Plan008 的 `release_closeable=YES` 只表示 release gate 可关闭；它不自
 | FR-042 Schema Version Compatibility Policy | AC-122 ~ AC-124 | TC-058 | 单元 + CI（MAJOR terminal reject + MINOR 向后兼容 + 兼容矩阵校验） |
 | FR-043 Cost Observability | AC-125 ~ AC-127 | TC-059 | 集成 + metrics（存储容量/带宽/分摊指标 + Prometheus 告警规则） |
 | FR-044 Data Compliance & Destruction | AC-128 ~ AC-130 | TC-060, TC-061 | 单元 + 审计（数据分类标注 + 合规保留期 + 销毁证明 + 血缘文档） |
-| FR-031~036（Draft） | AC-131 ~ AC-154 | TC-066 ~ TC-083 | 定义于 `SPEC-exchangeinfo-sync.md`；Draft 状态不计入当前基线投影 |
+| FR-031~036（Draft） | AC-131 ~ AC-154 | TC-066 ~ TC-083 | 定义于 `specs/exchangeinfo-sync.md`；Draft 状态不计入当前基线投影 |
 
 **AC 总数**：130（AC-001 ~ AC-130）· **TC 总数**：65（TC-001 ~ TC-065，全覆盖 FR-001~044，含 FR-012~030 的 TC-043~049 + FR-037~044 的 TC-050~065）· Draft 预留 AC-131~154 / TC-066~083 · **追溯登记覆盖率**：100%（FR→AC→TC 全链路已登记；实现通过率见 TRACEABILITY.md §6）
 
@@ -1228,7 +1605,7 @@ server_unavailable
 |--------|------|--------|------|
 | `binance.rest_url` | `string` | `https://api.binance.com` | Binance REST API base URL |
 | `binance.ws_url` | `string` | `wss://stream.binance.com:9443` | Binance WebSocket base URL |
-| `binance.product_lines` | `[]string` | `[]` | 启用的产品线（domain_market canonical：`spot`/`um_perp`/`cm_perp`/`options`）。**→ FR-034**（规格增补，见 [`SPEC-exchangeinfo-sync.md`](SPEC-exchangeinfo-sync.md) §6） |
+| `binance.product_lines` | `[]string` | `[]` | 启用的产品线（domain_market canonical：`spot`/`um_perp`/`cm_perp`/`options`）。**→ FR-034**（规格增补，见 [`specs/exchangeinfo-sync.md`](specs/exchangeinfo-sync.md) §6） |
 | `binance.symbols.allow` | `[]string` | `[]` | 白名单 symbol（空=全部）。**→ FR-034** |
 | `binance.symbols.deny` | `[]string` | `[]` | 黑名单 symbol（deny 永远赢）。**→ FR-034** |
 | `binance.api_key_env` | `string` | `BINANCE_API_KEY` | 读取 API Key 的环境变量名 |
@@ -1841,15 +2218,15 @@ github.com/ZoneCNH/binance/
 | ID | 问题 | 状态 | 负责人 |
 |----|------|------|--------|
 | OQ-003 | server idempotency store 的 backing storage 选型（in-memory / SQLite / Redis）？ | 已解决 — Redisx SetNX 为 production default；memory 仅允许 local test | binance owner |
-| OQ-004 | 是否需要 multi-region Binance endpoint 切换？ | 待评估 | binance owner |
-| OQ-005 | `Binance server` 是否需要支持非 Binance 的 multi-exchange server？ | 待评估 | architecture |
+| OQ-004 | 是否需要 multi-region Binance endpoint 切换？ | 待评估（DR 要求见 Appendix G；natsx cluster 跨 AZ 已覆盖传输层，endpoint 层待评估） | binance owner |
+| OQ-005 | Server 是否需要支持非 Binance 的 multi-exchange server？ | 已解决 — §5 Non-goals 明确"本模块仅处理 Binance"。多交易所由独立 cs_module 各自承担 | architecture |
 
 ### Future
 
 | ID | 问题 | 状态 | 负责人 |
 |----|------|------|--------|
-| OQ-006 | 是否需要 Binance 以外的 CEX 参照此 C/S 架构统一？ | 待评估 | architecture |
-| OQ-007 | 是否需要压缩 `natsx` payload（特别是 depth snapshot）？ | 待评估 | performance |
+| OQ-006 | 是否需要 Binance 以外的 CEX 参照此 C/S 架构统一？ | 已解决 — okx/hyperliquid/coinglass/fred/treasury 已按 `arch_type: cs_module` 注册；C/S 模板提取见 `analysis/GOVERNANCE-TIER-PROPOSAL.md` + `structural-architecture-analysis-20260626.md` Phase C | architecture |
+| OQ-007 | 是否需要压缩 `natsx` payload（特别是 depth snapshot）？ | 待评估（depth 20 档全量约 2KB/msg；4 PL × ~500 symbols × depth@100ms ≈ 40MB/s 未压缩；生产前需评估 natsx max_payload + Snappy/zstd 压缩） | performance |
 
 ---
 
@@ -2058,3 +2435,88 @@ Binance Exchange (REST/WebSocket)
 > **6/6 通过** — 上游契约链闭合。本 SPEC 处于 Approved 状态，可进入运行时实现阶段（PR-007）。实现时必须严格遵循 natsx JetStream subject 规范、domain_market §10 canonical semantics、Gin REST API `/api/v1/market/*` 契约。
 
 ---
+
+## Appendix F: Data Quality SLA Framework（SLA 框架）
+
+> 来源：`report/binance/data-maturity-assessment-20260625.md`（2026-06-25 数据成熟度评估）。本附录将该报告的 4 维 SLA 模型 + 3 级成熟度模型 + 10 项 SLO 目标正式纳入 SPEC，作为 FR-029/FR-014/NFR-001~020 的统一度量框架。
+
+### F.1 四维 SLA 模型
+
+生产级行情数据系统的成熟度由四个正交维度决定。任一维不达标，系统不可声明"生产级"。
+
+| 维度 | 定义 | 核心问题 | 对应 FR |
+|------|------|----------|---------|
+| **Freshness（时效性）** | `event_time → persist/fanout` 的端到端延迟 | "数据有多新？" | FR-029, FR-014 |
+| **Completeness（完整性）** | 应采集的事件实际采集/持久化的比例 | "数据有没有丢？" | FR-004, FR-016~019, FR-026 |
+| **Durability（持久性）** | 已持久化数据在故障/重启/过期后可恢复的程度 | "数据会不会没？" | FR-005, FR-006d, FR-018, FR-027 |
+| **Consistency（一致性）** | 跨存储层（redis/taos/pg/ch）、跨时间窗口的数据是否自洽 | "数据对不对？" | FR-005 幂等, FR-026 对账, FR-030 字段 |
+
+**因果链**：四维不是独立的——Freshness 下降 → 触发 stale alert → 应触发 Completeness 修复（backfill）→ Completeness 破缺（gap）→ 应触发 Consistency 对账（reconcile）→ Durability 不足（重启丢 cursor）→ 使 Completeness 永久受损。
+
+### F.2 三级成熟度模型
+
+| 级别 | 含义 | binance 实证锚点 |
+|------|------|-----------------|
+| **L1 检测** | 能发现违约，但无自动动作 | `quality.go` gap 检测、`sla_window.go` stale 计数 |
+| **L2 告警** | 检测后主动告警（metrics → alerting rules → 通知/on-call） | `metrics.go` Prometheus gauge 已设，**alerting rules 消费层缺失** |
+| **L3 自愈** | 检测后自动触发修复（replay/backfill/reconcile） | 全链路未实现（6 个 P0 缺口：stale→alert, gap→backfill, gap→replay, DLQ, retention, rehydrate） |
+
+**当前成熟度**：L1 扎实（检测能力已大量铺设），L2 缺消费层（metrics 被采集但无 alerting rules 消费），L3 完全空白。参见 `report/binance/data-maturity-assessment-20260625.md` §2 因果链断裂图。
+
+### F.3 SLO 目标（10 项）
+
+| # | SLO | 目标 | SPEC 出处 | 状态 |
+|---|-----|------|-----------|:----:|
+| SLO-01 | Freshness P99（event→persist） | < 200ms | §17 NFR | ✅ |
+| SLO-02 | Freshness P99（event→fanout） | < 300ms | §17 NFR | ✅ |
+| SLO-03 | Stale alert 阈值 | spot/um/cm 30s, options 60s | §17 NFR | ⚠️ 计数✅, 告警❌ |
+| SLO-04 | Gap 检测窗口 | MaxEventGap 2min | FR-029 | ⚠️ 检测✅, 修复❌ |
+| SLO-05 | 幂等去重窗口 | 72h | FR-005 | ✅ |
+| SLO-06 | natsx at-least-once | 0 丢失 | FR-004 | ✅ |
+| SLO-07 | 覆盖率（不应丢的事件） | ≥ 99.99%（4 个 9） | 生产级要求 | ❌ 无度量 |
+| SLO-08 | 历史数据可恢复性 | 重启后 cursor 不丢 | FR-016/019 | ❌ 纯内存 |
+| SLO-09 | 对账容差 | 0.01% | FR-026 | ❌ 未真实执行 |
+| SLO-10 | 冷数据可回热 | OSS→taosx rehydrate | FR-027 | ❌ 未接线 |
+
+**告警消费层（"死信号"问题）**：runtime 已设置 Prometheus gauge（`SetGapRepairRequired`、stale 计数），但无 alerting rules 消费——这是 L1→L2 断裂的根因。生产级要求：每条 SLO 至少有一条 alerting rule，触发后通知 on-call（PagerDuty/webhook）。
+
+---
+
+## Appendix G: Disaster Recovery Requirements（灾难恢复）
+
+> 来源：`report/binance/data-maturity-assessment-20260625.md` §1.4 横切生产级维度 + `report/binance/foundation-resilience-audit-20260625.md` §2 可靠性责任矩阵。
+
+### G.1 RPO / RTO 定义
+
+| 指标 | 定义 | 目标 | 当前状态 |
+|------|------|------|:--------:|
+| **RPO**（Recovery Point Objective） | 灾难时可接受的最大数据丢失窗口 | ≤ 1h（natsx stream 7d retention 兜底） | ❌ 无定义 |
+| **RTO**（Recovery Time Objective） | 灾难后恢复完整服务的时间上限 | ≤ 4h（含 infra 重建 + 数据回灌 + 健康检查） | ❌ 无定义 |
+
+### G.2 多可用区 / 多节点要求
+
+| 组件 | 生产级要求 | 当前配置 | 差距 |
+|------|-----------|:--------:|:----:|
+| NATS JetStream | Cluster ≥ 3 节点, Replicas ≥ 3 | 单节点（dev 配置） | 🔴 |
+| Redis | Sentinel（HA）或 Cluster（分片） + AOF 持久化 | 单实例 | 🔴 |
+| PostgreSQL | 主从复制 + WAL 归档 + 定期 pg_dump | 单实例 | 🔴 |
+| TDengine | 多副本（Replica ≥ 2）+ WAL 落盘 | 单节点 | 🔴 |
+| ClickHouse | ReplicatedMergeTree + 多副本 | 单节点 | 🔴 |
+| Kafka | Cluster ≥ 3 broker, topic replication ≥ 3 | 单 broker（dev 配置） | 🔴 |
+| OSS | 云原生多 AZ 冗余（S3 等效） | 依赖 OSS 服务商 | ✅ |
+
+### G.3 Backup / Restore 要求
+
+| 数据层 | Backup 策略 | Restore 验证 |
+|--------|------------|:------------:|
+| postgresx（catalog + audit） | 每日 pg_dump + WAL 连续归档 | 季度 restore drill |
+| taosx（时序行情） | natsx stream 7d retention 兜底 + OSS 归档 | backfill replay 可复现 |
+| OSS（归档 parquet） | 云原生多 AZ（S3 等效） | ETag 校验（FR-006d 已实现） |
+| redisx（缓存/幂等） | AOF 持久化（appendfsync everysec） | 非关键——缓存 miss 回退 taosx |
+
+### G.4 相关 FR / NFR
+
+- FR-006d（OSS 归档 + ETag 校验）— 已实现
+- FR-018（Archive Manifest and Restore）— 已实现
+- FR-027（Cold Data Rehydration）— Partial（代码存在，未接线）
+- **NFR-028（DR Readiness）**— 新增：RPO/RTO 达标 + 多 AZ 部署 + restore drill ≥ 年 1 次

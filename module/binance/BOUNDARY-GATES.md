@@ -20,13 +20,13 @@
 
 2026-06-24 kafkax fanout 本地子集补充：local kafkax adapter 与 strict handoff unit subset 已验证，包含 topic/key、dispatch failure retryable `BNC-008` before durable/Ack 与 `plan006_task_4_7_repeat_checks=100`；真实 Kafka broker fanout、production topic/ACL 与 release evidence 仍不能标记为 PASS。
 
-> **2026-06-25 G0 存储装配断层声明**：boundary-gates 的 §12 natsx presence / §13 storage presence / §14 gin presence gate 证明的是「runtime 代码中存在调用」，**不证明 `cmd/binance-server/main.go` 装配了真实实例**。实测 main.go 用 `bootstrap.Spec{Stores: bootstrap.None}` + `NewMemoryIdempotencyStore` + `StorageWriter=nil`，9 存储类 FR（FR-005/006a-d/007/007a/010/011）runtime 永不执行。详见 `report/binance/production-readiness-assessment-20260625.md` §4.1 G0。
+> **2026-06-26 G0 存储装配更新**：G0 已从 Plan007 时期的「`bootstrap.None` + `MemoryIdempotencyStore` + `StorageWriter=nil`」前进至 `storageFromEnv`（5 infra client + writer 装配 + fail-fast）。当前 main.go 使用 `bootstrap.None` + 独立 `storageFromEnv` 并行装配；`MemoryIdempotencyStore` 仅作为 smoke 模式回退。存储类 FR（FR-005/006a-d/007/007a/010/011）的 L2 功能验收仍需真实 infra 端到端证据（PENDING-LIVE-RUN）。历史 G0 断层记录见 `report/binance/production-readiness-assessment-20260625.md` §4.1。
 
-| 验证面 | 命令 | 通过条件 |
-| --- | --- | --- |
-| 脚本语法 | `cd /home/binance && bash -n scripts/boundary-gates.sh` | shell 语法通过 |
-| 边界门禁 | `cd /home/binance && ./scripts/boundary-gates.sh` | 13/13 PASS |
-| 证据包 | `cd /home/binance && sed -n '1,160p' release/evidence/binance/20260623/SUMMARY.md` | 记录 evidence commit、verified source commit、测试命令与已知缺口 |
+| 验证面   | 命令                                                                               | 通过条件                                                         |
+| -------- | ---------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| 脚本语法 | `cd /home/binance && bash -n scripts/boundary-gates.sh`                            | shell 语法通过                                                   |
+| 边界门禁 | `cd /home/binance && ./scripts/boundary-gates.sh`                                  | 15/15 PASS（§1-§14 + §15 C7 + §16 C8）                                                       |
+| 证据包   | `cd /home/binance && sed -n '1,160p' release/evidence/binance/20260623/SUMMARY.md` | 记录 evidence commit、verified source commit、测试命令与已知缺口 |
 
 ## 2. Gate: No Legacy binance-market
 
@@ -88,42 +88,54 @@ Runtime `go.mod` 必须保留边界所需 direct dependencies，不得通过依�
 
 关闭规则：runtime gate 必须证明 `go.mod` 中的边界依赖集合合规。
 
+## 15. Gate: Client Must Not Have Direct Storage Access (C7)
+
+`binance-client` 禁止直接 import 或调用任何存储层模块（`redisx`/`postgresx`/`taosx`/`clickhousex`/`ossx`）。Client 仅通过 `natsx.Publish()` 将数据交给 server；任何需要持久化的状态（cursor、backfill progress）必须经 natsx control subject 由 server 代理写入。
+
+关闭规则：`rg "redisx\|postgresx\|taosx\|clickhousex\|ossx" cmd/binance-client internal/client --include="*.go" | grep -v "_test.go" | grep -v "natsx"` 零命中。例外：`internal/client/publisher/` 仅允许 natsx import。
+
+## 16. Gate: Server Must Not Have Direct Exchange Access (C8)
+
+`binance-server` 禁止直接 import 或调用交易所连接相关模块（`binance-connector-go`、`gorilla/websocket` 的 exchange-facing 使用）。Server 不发起 Binance REST/WS 连接、不持有交易所 API key。所有交易所数据经 natsx 从 client 消费。
+
+关闭规则：`rg "binance-connector-go\|binance\.(spot\|futures\|delivery\|option)" cmd/binance-server internal/server --include="*.go"` 零命中。
+
 ## 12. 状态口径
 
-| 项 | 状态 |
-| --- | --- |
-| BR-001 | Done：Gate §2 已由 runtime 13/13 PASS 证明 |
-| BR-002 | Done：Gate §3 已由 runtime 13/13 PASS 证明 |
-| BR-003 | Done：Gate §4 已由 runtime 13/13 PASS 证明 |
-| BR-004 | Done：Plan007 A3 (`1ec9d26`) NakWithDelay(5s) + MaxDeliver=5 + deadletter 包已实现；本地 NATS JetStream gated 测试验证 PubAck/duplicate/Nak/MaxDeliver 语义（`release/evidence/binance/20260625/testnet-live.txt`） |
-| BR-005 | Done：Gate §5 与 §6 已由 runtime 13/13 PASS 证明 |
-| BR-006 | Done：Gate §7 已由 runtime 13/13 PASS 证明 |
-| BR-007 | Done：Gate §9 已由 runtime 13/13 PASS 证明 |
-| BR-008 | Done：Gate §8 已由 runtime 13/13 PASS 证明 |
-| BR-009 | Done：Gate §11 已由 runtime 13/13 PASS 证明 |
-| Release | Not Done：远端 CI、release tag、live websocket（合约/期权 testnet 凭据）、真实 Kafka broker fanout、**G0 存储装配闭合**（9 存储类 FR main.go 未装配实例，runtime 永不落盘，详见 `report/binance/production-readiness-assessment-20260625.md` §4.1）、完整 JetStream TC-004/TC-006 跨进程证据仍按 Release DoD 单独验收 |
+| 项      | 状态                                                                                                                                                                                                                                                                                                                                                       |
+| ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| BR-001  | Done：Gate §2 已由 runtime 13/13 PASS 证明                                                                                                                                                                                                                                                                                                                 |
+| BR-002  | Done：Gate §3 已由 runtime 13/13 PASS 证明                                                                                                                                                                                                                                                                                                                 |
+| BR-003  | Done：Gate §4 已由 runtime 13/13 PASS 证明                                                                                                                                                                                                                                                                                                                 |
+| BR-004  | Done：Plan007 A3 (`1ec9d26`) NakWithDelay(5s) + MaxDeliver=5 + deadletter 包已实现；本地 NATS JetStream gated 测试验证 PubAck/duplicate/Nak/MaxDeliver 语义（`release/evidence/binance/20260625/testnet-live.txt`）                                                                                                                                        |
+| BR-005  | Done：Gate §5 与 §6 已由 runtime 13/13 PASS 证明                                                                                                                                                                                                                                                                                                           |
+| BR-006  | Done：Gate §7 已由 runtime 13/13 PASS 证明                                                                                                                                                                                                                                                                                                                 |
+| BR-007  | Done：Gate §9 已由 runtime 13/13 PASS 证明                                                                                                                                                                                                                                                                                                                 |
+| BR-008  | Done：Gate §8 已由 runtime 13/13 PASS 证明                                                                                                                                                                                                                                                                                                                 |
+| BR-009  | Done：Gate §11 已由 runtime 13/13 PASS 证明                                                                                                                                                                                                                                                                                                                |
+| Release | Not Done：远端 CI、release tag、live websocket（合约/期权 testnet 凭据）、真实 Kafka broker fanout、**G0 存储装配已前进至 storageFromEnv（5 infra client + fail-fast），真实 infra 端到端仍 PENDING-LIVE-RUN**（详见 `report/binance/production-readiness-assessment-20260625.md` §4.1）、完整 JetStream TC-004/TC-006 跨进程证据仍按 Release DoD 单独验收 |
 
 ---
 
 ## §20 Gate 推广模板（Plan007 B8）
 
-> 本节以 binance `boundary-gates.sh`（13 gates）为参考模板，提供跨模块 gate 推广指南。
+> 本节以 binance `boundary-gates.sh`（15 gates，含 §15 C7 + §16 C8）为参考模板，提供跨模块 gate 推广指南。
 > 各模块按实际依赖裁剪 gate 列表；完整说明见 `plans/binance/007-execution-alignment.md`。
 
 ### 模块适配矩阵
 
-| 模块 | 保留 gates | 移除 gates | 备注 |
-|:-----|:-----------|:-----------|:-----|
-| `binance` | 全部 13 | — | 参考实现 |
-| `bootstrap` | §2/§5/§11 | §3/§4/§6-§10/§12-§14（无 C/S 架构） | 已就位 (6 gates) |
-| `natsx` | §11（go.mod 合规） | 其余 | 待创建 |
-| `contracts` | §11 + §20.5（无 infra 依赖） | 其余 | 待创建 |
-| `domain_*` | §9/§11 | 其余 | 待创建（纯度门禁：零 infra import） |
-| `transportx` | §11 | 其余 | 待创建 |
+| 模块         | 保留 gates                   | 移除 gates                          | 备注                                |
+| :----------- | :--------------------------- | :---------------------------------- | :---------------------------------- |
+| `binance`    | 全部 13                      | —                                   | 参考实现                            |
+| `bootstrap`  | §2/§5/§11                    | §3/§4/§6-§10/§12-§14（无 C/S 架构） | 已就位 (6 gates)                    |
+| `natsx`      | §11（go.mod 合规）           | 其余                                | 待创建                              |
+| `contracts`  | §11 + §20.5（无 infra 依赖） | 其余                                | 待创建                              |
+| `domain_*`   | §9/§11                       | 其余                                | 待创建（纯度门禁：零 infra import） |
+| `transportx` | §11                          | 其余                                | 待创建                              |
 
 ### 实施状态
 
-- ✅ `binance`：13 gates 完整实现 + CI 集成 (`.github/workflows/boundary-gates.yml`)
+- ✅ `binance`：15 gates 完整实现 + CI 集成（含 C7 client-no-storage + C8 server-no-exchange）
 - ✅ `bootstrap`：6 gates 已就位（含 foundationx 零命中 `§20.5`）
 - ⬜ `contracts`：待创建 `scripts/boundary-gates.sh`
 - ⬜ `natsx`：待创建

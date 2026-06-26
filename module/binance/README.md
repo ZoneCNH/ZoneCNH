@@ -3,8 +3,9 @@
 `module/binance` is the Binance-specific Market Data C/S Module for ZoneCNH.
 
 - Spec-Version: v3.7.1 (root) / v2.1.1 (client) / v2.2.0 (server)
-- Runtime-Version: v0.2.0（Runtime-Anchor: `/home/binance@f046e16`）
-- Delivery-State: FR-001~FR-044 spec/traceability registered; **2026-06-26 spec-gap-closure — Status-Projection `24 Done / 10 Partial / 10 Pending`**（含 v3.7.0 新增 FR-037~044 + v3.7.1 FR-012~030 行为规范补齐 + FR-031~036 Draft）。Runtime-Anchor `/home/binance@f046e16`; PR #145 + #1189 合并。Partial FR: FR-007, FR-007a, FR-011, FR-016, FR-017, FR-023, FR-024, FR-026, FR-027, FR-028。Pending FR: FR-037~044。
+- Runtime-Version: v0.2.0（Runtime-Anchor: `/home/binance@756fbc5`）
+- Delivery-State: FR-001~FR-047 spec/traceability registered; **2026-06-26 — Status-Projection `24 Done / 10 Partial / 13 Pending`**（Pending: FR-037~044 生产标准化 + FR-045~047 运维需求——告警消费/优雅关闭/启动验证）。Runtime-Anchor `/home/binance@756fbc5`。Partial FR: FR-007, FR-007a, FR-011, FR-016, FR-017, FR-023, FR-024, FR-026, FR-027, FR-028。Draft FR: FR-031~036（ExchangeInfo 同步）。
+- FR-Status-SSOT: **`TRACEABILITY.md` §1 为 FR 实现状态的唯一权威源（SSOT）**——本文件、`ACCEPTANCE.md`、`FEATURES.md`、`report/binance/` 中的 FR 状态均为投影，冲突时以 `TRACEABILITY.md` §1 为准。
 - Last-Updated: 2026-06-26
 
 It is split into two submodules:
@@ -86,7 +87,8 @@ module/binance/server
   └─ Gin REST API -> market_data / downstream consumers
 ```
 
-详细版见 `analysis/DEEP-ANALYSIS.md` 的 §2.1 和 §5.1。
+详细版见 `analysis/archive/DEEP-ANALYSIS-ARCHIVE-architecture.md`（架构评估）
+和 `analysis/archive/DEEP-ANALYSIS-ARCHIVE-integration.md`（集成详案）。
 
 ## GitHub Issue Sync Gate
 
@@ -94,7 +96,7 @@ module/binance/server
 
 [COMPUTED, HIGH] GitHub #1104~#1118 are synchronized as of 2026-06-25. #1106 is the documentation alignment item and is closed by this module/report alignment; #1104, #1105, and #1107~#1118 remain open until runtime/evidence closure.
 
-[COMPUTED, HIGH] 2026-06-25 alignment refresh: runtime anchor `/home/binance@f18a329`; current FR projection `24 Done / 10 Partial / 0 Pending`; Partial FR are FR-007, FR-007a, FR-011, FR-016, FR-017, FR-023, FR-024, FR-026, FR-027, and FR-028. Historical `28 Done / 2 Partial` and Plan007 `19 Done / 11 Partial` snapshots are retained only as history in `TRACEABILITY.md` and must not be used as current state.
+[COMPUTED, HIGH] 2026-06-26 alignment refresh: runtime anchor `/home/binance@756fbc5`; current FR projection `24 Done / 10 Partial / 13 Pending`（v3.7.1 有效基线：FR-037~047 为 Pending + FR-031~036 为 Draft）
 
 ## Read Next
 
@@ -117,12 +119,26 @@ module/binance/server
 **Server**：
 - `server/SPEC.md`
 - `server/TRACEABILITY.md`
-- `server/PERSISTENCE-WIRING.md` — 存储装配契约
-- `server/ENDPOINTS.md` — REST API 端点
-- `server/OPERATIONS.md` — 部署与运维
-- `server/DATA-LIFECYCLE.md` — 数据生命周期
-- `server/DATA-QUALITY-SLA.md` — 数据质量 SLA
+- `server/docs/PERSISTENCE-WIRING.md` — 存储装配契约
+- `server/docs/ENDPOINTS.md` — REST API 端点
+- `server/docs/OPERATIONS.md` — 部署与运维
+- `server/docs/DATA-LIFECYCLE.md` — 数据生命周期
+- `server/docs/DATA-QUALITY-SLA.md` — 数据质量 SLA
 
 **分析归档**：
 - `analysis/DEEP-ANALYSIS.md` — 架构决策深度分析
 - `analysis/DEEP-ANALYSIS-INDEX.md` — 归档索引
+
+**架构决策**：
+- `adr/ADR-002-wire-boundary.md` — Wire Contract Boundary
+- `specs/exchangeinfo-sync.md` — ExchangeInfo 同步增补规格（Draft）
+
+**Tasks**：
+- `tasks/README.md` — Task 索引
+- `tasks/root/` — 跨切任务
+- `tasks/client/` — Client 任务
+- `tasks/server/` — Server 任务
+
+**治理提案**：
+- `analysis/GOVERNANCE-TIER-PROPOSAL.md` — 分层治理等级提案
+- `analysis/DIR-STRUCTURE-PROPOSAL.md` — 目录结构优化提案

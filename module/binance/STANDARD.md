@@ -48,7 +48,7 @@
 | --- | --- |
 | Unit | admin reload success, method rejection, payload rejection |
 | Integration | active stream add/remove, unchanged stream continuity, rollback on reload failure |
-| Boundary | `./scripts/boundary-gates.sh` passes all gates |
+| Boundary | `./scripts/boundary-gates.sh` passes all gates（15 gates，含 §15 C7 + §16 C8 数据边界） |
 | Runtime | `go test ./...`, `golangci-lint run`, and smoke self-test pass |
 | Release | `TRACEABILITY.md`, `ACCEPTANCE.md`, `FEATURES.md`, and release evidence archive reference the same result |
 

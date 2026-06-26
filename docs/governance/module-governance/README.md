@@ -24,7 +24,8 @@
 
 ## 阅读顺序
 
-- **首次阅读**：总纲 → 01（注册表）→ 02（生命周期）→ 其余按需
+- **首次阅读**：总纲 → 子模块治理（若涉及 C/S 架构）→ 01（注册表）→ 02（生命周期）→ 其余按需
+- **新增 C/S 模块**：总纲 §子模块治理 → 06（准入）→ 01（注册登记 + submodules 字段）→ 02（lifecycle=proposed）→ 03（owner）
 - **新增模块**：06（准入）→ 01（注册登记）→ 02（lifecycle=proposed）→ 03（owner）
 - **退役模块**：07（退役）→ 02（lifecycle=deprecated→archived）→ 01（registry 归档）
 - **查询模块状态**：01（registry schema）→ 02（lifecycle 语义）→ 05（健康度）

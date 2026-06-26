@@ -56,7 +56,7 @@
 
 ### 1.5 Draft FR（6 项，不在此次闭合范围）
 
-FR-031~036（ExchangeInfo 同步）已在 `SPEC-exchangeinfo-sync.md` 完整定义，处于 Draft 状态，待 pipeline-arbiter 98 分门禁通过后独立合入主 SPEC。
+FR-031~036（ExchangeInfo 同步）已在 `specs/exchangeinfo-sync.md` 完整定义，处于 Draft 状态，待 pipeline-arbiter 98 分门禁通过后独立合入主 SPEC。
 
 ### 1.6 规模化跟踪项（4 项，已锚定）
 

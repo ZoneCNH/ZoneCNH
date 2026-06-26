@@ -1,5 +1,7 @@
 # module/binance PERSISTENCE-WIRING.md — Storage Assembly Contract
 
+> **边界声明**：本文档定义的所有存储装配（`storageFromEnv`）**仅适用于 server 侧**。Client 严禁使用任何存储层——见 parent SPEC §4.4 C1/C6/C8。
+
 ## Metadata
 
 | Field | Value |

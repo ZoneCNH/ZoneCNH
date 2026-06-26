@@ -10,7 +10,7 @@
 - 目标：体系化、标准化、规范化，**生产级**
 - 作者：ZCode（深度分析 + Explore agent 实证核查）
 
-> [COMPUTED, HIGH] 本报告保留 2026-06-25 历史评估语境；当前 issue ledger 与 runtime anchor 以 [`issues-sync-20260625.md`](issues-sync-20260625.md) 和 `/home/binance@f046e16`（含 Plan008 全部 40 Task 代码实现；PR #145 合并）为准。
+> [COMPUTED, HIGH] 本报告保留 2026-06-25 历史评估语境；当前 issue ledger 与 runtime anchor 以 [`issues-sync-20260625.md`](issues-sync-20260625.md) 和 `/home/binance@f046e16`（含 Plan008 全部 40 Task 代码实现；PR #145 合并）为准。v3.7.1（2026-06-26）新增 FR-037~044（全 Pending），当前有效基线为 `24 Done / 10 Partial / 10 Pending`。以 `module/binance/TRACEABILITY.md` v3.7.1 为准。
 
 ---
 
@@ -18,12 +18,12 @@
 
 本报告采用**自顶向下**结构：先定义统一的生产级 SLA 框架，再用它衡量三条链路的成熟度，最后给出补齐路线图。
 
-| 文档                                                                       | 职责                                             | 读者            |
-| -------------------------------------------------------------------------- | ------------------------------------------------ | --------------- |
-| **本文件（主索引）**                                                       | SLA 框架 + 总体评分 + 路线图 + 优先级仲裁        | 决策者 / Owner  |
-| [`data-maturity-history-20260625.md`](data-maturity-history-20260625.md)   | 历史数据链路深度评估（FR-016~019/026~028）       | 数据工程 / 运维 |
-| [`data-maturity-realtime-20260625.md`](data-maturity-realtime-20260625.md) | 实时数据链路深度评估（FR-003/004/012~015/029）   | SRE / 实时工程  |
-| [`data-maturity-storage-20260625.md`](data-maturity-storage-20260625.md)   | 数据存储链路深度评估（FR-005~007a/010/011/006d） | 存储 / DBA      |
+| 文档 | 职责 | 读者 |
+| --- | --- | --- |
+| **本文件** | SLA 框架 + 总体评分 + 路线图 + 三链路附录 | 决策者 / Owner |
+| 附录 A | 历史数据链路深度评估（FR-016~019/026~028） | 数据工程 / 运维 |
+| 附录 B | 实时数据链路深度评估（FR-003/004/012~015/029） | SRE / 实时工程 |
+| 附录 C | 数据存储链路深度评估（FR-005~007a/010/011/006d） | 存储 / DBA |
 
 > [COMPUTED, HIGH] 本报告所有"缺口"声明均经 Explore agent 在 runtime `/home/binance` 逐条 file:line 核查，证据可复现。规格参数来自 SPEC.md 实读。缺口判定方法：规格定义了什么 → runtime 实现了什么 → 差值即缺口。
 
@@ -293,3 +293,81 @@
 1. **§20 反奉承红旗**：§1 和 §7 对现有规格治理给出"罕见的高成熟度"等正面评价。这些评价有实证锚点（30 FR/104 AC/13 gate 可复现），但读者应警惕正面评价同样需要权威。我已尽量用数字锚定，避免无依据的赞美。
 2. **§20 事后分析**：§2 的因果链图是在知道各缺口后归纳的。它是对现状的描述，不能当作"规格框架本身有缺陷"的预测证据。框架质量（规格层）与实现完整度（runtime 层）是独立的——因果链断裂是 runtime 实现断层，不是规格设计错误。
 3. **§20 FRAME→REALITY**：§1.2 的四级模型和 §3 的评分是 `[FRAME]` 性质的评估框架（L0/L1/L2/L3 是我构造的分类）。我已用 runtime 实证锚定每一级，但"L3=生产级"本身是行业惯例映射（`[KNOWN]`），非 binance 内部既定标准。若团队有不同分级标准，应替换。
+
+---
+
+## 附录 A：历史数据链路深度评估（摘要）
+
+> 原始详细报告已合并于此附录，原独立文件 `data-maturity-history-20260625.md` 已删除。
+
+### A.1 成熟度评分
+
+| 维度 | 得分 | 级别 | 依据 |
+|---|---|---|---|
+| Completeness | **0.3** | L0+ | gap→replay 断裂；backfill 无覆盖恢复 |
+| Durability | **0.5** | L0+ | cursor/coverage 纯内存；rehydrate 未接线 |
+| Consistency | **0.5** | L0+ | reconcile 无真实对账 |
+| **加权** | **0.4** | **实验级** | 距生产级（≥2.0）缺口最大 |
+
+`[COMPUTED, HIGH]` 历史链路是三链路中成熟度最低的（0.4 vs 实时 1.3 vs 存储 1.2）。核心问题：数据完整性保障的"修复侧"几乎全部空白——能记录 backfill 请求、能检测 gap，但**不能恢复、不能对账、重启即丢**。
+
+### A.2 关键缺口
+
+| ID | 缺口 | FR | 严重度 |
+|---|---|---|---|
+| G3 | replay job 零实现：gap 检测后无任何代码读取 `RepairRequired` 标志去触发 backfill | FR-017 | P0 |
+| G4 | backfill 无覆盖恢复：cursor/coverage 纯内存（`HistoryRuntime.jobs`），重启即丢 | FR-016/028 | P0 |
+| G5 | reconcile 无真实对账：`cron_reconcile.go` 硬编码 `return nil` 占位 | FR-026 | P0 |
+| G9 | cold rehydrate 未接线生产路径 | FR-027 | P1 |
+
+---
+
+## 附录 B：实时数据链路深度评估（摘要）
+
+> 原始详细报告已合并于此附录，原独立文件 `data-maturity-realtime-20260625.md` 已删除。
+
+### B.1 成熟度评分
+
+| 维度 | 得分 | 级别 | 依据 |
+|---|---|---|---|
+| Freshness | **1.8** | L1+ | SLO 24/24 PASS，但 stale 无告警动作 |
+| Completeness | **0.8** | L1- | at-least-once 扎实，gap→修复断裂 |
+| Durability | **1.0** | L1 | DLQ in-memory；事件经 taosx 持久化 |
+| Consistency | **1.5** | L1+ | 幂等 SetNX 扎实；断流场景保障不足 |
+| **加权** | **1.3** | **预生产** | 无单一维度达 L2+ |
+
+`[COMPUTED, HIGH]` 实时链路是三链路中成熟度最高的（1.3），但没有任何单一维度达到生产级门槛。延迟**测量**达 L2（SLO benchmark 24/24 PASS），但延迟**违约响应**仅 L1——"测得准"不等于"管得住"。
+
+### B.2 关键缺口
+
+| ID | 缺口 | FR | 严重度 |
+|---|---|---|---|
+| G1 | stale alert 无触发动作：`IsStale()` 返回值从不被读，无告警/natsx/alerts 表动作 | FR-029 | P0 |
+| G2 | gap 检测→修复全部断裂：`RepairRequired=true` 被设置但无消费方 | FR-017 | P0 |
+| G8 | deadletter 纯 in-memory：`FileWriter` 代码就绪但未接线到生产 dispatch | FR-004 | P1 |
+
+---
+
+## 附录 C：数据存储链路深度评估（摘要）
+
+> 原始详细报告已合并于此附录，原独立文件 `data-maturity-storage-20260625.md` 已删除。
+
+### C.1 成熟度评分
+
+| 维度 | 得分 | 级别 | 依据 |
+|---|---|---|---|
+| Freshness | **1.5** | L1+ | G0 存储装配闭合；写入延迟达标 |
+| Completeness | **1.0** | L1 | 四层存储写入路径齐全；归档完整性有缺口 |
+| Durability | **0.8** | L1- | taosx retention 无删除；OSS 语义错位 |
+| Consistency | **1.5** | L1+ | 幂等 SetNX 扎实；跨层一致性无对账 |
+| **加权** | **1.2** | **预生产** | 有基础设施，缺生命周期治理 |
+
+`[COMPUTED, HIGH]` 存储链路是"基础设施齐全但生命周期管理空白"。G0 存储装配闭合后四层存储都能真实写入，但数据写进去之后怎么管理（过期、归档、回热）几乎是空白。
+
+### C.2 关键缺口
+
+| ID | 缺口 | FR | 严重度 |
+|---|---|---|---|
+| G6 | taosx retention 无删除：`TaosClient` 接口无 Delete/Drop 能力，DDL 无 KEEP 子句 | FR-006e/038 | P0 |
+| G7 | OSS 语义错位：archiver 只管理 OSS 对象生命周期，不触发 taosx 热数据删除 | FR-006d | P1 |
+| G10 | clickhousex TTL 缺失：ETL 写入不配置 TTL，CH 数据无限增长 | FR-010 | P2 |

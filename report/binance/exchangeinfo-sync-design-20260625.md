@@ -3,7 +3,7 @@
 - Report-Date: 2026-06-25
 - Report-Type: 技术选型与架构权衡分析（ADR 前置）
 - Scope: exchangeInfo DB 持久化、定时刷新策略、分级白名单优先级模型
-- Companion: [`symbol-sync-deep-analysis-20260625.md`](symbol-sync-deep-analysis-20260625.md)（数据量基线）、[`module/binance/SPEC-exchangeinfo-sync.md`](../../module/binance/SPEC-exchangeinfo-sync.md)（规格落地）
+- Companion: [`symbol-sync-deep-analysis-20260625.md`](symbol-sync-deep-analysis-20260625.md)（数据量基线）、[`module/binance/specs/exchangeinfo-sync.md`](../../module/binance/specs/exchangeinfo-sync.md)（规格落地）
 - Analyst: ZCode（GLM-5.2），受 `docs/constitution/20-epistemic-standards.md` §20 约束
 
 ---
@@ -174,7 +174,7 @@ finalDecision(product_line, symbol):
 
 `[INFERRED, HIGH]` `disabled` 是唯一安全默认。首次部署时，3,616 symbol 全部 disabled，运维通过 admin API 或配置批量设置 tier。虽然增加了首次部署工作量，但避免了「部署后意外全量采集导致带宽/存储打爆」的风险。
 
-**缓解措施**（SPEC-exchangeinfo-sync.md §11 已登记）：
+**缓解措施**（specs/exchangeinfo-sync.md §11 已登记）：
 
 - bootstrap 日志输出 `N symbol at disabled tier` 告警
 - 提供 admin API `POST /api/v1/admin/symbols/batch-tier` 批量分级
@@ -237,7 +237,7 @@ finalDecision(product_line, symbol):
 
 **实证**：第一轮 FR-031/032 反复使用「diff」概念但无算法定义。实现者需自行设计 `added/removed/updated` 如何从两组 `[]CatalogEntry` 计算，口径不一致风险高。
 
-**裁决**：在 SPEC-exchangeinfo-sync.md §4.4 固化为 Go 类型契约（`InstrumentsChangedPayload`/`InstrumentsDiff`/`DiffCatalog` 纯函数/`StreamsForProductLineTier`/`ResolveTier`），消除实现歧义。diff 复合键与 `catalog.go:70` 的 `entryKey` 一致（`CanonicalProductLine + ":" + UpperCase(symbol)`）。
+**裁决**：在 specs/exchangeinfo-sync.md §4.4 固化为 Go 类型契约（`InstrumentsChangedPayload`/`InstrumentsDiff`/`DiffCatalog` 纯函数/`StreamsForProductLineTier`/`ResolveTier`），消除实现歧义。diff 复合键与 `catalog.go:70` 的 `entryKey` 一致（`CanonicalProductLine + ":" + UpperCase(symbol)`）。
 
 ### 7b.4 Reload vs SyncCatalog 调用顺序（AC-112c）
 
@@ -292,7 +292,7 @@ finalDecision(product_line, symbol):
 - natsx `binance.control.>` **LimitsPolicy** stream（AC-112a，第三轮修正：原 WorkQueue 在 multi-server 下丢消息）闭合传输层断裂，与 market stream 隔离
 - FR-036 tier-aware 连接拓扑（第三轮新增）承认 tier 差异化流是架构级变更，需 connector 重构 + ADR 前置
 
-`[INFERRED, HIGH]` 这些决策已落地为 [`SPEC-exchangeinfo-sync.md`](../../module/binance/SPEC-exchangeinfo-sync.md) 的 FR-031~036 / BR-010~012 / AC-105~128 / TC-050~067，待 pipeline-arbiter 98 分门禁通过后进入 task-split → code 管线。三轮补强（第二轮 FR-035 + 接口契约；第三轮结构性审查修正 FR-036 拆分 + productLine 分化 + retention 修正 + diff 分离 + BR-012）确保规格与 runtime 架构现实一致。
+`[INFERRED, HIGH]` 这些决策已落地为 [`specs/exchangeinfo-sync.md`](../../module/binance/specs/exchangeinfo-sync.md) 的 FR-031~036 / BR-010~012 / AC-105~128 / TC-050~067，待 pipeline-arbiter 98 分门禁通过后进入 task-split → code 管线。三轮补强（第二轮 FR-035 + 接口契约；第三轮结构性审查修正 FR-036 拆分 + productLine 分化 + retention 修正 + diff 分离 + BR-012）确保规格与 runtime 架构现实一致。
 
 ---
 

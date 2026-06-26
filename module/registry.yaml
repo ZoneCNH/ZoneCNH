@@ -482,10 +482,20 @@ binance:
   registered: 2026-06-01
   spec_ref: module/binance/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml  # forbidden_deps 黑名单成员
-  maturity_ref: .foundationx/status/index.json#binance
-  spec_version: v3.6.0
+  # maturity_ref: ~  — .foundationx/status 当前仅覆盖基座+L2.5（21 模块），业务域模块待扩展覆盖后补登记
+  spec_version: v3.7.1
+  gov_tier: L3  # 治理分层等级：L3 全量治理（跨模块参考实现）；详见 module/binance/analysis/GOVERNANCE-TIER-PROPOSAL.md
+  submodules:  # C/S 架构子模块；详见 docs/governance/MODULE-GOVERNANCE.md §子模块治理
+    client:
+      spec_ref: module/binance/client/SPEC.md
+      spec_version: v2.1.1
+      maturity: stable  # 16/17 client FR Done，四产品线 connector + control plane 已装配
+    server:
+      spec_ref: module/binance/server/SPEC.md
+      spec_version: v2.2.0
+      maturity: active  # 存储类 FR PENDING-LIVE-RUN，G0 storageFromEnv 已装配
   release:
-    latest_tag: v3.6.0
+    latest_tag: v0.2.0
     cadence: on-demand
 
 okx:

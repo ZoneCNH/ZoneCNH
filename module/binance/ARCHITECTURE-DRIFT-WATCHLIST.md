@@ -120,6 +120,34 @@ cd /home/binance && bash scripts/boundary-gates.sh 2>&1 | grep -E "(PASS|FAIL)"
 
 ---
 
+## D9. C7 违规 — Client 直连存储层
+
+**风险级别**：**CRITICAL**
+**历史**：2026-06-26 架构分析发现 `internal/client/history_state_postgres.go` import `postgresx`，违反 SPEC §4.4 C1（Client 不落盘）
+**违反规则**：R12（数据边界强制）、BOUNDARY-GATES §15
+**检测命令**：
+```bash
+rg "redisx|postgresx|taosx|clickhousex|ossx" /home/binance/internal/client --include="*.go" | grep -v "_test.go" | grep -v "natsx"
+```
+**已知违规**：`history_state_postgres.go`、`history_lifecycle.go`、`archive_manifest.go`、`cron_reconcile.go`（4 项 Phase A 待迁移）
+
+---
+
+## D10. C8 违规 — Server 直连交易所
+
+**风险级别**：**HIGH**
+**历史**：2026-06-26 架构分析确认 server 侧当前无 exchange connector import（clean baseline），但需持续监控
+**违反规则**：R12（数据边界强制）、BOUNDARY-GATES §16
+**检测命令**：
+```bash
+rg "binance-connector-go|binance\.(spot|futures|delivery|option)" /home/binance/internal/server /home/binance/cmd/binance-server --include="*.go"
+```
+**当前状态**：Clean（零命中）。风险在于未来 FR-031~036 exchangeInfo 实现时可能误将 exchangeInfo REST 调用放在 server 侧。
+
+---
+
+## 变更历史
+
 ## 变更历史
 
 | 日期 | 版本 | 变更内容 | 作者 |

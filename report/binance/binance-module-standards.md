@@ -9,6 +9,7 @@
 | 当前 Runtime-Anchor | `/home/binance@f046e16`（含 Plan008 全部 40 Task 代码实现；PR #145 合并） |
 | 当前 Issue-Ledger | [`issues-sync-20260625.md`](./issues-sync-20260625.md) |
 | 当前状态投影 | `24 Done / 10 Partial / 0 Pending` + `6 Draft`（FR-031~036） |
+| 版本语境 | ⚠️ 本报告写于 2026-06-25（v3.6.1 基线，FR-037~044 尚未登记）。v3.7.1（2026-06-26）新增 FR-037~044（全 Pending），当前有效基线为 `24 Done / 10 Partial / 10 Pending`。以 `module/binance/TRACEABILITY.md` v3.7.1 为准。 |
 | 当前 issue 状态 | ✅ **全部 Closed**（#1104~#1118 + #1123）：7 代码修复 + 9 能力边界文档化；Plan008 release closeout 已归档 |
 | 置信度   | HIGH（基于代码逐文件核验）                                               |
 

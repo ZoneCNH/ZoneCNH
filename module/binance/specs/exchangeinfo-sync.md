@@ -6,9 +6,10 @@
 - Parent: [`SPEC.md`](SPEC.md) v3.7.1（§8 Control Plane、§11.1 Config、§4.1 Boundaries）
 - Supersedes: 无（增补，非替代）
 - Scope: 在 SPEC v3.7.1 的 FR-030 之后新增 FR-031~036 / BR-010~012 / AC-131~154 / TC-066~083（v3 结构性审查修正：拆分 FR-033→FR-033+FR-036、StreamsForProductLineTier 按 productLine 分化、control stream LimitsPolicy、diff Updated/SpecUpdated 分离、options 到期峰值 BR-012；编号已协调：AC-105~130 / TC-050~065 保留给 Current FR-037~044）
-- Runtime-Anchor: `/home/binance@f18a329`
+- Runtime-Anchor: `/home/binance@756fbc5`
+- Runtime-Note: 本文档为 Draft，代码引用基于 `/home/binance@f18a329` 实读；提升为 Active 前须以当前 HEAD 复核所有 file:line 引用。
 
-> [COMPUTED, HIGH] 本文档是 `SPEC.md` 的**增补章节**，编号在 v3.7.1（FR-044 / AC-130 / TC-065）之后顺延。所有引用的 file:line 基于 runtime `/home/binance@f18a329` 实读，可复现。本文档通过 pipeline 98 分门禁后由 arbiter 翻转 `Status: Approved`，再合入 `SPEC.md` 主文。
+> [COMPUTED, HIGH] 本文档是 `SPEC.md` 的**增补章节**，编号在 v3.7.1（FR-044 / AC-130 / TC-065）之后顺延。所有引用的 file:line 基于 runtime `/home/binance@f18a329` 实读（Draft 阶段），提升为 Active 前须以当前 HEAD `/home/binance@756fbc5` 复核。本文档通过 pipeline 98 分门禁后由 arbiter 翻转 `Status: Approved`，再合入 `SPEC.md` 主文。
 
 ---
 

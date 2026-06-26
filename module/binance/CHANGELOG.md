@@ -3,16 +3,57 @@
 所有 notable 变更记录，按 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/) 格式维护。
 
 - Module-Version: v3.7.1
-- Last-Updated: 2026-06-25
-- Spec-Reference: `module/binance/SPEC.md` v3.6.0
+- Last-Updated: 2026-06-26
+- Spec-Reference: `module/binance/SPEC.md` v3.7.1
 - 治理规则：`module/binance/RULES.md` R9 文档存在性
+
+---
+
+## [Unreleased] — 2026-06-26 治理结构优化 + 需求质量修复
+
+### Added
+- **FR-045 Alert Consumption Layer**：Prometheus alerting rules→Alertmanager→on-call；闭合"死信号"缺口
+- **FR-046 Graceful Shutdown**：SIGTERM→drain→flush→Ack；30s/60s 超时
+- **FR-047 Startup Config Validation**：7 infra env var fail-fast + 连接指数退避
+- **SPEC Appendix F（SLA Framework）**：4 维 SLA 模型 + 3 级成熟度 + 10 SLO
+- **SPEC Appendix G（DR Requirements）**：RPO≤1h/RTO≤4h + 7 组件多 AZ
+- **TRACEABILITY NFR-028**：DR Readiness 量化要求
+- **ACCEPTANCE PRG-008**：SLA+DR 验收门禁
+- `adr/README.md`、`tasks/README.md`、`analysis/DIR-STRUCTURE-PROPOSAL.md`、`report/binance/structural-architecture-analysis-20260626.md`、`report/binance/requirements-quality-analysis-20260626.md`
+
+### Changed
+- **FR-009**：补充分类标注（FR-type 但语义上为 BR；引用 BR-001~009 gate 映射）
+- **FR-031~036 Draft 标注**：新增 spec-code 倒挂说明 + 阻塞根因
+- **状态投影更新**：`24/10/10` → `24/10/13` Pending（新增 FR-045~047）
+- **目录结构重组**：6 项目录级调整（server/docs 下沉 + tasks 整合 + specs/adr/archive 分离）
+- **RULES.md R9**：平面清单 → L1/L2/L3 分层清单
+- **全文档版本统一**：`0→13 Pending`、Runtime-Anchor `756fbc5`、Spec-Reference `v3.7.1`
+- **ACCEPTANCE.md AC 表**：AC-087~104 拆分对齐 TRACEABILITY；新增 PRG-008
+- **IMPLEMENTATION-PLAN gate 计数**：10 → 13
+- **BOUNDARY-GATES G0 存储装配声明**：更新为 `storageFromEnv` 状态
+- **check-binance-docs.sh**：新增 R11/锚点保鲜/SSOT 检查 + 路径对齐
+- **README.md**：FR-Status-SSOT 声明 + adr/specs/tasks 目录引用
+- **report/binance/ 报告**：追加 v3.7.1 版本语境标注
+
+### Added
+- **FR-045~047**：Alert Consumption + Graceful Shutdown + Startup Validation
+- **SPEC Appendix F/G**：SLA Framework + DR Requirements
+- **TRACEABILITY NFR-028**：DR Readiness
+- `adr/README.md`、`tasks/README.md`
+- `analysis/GOVERNANCE-TIER-PROPOSAL.md`、`analysis/DIR-STRUCTURE-PROPOSAL.md`
+- `report/binance/structural-architecture-analysis-20260626.md`
+- `report/binance/requirements-quality-analysis-20260626.md`
+
+### Related
+- `docs/governance/MODULE-GOVERNANCE.md` v1.1.0：§子模块治理
+- `module/registry.yaml`：`gov_tier: L3` + `submodules`
 
 ---
 
 ## [v3.6.0] — 2026-06-25 生产就绪修复（G0~G8 + C1/C4/C7）
 
 ### Added
-- **C7 新增 6 规范文档**：`ENDPOINTS.md` / `PERSISTENCE-WIRING.md` / `SECURITY.md` / `OBSERVABILITY.md` / `OPERATIONS.md` / `DATA-QUALITY-SLA.md`。
+- **C7 新增 6 规范文档**：`server/docs/ENDPOINTS.md` / `server/docs/PERSISTENCE-WIRING.md` / `server/docs/SECURITY.md` / `server/docs/OBSERVABILITY.md` / `server/docs/OPERATIONS.md` / `server/docs/DATA-QUALITY-SLA.md`。
 - **G0 存储装配契约**：`PERSISTENCE-WIRING.md` 定义 `storageFromEnv` 装配链路（5 infra client + 7 writer + fail-fast + SecretString 桥接）。
 - **C4 mainnet 四线矩阵**：`test/e2e/mainnet_live_test.go`（取代 testnet 路线），gate `BINANCE_MAINNET_LIVE`，spot/um/cm/options 四产品线。
 - **G7 产品线差异测试**：`internal/client/product_line_diff_test.go`（同 symbol 跨线 InstrumentKey + 合约专属事件路由）。

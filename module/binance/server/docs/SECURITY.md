@@ -1,4 +1,4 @@
-# module/binance SECURITY.md — Security Controls Standard
+# module/binance/server SECURITY.md — Security Controls Standard
 
 ## Metadata
 
@@ -24,7 +24,7 @@
 [COMPUTED, HIGH] 凭据流转路径（单一权威源）：
 1. **加载**：`binancecfg.Load(ctx)` 经 configx 从 `FOUNDATIONX_*` 环境变量加载
 2. **类型**：所有凭据字段为 `configx.SecretString`（自动遮蔽日志/JSON/Sanitize）
-3. **使用**：经 `.Reveal()` 解包传给 infra client（**严禁 `.String()`——返回 `***`**，见 `server/PERSISTENCE-WIRING.md` §4）
+3. **使用**：经 `.Reveal()` 解包传给 infra client（**严禁 `.String()`——返回 `***`**，见 `server/docs/PERSISTENCE-WIRING.md` §4）
 4. **存储**：`.env`（本地 dev）已被 `.gitignore` 排除（commit `e02b190`）；`sre/secrets/` 不进 git
 
 [FRAME, HIGH] 禁止事项：

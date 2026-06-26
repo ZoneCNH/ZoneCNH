@@ -12,7 +12,7 @@
 
 ## ⛔ 不要执行这些（Draft 规格，未 Approved）
 
-以下 FR 是 **Draft 规格草案**，定义于 `module/binance/SPEC-exchangeinfo-sync.md`，**尚未经 pipeline-arbiter 98 分门禁批准**。在 `Status: Approved` 翻转前，**禁止实现这些 FR 的 runtime 代码**。
+以下 FR 是 **Draft 规格草案**，定义于 `module/binance/specs/exchangeinfo-sync.md`，**尚未经 pipeline-arbiter 98 分门禁批准**。在 `Status: Approved` 翻转前，**禁止实现这些 FR 的 runtime 代码**。
 
 | FR | 标题 | 状态 | 原因 |
 |----|------|------|------|

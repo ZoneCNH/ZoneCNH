@@ -8,7 +8,7 @@
 >
 > [COMPUTED, HIGH] 归档文件是时间点快照。读取生产就绪、runtime/release readiness 或 issue 状态时，应以最新 runtime 仓库、验收矩阵、release evidence 和后续报告复核为准。
 >
-> [COMPUTED, HIGH] 本次归档共覆盖 28 份 Markdown 报告：20260622 9 份、20260623 9 份、20260624 2 份、20260625 8 份。
+> [COMPUTED, HIGH] 本次归档共覆盖 28 份 Markdown 报告：20260622 9 份、20260623 9 份、20260624 2 份、20260625 8 份。2026-06-26 清理瘦身：删除 7 份重复迭代版本、合并 3 份 data-maturity 子报告入主报告附录、将 20260623 归档移到 `.omc/archive/`（本地保留，退出 git）。
 
 ## 当前有效基线
 
@@ -16,7 +16,7 @@
 | --- | --- |
 | Runtime-Anchor | `/home/binance@f046e16` |
 | Issue-Ledger | [`issues-sync-20260625.md`](issues-sync-20260625.md) |
-| Status-Projection | `24 Done / 10 Partial / 0 Pending` + `6 Draft`（FR-031~036） |
+| Status-Projection | `24 Done / 10 Partial / 10 Pending`（FR-037~044 生产标准化）+ `6 Draft`（FR-031~036 ExchangeInfo） |
 | Issue-Range | GitHub / Beads `#1104`-`#1118` + `#1123`（16 项） |
 | Closed-By-This-Slice | 全部 16 项（7 代码修复+实证 + 9 能力边界文档化） |
 | Still-Open | 无（全部 Closed） |
@@ -38,14 +38,18 @@
 
 | Report | Purpose |
 | --- | --- |
+| [structural-analysis-optimization-20260626.md](structural-analysis-optimization-20260626.md) | 当前结构性深度分析、单代理评分与完整优化方案；非四源仲裁分。 |
 | [binance-module-analysis.md](binance-module-analysis.md) | 生产级模块分析报告（当前主分析）。 |
 | [binance-data-flow-architecture.md](binance-data-flow-architecture.md) | 数据流架构图与职责边界。 |
 | [binance-module-standards.md](binance-module-standards.md) | binance 模块开发与生产规范。 |
 | [issues-sync-20260625.md](issues-sync-20260625.md) | 2026-06-25 Beads/GitHub issue 同步账本（16 缺口映射，全部 Closed）。 |
 | [v0.2.0-release-gate-verdict-20260625.md](v0.2.0-release-gate-verdict-20260625.md) | v0.2.0 发布门禁增量裁决（推翻「零阻塞」断言，记录 readiness-audit gate 红 + FR 状态漂移）。 |
 | [symbol-sync-deep-analysis-20260625.md](symbol-sync-deep-analysis-20260625.md) | **Symbol 同步深度分析**：实测 3,616 symbol 规模、数据量、限流权重、服务器评估、分批规则。 |
-| [exchangeinfo-sync-design-20260625.md](exchangeinfo-sync-design-20260625.md) | **ExchangeInfo 同步技术选型**：落库触发方/DB/刷新策略/分级白名单/优先级模型 6 项决策权衡分析。配套 `module/binance/SPEC-exchangeinfo-sync.md`。 |
+| [exchangeinfo-sync-design-20260625.md](exchangeinfo-sync-design-20260625.md) | **ExchangeInfo 同步技术选型**：落库触发方/DB/刷新策略/分级白名单/优先级模型 6 项决策权衡分析。配套 `module/binance/specs/exchangeinfo-sync.md`。 |
 | [HANDOFF-FOR-CODEX-20260625.md](HANDOFF-FOR-CODEX-20260625.md) | **并发 agent 交接说明**：Draft FR（FR-031~036 禁止执行）、已完成工作、历史 issue ledger（全部 Closed）、依赖交叉、恢复前必做检查。 |
+| [governance-model-deep-analysis-20260626.md](governance-model-deep-analysis-20260626.md) | **治理模式深度分析**：8 项结构张力诊断 + 4 级优化建议。立即项已落地（maturity_ref 修复 + SPEC-Runtime 异步演进标注），中长期项待追踪（分层治理等级/模板提取/Phase F/精简审计）。 |
+| [structural-architecture-analysis-20260626.md](structural-architecture-analysis-20260626.md) | **🆕 C/S 架构模式结构性深度分析**：代码实态 vs 规格声明差分 + 边界违规 + 依赖拓扑 + 可复用性评估 + 四阶段优化方案。 |
+| [requirements-quality-analysis-20260626.md](requirements-quality-analysis-20260626.md) | **🆕 需求质量深度分析**：7 类问题诊断 + 热力图 + FR-045~047 新增（告警消费/优雅关闭/启动验证）+ 修复验证。 |
 
 ## 20260622
 

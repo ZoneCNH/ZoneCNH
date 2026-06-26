@@ -6,6 +6,10 @@
 |------|-----|
 | Module | `module/binance/server` |
 | Status | Approved |
+| Parent | `module/binance/SPEC.md` v3.7.1 |
+| **Boundary Contract** | 见 parent SPEC **§4.4 C/S Boundary Contract** — server 受 C2(不直连交易所)/C3(仅natsx)/C5(不持凭据)/C7(不采集)/C8(共享层无infra) 5 条硬约束 |
+| Module-Version | v2.2.0 |
+| Last-Updated | 2026-06-26 |
 | Spec-Version | v2.2.0 |
 | Last-Updated | 2026-06-23 |
 | Owner | ZoneCNH |
@@ -13,7 +17,7 @@
 | Role | Binance 行情数据的处理 + 存储服务端（natsx 消费 + redisx + postgresx + taosx + clickhousex + kafkax + ossx + Gin REST API） |
 | Port Interface | natsx JetStream subject `binance.market.*` (消费) + Gin REST HTTP `:8080` (提供给 market_data) |
 | Language | Go |
-| Runtime-Version | v0.1.0 |
+| Runtime-Version | v0.2.0 |
 | Repository | [github.com/ZoneCNH/binance](https://github.com/ZoneCNH/binance)（server/ 子目录） |
 | Go Module Path | `github.com/ZoneCNH/binance`（monorepo，server 端通过 `cmd/binance-server` + `internal/server` 提供） |
 | Related | [CONSTITUTION.md](../../../CONSTITUTION.md), [ARCHITECTURE.md](../../../ARCHITECTURE.md), [module/binance/SPEC.md](../SPEC.md), [module/domain_market](../../domain_market/), [module/natsx](../../natsx/), [module/redisx](../../redisx/), [module/taosx](../../taosx/), [module/clickhousex](../../clickhousex/), [module/kafkax](../../kafkax/), [module/ossx](../../ossx/), [module/postgresx](../../postgresx/) |

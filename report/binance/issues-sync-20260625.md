@@ -49,7 +49,7 @@
 
 ## FR-031~036 规格草案登记（PR #1119 引入）
 
-> [COMPUTED, HIGH] 以下 6 个 FR 为 PR #1119（`5dbe0d26`）引入的 exchangeInfo 同步规格草案，定义于 `module/binance/SPEC-exchangeinfo-sync.md`。当前状态 **Draft**，经五轮审查修正，待 pipeline-arbiter 翻转 Approved 后进入 task-split → code 管线。本节为账本级登记，暂未创建独立 GitHub issue（Draft 阶段不创建）；Approved 后可创建对应 issue 或直接进入 task-split。
+> [COMPUTED, HIGH] 以下 6 个 FR 为 PR #1119（`5dbe0d26`）引入的 exchangeInfo 同步规格草案，定义于 `module/binance/specs/exchangeinfo-sync.md`。当前状态 **Draft**，经五轮审查修正，待 pipeline-arbiter 翻转 Approved 后进入 task-split → code 管线。本节为账本级登记，暂未创建独立 GitHub issue（Draft 阶段不创建）；Approved 后可创建对应 issue 或直接进入 task-split。
 
 | FR | 优先级 | 标题 | Draft 状态 | 关闭条件 | 依赖交叉 |
 | --- | --- | --- | --- | --- | --- |

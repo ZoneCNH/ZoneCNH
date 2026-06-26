@@ -88,11 +88,14 @@ expect_eq "IMPLEMENTATION-PLAN Module-Version" "$spec_version" "$impl_version"
 expect_eq "CHANGELOG Spec-Reference" "$spec_version" "$changelog_ref"
 
 # R6 全量版本统一：顶层治理文档 Module-Version == root SPEC Spec-Version
-for f in RULES.md NAMING.md DATA-LIFECYCLE.md STANDARD.md ARCHITECTURE-DRIFT-WATCHLIST.md; do
+for f in RULES.md NAMING.md STANDARD.md ARCHITECTURE-DRIFT-WATCHLIST.md; do
   v=$(sed -nE 's/^- Module-Version: (v[0-9.]+).*/\1/p' module/binance/$f | head -1)
   [ -z "$v" ] && v=$(table_value "Module-Version" module/binance/$f)
   expect_eq "$f Module-Version" "$spec_version" "$v"
 done
+# server/docs/DATA-LIFECYCLE.md — server 专属文档，Module-Version 应与 root SPEC 对齐（R6 顶层统一）
+v=$(sed -nE 's/^\| Module-Version \| (v[0-9.]+).*/\1/p' module/binance/server/docs/DATA-LIFECYCLE.md | head -1)
+expect_eq "server/docs/DATA-LIFECYCLE.md Module-Version" "$spec_version" "$v"
 
 # R6 子规格对称：client/server TRACEABILITY Module-Version == 对应子 SPEC Spec-Version
 client_spec=$(sed -nE 's/^- Spec-Version: (v[0-9.]+).*/\1/p' module/binance/client/SPEC.md | head -1)
@@ -121,7 +124,7 @@ for f in SPEC.md TRACEABILITY.md ACCEPTANCE.md FEATURES.md IMPLEMENTATION-PLAN.m
          RUNTIME-MAPPING.md BOUNDARY-GATES.md NAMING.md RULES.md \
          ARCHITECTURE-DRIFT-WATCHLIST.md CHANGELOG.md STANDARD.md client/SPEC.md \
          client/TRACEABILITY.md server/SPEC.md server/TRACEABILITY.md \
-         client/tasks/archive/README.md server/tasks/archive/README.md; do
+         tasks/client/archive/README.md tasks/server/archive/README.md; do
   expect_file "module/binance/$f"
 done
 expect_file "scripts/check-binance-docs.sh"
@@ -134,15 +137,15 @@ for product_line in "${product_lines[@]}"; do
   for event_type in "${event_types[@]}"; do
     expect_rg "binance\\.market\\.${product_line}\\.${event_type}" module/binance/RUNTIME-MAPPING.md "NATS subject ${product_line}/${event_type}"
     expect_rg "binance\\.${product_line}\\.${event_type}\\.v1" module/binance/RUNTIME-MAPPING.md "Kafka runtime mapping ${product_line}/${event_type}"
-    expect_rg "binance\\.${product_line}\\.${event_type}\\.v1" module/binance/server/tasks/TASK-BINANCE-SERVER-014-kafkax-dispatch.md "Kafka task ${product_line}/${event_type}"
+    expect_rg "binance\\.${product_line}\\.${event_type}\\.v1" module/binance/tasks/server/TASK-BINANCE-SERVER-014-kafkax-dispatch.md "Kafka task ${product_line}/${event_type}"
   done
 done
 
 # Stage0 Kafka topic repair: active Kafka docs must not use the NATS subject template as Kafka topic.
 reject_text module/binance/ACCEPTANCE.md 'kafkax.*binance\.market\.\{product_line\}\.\{event_type\}' 'ACCEPTANCE Kafka topic is not old NATS template'
 reject_text module/binance/TRACEABILITY.md 'kafkax.*binance\.market' 'TRACEABILITY Kafka topic is not old NATS template'
-reject_text module/binance/server/tasks/TASK-BINANCE-SERVER-014-kafkax-dispatch.md '[Tt]opic.*binance\.market\.\{product_line\}\.\{event_type\}' 'SERVER-014 Kafka topic is not old NATS template'
-require_text module/binance/server/tasks/TASK-BINANCE-SERVER-014-kafkax-dispatch.md 'binance\.\{product_line\}\.\{event_type\}\.v1' 'SERVER-014 documents versioned Kafka topic template'
+reject_text module/binance/tasks/server/TASK-BINANCE-SERVER-014-kafkax-dispatch.md '[Tt]opic.*binance\.market\.\{product_line\}\.\{event_type\}' 'SERVER-014 Kafka topic is not old NATS template'
+require_text module/binance/tasks/server/TASK-BINANCE-SERVER-014-kafkax-dispatch.md 'binance\.\{product_line\}\.\{event_type\}\.v1' 'SERVER-014 documents versioned Kafka topic template'
 require_text module/binance/server/TRACEABILITY.md 'binance\.\{product_line\}\.\{event_type\}\.v1' 'server TRACEABILITY documents versioned Kafka topic template'
 
 # R1 naming aliases: operational docs must not reintroduce legacy product-line aliases.
@@ -195,6 +198,52 @@ expect_rg 'TC-049' module/binance/TRACEABILITY.md "TRACEABILITY includes TC-049"
 expect_rg '4 product lines × 6 event types × 5 文档/checker anchors' module/binance/TRACEABILITY.md "TRACEABILITY documents R2 120-cell matrix"
 expect_rg 'POST /api/v1/admin/symbols/reload' module/binance/RUNTIME-MAPPING.md "RUNTIME-MAPPING uses current symbols reload endpoint"
 expect_no_rg 'POST /api/v1/admin/catalog/reload' module/binance/RUNTIME-MAPPING.md "RUNTIME-MAPPING drops legacy catalog reload endpoint"
+
+# --- C7/C8 数据边界检查（SPEC §4.3）---
+expect_rg 'C7.*Client 不落盘|C7.*client.*落盘' module/binance/SPEC.md "SPEC §4.1 documents C7 client-no-storage"
+expect_rg 'C8.*Server 不直连|C8.*server.*直连' module/binance/SPEC.md "SPEC §4.1 documents C8 server-no-exchange"
+expect_rg '§15.*C7|§16.*C8|C7.*client-no|C8.*server-no' module/binance/BOUNDARY-GATES.md "BOUNDARY-GATES documents C7/C8 enforcement"
+
+# --- Phase 3: 持续机制 ---
+
+# R11 前导块行数检查
+trace_preamble=$(sed -n '/^## §1 FR 追溯表/,/^| FR ID/p' module/binance/TRACEABILITY.md | wc -l)
+if (( trace_preamble <= 10 )); then
+  pass "R11 TRACEABILITY §1 前导块 ≤ 10 行 (实际: $trace_preamble)"
+else
+  fail "R11 TRACEABILITY §1 前导块 $trace_preamble 行 > 10 行上限"
+fi
+
+features_preamble=$(sed -n '/^## 1\. 模块边界/,/^| 维度/p' module/binance/FEATURES.md | wc -l)
+if (( features_preamble <= 8 )); then
+  pass "R11 FEATURES 前导块 ≤ 8 行 (实际: $features_preamble)"
+else
+  fail "R11 FEATURES 前导块 $features_preamble 行 > 8 行上限"
+fi
+
+# Runtime 锚点保鲜：SPEC.md Runtime-HEAD SHA 在 /home/binance 仓库中 ≤ 14 天
+anchor_sha=$(sed -nE 's/^- Runtime-HEAD: `([a-f0-9]+)`.*/\1/p' module/binance/SPEC.md | head -1)
+if [[ -n "$anchor_sha" ]] && [[ -d /home/binance/.git ]]; then
+  if git -C /home/binance cat-file -e "$anchor_sha" 2>/dev/null; then
+    anchor_age_days=$(( ($(date +%s) - $(git -C /home/binance log -1 --format=%ct "$anchor_sha")) / 86400 ))
+    if (( anchor_age_days <= 14 )); then
+      pass "Runtime-HEAD $anchor_sha 距今 $anchor_age_days 天 (≤ 14 天)"
+    else
+      fail "Runtime-HEAD $anchor_sha 距今 $anchor_age_days 天 (> 14 天上限)"
+    fi
+  else
+    fail "Runtime-HEAD $anchor_sha 在 /home/binance 中不存在"
+  fi
+else
+  pass "Runtime-HEAD 保鲜检查跳过（无 SHA 或 /home/binance 不可达）"
+fi
+
+# SSOT 声明检查：README.md 明确声明 TRACEABILITY.md 为 FR 状态 SSOT
+if rg -q 'TRACEABILITY.md.*§1.*(SSOT|权威|authority|唯一|single source)' module/binance/README.md; then
+  pass "README.md 声明 TRACEABILITY.md §1 为 FR 状态 SSOT"
+else
+  fail "README.md 未声明 TRACEABILITY.md §1 为 FR 状态 SSOT"
+fi
 
 if (( failures > 0 )); then
   printf '%s check(s) failed\n' "$failures" >&2

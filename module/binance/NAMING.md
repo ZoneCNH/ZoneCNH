@@ -143,7 +143,7 @@ binance/cm_perp/BTCUSD_PERP/2026/06/23/mark_price.parquet
 ```bash
 rg -n 'usdm_futures|coinm_futures|futures_usdt|futures_coin|\\boption\\b|\\bopts\\b' module/binance
 rg -n 'binance\\.market\\.(ticks|bars|depth|events)\\b' module/binance
-rg -n '4 × [4]|16 × 5 = [8]0' module/binance/NAMING.md module/binance/RULES.md module/binance/server/tasks/TASK-BINANCE-SERVER-014-kafkax-dispatch.md
+rg -n '4 × [4]|16 × 5 = [8]0' module/binance/NAMING.md module/binance/RULES.md module/binance/tasks/server/TASK-BINANCE-SERVER-014-kafkax-dispatch.md
 rg -n 'funding\\b' module/binance | rg -v 'funding_rate|fundingInfo|funding_rates'
 rg -n 'USDⓈ-M 永续|COIN-M 永续' module/binance/NAMING.md  # 期望 0 命中：语义注释已改为"合约（永续 + 交割）"
 ```

@@ -9,10 +9,13 @@
 |---|---|
 | `DEEP-ANALYSIS.md` | 深度分析归档索引（迁移映射 + 活跃文档入口） |
 | `DEEP-ANALYSIS-INDEX.md` | 快速跳转索引（主题→文件映射） |
-| `DEEP-ANALYSIS-ARCHIVE-architecture.md` | §0-§2 + 附录A：分布式约束、架构评估、目标设计 |
-| `DEEP-ANALYSIS-ARCHIVE-integration.md` | §3：六模块集成详案（natsx/redisx/postgresx/taosx/kafkax/ossx） |
-| `DEEP-ANALYSIS-ARCHIVE-operations.md` | §4-§11 + 附录B：API/数据流/配置/部署/路线图/风险 |
 | `A10-FR024-HOT-RELOAD-EVAL.md` | FR-024 全量 Config Hot Reload 评估报告 |
+| `GOVERNANCE-TIER-PROPOSAL.md` | **治理分层等级提案（L1/L2/L3）**——binance L3 参考实现，后续模块从 L1 起步 |
+| `DIR-STRUCTURE-PROPOSAL.md` | **治理目录结构优化提案**——6 项目录调整（specs/adr/tasks/server-docs/analysis-archive） |
+| `archive/` | **历史归档快照** |
+| `archive/DEEP-ANALYSIS-ARCHIVE-architecture.md` | §0-§2 + 附录A：分布式约束、架构评估、目标设计 |
+| `archive/DEEP-ANALYSIS-ARCHIVE-integration.md` | §3：六模块集成详案（natsx/redisx/postgresx/taosx/kafkax/ossx） |
+| `archive/DEEP-ANALYSIS-ARCHIVE-operations.md` | §4-§11 + 附录B：API/数据流/配置/部署/路线图/风险 |
 
 ## 归档原因
 
@@ -26,4 +29,4 @@ A10-FR024-HOT-RELOAD-EVAL.md 为 Plan007 A10 的 FR-024 评估结论——全量
 - `../SPEC.md` — 根规格
 - `../TRACEABILITY.md` — 追溯矩阵
 - `../RUNTIME-MAPPING.md` — 运行时映射
-- `../server/PERSISTENCE-WIRING.md` — 存储装配契约
+- `../server/docs/PERSISTENCE-WIRING.md` — 存储装配契约

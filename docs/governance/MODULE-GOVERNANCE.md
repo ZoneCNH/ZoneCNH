@@ -1,7 +1,7 @@
 # 模块治理总纲 — Module Governance Charter
 
-- Module-Version: v1.0.0
-- Last-Updated: 2026-06-25
+- Module-Version: v1.1.0
+- Last-Updated: 2026-06-26
 - 适用范围：本仓库全部 `module/*/` 规格制品、`module/registry.yaml` 注册表、以及本仓库索引的全部外部模块仓库（`github.com/ZoneCNH/*`）
 - 效力层级：本文位于 `docs/governance/` 层，受 [`CONSTITUTION.md` §13.1](../constitution/13-supreme-clause.md) 效力层级管辖（CONSTITUTION > module/\*/SPEC.md > governance 文档 > ARCHITECTURE > module 详情 > 其他）
 - 优先级：本文 > `module/{module}/SPEC.md` 治理条款 > `module/{module}/RULES.md` 单模块规则；与 CONSTITUTION 冲突时以 CONSTITUTION 为准
@@ -48,6 +48,72 @@
 | 6 | 新模块准入 | §2.5 奥卡姆剃刀有原则无流程；无立项 ADR/边界论证/依赖审查/命名审批门禁 | [06-module-onboarding.md](module-governance/06-module-onboarding.md) | 准入 ADR 模板 |
 | 7 | 模块退役/迁移 | 无 sunset/EOL/合并/拆分/重命名标准流程（仅 4 占位模块删除先例） | [07-module-decommission.md](module-governance/07-module-decommission.md) | 退役 ADR 模板 |
 | 8 | 业务域依赖矩阵 | FOUNDATION-DEPS 只覆盖 20 基座+domainx；业务域仅出现在 forbidden 黑名单 | [08-business-domain-deps.md](module-governance/08-business-domain-deps.md) | 扩展 schema 规划（后续工作） |
+
+---
+
+## 子模块治理（C/S 架构专属）
+
+### 动机
+
+`arch_type: cs_module` 的模块（如 binance、okx、hyperliquid、coinglass、fred、treasury）内部拆分为 `client/` 和 `server/` 子模块。各子模块有独立的 SPEC.md、TRACEABILITY.md、tasks/，但八域体系中无"子模块"概念：
+
+- 子模块不是 `registry.yaml` 的独立条目——无法独立查询
+- 无独立 lifecycle——隐式继承父模块的 `lifecycle` 状态（如 binance `active` → client/server 均为 `active`，即使 server 不如 client 成熟）
+- 当 server 比 client 更成熟（或反之）时，无法独立表达
+- 子模块间版本独立 bump（R3 允许），但下游无结构化方式查询"server v2.2.0 vs client v2.1.1"
+
+### 子模块定义【软】
+
+子模块是 `arch_type: cs_module` 模块内的**逻辑子单元**，满足以下全部条件：
+1. 有独立的 SPEC.md（定义子模块的 FR/BR/NFR）
+2. 有独立的 TRACEABILITY.md（FR→AC→TC→Task 追溯链）
+3. 在 runtime 仓中对应独立的 `cmd/` 入口（如 `cmd/binance-client`、`cmd/binance-server`）
+
+### 子模块成熟度标记【软】
+
+子模块继承父模块的 `lifecycle` 状态，但可有独立的**成熟度标记**（可选，不影响父模块 lifecycle）：
+
+| 标记 | 含义 | 判别标准 |
+|------|------|----------|
+| `stable` | 规格 + 实现 + L2 功能证据闭合，可独立承担生产流量 | FR Done ≥ 80%，boundary gates PASS，真实 infra 端到端证据 |
+| `active` | 规格完整，实现推进中，部分 FR 已有 runtime 证据 | FR Done ≥ 40%，至少一个产品线 live 验证 |
+| `developing` | 规格完整或 Draft，实现未开始或仅有骨架 | FR Done < 40%，runtime 为 stub/骨架 |
+
+**当前 binance 子模块状态**：
+
+| 子模块 | Spec-Version | FR 状态 | 成熟度 | 根因 |
+|--------|-------------|---------|--------|------|
+| `client` | v2.1.1 | 大部分 client 侧 FR Done（16/17） | `stable` | 四产品线 connector + control plane + event mapping 已装配 |
+| `server` | v2.2.0 | 存储类 FR Partial（PENDING-LIVE-RUN） | `active` | G0 storageFromEnv 已装配，真实 infra 端到端未闭合 |
+
+### registry.yaml 子模块登记【开】
+
+`arch_type: cs_module` 的模块可在 `registry.yaml` 中**可选登记**子模块。子模块条目为**投影字段**，不构成独立 SSOT；权威版本与状态以子模块 `SPEC.md` + `TRACEABILITY.md` 为准。
+
+```yaml
+# 示例：binance 的子模块登记
+binance:
+  submodules:
+    client:
+      spec_ref: module/binance/client/SPEC.md
+      spec_version: v2.1.1
+      maturity: stable
+    server:
+      spec_ref: module/binance/server/SPEC.md
+      spec_version: v2.2.0
+      maturity: active
+```
+
+### 子模块与父模块的治理边界【硬】
+
+| 规则 | 说明 | 来源 |
+|------|------|------|
+| 子模块不独立注册 | 不作为 registry.yaml 的一级条目；无独立 lifecycle 字段 | 本体系 |
+| 子模块不独立发布 | 随父模块 release tag 一起发布（v0.2.0 同时标记 client + server） | 本体系 |
+| 子模块间禁止代码互导 | 受父模块 BOUNDARY-GATES 约束（client ≠ server import） | CONSTITUTION §2.1 |
+| 父模块退役时子模块同时退役 | 不独立存续；无"子模块迁移到另一个父模块"语义 | 本体系 |
+| 子模块 Spec-Version 独立 bump | client/server SPEC 版本可独立演进，不强制与父模块同步 | RULES R3 |
+| 子模块 TRACEABILITY Module-Version | 必须等于对应子 SPEC Spec-Version；不可等于父模块 Spec-Version | RULES R6 |
 
 ---
 
@@ -164,6 +230,8 @@ module/FOUNDATION-DEPS.yaml     → 依赖矩阵（allowed / forbidden / constra
 | [`module/FOUNDATION-DEPS.yaml`](../../module/FOUNDATION-DEPS.yaml) | Foundation 依赖矩阵（引用，非本体系管辖） |
 | [`.foundationx/status/index.json`](../../.foundationx/status/index.json) | 成熟度事实层（引用，非本体系管辖） |
 | [`module/binance/RULES.md`](../../module/binance/RULES.md) | 单模块治理规则先例（R1-R10 模式来源） |
+| [`module/binance/analysis/GOVERNANCE-TIER-PROPOSAL.md`](../../module/binance/analysis/GOVERNANCE-TIER-PROPOSAL.md) | 治理分层等级提案（L1/L2/L3）+ binance L3 参考实现 |
+| [`module/binance/`](../../module/binance/) | C/S 架构子模块治理参考实现（client + server）——本文 §子模块治理 的定义来源 |
 | [`docs/governance/LIFECYCLE.md`](LIFECYCLE.md) | Spec 生命周期（六态，与本体系模块生命周期映射） |
 | [`docs/governance/DEFINITION-OF-READY.md`](DEFINITION-OF-READY.md) | Spec 进入开发前置条件（准入通过后适用） |
 | [`docs/governance/boundary-gates-cross-module-promotion.md`](boundary-gates-cross-module-promotion.md) | 跨模块边界门禁推广先例 |
@@ -174,4 +242,5 @@ module/FOUNDATION-DEPS.yaml     → 依赖矩阵（allowed / forbidden / constra
 
 | 日期 | 版本 | 变更内容 | 作者 |
 | --- | --- | --- | --- |
+| 2026-06-26 | v1.1.0 | **新增 §子模块治理**：定义 C/S 架构模块的 client/server 子模块概念、成熟度标记（stable/active/developing）、registry.yaml 子模块登记 schema、与父模块的治理边界（6 条硬规则）；binance 当前为唯一参考实现（client stable / server active） | ZoneCNH |
 | 2026-06-25 | v1.0.0 | 首次建立。闭合 2026-06-25 治理缺口审计确认的 8 个模块治理缺口，定义三 SSOT 边界、八域总览、强制级别约定与修订流程 | ZoneCNH |

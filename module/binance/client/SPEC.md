@@ -4,8 +4,10 @@
 
 - Status: Approved
 - Spec-Version: v2.1.1
-- Last-Updated: 2026-06-25 (runtime metadata aligned with parent `module/binance/SPEC.md`)
+- Last-Updated: 2026-06-26 (runtime metadata aligned with parent `module/binance/SPEC.md`; boundary contract → parent §4.4)
 - Owner: ZoneCNH
+- Parent: `module/binance/SPEC.md` v3.7.1
+- **Boundary Contract**: 见 parent SPEC **§4.4 C/S Boundary Contract** — client 受 C1(不落盘)/C3(仅natsx)/C4(不查询)/C5(不持凭据)/C6(不广播)/C8(共享层无infra) 6 条硬约束
 - Layer: 数据域 · Binance 交易所接入
 - Runtime-Version: v0.2.0
 - Repository: [github.com/ZoneCNH/binance](https://github.com/ZoneCNH/binance)（client/ 子目录）

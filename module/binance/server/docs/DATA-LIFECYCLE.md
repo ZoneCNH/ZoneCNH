@@ -45,7 +45,7 @@
 | FR-015 | Operational pause/resume/drain | `SPEC.md` runtime control / `BOUNDARY-GATES.md` | MINOR v2.4.0 | FR-003, FR-004, FR-009 | G05 |
 | FR-016 | Backfill window planning | `SPEC.md` history lifecycle / `server/IMPLEMENTATION-PLAN.md` | MINOR v2.5.0 | FR-006a, FR-006d | G07 |
 | FR-017 | Gap detection and replay trigger | `SPEC.md` history lifecycle / `RUNTIME-MAPPING.md` | MINOR v2.5.0 | FR-004, FR-005, FR-006a | G08, G11 |
-| FR-018 | Archive retention and replay manifest | `SPEC.md` ossx lifecycle / `server/tasks/TASK-BINANCE-SERVER-016-ossx-archiver.md` | MINOR v2.5.0 | FR-006d | G10 |
+| FR-018 | Archive retention and replay manifest | `SPEC.md` ossx lifecycle / `tasks/server/TASK-BINANCE-SERVER-016-ossx-archiver.md` | MINOR v2.5.0 | FR-006d | G10 |
 | FR-019 | Backfill concurrency and idempotency gates | `ACCEPTANCE.md` / `TRACEABILITY.md` | MINOR v2.5.0 | FR-005, FR-011, FR-016, FR-017 | G09, G12 |
 | FR-020 | Funding-rate event support | `SPEC.md` event taxonomy / `NAMING.md` | MAJOR v3.0.0 | FR-001, FR-003, FR-006a, FR-009 | G13 |
 | FR-021 | Mark-price and index-price event support | `SPEC.md` event taxonomy / `NAMING.md` | MAJOR v3.0.0 | FR-001, FR-003, FR-006a, FR-009 | G13 |

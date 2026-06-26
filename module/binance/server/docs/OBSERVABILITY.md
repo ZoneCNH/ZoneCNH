@@ -1,4 +1,4 @@
-# module/binance OBSERVABILITY.md — Metrics & Alerting Standard
+# module/binance/server OBSERVABILITY.md — Metrics & Alerting Standard
 
 ## Metadata
 
