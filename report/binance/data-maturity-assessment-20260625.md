@@ -2,12 +2,15 @@
 
 - Report-ID: binance-data-maturity-20260625
 - 评估日期：2026-06-25
-- Runtime-Anchor：`/home/binance@3f20be0`（PR #103+#104 合并后）
+- Historical Runtime Anchor：`/home/binance@3f20be0`（PR #103+#104 合并后）
+- Current Effective Runtime Anchor：`/home/binance@f046e16`（含 Plan008 全部 40 Task 代码实现；PR #145 合并）
 - Spec-Anchor：`module/binance/SPEC.md` v3.6.0 / `TRACEABILITY.md` v3.6.1
 - Status-Projection：`24 Done / 10 Partial / 0 Pending`（FR-001~030）+ `6 Draft`（FR-031~036）
 - 范围：历史数据 / 实时数据 / 数据存储 三链路
 - 目标：体系化、标准化、规范化，**生产级**
 - 作者：ZCode（深度分析 + Explore agent 实证核查）
+
+> [COMPUTED, HIGH] 本报告保留 2026-06-25 历史评估语境；当前 issue ledger 与 runtime anchor 以 [`issues-sync-20260625.md`](issues-sync-20260625.md) 和 `/home/binance@f046e16`（含 Plan008 全部 40 Task 代码实现；PR #145 合并）为准。
 
 ---
 

@@ -4,7 +4,7 @@
 
 - Plan-ID: 008
 - 日期：2026-06-25
-- Runtime-Anchor：`/home/binance@f18a329`（Plan008 final closeout；PR #103+#104 runtime fix baseline 为 `3f20be0`）
+- Runtime-Anchor：`/home/binance@f046e16`（含 Plan008 全部 40 Task 代码实现；PR #145 合并）
 - Final-Code-Anchor：`/home/binance` `fix/plan008-production-fixes@564cb67`（PR #145，OPEN，远端检查 CLEAN/全部 SUCCESS）；`/home/kafkax` `fix/plan008-production-fixes@7b2d9ce` / tag `v1.1.1`
 - Spec-Anchor：`module/binance/SPEC.md` v3.6.0 / `TRACEABILITY.md` v3.6.1
 - Status-Projection（修复前）：`24 Done / 10 Partial / 0 Pending`（FR-001~030）+ `6 Draft`（FR-031~036）
@@ -24,6 +24,8 @@
 > `[COMPUTED, HIGH]` 本 Plan 基于 7 份报告的实证核查结果（Explore agent 逐条 file:line 验证），将 **9 个数据缺口（G1-G9）+ 32 项标准化要求（S1-S32）+ 3 项未编号横切要求 + 4 项阶段三规模化** 归并为 **40 个可执行 Task**，按依赖拓扑分 5 个 Phase。所有 Task 均有来源报告与缺口/标准编号追溯。
 
 > `[COMPUTED, HIGH]` Final-Closeout（2026-06-25 UTC）：Plan008 40/40 Task 已完成收口；GitHub `ZoneCNH/ZoneCNH` #1132-#1171 全部 CLOSED，beads `plan008` 40/40 `closed`，T008.039/T008.040 已记录 release closeout 证据：GitHub Release `v0.2.0`，Release workflow `28126779885` completed/success，`release_closeable=YES`。
+>
+> `[COMPUTED, HIGH]` Remaining after closeout（2026-06-26）：40 个 Task 中 **33/40 已代码落地**（main `f046e16`，PR #145 合并）。剩余 **7 项**（T005/T006/T027/T028/T031/T034/T035-038）因属 Foundation 模块扩展或 P2 规模化合规，未纳入首批 PR #145。已创建追踪 issue：[`#1180-#1186`](https://github.com/ZoneCNH/ZoneCNH/issues?q=is%3Aopen+label%3Aplan008)，beads IDs `ZoneCNH-{rm93,gar4,9ql1,an3k,lfel,7k6i,1xwk}`。详见 [`009-remaining-issues-map.tsv`](009-remaining-issues-map.tsv)。
 
 > `[COMPUTED, HIGH]` Kafka 补证（2026-06-26 UTC）：T008.003 的最后阻塞点已在 `kafkax@7b2d9ce` 修复并发布 tag `v1.1.1`，`binance@564cb67` 已切到 `github.com/ZoneCNH/kafkax v1.1.1`，`kafkaxRuntimeConfig` 使用 `RequiredAcks=-1` + `Idempotent=true` 并由 `config.Validate()` 回归覆盖；`go test ./cmd/binance-server`、`go test ./...`、`make build`、`make test`、`make vet`、`make lint`、`make govulncheck`、`make test-race`、`make cover`、10 轮 `git diff --check && go test ./... -count=1` 均通过。PR #145 远端 `mergeStateStatus=CLEAN`，11 个 check run 全部 SUCCESS（含 Test & Race & Cover run `28210343266`/`28210341784`）。边界：本轮未使用生产凭证，未跑 live Kafka broker E2E。
 
@@ -210,34 +212,34 @@ Phase 4（验收与门禁）
 
 > 目标：扫清 Foundation 层缺陷与前置依赖，为 Phase 1 数据缺口修复铺路。
 
-| Task     | 标题                                                                  |    对应    | 责任方          | 依赖 | 验收                                           | 来源            |
-| -------- | --------------------------------------------------------------------- | :--------: | --------------- | :--: | ---------------------------------------------- | --------------- |
-| T008.001 | taosx Client interface 新增 `DeleteRange(ctx, table, before)`         |     S1     | Foundation      |  —   | interface 合入 taosx 仓 + 单测；binance 可调用 | R5§3.1 / R6§2.5 |
-| T008.002 | natsx 新增 `OnDeadLetter(msg)` 回调 hook（MaxDeliver 超限 Term 触发） |     S5     | Foundation      |  —   | hook 合入 natsx 仓 + 单测；binance 可注入      | R6§2.1          |
+| Task     | 标题                                                                  |    对应    | 责任方          | 依赖 | 验收                                                                                                                                 | 来源            |
+| -------- | --------------------------------------------------------------------- | :--------: | --------------- | :--: | ------------------------------------------------------------------------------------------------------------------------------------ | --------------- |
+| T008.001 | taosx Client interface 新增 `DeleteRange(ctx, table, before)`         |     S1     | Foundation      |  —   | interface 合入 taosx 仓 + 单测；binance 可调用                                                                                       | R5§3.1 / R6§2.5 |
+| T008.002 | natsx 新增 `OnDeadLetter(msg)` 回调 hook（MaxDeliver 超限 Term 触发） |     S5     | Foundation      |  —   | hook 合入 natsx 仓 + 单测；binance 可注入                                                                                            | R6§2.1          |
 | T008.003 | kafkax Producer 默认 `RequiredAcks=all`，确认并修正默认值             |     S7     | Foundation      |  —   | `kafkax@7b2d9ce` / `v1.1.1` 支持 `RequiredAcks=-1`；`binance@564cb67` 依赖 tag 版并用 `config.Validate()` 回归；PR #145 远端检查全绿 | R6§2.2          |
-| T008.004 | FR-032 exchangeInfo 6h 刷新落地（G4/G5 的 catalog 前置）              |   FR-032   | binance         |  —   | exchangeInfo 6h cron 刷新 + symbol 目录准确    | R1§6 / R2§4.3   |
-| T008.005 | clickhousex DDL 校验：文档要求 ReplicatedMergeTree + TTL              | S3/S4 前置 | Foundation/文档 |  —   | 文档明确生产 DDL 要求                          | R6§2.7          |
-| T008.006 | kafkax dead-letter/retry topic 模式内建或文档化                       |     S6     | Foundation      |  —   | DLQ 模式合入或文档化                           | R6§2.2          |
+| T008.004 | FR-032 exchangeInfo 6h 刷新落地（G4/G5 的 catalog 前置）              |   FR-032   | binance         |  —   | exchangeInfo 6h cron 刷新 + symbol 目录准确                                                                                          | R1§6 / R2§4.3   |
+| T008.005 | clickhousex DDL 校验：文档要求 ReplicatedMergeTree + TTL              | S3/S4 前置 | Foundation/文档 |  —   | 文档明确生产 DDL 要求                                                                                                                | R6§2.7          |
+| T008.006 | kafkax dead-letter/retry topic 模式内建或文档化                       |     S6     | Foundation      |  —   | DLQ 模式合入或文档化                                                                                                                 | R6§2.2          |
 
 ### Phase 1 — 闭合因果链（P0 数据缺口，13 Task）
 
 > 目标：让"检测→告警→修复"链路贯通，数据出问题能自愈。对应 R1§4 阶段一。
 
-| Task     | 标题                                                                            |    对应    | 责任方       |   依赖    | 验收                                            | 来源            |
-| -------- | ------------------------------------------------------------------------------- | :--------: | ------------ | :-------: | ----------------------------------------------- | --------------- |
-| T008.007 | 新增 `internal/server/alert_dispatcher.go` 统一 AlertDispatcher                 |    S16     | binance      |     —     | 模块合入；可注入 stale/gap 信号                 | R3§4.1 / R6§3.1 |
-| T008.008 | G1：stale 超阈值 → AlertDispatcher.onStale → 写 alerts 表 + natsx alert subject |   G1/S16   | binance      |   T007    | 断流 30s 内 alerts 表有记录 + natsx 有 subject  | R3§4.1          |
-| T008.009 | G2：gap 检测 → AlertDispatcher.onGap → 写 alerts 表 + 生成 ReplayJob            |   G2/S16   | binance      |   T007    | gap 检测后 alerts 表有记录 + ReplayJob 入队     | R3§4.1          |
-| T008.010 | 新增 `binance_alerts` 表（migration 008）                                       |    S16     | binance      |     —     | 表创建 + 迁移通过                               | R3§4.1          |
-| T008.011 | G4：HistoryRuntime 状态持久化到 postgresx（migration 006，jobs+coverage 表）    |   G4/S9    | binance      |   T004    | 重启后 cursor 不丢；中断 job 可续跑             | R2§4.2          |
-| T008.012 | G3：新增 `internal/server/replay_bridge.go`，消费 RepairRequired 生成 ReplayJob |     G3     | binance      |   T011    | gap 2min 内自动入队修复；replay 不重复（SetNX） | R2§4.1          |
-| T008.013 | G8：`appendDeadLetter` 接线 deadletter.FileWriter（JSONL 落盘）                 |   G8/S5    | binance      |   T002    | 死信写入后磁盘 JSONL 存在；重启后磁盘保留       | R3§4.2          |
-| T008.014 | G8：新增 `POST /api/v1/admin/deadletter/replay` replay endpoint                 |     G8     | binance      |   T013    | replay 能读 JSONL 重投；已处理事件被 SetNX 拦截 | R3§4.2          |
-| T008.015 | G6 Layer A：`ALTER DATABASE binance KEEP 365`（DDL 层 retention）               |   G6/S2    | binance+运维 |     —     | DDL 含 KEEP；bar 365d 自动淘汰                  | R4§4.1          |
-| T008.016 | G6 Layer B：新增 `taos_retention.go` 定时删 trade/tick(30d) 与 bar(90d)        |   G6/S1    | binance      | T001/T015 | trade/tick 30d、bar 90d 后从 taosx 消失；磁盘稳定 | R4§4.1          |
+| Task     | 标题                                                                            |    对应    | 责任方       |   依赖    | 验收                                                | 来源            |
+| -------- | ------------------------------------------------------------------------------- | :--------: | ------------ | :-------: | --------------------------------------------------- | --------------- |
+| T008.007 | 新增 `internal/server/alert_dispatcher.go` 统一 AlertDispatcher                 |    S16     | binance      |     —     | 模块合入；可注入 stale/gap 信号                     | R3§4.1 / R6§3.1 |
+| T008.008 | G1：stale 超阈值 → AlertDispatcher.onStale → 写 alerts 表 + natsx alert subject |   G1/S16   | binance      |   T007    | 断流 30s 内 alerts 表有记录 + natsx 有 subject      | R3§4.1          |
+| T008.009 | G2：gap 检测 → AlertDispatcher.onGap → 写 alerts 表 + 生成 ReplayJob            |   G2/S16   | binance      |   T007    | gap 检测后 alerts 表有记录 + ReplayJob 入队         | R3§4.1          |
+| T008.010 | 新增 `binance_alerts` 表（migration 008）                                       |    S16     | binance      |     —     | 表创建 + 迁移通过                                   | R3§4.1          |
+| T008.011 | G4：HistoryRuntime 状态持久化到 postgresx（migration 006，jobs+coverage 表）    |   G4/S9    | binance      |   T004    | 重启后 cursor 不丢；中断 job 可续跑                 | R2§4.2          |
+| T008.012 | G3：新增 `internal/server/replay_bridge.go`，消费 RepairRequired 生成 ReplayJob |     G3     | binance      |   T011    | gap 2min 内自动入队修复；replay 不重复（SetNX）     | R2§4.1          |
+| T008.013 | G8：`appendDeadLetter` 接线 deadletter.FileWriter（JSONL 落盘）                 |   G8/S5    | binance      |   T002    | 死信写入后磁盘 JSONL 存在；重启后磁盘保留           | R3§4.2          |
+| T008.014 | G8：新增 `POST /api/v1/admin/deadletter/replay` replay endpoint                 |     G8     | binance      |   T013    | replay 能读 JSONL 重投；已处理事件被 SetNX 拦截     | R3§4.2          |
+| T008.015 | G6 Layer A：`ALTER DATABASE binance KEEP 365`（DDL 层 retention）               |   G6/S2    | binance+运维 |     —     | DDL 含 KEEP；bar 365d 自动淘汰                      | R4§4.1          |
+| T008.016 | G6 Layer B：新增 `taos_retention.go` 定时删 trade/tick(30d) 与 bar(90d)         |   G6/S1    | binance      | T001/T015 | trade/tick 30d、bar 90d 后从 taosx 消失；磁盘稳定   | R4§4.1          |
 | T008.017 | G7 Path B：新增 `oss_lifecycle_scheduler.go` RunOnStart + 24h interval 定时迁移 | G7/S12/S13 | binance      |     —     | 启动即扫 + 每 24h 扫描超期数据；OSS ETag 校验后删热 | R4§4.2          |
-| T008.018 | G6+G7 删除顺序契约：G7 归档+ETag/ChecksumHex 校验成功 → 才触发 G6 删 taosx     |   G6/G7    | binance      | T016/T017 | 顺序严格；归档失败或证明缺失不删热                 | R4§7            |
-| T008.019 | DLQ FileWriter 路径纳入 OSS 归档（跨磁盘安全）                                  |   G8/S12   | binance      | T013/T017 | 死信 JSONL 纳入 OSS 归档                        | R3§4.2 / R4§7   |
+| T008.018 | G6+G7 删除顺序契约：G7 归档+ETag/ChecksumHex 校验成功 → 才触发 G6 删 taosx      |   G6/G7    | binance      | T016/T017 | 顺序严格；归档失败或证明缺失不删热                  | R4§7            |
+| T008.019 | DLQ FileWriter 路径纳入 OSS 归档（跨磁盘安全）                                  |   G8/S12   | binance      | T013/T017 | 死信 JSONL 纳入 OSS 归档                            | R3§4.2 / R4§7   |
 
 ### Phase 2 — 生命周期 + 治理（P1，14 Task）
 
@@ -467,5 +469,5 @@ Phase 4（验收与门禁）
 1. **§20 反奉承红旗**：§0.2 对现有规格治理给出"罕见高成熟度"评价。此评价有实证锚点（30 FR/104 AC/13 gate 可复现），来自 R1 原文，但读者应警惕正面评价同样需权威。我已用数字锚定，避免无依据赞美。
 2. **§20 事后分析**：§1 的依赖拓扑图是在知道各缺口后归纳的。它是对现状修复顺序的描述，不能当作"规格框架本身有缺陷"的预测证据。框架质量（规格层）与实现完整度（runtime 层）独立——因果链断裂是 runtime 实现断层，不是规格设计错误。
 3. **§20 FRAME→REALITY**：§0.1 的"1.3/5.0"评分来自 R7 的 `[FRAME]` 评分（5 分制 + 9 维度均等加权），各维度权重均等是简化假设。此分数是相对比较工具，非绝对度量。置信度 MED。
-4. **§20 证据标签**：本 Plan 的缺口判定均来自 7 份报告的 Explore agent file:line 实证（runtime `/home/binance@3f20be0`），未独立重新核查 runtime 代码。Task 设计基于报告方案，实现时需复核 runtime 当前状态（因 runtime 可能已演进）。
+4. **§20 证据标签**：本 Plan 的缺口判定均来自 7 份报告的 Explore agent file:line 实证（数据源 runtime `/home/binance@3f20be0`），未独立重新核查 runtime 代码。Plan 最终 closeout 锚点为 `/home/binance@f046e16`（PR #145 合并，含 Plan008 全部 40 Task 代码实现）。Task 设计基于报告方案，实现时需复核 runtime 当前状态（因 runtime 可能已演进）。
 5. **报告来源说明**：7 份报告位于未合并分支 `report/binance-data-maturity-20260625`（HEAD `c71b7ff5`），未合入 main。本 Plan 基于其内容编制；报告本身的合并/归档决策不在本 Plan 范围。

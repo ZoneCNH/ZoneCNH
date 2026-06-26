@@ -5,13 +5,13 @@
 | 报告类型 | 生产就绪度（Production-Ready）深度分析 |
 | 分析对象 | `github.com/ZoneCNH/binance`（运行时代码仓 `/home/binance`） |
 | 治理投影 | `/home/ZoneCNH/module/binance/`（spec / TRACEABILITY 投影仓） |
-| 当前 Runtime-Anchor | `/home/binance@f18a329`（Plan008 final closeout；PR #103+#104 runtime fix baseline 为 `3f20be0`） |
+| 当前 Runtime-Anchor | `/home/binance@f046e16`（含 Plan008 全部 40 Task 代码实现；PR #145 合并） |
 | 当前 Issue-Ledger | [`issues-sync-20260625.md`](./issues-sync-20260625.md) |
 | 当前状态投影 | `24 Done / 10 Partial / 0 Pending` + `6 Draft`（FR-031~036 规格草案） |
 | 当前 issue 状态 | ✅ **全部 Closed**（#1104~#1118 + #1123）：7 个代码修复+实证，9 个能力边界文档化 |
 | 代码规模 | ~13.5K 行生产代码 + ~11.2K 行测试代码（66 个测试文件） |
 | 分析日期 | 2026-06-25 |
-| 证据基准 | 运行时代码 `/home/binance@f18a329` + `release/evidence/binance/20260625/` 实证 + mainnet live + Plan008 release workflow `28126779885` |
+| 证据基准 | 运行时代码 `/home/binance@f046e16`（含 Plan008 全部 40 Task；PR #145 合并） + `release/evidence/binance/20260625/` 实证 + mainnet live + Plan008 release workflow `28126779885` |
 | 置信度 | HIGH（代码逐文件核验 + release evidence 交叉验证） |
 | 证据标签 | 见各节内联标注 |
 
@@ -43,7 +43,7 @@
 
 `[COMPUTED, HIGH]` 当前行动清单、关闭条件和 issue 状态统一维护在 [`issues-sync-20260625.md`](./issues-sync-20260625.md)。**全部 16 个 issue 已闭合**（7 代码修复 + 9 能力边界文档化）。本文保留历史分析语境。
 
-**可信度说明**：模块治理投影文档与 runtime 曾存在状态漂移；本报告保留该历史语境。当前 `report/binance/` 有效口径以 `/home/binance@f18a329`、[`issues-sync-20260625.md`](./issues-sync-20260625.md)、[`plans/binance/008-issues-sync-report.md`](../../plans/binance/008-issues-sync-report.md) 和 `24 Done / 10 Partial / 0 Pending + 6 Draft` 为准；本文其余 runtime file/line 细节保留 PR #103/#104 分析语境。
+**可信度说明**：模块治理投影文档与 runtime 曾存在状态漂移；本报告保留该历史语境。当前 `report/binance/` 有效口径以 `/home/binance@f046e16`（含 Plan008 全部 40 Task 代码实现；PR #145 合并）、[`issues-sync-20260625.md`](./issues-sync-20260625.md)、[`plans/binance/008-issues-sync-report.md`](../../plans/binance/008-issues-sync-report.md) 和 `24 Done / 10 Partial / 0 Pending + 6 Draft` 为准；本文其余 runtime file/line 细节保留 PR #103/#104 分析语境。
 
 > **[RULES]** 报告遵循 [`docs/constitution/20-epistemic-standards.md`](../../docs/constitution/20-epistemic-standards.md) 认识论标准。凡事实性声明带 `[COMPUTED]`/`[KNOWN]`/`[INFERRED]` 标签 + 显式置信度；文档与代码冲突时以代码为优先，并显式标注冲突。
 

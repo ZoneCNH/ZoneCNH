@@ -4,7 +4,7 @@
 - Author: ZCode（GLM-5.2 session）
 - Purpose: 防止并发 agent 误执行 Draft FR 或重复已完成的工作
 - Main-HEAD: `457519db`
-- Runtime-Anchor: `/home/binance@f18a329`
+- Runtime-Anchor: `/home/binance@f046e16`（含 Plan008 全部 40 Task 代码实现；PR #145 合并）
 
 > [COMPUTED, HIGH] **如果你是 codex 或其他 agent，在执行 binance 相关 issue 前，必读本文件。** 本文件防止三类错误：(1) 误执行 Draft FR；(2) 重复已完成工作；(3) 基于过期状态操作。
 
@@ -38,26 +38,26 @@
 
 ---
 
-## 📋 可执行的 Open Issues（14 个）
+## 📋 历史 Issue Ledger Closeout（16/16 Closed）
 
-以下是已批准的、可执行的 runtime/evidence issue。优先级和关闭条件见 `issues-sync-20260625.md`。
+以下 14 个 issue 是本交接文件初版列出的原 Open 切片。当前以 `issues-sync-20260625.md` 为准：`#1104`-`#1118` 加 `#1123` 共 16 个 runtime/evidence issue 已全部 Closed。本表只保留历史排序和 task-split 去重语境。
 
-| 优先级 | Issue | 标题 |
-|--------|-------|------|
-| **P0** | #1104 | 补齐 FR-016 历史回补运行时 REST fetcher 注入 |
-| **P0** | #1105 | 厘清 Kafka broker roundtrip 证据冲突 |
-| P1 | #1107 | 明确或实现 UM/CM/Options 历史 REST endpoint 支持 |
-| P1 | #1108 | 用 mainnet 样本校验 Options ticker 字段归一化 |
-| P1 | #1109 | 补齐速率限制平滑与 token bucket 机制 |
-| P1 | #1110 | 补齐分布式 tracing 与 trace context 传播 |
-| P1 | #1111 | 补齐 Options active symbol live 覆盖 |
-| P1 | #1112 | 建立 storage mock 与 fake 的测试标准 |
-| P1 | #1113 | 补齐 100K TPS/backpressure 标准与实证 |
-| P2 | #1114 | 补齐增量 order book rebuild 状态机 |
-| P2 | #1115 | 将 ClickHouse ETL 从内存源升级为持久/多实例来源 |
-| P2 | #1116 | 支持增量 hot reload diff 而非全量重连 |
-| P2 | #1117 | 持久化历史回补进度 |
-| P2 | #1118 | 补齐持久 DLQ wiring 与 replay 流程 |
+| 原优先级 | Issue | 标题 | 当前账本状态 |
+|--------|-------|------|------|
+| **P0** | #1104 | 补齐 FR-016 历史回补运行时 REST fetcher 注入 | Closed（代码修复） |
+| **P0** | #1105 | 厘清 Kafka broker roundtrip 证据冲突 | Closed（代码修复+实证） |
+| P1 | #1107 | 明确或实现 UM/CM/Options 历史 REST endpoint 支持 | Closed（代码修复） |
+| P1 | #1108 | 用 mainnet 样本校验 Options ticker 字段归一化 | Closed（能力边界文档化） |
+| P1 | #1109 | 补齐速率限制平滑与 token bucket 机制 | Closed（代码修复） |
+| P1 | #1110 | 补齐分布式 tracing 与 trace context 传播 | Closed（能力边界文档化） |
+| P1 | #1111 | 补齐 Options active symbol live 覆盖 | Closed（代码修复+实证） |
+| P1 | #1112 | 建立 storage mock 与 fake 的测试标准 | Closed（能力边界文档化） |
+| P1 | #1113 | 补齐 100K TPS/backpressure 标准与实证 | Closed（能力边界文档化） |
+| P2 | #1114 | 补齐增量 order book rebuild 状态机 | Closed（能力边界文档化） |
+| P2 | #1115 | 将 ClickHouse ETL 从内存源升级为持久/多实例来源 | Closed（能力边界文档化） |
+| P2 | #1116 | 支持增量 hot reload diff 而非全量重连 | Closed（能力边界文档化） |
+| P2 | #1117 | 持久化历史回补进度 | Closed（能力边界文档化） |
+| P2 | #1118 | 补齐持久 DLQ wiring 与 replay 流程 | Closed（能力边界文档化） |
 
 > #1093（长期#10: 核心交易闭环跑通 live_integration）是长期 issue，非本轮范围。
 
@@ -67,12 +67,12 @@
 
 | 现有 issue | 关系 | Draft FR | 影响 |
 |-----------|------|---------|------|
-| **#1107** | 被包含 | FR-031 | FR-031 实现后 #1107 可关闭（但 FR-031 是 Draft，当前仍应独立执行 #1107） |
-| **#1116** | 被依赖 | FR-036 | FR-036 的 tier drain 依赖 #1116；**#1116 应优先执行**，FR-036 Approved 后可复用 |
-| **#1104** | 路径复用 | FR-032 | FR-032 复用 #1104 修复的 REST fetcher 路径；**#1104 应优先执行** |
-| **#1108** | 数据基础 | FR-031 | FR-031 为 #1108 提供契约；当前独立执行 #1108 无阻塞 |
+| **#1107** | 被包含 | FR-031 | #1107 已 Closed；FR-031 task-split 时复用其 REST route 结论，避免重复创建实现任务 |
+| **#1116** | 被依赖 | FR-036 | #1116 已以能力边界文档化 Closed；FR-036 若要实现 tier drain，需要在 Draft Approved 后自带增量 diff 任务 |
+| **#1104** | 路径复用 | FR-032 | #1104 已 Closed；FR-032 可复用已修复的 REST fetcher 注入路径 |
+| **#1108** | 数据基础 | FR-031 | #1108 已以能力边界文档化 Closed；FR-031 仍需补足 Options ticker live 抓样或显式保留边界 |
 
-**建议执行顺序**：#1104 → #1107 → #1116 → 其余 P1 → P2（#1104 和 #1116 是多个 Draft FR 的前置依赖）
+**后续 Draft FR 排序建议**：FR-031/FR-032/FR-036 仍是后续 task-split 的高风险交叉点，但不再通过重开 #1104/#1107/#1116 推进。
 
 ---
 

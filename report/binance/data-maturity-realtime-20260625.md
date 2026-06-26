@@ -2,11 +2,13 @@
 
 - Report-ID: binance-data-maturity-realtime-20260625
 - 所属主报告：[`data-maturity-assessment-20260625.md`](data-maturity-assessment-20260625.md) §3 实时数据行
-- Runtime-Anchor：`/home/binance@3f20be0`
+- Historical Runtime Anchor：`/home/binance@3f20be0`
+- Current Effective Runtime Anchor：`/home/binance@f046e16`（含 Plan008 全部 40 Task 代码实现；PR #145 合并）
 - 评估日期：2026-06-25
 - 范围：FR-003/004（natsx 通信 + At-Least-Once）/ FR-012~015（Stream 生命周期/可靠性/可观测/控制）/ FR-029（Freshness SLA）
 
 > [COMPUTED, HIGH] 本报告所有缺口声明经 Explore agent 在 runtime `/home/binance` 逐条 file:line 核查。规格参数来自 `module/binance/SPEC.md` 实读。
+> [COMPUTED, HIGH] 本报告保留 2026-06-25 历史评估语境；当前 issue ledger 与 runtime anchor 以 [`issues-sync-20260625.md`](issues-sync-20260625.md) 和 `/home/binance@f046e16`（含 Plan008 全部 40 Task 代码实现；PR #145 合并）为准。
 
 ---
 

@@ -1,6 +1,6 @@
 # Binance reports archive index
 
-- Last-Updated: 2026-06-25
+- Last-Updated: 2026-06-26
 - Scope: `report/binance` 历史深度分析、生产就绪、治理闭环与 SRE 跟进记录归档。
 - Archive Root: [`archive/`](archive/)
 
@@ -14,14 +14,14 @@
 
 | 字段 | 值 |
 | --- | --- |
-| Runtime-Anchor | `/home/binance@f18a329` |
+| Runtime-Anchor | `/home/binance@f046e16` |
 | Issue-Ledger | [`issues-sync-20260625.md`](issues-sync-20260625.md) |
-| Status-Projection | `24 Done / 10 Partial / 0 Pending` |
-| Issue-Range | GitHub / Beads `#1104`-`#1118`（15 项） |
-| Closed-By-This-Slice | `#1106` 文档对齐 |
-| Still-Open | `#1104`, `#1105`, `#1107`-`#1118` runtime/evidence items |
+| Status-Projection | `24 Done / 10 Partial / 0 Pending` + `6 Draft`（FR-031~036） |
+| Issue-Range | GitHub / Beads `#1104`-`#1118` + `#1123`（16 项） |
+| Closed-By-This-Slice | 全部 16 项（7 代码修复+实证 + 9 能力边界文档化） |
+| Still-Open | 无（全部 Closed） |
 
-> [COMPUTED, HIGH] 历史报告继续作为语境保留；任何当前行动清单、关闭条件和 issue 状态以 [`issues-sync-20260625.md`](issues-sync-20260625.md) 为准。
+> [COMPUTED, HIGH] 历史报告继续作为语境保留；任何当前行动清单、关闭条件和 issue 状态以 [`issues-sync-20260625.md`](issues-sync-20260625.md) 为准。当前 16 个 gap issue 已全部闭合（issues-sync §当前结论）。
 
 ## 归档批次
 
@@ -41,11 +41,11 @@
 | [binance-module-analysis.md](binance-module-analysis.md) | 生产级模块分析报告（当前主分析）。 |
 | [binance-data-flow-architecture.md](binance-data-flow-architecture.md) | 数据流架构图与职责边界。 |
 | [binance-module-standards.md](binance-module-standards.md) | binance 模块开发与生产规范。 |
-| [issues-sync-20260625.md](issues-sync-20260625.md) | 2026-06-25 Beads/GitHub issue 同步账本（15 缺口映射）。 |
+| [issues-sync-20260625.md](issues-sync-20260625.md) | 2026-06-25 Beads/GitHub issue 同步账本（16 缺口映射，全部 Closed）。 |
 | [v0.2.0-release-gate-verdict-20260625.md](v0.2.0-release-gate-verdict-20260625.md) | v0.2.0 发布门禁增量裁决（推翻「零阻塞」断言，记录 readiness-audit gate 红 + FR 状态漂移）。 |
 | [symbol-sync-deep-analysis-20260625.md](symbol-sync-deep-analysis-20260625.md) | **Symbol 同步深度分析**：实测 3,616 symbol 规模、数据量、限流权重、服务器评估、分批规则。 |
 | [exchangeinfo-sync-design-20260625.md](exchangeinfo-sync-design-20260625.md) | **ExchangeInfo 同步技术选型**：落库触发方/DB/刷新策略/分级白名单/优先级模型 6 项决策权衡分析。配套 `module/binance/SPEC-exchangeinfo-sync.md`。 |
-| [HANDOFF-FOR-CODEX-20260625.md](HANDOFF-FOR-CODEX-20260625.md) | **并发 agent 交接说明**：Draft FR（FR-031~036 禁止执行）、已完成工作、可执行 open issues、依赖交叉、恢复前必做检查。 |
+| [HANDOFF-FOR-CODEX-20260625.md](HANDOFF-FOR-CODEX-20260625.md) | **并发 agent 交接说明**：Draft FR（FR-031~036 禁止执行）、已完成工作、历史 issue ledger（全部 Closed）、依赖交叉、恢复前必做检查。 |
 
 ## 20260622
 
