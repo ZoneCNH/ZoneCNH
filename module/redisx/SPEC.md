@@ -1,8 +1,8 @@
 # redisx 规格
 
 Status: Approved
-- Spec-Version: v1.2.0
-- Last-Updated: 2026-06-19
+- Spec-Version: v1.3.0
+- Last-Updated: 2026-06-26
 - Layer: 基座 · 存储扩展
 - Version: v1.1.0
 - Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `kernel`
@@ -39,7 +39,7 @@ Status: Approved
 | --- | --- | --- |
 | Key 规范 | 提供可校验、可脱敏、可版本化的 KeyBuilder | FR-001 |
 | 客户端生命周期 | 提供 typed Options、New、Close、连接池、超时、TLS 和 kernel 生命周期集成 | FR-002 |
-| KV 与 TTL | 提供 Get/Set/Del/Exists/Expire/TTL 和默认 TTL 策略 | FR-003, FR-004 |
+| KV 与 TTL | 提供 Get/Set/SetNX/Del/Exists/Expire/TTL 和默认 TTL 策略 | FR-003, FR-004, FR-013 |
 | Cache | 提供 cache-aside、null-cache、GetOrLoad、防击穿控制 | FR-005 |
 | Redis 基础结构 | 提供 Hash/List、Pub/Sub、Pipeline 的最小稳定封装 | FR-006, FR-007, FR-008 |
 | 分布式锁 | 提供 token owner、lease、renew、Lua guarded release | FR-009 |
@@ -81,6 +81,7 @@ Status: Approved
 | FR-001 | WHEN 调用 KeyBuilder 基于 namespace/env/service/version/entity/id/purpose 构造 Key；THEN 输出确定性 Key 和脱敏 pattern，并拒绝空 segment、非法字符、超长 segment、直接业务裸 Key。 | AC-001-1: KeyBuilder 覆盖合法 Key、非法 segment、版本化 Key 和脱敏 pattern。 | TC-001 | TASK-REDISX-001 |
 | FR-002 | WHEN 调用 `New(ctx, Options)`；THEN 使用 typed Options 创建 Redis client、连接池、timeout、DB、TLS、Codec 和 kernel 生命周期 hook；WHEN 多次 `Close()`；THEN 幂等释放资源。 | AC-002-1: Options 校验、New、Close、pool 参数和生命周期 hook 有单元或契约测试。 | TC-002 | TASK-REDISX-000 |
 | FR-003 | WHEN 调用 KV `Get`、`Set`、`Del`；THEN 所有调用尊重 context、Codec 和错误映射；missing key 返回 `ErrNotFound`，`Del` 对不存在 Key 幂等。 | AC-003-1: Get/Set/Del 覆盖存在、不存在、序列化失败、context 取消和删除幂等。 | TC-003 | TASK-REDISX-002 |
+| FR-013 | WHEN 调用 `SetNX(ctx, key, value, ttl)`；THEN 仅当 key 不存在时原子设置值并返回 `(true, nil)`；key 已存在时返回 `(false, nil)` 不修改现有值；WHEN `ttl < 0`；THEN 返回 validation error 不访问 Redis。 | AC-013-1: SetNX 覆盖 key 不存在（成功 set）、key 已存在（跳过）、非法 key、负 TTL 拒绝。 | TC-013 | TASK-REDISX-002 |
 | FR-004 | WHEN 调用 `Exists`、`Expire`、`TTL` 或使用默认 TTL 策略；THEN 返回存在数量、更新 TTL、读取 TTL，并对未显式 TTL 的缓存写入应用默认 TTL 与 jitter。 | AC-004-1: Exists/Expire/TTL/default TTL/jitter 均有测试，不允许缓存写入无意永不过期。 | TC-004 | TASK-REDISX-002 |
 | FR-005 | WHEN 调用 `CacheClient.GetOrLoad`、`Set`、`Invalidate`；THEN 支持 cache-aside、null-cache、防击穿单进程合并、TTL jitter 和 Codec 解码失败处理。 | AC-005-1: CacheClient 覆盖 hit、miss、loader error、null-cache、防击穿和 Codec 错误。 | TC-005 | TASK-REDISX-003 |
 | FR-006 | WHEN 调用 Hash/List 最小封装；THEN `HGet/HSet`、`LPush/LRange` 提供稳定语义，missing field/key 返回可识别状态或空结果。 | AC-006-1: Hash/List 覆盖写入、读取、缺失、范围和 context 取消。 | TC-006 | TASK-REDISX-004 |
@@ -170,6 +171,7 @@ type Codec interface {
 type Client interface {
     Get(ctx context.Context, key Key, out any) error
     Set(ctx context.Context, key Key, value any, ttl time.Duration) error
+    SetNX(ctx context.Context, key Key, value any, ttl time.Duration) (bool, error)
     Del(ctx context.Context, keys ...Key) (int64, error)
     Exists(ctx context.Context, keys ...Key) (int64, error)
     Expire(ctx context.Context, key Key, ttl time.Duration) error
@@ -378,6 +380,8 @@ func DefaultConfig() Config {
 | Key segment 为空或含非法字符 | KeyBuilder 返回 `ErrInvalidKey` |
 | Key 超长 | KeyBuilder 拒绝并返回脱敏错误 |
 | `Get` missing key | 返回 `ErrNotFound`，不作为系统错误计数 |
+| `SetNX` key 已存在 | 返回 `(false, nil)` 不修改现有值，不作为错误 |
+| `SetNX` ttl 为负 | 返回 validation error，不访问 Redis |
 | Codec Decode 目标类型错误 | 返回 `ErrSerialization`，不泄露完整 Key |
 | context 已取消 | 不发起或尽快停止 Redis 操作，返回 context 错误 |
 | `Close` 多次调用 | 幂等返回 nil 或稳定 closed 状态 |
@@ -433,6 +437,7 @@ redisx/
 | **TC-001:** | KeyBuilder 合法/非法 segment、版本、pattern | Unit | TASK-REDISX-001 |
 | **TC-002:** | Options、New、Close、pool、lifecycle hook | Unit/Contract | TASK-REDISX-000 |
 | **TC-003:** | Get/Set/Del、ErrNotFound、Codec、context | Unit/Integration | TASK-REDISX-002 |
+| **TC-013:** | SetNX key-不存在成功、key-已存在跳过、非法 key、负 TTL 拒绝 | Unit/Integration | TASK-REDISX-002 |
 | **TC-004:** | Exists/Expire/TTL/default TTL/jitter | Unit/Integration | TASK-REDISX-002 |
 | **TC-005:** | Cache hit/miss/null-cache/GetOrLoad 防击穿 | Unit/Integration | TASK-REDISX-003 |
 | **TC-006:** | Hash/List 写入、读取、缺失和取消 | Integration | TASK-REDISX-004 |
@@ -584,7 +589,7 @@ Rollback 策略：
 
 ## 21. 发布 DoD
 
-- `goal.md`、`SPEC.md`、`TRACEABILITY.md`、10 个 task spec 和 `module/README.md` 的 12 FR、10 BR、4 NFR、10 task 映射一致。
+- `goal.md`、`SPEC.md`、`TRACEABILITY.md`、10 个 task spec 和 `module/README.md` 的 13 FR、10 BR、4 NFR、10 task 映射一致。
 - 每个 FR 至少有 AC、TC、Task，且 task 文件存在。
 - 每个 task spec 引用不超过 3 个 FR，文件 scope 不超过 5 个文件，并包含 Scope、Non-Scope、Test Plan、Done Evidence。
 - 生产代码直接依赖仅限 stdlib、`kernel` 和 Redis client library。
@@ -613,6 +618,7 @@ Open Questions: none blocking.
 
 | 日期 | 版本 | 变更内容 | 作者 |
 | --- | --- | --- | --- |
+| 2026-06-26 | v1.3.0 | 新增 FR-013 SetNX 条件写入文档（binance FR-005/011/017 依赖）；补充 Client interface、边界情况和 TC-013 | ZCode |
 | 2026-06-12 | v1.0.0 | 对齐 12 FR、10 BR、4 NFR、10 个任务和依赖边界 | Codex |
 
 ---

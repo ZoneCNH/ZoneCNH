@@ -128,6 +128,7 @@ Plan008 的 `release_closeable=YES` 只表示 release gate 可关闭；它不自
 | 下游分析域（signal/risk/backtest） | kafkax consumer group 消费 `binance.{product_line}.{event_type}.v1` topic | Kafka |
 | `module/binance/server` | natsx subscribe `binance.market.>` 消费 client 发布的事件 | NATS JetStream |
 | Operator / SRE | client :8081 / server :8082 Gin admin 端点 | HTTP |
+| Admin API（FR-034~035） | `PATCH /api/v1/admin/symbols/` sync tier 热更新、`POST /api/v1/admin/deadletter/replay` DLQ 重投 | HTTP REST |
 | CI Pipeline | BOUNDARY-GATES.md gate 脚本执行边界检查 | — |
 
 ---
@@ -804,9 +805,9 @@ Plan008 的 `release_closeable=YES` 只表示 release gate 可关闭；它不自
 
 ### FR-031~036：ExchangeInfo Synchronization（Draft）
 
-> **弃用声明**：FR-031~036 的行为规范定义于 `module/binance/SPEC-exchangeinfo-sync.md`（v3.7.0-draft，第三轮结构性审查后）。这 6 个 FR 当前为 Draft 状态（不计入 v3.7.0 基线投影），覆盖 exchangeInfo 四产品线发现、定时刷新持久化、sync tier 分级、选择性同步白名单、admin 鉴权加固和 tier-aware 连接拓扑。AC-105~128 / TC-050~067。
+> **弃用声明**：FR-031~036 的行为规范定义于 `module/binance/SPEC-exchangeinfo-sync.md`（v3.7.0-draft，第三轮结构性审查后）。这 6 个 FR 当前为 Draft 状态（不计入 v3.7.0 基线投影），覆盖 exchangeInfo 四产品线发现、定时刷新持久化、sync tier 分级、选择性同步白名单、admin 鉴权加固和 tier-aware 连接拓扑。AC-131~154 / TC-066~083。编号已协调：AC-105~130 / TC-050~065 保留给 Current FR-037~044。
 >
-> FR-031~036 和 FR-037~044 在 TRACEABILITY.md 中共享 AC/TC 编号空间（AC-105~128、TC-050~065）。当 FR-031~036 从 Draft 提升为 Active 时，需协调编号以避免碰撞。
+> FR-031~036（Draft）和 FR-037~044（Current）已协调编号空间：Current 使用 AC-105~130 / TC-050~065，Draft 使用 AC-131~154 / TC-066~083。FR-031~036 从 Draft 提升为 Active 时无需重新编号。
 
 ### FR-037: Release Safety Net（P0 · 来源 S26）
 
@@ -982,8 +983,9 @@ Plan008 的 `release_closeable=YES` 只表示 release gate 可关闭；它不自
 | FR-042 Schema Version Compatibility Policy | AC-122 ~ AC-124 | TC-058 | 单元 + CI（MAJOR terminal reject + MINOR 向后兼容 + 兼容矩阵校验） |
 | FR-043 Cost Observability | AC-125 ~ AC-127 | TC-059 | 集成 + metrics（存储容量/带宽/分摊指标 + Prometheus 告警规则） |
 | FR-044 Data Compliance & Destruction | AC-128 ~ AC-130 | TC-060, TC-061 | 单元 + 审计（数据分类标注 + 合规保留期 + 销毁证明 + 血缘文档） |
+| FR-031~036（Draft） | AC-131 ~ AC-154 | TC-066 ~ TC-083 | 定义于 `SPEC-exchangeinfo-sync.md`；Draft 状态不计入当前基线投影 |
 
-**AC 总数**：130（AC-001 ~ AC-130）· **TC 总数**：65（TC-001 ~ TC-065，全覆盖 FR-001~044，含 FR-012~030 的 TC-043~049 + FR-037~044 的 TC-050~065）· **追溯登记覆盖率**：100%（FR→AC→TC 全链路已登记；实现通过率见 TRACEABILITY.md §6）
+**AC 总数**：130（AC-001 ~ AC-130）· **TC 总数**：65（TC-001 ~ TC-065，全覆盖 FR-001~044，含 FR-012~030 的 TC-043~049 + FR-037~044 的 TC-050~065）· Draft 预留 AC-131~154 / TC-066~083 · **追溯登记覆盖率**：100%（FR→AC→TC 全链路已登记；实现通过率见 TRACEABILITY.md §6）
 
 > AC 完整描述（验收标准文本）单点维护于 `TRACEABILITY.md §5`。本表只做 SPEC ↔ Traceability 双向锚点，遵循 `~/.claude/rules/ecc/matrix-scoring-rules.md §R1 跨表走查` 原则。
 
@@ -1386,6 +1388,20 @@ server_unavailable
 | `observability.log.level` | `string` | `info` | 日志级别（debug/info/warn/error） |
 | `observability.log.format` | `string` | `json` | 日志格式（json/text） |
 
+#### 11.2.10 操作任务（Backfill / Reconciliation / Rehydration）
+
+| 配置键 | 类型 | 默认值 | 说明 |
+|--------|------|--------|------|
+| `backfill.max_concurrent` | `int` | `4` | 全局并发回填任务上限（FR-019 Resource Cap） |
+| `backfill.per_instrument_cap` | `int` | `10` | 单 instrument 并发回填上限 |
+| `backfill.cold_start_priority` | `float` | `0.8` | cold_start 令牌桶权重（FR-025 Priority） |
+| `backfill.repair_priority` | `float` | `0.2` | repair 令牌桶权重；cold_start+repair=1.0 |
+| `backfill.token_rate` | `int` | `100` | 令牌桶填充速率（tokens/s） |
+| `reconciliation.schedule` | `string` | `0 4 * * *` | 对账 cron 表达式（FR-026，默认 04:00 UTC） |
+| `reconciliation.tolerance_pct` | `float` | `0.01` | 对账差异容忍百分比（超出写入 alerts 表） |
+| `rehydration.ttl` | `duration` | `24h` | 冷数据回热 OSS 签名 URL TTL（FR-027） |
+| `rehydration.oss_bucket` | `string` | `` | 回热源 OSS bucket（默认使用 ossx bucket） |
+
 ### 11.3 环境变量清单（Secrets）
 
 > **Security**：所有密码/Token/API Key/Secret 仅通过环境变量注入。配置文件不包含明文凭据。禁止在 logs 和 admin/debug 端点暴露。CI gitleaks 门禁强制执行。
@@ -1446,6 +1462,11 @@ server_unavailable
 | 无效 symbol | parser 收到未知 format 的 symbol | 返回结构化 `ErrInvalidSymbol`，不产生 canonical event |
 | 产品线禁用 | 配置中 product line 未启用 | connector 不订阅该 product line 的 stream |
 | `kafkax` fanout 持续失败 | `kafkax` 不可用 | 指数退避重试，超过阈值告警，不丢失已 accepted event |
+| 回填请求与在途回填重叠 | 同一 product_line:time_range 已存在活跃 cold_start/repair | server 拒绝重复回填，返回 `ErrBackfillOverlap`，不创建重复 job |
+| Stream drain 超时 | drain 期间超过 DrainTimeout 仍有未确认消息 | 记录告警，强制 unsubscribe，剩余消息进入 DLQ |
+| 冷数据 rehydration TTL 过期 | OSS 归档键超过 24h TTL | 返回 `ErrRehydrationExpired`，要求重新发起回填请求 |
+| Schema 版本漂移检测 | server DDL 与 SPEC §11 声明的 schema 不一致 | `check-version-drift.sh` 在 CI 中检测漂移，CI FAIL 阻断 PR |
+| 对账差异超出 tolerance | Daily Reconciliation Job 检测到 `count` 或 `checksum` 差异 > tolerance | 写入 `alerts` 表，触发 Prometheus 告警，保留差异行供人工对账 |
 
 ---
 
@@ -1785,7 +1806,7 @@ github.com/ZoneCNH/binance/
 
 ## 22. Release DoD
 
-`module/binance` 当前发布完成标准：
+`module/binance` 当前发布完成标准（覆盖 38 FR：FR-001~030 Current + FR-031~036 Draft + FR-037~044 Current）：
 
 - [x] `binance-market` references 已移除或隔离到 migration history（BR-001）
 - [x] `module/binance/client` 和 `module/binance/server` specs 完成并通过 spec-lint（即 `docs/governance/scoring/RUBRIC-spec.md` 结构评分门禁）
