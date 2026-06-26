@@ -99,10 +99,19 @@ grep -r "v{OLD}" module/{name}/ README.md ARCHITECTURE.md STATUS.md \
 **0.6 — 最终验证（阻断条件）：** 对全仓库执行最终 grep，确认旧版本号或旧模块名仅在明确标记为历史/弃用/归档的上下文中出现。零残留引用方可通过。
 
 ```bash
+# 范围 A：本模块文档 + 锚点文档
 grep -r "v{OLD}" /home/ZoneCNH/module/{name}/ /home/ZoneCNH/README.md /home/ZoneCNH/ARCHITECTURE.md \
   /home/ZoneCNH/STATUS.md /home/ZoneCNH/module/README.md /home/ZoneCNH/docs/architecture/ \
   --include="*.md" | grep -v CHANGELOG | grep -v "弃用" | grep -v "历史" | grep -v "archive"
 # 零输出 = 通过。
+
+# 范围 B：依赖模块的反向引用（本模块的旧版本号是否残留在依赖模块的 SPEC 中）
+grep -r "v{OLD}" /home/ZoneCNH/module/natsx/ /home/ZoneCNH/module/kafkax/ \
+  /home/ZoneCNH/module/redisx/ /home/ZoneCNH/module/taosx/ /home/ZoneCNH/module/postgresx/ \
+  /home/ZoneCNH/module/clickhousex/ /home/ZoneCNH/module/ossx/ \
+  --include="*.md" 2>/dev/null | grep -i "binance\|{name}"
+# 若存在命中：依赖模块的 SPEC 引用了本模块的旧版本号。需 PR 到对应模块仓库或记录为已知漂移。
+# 若零输出：依赖模块中无过时引用。
 ```
 
 **0.7 — 仓库版本升级：** 运行 `./scripts/version-bump.sh --level minor`（仓库 release manifest），以使得锚点文档版本与 SPEC 版本保持同步。
@@ -133,11 +142,18 @@ grep -r "v{OLD}" /home/ZoneCNH/module/{name}/ /home/ZoneCNH/README.md /home/Zone
 - 规范中使用的错误码是否与代码中的错误常量不冲突
 - 若存在差异，必须在规范的 `> 注` 行中标记，或将其标注为 `[待确认]`。不得在规范与已验证的运行时代码之间制造无声分歧。
 
-**2.5b — 依赖契约验证：** 对于被 FR 调用的每个 Foundation 模块（natsx、kafkax、redisx、taosx、postgresx、clickhousex、ossx 等）：
+**2.5b — 依赖契约验证（双向）：** 对于被 FR 调用的每个 Foundation 模块（natsx、kafkax、redisx、taosx、postgresx、clickhousex、ossx 等）：
 
+**正向验证（被调用方法是否存在？）**
 - 检查该依赖模块的 SPEC.md，确认被调用的方法签名存在于其公共 API 契约中（例如：`Send(ctx, topic, key, value)` 是否存在于 kafkax？`WriteBatch` 是否存在于 taosx？）
 - 若某个方法在其 SPEC.md 中不存在，将其标记为已知缺口——不得假定该依赖模块提供了其 SPEC.md 未定义的方法
 - 将已确认存在的缺口（例如：redisx 无 SetNX、taosx 无 DeleteRange）记录在变更日志和开放问题中
+
+**反向验证（依赖模块引用本模块时，版本是否过时？）**
+- 在每个依赖模块的 SPEC.md 中 grep 本模块名称（如 `binance`），检查是否存在包含本模块旧 SPEC 版本号的引用
+- 若依赖模块的 SPEC.md 中写入了 `binance v3.5.0` 或 `binance spec v3.6.0`，则本模块 SPEC 版本升级后该引用即已过时
+- 过时引用必须标注为交叉仓库缺口——修复需要 PR 到依赖模块仓库，或接受版本漂移并记录在案
+- 示例：natsx SPEC.md 引用了 `binance.market.{product_line}.{event_type}` subject（稳定契约，不含版本号）——不会漂移。若未来任何依赖模块的 SPEC 中包含版本化的 binance 引用，则必须在此步骤中进行标记。
 
 ### Step 3：编写 Spec
 
