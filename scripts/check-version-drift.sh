@@ -94,6 +94,16 @@ for DEP in $RELATED; do
     fi
 done
 
+# ── 范围 F: plans/ 和 report/ ──
+# 这些属于活跃编辑文档，但其版本引用通常属于历史上下文，而非过时元数据。
+# 若发现命中，仅告警（不标记为失败），提示人工复核。
+PLAN_STALE=$(grep -rn "v$OLD_VERSION" "$ROOT/plans/" "$ROOT/report/" --include="*.md" 2>/dev/null | \
+    grep -i "$MODULE" | grep -v "弃用" | grep -v "历史" | grep -v "draft" | grep -v "archive" || true)
+if [ -n "$PLAN_STALE" ]; then
+    echo "WARN: plans/ 或 report/ 中发现 $OLD_VERSION 引用（仅告警，需人工复核）:"
+    echo "$PLAN_STALE"
+fi
+
 echo ""
 if [ "$FAILED" -eq 1 ]; then
     echo "--- DRIFT DETECTED: 请将以上过时引用更新为 v$NEW_VERSION 后重新提交 ---"
