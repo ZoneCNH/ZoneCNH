@@ -75,7 +75,7 @@
 | FR-022 | Event-Type Governance Matrix：R2 120-cell matrix 锁定 event/product/governance 覆盖面 | AC-078 ~ AC-080 | TC-039 | ROOT-008 | Done |
 | FR-023 | Release Evidence Bundle：local/CI/live/release evidence 分层归档且不可互相替代 | AC-081 ~ AC-083 | TC-040, TC-041 | ROOT-009 | Partial |
 | FR-024 | Runtime Config Hot Reload：`POST /api/v1/admin/symbols/reload` 重载目录并应用 stream diff | AC-084 ~ AC-086 | TC-042 | CLIENT-019 | Partial |
-| FR-025 | Backfill Throttle & Priority：token bucket weight 限流 + 80/20 配额 + trade>bar>tick 优先级 | AC-087 ~ AC-089 | TC-043 | SERVER-022 | Done |
+| FR-025 | Backfill Throttle & Priority：token bucket weight 限流 + 80/20 配额（cold_start 80% / repair 20%） | AC-087 ~ AC-089 | TC-043 | SERVER-022 | Done |
 | FR-026 | Daily Reconciliation Job：04:00 UTC 对账 taosx vs Binance klines + tolerance 0.01% + alerts 表 | AC-090 ~ AC-092 | TC-044 | SERVER-023 | Partial |
 | FR-027 | Cold Data Rehydration：OSS→taosx 回热 24h TTL + 202 job_id + 轮询 | AC-093 ~ AC-095 | TC-045 | SERVER-024 | Partial |
 | FR-028 | Backfill Progress API：jobs 列表 + coverage 时间戳 + 诊断字段 | AC-096 ~ AC-098 | TC-046 | SERVER-025 | Partial |
