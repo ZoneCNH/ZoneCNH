@@ -32,9 +32,17 @@ Step 0 → 1 → 2 → 2.5 → 3 → 4 → 5 → 0(再次) → 6
 
 **0.1 — 若 Spec-Version 升级，使用以下两个模式更新每一个文件：**
 
+**写入 sed 前强制验证：** 在运行 sed 之前，列出模块目录中实际存在的所有格式。每种格式均必须被下面的某个 sed 行捕获。
+
+```bash
+grep -r "Module-Version" module/{name}/*.md | grep -oP 'Module-Version[:|].*v[0-9.]*' | sort -u
+# Module-Version: v3.6.0          ← sed 第 1 行捕获
+# | Module-Version | v3.6.0 |     ← sed 第 2 行捕获
+# 若出现第三种格式，先扩展 sed，再执行。
+```
+
 ```bash
 # 模式 A：module/{name}/ 下所有治理文档中的 Module-Version 元数据字段
-# 同时捕获冒号格式 (Module-Version: vX.Y.Z) 和管道格式 (| Module-Version | vX.Y.Z |)
 grep -rl "Module-Version" module/{name}/*.md | xargs sed -i \
   -e 's/Module-Version: v[0-9.]*/Module-Version: v{NEW}/g' \
   -e 's/| Module-Version | v[0-9.]* |/| Module-Version | v{NEW} |/g'
