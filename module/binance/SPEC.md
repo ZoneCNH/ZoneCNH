@@ -3,12 +3,12 @@
 ## 1. Metadata
 
 - Status: Approved
-- Spec-Version: v3.6.0
-- Last-Updated: 2026-06-25 (v3.6.0: TRACEABILITY FR 状态刷新为 19 Done / 11 Partial，引入 main.go 装配级证据标准，对齐 runtime HEAD `e02b190`；Plan007 A1~A10 + B1~B8 已执行；v3.6.1/Plan008 投影已对齐 Runtime-Anchor `/home/binance@f18a329`、Release `v0.2.0`、workflow `28126779885`、`release_closeable=YES`)
+- Spec-Version: v3.7.0
+- Last-Updated: 2026-06-26 (v3.7.0: 新增 FR-037~044 覆盖发布安全网/taosx retention 生命周期/分布式 tracing/资源配额隔离/审计日志完整性/Schema 版本兼容策略/成本可观测/数据合规销毁；扩展 §11 DDL 契约、§16 TC-050~065、§17 NFR 预算、§18 OpenTelemetry tracing、§19 审计与凭证轮转、§20 部署健康门禁、§21 SchemaVersion 语义化策略；对齐 Runtime-Anchor `/home/binance@f046e16`；Plans/Reports 35 项缺口全闭合)
 - Owner: ZoneCNH
 - Layer: 数据域 · 行情
 - Runtime-Version: v0.2.0
-- Runtime-HEAD: `f18a329` (short Runtime-Anchor for `v0.2.0` release; Plan008 final closeout)
+- Runtime-HEAD: `f046e16` (Plan008 全部 40 Task 代码实现；PR #145 合并)
 - Repository: [github.com/ZoneCNH/binance](https://github.com/ZoneCNH/binance)
 - Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md), `module/domain_market`, `module/natsx`, `module/redisx`, `module/taosx`, `module/kafkax`, `module/ossx`, `module/postgresx`, `module/clickhousex`
 
@@ -241,6 +241,24 @@ Binance 行情集成面临以下问题：
 **WHEN** `ossx` 写入或校验失败
 **THEN** 保留 `taosx` 热数据并告警；不得删除源数据
 
+#### FR-006e: taosx Data Retention Lifecycle
+
+**功能描述**：对 taosx 热数据执行主动删除生命周期管理。与 FR-006d（OSS 归档）协同——先归档校验通过，后删热数据。对应 Plan008 G6 缺口 + S1/S2 标准化要求。
+
+**WHEN** retention scheduler 触发（默认每日 03:00 UTC，与 OSS 归档错开 1h）
+**THEN** 扫描 `taosx` 中超过 retention cutoff 的 tick（30d）、trade（30d）、depth（3d）、bar（90d）
+**AND** 逐批校验对应数据已在 OSS 归档且 ETag/ChecksumHex 通过（FR-006d）
+**AND** 调用 `taosx.DeleteRange(ctx, table, before)` 删除已验证的热数据分片
+
+**WHEN** OSS 归档未完成或 ETag 校验未通过
+**THEN** 跳过该批次删除；保留 taosx 热数据；写入 `binance_reconciliation_alerts` 表告警
+
+**WHEN** taosx DeleteRange 失败
+**THEN** 记录 error 日志；写入 alerts 表；下个调度周期自动重试
+
+**WHEN** taosx DB 级 KEEP 配置缺失
+**THEN** 启动时通过 `ALTER DATABASE market_binance KEEP 365` 确保 DB 级保留策略（DDL 层兜底）
+
 ### FR-007: Gin Market API
 
 **功能描述**：server 暴露 Gin REST market API，供 `market_data` 主动拉取 Binance-specific facts。实时查询走 redisx 热缓存，历史查询走 taosx 时序存储，分析查询走 clickhousex。
@@ -361,8 +379,132 @@ Binance 行情集成面临以下问题：
 **WHEN** 持锁实例正常关闭
 **THEN** 调用 `redisx.Del(ctx, "lock:binance:coordinator")` 主动释放锁
 
----
+### FR-037: Release Safety Net（P0 · 来源 S26）
 
+**功能描述**：建立发布安全网机制，确保新功能灰度上线、异常自动回滚。覆盖 feature flag、canary 部署、健康门禁和回滚 runbook。
+
+**WHEN** 新功能（如 FR-031~036 架构变更）准备上线
+**THEN** 通过环境变量 `XGO_BINANCE_FEATURE_{name}=on/off` 控制运行时开关，默认关闭
+**AND** 仅在 feature flag 开启 + canary 实例验证通过后才全量推送
+
+**WHEN** canary 实例部署完成
+**THEN** 部署工作流自动检查 `/readyz` + 错误率（5xx ratio < 1%）+ 延迟（P99 < 基线 × 1.5）
+**AND** 任意检查不达标 → 自动回滚（`kubectl rollout undo` 或等价机制）
+
+**WHEN** 回滚触发
+**THEN** 记录回滚事件到审计日志（FR-041）；通知 on-call；保留回滚前 artifact 至少 72h
+
+**WHEN** 未配置 feature flag 的新代码路径被调用
+**THEN** 默认关闭；返回 "feature not enabled" 而非静默执行
+
+### FR-038: taosx Data Retention Lifecycle（P0 · 来源 G6/S1/S2）
+
+**功能描述**：对 taosx 热数据执行主动删除生命周期管理。与 FR-006d（OSS 归档）严格协同——先归档校验通过，后删热数据。FR-006e 已在 §7 FR-006 扩展中定义（taosx Data Retention Lifecycle），本条为 Plan008 要求的 P0 独立 FR 完整规格。
+
+> 注：FR-006e 的完整 WHEN/THEN 规格已在 FR-006d 之后定义。本条 FR-038 是对应追溯矩阵的独立编号锚点，避免 G6 缺口在 TRACEABILITY 中无独立 FR 行。详细验收标准见 AC-108~111 / TC-051~052。
+
+### FR-039: Distributed Tracing — OpenTelemetry（P1 · 来源 S28）
+
+**功能描述**：引入 OpenTelemetry SDK，为 client→NATS→server→Kafka 全链路提供分布式追踪能力，补全可观测性三支柱（metrics + logs + traces）。
+
+**WHEN** client 收到原始 Binance 事件
+**THEN** 创建 root span `binance.client.normalize` 并注入 trace context（`traceparent` header）
+**AND** 后续 normalize → map → publish 各阶段创建 child span
+
+**WHEN** client 调用 `js.Publish(subj, payload)`
+**THEN** 通过 NATS header 传播 `traceparent`（W3C Trace Context 格式）
+
+**WHEN** server consumer 收到消息
+**THEN** 从 NATS header 提取 `traceparent`，创建 `binance.server.consume` span
+**AND** validate → idempotency → store → kafkax dispatch 各阶段创建 child span
+
+**WHEN** kafkax.Send 被调用
+**THEN** 通过 Kafka header 传播 `traceparent` + `binance-trace-id`，供下游分析域消费者串联
+
+**WHEN** 追踪采样
+**THEN** 通过 `observability.tracing.sample_rate`（默认 0.1）控制；`/debug/pprof` 和 admin 端点强制 100% 采样
+
+**WHEN** slog 日志输出
+**THEN** 自动注入 `trace_id` 和 `span_id` 结构化字段，与 Span 关联
+
+### FR-040: Resource Quota & Isolation（P1 · 来源 S29）
+
+**功能描述**：在多消费者/多产品线场景下实现资源隔离，防止单消费者/单产品线故障拖垮全局。
+
+**WHEN** 多个分析域 consumer group（signal/risk/backtest/market_regime）消费 Kafka
+**THEN** 为每个 consumer group 配置独立配额（max.poll.records + max.partition.fetch.bytes）
+**AND** 单 group 超配额时限流而非抢占其他 group 资源
+
+**WHEN** client 同时连接四产品线
+**THEN** 每个产品线使用独立 WS 连接池（spot/um/cm/options 各 3 连接）
+**AND** 单产品线连接异常（如 options 到期峰值）不影响其他产品线采集
+**AND** 各产品线独立 retry budget，互不抢占
+
+**WHEN** 请求 Gin REST API（`GET /api/v1/analytics/*`）
+**THEN** 通过 redisx 实现 per-caller（API key）限流，而非全局 1000 req/min
+**AND** ClickHouse 查询设 `max_execution_time`（默认 30s）+ `max_concurrent_queries`（默认 4）
+
+### FR-041: Audit Log Completeness（P1 · 来源 S30/S33）
+
+**功能描述**：将所有 admin 写操作、数据生命周期事件纳入不可篡改的审计日志，满足金融数据合规审计要求。
+
+**WHEN** 调用 `POST /api/v1/admin/*` 写操作（symbol reload、backfill trigger、retention override 等）
+**THEN** 记录审计事件到 `binance_admin_audit` 表（actor、action、before、after、timestamp、client_ip）
+**AND** 鉴权通过后才允许执行（FR-035 admin auth hardening）
+
+**WHEN** 数据生命周期事件发生（retention 删除、reconcile 差异 >0.01%、rehydrate 触发、DLQ 入队）
+**THEN** 写入 `binance_lifecycle_audit` 表（event_type、affected_range、row_count、trigger、timestamp）
+
+**WHEN** audit_log 表创建
+**THEN** 设 `REVOKE UPDATE, DELETE ON audit_log FROM public`（append-only）
+**AND** 审计日志保留期 ≥ 1 年；超期归档 OSS（`binance/audit/{YYYY}/{MM}/audit.parquet`）
+
+### FR-042: Schema Version Compatibility Policy（P1 · 来源 S27）
+
+**功能描述**：定义 `SchemaVersion` 语义化规则与兼容策略，确保 client/server 升级时数据格式向后兼容。
+
+**WHEN** `SchemaVersion` 字段被定义
+**THEN** 采用 `MAJOR.MINOR` 格式（如 `v1.0`）
+**AND** MAJOR 变更 = 破坏性（字段删除/重命名/类型变更）；MINOR 变更 = 向后兼容（新增字段，旧 consumer 忽略）
+
+**WHEN** server 收到未知 MAJOR 版本的 `SchemaVersion`
+**THEN** 执行 terminal reject（返回 `BNC-014 ErrSchemaVersionIncompatible`），不尝试解析
+**AND** 写入告警日志 + metrics counter `binance_server_schema_reject_total`
+
+**WHEN** server 收到已知 MAJOR + 更高 MINOR 版本
+**THEN** 忽略未知字段（向后兼容），正常处理
+
+**WHEN** 新增 MINOR 版本字段
+**THEN** 在 `postgresx` 的 `binance_schema_versions` 表登记（version、fields_added、compatible_since、deprecated_at）
+
+### FR-043: Cost Observability（P2 · 来源 S31）
+
+**功能描述**：对 infra 资源成本进行可观测性度量，支持 per-product-line 分摊与预算告警。
+
+**WHEN** 存储层写入数据（taosx/clickhousex/ossx/postgresx/redisx）
+**THEN** 暴露 Prometheus 指标：`binance_storage_bytes_total{store,product_line}` + `binance_storage_bytes_per_hour{store,product_line}`
+
+**WHEN** 带宽消耗（NATS/Kafka/Binance WS）
+**THEN** 暴露 `binance_bandwidth_bytes_total{direction,product_line}` 指标
+
+**WHEN** 存储容量或带宽超过预算阈值
+**THEN** 触发 Prometheus AlertManager 告警 → on-call 通知
+
+### FR-044: Data Compliance & Destruction（P2 · 来源 S32）
+
+**功能描述**：确保数据分类、合规保留与可证明销毁，满足数据治理合规要求。
+
+**WHEN** 数据首次写入
+**THEN** 按以下分类标注 `data_classification`：`market_public`（公开行情）、`market_derived`（衍生指标）、`operational`（运维数据）、`audit`（审计日志）
+
+**WHEN** 合规保留期到达（`market_public` 7y / `market_derived` 3y / `operational` 1y / `audit` 7y）
+**THEN** 执行不可逆销毁（OSS 对象删除 + taosx DROP STABLE + postgresx DELETE）
+**AND** 生成销毁证明（`certificate_of_destruction` JSON，含 date、data_class、row_count、byte_count、executor）
+
+**WHEN** 销毁操作执行
+**THEN** 写入 audit_log（FR-041）；销毁证明归档 OSS `binance/certificates/{YYYY}/`
+
+---
 ### FR → AC 映射索引
 
 > 本表显式锚定 SPEC.md 内的 FR 与 `TRACEABILITY.md §5 AC 注册表` 的映射，消除"SPEC 内 grep AC- 为 0"的单点漂移风险。AC 详细描述见 `TRACEABILITY.md §5`，TC 覆盖见 `TRACEABILITY.md §4`。
@@ -403,8 +545,16 @@ Binance 行情集成面临以下问题：
 | FR-028 Backfill Progress API | AC-096 ~ AC-098 | TC-046 | httptest（jobs 列表 + coverage 时间戳 + 诊断字段） |
 | FR-029 Data Quality & Freshness SLA | AC-099 ~ AC-101 | TC-047 | 集成 + metrics（freshness SLA + stale alert + schema drift） |
 | FR-030 Options Chain Raw Field Pass-through | AC-102 ~ AC-104 | TC-048, TC-049 | 单元 + 契约测试（Options 原始字段透传，Greeks 归分析域） |
+| FR-037 Release Safety Net | AC-105 ~ AC-107 | TC-050 | 集成 + CI（feature flag 开启/关闭 + canary 健康门禁 + 回滚验证） |
+| FR-038 taosx Data Retention Lifecycle | AC-108 ~ AC-111 | TC-051, TC-052 | 集成（定时 DELETE + OSS ETag 前置校验 + 删除审计 + DB KEEP） |
+| FR-039 Distributed Tracing (OpenTelemetry) | AC-112 ~ AC-114 | TC-053 | 集成（Span 埋点 + traceparent header 传播 NATS/Kafka + slog trace_id 关联） |
+| FR-040 Resource Quota & Isolation | AC-115 ~ AC-118 | TC-054, TC-055 | 集成 + CI（Kafka quota + WS 连接池隔离 + API per-caller 限流 + CH 查询超时） |
+| FR-041 Audit Log Completeness | AC-119 ~ AC-121 | TC-056, TC-057 | 单元 + CI（admin 写审计 + append-only REVOKE + 保留期验证 + OSS 归档） |
+| FR-042 Schema Version Compatibility Policy | AC-122 ~ AC-124 | TC-058 | 单元 + CI（MAJOR terminal reject + MINOR 向后兼容 + 兼容矩阵校验） |
+| FR-043 Cost Observability | AC-125 ~ AC-127 | TC-059 | 集成 + metrics（存储容量/带宽/分摊指标 + Prometheus 告警规则） |
+| FR-044 Data Compliance & Destruction | AC-128 ~ AC-130 | TC-060, TC-061 | 单元 + 审计（数据分类标注 + 合规保留期 + 销毁证明 + 血缘文档） |
 
-**AC 总数**：104（AC-001 ~ AC-104）· **TC 总数**：49（TC-001 ~ TC-049）· **追溯登记覆盖率**：100%（FR→AC→TC 全链路已登记；实现通过率见 TRACEABILITY.md §6，截至 2026-06-23 多数 FR 仍为 Pending）
+**AC 总数**：130（AC-001 ~ AC-130）· **TC 总数**：61（TC-001 ~ TC-065，含 FR-037~044 的 TC-050~061 + 附加 TC-062~065）· **追溯登记覆盖率**：100%（FR→AC→TC 全链路已登记；实现通过率见 TRACEABILITY.md §6）
 
 > AC 完整描述（验收标准文本）单点维护于 `TRACEABILITY.md §5`。本表只做 SPEC ↔ Traceability 双向锚点，遵循 `~/.claude/rules/ecc/matrix-scoring-rules.md §R1 跨表走查` 原则。
 
@@ -742,6 +892,13 @@ server_unavailable
 | `clickhouse.etl.batch_rows` | `int` | `50000` | ETL 每批行数 |
 | `clickhouse.etl.aggregations` | `[]string` | `["1m_ohlcv","5m_vwap","15m_stats"]` | 预计算聚合类型 |
 
+> **生产 DDL 契约（P0 · 来源 S3/S4）**：生产部署必须满足以下 ClickHouse DDL 要求：
+> - **引擎**：三张业务表（`binance_tick_olap`、`binance_bar_olap`、`binance_trade_olap`）必须使用 `ENGINE = ReplicatedMergeTree('/clickhouse/tables/{shard}/market_binance/{table}', '{replica}')`（S3）
+> - **TTL**：每表含 `TTL bucket + INTERVAL 730 DAY` 过期表达式（S4）
+> - **分区**：`PARTITION BY toYYYYMM(bucket)` + `ORDER BY (product_line, symbol, bucket)`
+> - **幂等**：ETL 写入使用 `ReplacingMergeTree` 或先删后写，确保 ETL 重试不产生重复行（S14）
+> - **验证**：启动时通过 `SELECT engine FROM system.tables WHERE database='market_binance'` 校验引擎类型；不符合则 fail-fast 并记录错误日志
+
 > ClickHouse v26.5.2.39 已部署（host=xhypers，port=9000/8123）。`market_binance` 业务库待建表（通过 clickhousex.Exec DDL）。clickhousex 是 taosx 的 OLAP 互补层：taosx 负责高频时序写入，clickhousex 负责跨符号聚合、多维分析、因子回看查询。
 
 #### 11.2.6 kafkax
@@ -756,6 +913,12 @@ server_unavailable
 | `kafka.compression` | `string` | `snappy` | 消息压缩算法 |
 | `kafka.retry.max` | `int` | `3` | 发送失败最大重试次数 |
 | `kafka.required_acks` | `string` | `all` | 生产者 ACK 级别 |
+
+> **DLQ/Retry Topic 模式（P0 · 来源 S6）**：生产部署必须建立死信队列：
+> - **DLQ Topic**：`binance.{product_line}.{event_type}.v1.dlq` — 消费重试耗尽（MaxDeliver=5）后消息路由至此
+> - **Retry Topic**：`binance.{product_line}.{event_type}.v1.retry` — 临时重试消息（NakWithDelay 使用原 topic redelivery，不使用独立 retry topic）
+> - **DLQ 保留策略**：`retention.ms=2592000000`（30 天），`cleanup.policy=delete`
+> - **DLQ 消费**：admin endpoint `POST /api/v1/admin/deadletter/replay` 读取 JSONL 重投（FR-004/FR-041 审计）
 
 #### 11.2.7 ossx
 
@@ -833,6 +996,9 @@ server_unavailable
 | `ErrPostgresUnavailable` | postgresx catalog 查询或 upsert 不可达 | 指数退避重试；超过阈值告警 | `BNC-011` |
 | `ErrOssUploadFailed` | ossx 归档上传失败 | 保留 taosx 热数据；告警；下个调度周期自动重试 | `BNC-012` |
 | `ErrClickhouseUnavailable` | clickhousex ETL 写入或 analytics 查询不可达 | analytics API 返回 503；ETL 跳过本批次；实时 API 不受影响 | `BNC-013` |
+| `ErrSchemaVersionIncompatible` | server 收到未知 MAJOR SchemaVersion | terminal reject；写入告警日志 + metrics counter | `BNC-014` |
+| `ErrDataRetentionDeleteFailed` | taosx retention 删除失败 | 保留热数据；写入 alerts 表；下周期重试 | `BNC-015` |
+| `ErrAuditLogWriteFailed` | 审计日志写入失败 | 阻塞当前操作（审计失败不可静默）；告警 | `BNC-016` |
 
 ---
 
@@ -981,6 +1147,22 @@ github.com/ZoneCNH/binance/
 | TC-040 | FR-023 | 证据归档 | local/CI/live evidence bundle | local 与 remote CI/live 证据分层归档，不能互相替代 |
 | TC-041 | FR-023 | release gate | release tag/changelog/evidence consistency | release tag、CHANGELOG、CI URL、evidence bundle 一致 |
 | TC-042 | FR-024 | 集成 + httptest | `POST /api/v1/admin/symbols/reload` catalog reload | endpoint 验证通过，并证明 active stream add/remove 无进程重启 |
+| TC-050 | FR-037 | 集成 + CI | feature flag 开启与关闭 | `XGO_BINANCE_FEATURE_xxx=on` → 代码路径激活；`=off` → 返回 "feature not enabled" |
+| TC-051 | FR-038 | 单元 | taosx retention 删除逻辑 | 过期 tick(>30d) 在 OSS ETag 校验通过后被 DeleteRange 删除 |
+| TC-052 | FR-038 | 集成 | OSS 未归档时删除被阻止 | OSS ETag 缺失 → 跳过删除 → alerts 表有记录 |
+| TC-053 | FR-039 | 集成 | OpenTelemetry trace context 传播 | NATS msg header 含 `traceparent`；Kafka record header 含 `traceparent` + `binance-trace-id` |
+| TC-054 | FR-040 | 单元 | per-consumer-group Kafka quota | 单 group 超 quota 时限流，其他 group 不受影响 |
+| TC-055 | FR-040 | 集成 | per-product-line WS 连接池隔离 | spot 连接断开不影响 um/cm/options 采集 |
+| TC-056 | FR-041 | 单元 | admin 写操作审计 | `POST /api/v1/admin/symbols/reload` → audit_log INSERT（actor/action/before/after） |
+| TC-057 | FR-041 | CI | audit_log append-only | 验证 `REVOKE UPDATE, DELETE ON audit_log FROM public` 生效 |
+| TC-058 | FR-042 | 单元 | MAJOR 版本 terminal reject | SchemaVersion `v2.0`（未知 MAJOR）→ `BNC-014` reject |
+| TC-059 | FR-043 | 集成 + metrics | 存储容量指标 | Prometheus `binance_storage_bytes_total{store,product_line}` 有值 |
+| TC-060 | FR-044 | 单元 | 数据合规分类 | 写入时 `data_classification` 字段非空且合法 |
+| TC-061 | FR-044 | 审计 | 销毁证明生成 | `certificate_of_destruction` JSON 含 date/data_class/row_count/byte_count/executor |
+| TC-062 | FR-037 | CI | 健康门禁自动化 | canary → `/readyz` 检查 + 错误率 <1% → promote；失败 → rollback |
+| TC-063 | FR-039 | 单元 | slog trace_id 关联 | 日志行 JSON 含 `trace_id` + `span_id` 字段 |
+| TC-064 | FR-040 | 单元 | ClickHouse 查询超时 | `max_execution_time=30s` 超限 → 503 "query timeout" |
+| TC-065 | FR-041 | 单元 | 数据生命周期审计 | retention delete 后 `binance_lifecycle_audit` 表有新行 |
 
 ### Test Tools
 
@@ -1018,6 +1200,11 @@ github.com/ZoneCNH/binance/
 | End-to-end freshness (event_time → taosx persist) | 延迟 P99 | < 200ms | integration test（FR-029） |
 | End-to-end freshness (event_time → kafkax fanout) | 延迟 P99 | < 300ms | integration test（FR-029） |
 | Stale alert threshold (无新事件) | 超时 | spot/um_perp/cm_perp 30s，options 60s | observability alert（FR-029） |
+| OpenTelemetry tracing overhead | 延迟增加 | < 5% | `go test -bench` 对比 trace on/off |
+| ClickHouse analytics query timeout | 超时 | 30s | integration test（FR-040） |
+| OSS cold data rehydrate throughput | 吞吐量 | ≥ 10 MB/s per symbol | integration test（FR-027） |
+| taosx retention DELETE batch（1000 rows） | 延迟 P99 | < 100ms | integration test（FR-038） |
+| Schema version check（reject path） | 延迟 P99 | < 10μs | `go test -bench`（FR-042） |
 
 > [COMPUTED, HIGH] §17 原 P99 指标均为单环节延迟；FR-029 新增端到端 freshness SLA（event_time → persist/fanout）与 stale alert 阈值，覆盖单环节指标无法表达的"数据链路整体滞后"与"断流"两类数据质量风险。schema 漂移检测（字段增删/类型变更）由 CI gate 在 parser 单测层守门，不在此表。
 
@@ -1057,15 +1244,26 @@ github.com/ZoneCNH/binance/
 
 ### Tracing
 
-| Span 名 | 说明 |
-|---------|------|
-| `binance.client.normalize` | 原始事件规范化 |
-| `binance.client.map` | 映射为 canonical event |
-| `binance.client.publish` | natsx JetStream 发布 |
-| `binance.client.puback_wait` | 等待 PubAck |
-| `binance.server.validate` | server 端验证 |
-| `binance.server.idempotency_check` | 幂等性检查 |
-| `binance.server.kafkax_dispatch` | `kafkax` fanout handoff |
+> **OpenTelemetry 集成要求（P1 · 来源 S28/FR-039）**：生产部署必须引入 OpenTelemetry SDK (`go.opentelemetry.io/otel`)，在以下关键路径创建 Span，并通过 W3C Trace Context (`traceparent` header) 跨进程传播。
+
+| Span 名 | 说明 | 进程 |
+|---------|------|------|
+| `binance.client.normalize` | 原始事件规范化 | client |
+| `binance.client.map` | 映射为 canonical event | client |
+| `binance.client.publish` | natsx JetStream 发布 | client |
+| `binance.client.puback_wait` | 等待 PubAck | client |
+| `binance.server.consume` | natsx consumer 收到消息 | server |
+| `binance.server.validate` | server 端验证 | server |
+| `binance.server.idempotency_check` | 幂等性检查 | server |
+| `binance.server.store` | 存储写入（taosx/pg/redis/ch） | server |
+| `binance.server.kafkax_dispatch` | `kafkax` fanout handoff | server |
+| `binance.server.ack` | msg.Ack() | server |
+
+**Trace Context 传播规范**：
+- Client → Server（NATS）：`traceparent` 注入 NATS message header
+- Server → Downstream（Kafka）：`traceparent` + `binance-trace-id` 注入 Kafka record header
+- 采样率：通过 `observability.tracing.sample_rate` 配置（默认 0.1）；`/debug/pprof` 和 admin 端点强制 100%
+- 日志关联：slog 自动注入 `trace_id` + `span_id` 结构化字段
 
 ---
 
@@ -1079,6 +1277,9 @@ github.com/ZoneCNH/binance/
 - Client/server 间 natsx 通信使用 TLS（`module/natsx` TLS policy 指导）
 - 输入校验：所有收到的 exchange-native payload 在进入 parser 前验证基本结构
 - Idempotency store 不暴露外部查询接口
+- **审计日志完整性（FR-041）**：所有 `POST /api/v1/admin/*` 写操作必须记录审计（actor/action/before/after/timestamp/client_ip）；数据生命周期事件（retention 删除/reconcile 差异/rehydrate 触发/DLQ 入队）必须写入 `binance_lifecycle_audit` 表；`audit_log` 表设 `REVOKE UPDATE, DELETE` 实现 append-only；审计日志保留期 ≥ 1 年，超期归档 OSS
+- **凭证轮转（S35）**：所有 infra 凭据（PG/Redis/Kafka/NATS/TDengine/ClickHouse/OSS API Key/Binance API Key）必须定义轮转 runbook，含轮转周期（建议 90d）、轮转步骤、验证方法；轮转操作本身须记录到 audit_log
+- **数据合规销毁（FR-044）**：按 `data_classification` 字段分类（market_public/market_derived/operational/audit）；合规保留期到达后执行不可逆销毁并生成 `certificate_of_destruction`
 
 ---
 
@@ -1109,6 +1310,15 @@ github.com/ZoneCNH/binance/
 | Admin boundary | `BOUNDARY-GATES.md` §10 gate script | 零跨模块 admin mutation；server admin surface 保持在 server 边界内 |
 | go.mod dependency compliance | `BOUNDARY-GATES.md` §11 gate script | 边界 direct dependency 集合保持合规 |
 
+### 部署与发布 Gate（FR-037）
+
+| Gate | 命令/检查 | 通过条件 |
+|------|----------|----------|
+| Feature flag consistency | `grep -r "XGO_BINANCE_FEATURE_" cmd/ internal/` | 所有 feature flag 有对应 env var 文档 + 默认 off |
+| Deployment health check | canary 后自动 `curl /readyz` + `curl /metrics` | `/readyz` 200 + 错误率 < 1% + P99 延迟 < 基线 × 1.5 |
+| Rollback verification | `kubectl rollout undo deployment/binance-server --to-revision=N` | rollback 后 `/readyz` 200 + 无数据丢失 |
+| Schema version gate | `grep SchemaVersion internal/wire/types.go` | MAJOR bump 必须有 ADR + 兼容矩阵更新 + 双端协调计划 |
+
 ---
 
 ## 21. Upgrade Compatibility
@@ -1121,6 +1331,17 @@ github.com/ZoneCNH/binance/
 | natsx stream schema 变更 | 需协调 client/server 升级 | 蓝绿部署；consumer durable name 版本化 |
 | Admin endpoint 新增 | 向后兼容 | 无迁移需求 |
 | 移除 `binance-market` references | Breaking（新模块无此 legacy） | `docs/migrations/remove-binance-market.md` |
+
+### SchemaVersion 语义化策略（FR-042）
+
+| 规则 | 定义 |
+|------|------|
+| **格式** | `MAJOR.MINOR`（如 `v1.0`、`v2.3`） |
+| **MAJOR 变更** | 字段删除、字段重命名、字段类型变更、wire 格式变更 —— **破坏性**，需蓝绿协调 + ADR |
+| **MINOR 变更** | 新增可选字段（旧 consumer 忽略） —— **向后兼容**，可独立升级 |
+| **Terminal Reject** | server 收到未知 MAJOR → `BNC-014 ErrSchemaVersionIncompatible`，不尝试解析 |
+| **兼容矩阵** | 在 `postgresx` 的 `binance_schema_versions` 表登记：version、fields_added、compatible_since、deprecated_at |
+| **升级顺序** | 先升级所有 consumer（server + 下游分析域）支持新 MAJOR → 再升级 producer（client）→ 最后废弃旧 MAJOR |
 
 ---
 

@@ -4,9 +4,10 @@
 >
 > 规范来源：`docs/governance/TRACEABILITY.md`
 
-- Module-Version: v3.6.1
-- Last-Updated: 2026-06-25
-- Spec-Reference: `module/binance/SPEC.md` v3.6.0
+- Module-Version: v3.7.0
+- Last-Updated: 2026-06-26
+- Spec-Reference: `module/binance/SPEC.md` v3.7.0
+- Runtime-Anchor: `/home/binance@f046e16`（含 Plan008 全部 40 Task 代码实现；PR #145 合并）
 
 ---
 
@@ -26,6 +27,8 @@
 > - **BR-004** 由 Partial 提升为 Done（A3 NakWithDelay+DLQ 已实现并经本地 NATS JetStream gated 测试验证）。
 > - SHA 统一为 `e02b190`。该段仅保留为历史记录；当前有效状态以 Runtime-Anchor `/home/binance@f18a329` 与 Issue-Ledger `../../report/binance/issues-sync-20260625.md` 为准。
 
+> **v3.7.0 变更摘要 (2026-06-26)**：新增 FR-037~044 覆盖发布安全网/taosx retention 生命周期/分布式 tracing/资源配额隔离/审计日志完整性/Schema 版本兼容策略/成本可观测/数据合规销毁（来源 Plan008 S26-S32 + G6/S1-S2 + M1-M4）；AC 扩展至 130（AC-001~130）、TC 扩展至 65（TC-001~065）、FR 总数扩展至 44（含 FR-031~036 Draft + FR-037~044 Pending）。当前有效基线投影为 **24 Done / 10 Partial / 10 Pending**（FR-037~044 全 Pending）。Runtime-Anchor 对齐 `/home/binance@f046e16`（PR #145 合并含 Plan008 全部 40 Task）。
+
 > **v3.6.1 变更摘要 (2026-06-25)**：基于 Runtime-Anchor `/home/binance@f18a329` 与 Issue-Ledger `../../report/binance/issues-sync-20260625.md`，当前 FR 状态投影为 **24 Done / 10 Partial / 0 Pending**。Partial FR: FR-007, FR-007a, FR-011, FR-016, FR-017, FR-023, FR-024, FR-026, FR-027, FR-028。
 > - GitHub #1104~#1118 与后续 Plan008 issues 已同步闭合；Release closeout 已由 `../../plans/binance/008-issues-sync-report.md` 归档为 `release_closeable=YES`；remaining Partial FR 继续按 FR-specific acceptance evidence 单独治理。
 > - 本次撤回历史 `28 Done / 2 Partial` 当前口径；该口径仅作为已撤回历史记录，不再作为当前状态。
@@ -41,7 +44,7 @@
 
 > **2026-06-24 历史 kafkax fanout 本地子集刷新**：目标 server 测试、`go test ./cmd/binance-server ./internal/server -count=1`、`go test ./...`、`go vet ./...`、`./scripts/boundary-gates.sh` 与 `plan006_task_4_7_repeat_checks=100` PASS；本地 adapter 已验证 topic/key 和 strict handoff `BNC-008` before durable/Ack。FR-008 仍未 Done：真实 Kafka broker e2e、production topic/ACL、release evidence 未闭合。该段仅保留为历史记录；当前有效状态以 Runtime-Anchor `/home/binance@f18a329` 与 Issue-Ledger `../../report/binance/issues-sync-20260625.md` 为准。
 
-> **状态模型说明**：FR 表的"实现状态"列采用 Done/Partial/Pending 三态模型；当前状态以 Runtime-Anchor `/home/binance@f18a329` 与 Issue-Ledger `../../report/binance/issues-sync-20260625.md` 为准。Partial FR 固定为 FR-007、FR-007a、FR-011、FR-016、FR-017、FR-023、FR-024、FR-026、FR-027、FR-028；当前有效基线无 Pending FR。
+> **状态模型说明**：FR 表的"实现状态"列采用 Done/Partial/Pending 三态模型；当前状态以 Runtime-Anchor `/home/binance@f046e16` 与 Issue-Ledger `../../report/binance/issues-sync-20260625.md` 为准。Partial FR 固定为 FR-007、FR-007a、FR-011、FR-016、FR-017、FR-023、FR-024、FR-026、FR-027、FR-028。Pending FR 固定为 FR-037~044（v3.7.0 新增）+ FR-031~036（Draft，不计入 v3.7.0 基线投影）。当前有效基线：**24 Done / 10 Partial / 10 Pending**。
 | FR ID | 功能需求 | AC | TC ID(s) | Task | 实现状态 |
 |-------|----------|-----|----------|------|----------|
 | FR-001 | Product-Line Support：Client 可独立采集 Spot / USDⓈ-M / COIN-M / Options 四产品线 | AC-001 ~ AC-003 | TC-001 | TASK-BINANCE-ROOT-001, CLIENT-001 | Done |
@@ -84,6 +87,14 @@
 | FR-034 | Selective Sync Whitelist：实现 `product_lines`/`symbols.allow`/`symbols.deny`；优先级 deny>allow>tier；运行时热更新 | AC-117 ~ AC-120 | TC-056, TC-057 | — | Draft（不计入当前投影） |
 | FR-035 | Admin Surface Auth Hardening：client `AdminServer` 写操作鉴权（Bearer token / loopback fallback）；FR-033/034 写操作的安全前置 | AC-121 ~ AC-124 | TC-059, TC-060, TC-061, TC-062 | — | Draft（不计入当前投影） |
 | FR-036 | Tier-Aware Connection Topology：stream manager 按 (productLine,tier) 分组 WS 连接；`StreamsForProductLineTier` 按 productLine 分化（options 仅 optionTicker）；连接分批 + 升降级 drain + options 到期峰值平滑 | AC-125 ~ AC-128 | TC-063, TC-064, TC-065, TC-066, TC-067 | — | Draft（不计入当前投影） |
+| FR-037 | Release Safety Net：feature flag 机制（`XGO_BINANCE_FEATURE_{name}`）+ canary 部署 + 健康门禁 + 自动回滚 runbook（S26） | AC-105 ~ AC-107 | TC-050, TC-062 | — | Pending |
+| FR-038 | taosx Data Retention Lifecycle：DB 级 KEEP 365 + 定时 DELETE trade/tick(30d)/bar(90d) + OSS ETag 前置校验 + 删除审计（G6/S1/S2） | AC-108 ~ AC-111 | TC-051, TC-052 | — | Pending |
+| FR-039 | Distributed Tracing (OpenTelemetry)：SDK 埋点 + W3C traceparent header 传播 NATS/Kafka + slog trace_id 关联 + 采样率可配（S28） | AC-112 ~ AC-114 | TC-053, TC-063 | — | Pending |
+| FR-040 | Resource Quota & Isolation：per-consumer-group Kafka 配额 + per-product-line WS 连接池隔离 + per-caller API 限流 + CH 查询超时（S29） | AC-115 ~ AC-118 | TC-054, TC-055, TC-064 | — | Pending |
+| FR-041 | Audit Log Completeness：admin 写操作审计 + 数据生命周期审计 + append-only + ≥1 年保留 + OSS 归档（S30/S33） | AC-119 ~ AC-121 | TC-056, TC-057, TC-065 | — | Pending |
+| FR-042 | Schema Version Compatibility Policy：MAJOR terminal reject (BNC-014) + MINOR 向后兼容 + 兼容矩阵 + 升级顺序（S27） | AC-122 ~ AC-124 | TC-058 | — | Pending |
+| FR-043 | Cost Observability：存储容量/带宽 per-product-line Prometheus 指标 + 成本告警（S31） | AC-125 ~ AC-127 | TC-059 | — | Pending |
+| FR-044 | Data Compliance & Destruction：data_classification 标注 + 合规保留期 + 销毁证明 certificate_of_destruction（S32） | AC-128 ~ AC-130 | TC-060, TC-061 | — | Pending |
 
 > [COMPUTED, HIGH] **FR-031~036 规格草案（2026-06-25，第三轮结构性审查后）**：定义于 [`SPEC-exchangeinfo-sync.md`](SPEC-exchangeinfo-sync.md)。第三轮审查发现 3 个 P0 结构性问题并修正：(1) FR-033 原含「tier→连接拓扑」与 connector 单连接模型冲突，拆出 FR-036；(2) `StreamsForTier` 未按 productLine 分化（options 无 depth/bookTicker），改为 `StreamsForProductLineTier`；(3) control stream retention WorkQueue 在 multi-server 下丢消息，改 LimitsPolicy。另修 2 个 P1：diff Updated/SpecUpdated 分离、options 到期峰值 BR-012。当前为 **Draft（不计入 v3.6.1 状态投影）**，不参与当前 `24 Done / 10 Partial / 0 Pending` 统计。FR-035 是 FR-033/034 写操作的安全前置；FR-036 依赖 FR-033 且涉及 connector 架构重构，建议前置 ADR。
 
