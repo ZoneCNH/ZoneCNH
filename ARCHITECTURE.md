@@ -203,7 +203,7 @@ FoundationX 中运行模块分为两种架构类型：
 - 通过 `bootstrap.Build(ctx, Spec{Module, Stores=None})` 组装
 - 实现 `contracts.MarketDataProvider` 或 `MacroDataProvider` 接口
 - 使用 `domain_market` / `domain_macro` / `domain_exchange` 共享类型
-- **规格参考实现**：binance（spec v3.5.0 Approved 分布式：natsx + 7 infra + Gin；2026-06-23 本地 runtime evidence 已归档，本地验证 HEAD `dd3332d3452f4eaa8146563bdb82caf577a3d4c1`，证据提交 `71e2a6e8bb5591c43e8a2ebfff8c7645bf030786`；FR-009 本地闭合；FR-001/002 Partial，FR-003~008/010~030 Pending；remote CI/live websocket/外部集成/release tag 未闭合）
+- **规格参考实现**：binance（spec v3.7.1 Approved 分布式：natsx + 7 infra + Gin；2026-06-26 Runtime-Anchor `/home/binance@f046e16`（PR #145 + #1189 合并）；FR-001~044 完成度为 24 Done / 10 Partial / 10 Pending（含 v3.7.0 新增 FR-037~044 + v3.7.1 FR-012~030 行为规范补齐）；remote CI / FR-031~036 Draft / 生产级 Kafka broker E2E 未闭合）
 
 ### 独立进程（非 C/S）
 
@@ -444,7 +444,7 @@ Foundation 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中在 
 | L2.5                  | [domain_macro](https://github.com/ZoneCNH/domain_macro)         | v1.0.0 | ✅ 已有   | Spec→Code 完成 | 宏观数据域模型（MacroPoint/MacroState）；v1.0.0 GitHub Release 已发布；7 FR Done；factory grade；live/soak N/A（纯值对象库）           |
 | **数据域 · 行情**     |                                                                 |        |           |          |                                                                                           |
 | 数据域                | [market_data](https://github.com/ZoneCNH/market_data)           | v1.1.0 | ✅ 已发布 | ████ 85% | **dispatch 独立进程（域入口）**：Receiver（DownstreamDispatchPort，18 测试）+ DualWriteSink（TD+Kafka 双写，6 测试）；v1.1.0 released                    |
-| 数据域                | [binance](https://github.com/ZoneCNH/binance)                   | evidence-20260623 / v3.5.0 (spec) | 🟡 本地证据 | ░░░░ 3% | **C/S Module 规格参考实现**：spec v3.5.0 Approved（分布式 — client natsx publish / server 7 infra: natsx+redisx+pg+taosx+clickhousex+kafkax+ossx + Gin :8080）；本地 runtime evidence 已归档（本地验证 HEAD `dd3332d3452f4eaa8146563bdb82caf577a3d4c1`，证据提交 `71e2a6e8bb5591c43e8a2ebfff8c7645bf030786`）；FR-009 本地闭合；FR-001/002 Partial，FR-003~008/010~030 Pending；未覆盖 live websocket、外部集成、remote CI、release tag |
+| 数据域                | [binance](https://github.com/ZoneCNH/binance)                   | v0.2.0 / v3.7.1 (spec) | 🟡 本地证据 | ██░░ 55% | **C/S Module 规格参考实现**：spec v3.7.1 Approved 分布式（client natsx publish / server 7 infra + Gin :8080）；PR #145（Plan008 40 Task）+ #1189/#1194/#1195 合并；FR-001~044：24 Done / 10 Partial / 10 Pending；Runtime-Anchor `/home/binance@f046e16`；remote CI / Kafka broker E2E / FR-031~036 Draft 未闭合 |
 | 数据域                | [okx](https://github.com/ZoneCNH/okx)                           | -      | ✅ 已有   | ███░ 80% | **C/S Module**：OKX CEX 行情采集；待升级 bootstrap 接入 + client/server 拆分                                                                               |
 | 数据域                | [bybit](https://github.com/ZoneCNH/bybit)                       | -      | ✅ 已有   | ███░ 80% | **C/S Module**：Bybit CEX 行情采集；待升级                                                                             |
 | 数据域                | [bitget](https://github.com/ZoneCNH/bitget)                     | -      | ✅ 已有   | ███░ 80% | **C/S Module**：Bitget CEX 行情采集；待升级                                                                            |
