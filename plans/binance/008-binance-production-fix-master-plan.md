@@ -29,6 +29,8 @@
 
 > `[COMPUTED, HIGH]` Follow-up-Code-Anchor（2026-06-26 UTC）：Plan008 closeout 后二次补证 issue GitHub #1180-#1186 已 7/7 CLOSED，beads `ZoneCNH-rm93` / `ZoneCNH-gar4` / `ZoneCNH-9ql1` / `ZoneCNH-an3k` / `ZoneCNH-lfel` / `ZoneCNH-7k6i` / `ZoneCNH-1xwk` 已 7/7 `closed`。这些 issue 是 #1132-#1171 closeout 后的证据补强，不改变 T008.001-T040 的 40 Task SSOT。
 
+> `[COMPUTED, HIGH]` Final-Alignment-Check（2026-06-26 UTC）：最终 10 轮当前态校验已输出 `10_ROUNDS_PASS`；每轮验证 GitHub #1180-#1186 7/7 CLOSED、对应 beads 7/7 `closed`、`ZoneCNH` / `binance` / `clickhousex` / `kafkax` / `ossx` / `redisx` / `postgresx` 七个 `fix/plan008-live-followups` worktree clean 且 HEAD == `origin/fix/plan008-live-followups`，并确认本 Plan 与 `008-issues-sync-report.md` 均包含 #1180-#1186、七个 beads ID 和六个代码提交锚点。
+
 | GH | beads | 补证范围 | Code anchor | 验证证据 |
 | --- | --- | --- | --- | --- |
 | #1180 | `ZoneCNH-rm93` | T008.005 / S3-S4 clickhousex DDL 生产契约 | `clickhousex fix/plan008-live-followups@6740259` | `go test ./pkg/clickhousex` + `git diff --check` |
