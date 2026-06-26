@@ -6,8 +6,8 @@
 | --- | --- |
 | Status | Generated from current module SSOT |
 | Last-Updated | 2026-06-26 |
-| Module-Version | v3.7.0 |
-| Module-State | 规格扩展到 v3.7.0；新增 FR-037~044（发布安全/taosx retention/tracing/资源隔离/审计/成本/合规/Schema 版本策略）对齐 Plan008 S26-S32/G6/S1-S2/M1-M4；当前状态投影对齐 Runtime-Anchor `/home/binance@f046e16`（PR #145 合并含 Plan008 全部 40 Task）与 Issue-Ledger `../../report/binance/issues-sync-20260625.md`，刷新为 **24 Done / 10 Partial / 10 Pending**。Pending FR: FR-037~044（v3.7.0 新增，全部 Pending）。Partial FR: FR-007, FR-007a, FR-011, FR-016, FR-017, FR-023, FR-024, FR-026, FR-027, FR-028。GitHub #1104~#1118 与后续 Plan008 issues 已同步闭合；Release closeout 已由 `../../plans/binance/008-issues-sync-report.md` 归档为 `release_closeable=YES`；剩余风险以保守 FR projection 的 `10 Partial + 10 Pending` 表达。 |
+| Module-Version | v3.7.1 |
+| Module-State | 规格扩展到 v3.7.1（v3.7.0 新增 FR-037~044 + v3.7.1 补齐 FR-012~030 行为规范 + 结构修正）；（发布安全/taosx retention/tracing/资源隔离/审计/成本/合规/Schema 版本策略）对齐 Plan008 S26-S32/G6/S1-S2/M1-M4；当前状态投影对齐 Runtime-Anchor `/home/binance@f046e16`（PR #145 合并含 Plan008 全部 40 Task）与 Issue-Ledger `../../report/binance/issues-sync-20260625.md`，刷新为 **24 Done / 10 Partial / 10 Pending**。Pending FR: FR-037~044（v3.7.0 新增，全部 Pending）。Partial FR: FR-007, FR-007a, FR-011, FR-016, FR-017, FR-023, FR-024, FR-026, FR-027, FR-028。GitHub #1104~#1118 与后续 Plan008 issues 已同步闭合；Release closeout 已由 `../../plans/binance/008-issues-sync-report.md` 归档为 `release_closeable=YES`；剩余风险以保守 FR projection 的 `10 Partial + 10 Pending` 表达。 |
 | Layer | 数据域 / Binance-specific market_data C/S module |
 | Runtime-Repo | `/home/binance` |
 | Source | `goal.md`, `SPEC.md`, `TRACEABILITY.md`, `DATA-LIFECYCLE.md`, `STANDARD.md`, `BOUNDARY-GATES.md`, `RUNTIME-MAPPING.md`, `IMPLEMENTATION-PLAN.md`, `client/`, `server/`, `tasks/` |
