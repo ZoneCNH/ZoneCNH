@@ -2,10 +2,72 @@
 
 所有 notable 变更记录，按 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/) 格式维护。
 
-- Module-Version: v3.7.1
-- Last-Updated: 2026-06-25
-- Spec-Reference: `module/binance/SPEC.md` v3.6.0
+- Module-Version: v3.9.0
+- Last-Updated: 2026-06-27
+- Spec-Reference: `module/binance/SPEC.md` v3.9.0
 - 治理规则：`module/binance/RULES.md` R9 文档存在性
+
+---
+
+## [v3.9.0] — 2026-06-26 内容正确性大修（P0+P1+P2 · 深度分析驱动）
+
+### Fixed（限流模型）
+- **FR-013**：限流模型从「每秒 weight」修正为 Binance 实际的「分钟滑动窗口 weight」（`max_weight_per_minute=1200`），增加 `X-MBX-USED-WEIGHT-1M` header 动态解析
+- **FR-013**：HTTP 429 处理增加 `Retry-After` header 解析 + AIMD 恢复策略；HTTP 418 新增独立熔断处理（暂停 15min + IP 切换/告警）
+- **FR-013**：退避参数补全为显式配置表（base_delay:1s / max_delay:120s / multiplier:2.0 / jitter:±10% / retry_budget:10 / refill:1/30s）
+- **FR-025**：回填限流从「20 req/s token bucket」改为分钟 weight 预算模型（`backfill_weight_budget_per_minute:800`），优先级从 80/20 二维升级为 P0/P1/P2 三级
+
+### Fixed（缺口检测）
+- **FR-017**：缺口检测从统一「时间间隔 > 2× 预期间隔」重写为按事件类型差异化策略：trade→trade_id 序列、bar→open_time 序列、depth→U/u updateId 序列（跳跃→快照刷新）、tick→事件驱动仅记录不告警、funding_rate→fundingTime 周期、mark_price→event_time 间隔
+- **FR-017**：增加 `GAP_DATA_MISSING`（漏收）vs `GAP_NO_DATA`（停盘期/低流动性）区分，利用 exchangeInfo `status` 字段判定
+
+### Fixed（clock skew）
+- **FR-013**：增加事件时间戳**单调性检测**（E 回拨→ALERT_CLOCK_REGRESSION）+ **drift rate 检测**（>100ms/min→WARN）
+- **FR-013**：告警条件从「连续 3 次超阈值」改为「连续 3 分钟超阈值」（容忍 NTP 瞬时跳变）
+
+### Added（symbol 生命周期）
+- **FR-032**：增加 symbol `status=BREAK/HALT/DELISTED` 的完整生命周期处理（暂停告警/停止采集/标记 delisted/30d 归档）
+- **FR-032**：`SpecUpdated` 中 `tickSize`/`stepSize`/`minQty`/`maxQty` 升级为 `SpecUpdated_LightReload`（更新 DB + cache，不重建 WS）
+
+### Added（WS 连接管理）
+- **FR-012**：增加 WS ping/pong keepalive 策略（每 3min 期望 ping，30s 无 pong→重连）+ 24h staggered reconnect（随机 0-30min，先建后断防风暴）
+- **FR-036**：增加 `max_ws_connections_per_product_line=10` 上限 + 连接建立 stagger（0-30s）
+
+### Added（其他补充）
+- **FR-029**：增加端到端延迟预算分解（client<50ms + NATS<10ms + server<100ms P95）+ `FutureTolerance` 与 `clock_skew` 独立关系说明 + histogram bucket 定义
+- **FR-023**：增加 local/CI/live evidence 交叉校验规则（4 项：SHA 一致 / test count ±5% / boundary gate 一致 / CI 不可用时 2/3 一致）
+- **FR-016**：增加 REST `limit=1000` 策略 + `startTime`/`endTime` 左闭右开语义
+- **FR-031**：增加 `contractType`→`instrument_subtype` 映射（PERPETUAL/CURRENT_QUARTER/NEXT_QUARTER）+ Options `quoteAsset` 维度
+
+### Fixed（Config Schema）
+- `backfill.token_rate: 100 tokens/s` → 删除，改为 `backfill.weight_budget_per_minute: 800`
+- `oss.archiver.bars_cutoff: 2160h(90d)` → `8760h(365d)`（对齐 taosx retention）
+- `redis.ratelimit.window: 1s` → `10s`（防固定窗口边界突发，建议 sliding window log）
+- `redis.idempotency.ttl` 注释修正（72h 安全边界说明，去除「覆盖 JetStream 7d」误导）
+- `nats.consumer.durable` 增加 instance_id 说明（多实例防冲突）
+- `nats.consumer.ack_wait` 注释修正（与 idempotency 协同说明）
+
+### Fixed（Client 幂等键）
+- **client/SPEC.md FR-005**：幂等键策略从「如可用」改为按事件类型强制维度：depth→`{U}:{u}`、trade→trade_id（禁止降级）、bar→open_time+interval、tick→event_time+bid+ask
+
+### Added（性能预算）
+- Client/Server §17：增加 WS 吞吐（≥10K msg/s）、RSS 内存预算（client 256MB / server 1-4GB）、端到端延迟分解
+
+### Changed（治理）
+- **双态模型**：ACCEPTANCE.md / FEATURES.md / TRACEABILITY.md 统一引入 Code-Done（代码就绪）vs Evidence-Done（验收通过）双态
+- **RULES.md**：新增 R11（Backfill Weight Model Compliance）+ R12（Gap Detection Strategy Per Event Type）
+- **ARCHITECTURE-DRIFT-WATCHLIST.md**：新增 D9（限流模型漂移）+ D10（缺口检测策略漂移）+ D11（双态分歧）
+- **FEATURES.md**：能力边界声明 #1114/#1116 接入 ADR-003/ADR-004 Accepted 裁决
+
+### 深度分析来源
+三部分深度分析（共 29 项发现），覆盖限流模型、缺口检测、退避参数、symbol 生命周期、WS 连接管理、config schema、状态模型一致性、幂等键策略、性能预算 9 个维度。
+
+### Fixed（结构性修复 · 2026-06-27 · spec-structural-analysis-20260627 报告驱动）
+- **MA-1**：config schema 字段名统一 — 根 §11.1 `binance.product_lines` 默认值 `[]`→`["spot"]`；补全 `publisher.publish_ack_timeout`/`publisher.backpressure_queue_size`；client/server §11 改为引用根 §11 canonical，废弃 `client.*`/`server.*` 前缀
+- **MA-2**：双态模型新增 Code-Drifted 第四态 — FR-013/017/025 因 v3.9.0 spec 内容正确性大修后 runtime 未对齐，从 Code-Done 降级为 Code-Drifted；ACCEPTANCE.md + FEATURES.md 状态统计更新为 `21 Done / 10 Partial / 3 Drifted / 10 Pending`
+- **MA-3**：4 个退役文件添加 `⚠️ DEPRECATED` 横幅 + 精简为摘要指针 — DATA-LIFECYCLE.md (159→48 行)、DATA-QUALITY-SLA.md (85→16 行)、ENDPOINTS.md (72→16 行)、SPEC-exchangeinfo-sync.md (526→15 行)
+- **MA-4**：Appendix D AC-BNC 遗留编号迁移到 `docs/migrations/ac-bnc-legacy-mapping.md`；根 SPEC Appendix D 替换为 3 行迁移指针
+- **MO-2**：根 SPEC §14 目录结构移除 4 个退役文件，移入"已退役文件"小节
 
 ---
 

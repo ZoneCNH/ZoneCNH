@@ -6,14 +6,15 @@
 |------|-----|
 | Module | `module/binance/server` |
 | Status | Approved |
-| Spec-Version | v2.2.0 |
-| Last-Updated | 2026-06-23 |
+| Spec-Version | v3.9.0 |
+| Last-Updated | 2026-06-26 (v3.9.0: §11 config 修正 — durable consumer 增加 instance_id 说明（多实例防冲突）；ack_wait 注释说明与 idempotency 协同。§17 性能预算扩展 — 内存预算)
+| Last-Updated | 2026-06-26 (v2.2.0→v3.8.0: 结构性修复 — 废除本地 FR/BR 编号，全部改为引用根 SPEC canonical FR/BR；§7 重构为根 FR 的 server 实现视图；删除内嵌 FR-025~028 改为根引用；SC→TC 测试编号统一) |
 | Owner | ZoneCNH |
 | Layer | 数据域 · 行情接入层 |
 | Role | Binance 行情数据的处理 + 存储服务端（natsx 消费 + redisx + postgresx + taosx + clickhousex + kafkax + ossx + Gin REST API） |
 | Port Interface | natsx JetStream subject `binance.market.*` (消费) + Gin REST HTTP `:8080` (提供给 market_data) |
 | Language | Go |
-| Runtime-Version | v0.1.0 |
+| Runtime-Version | v0.2.0 |
 | Repository | [github.com/ZoneCNH/binance](https://github.com/ZoneCNH/binance)（server/ 子目录） |
 | Go Module Path | `github.com/ZoneCNH/binance`（monorepo，server 端通过 `cmd/binance-server` + `internal/server` 提供） |
 | Related | [CONSTITUTION.md](../../../CONSTITUTION.md), [ARCHITECTURE.md](../../../ARCHITECTURE.md), [module/binance/SPEC.md](../SPEC.md), [module/domain_market](../../domain_market/), [module/natsx](../../natsx/), [module/redisx](../../redisx/), [module/taosx](../../taosx/), [module/clickhousex](../../clickhousex/), [module/kafkax](../../kafkax/), [module/ossx](../../ossx/), [module/postgresx](../../postgresx/) |
@@ -105,245 +106,148 @@ client 和 server **互不感知彼此的进程位置**。server 只知道 NATS 
 
 ---
 
-## 7. Functional Requirements
+## 7. Functional Requirements（Server 实现视图）
 
-### FR-001: natsx Consumer Binding
+> **编号规则（v3.8.0 统一）**：本节以根 SPEC canonical FR 编号为标题，补充 server 特有的 WHEN/THEN 实现细节。不定义独立 FR 编号。完整 FR 定义见 [根 SPEC](../SPEC.md) §7。FR-025~028 等根级 FR 的 server 侧实现锚点以引用形式标注。
+
+### Server 实现 FR 速查表
+
+| 根 FR | 名称 | Server 侧职责 |
+|-------|------|-------------|
+| FR-003 | natsx Communication | durable consumer 订阅 + ManualAck |
+| FR-004 | At-Least-Once Delivery | ManualAck policy + NakWithDelay + dead-letter |
+| FR-005 | Idempotent Acceptance | redisx SetNX + payload hash 校验 |
+| FR-006a | taosx Time-Series Storage | WriteBatch tick/bar/depth |
+| FR-006b | postgresx Metadata Storage | UpsertSymbol ON CONFLICT |
+| FR-006c | redisx Hot Cache | SET tick/depth TTL 缓存 |
+| FR-006d | ossx Archival | ETag 校验后删除 taosx 热数据 |
+| FR-006e | taosx Data Retention Lifecycle | 定时 DELETE + OSS ETag 前置校验 |
+| FR-007 | Gin Market API | REST `/api/v1/market/*` |
+| FR-007a | clickhousex Analytics API | `/api/v1/analytics/*` |
+| FR-008 | kafkax Downstream Broadcast | topic `binance.{pl}.{et}.v1` fanout |
+| FR-009 | Boundary Enforcement | CI gate 阻断跨界 import |
+| FR-010 | clickhousex OLAP Storage | 5min ETL 聚合 |
+| FR-011 | Distributed Coordinator Lock | redisx SetNX HA 选举 |
+| FR-017 | Gap Detection and Replay | gap 检测 + replay job + 幂等回放 |
+| FR-018 | Archive Manifest and Restore | manifest + restore + retention-delete guard |
+| FR-020 | Funding Rate Event Support | taosx 存储 + postgresx 历史 + kafkax fanout |
+| FR-021 | Mark and Index Price Support | taosx 独立超级表 + kafkax fanout |
+| FR-025 | Backfill Throttle & Priority | 分钟 weight 预算 + P0/P1/P2 三级优先级 |
+| FR-026 | Daily Reconciliation Job | 04:00 UTC 对账 + tolerance 比对 |
+| FR-027 | Cold Data Rehydration | OSS→taosx 回热 + 202 job_id + 24h TTL |
+| FR-028 | Backfill Progress API | jobs 列表 + coverage 时间戳 |
+| FR-029 | Data Quality & Freshness SLA | e2e latency histogram + stale alert |
+| FR-032 | ExchangeInfo Persistence | 消费 `instruments.changed` + UpsertInstruments |
+| FR-038 | taosx Data Retention Lifecycle | DB KEEP + 定时 DELETE |
+| FR-044 | Data Compliance & Destruction | data_classification + 合规保留期 + 销毁证明 |
+
+---
+
+### FR-003: natsx Communication（server 侧 Consumer）
+
+根 SPEC FR-003 canonical 定义见 [SPEC.md](../SPEC.md) §7。Server 侧通过 durable consumer + ManualAck 消费，client 侧通过 publisher 发布。
 
 **WHEN** server 启动且 natsx 连接就绪
 **THEN** 创建 durable consumer（`durable=binance-server`），订阅 `binance.market.>`，ManualAck 模式
 
 **WHEN** NATS 连接断开后重连
-**THEN** durable consumer 自动从上次 Ack 位置恢复，无数据丢失
-
-### FR-002: Consumer Lifecycle
-
-**WHEN** server 启动 durable consumer
-**THEN** 分配 consumer 上下文，初始化 metrics 计数器
-
-**WHEN** server 正常关闭（SIGTERM）
-**THEN** 完成当前处理中消息的 Ack 后关闭 consumer，不丢弃 in-flight 消息
+**THEN** durable consumer 自动从上次 Ack 位置恢复
 
 **WHEN** consumer 处理超过 `ack_wait` 仍未 Ack
 **THEN** JetStream 自动重投（NakWithDelay），consumer 重新处理；redisx SetNX 幂等过滤重复
 
-### FR-003: Envelope Validation
+**WHEN** server 正常关闭（SIGTERM）
+**THEN** 完成当前处理中消息的 Ack 后关闭 consumer，不丢弃 in-flight 消息
+
+### FR-004: At-Least-Once Delivery（server 侧）
+
+根 SPEC FR-004 canonical 定义见 [SPEC.md](../SPEC.md) §7。
+
+**WHEN** server 处理消息成功（redisx + taosx + postgresx + kafkax handoff 全完成）
+**THEN** 调用 `msg.Ack()`
+
+**WHEN** server 处理消息失败（任一写入报错）
+**THEN** 调用 `msg.NakWithDelay(5s)`，JetStream 重投；达到 MaxDeliver(5) 后进入死信
+
+### FR-005: Idempotent Acceptance + Envelope Validation（server 侧）
+
+根 SPEC FR-005 canonical 定义见 [SPEC.md](../SPEC.md) §7。Client 侧 key 生成见 Client SPEC。
 
 **WHEN** 收到 natsx 消息（`domain_market.MarketFactEnvelope` JSON）
-**THEN** 校验 required 字段：product_line、instrument_key、event_type、event_time、idempotency_key、source_metadata 全部存在且有效
+**THEN** 校验 required 字段：product_line、instrument_key、event_type、event_time、idempotency_key、source_metadata
+**AND** 产品线不在白名单、event type 未知、event time 无效（零值或未来超阈值）→ ManualNak terminal_validation
 
-**WHEN** product_line 不在支持列表中
-**THEN** ManualNak，记录 terminal_validation 错误日志
+**WHEN** 校验通过且 idempotency key 未被接受过
+**THEN** `redisx.SetNX(key, payloadHash, 72h)` 原子写入 → 进入存储
 
-**WHEN** instrument identity 结构无效
-**THEN** ManualNak，记录 terminal_validation 错误日志
+**WHEN** key 已存在且 payload hash 一致 → 幂等重复，跳过存储，直接 Ack
+**WHEN** key 已存在但 payload hash 冲突 → ManualNak terminal_conflict
 
-**WHEN** event type 未知
-**THEN** ManualNak，记录 terminal_validation 错误日志
+### FR-006a/6b/6c/6d/6e: Full-Stack Storage（server 侧）
 
-**WHEN** event time 无效（零值或未来时间超阈值）
-**THEN** ManualNak，记录 terminal_validation 错误日志
+根 SPEC FR-006a~006e canonical 定义见 [SPEC.md](../SPEC.md) §7。详见根 SPEC WHEN/THEN。Server 侧要点：
 
-**WHEN** idempotency key 缺失
-**THEN** ManualNak，记录 terminal_validation 错误日志
+- **FR-006a taosx**：WriteBatch 写入 tick/bar/depth 到超级表子表；失败→NakWithDelay
+- **FR-006b postgresx**：ON CONFLICT DO UPDATE 幂等 upsert；不可达→不 Ack
+- **FR-006c redisx**：热缓存 SET(tick,60s)/SET(depth,5s)；失败→降级不阻塞
+- **FR-006d ossx**：ETag 校验后删热数据；先写后删
+- **FR-006e taosx Retention**：定时 DELETE + OSS ETag 前置校验 + DB KEEP 365 兜底
 
-**WHEN** 所有校验通过
-**THEN** 进入 idempotency 检查阶段
+### FR-007: Gin Market API（server 侧）
 
-### FR-004: Idempotent Acceptance（redisx SetNX）
+根 SPEC FR-007 canonical 定义见 [SPEC.md](../SPEC.md) §7。详见根 SPEC WHEN/THEN。
 
-**WHEN** idempotency key 未被接受过
-**THEN** 通过 `redisx.SetNX(key, payloadHash, 72h)` 原子写入，进入存储阶段
+### FR-007a: clickhousex Analytics API（server 侧）
 
-**WHEN** idempotency key 已存在且 payload hash 一致
-**THEN** 视为幂等重复，跳过存储，直接 Ack
+根 SPEC FR-007a canonical 定义见 [SPEC.md](../SPEC.md) §7。详见根 SPEC WHEN/THEN。
 
-**WHEN** idempotency key 已存在但 payload hash 冲突
-**THEN** ManualNak（terminal_conflict），记录告警，不重复存储
+### FR-008: kafkax Downstream Broadcast（server 侧）
 
-### FR-005: Multi-Store Write
+根 SPEC FR-008 canonical 定义见 [SPEC.md](../SPEC.md) §7。
 
-> **v2.1.0 对齐**：与根 SPEC.md FR-006 (Full-Stack Storage) 一一对应。
-> 子项 FR-005a/5b/5c/5d 映射根 FR-006a/6b/6c/6d，命名分歧仅在 server 子规格层；任务（SERVER-012~016）按子项独立追踪。
-> 任一存储层独立失败不影响其他层；taosx/postgresx 失败 → 不 Ack；redisx/ossx 失败 → 降级不阻塞主管线。
+**WHEN** 全部存储写入成功
+**THEN** `kafkax.Send(topic="binance.{pl}.{et}.v1", key=symbol)` → handoff 成功后 `msg.Ack()`
 
-#### FR-005a: taosx Time-Series Storage（对应根 FR-006a）
+**WHEN** kafkax 不可达或失败
+**THEN** 重试（最多 3 次，指数退避）；仍失败→NakWithDelay 或 dead-letter
 
-**WHEN** event 通过校验和幂等检查
-**THEN** 调用 `taosx.WriteBatch(ctx, points)` 写入 tick/bar/depth 到对应超级表子表（product_line + symbol 作为子表名）
+### FR-009: Boundary Enforcement（server 侧）
 
-**WHEN** taosx WriteBatch 失败
-**THEN** 返回 error；调用 `msg.NakWithDelay(5s)`；不调用 `msg.Ack()`；告警
+根 SPEC FR-009 canonical 定义见 [SPEC.md](../SPEC.md) §7。Server 侧 CI gate：禁止 import `internal/client`、`internal/cs`、`module/contracts`、gRPC runtime。
 
-#### FR-005b: postgresx Metadata Storage（对应根 FR-006b）
+### FR-010: clickhousex OLAP Storage（server 侧）
 
-**WHEN** 收到新 instrument symbol
-**THEN** 调用 `postgresx.Exec(ctx, upsertSQL)` 幂等写入 `binance_instruments` 表（ON CONFLICT DO UPDATE）+ 写入审计日志
+根 SPEC FR-010 canonical 定义见 [SPEC.md](../SPEC.md) §7。详见根 SPEC WHEN/THEN。
 
-**WHEN** postgresx 不可达
-**THEN** 返回 error；不 Ack；指数退避重试
+### FR-011: Distributed Coordinator Lock（server 侧）
 
-#### FR-005c: redisx Hot Cache（对应根 FR-006c）
+根 SPEC FR-011 canonical 定义见 [SPEC.md](../SPEC.md) §7。
 
-**WHEN** taosx 写入成功
-**THEN** 并行调用 `redisx.SET(ctx, "tick:{product_line}:{symbol}", json, 60s)` 与 `redisx.SET(..., "depth:{...}", json, 5s)` 更新热缓存
+**WHEN** server 启动
+**THEN** `redisx.SetNX(coordinator_lock, instance_id, 30s)` 竞选；成功→启动 ETL+归档；失败→standby 轮询
 
-**WHEN** redisx 缓存写入失败
-**THEN** 记录 warn 日志；**继续后续管线**（缓存失败降级到 taosx 直查，不阻塞 kafkax handoff）
+### 其他根级 FR 的 Server 侧实现锚点
 
-#### FR-005d: kafkax Handoff Gate（聚合点）
-
-**WHEN** FR-005a + FR-005b 全部成功（FR-005c 失败可降级）
-**THEN** 进入 FR-006 kafkax dispatch 阶段；暂不调用 `msg.Ack()`
-
-**WHEN** FR-005a 或 FR-005b 任一失败
-**THEN** ManualNak（NakWithDelay），JetStream 重投；不调用 `msg.Ack()`；告警
-
-**设计约束**：`msg.Ack()` 必须在 FR-005a + FR-005b + FR-006 kafkax handoff 全部成功后才能调用（BR-001 / BR-003）
-
-### FR-006: kafkax Dispatch
-
-**WHEN** 全部存储写入成功，且 `msg.Ack()` 尚未调用
-**THEN** 通过 `kafkax.Send()` 将事件发布到 topic `binance.{product_line}.{event_type}.v1`，解耦下游消费者；handoff 成功后调用 `msg.Ack()`
-
-**WHEN** kafkax 发送失败
-**THEN** 立即重试（最多 3 次，指数退避）；仍失败则返回 error、调用 `msg.NakWithDelay(...)` 或进入 dead-letter/告警路径；`kafkax` handoff 完成前不得调用 `msg.Ack()`
-
-### FR-007: Gin REST API（market_data 主动拉取）
-
-**WHEN** `GET /api/v1/market/ticks/{instrument_key}`
-**THEN** 优先从 redisx 热缓存返回最新 tick；缓存 miss 则查 taosx
-
-**WHEN** `GET /api/v1/market/bars/{instrument_key}?interval=1m&start=&end=`
-**THEN** 从 taosx 查询 K 线历史数据，返回 JSON
-
-**WHEN** `GET /api/v1/market/instruments`
-**THEN** 从 postgresx 返回所有活跃 instrument catalog
-
-**WHEN** `GET /api/v1/market/depth/{instrument_key}`
-**THEN** 从 redisx 热缓存返回最新深度快照
-
-**WHEN** market_data 调用超过 redisx 限流阈值
-**THEN** 返回 429 Too Many Requests
-
-### FR-007a: clickhousex Analytics API
-
-**WHEN** `GET /api/v1/analytics/vwap/{instrument_key}?interval=1m`
-**THEN** 从 clickhousex 返回聚合 VWAP 数据
-
-**WHEN** `GET /api/v1/analytics/top-movers?product_line=spot&limit=20`
-**THEN** 从 clickhousex 返回涨跌幅排行
-
-**WHEN** `GET /api/v1/analytics/correlation?symbols=BTCUSDT,ETHUSDT`
-**THEN** 从 clickhousex 返回相关性矩阵
-
-**WHEN** clickhousex 不可达
-**THEN** 返回 503，日志记录，不影响 taosx 实时 ticks API
-
-### FR-008: ossx Archival
-
-**WHEN** ossx 定时任务触发
-**THEN** 将 taosx 中超过 RetentionDays 的时序数据异步归档到 ossx（parquet/json.gz）
-
-**WHEN** ossx 上传完成并验证 ETag
-**THEN** 才允许删除对应 taosx 热数据，禁止先删后写
-
-### FR-009: Boundary Enforcement
-
-**WHEN** server runtime code imports `internal/client`、`internal/cs`、`module/contracts` 或 gRPC ingest runtime
-**THEN** CI boundary gate MUST fail
-
-**WHEN** server `go.mod` 缺少 `gin` / `ossx` / `natsx` / `redisx` / `taosx` / `postgresx` / `kafkax` / `clickhousex` direct dependency
-**THEN** CI dependency gate MUST fail
-
-### FR-010: clickhousex OLAP Storage
-
-**WHEN** ETL scheduler 触发（每 5 分钟）
-**THEN** 从 taosx 查询上一窗口的 raw ticks，聚合计算 1m_ohlcv / 5m_vwap / 15m_stats，通过 `clickhousex.InsertBatch` 写入 ClickHouse
-
-**WHEN** clickhousex InsertBatch 失败
-**THEN** 记录 error 日志，跳过本批次，不阻塞实时 ticks API
-
-**WHEN** taosx 数据不可达
-**THEN** ETL 本轮跳过，下轮重试；不影响 natsx 消费主管线
-
-### FR-011: Distributed Coordinator Lock
-
-**WHEN** server 启动时
-**THEN** 尝试通过 redisx `SetNX(coordinator_lock, instance_id, 30s)` 获取分布式锁
-
-**WHEN** SetNX 成功（本实例为主）
-**THEN** 启动 ETL scheduler（FR-010）；每 10s 续期（Expire）；同时定期触发 ossx 归档（FR-008）
-
-**WHEN** SetNX 失败（其他实例已持锁）
-**THEN** 进入 standby 模式，每 5s 轮询；持锁实例崩溃后 TTL 到期自动接管
-
-**WHEN** 续期失败（网络抖动或 redisx 不可达）
-**THEN** 立即停止 ETL scheduler 和 ossx 归档；记录告警；等待重新获取锁
-
-**WHEN** 正常关闭
-**THEN** 主动调用 `Del(coordinator_lock)` 释放锁，减少等待时间
+| 根 FR | Server 侧职责 | 详见 |
+|-------|-------------|------|
+| FR-017 | Gap Detection and Replay | [SPEC.md](../SPEC.md) §7 |
+| FR-018 | Archive Manifest and Restore | [SPEC.md](../SPEC.md) §7 |
+| FR-025 | Backfill Throttle & Priority | [SPEC.md](../SPEC.md) §7 |
+| FR-026 | Daily Reconciliation Job | [SPEC.md](../SPEC.md) §7 |
+| FR-027 | Cold Data Rehydration | [SPEC.md](../SPEC.md) §7 |
+| FR-028 | Backfill Progress API | [SPEC.md](../SPEC.md) §7 |
+| FR-029 | Data Quality & Freshness SLA | [SPEC.md](../SPEC.md) §7 |
+| FR-032 | ExchangeInfo Persistence & Scheduled Refresh | [SPEC.md](../SPEC.md) §7 |
+| FR-038 | taosx Data Retention Lifecycle | [SPEC.md](../SPEC.md) §7 |
+| FR-044 | Data Compliance & Destruction | [SPEC.md](../SPEC.md) §7 |
 
 ---
 
-### FR-025: Backfill Throttle & Priority
+## 8. Business Rules（Server 实现约束）
 
-**WHEN** server 发起 REST backfill 或实时 REST 调用
-**THEN** 通过 token bucket 感知 Binance IP weight 限流（spot 1200 weight/min，futures 2400 weight/min）
+> **编号规则（v3.8.0 统一）**：所有 BR 使用根 SPEC canonical 编号。本节仅列出 server 侧特有的实现约束，完整 BR 定义见 [根 SPEC](../SPEC.md) §8。
 
-**WHEN** weight 预算分配
-**THEN** 80% 给实时流恢复，20% 给 backfill；backfill 内部优先级 `trade > bar > tick`
-
-**WHEN** weight 接近上限（>90%）
-**THEN** 暂停 backfill 调度，保留实时配额；记录 `backfill.weight_exhausted` 指标
-
-**配置**（`binance-server.yaml` §11）：`backfill.weight_budget`、`backfill.priority`、`backfill.spot_weight_per_min=1200`、`backfill.futures_weight_per_min=2400`
-
----
-
-### FR-026: Daily Reconciliation Job
-
-**WHEN** 每日 04:00 UTC（`reconciliation.schedule=0 4 * * *`）
-**THEN** coordinator 锁持有实例跑全量对账：按 `symbol × 1d` 维度比对 taosx 聚合 OHLCV vs Binance `/api/v3/klines`
-
-**WHEN** 差异超阈值（`reconciliation.tolerance=0.01%`）
-**THEN** 写入 postgresx `binance_reconciliation_alerts` 表，含 symbol、date、expected、actual、diff、severity
-
-**WHEN** 对账完成
-**THEN** 发布 `binance.control.reconciliation.completed` 事件，附当日统计（symbols_checked、alerts_count）
-
----
-
-### FR-027: Cold Data Rehydration
-
-**WHEN** `GET /api/v1/market/ticks/:symbol/range` 命中时间窗落在 OSS 归档区（已过期出 taosx）
-**THEN** 返回 `202 Accepted` + `job_id`，触发 async OSS→taosx 回热（临时表 24h TTL，`rehydration.temp_ttl=24h`）
-
-**WHEN** 回热 job 完成
-**THEN** 临时表可查询；客户端通过 `GET /api/v1/admin/rehydration/jobs/:job_id` 轮询状态（`pending`/`running`/`ready`/`expired`）
-
-**WHEN** 临时表 TTL 到期（24h）
-**THEN** 自动删除临时表，后续相同查询重新触发回热
-
-> [COMPUTED, HIGH] FR-027 是 FR-007 Gin Market API 的冷数据扩展分支，不替代热数据查询路径。
-
----
-
-### FR-028: Backfill Progress API
-
-**WHEN** 运维查询 `GET /api/v1/admin/backfill/jobs`
-**THEN** 返回活跃 backfill job 列表（job_id、symbol、product_line、event_type、window、cursor、status、progress_pct）
-
-**WHEN** 运维查询 `GET /api/v1/admin/backfill/coverage/:symbol`
-**THEN** 返回该 symbol 每个 `(product_line, event_type)` 的最早可用时间戳（taosx + OSS 合并视图）
-
-**WHEN** job 失败或卡住
-**THEN** API 暴露 `last_error`、`retry_count`、`next_retry_at` 字段供运维诊断
-
----
-
-## 8. Business Rules
-
-### BR-001: ManualAck 全链路写入后才 Ack
+### BR-004: ManualAck 全链路写入后才 Ack（根 BR-004 的 server 侧约束）
 
 **规则**: `msg.Ack()` 必须在 redisx SetNX + taosx + postgresx + `kafkax` handoff 全部成功后才调用。
 
@@ -351,50 +255,33 @@ client 和 server **互不感知彼此的进程位置**。server 只知道 NATS 
 
 **违反时**: 进程崩溃后 JetStream 重投，redisx SetNX 幂等检查防止重复写入 taosx。
 
-### BR-002: redisx SetNX — 幂等唯一性
+### BR-004a: redisx SetNX — 幂等唯一性（根 BR-004 的 server 侧约束）
 
 **规则**: redisx `SetNX(key, payloadHash, TTL)` 必须原子执行，保证 at-most-once 存储语义。
 
 **约束**: idempotency key TTL 默认 72h，可配置；多实例 server 共享同一 Redis 实例。
 
-**违反时**: 重复 key 同 payload → 幂等 Ack；重复 key 不同 payload → terminal_conflict Nak。
-
-### BR-003: ManualAck Only After Durable Processing
+### BR-004b: ManualAck Only After Durable Processing（根 BR-004 的 server 侧约束）
 
 **规则**: JetStream `msg.Ack()` 必须在 validation、idempotency、durable storage、`kafkax` handoff 全部完成后才能发送。
 
 **约束**: 禁止在 idempotency check 通过但存储或 fanout 未完成时 Ack；失败路径使用 Nak / retry / dead-letter policy。
 
-**违反时**: 若写入失败但已 Ack，JetStream 不会重投，导致数据丢失。server 必须确保 Ack 仅在实际持久化并完成 `kafkax` handoff 后发送。
-
-### BR-004: Validation Failure → Terminal Reject Without Durable Acceptance
+### BR-004c: Validation Failure → Terminal Reject（根 BR-004 的 server 侧约束）
 
 **规则**: 终端校验失败（terminal_validation）不得进入幂等、存储或 `kafkax` fanout。
 
-**约束**: terminal validation 可以按 policy Ack / dead-letter，但不得产生 durable market fact。
-
-**违反时**: 无效 payload 被持久化或 fanout，污染历史行情和下游分析。
-
-### BR-005: Admin Surface Isolation
-
-**规则**: Admin 端点只能变更 server-local 状态，禁止：
-- 修改 client connector
-- 清理或伪造 JetStream consumer state
-- 绕过 idempotency
-- 暴露 secrets
-- 触发交易操作
-
-**约束**: Admin handler 只能访问 server 内部状态（consumer stats、idempotency store stats、storage/API/fanout stats）。
-
-**违反时**: 操作被拒绝并记录 security event。
-
-### BR-006: Server Must Not Import Client Internals
+### BR-003: Server Must Not Import Client Internals（根 BR-003 的 server 侧约束）
 
 **规则**: server 禁止 import `module/binance/client` 的任何 internal 包或类型。
 
 **约束**: server 与 client 之间仅通过 `natsx` subject + `domain_market.MarketFactEnvelope` JSON 解耦；禁止 `contracts` / gRPC / `internal/cs` bridge。
 
 **违反时**: 编译失败（依赖方向违反 ARCHITECTURE.md 数据域边界）。
+
+### BR-009: Admin Surface Isolation（根 BR-009 的 server 侧约束）
+
+**规则**: Admin 端点只能变更 server-local 状态，禁止修改 client connector、清理或伪造 JetStream consumer state、绕过 idempotency、暴露 secrets、触发交易操作。
 
 ---
 
@@ -453,23 +340,27 @@ server 必须覆盖 `terminal_validation`、`terminal_conflict`、`retryable_sto
 
 ## 11. Config Schema
 
-| 配置项 | 类型 | 默认值 | 说明 |
+> **Canonical source**：Server 完整配置见 [`SPEC.md`](../SPEC.md) §11.2 Server Config（`binance-server.yaml`），含 natsx consumer / redisx / postgresx / taosx / clickhousex / kafkax / ossx / Gin API / observability / backfill 共 10 个子节。以下仅列出 server 特有补充说明。
+
+### Server 特有配置说明
+
+| 配置键 | 类型 | 默认值 | 说明 |
 |--------|------|--------|------|
-| `nats.url` | string | `nats://127.0.0.1:4222` | 外部 NATS JetStream 服务连接地址；server 不内嵌 NATS |
-| `nats.auth.user` | string | `admin` | NATS 用户名 |
-| `nats.auth.password_env` | string | `FOUNDATIONX_NATS_PASSWORD` | NATS 密码环境变量名；明文只来自本地 secret/env |
-| `nats.stream` | string | `BINANCE_MARKET` | JetStream stream 名称 |
-| `nats.subject` | string | `binance.market.>` | 订阅 subject |
-| `nats.durable` | string | `binance-server` | durable consumer 名称 |
-| `server.admin_addr` | string | `:8080` | Admin HTTP 监听地址 |
-| `server.api_addr` | string | `:8080` | Market REST API 监听地址 |
-| `idempotency.store` | string | `redis` | 幂等存储类型：redis / memory（测试） |
-| `idempotency.ttl` | duration | `72h` | 幂等记录保留时间 |
-| `storage.taos.database` | string | `binance_market` | taosx 时序库 |
-| `fanout.kafkax.topic_prefix` | string | `binance` | kafkax topic 前缀；实际 topic = `binance.{product_line}.{event_type}.v1` |
-| `fanout.retry_max` | int | `3` | kafkax 发布失败最大重试次数 |
-| `validation.future_time_threshold` | duration | `5m` | 未来时间容忍阈值 |
-| `observability.log_level` | string | `info` | 日志级别 |
+| `nats.consumer.durable` | `string` | `binance-server` | durable consumer 名称；多实例追加 `-{instance_id}` |
+| `nats.consumer.ack_wait` | `duration` | `30s` | ManualAck 超时；超时后 JetStream 自动重投，redisx SetNX 幂等检查防重复 |
+| `nats.consumer.max_deliver` | `int` | `5` | 最大重投次数（超限进入死信） |
+| `nats.consumer.filter_subject` | `string` | `binance.market.>` | 订阅 subject 通配符 |
+| `idempotency.store` | `string` | `redis` | 幂等存储类型：redis / memory（测试） |
+| `idempotency.ttl` | `duration` | `72h` | 幂等记录保留时间 |
+| `storage.taos.database` | `string` | `market_binance` | taosx 时序库名 |
+| `fanout.kafkax.topic_prefix` | `string` | `binance` | kafkax topic 前缀 |
+| `fanout.retry_max` | `int` | `3` | kafkax 发布失败最大重试次数 |
+| `validation.future_time_threshold` | `duration` | `5m` | 未来时间容忍阈值 |
+| `api.bind` | `string` | `:8080` | Gin REST API 绑定地址 |
+| `admin.bind` | `string` | `:8082` | Gin admin 绑定地址（/healthz /readyz /debug/pprof） |
+| `observability.log.level` | `string` | `info` | 日志级别 |
+
+> **字段名规范**：所有 server 配置键使用 `nats.*` / `redis.*` / `postgres.*` / `taos.*` / `clickhouse.*` / `kafka.*` / `oss.*` / `api.*` / `admin.*` / `observability.*` / `idempotency.*` / `storage.*` / `fanout.*` / `validation.*` 前缀，与根 §11.2 canonical 一致。完整配置项、默认值和生产 DDL 契约见根 §11.2。
 
 ---
 
@@ -543,7 +434,7 @@ github.com/ZoneCNH/binance/
     └── *_test.go                   # 各子目录单元测试 + contract 测试
 ```
 
-> **monorepo 边界约束**：`internal/server/*` 不得 import `internal/client/*`，对应 BR-006 + BOUNDARY-GATES §4 CI gate。`internal/server` 仅通过 `natsx` subject + `domain_market` envelope 与 client 解耦，禁止 `contracts` / gRPC / `internal/cs` bridge。
+> **monorepo 边界约束**：`internal/server/*` 不得 import `internal/client/*`，对应 BR-003 + BOUNDARY-GATES §4 CI gate。`internal/server` 仅通过 `natsx` subject + `domain_market` envelope 与 client 解耦，禁止 `contracts` / gRPC / `internal/cs` bridge。
 
 ---
 
@@ -599,21 +490,21 @@ server 不反向依赖 client，二者通过 `natsx` subject + `domain_market` e
 
 | 场景 ID | 对应 FR/BR | 测试类型 | 场景 | 预期结果 |
 |---------|------------|----------|------|----------|
-| SC-001 | FR-001 | 集成 | natsx durable consumer 订阅 | consumer 绑定 stream/subject/durable 成功 |
-| SC-002 | FR-002 | 集成 | 未 Ack message 后进程重启 | JetStream redelivery，server 重新处理 |
-| SC-003 | FR-003 | 单元 | 缺少必填字段的 MarketFactEnvelope | 返回 terminal_validation reject，不写 storage/fanout |
-| SC-004 | FR-003 | 单元 | 不支持的 product_line | 返回 terminal_validation reject |
-| SC-005 | FR-004 | 集成 | 首次 idempotency key | 写入 redisx/taosx/postgresx，完成 kafkax handoff 后 Ack |
-| SC-006 | FR-004 | 集成 | 重复 idempotency key（相同 payload） | Ack duplicate，不重复写 storage/fanout |
-| SC-007 | FR-004 | 集成 | 重复 idempotency key（冲突 payload） | terminal_conflict reject |
-| SC-008 | FR-005 | 集成 | storage write 成功 | Ack 仅在 redisx + taosx + postgresx + kafkax handoff 完成后发送 |
-| SC-009 | FR-005 | 集成 | storage write 失败 | Nak，不 finalization SetNX，不 Ack |
-| SC-010 | FR-006 | 集成 | kafkax fanout 失败 | retry-first，耗尽后 dead-letter |
-| SC-011 | FR-007 | 集成 | GET /api/v1/market/ticks | 返回已持久化 Binance-specific 行情 |
-| SC-012 | FR-009 | 静态 | server imports internal/client or internal/cs | CI boundary gate fails |
-| SC-013 | FR-009 | 静态 | server imports module/contracts or gRPC ingest runtime | CI boundary gate fails |
-| SC-014 | FR-009 | 静态 | go.mod missing direct gin/ossx/natsx/redisx/taosx/postgresx/kafkax dependency | CI dependency gate fails |
-| SC-015 | BR-006 | 静态 | boundary scan | 无 client/gRPC/internal-cs import |
+| TC-001 | FR-003 | 集成 | natsx durable consumer 订阅 | consumer 绑定 stream/subject/durable 成功 |
+| TC-002 | FR-004 | 集成 | 未 Ack message 后进程重启 | JetStream redelivery，server 重新处理 |
+| TC-003 | FR-005 | 单元 | 缺少必填字段的 MarketFactEnvelope | 返回 terminal_validation reject，不写 storage/fanout |
+| TC-004 | FR-005 | 单元 | 不支持的 product_line | 返回 terminal_validation reject |
+| TC-005 | FR-005 | 集成 | 首次 idempotency key | 写入 redisx/taosx/postgresx，完成 kafkax handoff 后 Ack |
+| TC-006 | FR-005 | 集成 | 重复 idempotency key（相同 payload） | Ack duplicate，不重复写 storage/fanout |
+| TC-007 | FR-005 | 集成 | 重复 idempotency key（冲突 payload） | terminal_conflict reject |
+| TC-008 | FR-006a/6b | 集成 | storage write 成功 | Ack 仅在 redisx + taosx + postgresx + kafkax handoff 完成后发送 |
+| TC-009 | FR-006a/6b | 集成 | storage write 失败 | Nak，不 finalization SetNX，不 Ack |
+| TC-010 | FR-008 | 集成 | kafkax fanout 失败 | retry-first，耗尽后 dead-letter |
+| TC-011 | FR-007 | 集成 | GET /api/v1/market/ticks | 返回已持久化 Binance-specific 行情 |
+| TC-012 | FR-009 | 静态 | server imports internal/client or internal/cs | CI boundary gate fails |
+| TC-013 | FR-009 | 静态 | server imports module/contracts or gRPC ingest runtime | CI boundary gate fails |
+| TC-014 | FR-009 | 静态 | go.mod missing direct gin/ossx/natsx/redisx/taosx/postgresx/kafkax dependency | CI dependency gate fails |
+| TC-015 | BR-003 | 静态 | boundary scan | 无 client/gRPC/internal-cs import |
 
 ### 16.2 契约测试
 
@@ -641,6 +532,11 @@ server 必须通过 consumer contract tests：
 | Ack/Nak decision | 延迟 P99 | < 0.5ms | benchmark test |
 | End-to-end ingest (validate + idempotency + storage + fanout + Ack) | 延迟 P99 | < 25ms | benchmark test |
 | Consumer throughput | 吞吐 | ≥ 1000 events/s per instance | `go test -bench` |
+| Server RSS memory（steady state，无 backfill） | RSS | ≤ 1GB (P99) | `/debug/vars` runtime.MemStats |
+| Server RSS memory（含 backfill peak） | RSS | ≤ 4GB (P99) | `/debug/vars` runtime.MemStats |
+| Server E2E contribution（consume→persist） | 延迟 P95 | < 100ms（同区域部署） | 集成 benchmark（FR-029 延迟预算分解） |
+
+> v3.9.0 新增内存预算（1GB steady / 4GB peak）、端到端延迟预算分解（server<100ms P95）。
 
 ---
 
@@ -782,17 +678,17 @@ server 必须通过 consumer contract tests：
 
 | AC ID | FR 引用 | 验收标准 | 验证方式 |
 |-------|---------|----------|----------|
-| AC-001 | FR-001 | `natsx` durable consumer 绑定成功，接收 `binance.market.*` message | 集成场景 SC-001 |
-| AC-002 | FR-003 | 必填字段缺失返回 terminal_validation reject | 单元场景 SC-003 |
-| AC-003 | FR-004 | 首次 idempotency key 通过验收 | 集成场景 SC-005 |
-| AC-004 | FR-004 | 重复 key 不产生重复 storage/fanout | 集成场景 SC-006 |
-| AC-005 | FR-004 | 冲突 payload 返回 terminal_conflict | 集成场景 SC-007 |
-| AC-006 | FR-005 | durable storage 成功后进入 `kafkax` handoff；失败不 Ack | 集成场景 SC-008/SC-009 |
-| AC-007 | FR-006 | `kafkax` handoff 成功后才 Ack；失败 retry-first，耗尽后 dead-letter/告警 | 集成场景 SC-010 |
-| AC-008 | FR-007 | Gin API 返回已持久化 Binance-specific 行情 | 集成场景 SC-011 |
-| AC-009 | FR-009 | server 源码无 `internal/client` / `internal/cs` / `module/contracts` / gRPC ingest runtime import | 静态场景 SC-012/SC-013 |
-| AC-010 | FR-009 | go.mod direct deps 包含 gin/ossx/natsx/redisx/taosx/postgresx/kafkax | 静态场景 SC-014 |
-| AC-011 | BR-005/BR-006 | 同进程 cs 与 client internals boundary gate PASS | 静态场景 SC-015 |
+| AC-001 | FR-003 | `natsx` durable consumer 绑定成功，接收 `binance.market.*` message | TC-001 |
+| AC-002 | FR-005 | 必填字段缺失返回 terminal_validation reject | TC-003 |
+| AC-003 | FR-005 | 首次 idempotency key 通过验收 | TC-005 |
+| AC-004 | FR-005 | 重复 key 不产生重复 storage/fanout | TC-006 |
+| AC-005 | FR-005 | 冲突 payload 返回 terminal_conflict | TC-007 |
+| AC-006 | FR-006a/6b | durable storage 成功后进入 `kafkax` handoff；失败不 Ack | TC-008/TC-009 |
+| AC-007 | FR-008 | `kafkax` handoff 成功后才 Ack；失败 retry-first，耗尽后 dead-letter/告警 | TC-010 |
+| AC-008 | FR-007 | Gin API 返回已持久化 Binance-specific 行情 | TC-011 |
+| AC-009 | FR-009 | server 源码无 `internal/client` / `internal/cs` / `module/contracts` / gRPC ingest runtime import | TC-012/TC-013 |
+| AC-010 | FR-009 | go.mod direct deps 包含 gin/ossx/natsx/redisx/taosx/postgresx/kafkax | TC-014 |
+| AC-011 | BR-003 | 同进程 cs 与 client internals boundary gate PASS | TC-015 |
 
 ## Appendix B: Change History
 

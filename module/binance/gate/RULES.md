@@ -1,7 +1,7 @@
 # module/binance RULES.md — 模块治理规则
 
-- Module-Version: v3.7.1
-- Last-Updated: 2026-06-25
+- Module-Version: v3.9.0
+- Last-Updated: 2026-06-26
 - 适用范围：`module/binance/` 全部规格文档 + `github.com/ZoneCNH/binance` runtime 仓
 - 优先级：本文 > 子规格 > task；与 `CONSTITUTION.md` §0-§20 冲突时以 `CONSTITUTION.md` 为准
 - 强制级别：每条规则标注【硬】（违反即治理违规）/【软】（推荐）/【开】（仅验证存在性）
@@ -256,7 +256,36 @@ test -x scripts/check-binance-docs.sh
 
 ---
 
-## 12. 变更历史
+## 12. v3.9.0 新增规则
+
+### R11: Backfill Weight Model Compliance
+
+**级别**：Hard
+**内容**：回填限流必须使用分钟滑动窗口 weight 模型（`max_weight_per_minute`），不得使用每秒 token 模型。每次 REST API 调用后必须解析 `X-MBX-USED-WEIGHT-1M` header 动态感知实际消耗。
+**检测命令**：
+```bash
+# 检查 SPEC §11.2.10 是否使用 weight_budget_per_minute（非 token_rate）
+rg "token_rate" module/binance/spec/SPEC.md && echo "FAIL: 仍使用旧 token_rate 模型" || echo "PASS"
+rg "backfill_weight_budget_per_minute" module/binance/spec/SPEC.md | head -1
+```
+**违反时**：生产上线前必须对齐 SPEC v3.9.0 FR-025/FR-013 的分钟 weight 模型，否则必触发 Binance IP 封禁。
+**来源**：深度分析 v3.9.0 P0-1。
+
+### R12: Gap Detection Strategy Per Event Type
+
+**级别**：Hard
+**内容**：缺口检测必须按事件类型选择策略（trade→trade_id 序列、bar→open_time 序列、depth→updateId 序列、tick→事件驱动不告警），禁止使用统一时间间隔法。代码实现中若发现 `gap > 2*interval` 通用逻辑即违规。
+**检测命令**：
+```bash
+# 检查代码中是否存在通用的时间间隔 gap 检测（禁止）
+rg "2\s*\*\s*(interval|expected)" /home/binance/internal/ --include='*.go' && echo "FAIL: 使用统一时间间隔法" || echo "PASS"
+```
+**违反时**：低流动性 symbol 产生海量假缺口（trade/tick），depth updateId 跳跃漏检。必须在实现层按 FR-017 v3.9.0 分类型策略。
+**来源**：深度分析 v3.9.0 P0-2。
+
+---
+
+## 13. 变更历史
 
 | 日期 | 版本 | 变更内容 | 作者 |
 |---|---|---|---|

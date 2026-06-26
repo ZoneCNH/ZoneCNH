@@ -1,11 +1,11 @@
 # module/binance/client TRACEABILITY
 
 > 追溯矩阵 §1–§7，符合 `docs/governance/TRACEABILITY.md` 标准格式。
-> 数据来源：`module/binance/client/SPEC.md` v2.1.1。
+> 数据来源：`module/binance/spec/client/SPEC.md` v3.9.0（FR/BR 使用 root canonical 编号）。
 
-- Module-Version: v2.1.1（与 client SPEC Spec-Version 一致；root Module-Version v3.7.1）
-- Last-Updated: 2026-06-25
-- Spec-Reference: `module/binance/client/SPEC.md` v2.1.1
+- Module-Version: v3.9.0（FR/BR 编号统一为 root canonical；与 root SPEC v3.9.0 一致）
+- Last-Updated: 2026-06-27（v3.9.0 结构修复：config §11 引用化对齐根 §11.1 canonical；FR-013/025 client 侧实现状态 Drifted 见根 TRACEABILITY.md）
+- Spec-Reference: `module/binance/spec/client/SPEC.md` v3.9.0
 
 ---
 
@@ -16,16 +16,16 @@
 
 | FR ID | 功能需求 | AC | TC ID(s) | Task | 实现状态 |
 |-------|----------|-----|----------|------|:--------:|
-| FR-001 | Product-Line Catalog：维护 Binance 四产品线目录，每条独立启停，支持热重载 | AC-001~004 | TC-001 | TASK-BINANCE-CLIENT-001 | ⬜ Pending |
-| FR-002 | Instrument Parser：解析 Binance 原生 symbol 为规范身份组件，消除跨产品线身份碰撞 | AC-005~007 | TC-002~004 | TASK-BINANCE-CLIENT-002 | ⬜ Pending |
-| FR-003 | Product-Line Connectors：Spot/USDⓈ-M/COIN-M/Options 4 个 connector，断线重连/限速感知/优雅关闭 | AC-008~012 | TC-005, TC-006 | TASK-BINANCE-CLIENT-003~006 | ⬜ Pending |
-| FR-004 | Raw Event Normalization：规范化原始事件，保留完整溯源（10 字段） | AC-013, AC-014 | TC-007 | TASK-BINANCE-CLIENT-007 | ⬜ Pending |
-| FR-005 | Canonical Mapping：映射规范化事件为 domain_market 类型 | AC-015, AC-016 | TC-008 | TASK-BINANCE-CLIENT-007 | ⬜ Pending |
-| FR-006 | Idempotency Key Generation：跨重试稳定，按 event type 差异化策略 | AC-017, AC-018 | TC-009, TC-010 | TASK-BINANCE-CLIENT-007 | ⬜ Pending |
+| FR-001 | Product-Line Catalog：维护 Binance 四产品线目录，每条独立启停，支持热重载 | AC-001~004 | TC-001 | TASK-BINANCE-CLIENT-001 | ✅ Done |
+| FR-002 | Instrument Parser：解析 Binance 原生 symbol 为规范身份组件，消除跨产品线身份碰撞 | AC-005~007 | TC-002~004 | TASK-BINANCE-CLIENT-002 | ✅ Done |
+| FR-003 | Product-Line Connectors：Spot/USDⓈ-M/COIN-M/Options 4 个 connector，断线重连/限速感知/优雅关闭 | AC-008~012 | TC-005, TC-006 | TASK-BINANCE-CLIENT-003~006 | ✅ Done |
+| FR-004 | Raw Event Normalization：规范化原始事件，保留完整溯源（10 字段） | AC-013, AC-014 | TC-007 | TASK-BINANCE-CLIENT-007 | ✅ Done |
+| FR-005 | Canonical Mapping：映射规范化事件为 domain_market 类型 | AC-015, AC-016 | TC-008 | TASK-BINANCE-CLIENT-007 | ✅ Done |
+| FR-006 | Idempotency Key Generation：跨重试稳定，按 event type 差异化策略 | AC-017, AC-018 | TC-009, TC-010 | TASK-BINANCE-CLIENT-007 | ✅ Done |
 | ~~FR-007~~ | ~~Spool：SQLite 发送前持久化~~  ⚠️ **ARCHIVED v2.0.0** — JetStream 持久化替代，见 SERVER-010 | — | — | ~~TASK-BINANCE-CLIENT-009~~ | 🗄️ Archived |
 | ~~FR-008~~ | ~~Checkpoint：仅 server 持久 ACK 后推进~~ ⚠️ **ARCHIVED v2.0.0** — JetStream durable consumer 替代 | — | — | ~~TASK-BINANCE-CLIENT-009~~ | 🗄️ Archived |
-| FR-009 | natsx Publisher：mapper 输出的 MarketFactEnvelope 通过 `natsx.Publish` **网络**发布到 JetStream；等待 PubAck 确认持久化；禁止同进程调用 | AC-019~023 | TC-011~013 | TASK-BINANCE-CLIENT-014 | ⬜ Pending（v2.0.0 重写） |
-| FR-010 | Admin Surface：HTTP 端点（healthz/readyz/debug/admin），仅操作本地状态 | AC-024~028 | TC-014, TC-015 | TASK-BINANCE-CLIENT-010 | ⬜ Pending |
+| FR-009 | natsx Publisher：mapper 输出的 MarketFactEnvelope 通过 `natsx.Publish` **网络**发布到 JetStream；等待 PubAck 确认持久化；禁止同进程调用 | AC-019~023 | TC-011~013 | TASK-BINANCE-CLIENT-014 | ✅ Done |
+| FR-010 | Admin Surface：HTTP 端点（healthz/readyz/debug/admin），仅操作本地状态 | AC-024~028 | TC-014, TC-015 | TASK-BINANCE-CLIENT-010 | ✅ Done |
 
 ---
 
@@ -35,11 +35,11 @@
 |-------|---------|-------------|----------|:--------:|
 | ~~BR-001~~ | ~~Checkpoint 仅在 server 持久 ACK 后推进~~ ⚠️ **ARCHIVED v2.0.0** — JetStream ManualAck 替代 | — | — | 🗄️ Archived |
 | ~~BR-002~~ | ~~Spool 状态机 5 条合法转换~~ ⚠️ **ARCHIVED v2.0.0** — Spool 已废弃 | — | — | 🗄️ Archived |
-| BR-003 | Client Go import 图不得出现 `module/binance/server`、`internal/cs` 的任何包 | BR-003 | CI Gate: BOUNDARY-GATES.md §3, §5 | ⬜ Pending |
-| BR-004 | Client Go import 图不得出现 `storage/`、`query/`、`strategy/` 包 | BR-004 | CI Gate: BOUNDARY-GATES.md §4 | ⬜ Pending |
-| BR-005 | 同一 symbol 在不同产品线中必须产生不同的规范身份 | BR-005 | TC-002~004 | ⬜ Pending |
-| BR-006 | natsx Publisher 必须等待 JetStream PubAck 再返回；禁止 fire-and-forget | BR-006 | TC-012: mock PubAck 同步等待 | ⬜ Pending |
-| BR-007 | Client 禁止与 server 同进程运行（独立二进制，独立机器可部署） | BR-007 | CI Gate: BOUNDARY-GATES.md §6 | ⬜ Pending |
+| BR-002 | Client Go import 图不得出现 `module/binance/server`、`internal/cs` 的任何包 | BR-002 | CI Gate: BOUNDARY-GATES.md §3, §5 | ✅ Done |
+| BR-007 | Client Go import 图不得出现 `storage/`、`query/`、`strategy/` 包 | BR-007 | CI Gate: BOUNDARY-GATES.md §4 | ✅ Done |
+| BR-008 | 同一 symbol 在不同产品线中必须产生不同的规范身份 | FR-002 | TC-002~004 | ✅ Done |
+| BR-004 | natsx Publisher 必须等待 JetStream PubAck 再返回；禁止 fire-and-forget | BR-004 | TC-012: mock PubAck 同步等待 | ✅ Done |
+| BR-002 | Client 禁止与 server 同进程运行（独立二进制，独立机器可部署） | BR-002 | CI Gate: BOUNDARY-GATES.md §6 | ✅ Done |
 
 ---
 
@@ -81,9 +81,9 @@
 | TC ID | 覆盖 FR(s) | 覆盖 BR(s) | 测试类型 | 场景摘要 | 状态 |
 |-------|-----------|-----------|:--------:|---------|:----:|
 | TC-001 | FR-001 | — | 单元 | 加载 4 条产品线 catalog，验证独立启停 | ⬜ Pending |
-| TC-002 | FR-002 | BR-005 | 单元 | BTCUSDT Spot 身份，与 USDⓈ-M 不碰撞 | ⬜ Pending |
-| TC-003 | FR-002 | BR-005 | 单元 | BTCUSDT USDⓈ-M 永续身份 | ⬜ Pending |
-| TC-004 | FR-002 | BR-005 | 单元 | Options Call/Put 身份 | ⬜ Pending |
+| TC-002 | FR-002 | FR-002 | 单元 | BTCUSDT Spot 身份，与 USDⓈ-M 不碰撞 | ⬜ Pending |
+| TC-003 | FR-002 | FR-002 | 单元 | BTCUSDT USDⓈ-M 永续身份 | ⬜ Pending |
+| TC-004 | FR-002 | FR-002 | 单元 | Options Call/Put 身份 | ⬜ Pending |
 | TC-005 | FR-003 | — | 集成 | Spot connector 连接并接收事件 | ⬜ Pending |
 | TC-006 | FR-003 | — | 集成 | Connector 断开后自动重连，事件流继续 | ⬜ Pending |
 | TC-007 | FR-004 | — | 单元 | 规范化 trade 事件，验证 10 字段完整 | ⬜ Pending |
@@ -91,7 +91,7 @@
 | TC-009 | FR-006 | — | 单元 | 同一事件两次生成幂等键，结果相同 | ⬜ Pending |
 | TC-010 | FR-006 | — | 单元 | 不同 event type 使用不同 key 策略 | ⬜ Pending |
 | TC-011 | FR-009 | BR-007 | 单元（mock JetStream） | Publish 调用 JetStream.Publish(subj, data) | ⬜ Pending |
-| TC-012 | FR-009 | BR-006 | 单元 | Publish 等待 PubAck 返回后才 return nil | ⬜ Pending |
+| TC-012 | FR-003 | BR-004 | 单元 | Publish 等待 PubAck 返回后才 return nil | ⬜ Pending |
 | TC-013 | FR-009 | BR-003 | 单元 | JetStream 不可达 → Publish 返回 error，不 panic | ⬜ Pending |
 | TC-014 | FR-010 | — | 单元 | `/healthz` 返回 HTTP 200 | ⬜ Pending |
 | TC-015 | FR-010 | — | 单元 | Admin pause 产品线，connector 停止产生新事件 | ⬜ Pending |
@@ -101,7 +101,7 @@
 | Gate ID | 覆盖 BR(s) | 命令 | 通过条件 | 状态 |
 |---------|-----------|------|----------|:----:|
 | CI-BOUNDARY-SERVER | BR-003 | `grep -r 'internal/server\|internal/cs' internal/client/` | 零匹配 | ⬜ Pending |
-| CI-BOUNDARY-STORAGE | BR-004 | `go list -deps ./... \| grep -qE 'storage/\|query/\|strategy/'` | 零匹配 | ⬜ Pending |
+| CI-BOUNDARY-STORAGE | BR-007 | `go list -deps ./... \| grep -qE 'storage/\|query/\|strategy/'` | 零匹配 | ⬜ Pending |
 | CI-NO-CS-PKG | BR-003 | BOUNDARY-GATES.md §5 脚本 | PASS | ⬜ Pending |
 | CI-NO-SAME-PROCESS | BR-007 | BOUNDARY-GATES.md §6 脚本 | PASS | ⬜ Pending |
 
@@ -193,7 +193,9 @@
 | BR→验证映射率 | 5 / 5 | 100% |
 | TC→FR 回溯率 | 15 / 15 | 100% |
 | AC→验证映射率 | 28 / 28 | 100% |
-| 实现完成率 | 0 / 8 FR | 0%（文档对齐 v2.1.1，代码待实现） |
+| 实现完成率 | 8 / 8 FR | 100%（代码实现完成；投影自 root TRACEABILITY Runtime-Anchor `/home/binance@f046e16`；TC 测试证据仍 Pending） |
+
+	> **v2.1.2 状态同步 (2026-06-26)**：FR/BR 实现状态从全 Pending 同步为 Done，对齐 root TRACEABILITY v3.7.1 的 24 Done / 10 Partial / 10 Pending 投影。子模块 TC 仍保持 Pending（测试证据未独立闭合）。
 
 ---
 
@@ -206,3 +208,4 @@
 | 2026-06-17 | v1.2.0 | 同步 SPEC v1.0.1 Status 晋升 | ZoneCNH |
 | 2026-06-21 | v2.0.0 | **v2.0.0 分布式架构对齐**：归档 FR-007（SQLite spool）+ FR-008（checkpoint）+ BR-001/002（spool/checkpoint 约束）；FR-009 重写为 natsx Publisher（替代 gRPC bidi stream）；新增 BR-006（PubAck 同步等待）+ BR-007（禁止同进程）；NFR 删除 spool/gRPC 延迟，新增 natsx PubAck 预算；TC-011~013 替换为 natsx publisher 测试；AC 从 38 条精简为 28 条（归档 spool/checkpoint AC）；CI Gate 更新为 cs 包/同进程禁止检查 | ZoneCNH |
 | 2026-06-22 | v2.1.1 | 命名同步：两套旧合约别名收敛到 `um_perp/cm_perp`（catalog enum + go 文件名 + TC-003）；Spec-Reference 指向 client/SPEC.md v2.1.1 | ZoneCNH |
+| 2026-06-26 | v2.1.2 | **P0 状态同步**：FR/BR 实现状态从全 Pending → Done，对齐 root TRACEABILITY v3.7.1 Runtime-Anchor `/home/binance@f046e16`；TC/NFR 仍保持 Pending（子模块独立测试证据未闭合）；§6 仪表盘刷新 | ZCode |
