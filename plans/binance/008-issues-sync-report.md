@@ -32,7 +32,23 @@
 
 `[COMPUTED, HIGH]` 验证脚本路径口径（2026-06-26）：`008-verify-faithfulness.sh` 与 `008-verify-10rounds.sh` 从脚本所在目录解析 Plan、SSOT 与映射文件，避免 feature worktree 中误读主 checkout；release 与 issue 状态口径不变。
 
+`[COMPUTED, HIGH]` 二次补证状态（2026-06-26）：Plan008 closeout 后新增的证据补强 GitHub issues #1180-#1186 已 7/7 CLOSED；对应 beads `ZoneCNH-rm93` / `ZoneCNH-gar4` / `ZoneCNH-9ql1` / `ZoneCNH-an3k` / `ZoneCNH-lfel` / `ZoneCNH-7k6i` / `ZoneCNH-1xwk` 已 7/7 `closed`。这些 issue 是 closeout evidence backfill，不新增或改写 T008.001-T040 的 40 Task SSOT。
+
 **三方 100% 一致，0 遗漏，0 open Plan008 issue。**
+
+---
+
+### 1.1 二次补证 issue 映射（#1180-#1186）
+
+| GH | beads ID | 对应原 Task / 范围 | 关闭证据 |
+| --- | --- | --- | --- |
+| #1180 | `ZoneCNH-rm93` | T008.005 / S3-S4 clickhousex DDL 生产契约 | `clickhousex fix/plan008-live-followups@6740259`；`go test ./pkg/clickhousex` + `git diff --check` |
+| #1181 | `ZoneCNH-gar4` | T008.006 / S6 kafkax retry + DLT 契约 | `kafkax fix/plan008-live-followups@a1f01d0`；`go test ./pkg/kafkax` + `git diff --check` |
+| #1182 | `ZoneCNH-9ql1` | T008.027 / S26 feature flag 发布安全网 | `binance fix/plan008-live-followups@0c2ce91`；`go test ./internal/server/api` + `git diff --check` |
+| #1183 | `ZoneCNH-an3k` | T008.028 / 部署健康门禁 + 回滚 runbook | `binance fix/plan008-live-followups@0c2ce91`；`bash -n scripts/readiness-audit.sh` + `./scripts/readiness-audit.sh` |
+| #1184 | `ZoneCNH-lfel` | T008.031 / S29 资源配额与隔离 | `binance fix/plan008-live-followups@0c2ce91`；resource isolation runbook + boundary gate |
+| #1185 | `ZoneCNH-7k6i` | T008.034 / S18-S25 Foundation 模块补证 | `clickhousex@6740259` / `kafkax@a1f01d0` / `ossx@ce8aea5` / `redisx@78e87f0` / `postgresx@ebd5603`；5 个 Foundation package test |
+| #1186 | `ZoneCNH-1xwk` | T008.035-T038 / S31-S35 + M1-M4 规模化与合规 | `binance fix/plan008-live-followups@0c2ce91`；scale/compliance runbook + readiness/API regression |
 
 ---
 
