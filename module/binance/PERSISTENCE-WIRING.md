@@ -5,7 +5,7 @@
 | Field | Value |
 | --- | --- |
 | Status | Active |
-| Module-Version | v3.6.0 |
+| Module-Version | v3.7.1 |
 | Last-Updated | 2026-06-25 |
 | Scope | `module/binance` 存储 writer 装配契约（G0 修复规范） |
 | Spec-Impact | FR-005/006a-d/007/007a/010/011 从 Partial 推进到 Done 的装配基线 |

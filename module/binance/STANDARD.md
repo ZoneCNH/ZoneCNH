@@ -5,7 +5,7 @@
 | Field | Value |
 | --- | --- |
 | Status | Active |
-| Module-Version | v3.6.0 |
+| Module-Version | v3.7.1 |
 | Last-Updated | 2026-06-25 |
 | Scope | `module/binance` runtime control and evidence standard |
 | Spec-Impact | None until FR-024 is promoted into `SPEC.md` |

@@ -5,7 +5,7 @@
 | Field | Value |
 | --- | --- |
 | Status | Active |
-| Module-Version | v3.6.0 |
+| Module-Version | v3.7.1 |
 | Last-Updated | 2026-06-25 |
 | Scope | `module/binance` 四产品线 mainnet 官方端点清单与 mainnet-only 策略 |
 | Spec-Impact | C1（清除 testnet 依赖）的规范基线 |

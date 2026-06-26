@@ -5,7 +5,7 @@
 | Field | Value |
 | --- | --- |
 | Status | Active |
-| Module-Version | v3.6.0 |
+| Module-Version | v3.7.1 |
 | Last-Updated | 2026-06-25 |
 | Scope | `module/binance` 数据新鲜度 SLA、stale 告警、schema drift 处理 |
 | Spec-Impact | FR-029（数据质量监控）对外承诺 |
