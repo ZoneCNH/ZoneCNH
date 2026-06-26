@@ -4,6 +4,8 @@
 # 用法:
 #   ./scripts/check-version-drift.sh binance v3.7.0 v3.7.1
 #       → 检查 binance 模块的 v3.7.0 引用是否已全部更新为 v3.7.1
+#   ./scripts/check-version-drift.sh --help
+#       → 打印覆盖范围数（供 agent 引用，避免硬编码）
 #
 # 退出码:
 #   0 — 零残留引用，通过
@@ -13,6 +15,13 @@
 #       会影响 25+ 个文件。CI 门禁确保这些文件在 PR 中同步更新，而非事后补丁。
 
 set -euo pipefail
+
+# --help: 打印覆盖范围数并退出（供 agent 动态引用，避免硬编码数字漂移）
+if [ "${1:-}" = "--help" ]; then
+    SCOPE_COUNT=$(grep -c '^# ── 范围' "$0")
+    echo "check-version-drift.sh — $SCOPE_COUNT 个覆盖范围（模块感知，动态依赖/模板）"
+    exit 0
+fi
 
 MODULE="${1:?Usage: $0 <module-name> <old-version> <new-version>}"
 OLD_VERSION="${2:?Usage: $0 <module-name> <old-version> <new-version>}"
