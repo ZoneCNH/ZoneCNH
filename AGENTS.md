@@ -237,10 +237,38 @@ Goal → Spec → Design → Plan → Tasks → Prompt → Code → Test → Rev
 
 Matrix 是横切追溯制品，贯穿所有阶段但不作为主流程阶段。
 
-### 模块级 Goal 文档命名规则
+### 模块目录结构规则
 
-- 模块级 Goal 文档固定为 `module/{module}/goal.md`。
-- 禁止新建 `module/{module}/goal/` 目录、`module/{module}/goal/1.md` 或 `goal/*.md` 多文件槽位；未来如需多版本 Goal，必须先更新 `docs/goal/00-authority-map.md`、`.config/goal/schema/rules.yaml` 和 `module/README.md`。
+模块规格制品按 Goal 驱动交付体系的管线层级组织为目录化结构：
+
+```text
+module/{module}/
+├── goal/            ← S1  Goal 层
+├── spec/            ← S2  Spec 层
+├── design/          ← S3  Design 层
+├── plan/            ← S4  Plan 层
+├── tasks/           ← S5  Tasks 层
+├── prompt/          ← S6  Prompt 层
+├── evidence/        ← S8-S11 合层（按版本组织）
+│   └── v<version>/
+│       ├── test/           ← S8 测试计划/用例/结果
+│       ├── review/         ← S9 审查记录
+│       ├── release/        ← S10 Release Manifest
+│       └── retrospective/  ← S11 复盘
+├── matrix/          ← 模块追溯（模块级 SSOT）
+├── gate/            ← 模块门禁（模块级 SSOT）
+├── schema/          ← 模块级 schema
+├── README.md
+└── CHANGELOG.md
+```
+
+> 管线阶段（S1-S11）：goal → spec → design → plan → tasks → prompt → (Code: /home/{module}) → test → review → release → retrospective
+> S8-S11 归并入 `evidence/{版本}/` 下按版本组织（一个发布周期一份）。
+> `.config/goal/` 为跨模块控制面 SSOT（Registry、Pipeline 状态）；模块级 `matrix/` `gate/` 为模块自身记录源。
+
+- 模块级 Goal 文档位于 `module/{module}/goal/goal.md`。
+- 各层可含子模块子目录（如 `client/`、`server/`），子模块复用相同目录结构。
+- `.config/goal/` 仍为 Registry、Matrix canonical edge、Gate 状态、Evidence Bundle 和 Pipeline 状态的跨模块控制面 SSOT；模块级 `matrix/`、`evidence/`、`registry/` 为模块本地投影，不得与 `.config/goal/` 控制面冲突。
 
 ### 关键文档
 

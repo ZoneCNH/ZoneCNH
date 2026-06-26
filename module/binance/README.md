@@ -98,10 +98,8 @@ module/binance/server
 
 ## Read Next
 
-- `SPEC.md`
-- `BOUNDARY-GATES.md`
-- `STANDARD.md`
-- `DATA-LIFECYCLE.md`
-- `RUNTIME-MAPPING.md`
-- `client/SPEC.md`
-- `server/SPEC.md`
+- `spec/SPEC.md`
+- `gate/BOUNDARY-GATES.md`
+- `design/DESIGN.md`
+- `matrix/TRACEABILITY.md`
+- `evidence/v3.7.1/`
