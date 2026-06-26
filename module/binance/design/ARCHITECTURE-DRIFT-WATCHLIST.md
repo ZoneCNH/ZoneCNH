@@ -1,7 +1,7 @@
 # module/binance ARCHITECTURE-DRIFT-WATCHLIST.md — 漂移监控点
 
-- Module-Version: v3.7.1
-- Last-Updated: 2026-06-25
+- Module-Version: v3.9.0
+- Last-Updated: 2026-06-26
 - 用途：列举 `module/binance/` 最易漂移的位置（违反 NAMING/RULES 的高发区），供 PR review / GC agent 逐项检查
 
 ---
@@ -116,6 +116,47 @@ grep -oP "Spec-Version: \Kv[0-9.]+" module/binance/SPEC.md
 **检测命令**（需 runtime 仓）：
 ```bash
 cd /home/binance && bash scripts/boundary-gates.sh 2>&1 | grep -E "(PASS|FAIL)"
+```
+
+---
+
+## D9. 限流模型漂移（秒 vs 分钟 weight）
+
+**风险级别**：HIGH
+**历史**：v3.8.0 及之前 SPEC FR-013/FR-025/§11.2.10 使用「每秒 weight」模型（`max_weight_per_second`、`backfill_token_rate=100 tokens/s`），与 Binance 实际的「每分钟滑动窗口 weight」（`X-MBX-USED-WEIGHT-1M` header）机制不匹配。v3.9.0 全面修正为分钟模型。
+**违反规则**：R11（v3.9.0 新增）
+**检测命令**：
+```bash
+# 检测 spec 中是否残留旧限流模型
+rg "max_weight_per_second|token_rate.*100" module/binance/spec/SPEC.md && echo "DRIFT D9: 限流模型回退到旧秒模型" || echo "OK"
+```
+
+---
+
+## D10. 缺口检测策略漂移（时间差 vs 序列）
+
+**风险级别**：HIGH
+**历史**：v3.8.0 FR-017 使用统一「相邻事件间隔 > 2× 预期间隔」检测所有事件类型的缺口，无法区分 trade（由 trade_id 序列驱动）、depth（由 updateId 序列驱动）、tick（事件驱动无固定间隔）。v3.9.0 重写为按事件类型的差异化策略。
+**违反规则**：R12（v3.9.0 新增）
+**检测命令**：
+```bash
+# 检测代码中是否使用通用时间间隔 gap 检测
+rg "2\s*\*\s*interval|2\s*\*\s*expected" /home/binance/internal/ -l --include='*.go' && echo "DRIFT D10: 缺口检测使用统一时间间隔法" || echo "OK"
+```
+
+---
+
+## D11. 双态分歧（Code-Done vs Evidence-Done）
+
+**风险级别**：MEDIUM
+**历史**：v3.8.0 及之前 FEATURES.md/ACCEPTANCE.md/TRACEABILITY.md 三份文档对同一 FR 的「Done」状态定义互相矛盾（FEATURES Code-Done vs ACCEPTANCE Evidence-Pending），导致无法从单一文档判断真实完成状态。v3.9.0 引入双态模型（Code-Done / Evidence-Done），三表各明确视角。
+**违反规则**：R4
+**检测命令**：
+```bash
+# 检测三表中 Code-Done 数量与 Evidence-Done 数量的偏差
+echo "FEATURES Done: $(rg -c '| FR-.*\| Done' module/binance/spec/FEATURES.md)"
+echo "ACCEPTANCE Evidence-Done: $(rg -c 'Evidence-Done' module/binance/spec/ACCEPTANCE.md)"
+# 偏差 > 10% 触发 D11 告警
 ```
 
 ---

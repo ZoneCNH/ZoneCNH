@@ -1,11 +1,11 @@
 # module/binance/server TRACEABILITY
 
 > 追溯矩阵 §1–§7，符合 `docs/governance/TRACEABILITY.md` 标准格式。
-> 数据来源：`module/binance/server/SPEC.md` v2.2.0。
+> 数据来源：`module/binance/spec/server/SPEC.md` v3.9.0（FR/BR 使用 root canonical 编号）。
 
-- Module-Version: v2.2.0（与 server SPEC Spec-Version 一致；root Module-Version v3.7.1）
-- Last-Updated: 2026-06-25
-- Spec-Reference: `module/binance/server/SPEC.md` v2.2.0
+- Module-Version: v3.9.0（FR/BR 编号统一为 root canonical；与 root SPEC v3.9.0 一致）
+- Last-Updated: 2026-06-27（v3.9.0 结构修复：config §11 引用化对齐根 §11.2 canonical；FR-017/025 server 侧实现状态 Drifted 见根 TRACEABILITY.md）
+- Spec-Reference: `module/binance/spec/server/SPEC.md` v3.9.0
 
 > **v2.1.1 变更摘要**：元数据对齐 server SPEC v2.1.0；保留 v2.1.0 的 FR/TC/AC 追溯结构；
 > TC-020/021 覆盖；FR-002→FR-005 编号修正（v2.0.0 漏收 Consumer Lifecycle 导致整体偏移）；
@@ -21,18 +21,18 @@
 
 | FR ID | 功能需求 | AC | TC ID(s) | Task | 实现状态 |
 |-------|----------|-----|----------|------|:--------:|
-| FR-001 | natsx Consumer Binding — durable consumer `binance-server`，禁止同进程调用 | AC-001 ~ AC-003 | TC-001, TC-002 | TASK-BINANCE-SERVER-010 | ⬜ Pending |
-| FR-002 | Consumer Lifecycle — 优雅关闭（SIGTERM 完成 in-flight Ack）、ack_wait 超时重投、进程重启自动恢复 | AC-031 ~ AC-032 | TC-020, TC-021 | TASK-BINANCE-SERVER-010 | ⬜ Pending |
-| FR-003 | Envelope Validation — 校验 product_line / instrument_key / event_type / event_time / idempotency_key 全部有效；非法消息 ManualNak | AC-004 ~ AC-006 | TC-003, TC-004 | TASK-BINANCE-SERVER-002 | ⬜ Pending |
-| FR-004 | Idempotent Acceptance — redisx SetNX 防止 JetStream 重投导致重复写入（key TTL 72h） | AC-007 ~ AC-009 | TC-005, TC-006 | TASK-BINANCE-SERVER-011 | ⬜ Pending |
-| FR-005 | Multi-Store Write — taosx WriteBatch（时序）+ postgresx Upsert（元数据）+ redisx SET（热缓存）并行写入；全部成功才进入 kafkax dispatch | AC-010 ~ AC-015 | TC-007, TC-008, TC-009 | TASK-BINANCE-SERVER-013, TASK-BINANCE-SERVER-012 | ⬜ Pending |
-| FR-006 | kafkax Dispatch — 处理成功后广播到下游 topic，symbol 为 partition key | AC-016 ~ AC-018 | TC-010, TC-011 | TASK-BINANCE-SERVER-014 | ⬜ Pending |
-| FR-007 | Gin Market API — /api/v1/market/* REST 接口，作为 market_data 唯一数据接口 | AC-019 ~ AC-024 | TC-012 ~ TC-015 | TASK-BINANCE-SERVER-015 | ⬜ Pending |
-| FR-007a | clickhousex Analytics API — /api/v1/analytics/vwap/top-movers/correlation OLAP 查询 | AC-033 ~ AC-035 | TC-022 | TASK-BINANCE-SERVER-015 | ⬜ Pending |
-| FR-008 | ossx Archival — 每日定时将 taosx 中超 RetentionDays 数据归档到对象存储；ETag 确认后删热数据 | AC-025 ~ AC-027 | TC-016, TC-017 | TASK-BINANCE-SERVER-016 | ⬜ Pending |
-| FR-009 | Boundary Enforcement — CI gate 阻断 server 导入 client/cs 包；go.mod 合规检查（含 clickhousex） | AC-028 ~ AC-030 | TC-018, TC-019 | TASK-BINANCE-SERVER-008 | ⬜ Pending |
-| FR-010 | clickhousex OLAP Storage — 每 5 分钟 ETL 聚合 taosx→clickhousex，为 analytics API 提供 OLAP 查询 | AC-036 ~ AC-038 | TC-023, TC-024 | TASK-BINANCE-SERVER-017 | ⬜ Pending |
-| FR-011 | Distributed Coordinator Lock — redisx SetNX 分布式锁，HA 场景下确保 coordinator 单点执行 | AC-039 ~ AC-040 | TC-025, TC-026 | TASK-BINANCE-SERVER-013 | ⬜ Pending |
+| FR-001 | natsx Consumer Binding — durable consumer `binance-server`，禁止同进程调用 | AC-001 ~ AC-003 | TC-001, TC-002 | TASK-BINANCE-SERVER-010 | ✅ Done |
+| FR-002 | Consumer Lifecycle — 优雅关闭（SIGTERM 完成 in-flight Ack）、ack_wait 超时重投、进程重启自动恢复 | AC-031 ~ AC-032 | TC-020, TC-021 | TASK-BINANCE-SERVER-010 | ✅ Done |
+| FR-003 | Envelope Validation — 校验 product_line / instrument_key / event_type / event_time / idempotency_key 全部有效；非法消息 ManualNak | AC-004 ~ AC-006 | TC-003, TC-004 | TASK-BINANCE-SERVER-002 | ✅ Done |
+| FR-004 | Idempotent Acceptance — redisx SetNX 防止 JetStream 重投导致重复写入（key TTL 72h） | AC-007 ~ AC-009 | TC-005, TC-006 | TASK-BINANCE-SERVER-011 | ✅ Done |
+| FR-005 | Multi-Store Write — taosx WriteBatch（时序）+ postgresx Upsert（元数据）+ redisx SET（热缓存）并行写入；全部成功才进入 kafkax dispatch | AC-010 ~ AC-015 | TC-007, TC-008, TC-009 | TASK-BINANCE-SERVER-013, TASK-BINANCE-SERVER-012 | ✅ Done |
+| FR-006 | kafkax Dispatch — 处理成功后广播到下游 topic，symbol 为 partition key | AC-016 ~ AC-018 | TC-010, TC-011 | TASK-BINANCE-SERVER-014 | ✅ Done |
+| FR-007 | Gin Market API — /api/v1/market/* REST 接口，作为 market_data 唯一数据接口 | AC-019 ~ AC-024 | TC-012 ~ TC-015 | TASK-BINANCE-SERVER-015 | ⚠️ Partial |
+| FR-007a | clickhousex Analytics API — /api/v1/analytics/vwap/top-movers/correlation OLAP 查询 | AC-033 ~ AC-035 | TC-022 | TASK-BINANCE-SERVER-015 | ⚠️ Partial |
+| FR-008 | ossx Archival — 每日定时将 taosx 中超 RetentionDays 数据归档到对象存储；ETag 确认后删热数据 | AC-025 ~ AC-027 | TC-016, TC-017 | TASK-BINANCE-SERVER-016 | ✅ Done |
+| FR-009 | Boundary Enforcement — CI gate 阻断 server 导入 client/cs 包；go.mod 合规检查（含 clickhousex） | AC-028 ~ AC-030 | TC-018, TC-019 | TASK-BINANCE-SERVER-008 | ✅ Done |
+| FR-010 | clickhousex OLAP Storage — 每 5 分钟 ETL 聚合 taosx→clickhousex，为 analytics API 提供 OLAP 查询 | AC-036 ~ AC-038 | TC-023, TC-024 | TASK-BINANCE-SERVER-017 | ✅ Done |
+| FR-011 | Distributed Coordinator Lock — redisx SetNX 分布式锁，HA 场景下确保 coordinator 单点执行 | AC-039 ~ AC-040 | TC-025, TC-026 | TASK-BINANCE-SERVER-013 | ⚠️ Partial |
 
 ---
 
@@ -40,15 +40,15 @@
 
 | BR ID | 业务规则 | 来源（SPEC §8） | 验证方式 | Task | 实现状态 |
 |-------|----------|----------------|----------|------|:--------:|
-| BR-001 | ManualAck 全链路写入后才 Ack — redisx SetNX + taosx + postgresx + kafkax handoff 全成功后才调用 msg.Ack() | BR-001 | TC-002: 处理失败→NakWithDelay 集成测试 | TASK-BINANCE-SERVER-010 | ⬜ |
-| BR-002 | redisx SetNX 幂等唯一性 — 相同 idempotency key 最多写入 taosx 一次（at-most-once storage）| BR-002 | TC-005, TC-006: SetNX 原子性集成测试 | TASK-BINANCE-SERVER-011 | ⬜ |
-| BR-003 | ManualAck Only After Durable Processing — validation + idempotency + durable storage + kafkax handoff 全完成才 Ack；失败路径使用 Nak/retry/dead-letter | BR-003 | TC-002: 写入失败→未 Ack 验证；TC-011: kafkax 失败→未 Ack | TASK-BINANCE-SERVER-010 | ⬜ |
-| BR-004 | Validation Failure → Terminal Reject — terminal_validation 失败不进入幂等/存储/fanout 管线 | BR-004 | TC-003, TC-004: 非法消息 Nak 且无下游调用 | TASK-BINANCE-SERVER-002 | ⬜ |
-| BR-005 | Admin Surface Isolation — admin 端点只能变更 server-local 状态；禁止修改 client connector、绕过 idempotency、暴露 secrets | BR-005 | admin endpoint auth test | TASK-BINANCE-SERVER-006 | ⬜ |
-| BR-006 | Server Must Not Import Client Internals — 禁止 import `module/binance/client`、`internal/cs`、gRPC ingest runtime | BR-006 | TC-018: CI gate grep 零匹配 | TASK-BINANCE-SERVER-008 | ⬜ |
-| BR-007 | Cold-Write-First — ossx ETag 验证通过后才从 taosx 删除归档段数据，禁止先删后写 | FR-008 约束 | TC-016: PutObject 失败→taosx 未删除验证 | TASK-BINANCE-SERVER-016 | ⬜ |
-| BR-008 | Server Owns Binance Storage — server 独占 taosx/postgresx/redisx/clickhousex/ossx（Binance 专属），market_data 禁止直连 | FR-005/FR-010 约束 | CI Gate: BOUNDARY-GATES.md §7 | TASK-BINANCE-SERVER-008 | ⬜ |
-| BR-009 | No cs Package — 禁止导入 `internal/cs`；禁止 client 与 server 同进程运行 | FR-009 约束 | CI Gate: BOUNDARY-GATES.md §5, §6 | TASK-BINANCE-SERVER-008 | ⬜ |
+| BR-001 | ManualAck 全链路写入后才 Ack — redisx SetNX + taosx + postgresx + kafkax handoff 全成功后才调用 msg.Ack() | BR-001 | TC-002: 处理失败→NakWithDelay 集成测试 | TASK-BINANCE-SERVER-010 | ✅ Done |
+| BR-002 | redisx SetNX 幂等唯一性 — 相同 idempotency key 最多写入 taosx 一次（at-most-once storage）| BR-002 | TC-005, TC-006: SetNX 原子性集成测试 | TASK-BINANCE-SERVER-011 | ✅ Done |
+| BR-003 | ManualAck Only After Durable Processing — validation + idempotency + durable storage + kafkax handoff 全完成才 Ack；失败路径使用 Nak/retry/dead-letter | BR-003 | TC-002: 写入失败→未 Ack 验证；TC-011: kafkax 失败→未 Ack | TASK-BINANCE-SERVER-010 | ✅ Done |
+| BR-004 | Validation Failure → Terminal Reject — terminal_validation 失败不进入幂等/存储/fanout 管线 | BR-004 | TC-003, TC-004: 非法消息 Nak 且无下游调用 | TASK-BINANCE-SERVER-002 | ✅ Done |
+| BR-005 | Admin Surface Isolation — admin 端点只能变更 server-local 状态；禁止修改 client connector、绕过 idempotency、暴露 secrets | BR-005 | admin endpoint auth test | TASK-BINANCE-SERVER-006 | ✅ Done |
+| BR-006 | Server Must Not Import Client Internals — 禁止 import `module/binance/client`、`internal/cs`、gRPC ingest runtime | BR-006 | TC-018: CI gate grep 零匹配 | TASK-BINANCE-SERVER-008 | ✅ Done |
+| BR-007 | Cold-Write-First — ossx ETag 验证通过后才从 taosx 删除归档段数据，禁止先删后写 | FR-008 约束 | TC-016: PutObject 失败→taosx 未删除验证 | TASK-BINANCE-SERVER-016 | ✅ Done |
+| BR-008 | Server Owns Binance Storage — server 独占 taosx/postgresx/redisx/clickhousex/ossx（Binance 专属），market_data 禁止直连 | FR-005/FR-010 约束 | CI Gate: BOUNDARY-GATES.md §7 | TASK-BINANCE-SERVER-008 | ✅ Done |
+| BR-009 | No cs Package — 禁止导入 `internal/cs`；禁止 client 与 server 同进程运行 | FR-009 约束 | CI Gate: BOUNDARY-GATES.md §5, §6 | TASK-BINANCE-SERVER-008 | ✅ Done |
 
 ---
 
@@ -221,7 +221,9 @@
 | BR→验证映射率 | 9 / 9 | 100% |
 | TC→FR 回溯率 | 26 / 26 | 100% |
 | AC→验证映射率 | 40 / 40 | 100% |
-| 实现完成率 | 0 / 12 FR | 0%（文档对齐 server SPEC v2.1.0，代码待实现） |
+| 实现完成率 | 9 Done / 3 Partial / 12 FR | 75% Done（代码实现完成；投影自 root TRACEABILITY Runtime-Anchor `/home/binance@f046e16`；Partial: FR-007/007a/011；TC 测试证据仍 Pending） |
+
+	> **v2.2.1 状态同步 (2026-06-26)**：FR/BR 实现状态从全 Pending 同步为 9 Done / 3 Partial，对齐 root TRACEABILITY v3.7.1 的 24 Done / 10 Partial / 10 Pending 投影。子模块 TC 仍保持 Pending（测试证据未独立闭合）。
 
 ---
 
@@ -236,3 +238,4 @@
 | 2026-06-21 | v2.0.0 | **全面重写**：gRPC/同进程 cs → natsx JetStream 分布式架构；FR-001~009 全部对齐 natsx/redisx/postgresx/taosx/kafkax/Gin/ossx；BR/NFR/TC/AC 全面更新 | ZoneCNH |
 | 2026-06-21 | v2.1.0 | **对齐当时的 server SPEC 基线**：补充 FR-002 Consumer Lifecycle（TC-020/021, AC-031/032）；FR 命名全面对齐 SPEC（FR-002→FR-003 Envelope Validation, FR-003→FR-004 Idempotent Acceptance, FR-004+005→FR-005 Multi-Store Write）；新增 FR-007a（clickhousex Analytics API, TC-022, AC-033~035）、FR-010（clickhousex OLAP, TC-023/024, AC-036~038）、FR-011（Coordinator Lock, TC-025/026, AC-039~040）；BR 从 6 条扩展至 9 条（对齐 SPEC BR-001~006 + Cold-Write-First/Server Owns Storage/No cs Package）；NFR 10→12；TC 19→26；AC 30→40 | ZoneCNH |
 | 2026-06-22 | v2.1.1 | 修正追溯矩阵元数据：对应 server SPEC v2.1.0；实现状态仍保持 Pending，代码待实现 | ZoneCNH |
+| 2026-06-26 | v2.2.1 | **P0 状态同步**：FR/BR 实现状态从全 Pending 同步为 9 Done / 3 Partial（Partial: FR-007/007a/011），对齐 root TRACEABILITY v3.7.1 Runtime-Anchor `/home/binance@f046e16`；TC/NFR 仍保持 Pending（子模块独立测试证据未闭合）；§6 仪表盘刷新 | ZCode |

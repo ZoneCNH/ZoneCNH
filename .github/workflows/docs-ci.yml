@@ -107,7 +107,9 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: 运行状态一致性检查
-        run: bash .github/ci/status-consistency-check.sh
+        run: |
+          bash .github/ci/status-consistency-check.sh
+          bash .github/ci/binance-status-consistency-check.sh
 
   # ── 6. Spec 结构校验 ────────────────────────────────────────
   spec-lint:

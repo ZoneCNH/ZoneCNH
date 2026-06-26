@@ -2,10 +2,10 @@
 
 `module/binance` is the Binance-specific Market Data C/S Module for ZoneCNH.
 
-- Spec-Version: v3.7.1 (root) / v2.1.1 (client) / v2.2.0 (server)
+- Spec-Version: v3.9.0 (root / client / server — 2026-06-26 内容正确性大修 + 2026-06-27 结构性修复：限流分钟模型、缺口检测按事件类型分策略、回填三级优先级、symbol生命周期、WS连接管理、退避参数补全、双态模型+Code-Drifted、config schema 字段名统一、退役文件 DEPRECATED、Appendix D 迁移)
 - Runtime-Version: v0.2.0（Runtime-Anchor: `/home/binance@f046e16`）
-- Delivery-State: FR-001~FR-044 spec/traceability registered; **2026-06-26 spec-gap-closure — Status-Projection `24 Done / 10 Partial / 10 Pending`**（含 v3.7.0 新增 FR-037~044 + v3.7.1 FR-012~030 行为规范补齐 + FR-031~036 Draft）。Runtime-Anchor `/home/binance@f046e16`; PR #145 + #1189 合并。Partial FR: FR-007, FR-007a, FR-011, FR-016, FR-017, FR-023, FR-024, FR-026, FR-027, FR-028。Pending FR: FR-037~044。
-- Last-Updated: 2026-06-26
+- Delivery-State: FR-001~FR-044 spec/traceability registered — Code `21 Done / 10 Partial / 3 Drifted / 10 Pending`；Evidence-Done 仅 FR-009（13 gates PASS）。Drifted FR: FR-013, FR-017, FR-025（v3.9.0 spec 内容正确性大修后 runtime 未对齐）。Partial FR: FR-007, FR-007a, FR-011, FR-016, FR-023, FR-024, FR-026, FR-027, FR-028。Pending FR: FR-031~044。
+- Last-Updated: 2026-06-27 (v3.9.0: 内容正确性大修 + 双态模型 + 结构性修复：config schema 统一 / Code-Drifted 四态 / 退役文件 DEPRECATED / Appendix D 迁移 / §14 目录清理)
 
 It is split into two submodules:
 
@@ -86,7 +86,7 @@ module/binance/server
   └─ Gin REST API -> market_data / downstream consumers
 ```
 
-详细版见 `DEEP-ANALYSIS.md` 的 §2.1 和 §5.1。
+详细版见 `design/DESIGN.md` §3（数据流）和 `spec/SPEC.md` §2（架构图）。历史深度分析已归档至 `design/DEEP-ANALYSIS-ARCHIVE-*.md`。
 
 ## GitHub Issue Sync Gate
 
@@ -94,7 +94,7 @@ module/binance/server
 
 [COMPUTED, HIGH] GitHub #1104~#1118 are synchronized as of 2026-06-25. #1106 is the documentation alignment item and is closed by this module/report alignment; #1104, #1105, and #1107~#1118 remain open until runtime/evidence closure.
 
-[COMPUTED, HIGH] 2026-06-25 alignment refresh: runtime anchor `/home/binance@f18a329`; current FR projection `24 Done / 10 Partial / 0 Pending`; Partial FR are FR-007, FR-007a, FR-011, FR-016, FR-017, FR-023, FR-024, FR-026, FR-027, and FR-028. Historical `28 Done / 2 Partial` and Plan007 `19 Done / 11 Partial` snapshots are retained only as history in `TRACEABILITY.md` and must not be used as current state.
+[COMPUTED, HIGH] 2026-06-27 alignment refresh: runtime anchor `/home/binance@f046e16`; current FR projection `21 Done / 10 Partial / 3 Drifted / 10 Pending`; Drifted FR are FR-013, FR-017, FR-025 (v3.9.0 spec content correctness overhaul not yet reflected in runtime); Partial FR are FR-007, FR-007a, FR-011, FR-016, FR-023, FR-024, FR-026, FR-027, and FR-028. Historical `24 Done / 10 Partial`, `28 Done / 2 Partial` and Plan007 `19 Done / 11 Partial` snapshots are retained only as history in `TRACEABILITY.md` and must not be used as current state.
 
 ## Read Next
 

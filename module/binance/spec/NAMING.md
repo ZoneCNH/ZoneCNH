@@ -1,8 +1,8 @@
 # module/binance NAMING.md — 命名 SSOT
 
-- Module-Version: v3.7.1
+- Module-Version: v3.9.0
 - Last-Updated: 2026-06-26
-- Applies-To: `module/binance/SPEC.md` v3.7.1, `module/binance/RULES.md` v3.7.1
+- Applies-To: `module/binance/SPEC.md` v3.9.0, `module/binance/gate/RULES.md` v3.9.0
 - Scope: product_line、event_type、natsx subject、Kafka topic、TDengine stable、Redis key、REST endpoint、OSS path
 
 > [COMPUTED, HIGH] 本文件是 `module/binance` 命名权威入口。所有新增规格、任务和 runtime 代码必须使用本文件的 canonical token；历史别名只允许出现在本文件、治理报告、漂移清单和归档 task 中。

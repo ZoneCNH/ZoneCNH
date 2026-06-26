@@ -3,8 +3,9 @@
 ## 1. Metadata
 
 - Status: Approved
-- Spec-Version: v2.1.1
-- Last-Updated: 2026-06-25 (runtime metadata aligned with parent `module/binance/SPEC.md`)
+- Spec-Version: v3.9.0
+- Last-Updated: 2026-06-26 (v3.9.0: 幂等键策略修正 — 按事件类型强制维度；depth key 固定 U/u updateId；trade key 强制 trade_id；bar key 强制 open_time+interval；tick key 使用 event_time+bid+ask。§17 性能预算扩展 — WS 吞吐、内存预算、延迟分解)
+- Last-Updated: 2026-06-26 (v2.1.1→v3.8.0: 结构性修复 — 废除本地 FR/BR 编号，全部改为引用根 SPEC canonical FR/BR；§7 重构为根 FR 的 client 实现视图；合并 ENDPOINTS.md 为附录）
 - Owner: ZoneCNH
 - Layer: 数据域 · Binance 交易所接入
 - Runtime-Version: v0.2.0
@@ -88,11 +89,13 @@ client 完成发布即结束职责。持久化、幂等、存储、API 全部由
 
 ---
 
-## 7. Functional Requirements
+## 7. Functional Requirements（Client 实现视图）
 
-### FR-001: Product-Line Catalog
+> **编号规则（v3.8.0 统一）**：本节以根 SPEC canonical FR 编号为标题，补充 client 特有的 WHEN/THEN 实现细节。不定义独立 FR 编号。完整 FR 定义见 [根 SPEC](../SPEC.md) §7。
 
-**功能描述**：维护 Binance 产品线目录，每条产品线可独立配置和启停。
+### FR-001: Product-Line Support（client 实现）
+
+**Client 实现范围**：维护四产品线 catalog + connector 管理 + catalog 热重载。根 SPEC FR-001 的 canonical 定义见 [SPEC.md](../SPEC.md) §7。
 
 **WHEN** client 启动
 **THEN** 加载产品线目录，包含 Spot、USDⓈ-M Futures、COIN-M Futures、Options 四条产品线
@@ -104,102 +107,26 @@ client 完成发布即结束职责。持久化、幂等、存储、API 全部由
 **WHEN** 查询 catalog entry
 **THEN** 返回包含 exchange、product_line、instrument_type、symbol、base_asset、quote_asset、margin_asset、settlement_asset、expiry、strike、option_type、contract_code、price precision、quantity precision、status 的完整条目
 
-### FR-002: Instrument Parser
+### FR-002: Instrument Identity（client 实现）
 
-**功能描述**：将 Binance 原生符号和交易所元数据转换为规范身份组件。
+**Client 实现范围**：Binance symbol 解析器，输出 identity 组件供 mapper 使用。根 SPEC FR-002 的 canonical 定义见 [SPEC.md](../SPEC.md) §7。
 
 **WHEN** 输入 Binance 原生 symbol 和 exchange metadata
-**THEN** 解析器输出 identity 组件，可区分：
-- `BTCUSDT` Spot
-- `BTCUSDT` USDⓈ-M Perpetual
-- `BTCUSD` COIN-M Perpetual
-- `BTC-YYYYMMDD-STRIKE-C` Option
-- `BTC-YYYYMMDD-STRIKE-P` Option
+**THEN** 解析器输出 identity 组件，可区分：Spot `BTCUSDT`、USDⓈ-M `BTCUSDT` Perpetual、COIN-M `BTCUSD` Perpetual、Option `BTC-YYYYMMDD-STRIKE-C/P`
 
 **WHEN** 输入无法解析的 symbol
 **THEN** 返回错误，不产生歧义的身份映射
 
-**WHEN** parser 输出被 mapper 使用
-**THEN** 输出作为 `domain_market` 规范类型的输入，不定义独立的规范枚举
+### FR-003: natsx Communication（client 实现）
 
-### FR-003: Product-Line Connectors
-
-**功能描述**：每条产品线提供一致的 connector，暴露内部事件流。
-
-**WHEN** 启用某条产品线
-**THEN** 对应 connector 建立连接并开始采集
-
-**WHEN** 连接断开
-**THEN** connector 自动重连，恢复订阅
-
-**WHEN** 收到交易所限速响应
-**THEN** connector 以限速感知策略恢复
-
-**WHEN** connector 收到原始事件
-**THEN** 捕获原始 payload、记录本地时间戳、标注 product_line，输出统一格式的内部事件流
-
-**WHEN** 禁用某条产品线
-**THEN** connector 优雅关闭连接，不再产生新事件
-
-### FR-004: Raw Event Normalization
-
-**功能描述**：将原始事件规范化为内部 client 事件。
-
-**WHEN** connector 输出原始事件
-**THEN** 规范化后的事件保留：product_line、source stream、raw symbol、event type、exchange event time、local receive time、raw payload reference 或 compact payload、sequence/update ids（如可用）
-
-**WHEN** 规范化完成
-**THEN** 事件进入 canonical mapping 阶段
-
-### FR-005: Canonical Mapping
-
-**功能描述**：将规范化 client 事件转换为 domain_market 规范行情事件。
-
-**WHEN** 规范化事件就绪
-**THEN** mapper 使用 `module/domain_market` 领域语义转换
-
-**WHEN** 映射完成
-**THEN** 输出规范行情事件，类型系统完全依赖 `domain_market`
-
-**WHEN** 映射遇到无法识别的 event type
-**THEN** 返回错误，不生成半规范事件
-
-### FR-006: Idempotency Key Generation
-
-**功能描述**：生成跨重试稳定的幂等键。
-
-**WHEN** 事件进入 publisher 前
-**THEN** 生成幂等键，维度包括：exchange、product_line、instrument_key、event_type、event_time 或 source sequence、interval/open time（K 线）、trade id（成交，如可用）、update id range（深度，如可用）
-
-**WHEN** 不同 event type 需要不同 key 策略
-**THEN** 按 event type 选择对应 key 策略
-
-**WHEN** 同一事件重试
-**THEN** 幂等键不变（跨重试稳定）
-
-### ~~FR-007~~: ~~Spool~~ [ARCHIVED v2.0.0]
-
-> **ARCHIVED**：SQLite spool 已归档，由 natsx JetStream 持久化替代（详见 server FR-010）。
-
----
-
-### ~~FR-008~~: ~~Checkpoint~~ [ARCHIVED v2.0.0]
-
-> **ARCHIVED**：Checkpoint 已归档，由 JetStream durable consumer 替代。
-
----
-
-### FR-009: natsx Publisher
-
-**功能描述**：通过 natsx JetStream 发布规范化事件，同步等待 PubAck 确认持久化。
+**Client 实现范围**：natsx JetStream publisher。根 SPEC FR-003 的 canonical 定义见 [SPEC.md](../SPEC.md) §7。Server 侧 consumer 见 Server SPEC。
 
 **WHEN** 规范化事件生成幂等键后
 **THEN** 构造 `domain_market.MarketFactEnvelope` JSON payload，调用 `js.Publish(subject, payload)` 同步发布
+**AND** subject 格式：`binance.market.{product_line}.{event_type}`
 
 **WHEN** JetStream 返回 PubAck
 **THEN** 投递视为成功；JetStream 已在 NATS 集群持久化该消息
-
-client 仅作为 JetStream producer；NATS Server / JetStream 由外部平台服务提供。
 
 **WHEN** PubAck 超时或 NATS 连接断开
 **THEN** 内存队列（有界，backpressure 阈值可配置）暂存事件；指数退避重连后重发；重发消息由 server redisx SetNX 幂等过滤
@@ -207,39 +134,120 @@ client 仅作为 JetStream producer；NATS Server / JetStream 由外部平台服
 **WHEN** 内存队列达到 backpressure 阈值
 **THEN** 触发 `ErrNATSBackpressure`，告警，暂停新事件采集
 
-**WHEN** client 进程重启
-**THEN** 内存队列清空，从当前 Binance WS 连接重新采集；JetStream durable consumer 确保 server 侧无数据丢失
+### FR-004: At-Least-Once Delivery
 
-### FR-010: Admin Surface
+> Client 侧不直接实现 FR-004（由 Server 侧 JetStream durable consumer + ManualAck 保证）。Client 职责：发布 + 等待 PubAck + 内存队列退避重试。
 
-**功能描述**：提供 Gin admin 端点，仅操作本地状态。
+### FR-005: Idempotent Acceptance
 
-**WHEN** 访问 `/healthz`
-**THEN** 返回 client 进程健康状态
+> Client 职责：生成跨重试稳定的幂等键（见下方 FR-005 Key Generation）。Server 侧负责 SetNX 验收。根 SPEC FR-005 的 canonical 定义见 [SPEC.md](../SPEC.md) §7。
 
-**WHEN** 访问 `/readyz`
-**THEN** 返回 client 就绪状态
+#### FR-005 Key Generation（client 实现）
 
-**WHEN** 访问 `/debug/*`
-**THEN** 返回调试信息（pprof 等）
+**WHEN** 事件进入 publisher 前
+**THEN** 生成幂等键，**按事件类型强制维度**（不使用"如可用"策略）：
+  - **trade**：`{exchange}:{product_line}:{symbol}:trade:{trade_id}`。`trade_id` 为 Binance aggTrade `a` 字段（单调递增整数）。**禁止降级为仅 event_time**（同一毫秒内可能有多笔成交）
+  - **bar**：`{exchange}:{product_line}:{symbol}:bar:{interval}:{open_time}`。`interval` 和 `open_time` 均为必填维度
+  - **depth**：`{exchange}:{product_line}:{symbol}:depth:{U}:{u}`。`U` 为 firstUpdateId，`u` 为 lastUpdateId（Binance depth 增量窗口）。使用窗口首尾 updateId 而非"如可用"
+  - **tick**（bookTicker）：`{exchange}:{product_line}:{symbol}:tick:{event_time}:{bid_price}:{ask_price}`。bookTicker 无 sequence ID，使用 event_time + 价位组合保证唯一性
+  - **funding_rate**：`{exchange}:{product_line}:{symbol}:funding_rate:{funding_time}`
+  - **mark_price**：`{exchange}:{product_line}:{symbol}:mark_price:{event_time}`
 
-**WHEN** 访问 `/admin/*`
-**THEN** 提供本地管理操作：list enabled product lines、list active streams、pause/resume product-line collection、show natsx publisher stats（queue depth、puback latency）、trigger safe catalog reload
+**WHEN** 不同 event type 需要不同 key 策略
+**THEN** 按 event type 选择对应 key 策略
 
-**WHEN** admin 操作涉及修改
-**THEN** 不修改 server 状态、不清理或伪造 JetStream PubAck / consumer state、不暴露 secrets、不触发交易动作
+**WHEN** 同一事件重试
+**THEN** 幂等键不变（跨重试稳定）
+
+### FR-006a/6b/6c/6d: Storage
+
+> Client 不持有存储。taosx/postgresx/redisx/ossx 全部属于 Server。
+
+### FR-007: Gin Market API
+
+> Client 不提供 Market API（由 Server Gin :8080 提供）。
+
+### FR-008: kafkax Downstream Broadcast
+
+> Client 不参与 kafkax dispatch（由 Server 负责）。
+
+### FR-009: Boundary Enforcement（client 侧）
+
+**Client 实现范围**：CI gate 强制 client 不得 import server internals。根 SPEC FR-009 的 canonical 定义见 [SPEC.md](../SPEC.md) §7。
+
+**WHEN** client 代码尝试 import server internal 包
+**THEN** CI boundary gate 失败（`go list -deps | grep 'binance/server'` 检测到违规 import）
+
+**WHEN** client 代码尝试 import gRPC / sqlite3
+**THEN** CI gate 失败（`grep -qE 'google.golang.org/grpc|go-sqlite3'` 检测到违规 import）
+
+### FR-012: Stream Session Lifecycle（client 实现）
+
+**Client 实现范围**：WebSocket stream 会话管理。根 SPEC FR-012 的 canonical 定义见 [SPEC.md](../SPEC.md) §7。详见根 SPEC WHEN/THEN。
+
+### FR-013: Exchange Reliability Controls（client 实现）
+
+**Client 实现范围**：retry budget、rate-limit、clock skew 检测。根 SPEC FR-013 的 canonical 定义见 [SPEC.md](../SPEC.md) §7。详见根 SPEC WHEN/THEN。
+
+### FR-014: Runtime Stream Observability（client 实现）
+
+**Client 实现范围**：admin API 暴露 stream 状态 + Prometheus metrics。根 SPEC FR-014 的 canonical 定义见 [SPEC.md](../SPEC.md) §7。详见根 SPEC WHEN/THEN。
+
+### FR-015: Runtime Pause/Resume/Drain（client 实现）
+
+**Client 实现范围**：admin 端点控制 stream 生命周期。根 SPEC FR-015 的 canonical 定义见 [SPEC.md](../SPEC.md) §7。详见根 SPEC WHEN/THEN。
+
+### FR-016: Historical Backfill Planner（client 实现）
+
+**Client 实现范围**：backfill job 创建、窗口校验、游标持久化。根 SPEC FR-016 的 canonical 定义见 [SPEC.md](../SPEC.md) §7。详见根 SPEC WHEN/THEN。
+
+### FR-019: Backfill Resource Governance（client 实现）
+
+**Client 实现范围**：并发上限、取消游标持久化。根 SPEC FR-019 的 canonical 定义见 [SPEC.md](../SPEC.md) §7。详见根 SPEC WHEN/THEN。
+
+### FR-020: Funding Rate Event Support（client 实现）
+
+**Client 实现范围**：funding_rate 事件的 mapping 与 publish。根 SPEC FR-020 的 canonical 定义见 [SPEC.md](../SPEC.md) §7。详见根 SPEC WHEN/THEN。
+
+### FR-021: Mark and Index Price Support（client 实现）
+
+**Client 实现范围**：mark_price 事件的 mapping 与 publish。IndexPrice 作为事件字段承载。根 SPEC FR-021 的 canonical 定义见 [SPEC.md](../SPEC.md) §7。详见根 SPEC WHEN/THEN。
+
+### FR-024: Runtime Config Hot Reload（client 实现）
+
+**Client 实现范围**：`POST /api/v1/admin/symbols/reload` 触发 catalog reload + full reconnect/no-restart 边界；按 tier 的增量 stream diff 归属 FR-036（ADR-004）。根 SPEC FR-024 的 canonical 定义见 [SPEC.md](../SPEC.md) §7。详见根 SPEC WHEN/THEN。
+
+### FR-025: Backfill Throttle & Priority（client 实现）
+
+**Client 实现范围**：分钟 weight 预算 + P0/P1/P2 三级优先级（P0 实时 30% / P1 repair 20% / P2 cold_start 50%）。根 SPEC FR-025 的 canonical 定义见 [SPEC.md](../SPEC.md) §7。详见根 SPEC WHEN/THEN。
+
+### FR-030: Options Chain Raw Field Pass-through（client 实现）
+
+**Client 实现范围**：Options 原始字段透传（Greeks 等）。根 SPEC FR-030 的 canonical 定义见 [SPEC.md](../SPEC.md) §7。详见根 SPEC WHEN/THEN。
+
+**WHEN** client 收到 Binance Options WebSocket 事件
+**THEN** 解析全部原始字段，不做字段裁剪
+**AND** Options 特有字段（`delta`、`gamma`、`theta`、`vega`、`impliedVolatility`、`openInterest`、`strikePrice`、`optionType`、`expiryDate`、`underlying`）原样保留在 MarketFactEnvelope 的 `raw_fields` map 中
 
 ---
 
-## 8. Business Rules
+## 8. Business Rules（Client 实现约束）
 
-### BR-001: natsx PubAck — 发布确认语义
+> **编号规则（v3.8.0 统一）**：所有 BR 使用根 SPEC canonical 编号。本节仅列出 client 侧特有的实现约束，不定义独立 BR 编号。完整 BR 定义见 [根 SPEC](../SPEC.md) §8。
+
+### BR-002: Client Must Not Import Server Internals（根 BR-002 的 client 侧约束）
+
+**约束**：`module/binance/client` 的 Go import 图中不得出现 `module/binance/server` 的任何包。
+
+**违反时**：CI gate 的 `boundary-check` 步骤（`go list -deps | grep 'binance/server'`）检测到违规 import，构建失败。PR 禁止合并。
+
+### BR-004: natsx PubAck — 发布确认语义（根 BR-004 的 client 侧约束）
 
 **约束**：client 必须调用 `js.Publish()` 并同步等待 `PubAck` 返回，确认消息已持久化到 JetStream，才视为发布成功。
 
 **违反时**：若不等待 PubAck 直接返回，NATS 网络抖动时消息可能丢失，server 侧无法感知。
 
-### BR-002: natsx 发布状态机
+### BR-004a: natsx 发布状态机（根 BR-004 的 client 侧约束）
 
 **约束**：publisher 内部状态机仅允许以下转换：
 
@@ -251,25 +259,19 @@ pending → publishing → pub_acked
 
 禁止 `pub_acked → publishing`（重复发布已确认事件）。
 
-**违反时**：状态转换被 publisher 层拦截，返回错误并记录日志，不重复发布。
-
-### BR-003: Client 不能 import server internals
-
-**约束**：`module/binance/client` 的 Go import 图中不得出现 `module/binance/server` 的任何包。
-
-**违反时**：CI gate 的 `boundary-check` 步骤（`go list -deps | grep 'binance/server'`）检测到违规 import，构建失败。PR 禁止合并。
-
-### BR-004: Client 不能 import storage/query/strategy
+### BR-007: Wire Contract Externality（根 BR-007 的 client 侧约束）
 
 **约束**：`module/binance/client` 的 Go import 图中不得出现 `storage/`、`query/`、`strategy/` 包。
 
-**违反时**：同 BR-003，CI gate 检测到违规 import 后构建失败。
+**违反时**：同 BR-002，CI gate 检测到违规 import 后构建失败。
 
-### BR-005: 产品线身份必须唯一
+### BR-008: Idempotency Key Stability（根 BR-008 的 client 侧约束）
 
-**约束**：同一 symbol 在不同产品线中必须产生不同的规范身份（如 `BTCUSDT` Spot 与 `BTCUSDT` USDⓈ-M Perpetual 必须是两个不同的 instrument key）。
+**约束**：client 生成的 idempotency key 必须在 retry 场景下稳定。key 基于 exchange + product_line + instrument_key + event_type + event_time/source_sequence 等确定性维度。
 
-**违反时**：mapper 检测到身份碰撞，拒绝映射并返回错误。
+### BR-009: Admin Boundary（根 BR-009 的 client 侧约束）
+
+**约束**：client admin 仅可变更 client-local state。禁止修改 server 状态、清理或伪造 JetStream PubAck / consumer state、暴露 secrets、触发交易动作。
 
 ---
 
@@ -401,21 +403,22 @@ const (
 
 ## 11. Config Schema
 
-| 配置项 | 类型 | 默认值 | 说明 |
-|--------|------|--------|------|
-| `client.product_lines` | `[]string` | `["spot"]` | 启用的产品线列表 |
-| `nats.url` | `string` | `nats://127.0.0.1:4222` | 外部 NATS JetStream 连接地址；client 不内嵌 NATS |
-| `nats.stream` | `string` | `BINANCE_MARKET` | JetStream Stream 名称 |
-| `nats.auth.user` | `string` | `admin` | NATS 用户名 |
-| `nats.auth.password_env` | `string` | `FOUNDATIONX_NATS_PASSWORD` | NATS 密码环境变量名；明文只来自本地 secret/env |
-| `publisher.publish_ack_timeout` | `duration` | `5s` | PubAck 等待超时 |
-| `publisher.max_publish_retry` | `int` | `5` | 最大发布重试次数 |
-| `publisher.backpressure_queue_size` | `int` | `10000` | 内存队列最大事件数 |
-| `client.admin_port` | `int` | `8081` | Gin admin 端口 |
-| `client.binance_api_key` | `string` | 从环境变量读取 | Binance API Key（敏感） |
-| `client.binance_secret_key` | `string` | 从环境变量读取 | Binance Secret Key（敏感） |
+> **Canonical source**：Client 完整配置见 [`SPEC.md`](../SPEC.md) §11.1 Client Config（`binance-client.yaml`）。以下仅列出 client 特有补充说明。
 
-> 敏感配置（API Key、Secret Key）不设默认值，必须从环境变量或 `configx` 安全后端获取。
+### Client 特有配置说明
+
+| 配置键 | 类型 | 默认值 | 说明 |
+|--------|------|--------|------|
+| `binance.product_lines` | `[]string` | `["spot"]` | 启用的产品线列表。canonical 字段名见根 §11.1 |
+| `binance.api_key_env` | `string` | `BINANCE_API_KEY` | API Key 环境变量名（敏感，不设默认值） |
+| `binance.secret_key_env` | `string` | `BINANCE_SECRET_KEY` | Secret Key 环境变量名（敏感，不设默认值） |
+| `publisher.publish_ack_timeout` | `duration` | `5s` | PubAck 等待超时（client 侧 publisher 行为参数） |
+| `publisher.backpressure_queue_size` | `int` | `10000` | 内存队列最大事件数，达阈值时暂停采集 |
+| `admin.bind` | `string` | `:8081` | Gin admin HTTP 绑定地址（/healthz /readyz） |
+
+> **字段名规范**：所有 client 配置键使用 `binance.*` / `nats.*` / `publisher.*` / `retry.*` / `admin.*` 前缀，与根 §11.1 canonical 一致。禁止使用 `client.*` 前缀（历史遗留字段名，已废弃）。
+>
+> Client 不配置：redis / postgres / taos / clickhouse / kafka / oss / Gin API — 这些全部属于 server（根 §11.2）。
 
 ---
 
@@ -445,7 +448,7 @@ const (
 | 重连不丢事件 | connector WebSocket 断开 | connector 自动重连；重连期间产生的事件暂存内存队列；队列满触发背压告警 |
 | NATS 连接断开 | natsx 连接不可达 | publisher 退避重连；内存队列持续累积；重连后批量发布；重发由 server 幂等过滤 |
 | 内存队列满 | 队列达到 backpressure_queue_size | 触发 `ErrNATSBackpressure`，暂停采集；等待队列消化后恢复 |
-| 空 product_lines 配置 | `client.product_lines` 为空 | client 启动但不启动任何 connector，admin 可操作 |
+| 空 product_lines 配置 | `binance.product_lines` 为空 | client 启动但不启动任何 connector，admin 可操作 |
 | 并发 connector 发布 | 多个 connector 同时写入内存队列 | channel-based 并发安全；单 goroutine drain 队列到 natsx |
 | NATS PubAck 超时 | Publish 等待超过 `publish_ack_timeout` | 重试发布；超过 `max_publish_retry` 后触发 `ErrNATSPubAck` 告警 |
 | 进程崩溃 | 任意时刻 SIGKILL | 内存队列未 PubAck 事件丢失；重启后从 WS 重新采集；server durable consumer 天然幂等 |
@@ -598,6 +601,11 @@ module/binance/server
 | admin `/healthz` | 延迟 P99 | < 1ms | benchmark |
 | 单 connector 采集 | 吞吐 | > 500 events/s | 集成 benchmark |
 | client 内存稳态 | 内存 | < 128MB | `go test -benchmem` long-running test |
+| client RSS memory（steady state） | RSS | ≤ 256MB (P99) | `/debug/vars` runtime.MemStats |
+| WS message throughput（单 product_line） | 吞吐 | ≥ 10,000 msg/s (P99) | 集成 benchmark（FR-012） |
+| Client E2E contribution（receive→publish） | 延迟 P95 | < 50ms（同区域部署） | 集成 benchmark（FR-029 延迟预算分解） |
+
+> v3.9.0 新增 WS 吞吐量（≥10K msg/s）、RSS 内存上限（256MB）、端到端延迟预算分解（client<50ms）。原 128MB 为 `benchmem` 稳态指标，保留作为基准；RSS 256MB 为生产部署硬上限。
 
 ---
 
@@ -733,3 +741,32 @@ module/binance/server
 | OQ-005 | 是否需要支持 Binance WebSocket 多路复用（组合流）以减少连接数？ | 待评估 | - |
 | OQ-006 | 是否需要支持 compressed payload 传输以降低 `natsx` / JetStream 带宽？ | 待评估 | - |
 | OQ-007 | 是否需要支持 client 横向扩展（多实例分片采集不同产品线）？ | 待评估 | - |
+
+---
+
+## Appendix A: Mainnet-Only Endpoint Strategy（原 `ENDPOINTS.md`，v3.8.0 合并）
+
+> 来源：`module/binance/spec/ENDPOINTS.md`（v3.7.1 Active），2026-06-26 合并入本附录。原文件保留为历史参考。
+
+### A.1 四产品线 Mainnet 端点清单
+
+| 产品线 | WS StreamBase | REST Base | 常量名 |
+| --- | --- | --- | --- |
+| spot | `wss://stream.binance.com:9443` | `https://api.binance.com` | `MainnetSpotStreamBaseURL` / `MainnetRESTBaseURL` |
+| USDⓈ-M Futures (um_perp) | `wss://fstream.binance.com` | `https://fapi.binance.com` | `UMPerpStreamBaseURL` |
+| COIN-M Futures (cm_perp) | `wss://dstream.binance.com` | `https://dapi.binance.com` | `CMPerpStreamBaseURL` |
+| Options | `wss://fstream.binance.com/public` | `https://vapi.binance.com` | `OptionsStreamBaseURL` |
+
+### A.2 Mainnet-Only 策略
+
+1. **release evidence 禁止 testnet**：所有证据文件必须基于 mainnet 端点
+2. **集成测试用 mainnet**：`test/e2e/mainnet_live_test.go` gate `BINANCE_MAINNET_LIVE`
+3. **testnet 代码保留为环境抽象**：`endpoints.go` 的 `Testnet*` 常量保留（开发/沙箱用），清除的是以 testnet 作为 release 证据的做法
+
+### A.3 Evidence Gates
+
+| Gate | 证据 |
+| --- | --- |
+| testnet evidence 清除 | `release/evidence/binance/` 无 testnet URL 残留 |
+| mainnet 矩阵就绪 | `mainnet-coverage-matrix.txt` 存在 |
+| 四线端点正确 | `endpoints.go` 常量与官方文档一致 |
