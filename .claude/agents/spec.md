@@ -106,7 +106,7 @@ grep -rl "v{OLD}" README.md ARCHITECTURE.md STATUS.md module/README.md \
 **6b — 验证零残留（阻断条件）：** 手动 grep 和 CI 门禁脚本均可使用。优先使用脚本，因其覆盖范围更广且具备智能过滤能力。
 
 ```bash
-# 优先：运行 CI 门禁脚本（覆盖 6 个范围，具备智能过滤、模块感知）
+# 优先：运行 CI 门禁脚本（范围数见 --help，模块感知，动态依赖/模板）
 bash scripts/check-version-drift.sh {name} {OLD} {NEW}
 
 # 备用：手动验证（若脚本不可用）
