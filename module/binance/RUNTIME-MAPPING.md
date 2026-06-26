@@ -1,6 +1,6 @@
-# module/binance RUNTIME MAPPING v3.6.0
+# module/binance RUNTIME MAPPING v3.7.1
 
-> 版本：v3.6.0
+> 版本：v3.7.1
 > Module-Version: v3.6.0
 > 更新日期：2026-06-25
 > 替代：v1.0.0（gRPC + SQLite spool 架构）
