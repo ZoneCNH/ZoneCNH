@@ -4,11 +4,11 @@
 - **来源**：[`report/binance/spec-structural-analysis-20260627.md`](../../report/binance/spec-structural-analysis-20260627.md) 生产级可发布差距分析
 - **Spec-Version**：v3.9.0
 - **Runtime-Anchor**：`/home/binance@f046e16`
-- **当前状态**：v0.2.0 可编译可发布，但**不可生产运营**；Code-State **22 Done / 26 Partial / 0 Drifted / 0 Pending**；Evidence-State **1 Done (FR-009) / 43 Pending**；7 PRG Evidence-Pending / Code-Partial anchors；FR-031~044 为 Code-Partial / Evidence-Pending。
+- **当前状态**：v0.2.0 可编译可发布，但**不可生产运营**；Code-State **23 Done / 25 Partial / 0 Drifted / 0 Pending**；Evidence-State **1 Done (FR-009) / 43 Pending**；7 PRG Evidence-Pending / Code-Partial-or-Code-Done anchors；FR-037 为 Code-Done / Evidence-Pending；FR-031~036、FR-038~044 为 Code-Partial / Evidence-Pending。
 
-> [COMPUTED, HIGH] 本文件是 spec 层结构性修复（MA-1~MA-4 + MO-2，已完成）之后的**剩余未完成项**清单。完成状态基于 2026-06-27 对 spec 文件和 `/home/binance` runtime 代码的交叉验证；P0-10、P1-6、P2-8 以及 legacy mapping 等文档可验证状态已同步为完成，runtime/外部环境项仍保留为未完成或阻塞。
+> [COMPUTED, HIGH] 本文件是 spec 层结构性修复（MA-1~MA-4 + MO-2，已完成）之后的**剩余未完成项**清单。完成状态基于 2026-06-27 对 spec 文件和 `/home/binance` runtime 代码的交叉验证；P0-5、P0-10、P1-6、P2-8 以及 legacy mapping 等文档可验证状态已同步为完成，runtime/外部环境项仍保留为未完成或阻塞。
 >
-> [COMPUTED, MED] 2026-06-27 agent team 再审计发现若干 runtime 代码原语已出现（trace context header、append-only audit DDL、exchangeInfo refresher、FileHistoryStateStore、persistent DLQ writer hook），但 Runtime-Anchor 投影、direct TC、live/evidence 或 release gate 自动化未闭合；本文件按“代码原语存在≠验收闭合”同步为部分完成/证据待闭合。
+> [COMPUTED, MED] 2026-06-27 agent team 再审计发现若干 runtime 代码原语已出现（trace context header、append-only audit DDL、exchangeInfo refresher、FileHistoryStateStore、persistent DLQ writer hook），且 FR-037 的 XGO feature flag、canary gate、rollback runbook、env template 与 readiness guard 已补齐本地代码门禁；但 Runtime-Anchor 投影、direct TC、live/evidence 或外部生产演练未闭合的条目仍按“代码原语存在≠验收闭合”同步为部分完成/证据待闭合。
 
 ---
 
@@ -16,14 +16,14 @@
 
 | 优先级      |  总数  | 已完成 | 未完成 | 完成率  |
 | ----------- | :----: | :----: | :----: | :-----: |
-| P0 阻塞     |   10   |   9    |   1    |   90%   |
+| P0 阻塞     |   10   |   10   |   0    |  100%   |
 | P1 强烈建议 |   8    |   3    |   5    |   38%   |
 | P2 可延后   |   8    |   3    |   5    |   38%   |
-| **合计**    | **26** | **15** | **11** | **58%** |
+| **合计**    | **26** | **16** | **10** | **62%** |
 
 ---
 
-## P0 阻塞 — 不补全不可上线（1 项未完成）
+## P0 阻塞 — 本地可闭合项已完成（0 项未完成）
 
 ### P0-1：FR-013 runtime 分钟限流模型对齐
 
@@ -59,13 +59,12 @@
 
 ### P0-5：Release safety net（feature flag + canary + rollback）
 
-- **状态**：⚠️ 部分完成
+- **状态**：✅ 已完成（2026-06-27，本地代码门禁；生产演练证据待闭合）
 - **对应**：FR-037 / PRG-003
-- **Runtime 位置**：`/home/binance/docs/runbooks/plan008-deploy-health-rollback.md`（runbook 有）+ `FOUNDATIONX_BINANCE_FEATURE_ASYNC_COLD_RANGE` flag（1 个 flag）
-- **当前**：有 deploy runbook + 1 个 feature flag，但无代码级 canary health gate + 无自动回滚机制
-- **目标**：feature flag 机制（`XGO_BINANCE_FEATURE_{name}` 通用框架）+ canary 部署健康门禁（`/readyz`/error-rate gate）+ 自动回滚 runbook
-- **风险**：上线即全量，出问题影响全部用户
-- **工作量**：L
+- **Runtime 位置**：`/home/binance/internal/server/api/feature_flag.go` + `/home/binance/scripts/deploy-canary-gate.sh` + `/home/binance/configs/binance-server.env.example` + `/home/binance/docs/runbooks/plan008-deploy-health-rollback.md`
+- **完成内容**：`XGO_BINANCE_FEATURE_ASYNC_COLD_RANGE=false` 默认关闭开关与 `FOUNDATIONX_BINANCE_FEATURE_ASYNC_COLD_RANGE` 兼容读取已接入；`deploy-canary-gate.sh` 已覆盖 `/healthz`、`/readyz`、error-rate、consumer lag 与 rollback command；env template、deploy runbook 与 readiness audit guard 已同步。
+- **剩余证据**：真实生产 canary 执行记录与 rollback drill 归档仍属于 Evidence-Pending，不在本地代码门禁内冒充完成。
+- **工作量**：本地代码已完成；外部证据另行治理
 
 ### P0-8：kafkax retry/DLQ topic contract
 
@@ -152,7 +151,7 @@
 | ---- | ------------------------------ | ------------------------------------------------------------------------ |
 | P1-6 | ADR：FR-024 vs FR-036 架构路径 | ADR-004 Accepted；FR-036 自建增量 diff，FR-024 保持 full reconnect/no-restart 边界 |
 | P1-7 | 双态模型补充 Code-Drifted 规则 | ACCEPTANCE.md + FEATURES.md + TRACEABILITY.md 已引入 Code-Drifted 第四态 |
-| P1-8 | FR-013/017/025 状态复核        | 三个 FR 从 active Code-Drifted 调整为 Code-Partial，统计更新为 Code-State **22/26/0/0**；Evidence-State **1 Done (FR-009) / 43 Pending**，Code-Pending 为无；FR-031~044 已改为 Code-Partial / Evidence-Pending。
+| P1-8 | FR-013/017/025 状态复核        | 三个 FR 从 active Code-Drifted 调整为 Code-Partial，统计更新为 Code-State **23/25/0/0**；Evidence-State **1 Done (FR-009) / 43 Pending**，Code-Pending 为无；FR-037 已改为 Code-Done / Evidence-Pending，FR-031~036、FR-038~044 保持 Code-Partial / Evidence-Pending。
 
 ---
 
@@ -232,12 +231,12 @@
 | 0.3  | 对齐 FR-025：分钟 weight + P0/P1/P2 优先级                | `throttle.go`                                       |
 | 0.4  | 状态复核：FR-013/017/025 从 active Code-Drifted 调整为 Code-Partial；Code-Done/Evidence-Done 依赖 direct TC/live evidence | `ACCEPTANCE.md` + `FEATURES.md` + `TRACEABILITY.md` |
 
-### Phase 1：生产级门禁补全（剩余 P0-5，3-4 周）
+### Phase 1：生产级门禁补全（本地代码项已完成，生产证据待闭合）
 
 | 步骤 | 工作                                        | 对应 PRG         |
 | ---- | ------------------------------------------- | ---------------- |
 | 1.1  | schema version server 校验 + 兼容矩阵       | PRG-003 / FR-042 |
-| 1.2  | feature flag 通用框架 + canary health gate  | PRG-003 / FR-037 |
+| 1.2  | ✅ feature flag 通用框架 + canary health gate 本地代码门禁 | PRG-003 / FR-037 |
 | 1.3  | kafkax DLQ topic contract + replay endpoint | PRG-002          |
 | 1.4  | ✅ ADR：order book rebuild 排除             | MO-4 / ADR-003  |
 
@@ -254,7 +253,7 @@
 
 ### Phase 3：Evidence-Done 推进（持续，8-12 周）
 
-1. 先补 FR-013/017/025 direct TC/live evidence，再按证据把 Code-Partial 推进到 Code-Done/Evidence-Done
+1. 先补 FR-013/017/025 direct TC/live evidence 与 FR-037 生产 canary/rollback drill evidence，再按证据把 Code-Partial 推进到 Code-Done/Evidence-Done
 2. 按 FR 依赖顺序推进：FR-001~009（核心链路）→ FR-006a-e（存储）→ FR-012~015（实时控制）→ 其余
 3. 外部 E2E 分批：Redis + NATS → TDengine + Kafka → ClickHouse + OSS
 4. 每关闭一个 Evidence-Done，同步更新 ACCEPTANCE.md §4 + TRACEABILITY.md
@@ -274,7 +273,7 @@
 
 ## 关键约束
 
-> [KNOWN, HIGH] 本 TODO 清单中仍需 `/home/binance` runtime 或外部环境继续闭合的项包括 P0-5、P1-1~P1-5、P2-1~P2-3、P2-6、P2-7 及相关 Evidence/PRG；其中 P1-1、P1-2、P1-3、P2-1、P2-2、P2-3、P2-6、P2-7 已从“零实现/未接线”修正为“runtime 代码原语已出现但验收证据未闭合”。本次主仓同步已完成 P0-10、P1-6、P2-8、prompt 状态投影、legacy mapping 与 agent team 再审计口径同步。
+> [KNOWN, HIGH] 本 TODO 清单中仍需 `/home/binance` runtime 或外部环境继续闭合的项包括 P1-1~P1-5、P2-1~P2-3、P2-6、P2-7 及相关 Evidence/PRG；其中 P1-1、P1-2、P1-3、P2-1、P2-2、P2-3、P2-6、P2-7 已从“零实现/未接线”修正为“runtime 代码原语已出现但验收证据未闭合”；FR-037 的本地代码门禁已闭合，但真实生产 canary / rollback drill 归档证据仍按 Evidence-Pending 治理。本次主仓同步已完成 P0-5、P0-10、P1-6、P2-8、prompt 状态投影、legacy mapping 与 agent team 再审计口径同步。
 >
 > [COMPUTED, HIGH] 所有 P0 项完成后才可声明"生产级可发布"。P1 项完成后才可声明"生产级可运营"。P2 项可延后但有替代手段时不应无限期搁置。
 >
