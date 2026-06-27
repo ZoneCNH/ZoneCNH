@@ -91,15 +91,20 @@ bash docs/goal/tools/goal-workflow.sh ci
 └── runtime/                    # 本地运行态，忽略提交
 ```
 
-**Agent 职责分工**：
+**Agent 职责分工**（10 个 Goal Agent）：
 
-| Agent               | 维护文件                                 | 职责                                       |
-| ------------------- | ---------------------------------------- | ------------------------------------------ |
-| goal-spec           | `registry/*.yaml`, `pipeline/state.yaml` | Goal/Task/Issue/Release/Risk/Decision 注册 |
-| goal-matrix         | `matrix/matrix.yaml`                     | 追溯矩阵生成与维护                         |
-| goal-reviewer       | `gates/state.yaml`                       | Gate 状态检查与记录                        |
-| goal-prompt-builder | `prompts/TASK-*/`                        | Context Package 构建与版本管理             |
-| goal-evidence       | `evidence/EVID-*.md`                     | 证据收集与验证                             |
+| Agent                 | 维护文件                                 | 职责                                       |
+| --------------------- | ---------------------------------------- | ------------------------------------------ |
+| goal-spec             | `registry/*.yaml`, `pipeline/state.yaml` | Goal/Spec/Registry 注册                    |
+| goal-architect        | `module/{m}/design/`, ADR                | Design 文档与 ADR                          |
+| goal-planner          | `module/{m}/plan/`, `module/{m}/tasks/`  | Plan/Tasks 拆分                            |
+| goal-matrix           | `matrix/matrix.yaml`                     | 追溯矩阵                                   |
+| goal-prompt-builder   | `prompts/TASK-*/`                        | Context Package 构建                       |
+| goal-evidence         | `evidence/EVID-*.md`                     | 证据收集与验证                             |
+| goal-reviewer         | `gates/state.yaml`                       | Gate 状态与对抗审查                        |
+| goal-governance       | 校验/审计（不直接写）                    | SSOT 一致性审计与漂移检测                  |
+| goal-lint             | `schema/rules.yaml`（校验）              | Lint 规则与漂移检查                        |
+| goal-context-recovery | `runtime/`（恢复缓存）                   | 会话中断后上下文恢复                       |
 
 ## 与 docs/spec、module/ 和 docs/governance/ 的同步边界
 

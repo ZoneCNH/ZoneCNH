@@ -124,7 +124,7 @@ L2.5: domainx / decimalx / domain_market / domain_macro / domain_exchange (5/5 �
 
 **交易所 SDK / C/S Module：**
 
-- [binance](https://github.com/ZoneCNH/binance) — 币安 Binance Market Data C/S Module (Spot/USDⓈ-M/COIN-M/Options)；spec v3.9.0 Approved；Runtime-Version `v0.2.0`（Runtime-Anchor `/home/binance@f046e16`）；Code-State `22 Done / 26 Partial / 0 Drifted / 0 Pending`；Evidence-State `1 Done (FR-009) / 43 Pending`；FR-031~044 已有本地 code anchors，production gates 仍 blocked。 `公开`
+- [binance](https://github.com/ZoneCNH/binance) — 币安 Binance Market Data C/S Module (Spot/USDⓈ-M/COIN-M/Options)；spec v3.9.0 Approved；Runtime-Version `v0.2.0`（Runtime-Anchor `/home/binance@f046e16`）；Code-State `23 Done / 25 Partial / 0 Drifted / 0 Pending`；Evidence-State `1 Done (FR-009) / 43 Pending`；FR-037 本地部署安全网 code gate 已闭合，production canary / rollback / live evidence 仍 pending。 `公开`
 - [okx](https://github.com/ZoneCNH/okx) — OKX `公开`
 - [bybit](https://github.com/ZoneCNH/bybit) — Bybit `公开`
 - [bitget](https://github.com/ZoneCNH/bitget) — Bitget `公开`

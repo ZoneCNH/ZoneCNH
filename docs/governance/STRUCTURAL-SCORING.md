@@ -22,6 +22,14 @@
 | Release      | Release Manifest + Risk Register         | `scoring/RUBRIC-release.md`    |
 | Retrospective| 复盘报告与改进 backlog                   | `scoring/RUBRIC-retrospective.md` |
 
+### 与 Goal Gate 的关系
+
+本文件定义的四源评分（claude/codex/copilot/rules）是 Goal Gate G2/G5/G6/G9 的 score 实现机制；Goal Gate（[`../goal/04-gates.md`](../goal/04-gates.md)）是权威裁决源。
+
+- `composite_score >= 98` 对应 Goal Gate 的 PASS 阈值（高于 Goal Gate 默认 90，因四源评分采用更严格的异构防 Goodhart 标准）。
+- 当 `composite_score` 在 90-97 之间时，Goal Gate 可裁决为 `PASS_WITH_RISK`（仅限允许风险通过的 Gate：G2/G3/G4/G5/G7/G8/G9），但 G6/G10 仍不允许风险通过。
+- 两者结果不一致时以 Goal Gate verdict 为准。
+
 ---
 
 ## 2. 四源并行评分（三 LLM + 一规则引擎）

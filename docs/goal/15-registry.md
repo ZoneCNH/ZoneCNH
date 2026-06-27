@@ -6,21 +6,25 @@ Registry 保存长期状态，所有 Agent 共享。
 
 ## 统一状态路径
 
-所有 Goal 相关状态统一存放在 `.config/goal/`，由 5 个 Goal Agent 共同维护：
+所有 Goal 相关状态统一存放在 `.config/goal/`，由 10 个 Goal Agent 共同维护：
 
-| 目录                     | 文件             | 维护 Agent          |
-| ------------------------ | ---------------- | ------------------- |
-| `.config/goal/registry/` | `goals.yaml`     | goal-spec           |
-| `.config/goal/registry/` | `tasks.yaml`     | goal-spec           |
-| `.config/goal/registry/` | `issues.yaml`    | goal-spec           |
-| `.config/goal/registry/` | `releases.yaml`  | goal-spec           |
-| `.config/goal/registry/` | `risks.yaml`     | goal-spec           |
-| `.config/goal/registry/` | `decisions.yaml` | goal-spec           |
-| `.config/goal/matrix/`   | `matrix.yaml`    | goal-matrix         |
-| `.config/goal/gates/`    | `state.yaml`     | goal-reviewer       |
-| `.config/goal/pipeline/` | `state.yaml`     | goal-spec           |
-| `.config/goal/evidence/` | `EVID-*.md`      | goal-evidence       |
-| `.config/goal/prompts/`  | `TASK-*/v*.md`   | goal-prompt-builder |
+| 目录                     | 文件             | 维护 Agent                |
+| ------------------------ | ---------------- | ------------------------- |
+| `.config/goal/registry/` | `goals.yaml`     | goal-spec                 |
+| `.config/goal/registry/` | `tasks.yaml`     | goal-spec                 |
+| `.config/goal/registry/` | `issues.yaml`    | goal-spec                 |
+| `.config/goal/registry/` | `releases.yaml`  | goal-spec                 |
+| `.config/goal/registry/` | `risks.yaml`     | goal-spec                 |
+| `.config/goal/registry/` | `decisions.yaml` | goal-spec                 |
+| `.config/goal/matrix/`   | `matrix.yaml`    | goal-matrix               |
+| `.config/goal/gates/`    | `state.yaml`     | goal-reviewer             |
+| `.config/goal/pipeline/` | `state.yaml`     | goal-spec                 |
+| `.config/goal/evidence/` | `EVID-*.md`      | goal-evidence             |
+| `.config/goal/prompts/`  | `TASK-*/v*.md`   | goal-prompt-builder       |
+| `.config/goal/schema/`   | `rules.yaml`     | goal-lint（校验）         |
+| `.config/goal/runtime/`  | 恢复缓存         | goal-context-recovery     |
+
+> 校验/审计角色：goal-governance 负责 SSOT 一致性审计与漂移检测，不直接写入 `.config/goal/` 文件；goal-architect 生成 `module/{m}/design/` 与 ADR，goal-planner 生成 `module/{m}/plan/`、`module/{m}/tasks/`，二者制品不在 `.config/goal/` 下，通过 goal-spec 回写 `decisions.yaml` 等注册表。
 
 ---
 
@@ -105,9 +109,7 @@ OPEN → TRIAGED → SPEC_READY → DESIGN_READY → TASKS_READY
 → IN_PROGRESS → IN_REVIEW → READY_FOR_RELEASE → DONE
 ```
 
-Issue 生命周期的异常状态沿用 Pipeline 异常状态枚举；完整 SSOT 见 [03-pipeline.md §2.2](03-pipeline.md#22-异常状态)。Registry 不新增本地异常状态。
-
-异常状态：`BLOCKED`、`FAILED`、`NEEDS_RESEARCH`、`NEEDS_DECISION`、`NEEDS_REPLAN`、`NEEDS_ROLLBACK`、`NEEDS_HUMAN_APPROVAL`、`INCONSISTENT_STATE`
+异常状态分类见 [03-pipeline.md §2.2](03-pipeline.md#22-异常状态)（4 类：BLOCKED / FAILED / NEEDS_INPUT / INCONSISTENT_STATE，含子类型）。Registry 不新增本地异常状态。
 
 ---
 

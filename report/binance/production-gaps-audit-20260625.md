@@ -30,11 +30,13 @@
 
 ---
 
-## 1. 发布安全网（P0 阻塞 — 零实现）
+## 1. 发布安全网（2026-06-25 历史缺口；2026-06-27 本地 code gate 已闭合）
 
-### 现状实证
+> `[COMPUTED, HIGH]` 2026-06-27 对齐：本节保留 2026-06-25 审计语境；当前本地代码已新增 `XGO_BINANCE_FEATURE_ASYNC_COLD_RANGE`、`scripts/deploy-canary-gate.sh`、env / readiness / runbook anchors。production canary、rollback drill、live / CI / E2E 证据仍 pending；当前状态以 `spec-structural-analysis-20260627.md` 与 `module/binance/todo.md` 为准。
 
-`[COMPUTED, HIGH]` runtime grep `feature.flag|canary|gray|blue.green|rollout` **零命中**。`.github/workflows/` 只有 build/test/lint/release/security CI——**无部署工作流**。无 Helm chart、无 K8s manifest、无灰度发布机制。
+### 2026-06-25 现状实证（历史）
+
+`[COMPUTED, HIGH]` 2026-06-25 runtime grep `feature.flag|canary|gray|blue.green|rollout` **零命中**。`.github/workflows/` 只有 build/test/lint/release/security CI——**无部署工作流**。无 Helm chart、无 K8s manifest、无灰度发布机制。
 
 ### 生产级要求
 

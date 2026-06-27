@@ -1,5 +1,7 @@
 # 受控递归改进
 
+> **本文件是 Controlled RSI 的操作性 SSOT。** `rsi-standard/` 子目录为完整标准参考附录（只读），`26-rsi-full-standard.md` 为指向本文件的索引指针。三者冲突时以本文件为准。
+
 Controlled RSI 是基于证据改进工程工作流的机制，不是让 Agent 自动重写产品目标或生产代码。它改进的是模板、Prompt、Gate、矩阵字段、检查清单和评估集。
 
 ## 可改进对象

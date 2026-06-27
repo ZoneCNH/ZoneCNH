@@ -76,13 +76,16 @@ INIT → CONTEXT_READY → GOAL_READY → SPEC_READY → DESIGN_READY
 ```text
 BLOCKED             — 依赖缺失 / 权限缺失
 FAILED              — 执行失败
-NEEDS_RESEARCH      — 未知项阻塞决策
-NEEDS_DECISION      — 多方案且影响 CL3+
-NEEDS_REPLAN        — Spec/Design 变更影响 Plan
-NEEDS_ROLLBACK      — Release Gate FAIL 后回滚
-NEEDS_HUMAN_APPROVAL — CL3+ 变更需人工确认
+NEEDS_INPUT         — 需要外部输入才能继续
+  NEEDS_INPUT:research        — 未知项阻塞决策
+  NEEDS_INPUT:decision        — 多方案且影响 CL3+
+  NEEDS_INPUT:replan          — Spec/Design 变更影响 Plan
+  NEEDS_INPUT:human_approval  — CL3+ 变更需人工确认
+  NEEDS_INPUT:rollback         — Release Gate FAIL 后回滚
 INCONSISTENT_STATE  — Registry/Artifact/CI 冲突
 ```
+
+> **兼容说明**：旧记录中的 `NEEDS_RESEARCH` / `NEEDS_DECISION` / `NEEDS_REPLAN` / `NEEDS_ROLLBACK` / `NEEDS_HUMAN_APPROVAL` 在迁移时映射为 `NEEDS_INPUT` 的对应子类型；兼容显示时保留旧名，但新写入的状态 MUST 使用 4 类主分类 + 子类型格式。
 
 ### 2.3 状态输出格式
 
@@ -139,17 +142,18 @@ Gate 的 `result.verdict` 与 Pipeline 的 `phase_status` 是两条独立状态�
 
 回退规则：
 
-| From      | To                 | 条件                                   |
-| --------- | ------------------ | -------------------------------------- |
-| VERIFYING | EXECUTING          | Test Gate FAIL → 修复实现              |
-| REVIEWING | EXECUTING          | Review FAIL: implementation → 修复实现 |
-| REVIEWING | DESIGN_READY       | Review FAIL: design → 修改设计         |
-| RELEASING | NEEDS_ROLLBACK     | Release Gate FAIL after release → 回滚 |
-| ANY       | BLOCKED            | 依赖缺失 / 权限缺失                    |
-| ANY       | NEEDS_RESEARCH     | Unknown 阻塞决策                       |
-| ANY       | NEEDS_DECISION     | 多方案且影响 CL3+                      |
-| ANY       | NEEDS_REPLAN       | Spec/Design 变更影响 Plan              |
-| ANY       | INCONSISTENT_STATE | Registry/Artifact/CI 冲突              |
+| From      | To                       | 条件                                   |
+| --------- | ------------------------ | -------------------------------------- |
+| VERIFYING | EXECUTING                | Test Gate FAIL → 修复实现              |
+| REVIEWING | EXECUTING                | Review FAIL: implementation → 修复实现 |
+| REVIEWING | DESIGN_READY             | Review FAIL: design → 修改设计         |
+| RELEASING | NEEDS_INPUT:rollback     | Release Gate FAIL after release → 回滚 |
+| ANY       | BLOCKED                  | 依赖缺失 / 权限缺失                    |
+| ANY       | NEEDS_INPUT:research     | Unknown 阻塞决策                       |
+| ANY       | NEEDS_INPUT:decision     | 多方案且影响 CL3+                      |
+| ANY       | NEEDS_INPUT:replan       | Spec/Design 变更影响 Plan              |
+| ANY       | NEEDS_INPUT:human_approval | CL3+ 变更需人工确认                  |
+| ANY       | INCONSISTENT_STATE       | Registry/Artifact/CI 冲突              |
 
 ---
 

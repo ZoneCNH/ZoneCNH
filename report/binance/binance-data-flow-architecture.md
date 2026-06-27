@@ -8,7 +8,7 @@
 | 当前 Runtime-Anchor | `/home/binance@f046e16`（含 Plan008 全部 40 Task 代码实现；PR #145 合并） |
 | 当前行动清单 | [`../../module/binance/todo.md`](../../module/binance/todo.md) |
 | 历史 Issue-Ledger | [`issues-sync-20260625.md`](./issues-sync-20260625.md) |
-| 当前状态口径 | Code-State `22 Done / 26 Partial / 0 Drifted / 0 Pending`；Evidence-State `1 Done (FR-009) / 43 Pending` |
+| 当前状态口径 | Code-State `23 Done / 25 Partial / 0 Drifted / 0 Pending`；Evidence-State `1 Done (FR-009) / 43 Pending` |
 | 历史 issue 状态 | ✅ **全部 Closed**（#1104~#1118 + #1123）：7 代码修复 + 9 能力边界文档化；Plan008 release closeout 已归档 |
 | 置信度 | HIGH |
 

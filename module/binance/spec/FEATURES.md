@@ -7,7 +7,7 @@
 | Status | Generated from current module SSOT |
 | Last-Updated | 2026-06-27 |
 | Module-Version | v3.9.0 |
-| Module-State | v3.9.0 双态模型：Code-State **22 Done / 26 Partial / 0 Drifted / 0 Pending**；Evidence-State **1 Done (FR-009) / 43 Pending**。Code-Partial 固定为：FR-007、FR-007a、FR-011、FR-013、FR-016、FR-017、FR-023、FR-024、FR-025、FR-026、FR-027、FR-028、FR-031、FR-032、FR-033、FR-034、FR-035、FR-036、FR-037、FR-038、FR-039、FR-040、FR-041、FR-042、FR-043、FR-044；Code-Pending：无；FR-031~044 为 Code-Partial / Evidence-Pending，本地 anchors 不等于生产闭合。 |
+| Module-State | v3.9.0 双态模型：Code-State **23 Done / 25 Partial / 0 Drifted / 0 Pending**；Evidence-State **1 Done (FR-009) / 43 Pending**。Code-Partial 固定为：FR-007、FR-007a、FR-011、FR-013、FR-016、FR-017、FR-023、FR-024、FR-025、FR-026、FR-027、FR-028、FR-031、FR-032、FR-033、FR-034、FR-035、FR-036、FR-038、FR-039、FR-040、FR-041、FR-042、FR-043、FR-044；Code-Pending：无；FR-031~036、FR-038~044 为 Code-Partial / Evidence-Pending；FR-037 为 Code-Done / Evidence-Pending，本地 anchors 不等于生产闭合。 |
 | Layer | 数据域 / Binance-specific market_data C/S module |
 | Runtime-Repo | `/home/binance` |
 | Source | `goal.md`, `SPEC.md`, `TRACEABILITY.md`, `DATA-LIFECYCLE.md`, `STANDARD.md`, `BOUNDARY-GATES.md`, `RUNTIME-MAPPING.md`, `IMPLEMENTATION-PLAN.md`, `client/`, `server/`, `tasks/` |
@@ -35,7 +35,7 @@
 
 > v3.5.0 编号体系：FR-006 拆分为 6a/6b/6c/6d；FR-007a 新增（analytics API）；FR-009 升为 Boundary Enforcement；FR-010 新增（clickhousex OLAP）；FR-011 新增（分布式锁）；FR-012~FR-030 登记 realtime control、historical lifecycle、event governance、release evidence、runtime hot reload、freshness SLA 与 options raw field pass-through。
 
-> 状态口径（v3.9.0）：`Done` / `Partial` / `Drifted` / `Pending` 为四态模型；L1 boundary governance 不替代 L2 功能验收。`Drifted` = 无。`Partial` 当前固定为 FR-007、FR-007a、FR-011、FR-013、FR-016、FR-017、FR-023、FR-024、FR-025、FR-026、FR-027、FR-028。
+> 状态口径（v3.9.0）：`Done` / `Partial` / `Drifted` / `Pending` 为四态模型；L1 boundary governance 不替代 L2 功能验收。`Drifted` = 无。`Partial` 当前固定为 FR-007、FR-007a、FR-011、FR-013、FR-016、FR-017、FR-023、FR-024、FR-025、FR-026、FR-027、FR-028、FR-031、FR-032、FR-033、FR-034、FR-035、FR-036、FR-038、FR-039、FR-040、FR-041、FR-042、FR-043、FR-044；FR-037 为 Code-Done / Evidence-Pending。
 
 | FR | 功能 | 当前状态 | 已有证据 | 剩余实现面 |
 | --- | --- | --- | --- | --- |
@@ -68,9 +68,9 @@
 | FR-023 | Release Evidence Bundle | Partial | `scripts/runtime-release-evidence.sh` + `release/evidence/binance/{20260622,20260623,20260625}/`；Issue-Ledger #1105/#1113 仍要求真实 Kafka broker、100K TPS/backpressure 与远程 CI/release evidence。 | 远程 CI/release tag 产物 + Kafka/live/backpressure evidence。 |
 | FR-024 | Runtime Config Hot Reload | Partial | `admin.go` `/api/v1/admin/symbols/reload` + `stream_control.go` Refresh；Issue-Ledger #1116 仍要求增量 hot reload diff，而非全量重连。 | 增量 stream add/remove + live websocket 证据。 |
 | FR-025 | Backfill Throttle & Priority | **Partial** | `throttle.go` 已装配 `ThrottlePriority` P0/P1/P2、默认 `30:20:50`、`AllowPriority()` 和 P0/P1/P2 snapshot 字段；旧 `Allow()` 兼容保留。 | 补 direct priority behavior tests、实时延迟自适应降速与 live scheduler evidence。 |
-| FR-026 | Daily Reconciliation Job | Partial | `cron_reconcile.go` Start goroutine + nextTrigger 04:00 UTC + runReconciliation 存在；Issue-Ledger #1117 仍要求持久化 reconciliation state、history/progress 与证据闭合。 | 真实对账运行证据 + 持久化 state/progress。 |
-| FR-027 | Cold Data Rehydration | Partial | `oss_rehydrate.go` Rehydrate 代码真实；Issue-Ledger #1117 仍要求持久化 history/reconcile/rehydration progress 与 writer/runbook evidence。 | 持久化 rehydration progress + writer integration + evidence。 |
-| FR-028 | Backfill Progress API | Partial | `admin.go:106` `/api/v1/admin/backfill/progress` 端点存在；Issue-Ledger #1117 仍要求 progress 后端持久化与重启恢复证据。 | 持久化 progress 存储 + restart/recovery evidence。 |
+| FR-026 | Daily Reconciliation Job | Partial | `cron_reconcile.go` Start goroutine + nextTrigger 04:00 UTC + runReconciliation 存在，且 `XGO_BINANCE_HISTORY_STATE_FILE` 本地 state-store 接线已出现；Issue-Ledger #1117 仍要求 reconciliation state direct evidence 与证据归档闭合。 | 真实对账运行证据 + 持久化 state/progress direct evidence。 |
+| FR-027 | Cold Data Rehydration | Partial | `oss_rehydrate.go` Rehydrate 代码真实，且 `XGO_BINANCE_HISTORY_STATE_FILE` 本地 state-store 接线已出现；Issue-Ledger #1117 仍要求 rehydration writer integration/direct evidence 与 runbook evidence。 | 持久化 rehydration progress direct TC + writer integration + evidence。 |
+| FR-028 | Backfill Progress API | Partial | `admin.go:106` `/api/v1/admin/backfill/progress` 端点、`FileHistoryStateStore` 与 `XGO_BINANCE_HISTORY_STATE_FILE` 本地接线已出现；Issue-Ledger #1117 仍要求 restart/recovery evidence 与持久介质验证。 | restart/recovery direct TC + 持久介质证据。 |
 | FR-029 | Data Quality & Freshness SLA | Done | `sla_window.go` P95/P99 + StaleCount；接入 quality.go + admin 暴露 freshness_millis。 | stale alert 阈值文档化（P2 建议）。 |
 | FR-030 | Options Chain Raw Field Pass-through | Done | Plan007 A7 (`b82d5b1`) `normalize.go:463` rawPassThrough 兜底 + ticker 流支持；EventType fallback tick。 | options testnet 凭据 + Greeks 边界测试（G7）。 |
 
@@ -87,13 +87,13 @@
 | FR-035 | Admin Control Surface | Partial | pause/resume/reload/drain/health/readiness 管理 API；`internal/server/admin.go` 与 feature/admin guards 提供 anchors。 | auth/loopback/full write-safety evidence 未闭合。 |
 | FR-036 | Stream Load Shedding | Partial | 分层 WS groups、cold tier 降频、options expiry 平滑；stream/catalog/tier anchors 已存在。 | options expiry smoothing 与 live shedding evidence 未闭合。 |
 
-### v3.7.0 新增 FR-037~044（P0/P1/P2 — Code-Partial / Evidence-Pending）
+### v3.7.0 新增 FR-037~044（生产证据未全闭合）
 
-> [COMPUTED, HIGH] 以下 FR 为 2026-06-26 v3.7.0 新增，对齐 Plan008 生产级缺口终审（S26-S32 + G6/S1-S2）的标准化要求。所有新增 FR 当前状态 **Code-Partial / Evidence-Pending**（已有本地 anchors，未闭合生产 evidence）。对应 GitHub issue #1180-#1186（Plan008 7 项剩余 Task）。
+> [COMPUTED, HIGH] 以下 FR 为 2026-06-26 v3.7.0 新增，对齐 Plan008 生产级缺口终审（S26-S32 + G6/S1-S2）的标准化要求。FR-038~044 保持 **Code-Partial / Evidence-Pending**（已有本地 anchors，未闭合生产 evidence）。FR-037 当前状态 **Code-Done / Evidence-Pending**（本地 gate anchors 已补，未闭合生产 canary/rollback drill evidence）。对应 GitHub issue #1180-#1186（Plan008 7 项剩余 Task）。
 
 | FR | 名称 | 状态 | 核心内容 | 对应标准化 |
 | --- | --- | --- | --- | --- |
-| FR-037 | Canary & Rollback Controls | Partial | feature flag、readiness gate、deploy health、rollback runbook；`feature_flag.go`、readiness audit 与 deploy runbook 提供 anchors。 | 自动 canary gate/rollback drill evidence 未闭合。 |
+| FR-037 | Canary & Rollback Controls | Done | `XGO_BINANCE_FEATURE_ASYNC_COLD_RANGE` 默认关闭开关、兼容 `FOUNDATIONX_` 旧开关、`scripts/deploy-canary-gate.sh` health/readiness/error-rate/consumer-lag/rollback gate、env template、readiness audit 与 deploy runbook anchors 已补。 | 生产 canary/rollback drill evidence 未闭合。 |
 | FR-038 | Retention / Archive / Rehydrate | Partial | retention policy、archive、rehydrate、delete proof；retention/archive/delete/restore anchors 已存在。 | live retention/rehydrate drill evidence 未闭合。 |
 | FR-039 | Trace Propagation | Partial | W3C trace context across HTTP/Kafka/worker/logs；`kafka_dispatch.go` tests assert W3C headers。 | OTel/NATS/live span-chain evidence 未闭合。 |
 | FR-040 | Resource Quota & Backpressure | Partial | per-stream/per-symbol quota、throttle、backpressure metrics；throttle/catalog/admin pause-drain/metrics anchors 已存在。 | multi-tenant quota soak evidence 未闭合。 |
@@ -115,8 +115,8 @@
 | **#1108** Options ticker 字段校验 | `parseOptionTicker` 字段名（`e/E/s/o/c/p/q/d/g/t/v`）基于文档约定；`@optionTicker` WS 报文字段名未经 mainnet 实样确认 | **REST fixture 替代**：使用 eapi exchangeInfo 的 `optionSymbols[]` metadata（symbol/underlying/side/strike/expiry）作为 fixture 校验 `parseOptionSymbolMeta`；WS `@optionTicker` body 字段名待 BINANCE_MAINNET_LIVE 抓样确认（normalize.go:502 TODO） | eapi REST 1,550 symbols 实测；`normalize_option_test.go` 已覆盖 symbol 解析路径 |
 | **#1110** 分布式 tracing | TraceContext 已进入 wire request，server→Kafka 已传播 traceparent/tracestate/baggage；OpenTelemetry SDK、NATS 端到端 header、slog trace_id 与采样配置仍未闭合 | **明确部分覆盖链路**：当前可观测性依赖 Prometheus 指标 + slog JSON 日志；trace context 已覆盖 server→Kafka header，完整分布式 tracing 已登记为 FR-039（Code-Partial / Evidence-Pending） | OBSERVABILITY.md metrics；`wire/types.go` TraceContext；`kafka_dispatch.go` trace headers |
 | **#1112** storage mock/fake 标准 | 当前测试用 in-memory fake（fakeKafkaProducer、fakeOSSStore 等），无统一的 mock/live 证据分级准则 | **明确测试证据分级**：fake 测试（in-memory mock）标记为 unit；live 测试（真实 infra）需 `*_LIVE` env gate；报告引用需区分 fake vs live | `consumer_integration_test.go` BINANCE_NATSX_INTEGRATION gate；`kafka_broker_test.go` BINANCE_KAFKA_LIVE gate |
-| **#1117** 持久化 backfill progress | FileHistoryStateStore/snapshot load-save 已出现；backfill/reconcile/rehydration 的部署接线、restart evidence 与持久介质口径仍未闭合 | **明确恢复协议 + evidence gap**：代码已有本地 state store 原语，Code/Evidence 升格仍依赖部署接线、重启恢复 direct TC 与持久介质验证 | `history_lifecycle.go` FileHistoryStateStore + snapshot load/save |
-| **#1118** 持久 DLQ wiring/replay | `deadletter.FileWriter` 已实现+测试；`appendDeadLetter` 支持 configured writer path，但 admin snapshot/replay/drain 仍以内存为主，缺默认生产接线与 file-backed replay evidence | **明确实现边界 + replay gap**：持久写入 hook 已存在，关闭仍需默认生产接线与 file-backed replay/drain 证据 | `deadletter.go` FileWriter；`ingest.go` appendDeadLetter writer hook |
+| **#1117** 持久化 backfill progress | FileHistoryStateStore/snapshot load-save 与 `cmd/binance-client` 的 `XGO_BINANCE_HISTORY_STATE_FILE` 本地接线已出现；backfill/reconcile/rehydration 的 restart evidence、持久介质口径与证据归档仍未闭合 | **明确恢复协议 + evidence gap**：代码已有本地 state store 原语和 env 接线，Code/Evidence 升格仍依赖重启恢复 direct TC 与持久介质验证 | `history_lifecycle.go` FileHistoryStateStore + snapshot load/save；`cmd/binance-client` XGO_BINANCE_HISTORY_STATE_FILE |
+| **#1118** 持久 DLQ wiring/replay | `deadletter.FileWriter` 已实现+测试；`appendDeadLetter` 支持 configured writer path；`cmd/binance-server` 的 `XGO_BINANCE_DLQ_FILE` 本地接线已出现；admin snapshot/replay/drain 仍以内存为主，file-backed replay evidence 未闭合 | **明确实现边界 + replay gap**：持久写入 hook 与 env 接线已存在，关闭仍需 file-backed replay/drain 证据 | `deadletter.go` FileWriter；`ingest.go` appendDeadLetter writer hook；`cmd/binance-server` XGO_BINANCE_DLQ_FILE |
 
 ## 3. 边界与质量需求投影
 
@@ -151,7 +151,7 @@
 | --- | --- | --- |
 | `goal.md` | 业务目标与模块意图 | 作为实现清单的目标来源。 |
 | `SPEC.md` | v2.0.0 功能与边界规格 | 作为 FR/BR/NFR 语义来源。 |
-| `TRACEABILITY.md` | 根级 FR/AC/TC/Task 追溯 | 作为当前状态与验收编号来源；v3.9.0 当前口径对齐 Runtime-Anchor `/home/binance@f046e16`，Code-State 22/26/0/0，Evidence-State 1 Done / 43 Pending。 |
+| `TRACEABILITY.md` | 根级 FR/AC/TC/Task 追溯 | 作为当前状态与验收编号来源；v3.9.0 当前口径对齐 Runtime-Anchor `/home/binance@f046e16`，Code-State 23/25/0/0，Evidence-State 1 Done / 43 Pending。 |
 | `client/TRACEABILITY.md` | Client 子域追溯 | 作为 client active/pending 实现面来源。 |
 | `server/TRACEABILITY.md` | Server 子域追溯 | 作为 server active/pending 实现面来源。 |
 | `BOUNDARY-GATES.md` | 边界漂移防线 | 作为 FR-009 与 BR-001~BR-009 的文档和本地 runtime 证据入口。 |
@@ -164,7 +164,7 @@
 | 检查项 | 状态 | 依据 |
 | --- | --- | --- |
 | v2.0.0 根规格存在 | Done | `SPEC.md` v3.8.0。 |
-| 根级 traceability 存在 | Done | `TRACEABILITY.md` v3.9.0；当前口径对齐 Runtime-Anchor `/home/binance@f046e16`，Code-State 22/26/0/0，Evidence-State 1 Done / 43 Pending。 |
+| 根级 traceability 存在 | Done | `TRACEABILITY.md` v3.9.0；当前口径对齐 Runtime-Anchor `/home/binance@f046e16`，Code-State 23/25/0/0，Evidence-State 1 Done / 43 Pending。 |
 | Client/Server 子域 traceability 存在 | Done | `client/TRACEABILITY.md`, `server/TRACEABILITY.md`。 |
 | C/S 独立进程边界已定义 | Done | `README.md`, `SPEC.md`, `BOUNDARY-GATES.md`。 |
 | Boundary gate 文档已形成 | Done | `BOUNDARY-GATES.md` v2.2.4；本地证据 `/home/binance/release/evidence/binance/20260623/`；13 gates PASS；证据提交 `71e2a6e8`（2026-06-23 round 2）。 |
@@ -190,5 +190,5 @@
 | **#1112 存储 mock/fake/live 标准（P1，已关闭）** | FR-007/FR-007a/FR-011 的 Done 判定曾需统一证据标准。 | 以能力边界文档化 Closed。 |
 | **#1114/#1116 runtime 增量状态机（P2，已关闭）** | order book rebuild 与 hot reload 曾需增量 diff/state machine 证据。 | 以能力边界文档化 Closed（#1114 明确排除，#1116 维持 Partial）。 |
 | **#1115 ClickHouse ETL 持久化（P2，已关闭）** | FR-007a 曾需持久化、多实例 source 与 live OLAP evidence。 | 以能力边界文档化 Closed。 |
-| **#1117/#1118 持久化进度与 DLQ（P2，已关闭）** | FR-017/026/027/028 曾缺持久化 progress/history/reconcile/rehydration 证据；DLQ 曾缺持久化 wiring/replay。 | 以能力边界文档化 Closed。 |
+| **#1117/#1118 持久化进度与 DLQ（P2，已关闭）** | FR-017/026/027/028 曾缺持久化 progress/history/reconcile/rehydration 证据；DLQ 曾缺持久化 wiring/replay；当前本地 env 接线已补，生产 replay/restart evidence 仍按 Evidence-Pending 治理。 | 以能力边界文档化 Closed。 |
 | **#1180-#1186 Plan008 剩余 P2 Task（P0/P1/P2，开放）** | FR-037~044（v3.7.0 新增）的 runtime 实现。 | 追踪：https://github.com/ZoneCNH/ZoneCNH/issues?q=is%3Aopen+label%3Aplan008 |

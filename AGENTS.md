@@ -102,9 +102,11 @@ Spec 编写完成后，不是直接写代码，而是按管线推进：Spec → 
 
 | 平台        | 配置目录           | 模型                       | 格式                 | Agent 数 |
 | ----------- | ------------------ | -------------------------- | -------------------- | -------- |
-| Claude Code | `.claude/agents/`  | Sonnet / Opus              | Markdown frontmatter | 28       |
-| Codex       | `.codex/agents/`   | GPT-5.5 + reasoning effort | TOML                 | 20       |
-| Copilot CLI | `.copilot/agents/` | Copilot/Claude 模型        | Markdown prompt      | 19       |
+| Claude Code | `.claude/agents/`  | Sonnet / Opus              | Markdown frontmatter | 27       |
+| Codex       | `.codex/agents/`   | GPT-5.5 + reasoning effort | TOML                 | 27       |
+| Copilot CLI | `.copilot/agents/` | Copilot/Claude 模型        | Markdown prompt      | 27       |
+
+三平台 agent 镜像对齐，由 scripts/sync-agents.py 在 goal-workflow.sh preflight 阶段自动检测漂移。
 
 运行时状态目录按平台隔离：Claude 使用 `.omc/state/pipeline/`，Codex 使用 `.omx/state/pipeline/`，Copilot 使用 `.copilot/state/pipeline/`。
 
@@ -189,6 +191,22 @@ Goal 驱动交付体系确保每一行代码都能追溯到一个可验证的业
 | `goal-matrix`         | 追溯矩阵管理               | `.config/goal/matrix/matrix.yaml`                                  | Sonnet |
 | `goal-prompt-builder` | Context Package 构建       | `.config/goal/prompts/TASK-*/`                                     | Sonnet |
 | `goal-evidence`       | 证据收集与验证             | `.config/goal/evidence/EVID-*.md`                                  | Sonnet |
+
+#### Goal Agent 与 Governance Agent 路由规则
+
+| 职能       | Goal agent（module/{m}/ 制品） | Governance agent（docs/ 制品）             | 路由规则                                                      |
+| -------- | ----------------------------- | ------------------------------------------- | ------------------------------------------------------------- |
+| Spec 编写 | goal-spec                     | spec, spec-author                           | 模块 spec 用 goal-spec；跨模块/工具级 spec 用 spec-author      |
+| Spec 审查 | goal-reviewer                 | spec-review, spec-structural-score          | Goal Gate 审查用 goal-reviewer；四源评分用 *-structural-score |
+| Design   | goal-architect                | —                                           | 统一用 goal-architect                                         |
+| Plan/Tasks | goal-planner                | task-planner, task-split                    | 模块计划用 goal-planner；governance 管线用 task-planner       |
+| Matrix   | goal-matrix                   | matrix, matrix-structural-score             | 模块追溯用 goal-matrix；评分用 matrix-structural-score       |
+| Prompt   | goal-prompt-builder           | prompt-builder, prompt-structural-score     | 模块 prompt 用 goal-prompt-builder；评分用 prompt-structural-score |
+| Code     | —                             | task-executor, code-structural-score        | 代码实现统一用 governance 的 task-executor                     |
+| Evidence | goal-evidence                 | —                                           | 统一用 goal-evidence                                          |
+| Governance | goal-governance             | pipeline-arbiter, meta-arbiter              | 一致性审计用 goal-governance；评分仲裁用 arbiter              |
+
+路由规则说明：当 Goal 管线与 governance 管线同时适用时，Goal Gate 为权威裁决（见 `docs/goal/00-authority-map.md` §双管线优先级）。Goal agent 负责制品创建与 Gate 审查；governance agent 负责四源评分与仲裁。
 
 ### 统一配置中心
 

@@ -94,7 +94,7 @@ module/binance/server
 
 [COMPUTED, HIGH] GitHub #1104~#1118 and #1123 remain historical 2026-06-25 sync evidence. Current 2026-06-27 stop condition is not issue-count closure; it is Code-State / Evidence-State closure plus production evidence/live/CI/dashboard/credentials/multi-tenant/destruction gates listed in [`todo.md`](todo.md).
 
-[COMPUTED, HIGH] 2026-06-27 alignment refresh: runtime anchor `/home/binance@f046e16`; Code `23 Done / 25 Partial / 0 Drifted / 0 Pending` (Code-State)；Evidence-State **1 Done (FR-009) / 43 Pending**。Code-Partial: FR-007、FR-007a、FR-011、FR-013、FR-016、FR-017、FR-023、FR-024、FR-025、FR-026、FR-027、FR-028、FR-031、FR-032、FR-033、FR-034、FR-035、FR-036、FR-038、FR-039、FR-040、FR-041、FR-042、FR-043、FR-044。FR-037 已由 Code-Partial 升格为 Code-Done / Evidence-Pending；FR-031~036、FR-038~044 已由 Pending-only 修正为 Code-Partial / Evidence-Pending；production evidence/live/CI/dashboard/credentials/multi-tenant/destruction gates 仍未闭合。
+[COMPUTED, HIGH] 2026-06-27 alignment refresh: runtime anchor `/home/binance@f046e16`; Code `23 Done / 25 Partial / 0 Drifted / 0 Pending` (Code-State)；Evidence-State **1 Done (FR-009) / 43 Pending**。Code-Partial: FR-007、FR-007a、FR-011、FR-013、FR-016、FR-017、FR-023、FR-024、FR-025、FR-026、FR-027、FR-028、FR-031、FR-032、FR-033、FR-034、FR-035、FR-036、FR-038、FR-039、FR-040、FR-041、FR-042、FR-043、FR-044。FR-031~036、FR-038~044 已由 Pending-only 修正为 Code-Partial / Evidence-Pending；FR-037 当前为 Code-Done / Evidence-Pending；production evidence/live/CI/dashboard/credentials/multi-tenant/destruction gates 仍未闭合。
 
 ## Read Next
 

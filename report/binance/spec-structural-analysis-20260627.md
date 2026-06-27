@@ -15,7 +15,7 @@
 
 **综合评分：72/100** — 无红线，2 项 CRITICAL，4 项 MAJOR，4 项 MODERATE
 
-**判定**：`Not Production-Ready` — 规格治理工艺已达高水平（v3.8.0 红线全修复），但 Code-State **22 Done / 26 Partial / 0 Drifted / 0 Pending**、Evidence-State **1 Done (FR-009) / 43 Pending** 与 7 PRG Evidence-Pending / Code-Partial anchors 构成生产级阻塞。当前状态为**可编译可发布的 v0.2.0**，但**不可生产运营**。
+**判定**：`Not Production-Ready` — 规格治理工艺已达高水平（v3.8.0 红线全修复），但 Code-State **23 Done / 25 Partial / 0 Drifted / 0 Pending**、Evidence-State **1 Done (FR-009) / 43 Pending** 与生产 canary/rollback/live/CI evidence 缺口构成生产级阻塞。当前状态为**可编译可发布的 v0.2.0**，但**不可生产运营**。
 
 **与前序报告对比**：
 
@@ -59,15 +59,15 @@
 
 ### CR-1 — 既有 Spec-Runtime 漂移已由 Code-State 口径收敛；Evidence 仍未闭合
 
-- **现状**：FR-013、FR-017、FR-025 不再作为 active Code-Drifted 统计；当前 Code-State 为 **22 Done / 26 Partial / 0 Drifted / 0 Pending**。
+- **现状**：FR-013、FR-017、FR-025 不再作为 active Code-Drifted 统计；FR-037 当前为 Code-Done / Evidence-Pending；当前 Code-State 为 **23 Done / 25 Partial / 0 Drifted / 0 Pending**。
 - **保守判定**：这些项仍随 43 个 Evidence-Pending 一起保留为证据缺口，不得升级为生产可用。
 - **后续动作**：补齐 direct TC/live/CI 证据后，才允许把对应 Evidence-State 从 Pending 改为 Done。
 
 ---
 
-### CR-2 — FR-037~044 已有 Code-Partial anchors；生产证据未闭合
+### CR-2 — Release safety net 已 Code-Done 但生产证据未闭合
 
-- **Evidence**：`module/binance/spec/FEATURES.md` 与 `spec/ACCEPTANCE.md` 已把 FR-037~044 标为 Code-Partial / Evidence-Pending。
+- **Evidence**：FR-038~044 仍为 Code-Partial / Evidence-Pending；`module/binance/spec/FEATURES.md` 与 `spec/ACCEPTANCE.md` 已把 FR-037 标为 Code-Done / Evidence-Pending。
 - **Runtime anchors**：`/home/binance` 存在 feature flag/readiness/deploy runbook、retention/archive/delete/restore、Kafka W3C header tests、quota/throttle/admin/metrics、append-only audit migration、schema/version guards、cost metrics/runbook、classification/retention/destruction proof anchors。
 - **判定**：旧的“未落地 / pending-only”结论已过期；新的 blocker 是缺 live/direct TC/CI/dashboard/credentials/multi-tenant/destruction evidence，仍不可生产运营。
 
@@ -81,12 +81,12 @@
 
 | 指标                | 当前值     | 生产级目标               | 差距 |
 | ------------------- | ---------- | ------------------------ | ---- |
-| FR Code-Done        | 22/44      | 44/44（或显式 deferral） | 20   |
-| FR Code-Partial     | 26/44      | 0                        | 10   |
-| FR Code-Pending     | 26/44      | 0                        | 10   |
+| FR Code-Done        | 23/48      | 48/48（或显式 deferral） | 25   |
+| FR Code-Partial     | 25/48      | 0                        | 25   |
+| FR Code-Pending     | 0/48       | 0                        | 0    |
 | Evidence-Done       | 1/44       | 44/44（或显式 deferral） | 43   |
 | PRG gates Pending   | 7/7        | 0/7                      | 7    |
-| Spec-Runtime drift  | 3 处       | 0                        | 3    |
+| Spec-Runtime drift  | 0 处       | 0                        | 0    |
 | 产品线 runtime 装配 | 仅 spot    | 4 线                     | 3    |
 | 外部 E2E            | local only | real infra               | 全缺 |
 
@@ -94,22 +94,22 @@
 
 ### 生产级必需补全清单
 
-按优先级分层，以下是从当前状态到"生产级可发布"必须补全的工作：
+按优先级分层，以下是从当前状态到"生产级可发布"必须补全的工作。P0 本地代码门禁已在 2026-06-27 闭合；仍不得上线的原因是 production canary/rollback drill、direct TC、live/CI、外部 E2E 与归档证据未闭合。
 
-#### P0 阻塞 — 不补全不可上线
+#### P0 本地代码门禁 — 已闭合；生产证据仍待闭合
 
 | #     | 工作项                                                 | 对应 FR/PRG      | 工作量 | 说明             |
 | ----- | ------------------------------------------------------ | ---------------- | ------ | ---------------- |
-| P0-1  | 对齐 FR-013 runtime（分钟限流 + 418/429 退避）         | FR-013           | M      | 防 IP 封禁       |
-| P0-2  | 对齐 FR-017 runtime（按事件类型分策略缺口检测）        | FR-017           | M      | 防数据漏检       |
-| P0-3  | 对齐 FR-025 runtime（分钟 weight + P0/P1/P2 优先级）   | FR-025           | M      | 防回填/实时争抢  |
-| P0-4  | Wire envelope schema version enforcement               | FR-042 / PRG-003 | M      | 防升级不兼容     |
-| P0-5  | Release safety net（feature flag + canary + rollback） | FR-037 / PRG-003 | L      | 防上线即全量     |
-| P0-6  | taosx data retention lifecycle                         | FR-038 / PRG-007 | M      | 防热数据膨胀     |
-| P0-7  | Config schema 字段名统一                               | MA-1             | S      | 防配置加载错误   |
-| P0-8  | kafkax retry/DLQ topic contract                        | PRG-002          | M      | 防下游故障无兜底 |
-| P0-9  | ClickHouse ReplicatedMergeTree + TTL                   | PRG-001          | M      | 防 OLAP 数据膨胀 |
-| P0-10 | ADR：order book rebuild 排除决策                       | MO-4             | S      | 架构决策记录     |
+| P0-1  | 对齐 FR-013 runtime（分钟限流 + 418/429 退避）         | FR-013           | M      | 本地代码已补；direct TC/live evidence 待闭合 |
+| P0-2  | 对齐 FR-017 runtime（按事件类型分策略缺口检测）        | FR-017           | M      | 本地代码已补；direct TC/live evidence 待闭合 |
+| P0-3  | 对齐 FR-025 runtime（分钟 weight + P0/P1/P2 优先级）   | FR-025           | M      | 本地代码已补；direct TC/live evidence 待闭合 |
+| P0-4  | Wire envelope schema version enforcement               | FR-042 / PRG-003 | M      | 本地代码已补；兼容矩阵/CI evidence 待闭合 |
+| P0-5  | Release safety net（feature flag + canary + rollback） | FR-037 / PRG-003 | M      | 本地代码门禁已补；生产 canary/rollback drill evidence 待闭合 |
+| P0-6  | taosx data retention lifecycle                         | FR-038 / PRG-007 | M      | 本地代码已补；archive/restore/destruction evidence 待闭合 |
+| P0-7  | Config schema 字段名统一                               | MA-1             | S      | spec 层已闭合；配置加载 evidence 待闭合 |
+| P0-8  | kafkax retry/DLQ topic contract                        | PRG-002          | M      | 本地 topic contract 已补；持久化 replay evidence 待闭合 |
+| P0-9  | ClickHouse ReplicatedMergeTree + TTL                   | PRG-001          | M      | 依赖契约已闭合；部署 evidence 待闭合 |
+| P0-10 | ADR：order book rebuild 排除决策                       | MO-4             | S      | ADR-003 已 Accepted |
 
 #### P1 强烈建议 — 不补全运营风险高
 
@@ -133,15 +133,15 @@
 | P2-3 | FR-031~036 ExchangeInfo sync runtime 实现 | FR-031~036  | L      | 选择性同步       |
 | P2-4 | 退役文件物理隔离/精简                     | MA-3        | S      | 文档治理         |
 | P2-5 | Appendix D AC-BNC 迁移                    | MA-4        | S      | 文档治理         |
-| P2-6 | Backfill progress 持久化                  | #1117       | M      | 重启恢复         |
-| P2-7 | DLQ 持久化 wiring                         | #1118       | S      | 持久死信         |
-| P2-8 | 三文件状态一致性 CI gate                  | MO-1        | S      | 防状态漂移       |
+| P2-6 | Backfill progress 持久化                  | #1117       | M      | 本地 env 接线已补；仍缺 restart evidence |
+| P2-7 | DLQ 持久化 wiring                         | #1118       | S      | 本地 env 接线已补；仍缺 replay evidence |
+| P2-8 | 五处状态一致性 CI gate                    | MO-1        | S      | 防状态漂移       |
 
 ### Evidence-Done 推进策略
 
 `[COMPUTED, HIGH]` 当前 Evidence-State 1 Done (FR-009) / 43 Pending。Evidence-Done 的判定标准是"TC 全 PASS + AC 全满足 + runtime evidence 归档"。推进策略：
 
-1. **先补 P0 spec-runtime drift**（P0-1/2/3）→ 这三个 FR 的 Code-Done 修复后可重新评估 Evidence
+1. **先闭合 FR-013/017/025 direct TC/live evidence 与 FR-037 production canary/rollback drill evidence** → 本地代码已补，Evidence-Done 仍需归档证据后才能升级
 2. **按 FR 依赖顺序推进 Evidence**：FR-001~009（核心链路）→ FR-006a-e（存储）→ FR-012~015（实时控制）→ 其余
 3. **外部 E2E 分批**：先 Redis + NATS（local gated 已部分验证），再 TDengine + Kafka，最后 ClickHouse + OSS
 4. **每关闭一个 Evidence-Done，同步更新 ACCEPTANCE.md §4 闭合矩阵 + TRACEABILITY.md**
@@ -150,26 +150,26 @@
 
 ## 优化路线图
 
-### Phase 0：Spec-Runtime 漂移修复（P0 阻塞，2 周）
+### Phase 0：Spec-Runtime 漂移修复（本地已完成，证据待闭合）
 
 | 步骤 | 工作                                                                                             | 影响文件                                                    |
 | ---- | ------------------------------------------------------------------------------------------------ | ----------------------------------------------------------- |
-| 0.1  | 对齐 FR-013 runtime：`reliability.go` 分钟滑动窗口 + 418/429 退避 + clock skew                   | `/home/binance/internal/client/controlplane/reliability.go` |
-| 0.2  | 对齐 FR-017 runtime：`quality.go` 按 event_type 分策略缺口检测                                   | `/home/binance/internal/server/quality.go`                  |
-| 0.3  | 对齐 FR-025 runtime：`throttle.go` 分钟 weight + P0/P1/P2 优先级                                 | `/home/binance/internal/client/throttle.go`                 |
-| 0.4  | 状态降级：ACCEPTANCE.md + FEATURES.md 中 FR-013/017/025 改标 Code-Partial → 修复后恢复 Code-Done | `module/binance/spec/ACCEPTANCE.md`, `FEATURES.md`          |
+| 0.1  | ✅ 对齐 FR-013 runtime：`reliability.go` 分钟滑动窗口 + 418/429 退避 + clock skew                 | `/home/binance/internal/server/controlplane/reliability.go` |
+| 0.2  | ✅ 对齐 FR-017 runtime：`quality.go` 按 event_type 分策略缺口检测                                 | `/home/binance/internal/server/quality.go`                  |
+| 0.3  | ✅ 对齐 FR-025 runtime：`throttle.go` 分钟 weight + P0/P1/P2 优先级                               | `/home/binance/internal/client/throttle.go`                 |
+| 0.4  | ✅ 状态复核：FR-013/017/025 不再作为 active drift；Evidence 仍需 direct TC/live 归档后升级        | `module/binance/spec/ACCEPTANCE.md`, `FEATURES.md`          |
 
-### Phase 1：生产级门禁补全（P0 阻塞，3-4 周）
+### Phase 1：生产级门禁补全（本地代码已完成，生产证据待闭合）
 
 | 步骤 | 工作                                                                   | 对应 PRG         |
 | ---- | ---------------------------------------------------------------------- | ---------------- |
-| 1.1  | Wire envelope schema version 字段 + server 校验                        | PRG-003 / FR-042 |
-| 1.2  | Feature flag 机制（`XGO_BINANCE_FEATURE_{name}`） + canary health gate | PRG-003 / FR-037 |
-| 1.3  | taosx retention scheduler + OSS ETag 前置校验                          | PRG-007 / FR-038 |
-| 1.4  | kafkax retry/DLQ topic contract                                        | PRG-002          |
-| 1.5  | ClickHouse ReplicatedMergeTree + TTL                                   | PRG-001          |
-| 1.6  | Config schema 字段名统一                                               | MA-1             |
-| 1.7  | ADR：order book rebuild 排除                                           | MO-4             |
+| 1.1  | ✅ Wire envelope schema version 字段 + server 校验；兼容矩阵/CI evidence 待归档 | PRG-003 / FR-042 |
+| 1.2  | ✅ 本地 canary gate 与 rollback command guard 已补；生产 canary/rollback drill evidence 待归档 | PRG-003 / FR-037 |
+| 1.3  | ✅ taosx retention scheduler + OSS ETag 前置校验；archive/restore/destruction evidence 待归档 | PRG-007 / FR-038 |
+| 1.4  | ✅ kafkax retry/DLQ topic contract；持久化 replay evidence 待归档       | PRG-002          |
+| 1.5  | ✅ ClickHouse ReplicatedMergeTree + TTL 依赖契约已闭合；部署 evidence 待归档 | PRG-001          |
+| 1.6  | ✅ Config schema 字段名统一                                             | MA-1             |
+| 1.7  | ✅ ADR：order book rebuild 排除                                         | MO-4             |
 
 ### Phase 2：运维治理补全（P1，4-6 周）
 
@@ -200,7 +200,7 @@
 | 4.1  | 退役文件添加醒目 DEPRECATED 横幅 + 内容精简为摘要 |
 | 4.2  | Appendix D AC-BNC 迁移到 docs/migrations/         |
 | 4.3  | 根 SPEC §14 目录结构移除退役文件                  |
-| 4.4  | 三文件状态一致性 CI gate                          |
+| 4.4  | ✅ 五处状态一致性 CI gate                         |
 
 ---
 
@@ -224,10 +224,10 @@
 | MO-1 Config 三层重复            | —                                 | **未完全修复** → MA-1（字段名漂移）                  |   ❌    |
 | MO-2 ENDPOINTS/SLA 抽象层       | ENDPOINTS→client 附录, SLA→FR-029 | 确认                                                 |   ✅    |
 | MO-3 §14 目录重叠               | 根 §14 仅文档层                   | `SPEC.md:1876-1915` 确认（但 MO-2 指出仍列退役文件） |   ✅    |
-| MO-4 三文件状态独立             | v3.9.0 双态模型部分缓解           | 确认（但 MO-1 指出无 CI gate）                       | ⚠️ 部分 |
+| MO-4 五处状态一致性 CI gate     | v3.9.0 双态模型 + CI gate         | README / FEATURES / ACCEPTANCE / TRACEABILITY / prompt README 一致性 gate 确认 | ✅ |
 | MO-5 Issue 闭合备忘录           | DATA-LIFECYCLE §9 保留为历史      | 确认                                                 |   ✅    |
 
-**修复统计**：17/21 完全修复（✅），2/21 部分修复（⚠️），1/21 未修复（❌ → 升级为 MA-1），1/21 保留但仍有问题（⚠️ → 升级为 MA-4）。
+**修复统计**：18/21 完全修复（✅），1/21 部分修复（⚠️），1/21 未修复（❌ → 升级为 MA-1），1/21 历史遗留保留但由后续治理守卫覆盖。
 
 ---
 
