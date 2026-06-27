@@ -13,6 +13,8 @@
 - Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md), `module/domain_market`, `module/natsx`, `module/redisx`, `module/taosx`, `module/kafkax`, `module/ossx`, `module/postgresx`, `module/clickhousex`
 
 > 子模块规格：`module/binance/client/SPEC.md`、`module/binance/server/SPEC.md`
+>
+> [COMPUTED, HIGH] 2026-06-27 open blocker ledger for GitHub #1268-#1279 / Beads `ZoneCNH-xzcr*` is recorded in [`../evidence/2026-06-27/review/ISSUE-BLOCKERS-1268-1279.md`](../evidence/2026-06-27/review/ISSUE-BLOCKERS-1268-1279.md); it does not change Spec-Version, Runtime-Version, Code-State or Evidence-State.
 
 ---
 

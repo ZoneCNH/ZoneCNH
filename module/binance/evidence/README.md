@@ -7,6 +7,12 @@
 | Evidence | Task | Status | Date |
 |----------|------|--------|------|
 | A10-FR024-HOT-RELOAD-EVAL.md | FR-024 Runtime Config Hot Reload | Partial | 2026-06 |
+| 2026-06-27/test/worker-a-runtime-evidence.md | GitHub #1269/#1277/#1278/#1279 local runtime evidence | Partial / Evidence Pending | 2026-06-27 |
+| 2026-06-27/test/worker-b-observability-evidence.md | GitHub #1270/#1271/#1272/#1275 local observability/control-plane evidence | Partial / Evidence Pending | 2026-06-27 |
+| 2026-06-27/test/worker-c-live-evidence-summary.md | GitHub #1273/#1274/#1276 external-dependency evidence summary | Partial / Evidence Pending | 2026-06-27 |
+| 2026-06-27/review/issue-alignment-20260627.md | GitHub #1093 and #1268-#1279 tracker synchronization ledger | Tracker Open / Evidence Pending | 2026-06-27 |
+| 2026-06-27/review/ISSUE-BLOCKERS-1268-1279.md | GitHub #1268-#1279 / Beads `ZoneCNH-xzcr*` Evidence-Done blocker ledger | Tracker Open / Evidence Pending | 2026-06-27 |
+| 2026-06-27/review/issue-closure-10-pass-audit.md | Ten-pass tracker state and wording consistency audit | PASS / Tracker Open / Evidence Pending | 2026-06-27 |
 
 ## 证据模板
 

@@ -1,14 +1,34 @@
 # module/binance TODO — 生产级可发布差距清单
 
 - **创建日期**：2026-06-27
-- **来源**：[`report/binance/spec-structural-analysis-20260627.md`](../../report/binance/spec-structural-analysis-20260627.md) 生产级可发布差距分析
+- **Last-Updated**：2026-06-27
+- **来源**：本文件、[`spec/ACCEPTANCE.md`](spec/ACCEPTANCE.md)、[`matrix/TRACEABILITY.md`](matrix/TRACEABILITY.md) 与 [`evidence/2026-06-27/review/ISSUE-BLOCKERS-1268-1279.md`](evidence/2026-06-27/review/ISSUE-BLOCKERS-1268-1279.md) 的当前可验证状态
 - **Spec-Version**：v3.9.0
-- **Runtime-Anchor**：`/home/binance@f046e16`
+- **Runtime-Anchor**：`/home/binance@0602e78428633a368b0afcd1c578c07ed7144752` + local working tree evidence package `/home/binance/release/evidence/binance/20260627-agent-audit-2/`
 - **当前状态**：v0.2.0 可编译可发布，但**不可生产运营**；Code-State **23 Done / 25 Partial / 0 Drifted / 0 Pending**；Evidence-State **1 Done (FR-009) / 43 Pending**；7 PRG Evidence-Pending / Code-Partial-or-Code-Done anchors；FR-031~036、FR-038~044 为 Code-Partial / Evidence-Pending；FR-037 为 Code-Done / Evidence-Pending。
 
 > [COMPUTED, HIGH] 本文件是 spec 层结构性修复（MA-1~MA-4 + MO-2，已完成）之后的**剩余未完成项**清单。完成状态基于 2026-06-27 对 spec 文件和 `/home/binance` runtime 代码的交叉验证；P0-5、P0-10、P1-6、P2-8 以及 legacy mapping 等文档可验证状态已同步为完成，runtime/外部环境项仍保留为未完成或阻塞。
 >
 > [COMPUTED, MED] 2026-06-27 agent team 再审计发现若干 runtime 代码原语已出现（trace context header、append-only audit DDL、exchangeInfo refresher、FileHistoryStateStore、`cmd/binance-client` 的 `XGO_BINANCE_HISTORY_STATE_FILE` 本地接线、persistent DLQ writer hook、`cmd/binance-server` 的 `XGO_BINANCE_DLQ_FILE` 本地接线），且 FR-037 的 XGO feature flag、canary gate、rollback runbook、env template 与 readiness guard 已补齐本地代码门禁；但 Runtime-Anchor 投影、direct TC、live/evidence 或外部生产演练未闭合的条目仍按“代码原语存在≠验收闭合”同步为部分完成/证据待闭合。
+>
+> [COMPUTED, HIGH] 2026-06-27 GitHub #1268-#1279 为 `OPEN`；Beads `ZoneCNH-xzcr*` 为 `in_progress` Evidence-Done blocker ownership；账本位于 [`evidence/2026-06-27/review/ISSUE-BLOCKERS-1268-1279.md`](evidence/2026-06-27/review/ISSUE-BLOCKERS-1268-1279.md)。#1269/#1277/#1278/#1279 有本地直接证据 [`evidence/2026-06-27/test/worker-a-runtime-evidence.md`](evidence/2026-06-27/test/worker-a-runtime-evidence.md)，其中 #1278/#1279 的新增 runtime evidence 已归档到 `/home/binance/release/evidence/binance/20260627-agent-audit-2/backfill-progress-restart-evidence.md` 与 `/home/binance/release/evidence/binance/20260627-agent-audit-2/dlq-snapshot-replay-evidence.md`。tracker open state 只表示缺口归属与执行跟踪，不得解读为 Evidence-Done；direct TC、live/external 或合规演练证据仍按下表阻塞。
+>
+> [COMPUTED, HIGH] Issue 拆解与剩余 Evidence blocker 对齐如下；该表是未完成 evidence ownership，不改变下方 TODO 完成率。
+
+| GitHub | Beads             | 覆盖范围                                                          | 当前判定                                                                                |
+| ------ | ----------------- | ----------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| #1268  | `ZoneCNH-xzcr`    | P0/P1/P2 evidence closure epic                                    | Tracker open / Evidence pending，等待所有子项 Evidence-Done |
+| #1269  | `ZoneCNH-xzcr.1`  | FR-013/017/025/037 direct TC/live/canary                          | Tracker open / local evidence attached，direct TC/live/canary 待闭合 |
+| #1270  | `ZoneCNH-xzcr.2`  | FR-039 tracing OTel/NATS/header E2E                               | Tracker open / Evidence pending，OTel/NATS/live span-chain 待闭合 |
+| #1271  | `ZoneCNH-xzcr.3`  | FR-040 quota/backpressure/multi-tenant soak                       | Tracker open / Evidence pending，多租户 soak 待闭合 |
+| #1272  | `ZoneCNH-xzcr.4`  | FR-041 audit log lifecycle/admin proof                            | Tracker open / Evidence pending，完整 lifecycle evidence 待闭合 |
+| #1273  | `ZoneCNH-xzcr.5`  | redisx/kafkax/natsx/postgresx/taosx/ossx/clickhousex external E2E | Tracker open / Evidence pending，外部依赖 E2E 证据未达 Evidence-Done |
+| #1274  | `ZoneCNH-xzcr.6`  | FR-001 UM/CM/Options testnet/mainnet live-gated                   | Tracker open / Evidence pending，产品线 credentialed testnet/live 证据未闭合 |
+| #1275  | `ZoneCNH-xzcr.7`  | FR-043 cost dashboard/alert/report                                | Tracker open / Evidence pending，dashboard/alert 证据待闭合 |
+| #1276  | `ZoneCNH-xzcr.8`  | FR-044 destruction drill/cert/archive                             | Tracker open / Evidence pending，合规销毁演练与证书归档待闭合 |
+| #1277  | `ZoneCNH-xzcr.9`  | FR-031~036 ExchangeInfo runtime/direct TC/live                    | Tracker open / local evidence attached，四线 runtime/direct TC/live 待闭合 |
+| #1278  | `ZoneCNH-xzcr.10` | Backfill progress restart persistence                             | Tracker open / local evidence attached，本地 file-store restart 与 fake Postgres state-store evidence 已归档；生产持久介质/真实重启归档/live historical capture 待闭合 |
+| #1279  | `ZoneCNH-xzcr.11` | DLQ snapshot/replay persistence                                   | Tracker open / local evidence attached，本地 DLQ file writer、JSONL reader 与 admin file-backed replay evidence 已归档；Kafka/NATS/live replay 待闭合 |
 
 ---
 
@@ -85,12 +105,12 @@
 
 ## P0 已完成（4 项，存档参考）
 
-| #    | 工作项                               | 完成证据                                                                                                       |
-| ---- | ------------------------------------ | -------------------------------------------------------------------------------------------------------------- |
-| P0-6 | taosx data retention lifecycle       | `/home/binance/internal/server/storage/taos_retention.go` 已实现 DeleteRange + archive proof 前置校验          |
-| P0-7 | Config schema 字段名统一             | spec 层已完成 — 根 §11.1 `binance.product_lines` 默认 `["spot"]`；client/server §11 引用化对齐根 §11 canonical |
-| P0-9 | ClickHouse ReplicatedMergeTree + TTL | dependency contract 层已闭环（`clickhousex` `457d9ff`）                                                        |
-| P0-10 | ADR：order book rebuild 排除决策    | ADR-003 Accepted；FEATURES.md #1114 已同步排除口径                                                             |
+| #     | 工作项                               | 完成证据                                                                                                       |
+| ----- | ------------------------------------ | -------------------------------------------------------------------------------------------------------------- |
+| P0-6  | taosx data retention lifecycle       | `/home/binance/internal/server/storage/taos_retention.go` 已实现 DeleteRange + archive proof 前置校验          |
+| P0-7  | Config schema 字段名统一             | spec 层已完成 — 根 §11.1 `binance.product_lines` 默认 `["spot"]`；client/server §11 引用化对齐根 §11 canonical |
+| P0-9  | ClickHouse ReplicatedMergeTree + TTL | dependency contract 层已闭环（`clickhousex` `457d9ff`）                                                        |
+| P0-10 | ADR：order book rebuild 排除决策     | ADR-003 Accepted；FEATURES.md #1114 已同步排除口径                                                             |
 
 ---
 
@@ -147,11 +167,11 @@
 
 ## P1 已完成（3 项，存档参考）
 
-| #    | 工作项                         | 完成证据                                                                 |
-| ---- | ------------------------------ | ------------------------------------------------------------------------ |
-| P1-6 | ADR：FR-024 vs FR-036 架构路径 | ADR-004 Accepted；FR-036 自建增量 diff，FR-024 保持 full reconnect/no-restart 边界 |
-| P1-7 | 双态模型补充 Code-Drifted 规则 | `spec/ACCEPTANCE.md` + `spec/FEATURES.md` + `matrix/TRACEABILITY.md` 已引入 Code-Drifted 第四态 |
-| P1-8 | FR-013/017/025 状态复核        | 三个 FR 从 active Code-Drifted 调整为 Code-Partial，统计更新为 Code-State **23 Done / 25 Partial / 0 Drifted / 0 Pending**；Evidence-State **1 Done (FR-009) / 43 Pending**，Code-Pending 为无；FR-031~036、FR-038~044 保持 Code-Partial / Evidence-Pending；FR-037 为 Code-Done / Evidence-Pending。 |
+| #    | 工作项                            | 完成证据                                                                                                                                                                                                                                                                                              |
+| ---- | --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| P1-6 | ✅ ADR：FR-024 vs FR-036 架构路径 | ADR-004 Accepted；FR-036 自建增量 diff，FR-024 保持 full reconnect/no-restart 边界                                                                                                                                                                                                                    |
+| P1-7 | 双态模型补充 Code-Drifted 规则    | `spec/ACCEPTANCE.md` + `spec/FEATURES.md` + `matrix/TRACEABILITY.md` 已引入 Code-Drifted 第四态                                                                                                                                                                                                       |
+| P1-8 | FR-013/017/025 状态复核           | 三个 FR 从 active Code-Drifted 调整为 Code-Partial，统计更新为 Code-State **23 Done / 25 Partial / 0 Drifted / 0 Pending**；Evidence-State **1 Done (FR-009) / 43 Pending**，Code-Pending 为无；FR-031~036、FR-038~044 保持 Code-Partial / Evidence-Pending；FR-037 为 Code-Done / Evidence-Pending。 |
 
 ---
 
@@ -187,7 +207,7 @@
 
 - **状态**：⚠️ 部分完成
 - **对应**：#1117
-- **当前**：`FileHistoryStateStore`/snapshot load-save 与 `cmd/binance-client` 的 `XGO_BINANCE_HISTORY_STATE_FILE` 本地 env 接线已出现；仍缺重启恢复 direct TC、持久介质验证与证据归档。
+- **当前**：本地 file-store restart 与 fake Postgres state-store evidence 已归档；仍缺生产持久介质、真实重启归档与 live historical capture。
 - **目标**：持久化到 postgresx（`catalog_exchange_info_snapshots` 表已规划），重启后恢复
 - **工作量**：M
 
@@ -195,7 +215,7 @@
 
 - **状态**：⚠️ 部分完成
 - **对应**：#1118
-- **当前**：`deadletter.FileWriter`、`appendDeadLetter` writer path 与 `cmd/binance-server` 的 `XGO_BINANCE_DLQ_FILE` 本地 env 接线已出现；仍缺 admin snapshot/replay file-backed 闭环与 replay evidence。
+- **当前**：本地 DLQ `FileWriter`、JSONL reader、admin file-backed replay endpoint evidence 已归档；仍缺 Kafka/NATS/live replay 证据。
 - **目标**：修改 `ingest.go` dispatch 的 dead letter 处理，加 FileWriter 作为持久 backend + replay 流程（读取 JSONL → 重新 Publish → 消费重处理）
 - **工作量**：S
 
@@ -210,10 +230,10 @@
 
 ## P2 已完成（3 项，存档参考）
 
-| #    | 工作项                      | 完成证据                                                                                                                                                                    |
-| ---- | --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| P2-4 | 退役文件物理隔离/精简       | 4 文件添加 DEPRECATED 横幅 + 精简（842→95 行）                                                                                                                             |
-| P2-5 | Appendix D AC-BNC 迁移      | 迁移到 `docs/migrations/ac-bnc-legacy-mapping.md`，根 SPEC Appendix D 替换为指针                                                                                           |
+| #    | 工作项                 | 完成证据                                                                                                                                                                                           |
+| ---- | ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| P2-4 | 退役文件物理隔离/精简  | 4 文件添加 DEPRECATED 横幅 + 精简（842→95 行）                                                                                                                                                     |
+| P2-5 | Appendix D AC-BNC 迁移 | 迁移到 `docs/migrations/ac-bnc-legacy-mapping.md`，根 SPEC Appendix D 替换为指针                                                                                                                   |
 | P2-8 | 五处状态一致性 CI gate | `.github/ci/binance-status-consistency-check.sh` + `.github/workflows/docs-ci.yml` 已覆盖 README/FEATURES/ACCEPTANCE/TRACEABILITY/prompt README Code 统计、Drifted FR 与 TRACEABILITY §1/§6 一致性 |
 
 ---
@@ -224,32 +244,32 @@
 
 本地代码对齐已完成；这 3 项原对应 IP 封禁、数据漏检、回填/实时争抢风险，direct TC/live evidence 未归档前仍不得升级为生产 Evidence-Done。
 
-| 步骤 | 工作                                                                                                                     | Runtime 文件                                        |
-| ---- | ------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------- |
-| 0.1  | ✅ 对齐 FR-013：分钟滑动窗口 + 418/429 退避 + clock skew；direct TC/live evidence 待归档                                 | `internal/server/controlplane/reliability.go`       |
-| 0.2  | ✅ 对齐 FR-017：按 event_type 分策略缺口检测；direct TC/live evidence 待归档                                             | `internal/server/quality.go`                        |
-| 0.3  | ✅ 对齐 FR-025：分钟 weight + P0/P1/P2 优先级；direct TC/live evidence 待归档                                            | `internal/client/throttle.go`                       |
+| 步骤 | 工作                                                                                                                         | Runtime 文件                                        |
+| ---- | ---------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| 0.1  | ✅ 对齐 FR-013：分钟滑动窗口 + 418/429 退避 + clock skew；direct TC/live evidence 待归档                                     | `internal/server/controlplane/reliability.go`       |
+| 0.2  | ✅ 对齐 FR-017：按 event_type 分策略缺口检测；direct TC/live evidence 待归档                                                 | `internal/server/quality.go`                        |
+| 0.3  | ✅ 对齐 FR-025：分钟 weight + P0/P1/P2 优先级；direct TC/live evidence 待归档                                                | `internal/client/throttle.go`                       |
 | 0.4  | ✅ 状态复核：FR-013/017/025 从 active Code-Drifted 调整为 Code-Partial；Code-Done/Evidence-Done 依赖 direct TC/live evidence | `ACCEPTANCE.md` + `FEATURES.md` + `TRACEABILITY.md` |
 
 ### Phase 1：生产级门禁补全（本地代码项已完成，生产证据待闭合）
 
-| 步骤 | 工作                                        | 对应 PRG         |
-| ---- | ------------------------------------------- | ---------------- |
-| 1.1  | ✅ schema version server 校验；兼容矩阵 evidence 待归档 | PRG-003 / FR-042 |
-| 1.2  | ✅ feature flag 通用框架 + canary health gate 本地代码门禁 | PRG-003 / FR-037 |
+| 步骤 | 工作                                                        | 对应 PRG         |
+| ---- | ----------------------------------------------------------- | ---------------- |
+| 1.1  | ✅ schema version server 校验；兼容矩阵 evidence 待归档     | PRG-003 / FR-042 |
+| 1.2  | ✅ feature flag 通用框架 + canary health gate 本地代码门禁  | PRG-003 / FR-037 |
 | 1.3  | ✅ kafkax DLQ topic contract；持久化 replay evidence 待归档 | PRG-002          |
-| 1.4  | ✅ ADR：order book rebuild 排除             | MO-4 / ADR-003  |
+| 1.4  | ✅ ADR：order book rebuild 排除                             | MO-4 / ADR-003   |
 
 ### Phase 2：运维治理补全（P1-1/2/3/4/5，4-6 周）
 
-| 步骤 | 工作                                                        | 对应 FR       |
-| ---- | ----------------------------------------------------------- | ------------- |
-| 2.1  | OTel SDK 埋点 + W3C traceparent direct TC                    | FR-039        |
-| 2.2  | Kafka quotas + 多租户压力验证 + per-caller 限流 + CH 查询超时 | FR-040        |
-| 2.3  | Admin 写操作 append-only 审计 evidence                       | FR-041        |
-| 2.4  | 真实外部 E2E（Kafka → Redis → TDengine → ClickHouse → OSS） | Evidence-Done |
-| 2.5  | UM/CM/Options testnet + mainnet live                        | FR-001 G7     |
-| 2.6  | ✅ ADR：FR-024 vs FR-036 架构路径                           | MO-3 / ADR-004 |
+| 步骤 | 工作                                                          | 对应 FR        |
+| ---- | ------------------------------------------------------------- | -------------- |
+| 2.1  | OTel SDK 埋点 + W3C traceparent direct TC                     | FR-039         |
+| 2.2  | Kafka quotas + 多租户压力验证 + per-caller 限流 + CH 查询超时 | FR-040         |
+| 2.3  | Admin 写操作 append-only 审计 evidence                        | FR-041         |
+| 2.4  | 真实外部 E2E（Kafka → Redis → TDengine → ClickHouse → OSS）   | Evidence-Done  |
+| 2.5  | UM/CM/Options testnet + mainnet live                          | FR-001 G7      |
+| 2.6  | ✅ ADR：FR-024 vs FR-036 架构路径                             | MO-3 / ADR-004 |
 
 ### Phase 3：Evidence-Done 推进（持续，8-12 周）
 
@@ -260,13 +280,13 @@
 
 ### Phase 4：P2 可延后项（有替代手段时按需推进）
 
-| 步骤 | 工作                                   |
-| ---- | -------------------------------------- |
-| 4.1  | FR-031~036 ExchangeInfo sync Runtime-Anchor/direct TC 闭合 |
-| 4.2  | Backfill progress 本地 env 接线 + restart evidence         |
-| 4.3  | DLQ 持久化本地 env 接线 + file-backed replay               |
-| 4.4  | ✅ 五处状态一致性 CI gate             |
-| 4.5  | Cost observability dashboard/alert evidence (FR-043) |
+| 步骤 | 工作                                                            |
+| ---- | --------------------------------------------------------------- |
+| 4.1  | FR-031~036 ExchangeInfo sync Runtime-Anchor/direct TC 闭合      |
+| 4.2  | Backfill progress 本地 env 接线 + restart evidence              |
+| 4.3  | DLQ 持久化本地 env 接线 + file-backed replay                    |
+| 4.4  | ✅ 五处状态一致性 CI gate                                       |
+| 4.5  | Cost observability dashboard/alert evidence (FR-043)            |
 | 4.6  | Data compliance destruction drill/certificate evidence (FR-044) |
 
 ---
@@ -274,6 +294,8 @@
 ## 关键约束
 
 > [COMPUTED, HIGH] 本 TODO 清单中仍需 `/home/binance` runtime 或外部环境继续闭合的项包括 P1-1~P1-5、P2-1~P2-3、P2-6、P2-7 及相关 Evidence/PRG；其中 P1-1、P1-2、P1-3、P2-1、P2-2、P2-3、P2-6、P2-7 已从旧“未实现或未接线”口径修正为“runtime 代码原语与本地 env 接线已出现但验收证据未闭合”；FR-037 的本地代码门禁已闭合，但真实生产 canary / rollback drill 归档证据仍按 Evidence-Pending 治理。本次主仓同步已完成 P0-5、P0-10、P1-6、P2-8、prompt 状态投影、legacy mapping 与 agent team 再审计口径同步。
+>
+> [COMPUTED, HIGH] 2026-06-27 本轮同步已将 `prompt/README.md` 与模块规格/验收/矩阵文档统一到 Code-State **23 Done / 25 Partial / 0 Drifted / 0 Pending**、Evidence-State **1 Done (FR-009) / 43 Pending**；FR-013/017/025 后续按 direct TC/live/evidence closure 推进，不再按 unresolved runtime migration 表述。
 >
 > [COMPUTED, HIGH] 本地 P0 代码门禁完成不等于生产级可发布；必须补齐 production canary / rollback drill、direct TC、live/evidence、外部 E2E/CI/dashboard/credential/multi-tenant/destruction 等证据后，才可声明"生产级可发布"。P1 项完成后才可声明"生产级可运营"。P2 项可延后但有替代手段时不应无限期搁置。
 >

@@ -13,6 +13,8 @@
 
 本文档是验收执行清单，不是通过证明。每个 Pending 项必须由实际命令输出、CI run、测试报告或 traceability 状态更新关闭。
 
+> [COMPUTED, HIGH] 2026-06-27 issue Evidence gap ledger [`../evidence/2026-06-27/review/ISSUE-BLOCKERS-1268-1279.md`](../evidence/2026-06-27/review/ISSUE-BLOCKERS-1268-1279.md) records GitHub #1268-#1279 as `OPEN` and Beads `ZoneCNH-xzcr*` as `in_progress` Evidence-Done blocker ownership. It is not acceptance proof; unless a row links direct TC/CI/live evidence, Evidence-State remains **1 Done (FR-009) / 43 Pending**.
+
 ### 状态口径 L1/L2 分层（RULES R4）+ 双态模型（v3.9.0）
 
 > **v3.9.0 引入双态模型**：`Code-Done` 和 `Evidence-Done` 是两种不同的完成度视角，不可互相替代。阅读本文件和其他状态文件时请明确区分。
@@ -267,3 +269,24 @@
 | #929  | Closed      | FR-025~FR-030 已登记。                                                                                                     | 不关闭 throttle、validation、gap repair、SLA metrics、schema drift 与 quality evidence。                                                                                   |
 | #930  | Closed      | stale v3.3/v3.4 projection 已移除；legacy `binance-market` 引用已压缩到边界/追踪语境；DEEP analysis archive/index 已拆分。 | 无额外 runtime 声明。                                                                                                                                                      |
 | #931  | Closed      | #923~#930 的状态入口已统一登记。                                                                                           | Runtime/release readiness 继续按 acceptance/release gates 判断。                                                                                                           |
+
+## 8. GitHub/Beads Issue Blocker Ledger（2026-06-27）
+
+> [COMPUTED, HIGH] GitHub #1268-#1279 are `OPEN` and Beads `ZoneCNH-xzcr*` are `in_progress` Evidence-Done blocker ownership. This section preserves remaining Evidence-Done proof gaps only; it is not acceptance proof and does not change Evidence-State.
+>
+> [COMPUTED, HIGH] Current ledger: [`../evidence/2026-06-27/review/ISSUE-BLOCKERS-1268-1279.md`](../evidence/2026-06-27/review/ISSUE-BLOCKERS-1268-1279.md); runtime evidence notes: [`../evidence/2026-06-27/test/worker-a-runtime-evidence.md`](../evidence/2026-06-27/test/worker-a-runtime-evidence.md), [`../evidence/2026-06-27/test/worker-b-observability-evidence.md`](../evidence/2026-06-27/test/worker-b-observability-evidence.md), [`../evidence/2026-06-27/test/worker-c-live-evidence-summary.md`](../evidence/2026-06-27/test/worker-c-live-evidence-summary.md).
+
+| GitHub | Beads | Acceptance decision | Remaining blocker |
+| ------ | ----- | ------------------- | ----------------- |
+| #1268 | `ZoneCNH-xzcr` | Tracker open / Evidence pending | Epic Evidence-Done closes only after #1269-#1279 have direct proof. |
+| #1269 | `ZoneCNH-xzcr.1` | Tracker open / Evidence pending | Direct TC/live/canary evidence for FR-013/017/025/037. |
+| #1270 | `ZoneCNH-xzcr.2` | Tracker open / Evidence pending | OTel/NATS/live trace span-chain evidence for FR-039. |
+| #1271 | `ZoneCNH-xzcr.3` | Tracker open / Evidence pending | Multi-tenant quota/backpressure soak evidence for FR-040. |
+| #1272 | `ZoneCNH-xzcr.4` | Tracker open / Evidence pending | Full audit lifecycle/retention/archive/permission evidence for FR-041. |
+| #1273 | `ZoneCNH-xzcr.5` | Tracker open / Evidence pending | External E2E evidence for redisx/kafkax/natsx/postgresx/taosx/ossx/clickhousex. |
+| #1274 | `ZoneCNH-xzcr.6` | Tracker open / Evidence pending | UM/CM/Options credentialed testnet and live-gated evidence. |
+| #1275 | `ZoneCNH-xzcr.7` | Tracker open / Evidence pending | Cost dashboard, alert, and report evidence for FR-043. |
+| #1276 | `ZoneCNH-xzcr.8` | Tracker open / Evidence pending | Destruction drill, certificate, and archive evidence for FR-044. |
+| #1277 | `ZoneCNH-xzcr.9` | Tracker open / Evidence pending | FR-031~036 four-line ExchangeInfo runtime/direct TC/live evidence. |
+| #1278 | `ZoneCNH-xzcr.10` | Tracker open / Evidence pending | Backfill progress restart persistence evidence. |
+| #1279 | `ZoneCNH-xzcr.11` | Tracker open / Evidence pending | DLQ snapshot/replay persistence evidence. |
