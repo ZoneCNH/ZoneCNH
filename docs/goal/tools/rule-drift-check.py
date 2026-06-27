@@ -626,10 +626,12 @@ def parse_gates(path: Path) -> dict[str, dict[str, str]]:
             continue
         if not current:
             continue
-        status = re.match(r"^    status:\s*([A-Z_]+)\s*$", raw_line)
+        # Gate-level status at 2-space indent (under "- gate_id:")
+        status = re.match(r"^  status:\s*([A-Z_]+)\s*$", raw_line)
         if status:
             gates[current]["status"] = status.group(1)
-        verdict = re.match(r"^      verdict:\s*([A-Z_]+)\s*$", raw_line)
+        # Result verdict at 4-space indent (under "  result:")
+        verdict = re.match(r"^    verdict:\s*([A-Z_]+)\s*$", raw_line)
         if verdict:
             gates[current]["verdict"] = verdict.group(1)
     return gates

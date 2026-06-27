@@ -7,7 +7,7 @@
 | Status | Generated from current module SSOT |
 | Last-Updated | 2026-06-27 |
 | Module-Version | v3.9.0 |
-| Module-State | v3.9.0 双态模型：Code-Done / Code-Partial / Code-Drifted / Code-Pending。规格扩展到 v3.9.0（内容正确性大修：限流分钟模型、缺口检测按事件类型分策略、回填三级优先级、symbol 生命周期、WS 连接管理、退避参数补全、config schema 修正）。当前投影以 Runtime-Anchor `/home/binance@f046e16` 为准：**22 Done / 12 Partial / 0 Drifted / 14 Pending**。FR-013/017/025 已从 active Code-Drifted 调整为 Code-Partial：runtime anchor 已覆盖分钟 weight/429/418/clock skew、event_type gap strategy、P0/P1/P2 priority，但 direct TC/live evidence 不足，不能升格 Code-Done/Evidence-Done。 |
+| Module-State | v3.9.0 双态模型：Code-State **22 Done / 26 Partial / 0 Drifted / 0 Pending**；Evidence-State **1 Done (FR-009) / 43 Pending**。Code-Partial 固定为：FR-007、FR-007a、FR-011、FR-013、FR-016、FR-017、FR-023、FR-024、FR-025、FR-026、FR-027、FR-028、FR-031、FR-032、FR-033、FR-034、FR-035、FR-036、FR-037、FR-038、FR-039、FR-040、FR-041、FR-042、FR-043、FR-044；Code-Pending：无；FR-031~044 为 Code-Partial / Evidence-Pending，本地 anchors 不等于生产闭合。 |
 | Layer | 数据域 / Binance-specific market_data C/S module |
 | Runtime-Repo | `/home/binance` |
 | Source | `goal.md`, `SPEC.md`, `TRACEABILITY.md`, `DATA-LIFECYCLE.md`, `STANDARD.md`, `BOUNDARY-GATES.md`, `RUNTIME-MAPPING.md`, `IMPLEMENTATION-PLAN.md`, `client/`, `server/`, `tasks/` |
@@ -76,31 +76,31 @@
 
 | 2026-06-26 | v3.8.0 | 结构性修复：FR/BR 编号统一为根 SPEC canonical 命名空间；Client/Server 子规格废除本地编号改为引用根 FR/BR；FR-031~036 Draft→Active 合并入根 §7；BR-010~BR-012 合并入根 §8；DATA-QUALITY-SLA 合并入 FR-029；ENDPOINTS 迁移至 client 附录；DATA-LIFECYCLE 退役 | ZoneCNH |
 
-> **以下 FR-031~036 为 exchangeInfo 同步规格（v3.8.0 Active）**，原定义于 `SPEC-exchangeinfo-sync.md`（Draft），v3.8.0 合并入根 SPEC。当前状态 **Pending**（runtime 未实现）。
+> **以下 FR-031~036 为 exchangeInfo 同步规格（v3.8.0 Active）**，原定义于 `SPEC-exchangeinfo-sync.md`（Draft），v3.8.0 合并入根 SPEC。当前状态 **Pending**（runtime anchors 未完全闭合）。
 
 | FR | 名称 | 状态 | 核心内容 | 待闭合 |
 | --- | --- | --- | --- | --- |
-| FR-031 | ExchangeInfo Discovery (4 Product Lines) | Pending | client 四产品线 exchangeInfo 发现（修 COIN-M/Options API 陷阱） | runtime 实现 |
-| FR-032 | ExchangeInfo Persistence & Scheduled Refresh | Pending | server 落库 postgresx + 6h diff-only + natsx control stream（LimitsPolicy） | runtime 实现 |
-| FR-033 | Sync Tier Classification | Pending | sync_tier 分级（分类层，不含连接拓扑） | runtime 实现 |
-| FR-034 | Selective Sync Whitelist | Pending | product_lines/allow/deny 白名单（deny 永远赢） | runtime 实现 |
-| FR-035 | Admin Surface Auth Hardening | Pending | admin 写操作 Bearer token + loopback fallback | runtime 实现 |
-| FR-036 | Tier-Aware Connection Topology | Pending | stream manager 按 (productLine,tier) 分组连接；按 ADR-004 自建增量 stream add/remove diff，不依赖 FR-024 升级 | runtime 实现 |
+| FR-031 | REST ExchangeInfo Discovery | 检测 spot/um/cm/option symbol metadata、tick/step/minNotional/filters。 | Partial | `/home/binance/internal/client/exchangeinfo*.go` 与 option `optionSymbols` 已提供本地 anchors；四线 live/TC matrix 未闭合。 |
+| FR-032 | ExchangeInfo Refresh & Diff | 定期刷新、diff、版本化缓存、变更告警。 | Partial | `exchangeinfo_refresh.go` 提供 refresh/diff anchor；server consumer、migration 与 direct evidence 未闭合。 |
+| FR-033 | Symbol Tiering & Priority | hot/warm/cold symbol tier、backfill/stream 优先级。 | Partial | catalog/tier/backfill throttling anchors 已存在；tier-aware stream priority live evidence 未闭合。 |
+| FR-034 | Dynamic Pair Universe | allow/deny/watchlist、hot reload、runtime config。 | Partial | runtime config/admin/catalog anchors 已存在；hot-update TC/live evidence 未闭合。 |
+| FR-035 | Admin Control Surface | pause/resume/reload/drain/health/readiness 管理 API。 | Partial | `internal/server/admin.go` 与 feature/admin guards 提供 anchors；auth/loopback/full write-safety evidence 未闭合。 |
+| FR-036 | Stream Load Shedding | 分层 WS groups、cold tier 降频、options expiry 平滑。 | Partial | stream/catalog/tier anchors 已存在；options expiry smoothing 与 live shedding evidence 未闭合。 |
 
-### v3.7.0 新增 FR-037~044（P0/P1/P2 — 全部 Pending）
+### v3.7.0 新增 FR-037~044（P0/P1/P2 — Code-Partial / Evidence-Pending）
 
-> [COMPUTED, HIGH] 以下 FR 为 2026-06-26 v3.7.0 新增，对齐 Plan008 生产级缺口终审（S26-S32 + G6/S1-S2）的标准化要求。所有新增 FR 当前状态 **Pending**（仅规格登记，runtime 未实现）。对应 GitHub issue #1180-#1186（Plan008 7 项剩余 Task）。
+> [COMPUTED, HIGH] 以下 FR 为 2026-06-26 v3.7.0 新增，对齐 Plan008 生产级缺口终审（S26-S32 + G6/S1-S2）的标准化要求。所有新增 FR 当前状态 **Pending**（已有本地 anchors，未闭合生产 evidence）。对应 GitHub issue #1180-#1186（Plan008 7 项剩余 Task）。
 
 | FR | 名称 | 状态 | 核心内容 | 对应标准化 |
 | --- | --- | --- | --- | --- |
-| FR-037 | Release Safety Net | Pending | feature flag (`XGO_BINANCE_FEATURE_{name}`) + canary 部署 + 健康门禁 + 自动回滚 runbook | S26 |
-| FR-038 | taosx Data Retention Lifecycle | Pending | DB 级 KEEP 365 + 定时 DELETE trade/tick(30d)/bar(90d) + OSS ETag 前置校验 + 删除审计 | G6 / S1 / S2 |
-| FR-039 | Distributed Tracing (OpenTelemetry) | Pending | OTel SDK 埋点 + W3C traceparent header 传播 NATS/Kafka + slog trace_id 关联 + 采样率可配 | S28 |
-| FR-040 | Resource Quota & Isolation | Pending | per-consumer-group Kafka 配额 + per-product-line WS 连接池隔离 + per-caller API 限流 + CH 查询超时 | S29 |
-| FR-041 | Audit Log Completeness | Pending | admin 写操作审计 + 数据生命周期审计 + append-only (REVOKE UPDATE,DELETE) + ≥1 年保留 + OSS 归档 | S30 / S33 |
-| FR-042 | Schema Version Compatibility Policy | Pending | MAJOR terminal reject (BNC-014) + MINOR 向后兼容 + 兼容矩阵 (postgresx) + 升级顺序 | S27 |
-| FR-043 | Cost Observability | Pending | 存储容量/带宽 per-product-line Prometheus 指标 + 成本告警 (AlertManager) | S31 |
-| FR-044 | Data Compliance & Destruction | Pending | data_classification 标注 + 合规保留期 + 不可逆销毁 + certificate_of_destruction | S32 |
+| FR-037 | Canary & Rollback Controls | feature flag、readiness gate、deploy health、rollback runbook。 | Partial | `feature_flag.go`、readiness audit 与 deploy runbook 提供 anchors；自动 canary gate/rollback drill evidence 未闭合。 |
+| FR-038 | Retention / Archive / Rehydrate | retention policy、archive、rehydrate、delete proof。 | Partial | retention/archive/delete/restore anchors 已存在；live retention/rehydrate drill evidence 未闭合。 |
+| FR-039 | Trace Propagation | W3C trace context across HTTP/Kafka/worker/logs。 | Partial | `kafka_dispatch.go` tests assert W3C headers；OTel/NATS/live span-chain evidence 未闭合。 |
+| FR-040 | Resource Quota & Backpressure | per-stream/per-symbol quota、throttle、backpressure metrics。 | Partial | throttle/catalog/admin pause-drain/metrics anchors 已存在；multi-tenant quota soak evidence 未闭合。 |
+| FR-041 | Audit Log Immutability | append-only audit、admin actions、data lifecycle proof。 | Partial | `migrations/003_audit.sql` append-only trigger + revoke anchor；full admin/data lifecycle audit evidence 未闭合。 |
+| FR-042 | Schema Compatibility Gate | schema version guard、compatibility tests、migration blocker。 | Partial | schema/version guard anchors 已存在；compatibility matrix drill evidence 未闭合。 |
+| FR-043 | Cost / Budget Observability | cost metrics、dashboard、budget alert、usage report。 | Partial | metrics/runbook cost anchors 已存在；dashboard/budget alert evidence 未闭合。 |
+| FR-044 | Compliance Destruction Proof | data classification、destruction certificate、retention exception trail。 | Partial | data classification/retention/archive/destruction-proof runbook anchors 已存在；irreversible certificate/cross-env drill evidence 未闭合。 |
 
 ### 能力边界声明（#1113/#1114/#1115/#1116 降级闭合）
 

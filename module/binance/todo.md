@@ -4,7 +4,7 @@
 - **来源**：[`report/binance/spec-structural-analysis-20260627.md`](../../report/binance/spec-structural-analysis-20260627.md) 生产级可发布差距分析
 - **Spec-Version**：v3.9.0
 - **Runtime-Anchor**：`/home/binance@f046e16`
-- **当前状态**：v0.2.0 可编译可发布，但**不可生产运营**（43/44 Evidence-Pending，7 PRG 全 Pending；ADR-003/ADR-004、legacy mapping、README/FEATURES/ACCEPTANCE/TRACEABILITY/prompt 状态一致性 CI gate 已同步完成）
+- **当前状态**：v0.2.0 可编译可发布，但**不可生产运营**；Code-State **22 Done / 26 Partial / 0 Drifted / 0 Pending**；Evidence-State **1 Done (FR-009) / 43 Pending**；7 PRG Evidence-Pending / Code-Partial anchors；FR-031~044 为 Code-Partial / Evidence-Pending。
 
 > [COMPUTED, HIGH] 本文件是 spec 层结构性修复（MA-1~MA-4 + MO-2，已完成）之后的**剩余未完成项**清单。完成状态基于 2026-06-27 对 spec 文件和 `/home/binance` runtime 代码的交叉验证；P0-10、P1-6、P2-8 以及 legacy mapping 等文档可验证状态已同步为完成，runtime/外部环境项仍保留为未完成或阻塞。
 
@@ -150,7 +150,7 @@
 | ---- | ------------------------------ | ------------------------------------------------------------------------ |
 | P1-6 | ADR：FR-024 vs FR-036 架构路径 | ADR-004 Accepted；FR-036 自建增量 diff，FR-024 保持 full reconnect/no-restart 边界 |
 | P1-7 | 双态模型补充 Code-Drifted 规则 | ACCEPTANCE.md + FEATURES.md + TRACEABILITY.md 已引入 Code-Drifted 第四态 |
-| P1-8 | FR-013/017/025 状态复核        | 三个 FR 从 active Code-Drifted 调整为 Code-Partial，统计更新为 22/12/0/14 |
+| P1-8 | FR-013/017/025 状态复核        | 三个 FR 从 active Code-Drifted 调整为 Code-Partial，统计更新为 Code-State **22/26/0/0**；Evidence-State **1 Done (FR-009) / 43 Pending**，Code-Pending 为无；FR-031~044 已改为 Code-Partial / Evidence-Pending。
 
 ---
 
@@ -160,7 +160,7 @@
 
 - **状态**：❌ 未完成
 - **对应**：FR-043
-- **当前**：零实现
+- **当前**：已有本地 anchors，未闭合生产 evidence
 - **目标**：存储容量/带宽 per-product-line Prometheus 指标 + 成本告警（AlertManager）
 - **替代**：可用外部监控暂替
 - **工作量**：M
@@ -169,7 +169,7 @@
 
 - **状态**：❌ 未完成
 - **对应**：FR-044
-- **当前**：零实现
+- **当前**：已有本地 anchors，未闭合生产 evidence
 - **目标**：`data_classification` 标注 + 合规保留期 + 不可逆销毁 + `certificate_of_destruction`
 - **替代**：可用手动流程暂替
 - **工作量**：M
@@ -178,7 +178,7 @@
 
 - **状态**：❌ 未完成
 - **对应**：FR-031~036
-- **当前**：全 Pending（仅规格登记，runtime 未实现）
+- **当前**：Code-Partial / Evidence-Pending（已有本地 anchors，未闭合四线/live/TC）
 - **目标**：四产品线 exchangeInfo 发现 + 持久化 + 6h diff-only 刷新 + sync_tier 分级 + 白名单选择性同步 + admin auth + tier-aware 连接拓扑
 - **工作量**：L
 

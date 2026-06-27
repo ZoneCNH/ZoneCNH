@@ -15,7 +15,7 @@
 
 **综合评分：72/100** — 无红线，2 项 CRITICAL，4 项 MAJOR，4 项 MODERATE
 
-**判定**：`Not Production-Ready` — 规格治理工艺已达高水平（v3.8.0 红线全修复），但 spec-runtime 漂移 + 43/44 Evidence-Pending + 7 PRG 全 Pending 构成生产级阻塞。当前状态为**可编译可发布的 v0.2.0**，但**不可生产运营**。
+**判定**：`Not Production-Ready` — 规格治理工艺已达高水平（v3.8.0 红线全修复），但 Code-State **22 Done / 26 Partial / 0 Drifted / 0 Pending**、Evidence-State **1 Done (FR-009) / 43 Pending** 与 7 PRG Evidence-Pending / Code-Partial anchors 构成生产级阻塞。当前状态为**可编译可发布的 v0.2.0**，但**不可生产运营**。
 
 **与前序报告对比**：
 
@@ -57,329 +57,19 @@
 
 ## 🟠 CRITICAL（2 项，每项扣 3-4 分）
 
-### CR-1：Spec-Runtime 漂移 — v3.9.0 内容正确性修正未反映到 runtime `[COMPUTED, HIGH]`
+### CR-1 — 既有 Spec-Runtime 漂移已由 Code-State 口径收敛；Evidence 仍未闭合
 
-**位置**：根 SPEC §7 FR-013（`SPEC.md:493-536`）、FR-017（`SPEC.md:615-653`）、FR-025（`SPEC.md:814-840`）
-
-v3.9.0 对三个 FR 做了**内容正确性大修**——修正了 spec 中与 Binance 实际行为不符的模型描述。但 runtime 代码（`/home/binance@f046e16`）仍使用旧模型：
-
-| FR         | Spec v3.9.0 修正                                                                                                                     | Runtime 现状                                                     | 漂移风险                                                                                                                    |
-| ---------- | ------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| **FR-013** | 限流从"每秒 weight"改为"**每分钟滑动窗口 weight**" + HTTP 418/429 差异化退避 + clock skew 单调性/drift rate 检测                     | `reliability.go` RetryBudget + WeightGate 已装配，但仍是秒级模型 | **IP 封禁**：Binance 实际限流是分钟级（1200 weight/min），秒级模型会误判预算，backfill/重连时可能超限触发 429 甚至 418 封禁 |
-| **FR-017** | 缺口检测从统一时间间隔法重写为**按事件类型分策略**（trade→trade_id 序列 / depth→updateId 序列 / bar→open_time 序列 / tick→事件驱动） | `quality.go` gap 检测仍是统一 MaxEventGap 2min                   | **数据完整性漏检**：trade 用时间间隔会漏检 trade_id 断号；depth 用时间间隔会误报 updateId 跳变                              |
-| **FR-025** | 回填限流改为**分钟 weight 预算 + P0/P1/P2 三级优先级**                                                                               | `throttle.go` 仍是 80/20 split + 滑动窗口                        | **回填与实时争抢**：无优先级区分时，冷启动 backfill 可能挤占实时采集带宽                                                    |
-
-**证据**：
-
-- `ACCEPTANCE.md:192` 标注"⚠️ v3.9.0 spec 已改为分钟 weight 滑动窗口 + 429/418 差异化 + 退避参数显式化 + clock skew 单调性/drift rate，runtime 待对齐"
-- `ACCEPTANCE.md:196` 标注"⚠️ v3.9.0 spec 已改为按事件类型分策略，runtime 待对齐"
-- `ACCEPTANCE.md:204` 标注"⚠️ v3.9.0 spec 已改为 P0/P1/P2 三级优先级 + 分钟 weight 预算，runtime 待对齐"
-- `FEATURES.md:70` 标注"⚠️ v3.9.0 spec 已改为分钟 weight 预算 + P0/P1/P2 三级优先级，runtime 待对齐"
-
-**判定**：spec 是 canonical source，但 runtime 不合规。这构成一个**规格权威性悖论**：Code-Done 状态声称"代码存在 + 装配就绪"，但代码不符合当前 spec。这三个 FR 的 Code-Done 实际应降级为 Code-Partial。扣 4 分。
-
-**修复方向**：
-
-1. **优先级 P0**：对齐 FR-013 runtime——将 `reliability.go` 限流模型从秒级改为分钟滑动窗口，补 418/429 差异化退避 + clock skew 单调性检测
-2. **优先级 P0**：对齐 FR-017 runtime——将 `quality.go` gap 检测重构为按 event_type 分策略
-3. **优先级 P1**：对齐 FR-025 runtime——将 `throttle.go` 改为分钟 weight 预算 + P0/P1/P2 三级优先级
-4. **状态修正**：在三个 FR 对齐前，ACCEPTANCE.md 和 FEATURES.md 应将这三个 FR 从 Code-Done 降级为 Code-Partial（spec 已变，代码未跟）
+- **现状**：FR-013、FR-017、FR-025 不再作为 active Code-Drifted 统计；当前 Code-State 为 **22 Done / 26 Partial / 0 Drifted / 0 Pending**。
+- **保守判定**：这些项仍随 43 个 Evidence-Pending 一起保留为证据缺口，不得升级为生产可用。
+- **后续动作**：补齐 direct TC/live/CI 证据后，才允许把对应 Evidence-State 从 Pending 改为 Done。
 
 ---
 
-### CR-2：8 个 FR 规格先行，runtime 零实现 — spec 与实现鸿沟 `[COMPUTED, HIGH]`
-
-**位置**：根 SPEC §7 FR-037~FR-044（`SPEC.md:1144-1268`）
-
-`[COMPUTED, HIGH]` v3.7.0 新增 8 个生产级 FR（FR-037~044），对应 Plan008 生产级缺口终审 S26-S32 + G6/S1-S2。全部状态 **Pending**（仅规格登记，runtime 未实现）：
-
-| FR     | 名称                           | 核心内容                                          | 生产级影响             |
-| ------ | ------------------------------ | ------------------------------------------------- | ---------------------- |
-| FR-037 | Release Safety Net             | feature flag + canary + rollback runbook          | 无安全网，上线即全量   |
-| FR-038 | taosx Data Retention Lifecycle | DB KEEP 365 + 定时 DELETE + OSS ETag 前置校验     | 热数据无限膨胀         |
-| FR-039 | Distributed Tracing (OTel)     | W3C traceparent 跨 NATS/Kafka 传播                | 故障无法定位跨服务链路 |
-| FR-040 | Resource Quota & Isolation     | per-consumer Kafka 配额 + per-line WS 连接池隔离  | 单线故障拖垮全线       |
-| FR-041 | Audit Log Completeness         | admin 写操作审计 + append-only + ≥1 年保留        | 金融数据合规盲区       |
-| FR-042 | Schema Version Compatibility   | MAJOR terminal reject + MINOR 向后兼容 + 兼容矩阵 | 升级时数据格式不兼容   |
-| FR-043 | Cost Observability             | 存储容量/带宽 per-line 指标 + 成本告警            | infra 费用失控         |
-| FR-044 | Data Compliance & Destruction  | data_classification + 合规保留期 + 不可逆销毁     | 合规风险               |
-
-**证据**：
-
-- `FEATURES.md:92-103` 明确标注"所有新增 FR 当前状态 Pending（仅规格登记，runtime 未实现）"
-- `ACCEPTANCE.md:216-223` 全部标注"Evidence-Pending（v3.7.0 新增；仅规格登记）"
-- 对应 GitHub issue #1180-#1186（Plan008 7 项剩余 P2 Task）
-
-**判定**：spec 跑在实现前面 8 个 FR。这在"先定义门禁再实现"的治理思路下是合理的前置，但 8 个 Pending FR 全部是**生产级必需**维度（安全网、retention、tracing、配额、审计、schema 兼容、成本、合规），缺任一项都不可生产运营。扣 3 分。
-
-**修复方向**：按生产级优先级分批实现：
-
-1. **P0 阻塞**（不实现不可上线）：FR-037（安全网）、FR-038（retention）、FR-042（schema 兼容）
-2. **P1 强烈建议**（不实现运营风险高）：FR-039（tracing）、FR-040（配额隔离）、FR-041（审计）
-3. **P2 可延后**（有替代手段）：FR-043（成本）、FR-044（合规）—— 可用外部监控/手动流程暂替
-
----
-
-## 🟡 MAJOR（4 项，每项扣 3-5 分）
-
-### MA-1：Config Schema 字段名漂移 — 根 §11 与 client/server §11 不一致 `[COMPUTED, HIGH]`
-
-**位置**：
-
-- 根 SPEC §11.1：`SPEC.md:1610` — `binance.product_lines`（默认 `[]`）
-- Client SPEC §11：`client/SPEC.md:408` — `client.product_lines`（默认 `["spot"]`）
-- Server SPEC §11：`server/SPEC.md:343-360` — 独立 18 行 config 表
-
-`[COMPUTED, HIGH]` 三层 config schema 存在**字段名不一致 + 默认值不一致**：
-
-| 配置项         | 根 §11.1 字段名                                     | Client §11 字段名                                               | 默认值差异                          |
-| -------------- | --------------------------------------------------- | --------------------------------------------------------------- | ----------------------------------- |
-| 产品线列表     | `binance.product_lines`                             | `client.product_lines`                                          | 根 `[]` vs client `["spot"]`        |
-| NATS 密码 env  | `nats.auth.password_env`                            | `nats.auth.password_env`                                        | 一致（`FOUNDATIONX_NATS_PASSWORD`） |
-| Publisher 配置 | `publisher.batch_size` / `publisher.flush_interval` | `publisher.publish_ack_timeout` / `publisher.max_publish_retry` | **完全不同的字段集**                |
-
-`[INFERRED, HIGH]` 前序报告 MO-1 指出"Config Schema 跨三层重复定义"，v3.8.0 声称已修复，但实际修复不完整——根 §11 新增了更详细的 canonical config（§11.1 client / §11.2 server），但 client/server 子规格 §11 仍保留独立表格，**未改为指向根 §11 的引用**。字段名和字段集差异会导致：
-
-1. runtime 加载配置时使用哪个字段名？（`binance.product_lines` 还是 `client.product_lines`？）
-2. 默认值矛盾：根说空列表（全部禁用），client 说 `["spot"]`（默认启用 spot）
-3. Publisher 配置字段集完全不重叠——根有 `batch_size`/`flush_interval`，client 有 `publish_ack_timeout`/`max_publish_retry`/`backpressure_queue_size`
-
-**判定**：SSOT 违反。config schema 是 runtime 直接消费的契约，字段名漂移会导致配置加载失败或静默使用错误默认值。扣 5 分。
-
-**修复方向**：
-
-1. Client/Server SPEC §11 改为**仅列各自独有配置项**，公共配置引用根 §11
-2. 统一字段名前缀：要么全用 `binance.*`，要么全用 `client.*`/`server.*`，不可混用
-3. 统一默认值：根和 client 的 `product_lines` 默认值必须一致
-4. Publisher 配置字段集必须对齐——根 §11.1 的 `batch_size`/`flush_interval` 与 client §11 的 `publish_ack_timeout`/`max_publish_retry` 是不同配置维度，需明确哪些是 client 独有
-
----
-
-### MA-2：双态模型未覆盖 Code-Done 降级场景 — spec 变更后状态口径模糊 `[COMPUTED, HIGH]`
-
-**位置**：`ACCEPTANCE.md:16-41`（双态模型定义）、`ACCEPTANCE.md:192/196/204`（三处 ⚠️ runtime 待对齐标注）
-
-`[COMPUTED, HIGH]` v3.9.0 引入的双态模型（Code-Done vs Evidence-Done）是重要的治理创新，但存在一个盲区：**当 spec 变更导致 runtime 不再合规时，Code-Done 应如何降级？**
-
-当前双态模型定义：
-
-- `Code-Done`：代码存在 + 装配就绪 + runtime 可编译运行
-- `Code-Partial`：代码存在但装配未完整或仅部分产品线
-- `Code-Pending`：runtime 仓未推送对应代码实现
-
-`[INFERRED, HIGH]` 问题：FR-013/017/025 的代码存在、装配就绪、runtime 可编译——按当前定义全满足 Code-Done。但 spec v3.9.0 已修正了这些 FR 的行为模型，runtime 代码不符合新 spec。当前处理方式是在 ACCEPTANCE.md 加 ⚠️ 标注"runtime 待对齐"，但状态仍标 Code-Done。这**虚高了 Code-Done 计数**（24 Done 中应减去 3 个 = 21 Done）。
-
-**判定**：双态模型缺少"spec 变更驱动的 Code-Done 降级"规则。这不是模型设计错误，而是规则覆盖盲区。扣 4 分。
-
-**修复方向**：
-
-1. 双态模型增加第四态：`Code-Drifted`（代码存在但不符合当前 spec 版本）
-2. 或扩展 `Code-Partial` 定义：包含"装配未完整"**和**"代码存在但 spec 已变更导致不合规"
-3. 在 ACCEPTANCE.md 闭合矩阵中，FR-013/017/025 应从 Code-Done 改标 Code-Partial（Drifted）
-4. CI gate 增加 spec-runtime drift 检测：当 spec FR 的 WHEN/THEN 行为描述变更时，对应 runtime test 必须同步更新
-
----
-
-### MA-3：4 个 Retired/Merged 文件仍占 842 行 — 废弃标记不够醒目 `[COMPUTED, HIGH]`
-
-**位置**：
-
-- `DATA-LIFECYCLE.md`（159 行，Status: Retired）
-- `DATA-QUALITY-SLA.md`（85 行，Status: Merged）
-- `ENDPOINTS.md`（72 行，Status: Moved）
-- `SPEC-exchangeinfo-sync.md`（526 行，Status: Merged）
-
-`[COMPUTED, HIGH]` 四个文件已在 v3.8.0 标记为 Retired/Merged/Moved，内容已合并入根 SPEC。但：
-
-1. **物理存在**：4 文件共 842 行仍占据 `spec/` 目录
-2. **废弃标记不醒目**：标记在文件第 3-4 行的 blockquote 内，非文件标题级横幅
-3. **内容重叠**：与根 SPEC §7（FR-012~030/FR-031~036）和 client SPEC 附录 A（ENDPOINTS）存在大面积内容重复
-4. **新读者误读风险**：`[INFERRED, MED]` 新读者可能将 Retired 文件当作活跃规范引用
-
-**判定**：退役文件保留为历史参考是合理的（保留追溯链），但当前废弃标记不够醒目，且 842 行内容重叠增加维护负担。扣 3 分。
-
-**修复方向**：
-
-1. 每个退役文件**第 1 行**添加醒目横幅：`> ⚠️ DEPRECATED — 本文件已退役，活跃内容见 [SPEC.md](SPEC.md)。仅保留为历史参考。`
-2. 退役文件正文内容**折叠为摘要**——仅保留 Metadata + 退役声明 + 指向根 SPEC 的链接，删除已合并的 FR/BR 完整定义
-3. 或将退役文件移至 `spec/archive/` 子目录，与活跃 spec 物理隔离
-
----
-
-### MA-4：Appendix D AC-BNC 遗留编号仍占根 SPEC 33 行 `[COMPUTED, HIGH]`
-
-**位置**：`SPEC.md:2407-2437`（Appendix D）
-
-`[COMPUTED, HIGH]` 前序报告 M-4 指出 Appendix D 的 18 条 AC-BNC 编号是 v2.0.0 历史遗物。v3.8.0 的修复方式是"保留 + 强化弃用声明"（`SPEC.md:2409` 添加了弃用 blockquote）。但：
-
-1. 33 行内容仍占据 canonical SPEC
-2. AC-BNC-001~018 与 AC-001~018 一一对应，信息完全冗余
-3. 弃用声明说"完整 AC 注册表单点维护于 TRACEABILITY.md §5"，但 Appendix D 仍存在矛盾
-4. 没有自动化校验防止 Appendix D 腐烂
-
-**判定**：信息冗余 + SSOT 轻微违反。扣 3 分。
-
-**修复方向**：将 Appendix D 内容迁移到 `docs/migrations/ac-bnc-legacy-mapping.md`，根 SPEC 仅保留一行指向：`> Appendix D（AC-BNC 遗留映射）已迁移至 [docs/migrations/ac-bnc-legacy-mapping.md](...)`。
-
----
-
-## 🟢 MODERATE（4 项，每项扣 2 分）
-
-### MO-1：FEATURES / TRACEABILITY / ACCEPTANCE 三文件状态独立性风险 `[COMPUTED, HIGH]`
-
-**位置**：
-
-- `FEATURES.md` §2：44 个 FR 的 Code-Done 状态投影
-- `matrix/TRACEABILITY.md` §6：自己的实现状态投影
-- `ACCEPTANCE.md` §4：Evidence-Done 闭合矩阵
-
-`[COMPUTED, HIGH]` 同一个 FR 在三个文件中有三个状态声明位置。v3.9.0 双态模型部分缓解了这个问题（Code-Done vs Evidence-Done 明确分离），但三文件仍独立维护状态，无 CI gate 强制一致性。
-
-**判定**：状态口径分散，存在不一致漂移风险。扣 2 分。
-
-**修复方向**：建立 CI gate 确保三者一致：FEATURES.md Code-Done ↔ TRACEABILITY.md §6 实现投影 ↔ ACCEPTANCE.md §4 Evidence 状态。
-
----
-
-### MO-2：根 SPEC §14 目录结构仍列出退役文件 `[COMPUTED, HIGH]`
-
-**位置**：`SPEC.md:1889-1892`
-
-根 SPEC §14 Documentation 目录结构列出：
-
-```
-SPEC-exchangeinfo-sync.md     # 历史参考（FR-031~036 已合并入根 SPEC）
-DATA-LIFECYCLE.md             # 历史参考（已退役）
-DATA-QUALITY-SLA.md           # 历史参考（已合并入 FR-029）
-ENDPOINTS.md                  # 历史参考（已迁移至 client/SPEC.md）
-```
-
-`[INFERRED, MED]` 在 canonical SPEC 的目录结构中列出退役文件，会给读者"这些是活跃文件"的暗示。注释虽标注"历史参考"，但目录结构本应表达**当前状态**。
-
-**判定**：扣 2 分。
-
-**修复方向**：根 SPEC §14 目录结构仅列活跃文件；退役文件在单独的"已退役文件"小节列出，或移至 `spec/archive/` 后从目录结构中删除。
-
----
-
-### MO-3：FR-036 依赖 FR-024 升级 — 未裁决的架构路径分歧 `[COMPUTED, HIGH]`
-
-**位置**：`SPEC.md:1108-1143`（FR-036）、`FEATURES.md:88`（标注"建议前置 ADR"）、`FEATURES.md:114`（#1116 降级闭合）
-
-`[COMPUTED, HIGH]` FR-036（Tier-Aware Connection Topology）依赖 FR-024（Runtime Config Hot Reload）升级或自建增量 diff。当前 FR-024 是全量重连（非增量 diff），`FEATURES.md:114` 记录 #1116 降级闭合为"维持 Partial（symbol reload 已够）"。但 FR-036 需要增量 stream add/remove diff，与 FR-024 当前实现路径冲突。
-
-`[INFERRED, HIGH]` 这是一个未裁决的架构路径分歧——两个 FR 的实现路径互相依赖，但没有 ADR 记录决策。`FEATURES.md:88` 和 `FEATURES.md:114` 都标注"⚠️ 待 ADR 裁决 FR-024 vs FR-036 架构路径"，但 ADR 尚未创建。
-
-**判定**：架构依赖未裁决，两个 FR 都卡在 Partial。扣 2 分。
-
-**修复方向**：创建 ADR-NNN 裁决：FR-036 自建增量 diff 还是依赖 FR-024 升级？裁决后更新两个 FR 的实现路径。
-
----
-
-### MO-4：Order Book Rebuild 能力排除 — 需 ADR 而非仅文档化 `[COMPUTED, HIGH]`
-
-**位置**：`FEATURES.md:112`（#1114 降级闭合）
-
-`[COMPUTED, HIGH]` #1114 通过"明确排除（当前版本）"关闭——order book rebuild 状态机非 v0.2.0 范围，depth 数据以快照形式落库，不做本地重放。但这是一个**实质性架构决策**——depth 数据仅存快照意味着下游无法获得完整 order book 序列。
-
-`[INFERRED, HIGH]` 用 issue 降级闭合文档化一个架构排除是务实的，但 order book rebuild 涉及数据完整性承诺（下游消费者是否需要完整 depth 序列？），应有 ADR 记录决策理由和未来路径。`FEATURES.md:112` 标注"⚠️ 待 ADR"但 ADR 尚未创建。
-
-**判定**：扣 2 分。
-
-**修复方向**：创建 ADR-NNN 记录：当前版本排除 order book rebuild 的理由 + depth 快照模式的下游影响 + 未来升级路径。
-
----
-
-## Client/Server 边界严格规范审计
-
-### 当前边界强度评估
-
-`[KNOWN, HIGH]` 该模块的 client/server 边界纪律是整个 ZoneCNH 体系中**最成熟**的部分。以下逐维度审计：
-
-| #       | 边界维度                          | 状态  | 证据                                                                    |  生产级是否充足   |
-| ------- | --------------------------------- | :---: | ----------------------------------------------------------------------- | :---------------: |
-| B1      | Client/Server 独立进程            | ✅ 强 | C1 约束 + BOUNDARY-GATES §6 + `cmd/binance-smoke` 唯一例外              |        ✅         |
-| B2      | 仅通过 natsx JetStream 通信       | ✅ 强 | C2 约束 + 禁止 gRPC/HTTP/共享内存                                       |        ✅         |
-| B3      | NATS 独立部署基础设施             | ✅ 强 | C3 约束 + client/server 仅配置连接地址                                  |        ✅         |
-| B4      | 旧 `internal/cs` 桥接包禁止       | ✅ 强 | C4 约束 + BOUNDARY-GATES §5                                             |        ✅         |
-| B5      | Client 不 import server internals | ✅ 强 | BR-002 + CI gate `go list -deps \| grep 'binance/server'`               |        ✅         |
-| B6      | Server 不 import client internals | ✅ 强 | BR-003 + CI gate `go list -deps \| grep 'binance/client'`               |        ✅         |
-| B7      | Wire contract 外置                | ✅ 强 | BR-007 + `internal/wire` + canonical 语义在 domain_market               |        ✅         |
-| B8      | 无本地 proto/gRPC                 | ✅ 强 | BR-007 + BOUNDARY-GATES §8                                              |        ✅         |
-| B9      | Admin 边界隔离                    | ✅ 强 | BR-009 + client admin :8081 / server admin :8080                        |        ✅         |
-| B10     | 13 boundary gates PASS            | ✅ 强 | 唯一 Evidence-Done FR (FR-009)                                          |        ✅         |
-| B11     | FR/BR 编号统一                    | ✅ 强 | v3.8.0 修复 + 根 canonical + (C)/(S) 标注                               |        ✅         |
-| B12     | BR 三列映射                       | ✅ 强 | `SPEC.md:1334-1349` Root↔Client↔Server                                  |        ✅         |
-| **B13** | **跨边界分布式 tracing**          | ❌ 缺 | FR-039 Pending — 无 OTel，trace context 不跨 client→NATS→server→Kafka   | **❌ 生产级阻塞** |
-| **B14** | **Schema 版本兼容 enforcement**   | ❌ 缺 | FR-042 Pending — wire envelope 无 schema version 校验，升级时可能不兼容 | **❌ 生产级阻塞** |
-| **B15** | **资源配额/隔离**                 | ❌ 缺 | FR-040 Pending — 无 per-line WS 连接池隔离，单线故障可拖垮全线          | **❌ 生产级阻塞** |
-| **B16** | **Admin 写操作审计**              | ❌ 缺 | FR-041 Pending — admin 操作无 append-only 审计日志                      | **❌ 生产级阻塞** |
-| B17     | Config schema 一致性              | ⚠️ 弱 | MA-1 — 根/client/server 字段名漂移                                      |     ⚠️ 需修复     |
-| B18     | 幂等键跨边界稳定                  | ✅ 强 | BR-008 + 按事件类型强制维度（v3.9.0 修正）                              |        ✅         |
-
-**边界强度总结**：
-
-`[COMPUTED, HIGH]` 当前 18 个边界维度中 12 个 ✅ 强、4 个 ❌ 缺（生产级阻塞）、1 个 ⚠️ 弱、1 个 ✅ 强。边界纪律的**结构层面**已达生产级，但**运维/治理层面**（tracing/schema 版本/配额/审计）缺失。
-
-### 生产级边界强化建议
-
-以下是将 client/server 边界从"结构正确"提升到"生产级可运营"必需的强化：
-
-#### 1. 跨边界分布式 tracing（FR-039 → P1）
-
-```
-client span → NATS inject traceparent → server span → Kafka inject traceparent → downstream span
-```
-
-- client 发布事件时在 NATS header 注入 W3C `traceparent`
-- server 消费时提取 `traceparent`，延续 trace span
-- kafkax 发布时在 Kafka header 注入 `traceparent`
-- slog 日志关联 `trace_id`，使日志可按 trace 检索
-- 采样率可配（默认 10%）
-
-**边界影响**：trace context 需要穿过 natsx JetStream header（非 payload），确保 wire contract 不变。
-
-#### 2. Wire envelope schema 版本 enforcement（FR-042 → P0）
-
-```
-MarketFactEnvelope {
-  schema_version: "1.0"  // 新增字段
-  ...
-}
-```
-
-- client 发布时填充 `schema_version`
-- server 消费时校验：MAJOR 不匹配 → terminal reject (BNC-014)；MINOR 不匹配 → 向后兼容
-- 升级顺序：先部署 server（兼容旧 client），再升级 client
-- 兼容矩阵持久化到 postgresx
-
-**边界影响**：wire contract 增加 version 字段，属于 MINOR breaking change（旧 client 不填 → server 默认 v1.0）。
-
-#### 3. 资源配额/隔离（FR-040 → P1）
-
-| 隔离维度             | 当前          | 生产级要求                                |
-| -------------------- | ------------- | ----------------------------------------- |
-| Kafka consumer group | 单 group      | per-product-line consumer group + 配额    |
-| WebSocket 连接池     | 无隔离        | per-product-line 连接池上限               |
-| API 限流             | 全局 1000/min | per-caller 限流 + ClickHouse 查询超时 30s |
-| 故障隔离             | 无            | 单产品线/调用方故障不拖垮其他线           |
-
-**边界影响**：client 侧 WS 连接池隔离需要在 connector 层按 product_line 分组；server 侧 Kafka consumer group 拆分需要多 consumer 实例。
-
-#### 4. Admin 写操作审计（FR-041 → P1）
-
-- client/server 所有 admin 写操作（symbols/reload、drain、pause 等）记录 append-only 审计日志
-- postgresx 审计表 `REVOKE UPDATE, DELETE`（仅 INSERT）
-- ≥1 年保留 + OSS 归档
-- 审计字段：timestamp、operator、action、target、before/after diff
-
-**边界影响**：admin 端点（BR-009 隔离的 client :8081 / server :8080）各自维护审计日志，不跨边界。
-
-#### 5. Config schema 统一（MA-1 → P0 修复）
-
-- 统一字段名前缀：`binance.product_lines`（根 canonical）
-- client/server §11 改为引用根 §11，仅列各自独有项
-- 默认值统一：`product_lines` 默认 `["spot"]`（根和 client 一致）
+### CR-2 — FR-037~044 已有 Code-Partial anchors；生产证据未闭合
+
+- **Evidence**：`module/binance/spec/FEATURES.md` 与 `spec/ACCEPTANCE.md` 已把 FR-037~044 标为 Code-Partial / Evidence-Pending。
+- **Runtime anchors**：`/home/binance` 存在 feature flag/readiness/deploy runbook、retention/archive/delete/restore、Kafka W3C header tests、quota/throttle/admin/metrics、append-only audit migration、schema/version guards、cost metrics/runbook、classification/retention/destruction proof anchors。
+- **判定**：旧的“未落地 / pending-only”结论已过期；新的 blocker 是缺 live/direct TC/CI/dashboard/credentials/multi-tenant/destruction evidence，仍不可生产运营。
 
 ---
 
@@ -391,9 +81,9 @@ MarketFactEnvelope {
 
 | 指标                | 当前值     | 生产级目标               | 差距 |
 | ------------------- | ---------- | ------------------------ | ---- |
-| FR Code-Done        | 24/44      | 44/44（或显式 deferral） | 20   |
-| FR Code-Partial     | 10/44      | 0                        | 10   |
-| FR Code-Pending     | 10/44      | 0                        | 10   |
+| FR Code-Done        | 22/44      | 44/44（或显式 deferral） | 20   |
+| FR Code-Partial     | 26/44      | 0                        | 10   |
+| FR Code-Pending     | 26/44      | 0                        | 10   |
 | Evidence-Done       | 1/44       | 44/44（或显式 deferral） | 43   |
 | PRG gates Pending   | 7/7        | 0/7                      | 7    |
 | Spec-Runtime drift  | 3 处       | 0                        | 3    |
@@ -449,7 +139,7 @@ MarketFactEnvelope {
 
 ### Evidence-Done 推进策略
 
-`[COMPUTED, HIGH]` 当前 43/44 Evidence-Pending。Evidence-Done 的判定标准是"TC 全 PASS + AC 全满足 + runtime evidence 归档"。推进策略：
+`[COMPUTED, HIGH]` 当前 Evidence-State 1 Done (FR-009) / 43 Pending。Evidence-Done 的判定标准是"TC 全 PASS + AC 全满足 + runtime evidence 归档"。推进策略：
 
 1. **先补 P0 spec-runtime drift**（P0-1/2/3）→ 这三个 FR 的 Code-Done 修复后可重新评估 Evidence
 2. **按 FR 依赖顺序推进 Evidence**：FR-001~009（核心链路）→ FR-006a-e（存储）→ FR-012~015（实时控制）→ 其余

@@ -7,10 +7,71 @@ FAIL=0
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 BINANCE_DIR="$REPO_ROOT/module/binance"
+SPEC_FILE="$BINANCE_DIR/spec/SPEC.md"
+FEATURES_FILE="$BINANCE_DIR/spec/FEATURES.md"
+ACCEPTANCE_FILE="$BINANCE_DIR/spec/ACCEPTANCE.md"
+TRACEABILITY_FILE="$BINANCE_DIR/matrix/TRACEABILITY.md"
+LEGACY_MAPPING_FILE="$REPO_ROOT/docs/migrations/ac-bnc-legacy-mapping.md"
 
 fail() {
   echo "FAIL: $*"
   FAIL=1
+}
+
+require_pattern() {
+  local file="$1"
+  local pattern="$2"
+  local message="$3"
+
+  if ! grep -Eq -- "$pattern" "$file"; then
+    fail "$message"
+  fi
+}
+
+forbid_pattern() {
+  local file="$1"
+  local pattern="$2"
+  local message="$3"
+
+  if grep -Eq -- "$pattern" "$file"; then
+    fail "$message"
+  fi
+}
+
+table_status() {
+  local file="$1"
+  local fr="$2"
+  local col="$3"
+
+  awk -F'|' -v fr="$fr" -v col="$col" '
+    {
+      id = $2
+      gsub(/[*`]/, "", id)
+      gsub(/^[[:space:]]+|[[:space:]]+$/, "", id)
+      if (id == fr) {
+        status = $col
+        gsub(/[*`]/, "", status)
+        gsub(/^[[:space:]]+|[[:space:]]+$/, "", status)
+        sub(/^Code-/, "", status)
+        print status
+        exit
+      }
+    }
+  ' "$file"
+}
+
+require_table_status() {
+  local file="$1"
+  local fr="$2"
+  local col="$3"
+  local expected="$4"
+  local message="$5"
+  local actual
+
+  actual="$(table_status "$file" "$fr" "$col")"
+  if [ "$actual" != "$expected" ]; then
+    fail "$message (actual: ${actual:-NOT_FOUND})"
+  fi
 }
 
 summary_stats() {
@@ -93,11 +154,14 @@ drifted_from_acceptance() {
 echo "=== Binance Status Consistency Check ==="
 echo ""
 
-for file in README.md spec/FEATURES.md spec/ACCEPTANCE.md matrix/TRACEABILITY.md prompt/README.md; do
+for file in README.md spec/SPEC.md spec/FEATURES.md spec/ACCEPTANCE.md matrix/TRACEABILITY.md prompt/README.md; do
   if [ ! -f "$BINANCE_DIR/$file" ]; then
     fail "$file not found"
   fi
 done
+if [ ! -f "$LEGACY_MAPPING_FILE" ]; then
+  fail "docs/migrations/ac-bnc-legacy-mapping.md not found"
+fi
 
 if [ "$FAIL" -ne 0 ]; then
   echo ""
@@ -183,6 +247,40 @@ if [ "$readme_drifted" != "$features_drifted" ] ||
   [ "$readme_drifted" != "$traceability_drifted" ]; then
   fail "Drifted FR list mismatch across README / FEATURES / ACCEPTANCE / TRACEABILITY"
 fi
+
+echo ""
+echo "Checking semantic status guards..."
+for fr in FR-013 FR-017 FR-025; do
+  require_table_status "$FEATURES_FILE" "$fr" 4 "Partial" "$fr FEATURES.md status must remain Partial"
+  require_table_status "$TRACEABILITY_FILE" "$fr" 7 "Partial" "$fr TRACEABILITY.md status must remain Partial"
+  require_pattern "$ACCEPTANCE_FILE" "^\\|[[:space:]]*$fr[[:space:]]*\\|.*Code-Partial" "$fr ACCEPTANCE.md must record Code-Partial"
+done
+require_pattern "$FEATURES_FILE" "^\\|[[:space:]]*FR-013[[:space:]]*\\|.*Partial.*X-MBX-USED-WEIGHT-1M.*429" "FR-013 Partial reason must preserve used-weight and 429 evidence"
+require_pattern "$FEATURES_FILE" "^\\|[[:space:]]*FR-017[[:space:]]*\\|.*Partial.*event_type.*trade_id.*depth updateId" "FR-017 Partial reason must preserve event_type gap strategy evidence"
+require_pattern "$FEATURES_FILE" "^\\|[[:space:]]*FR-025[[:space:]]*\\|.*Partial.*ThrottlePriority.*30:20:50" "FR-025 Partial reason must preserve priority throttle evidence"
+
+echo ""
+echo "Checking retired spec artifact guards..."
+require_pattern "$SPEC_FILE" "^  # 已退役文件（仅保留历史参考，不作为活跃规范）" "SPEC Appendix D must keep retired file section"
+for retired in spec/SPEC-exchangeinfo-sync.md spec/DATA-LIFECYCLE.md spec/DATA-QUALITY-SLA.md spec/ENDPOINTS.md; do
+  require_pattern "$SPEC_FILE" "^[[:space:]]*$retired[[:space:]]+# DEPRECATED" "$retired must stay in the retired-file partition"
+done
+require_pattern "$SPEC_FILE" "docs/migrations/ac-bnc-legacy-mapping\\.md" "SPEC Appendix D must point to AC-BNC legacy mapping"
+require_pattern "$SPEC_FILE" "module/binance/matrix/TRACEABILITY\\.md" "SPEC Appendix D must name the active TRACEABILITY registry"
+require_pattern "$SPEC_FILE" "module/binance/spec/ACCEPTANCE\\.md" "SPEC Appendix D must name the active ACCEPTANCE status source"
+for active_file in "$SPEC_FILE" "$TRACEABILITY_FILE" "$ACCEPTANCE_FILE" "$FEATURES_FILE"; do
+  forbid_pattern "$active_file" "^\\|[[:space:]]*AC-BNC-[0-9][0-9][0-9][[:space:]]*\\|" "AC-BNC active rows must remain isolated to the legacy mapping"
+done
+
+echo ""
+echo "Checking legacy AC-BNC mapping guards..."
+for n in $(seq 1 18); do
+  ac="$(printf 'AC-BNC-%03d' "$n")"
+  require_pattern "$LEGACY_MAPPING_FILE" "^\\|[[:space:]]*$ac[[:space:]]*\\|" "$ac legacy mapping row must exist"
+done
+require_pattern "$LEGACY_MAPPING_FILE" "module/binance/matrix/TRACEABILITY\\.md.*§5" "legacy mapping must point to active TRACEABILITY §5"
+require_pattern "$LEGACY_MAPPING_FILE" "module/binance/spec/ACCEPTANCE\\.md.*§2" "legacy mapping must point to active ACCEPTANCE §2"
+require_pattern "$LEGACY_MAPPING_FILE" "module/binance/matrix/TRACEABILITY\\.md.*§6" "legacy mapping must point to active TRACEABILITY §6"
 
 echo ""
 if [ "$FAIL" -ne 0 ]; then

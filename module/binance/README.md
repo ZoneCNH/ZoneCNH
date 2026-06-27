@@ -4,7 +4,7 @@
 
 - Spec-Version: v3.9.0 (root / client / server — 2026-06-26 内容正确性大修 + 2026-06-27 结构性修复：限流分钟模型、缺口检测按事件类型分策略、回填三级优先级、symbol生命周期、WS连接管理、退避参数补全、双态模型+Code-Partial/Code-Drifted、config schema 字段名统一、退役文件 DEPRECATED、Appendix D 迁移)
 - Runtime-Version: v0.2.0（Runtime-Anchor: `/home/binance@f046e16`）
-- Delivery-State: FR-001~FR-044 spec/traceability registered — Code `22 Done / 12 Partial / 0 Drifted / 14 Pending`；Evidence-Done 仅 FR-009（13 gates PASS）。Drifted FR: 无。Partial FR: FR-007, FR-007a, FR-011, FR-013, FR-016, FR-017, FR-023, FR-024, FR-025, FR-026, FR-027, FR-028。Pending FR: FR-031~044。
+- Delivery-State: FR-001~FR-044 spec/traceability registered — Code-State **22 Done / 26 Partial / 0 Drifted / 0 Pending**；Evidence-State **1 Done (FR-009) / 43 Pending**。Drifted FR: 无。Code-Partial: FR-007、FR-007a、FR-011、FR-013、FR-016、FR-017、FR-023、FR-024、FR-025、FR-026、FR-027、FR-028、FR-031、FR-032、FR-033、FR-034、FR-035、FR-036、FR-037、FR-038、FR-039、FR-040、FR-041、FR-042、FR-043、FR-044。Code-Pending: 无。FR-031~044 仅为本地 anchors，生产运营仍 blocked。
 - Last-Updated: 2026-06-27 (v3.9.0: 内容正确性大修 + 双态模型 + 结构性修复：config schema 统一 / Code-Partial/Code-Drifted 四态 / 退役文件 DEPRECATED / Appendix D 迁移 / §14 目录清理)
 
 It is split into two submodules:
@@ -94,7 +94,7 @@ module/binance/server
 
 [COMPUTED, HIGH] GitHub #1104~#1118 are synchronized as of 2026-06-25. #1106 is the documentation alignment item and is closed by this module/report alignment; #1104, #1105, and #1107~#1118 remain open until runtime/evidence closure.
 
-[COMPUTED, HIGH] 2026-06-27 alignment refresh: runtime anchor `/home/binance@f046e16`; current FR projection `22 Done / 12 Partial / 0 Drifted / 14 Pending`; active Drifted FR: none. FR-013, FR-017, and FR-025 have runtime anchors for current spec behavior and are conservatively Code-Partial until direct TC/live evidence closes; Partial FR are FR-007, FR-007a, FR-011, FR-013, FR-016, FR-017, FR-023, FR-024, FR-025, FR-026, FR-027, and FR-028. Historical `24 Done / 10 Partial`, `28 Done / 2 Partial` and Plan007 `19 Done / 11 Partial` snapshots are retained only as history in `TRACEABILITY.md` and must not be used as current state.
+[COMPUTED, HIGH] 2026-06-27 alignment refresh: runtime anchor `/home/binance@f046e16`; Code-State **22 Done / 26 Partial / 0 Drifted / 0 Pending**；Evidence-State **1 Done (FR-009) / 43 Pending**。Code-Partial: FR-007、FR-007a、FR-011、FR-013、FR-016、FR-017、FR-023、FR-024、FR-025、FR-026、FR-027、FR-028、FR-031、FR-032、FR-033、FR-034、FR-035、FR-036、FR-037、FR-038、FR-039、FR-040、FR-041、FR-042、FR-043、FR-044。FR-031~044 已由 Pending-only 修正为 Code-Partial / Evidence-Pending；production evidence/live/CI/dashboard/credentials/multi-tenant/destruction gates 仍未闭合。
 
 ## Read Next
 
