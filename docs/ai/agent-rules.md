@@ -2,7 +2,7 @@
 
 > AI 代理在 FoundationX 项目中工作时必须遵守的规则。
 
-最后更新：2026-06-07
+最后更新：2026-06-27
 Status: Approved
 
 ---
@@ -86,6 +86,23 @@ Status: Approved
 - 不在错误消息中泄露配置细节
 - 用户输入必须校验
 - 不使用 `unsafe` 包（除非有充分理由并记录）
+
+### 5.1 开发环境服务配置规则
+
+- `redisx`、`kafkax`、`natsx`、`postgresx`、`taosx`、`ossx`、`clickhousex` 的 dev 配置索引来自 `sre/secrets/env/dev.md`。
+- 实际本地运行态从 `sre/secrets/env/<module>.env` 或进程环境变量读取；代码不得解析 `dev.md` 作为运行时配置源。
+- 禁止把 password、token、API key、AccessKey、SecretKey、DSN 明文写入源码、spec、README、日志、错误消息、测试快照、prompt 或 agent memory。
+- 需要验证 live integration 时，只引用变量名、文件路径和验证命令；输出报告不得回显敏感变量值。
+
+| 模块 | 本地 env 文件 | 变量前缀 |
+| ---- | ------------- | -------- |
+| `redisx` | `sre/secrets/env/redisx.env` | `FOUNDATIONX_REDISX_*` |
+| `kafkax` | `sre/secrets/env/kafkax.env` | `FOUNDATIONX_KAFKAX_*` |
+| `natsx` | `sre/secrets/env/natsx.env` | `FOUNDATIONX_NATS_*`（旧版 `NATS_*` 仅作兼容） |
+| `postgresx` | `sre/secrets/env/postgresx.env` | `FOUNDATIONX_POSTGRESX_*` |
+| `taosx` | `sre/secrets/env/taosx.env` | `FOUNDATIONX_TAOSX_*`（旧版 `TAOSX_TDENGINE_*` 仅作兼容） |
+| `ossx` | `sre/secrets/env/ossx.env` | `FOUNDATIONX_OSSX_*` |
+| `clickhousex` | `sre/secrets/env/clickhousex.env` | `FOUNDATIONX_CLICKHOUSEX_*` |
 
 ---
 

@@ -17,6 +17,8 @@
 > **v3.9.0 当前状态口径（2026-06-27）**：Code-Done = Runtime-Anchor `/home/binance@f046e16` 下代码存在、装配就绪且 runtime 可编译运行；Code-Partial = 已有代码/子链路 anchors 但 direct TC、live/CI、凭据、dashboard、多租户或销毁证据未闭合；Code-Drifted = 当前无；Code-Pending = 当前无。Evidence-Done 仅 FR-009；其余当前 FR 均为 Evidence-Pending。历史 f18a329 / v3.6.1 口径仅保留在 TRACEABILITY 历史段。
 >
 > **v3.9.0 双态模型**：FEATURES.md 的「Done」均指 **Code-Done**（代码存在+装配就绪+runtime 可编译运行）。**Evidence-Done**（TC+AC 全 PASS+evidence 归档）的判定见 `ACCEPTANCE.md` §4 闭合矩阵。两者不可互相替代：FR-005 Code-Done（RedisStore 已装配）但 Evidence-Pending（TC-007/008 仍 Pending）。
+>
+> [COMPUTED, HIGH] 2026-06-27 issue blocker ledger [`../evidence/2026-06-27/review/ISSUE-BLOCKERS-1268-1279.md`](../evidence/2026-06-27/review/ISSUE-BLOCKERS-1268-1279.md) keeps all Code-Partial/Evidence-Pending projections unchanged; tracker open state is not feature completion.
 
 ## 1. 模块边界
 

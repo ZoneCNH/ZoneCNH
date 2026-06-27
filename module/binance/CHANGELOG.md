@@ -4,8 +4,8 @@
 
 - Module-Version: v3.9.0
 - Last-Updated: 2026-06-27
-- Spec-Reference: `module/binance/SPEC.md` v3.9.0
-- 治理规则：`module/binance/RULES.md` R9 文档存在性
+- Spec-Reference: `module/binance/spec/SPEC.md` v3.9.0
+- 治理规则：`module/binance/gate/RULES.md` R9 文档存在性
 
 ---
 
@@ -75,6 +75,8 @@
 - **P2-8**：新增 binance 状态一致性 CI gate，覆盖 README / FEATURES / ACCEPTANCE / TRACEABILITY / prompt/README.md 的 Code 统计、Drifted FR 清单，以及 TRACEABILITY §1/§6 汇总一致性；新增 Code-Partial 原因、退役文件分区、AC-BNC legacy mapping 指针三类语义守卫。
 - **agent team 再审计同步**：`todo.md` / `FEATURES.md` / `ACCEPTANCE.md` / `TRACEABILITY.md` 将 tracing、quota/isolation、audit、exchangeInfo、backfill state、DLQ、cost/compliance anchors 的旧“未实现或未接线”口径修正为 Code-Partial / Evidence-Pending，并保留 live/CI/dashboard/credentials/multi-tenant/destruction blockers。
 - **P2-6/P2-7 runtime env 接线同步**：同步 `/home/binance` 的 `XGO_BINANCE_HISTORY_STATE_FILE` 与 `XGO_BINANCE_DLQ_FILE` 本地接线；保持 #1117/#1118 为 Code-Partial / Evidence-Pending，剩余 restart/replay direct evidence 与生产归档未闭合。
+- **Beads/GitHub issue 对齐同步**：新增 `evidence/2026-06-27/review/issue-alignment-20260627.md` 与 `evidence/2026-06-27/review/ISSUE-BLOCKERS-1268-1279.md`，记录 Beads `ZoneCNH-xzcr*` 与 GitHub #1268-#1279 的 open blocker + Evidence pending 判定；当前 #1268-#1279 仍为 GitHub `OPEN`，对应 Beads items 为 `in_progress`，且不改变 Production-Ready、Evidence-Done 或 M1-M4 milestone 状态。
+- **Issue blocker 对齐**：新增 GitHub #1268-#1279 / Beads `ZoneCNH-xzcr*` tracker alignment/blocker ledger `evidence/2026-06-27/review/ISSUE-BLOCKERS-1268-1279.md`；同步 README/todo/spec/matrix/acceptance/prompt/report 投影，保持 Evidence-State `1 Done (FR-009) / 43 Pending` 不变。
 
 ---
 
@@ -251,8 +253,8 @@
 
 ### Added
 - 新建 `CHANGELOG.md`（本文），对齐 Keep-a-Changelog 格式，满足 RULES.md R9 文档存在性
-- 新建 `module/binance/NAMING.md`（命名 SSOT，4 产品线 × 4 event_type 对称矩阵）
-- 新建 `module/binance/RULES.md`（R1-R10 治理规则，全部机器可检测）
+- 新建 `module/binance/spec/NAMING.md`（命名 SSOT，4 产品线 × 4 event_type 对称矩阵）
+- 新建 `module/binance/gate/RULES.md`（R1-R10 治理规则，全部机器可检测）
 - 新建 `module/binance/ARCHITECTURE-DRIFT-WATCHLIST.md`（D1-D8 漂移监控点）
 
 ### Changed
