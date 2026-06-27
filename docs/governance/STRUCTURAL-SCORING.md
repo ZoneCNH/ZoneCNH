@@ -29,6 +29,7 @@
 - `composite_score >= 98` 对应 Goal Gate 的 PASS 阈值（高于 Goal Gate 默认 90，因四源评分采用更严格的异构防 Goodhart 标准）。
 - 当 `composite_score` 在 90-97 之间时，Goal Gate 可裁决为 `PASS_WITH_RISK`（仅限允许风险通过的 Gate：G2/G3/G4/G5/G7/G8/G9），但 G6/G10 仍不允许风险通过。
 - 两者结果不一致时以 Goal Gate verdict 为准。
+- STRUCTURAL-SCORING.md 是本仓库 governance 管线的评分规范投影，canonical Gate 定义见 `docs/goal/04-gates.md`；双重定义以 Goal Gate 为准。
 
 ---
 

@@ -112,12 +112,12 @@ Spec 编写完成后，不是直接写代码，而是按管线推进：Spec → 
 
 | Agent                | 流水线阶段  | 用途                                                                                                    | 可改文件           | 可写代码 | Claude 模型 | Codex reasoning |
 | -------------------- | ----------- | ------------------------------------------------------------------------------------------------------- | ------------------ | -------- | ----------- | --------------- |
-| `spec`               | S1-Spec     | 编写或修订项目 spec，补齐 23 节结构与追溯链                                                             | Spec 文档          | 否       | Opus        | high            |
+| `spec → 见 goal-spec`               | S1-Spec     | 编写或修订项目 spec，补齐 23 节结构与追溯链（已合并到 goal-spec）                                                             | Spec 文档          | 否       | Opus        | high            |
 | `spec-review`        | S1-Review   | 对抗性审查 spec，作为结构评分证据与参考                                                                 | 无                 | 否       | Opus        | high            |
-| `matrix`             | S2-Matrix   | 生成或校验需求追溯矩阵，闭合 FR/BR/AC/TC 链条                                                           | Traceability 文档  | 否       | Sonnet      | high            |
-| `task-split`         | S3-Tasks    | 将 Approved Spec 和 Matrix 拆成可执行 Task Spec                                                         | Task / Matrix 文档 | 否       | Sonnet      | high            |
-| `task-planner`       | S4-Plan     | 生成实现顺序、依赖、验证命令和风险计划                                                                  | Plan 文档          | 否       | Opus        | high            |
-| `prompt-builder`     | S5-Prompt   | 为单个 Task 生成 Context Packet 与开发 Prompt                                                           | Prompt 文档        | 否       | Sonnet      | medium          |
+| `matrix → 见 goal-matrix`             | S2-Matrix   | 生成或校验需求追溯矩阵，闭合 FR/BR/AC/TC 链条（已合并到 goal-matrix）                                                           | Traceability 文档  | 否       | Sonnet      | high            |
+| `task-split → 见 goal-planner`         | S3-Tasks    | 将 Approved Spec 和 Matrix 拆成可执行 Task Spec（已合并到 goal-planner）                                                         | Task / Matrix 文档 | 否       | Sonnet      | high            |
+| `task-planner → 见 goal-planner`       | S4-Plan     | 生成实现顺序、依赖、验证命令和风险计划（已合并到 goal-planner）                                                                  | Plan 文档          | 否       | Opus        | high            |
+| `prompt-builder → 见 goal-prompt-builder`     | S5-Prompt   | 为单个 Task 生成 Context Packet 与开发 Prompt（已合并到 goal-prompt-builder）                                                           | Prompt 文档        | 否       | Sonnet      | medium          |
 | `task-executor`      | S6-Code     | 按单个 Task 和 Prompt 编写代码与测试，验证后回填证据                                                    | Task 指定源码/测试 | 是       | Sonnet      | high            |
 | `*-structural-score` | S1-S6 Score | 每阶段结构性问题分析，Claude / Codex / Copilot + rules 四源输出评分、红线和扣分账本                     | 无                 | 否       | Opus        | high            |
 | `pipeline-arbiter`   | S1-S6 Gate  | 汇总四源评分（`claude/codex/copilot/rules`），计算 `composite_score = min(...)`，判定是否达到 98 分门禁 | Verdict / Attempts | 否       | Opus        | high            |

@@ -37,11 +37,11 @@ Copilot CLI 在本仓库中承担三类职责：
 
 | Agent             | 阶段      | 用途                                           | 可写文件        |
 | ----------------- | --------- | ---------------------------------------------- | --------------- |
-| `spec`            | S1-Spec   | 编写或修订模块 Spec，补齐 23 节结构与追溯链    | Spec 文档       |
-| `matrix`          | S2-Matrix | 生成或校验 FR/BR/AC/TC 需求追溯矩阵            | Traceability    |
-| `task-split`      | S3-Tasks  | 将 Approved Spec 拆分为可执行 Task Spec        | Task 文档       |
-| `task-planner`    | S4-Plan   | 生成实现顺序、依赖、验证命令和风险计划（只读） | Plan 文档       |
-| `prompt-builder`  | S5-Prompt | 为单个 Task 生成 Context Packet（只读）        | Prompt 文档     |
+| `spec → 见 goal-spec`            | S1-Spec   | 编写或修订模块 Spec，补齐 23 节结构与追溯链（已合并到 goal-spec）    | Spec 文档       |
+| `matrix → 见 goal-matrix`          | S2-Matrix | 生成或校验 FR/BR/AC/TC 需求追溯矩阵（已合并到 goal-matrix）            | Traceability    |
+| `task-split → 见 goal-planner`      | S3-Tasks  | 将 Approved Spec 拆分为可执行 Task Spec（已合并到 goal-planner）        | Task 文档       |
+| `task-planner → 见 goal-planner`    | S4-Plan   | 生成实现顺序、依赖、验证命令和风险计划（已合并到 goal-planner） | Plan 文档       |
+| `prompt-builder → 见 goal-prompt-builder`  | S5-Prompt | 为单个 Task 生成 Context Packet（已合并到 goal-prompt-builder）        | Prompt 文档     |
 | `task-executor`   | S6-Code   | 按 Task 和 Prompt 编写代码与测试（唯一可写码） | 源码 + 测试     |
 
 ## Goal Delivery OS Agent 投影清单
@@ -62,7 +62,6 @@ Copilot CLI 在本仓库中承担三类职责：
 | `goal-context-recovery`  | 会话中断后上下文恢复                               | `.config/goal/runtime/recovery.md`                                 |
 | `spec-review`            | 对抗性审查 module/*/SPEC.md（参考性 Go/No-Go）     | none (read-only review)                                            |
 | `ci-governance-auditor`  | 跨仓 CI/CD 治理审计                                | none (read-only validation)                                        |
-| `spec-structural-analyzer` | 规格结构性分析评分                                | `report/{module}-structural-score-*.md`                            |
 
 Goal Agent 必须遵守以下边界：
 

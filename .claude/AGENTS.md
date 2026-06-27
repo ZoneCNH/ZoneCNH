@@ -6,12 +6,12 @@ FoundationX 文档仓库的 Claude Code 代理配置。Claude Code 是三大 LLM
 
 | Agent | 模型 | 职责 |
 |-------|------|------|
-| spec | Opus | 编写或修订模块 Spec |
+| spec → 见 goal-spec | Opus | 编写或修订模块 Spec（已合并到 goal-spec） |
 | spec-review | Opus | 对抗性审查 spec，作为结构评分证据与参考 |
-| matrix | Sonnet | 生成或校验需求追溯矩阵 |
-| task-split | Sonnet | 将 Approved Spec 拆分为可执行的 Task |
-| task-planner | Opus | 为单个 TASK 生成分步实现计划 |
-| prompt-builder | Sonnet | 为单个 Task 生成 Context Packet |
+| matrix → 见 goal-matrix | Sonnet | 生成或校验需求追溯矩阵（已合并到 goal-matrix） |
+| task-split → 见 goal-planner | Sonnet | 将 Approved Spec 拆分为可执行的 Task（已合并到 goal-planner） |
+| task-planner → 见 goal-planner | Opus | 为单个 TASK 生成分步实现计划（已合并到 goal-planner） |
+| prompt-builder → 见 goal-prompt-builder | Sonnet | 为单个 Task 生成 Context Packet（已合并到 goal-prompt-builder） |
 | task-executor | Sonnet | 按 Task spec 编写代码 |
 
 ## 评分类代理（Claude 平台）

@@ -6,12 +6,12 @@ FoundationX 文档仓库的 Codex 代理配置。Codex 是三大 LLM scorer 之�
 
 | Agent          | 模型    | reasoning   | 职责                                    |
 | -------------- | ------- | ----------- | --------------------------------------- |
-| spec           | gpt-5.5 | high        | 编写或修订模块 Spec                     |
+| spec → 见 goal-spec           | gpt-5.5 | high        | 编写或修订模块 Spec（已合并到 goal-spec）                     |
 | spec-review    | gpt-5.5 | high        | 对抗性审查 spec，作为结构评分证据与参考 |
-| matrix         | gpt-5.5 | high        | 生成或校验需求追溯矩阵                  |
-| task-split     | gpt-5.5 | high        | 将 Approved Spec 拆分为可执行的 Task    |
-| task-planner   | gpt-5.5 | high        | 为单个 TASK 生成实现计划                |
-| prompt-builder | gpt-5.5 | medium      | 为单个 Task 生成 Context Packet         |
+| matrix → 见 goal-matrix         | gpt-5.5 | high        | 生成或校验需求追溯矩阵（已合并到 goal-matrix）                  |
+| task-split → 见 goal-planner     | gpt-5.5 | high        | 将 Approved Spec 拆分为可执行的 Task（已合并到 goal-planner）    |
+| task-planner → 见 goal-planner   | gpt-5.5 | high        | 为单个 TASK 生成实现计划（已合并到 goal-planner）                |
+| prompt-builder → 见 goal-prompt-builder | gpt-5.5 | medium      | 为单个 Task 生成 Context Packet（已合并到 goal-prompt-builder）         |
 | task-executor  | gpt-5.5 | high        | 按 Task spec 编写代码                   |
 
 ## 评分类代理（Codex 平台）
@@ -49,7 +49,6 @@ FoundationX 文档仓库的 Codex 代理配置。Codex 是三大 LLM scorer 之�
 | goal-lint              | gpt-5.5 | high      | Lint 规则验证与漂移检查                    |
 | goal-context-recovery  | gpt-5.5 | high      | 会话中断后上下文恢复                       |
 | ci-governance-auditor  | gpt-5.5 | high      | 跨仓 CI/CD 治理审计（只读）                |
-| spec-structural-analyzer | gpt-5.5 | high     | 规格结构性分析评分                         |
 
 Goal Agent 是 `docs/goal/` 体系的 Codex TOML 投影，权威边界以 `docs/goal/00-authority-map.md` 为准。三平台 agent 镜像由 `scripts/sync-agents.py` 在 preflight 阶段检测漂移。
 

@@ -1,44 +1,7 @@
-[agent]
-name = "matrix"
-description = "生成或校验 FR/BR/AC/TC 需求追溯矩阵。管线第二步。"
-platform = "codex"
-
-[model]
-name = "gpt-5.5"
-reasoning_effort = "high"
-
-[tools]
-allow = ["Read", "Write", "Edit", "Grep", "Glob"]
-
-[pipeline]
-stage = "S2-Matrix"
-prev = "spec"
-next = "task-split"
-gate = "FR/BR/AC/TC 100% 闭合；无孤儿 TC；无未覆盖 FR；Matrix team-scoring composite_score >= 98"
-role = "executor"
-
-[files]
-can_write = false
-allowed = ["module/{module}/TRACEABILITY.md", "module/{module}/matrix/**"]
-forbidden = ["/home/{module}/**"]
-
-[outputs]
-artifacts = ["module/{module}/TRACEABILITY.md"]
-state_path = ".omx/state/pipeline/{module}/matrix/"
-
-[instructions]
-required_inputs = ["module/{module}/SPEC.md", "docs/governance/TRACEABILITY.md"]
-workflow = [
-  "正向: 每个 FR → ≥1 AC → ≥1 TC",
-  "正向: 每个 BR → AC",
-  "反向: 每个 TC → AC → FR/BR（孤儿检测）",
-  "输出覆盖率报告 + 问题清单",
-]
-key_rules = [
-  "每 FR ≥1 AC，每 AC ≥1 TC",
-  "覆盖率 ≥95%",
-  "七列: Requirement/Description/AC/TC/Task/Status/Evidence",
-]
-
-[protected]
-readonly = ["docs/governance/scoring/RUBRIC-*.md", "CONSTITUTION.md"]
+# 本 agent 已合并到 goal-matrix。请使用 goal-matrix。
+# 保留此文件作为指向，避免历史引用断裂。
+# 实际执行请 codex --agent goal-matrix
+name = "goal-matrix"
+description = "已合并到 goal-matrix。请使用 goal-matrix。"
+model = "gpt-5.5"
+model_reasoning_effort = "high"
