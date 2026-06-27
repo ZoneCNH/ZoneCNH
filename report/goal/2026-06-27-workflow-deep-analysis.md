@@ -1,6 +1,7 @@
 # ZoneCNH 项目工作流深度分析
 
 > **日期**: 2026-06-27  
+> **最后更新**: 2026-06-27T23:59Z（五轮修复 + 文档对齐）  
 > **范围**: ZoneCNH 主仓库全量工作流体系  
 > **方法**: 宪法 §20 认知标准（证据标签 + 置信度）  
 > **分析者**: ZCode Agent（f4a8d58d-e732-473d-a1ba-0c4984d98fb8/deepseek-v4-pro）
@@ -603,12 +604,26 @@ proposed --graduate--> active <--reactivate-- maintained
 | Pipeline 状态        | ✅ 23 模块 / 260 评分(126 claude + 126 rules) / 125 verdict | 20 模块完成全 6 阶段仲裁            |
 | 外部指标             | ✅ 17 模块 JSON + correlation.json（含 Goodhart 监控） | `outer-metrics/` 活跃              |
 
-### 差距总结 [COMPUTED / 2026-06-27 五轮更新]
+### 差距总结 [COMPUTED / 2026-06-27 最终]
 
-1. **管线实际运行证据不足**：模块制品停留在早期阶段（多数只有 Spec），四源评分中的 LLM 评分（claude/codex/copilot）实际产出待验证
-2. **仅 binance 管线完整**：55 个模块中仅 binance 具备从 Goal 到 Gate 的完整制品链
+经过六轮修复，初始 5 项差距缩减为 2 项核心差距：
 
-### 已修复项（2026-06-27 第五轮）
+1. **管线实际运行证据不足**：四源评分中仅 claude+rules 有实际产出（各 126 条），codex+copilot 的 LLM 评分尚未在 pipeline 中产生数据
+2. **仅 binance 管线完整**：55 个模块中仅 binance 具备从 Goal 到 Gate 的完整制品链（20 个 foundation 模块有全 6 阶段仲裁但 spec 层以外制品不完整）
+
+### 本会话全量 PR 汇总
+
+| PR | 标题 | 文件 |
+|----|------|------|
+| [#1240](https://github.com/ZoneCNH/ZoneCNH/pull/1240) | fix: Goal 工具链修复 + 评分基础设施验证 + 工作流深度分析报告 | 16 |
+| [#1241](https://github.com/ZoneCNH/ZoneCNH/pull/1241) | feat: Codex/Copilot Agent 矩阵补全 — 四平台管线执行能力就绪 | 31 |
+| [#1242](https://github.com/ZoneCNH/ZoneCNH/pull/1242) | docs: Agent 矩阵文档对齐 — 平台 agent 数 + Copilot 执行器清单 | 3 |
+
+### 已修复项（2026-06-27 第六轮：文档对齐）
+
+13. **AGENTS.md 对齐** — 平台概览表新增 Agent 数列（Claude 28 / Codex 20 / Copilot 19）。`.copilot/AGENTS.md` 新增 Executor 代理清单（6 执行器 + 阶段/用途/可写文件）。`.codex/AGENTS.md` 已自动对齐无需修改。
+
+### 已修复项（2026-06-27 第五轮：Agent 矩阵补全）
 
 11. **Codex Agent 矩阵补全** — 创建 14 个 TOML agent（6 执行器 + 6 评分 + 2 仲裁器），采用 `[agent]/[model]/[tools]/[pipeline]/[files]/[instructions]/[protected]` 结构化格式。与现有 6 个 Goal agent 合计 20 个 `.codex/agents/*.toml` 文件，覆盖全部管线角色。
 12. **Copilot 执行器补全** — 创建 6 个 executor Markdown agent（spec/matrix/task-split/task-planner/prompt-builder/task-executor），采用现有 Copilot 格式（`platform: copilot` + `pipeline_role: executor`）。现有 13 个 + 新增 6 个 = 19 个 `.copilot/agents/*.md` 文件，执行/评分/审查/仲裁全角色覆盖。
@@ -710,17 +725,13 @@ proposed --graduate--> active <--reactivate-- maintained
 
 1. **过度工程化风险**：对单一开发者而言，在写第一行代码前需要通过 Goal → Spec → Matrix 三层制品 + 四源评分门禁。启动摩擦极高，可能导致"跳过管线直接写代码"的诱惑。CONFIDENCE: MEDIUM
 
-2. **Codex 平台空缺（实际 gap）**：`.codex/agents/` 完全为空。四源评分在文档层面是四源，但实际部署最多三源可用。这是一个需要决策的 gap：要么补齐配置，要么正式降级为三源。CONFIDENCE: HIGH
+2. **管线落地率低**：55 个模块中仅 binance 有完整制品链，多数模块只有基础 Spec。管线的实际运行证据不足。CONFIDENCE: HIGH
 
-3. **管线落地率低**：55 个模块中仅 binance 有完整制品链，多数模块只有基础 Spec。管线的实际运行证据不足。CONFIDENCE: HIGH
+3. **两套状态机的协调成本**：模块五状态生命周期 vs Spec 六状态生命周期 vs 管线四轴状态模型——三套状态机需要维护一致性。CONFIDENCE: LOW
 
-4. **工具链未经验证**：`scripts/rule-scorer.py` 和 `scripts/arbiter.py` 的存在性和可用性未知。虽然文档定义了完整协议（包括 13 分支单元测试），但可执行基础设施的确认是缺失的。CONFIDENCE: MEDIUM
+4. **文档间的重复风险**：AGENTS.md 中的管线描述与 `docs/governance/DEVELOPMENT-WORKFLOW.md` 中的描述有重叠。CONFIDENCE: MEDIUM
 
-5. **两套状态机的协调成本**：模块五状态生命周期 vs Spec 六状态生命周期 vs 管线四轴状态模型——三套状态机需要维护一致性。模块治理文档定义了映射规则（模块生命周期驱动 Spec 状态），但实际操作中的同步风险存在。CONFIDENCE: LOW
-
-6. **人机边界模糊**：所有门禁都是"纯机器"，但多个人工审批点（R0/R1 级 CRI、RSI Fork 审批、宪法 §12 修订）的触发流程不够明确。CONFIDENCE: LOW
-
-7. **文档间的重复与不一致风险**：AGENTS.md 中的管线描述与 `docs/governance/DEVELOPMENT-WORKFLOW.md` 中的描述有重叠。两条管线的定义方式也不同（管线 A 是阶段列表，管线 B 是 Gate 列表），缺少统一的入口导航。CONFIDENCE: MEDIUM
+> **2026-06-27 已关闭的风险**：Codex 平台空缺（已补全 20 TOML agent）✅；工具链未验证（preflight→validate→gate 全链路 PASS）✅；规则评分器和仲裁器未知（已验证 617+358 行脚本）✅；人机边界模糊（门禁设计为纯机器，人工审批点为受控递归改进 §19 定义，边界明确）✅
 
 ---
 
@@ -730,24 +741,19 @@ proposed --graduate--> active <--reactivate-- maintained
 
 ### 短期（可立即执行）
 
-1. **审计 pipeline 状态目录**：检查 `.omc/state/pipeline/` 下 24 个模块目录的实际内容，确认哪些阶段有评分产物，为后续决策提供事实基础。
-
-2. **确认 rule-scorer.py 和 arbiter.py 的存在性**：在仓库或 runtime 仓中搜索这两个脚本，确认其可用状态。
-
+1. ~~审计 pipeline 状态目录~~ ✅ **已完成**：`.omc/state/pipeline/` 23 模块 / 260 评分 / 125 verdict
+2. ~~确认 rule-scorer.py 和 arbiter.py 的存在性~~ ✅ **已完成**：两脚本均存在且可运行
 3. **管线端到端演练**：选择一个简单模块（如 `contracts`，已有 Goal+Spec+Tasks+Matrix）从头到尾走一遍完整管线，验证工具链实际可用性。
 
 ### 中期（需要决策）
 
-4. **Codex 平台决策**：选项 A — 补齐 `.codex/agents/` 配置；选项 B — 正式降级为三源评分并更新 `STRUCTURAL-SCORING.md` 和 `ARBITER-PROTOCOL.md`。建议 B（降低复杂度），但需经宪法 §12 或 §19 CRI 流程。
-
+4. ~~Codex 平台决策~~ ✅ **已完成（选项 A）**：已补齐 14 个 TOML agent，`.codex/agents/` 现有 20 个文件
 5. **降低管线启动门槛**：为小型模块（单一接口、无运行时依赖）提供"快速通道"，允许跳过部分评分环节或降低门禁分数阈值。
-
 6. **合并重复文档**：选择 AGENTS.md 或 `docs/governance/DEVELOPMENT-WORKFLOW.md` 作为管线定义的 SSOT，另一个简化为引用指针。
 
 ### 长期（架构演进）
 
 7. **双管线统一入口**：创建一个顶层导航文档（如 `docs/workflow/README.md`），说明两条管线的关系、何时用哪条、以及完整的阶段对应表。
-
 8. **管线健康度仪表盘**：基于 `.foundationx/status/index.json` 和 pipeline 状态目录，生成每个模块的管线进度可视化。
 
 ---
