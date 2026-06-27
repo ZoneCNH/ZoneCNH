@@ -1,14 +1,14 @@
 # Issue Blocker 10-Pass Audit - 2026-06-27
 
-- Scope: GitHub #1093 and #1268-#1279; Beads `ZoneCNH-8lb` and `ZoneCNH-xzcr*`.
-- Release gate anchor: `/home/binance/release/evidence/binance/20260627-agent-audit/external-gates.log`.
+- Scope: GitHub #1267-#1279 plus historical #1093; Beads `ZoneCNH-8lb` and `ZoneCNH-xzcr*`.
+- Release gate anchor: `/home/binance/release/evidence/binance/20260627-agent-audit-2/external-gates.log`.
 - Audit type: tracker-state, wording consistency, and release-boundary audit.
-- Decision: GitHub #1268-#1279 `OPEN` and Beads `ZoneCNH-xzcr*` in_progress as Evidence-Done blocker ownership; linked Evidence-Done proof remains pending.
+- Decision: GitHub #1267-#1279 `OPEN`, Beads `ZoneCNH-8lb` and `ZoneCNH-xzcr*` in_progress as long-term/Evidence-Done blocker ownership; linked Evidence-Done proof remains pending.
 - Git usage: this tracker-accounting audit does not use commit, push, PR, or merge as acceptance evidence; repository delivery can still be committed and merged separately.
 
 > [COMPUTED, HIGH] The audit checks live GitHub states, live Beads states, stale wording, external release-gate blockers, and trailing whitespace across the synchronized docs.
 
-| Round | GitHub #1268-#1279 | Beads `ZoneCNH-xzcr*` | Wording scan | Release boundary | Trailing whitespace | Result |
+| Round | GitHub #1267-#1279 | Beads `ZoneCNH-8lb` + `ZoneCNH-xzcr*` | Wording scan | Release boundary | Trailing whitespace | Result |
 | ----- | ------------------- | ------------------------ | ------------ | ---------------- | ------------------- | ------ |
 | 1 | OPEN | in_progress | PASS | `release_closeable=NO` preserved | PASS | PASS |
 | 2 | OPEN | in_progress | PASS | `release_closeable=NO` preserved | PASS | PASS |
@@ -28,6 +28,12 @@
 - [COMPUTED, HIGH] External-dependency summary for #1273/#1274/#1276 is recorded in `../test/worker-c-live-evidence-summary.md`; canonical destructive drill and credentialed testnet/live artifacts remain missing.
 - [COMPUTED, HIGH] External release gates still record `release_closeable=NO`, `live_binance_websocket=NOT_CAPTURED`, and `remote_github_actions=NOT_CAPTURED`.
 - [COMPUTED, HIGH] Evidence-State remains **1 Done (FR-009) / 43 Pending**.
-- [COMPUTED, HIGH] Beads `ZoneCNH-az71` is outside the #1268-#1279 evidence blocker split.
+- [COMPUTED, HIGH] Beads `ZoneCNH-az71` is outside the #1267-#1279 evidence blocker split.
+
+## Agent-Team Repeat Evidence
+
+- [COMPUTED, HIGH] A follow-up targeted runtime repeat check was recorded in `/home/binance/release/evidence/binance/20260627-agent-audit-2/issue-repeat-check-10x.log` and passed 10/10 rounds.
+- [COMPUTED, HIGH] The repeated checks covered `git diff --check`, `go test ./internal/server/deadletter -run TestReadFile -count=1`, targeted admin DLQ replay tests including restart persistence, and targeted history state tests.
+- [COMPUTED, HIGH] This repeat evidence upgrades local confidence for #1278/#1279, but does not close the issues because external/live/remote CI/release evidence remains missing.
 
 [RULES I BROKE]：无
