@@ -6,9 +6,10 @@
 | 分析对象 | `github.com/ZoneCNH/binance`（运行时代码仓 `/home/binance`） |
 | 治理投影 | `/home/ZoneCNH/module/binance/`（spec / TRACEABILITY 投影仓） |
 | 当前 Runtime-Anchor | `/home/binance@f046e16`（含 Plan008 全部 40 Task 代码实现；PR #145 合并） |
-| 当前 Issue-Ledger | [`issues-sync-20260625.md`](./issues-sync-20260625.md) |
-| 当前状态投影 | `24 Done / 10 Partial / 0 Pending` + `6 Draft`（FR-031~036 规格草案） |
-| 当前 issue 状态 | ✅ **全部 Closed**（#1104~#1118 + #1123）：7 个代码修复+实证，9 个能力边界文档化 |
+| 当前行动清单 | [`../../module/binance/todo.md`](../../module/binance/todo.md) |
+| 历史 Issue-Ledger | [`issues-sync-20260625.md`](./issues-sync-20260625.md) |
+| 当前状态口径 | Code-State `22 Done / 26 Partial / 0 Drifted / 0 Pending`；Evidence-State `1 Done (FR-009) / 43 Pending` |
+| 历史 issue 状态 | ✅ **全部 Closed**（#1104~#1118 + #1123）：7 个代码修复+实证，9 个能力边界文档化 |
 | 代码规模 | ~13.5K 行生产代码 + ~11.2K 行测试代码（66 个测试文件） |
 | 分析日期 | 2026-06-25 |
 | 证据基准 | 运行时代码 `/home/binance@f046e16`（含 Plan008 全部 40 Task；PR #145 合并） + `release/evidence/binance/20260625/` 实证 + mainnet live + Plan008 release workflow `28126779885` |
@@ -16,6 +17,8 @@
 | 证据标签 | 见各节内联标注 |
 
 ---
+
+> **2026-06-27 对齐说明** `[COMPUTED, HIGH]`：本文保留 2026-06-25 生产就绪分析语境；当前双状态口径以 [`../../module/binance/README.md`](../../module/binance/README.md)、[`../../module/binance/todo.md`](../../module/binance/todo.md) 和 [`spec-structural-analysis-20260627.md`](./spec-structural-analysis-20260627.md) 为准。`Production-Ready` 结论不得外推为当前 production gates 已闭合。
 
 ## 目录
 
@@ -41,9 +44,9 @@
 - ~~**REST 历史端点 Spot-only**~~ → ✅ **已修复**（#1107）：PR #103 实现 `routeEndpoint(productLine, eventType)`，支持 spot/um_perp/cm_perp REST 路由。
 - ~~**Kafka 广播 PARTIAL**~~ → ✅ **已修复**（#1105）：PR #104 修复 SASL 配置 + roundtrip PASS（12.74s，produce→consume value 匹配）。
 
-`[COMPUTED, HIGH]` 当前行动清单、关闭条件和 issue 状态统一维护在 [`issues-sync-20260625.md`](./issues-sync-20260625.md)。**全部 16 个 issue 已闭合**（7 代码修复 + 9 能力边界文档化）。本文保留历史分析语境。
+`[COMPUTED, HIGH]` 历史 issue 清单、关闭条件和 2026-06-25 issue 状态统一维护在 [`issues-sync-20260625.md`](./issues-sync-20260625.md)。**全部 16 个历史 issue 已闭合**（7 代码修复 + 9 能力边界文档化）。当前 2026-06-27 行动清单维护在 [`../../module/binance/todo.md`](../../module/binance/todo.md)。
 
-**可信度说明**：模块治理投影文档与 runtime 曾存在状态漂移；本报告保留该历史语境。当前 `report/binance/` 有效口径以 `/home/binance@f046e16`（含 Plan008 全部 40 Task 代码实现；PR #145 合并）、[`issues-sync-20260625.md`](./issues-sync-20260625.md)、[`plans/binance/008-issues-sync-report.md`](../../plans/binance/008-issues-sync-report.md) 和 `24 Done / 10 Partial / 0 Pending + 6 Draft` 为准；本文其余 runtime file/line 细节保留 PR #103/#104 分析语境。
+**可信度说明**：模块治理投影文档与 runtime 曾存在状态漂移；本报告保留该历史语境。当前 `report/binance/` 有效口径以 `/home/binance@f046e16`（含 Plan008 全部 40 Task 代码实现；PR #145 合并）、[`../../module/binance/todo.md`](../../module/binance/todo.md)、[`spec-structural-analysis-20260627.md`](./spec-structural-analysis-20260627.md)、Code-State `22 Done / 26 Partial / 0 Drifted / 0 Pending` 和 Evidence-State `1 Done (FR-009) / 43 Pending` 为准；本文其余 runtime file/line 细节保留 PR #103/#104 分析语境。
 
 > **[RULES]** 报告遵循 [`docs/constitution/20-epistemic-standards.md`](../../docs/constitution/20-epistemic-standards.md) 认识论标准。凡事实性声明带 `[COMPUTED]`/`[KNOWN]`/`[INFERRED]` 标签 + 显式置信度；文档与代码冲突时以代码为优先，并显式标注冲突。
 
