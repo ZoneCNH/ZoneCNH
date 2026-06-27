@@ -60,7 +60,7 @@ owner 字段允许三类值，优先级从高到低：
 # 模块规格
 module/kernel/SPEC.md           @owner-kernel
 module/configx/SPEC.md          @owner-configx
-module/binance/SPEC.md          @owner-binance
+module/binance/spec/SPEC.md     @owner-binance
 # ...
 ```
 

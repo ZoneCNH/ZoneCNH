@@ -1,7 +1,0 @@
-# 本 agent 已合并到 goal-prompt-builder。请使用 goal-prompt-builder。
-# 保留此文件作为指向，避免历史引用断裂。
-# 实际执行请 codex --agent goal-prompt-builder
-name = "goal-prompt-builder"
-description = "已合并到 goal-prompt-builder。请使用 goal-prompt-builder。"
-model = "gpt-5.5"
-model_reasoning_effort = "high"

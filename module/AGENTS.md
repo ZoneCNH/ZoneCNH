@@ -9,7 +9,7 @@
 1. **CONSTITUTION.md**（最高权威）— §1.1 十三条设计原则定义每个模块的核心身份
 2. **ARCHITECTURE.md**（第二权威）— 展开宪法中的简写为完整实现定义
 3. **module/README.md**（索引权威）— 模块分类、分层、依赖方向
-4. **模块级 goal.md + SPEC.md**（模块权威）— 单个模块的定位与可执行规格
+4. **模块级 goal/goal.md + spec/SPEC.md**（模块权威）— 单个模块的定位与可执行规格
 
 ### 关键宪法条款速查
 
@@ -42,36 +42,68 @@
 
 ## 模块目录结构
 
-每个模块目录 `module/{module}/` 的标准结构：
+> **SSOT**: `docs/goal/00-authority-map.md` §4 配置与运行态边界。根 `AGENTS.md` §模块目录结构规则。本节为投影，冲突时以上游为准。
+
+每个模块目录 `module/{module}/` 的标准结构（嵌套式）：
 
 ```text
 module/{module}/
-├── goal.md            # 模块 1.0 Goal 定位（必须，单文件）
-├── SPEC.md            # 可执行规格（必须，23 节结构）
-├── README.md          # 模块分析索引与入口说明
-├── TRACEABILITY.md    # 需求追溯矩阵（FR→AC→TC→Evidence）
-├── PLAN.md            # 根级实现计划（供 scorer 读取）
+├── goal/
+│   └── goal.md        # 模块 1.0 Goal 定位（必须，单文件）
+├── spec/
+│   └── SPEC.md        # 可执行规格（必须，23 节结构）
+│   └── client/        # 子模块 spec（可选）
+│   └── server/        # 子模块 spec（可选）
+├── design/            # 设计方案（DESIGN.md）
+├── plan/              # 执行计划（PLAN.md）
 ├── tasks/             # 任务 spec（TASK-{MODULE}-NNN.md）
 ├── prompt/            # Context Packet（PROMPT-{MODULE}-NNN.md）
-├── plan/              # 历史执行计划（可归档）
-├── analysis/          # 本地分析快照
-└── evidence/          # 测试证据
+├── evidence/          # S8-S11 合层，按日期归档
+│   └── YYYY-MM-DD/
+│       ├── test/      review/  release/  retrospective/
+├── matrix/            # 模块追溯矩阵（FR→AC→TC→Evidence）— 模块追溯 SSOT
+├── gate/              # 模块门禁检查清单 — 模块门禁 SSOT
+├── schema/            # 模块级数据/API/契约 schema
+├── README.md          # 模块分析索引与入口说明
+├── CHANGELOG.md       # 模块变更日志
+└── ci-workflow.yaml   # 模块 CI 工作流定义
 ```
+
+### 旧平铺结构迁移
+
+历史模块可能仍使用平铺结构（`goal.md`、`SPEC.md`、`TRACEABILITY.md`、`PLAN.md` 在根目录）。迁移规则：
+
+| 平铺文件              | 迁移目标                  | 说明                                      |
+| --------------------- | ------------------------- | ----------------------------------------- |
+| `goal.md`             | `goal/goal.md`            | 创建 `goal/` 目录后移入                    |
+| `SPEC.md`             | `spec/SPEC.md`            | 创建 `spec/` 目录后移入                    |
+| `TRACEABILITY.md`     | `matrix/TRACEABILITY.md`  | 或迁移到 `matrix/matrix.yaml`（推荐）      |
+| `PLAN.md` / `IMPLEMENTATION-PLAN.md` | `plan/PLAN.md` | 创建 `plan/` 目录后移入                   |
+| `ACCEPTANCE.md`       | `spec/ACCEPTANCE.md`      | 或合并到 SPEC.md §Acceptance Criteria     |
+| `FEATURES.md`         | `spec/FEATURES.md`        | 或合并到 SPEC.md §Functional Requirements |
+| `analysis/`           | 归档或删除                 | 非标准目录，历史分析可移入 `evidence/`     |
+
+**迁移原则**：
+- 目录表达**当前状态**，历史通过 `git log` / `git tag` 追溯。
+- 版本号唯一源：`spec/SPEC.md` 的 `Spec-Version` 字段。
+- `evidence/` 按日期归档——这是唯一需要时序累积的层。
+- 迁移时如涉及路径引用变更，需同步更新 `module/README.md` 索引和 CI 脚本中的路径。
+- 已迁移模块：`binance`。
 
 ### 文档角色区分
 
 | 文档              | 性质                                      | 读者                    |
 | ----------------- | ----------------------------------------- | ----------------------- |
-| `goal.md`         | 模块定位与 1.0 发布标准（是什么、为什么） | 架构负责人、模块 Owner  |
-| `SPEC.md`         | 可执行功能规格（做什么、怎么验证）        | 开发者、评审者、AI 代理 |
+| `goal/goal.md`    | 模块定位与 1.0 发布标准（是什么、为什么） | 架构负责人、模块 Owner  |
+| `spec/SPEC.md`    | 可执行功能规格（做什么、怎么验证）        | 开发者、评审者、AI 代理 |
+| `matrix/`         | 条款级来源矩阵与追溯 SSOT                 | 治理审计、评分管线      |
 | `README.md`       | 模块级索引与快照说明                      | 所有读者                |
-| `TRACEABILITY.md` | 条款级来源矩阵                            | 治理审计、评分管线      |
 
 ## 模块定位规则
 
 ### 定位描述必须与宪法一致
 
-每个模块的 `goal.md` 和 `SPEC.md` 中的定位描述必须与 CONSTITUTION.md §1.1 的对应条款一致：
+每个模块的 `goal/goal.md` 和 `spec/SPEC.md` 中的定位描述必须与 CONSTITUTION.md §1.1 的对应条款一致：
 
 - **xlib_standard**：五类职责（见上文），不承载业务运行
 - **xlibgate**：机器门禁，check imports/gomod/baseline/release/all
@@ -91,8 +123,8 @@ module/{module}/
 
 当修改模块定位或职责时，必须同步更新：
 
-1. `module/{module}/goal.md` — 模块定位
-2. `module/{module}/SPEC.md` — 功能规格
+1. `module/{module}/goal/goal.md` — 模块定位
+2. `module/{module}/spec/SPEC.md` — 功能规格
 3. `module/README.md` — 模块索引表中的核心职责列
 4. `ARCHITECTURE.md` — 状态表、依赖图、角色定义
 5. `CONSTITUTION.md` — 如涉及原则变更（需 ADR）
@@ -109,11 +141,11 @@ module/{module}/
 
 ### 23 节结构
 
-每个 SPEC.md 遵循统一结构。模板见 `docs/governance/SPEC-TEMPLATE.md`。
+每个 `spec/SPEC.md` 遵循统一结构。模板见 `docs/governance/SPEC-TEMPLATE.md`。
 
 ### 关键检查清单
 
-编写或修改 SPEC.md 时必须检查：
+编写或修改 `spec/SPEC.md` 时必须检查：
 
 - [ ] Metadata 状态、版本、日期完整
 - [ ] Goals 表每项可追溯（Trace 列不为空）
@@ -140,7 +172,7 @@ module/{module}/
 - **矛盾≠错误**：SPEC.md 和 goal.md 可能各描述了同一模块的不同侧面。先对照 CONSTITUTION 裁决，不要直接 "调和"
 - **修复前先分类**：区分实质矛盾（必须修）、粒度差异（以上游为准）、术语角度差异（装饰性，可保留）
 - **历史文档加归档标记**：不删除历史计划/任务，而是在文件头添加 `⚠️ 归档警告` 并指向当前权威定义
-- **模块结构**：目录表达当前状态——`goal/spec/design/plan/tasks/prompt` + `evidence/YYYY-MM-DD/` + `matrix/gate/schema` + `README.md` `CHANGELOG.md`。Goal 位于 `goal/goal.md`；Code 在 `/home/{module}`；历史通过 git 追溯
+- **模块结构**：以 `module/{module}/` 嵌套结构为标准（见上文 §模块目录结构）；Code 在 `/home/{module}`；历史通过 git 追溯
 
 ### ⚡ 效率规则
 
@@ -173,6 +205,7 @@ grep -rn "4 项职责\|Runtime 代码不适用\|不追求提供运行时" module
 | `ARCHITECTURE.md`                         | 架构图、依赖拓扑、状态表 |
 | `module/README.md`                        | 模块规格索引与分层总览   |
 | `AGENTS.md`                               | 仓库级代理工作指南       |
+| `docs/goal/00-authority-map.md`           | 模块目录结构 SSOT（§4）  |
 | `docs/governance/SPEC-TEMPLATE.md`        | 23 节 spec 模板          |
 | `docs/governance/TRACEABILITY.md`         | 追溯矩阵规范             |
 | `docs/governance/DEVELOPMENT-WORKFLOW.md` | Spec → Ship 完整管线     |

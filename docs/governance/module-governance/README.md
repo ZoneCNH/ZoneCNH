@@ -15,12 +15,23 @@
 | 07 | [07-module-decommission.md](07-module-decommission.md) | 模块退役/迁移 | 退役七步流程 + archive/delete 决策 |
 | 08 | [08-business-domain-deps.md](08-business-domain-deps.md) | 业务域依赖矩阵 | FOUNDATION-DEPS 扩展规划（后续工作） |
 
+## 扩展专题文档
+
+| 编号 | 文档 | 治理域 | 关键产物 |
+| --- | --- | --- | --- |
+| 09 | [09-data-cs-governance-levels.md](09-data-cs-governance-levels.md) | 数据 C/S 模块治理等级 | L1/L2/L3 分层与 issue 关闭边界 |
+| 09B | [09-maintenance-cadence.md](09-maintenance-cadence.md) | 模块治理维护节奏 | 季度 review cadence、closeout 规则与 no-git blocker 记录 |
+| 10 | [10-quarterly-pruning-audit.md](10-quarterly-pruning-audit.md) | 季度治理剪枝 | keep/merge/archive/decommission 审计流程 |
+| 10B | [10-governance-levels.md](10-governance-levels.md) | 通用治理等级 | L1/L2/L3 证据等级与关闭边界 |
+
 ## 模板
 
 | 模板 | 用途 |
 | --- | --- |
 | [templates/ADR-MODULE-ONBOARDING.md](templates/ADR-MODULE-ONBOARDING.md) | 准入 ADR 模板 |
 | [templates/ADR-MODULE-DECOMMISSION.md](templates/ADR-MODULE-DECOMMISSION.md) | 退役 ADR 模板 |
+| [templates/GOVERNANCE-TEMPLATE.md](templates/GOVERNANCE-TEMPLATE.md) | 数据 C/S 模块治理模板 |
+| [templates/MODULE-GOVERNANCE-REVIEW.md](templates/MODULE-GOVERNANCE-REVIEW.md) | 模块季度治理 review 模板 |
 
 ## 阅读顺序
 
@@ -33,4 +44,4 @@
 
 - 模块治理总纲与专题规则放在 `docs/governance/module-governance/`。
 - 机器可读注册表放在 `module/registry.yaml`（与 `module/FOUNDATION-DEPS.yaml` 并列）。
-- 模块级单模块规则（如 `module/binance/RULES.md`）是本体系的模块级投影，不放在本目录。
+- 模块级单模块规则（如 `module/binance/gate/RULES.md`）是本体系的模块级投影，不放在本目录。

@@ -1,11 +1,11 @@
 # 模块治理总纲 — Module Governance Charter
 
-- Module-Version: v1.0.0
-- Last-Updated: 2026-06-25
+- Module-Version: v1.1.1
+- Last-Updated: 2026-06-27
 - 适用范围：本仓库全部 `module/*/` 规格制品、`module/registry.yaml` 注册表、以及本仓库索引的全部外部模块仓库（`github.com/ZoneCNH/*`）
 - 效力层级：本文位于 `docs/governance/` 层，受 [`CONSTITUTION.md` §13.1](../constitution/13-supreme-clause.md) 效力层级管辖（CONSTITUTION > module/\*/SPEC.md > governance 文档 > ARCHITECTURE > module 详情 > 其他）
-- 优先级：本文 > `module/{module}/SPEC.md` 治理条款 > `module/{module}/RULES.md` 单模块规则；与 CONSTITUTION 冲突时以 CONSTITUTION 为准
-- 强制级别：每条规则标注【硬】（违反即治理违规）/【软】（推荐）/【开】（仅验证存在性），沿用 [`module/binance/RULES.md`](../../module/binance/RULES.md) R1-R10 模式
+- 优先级：本文 > `module/{module}/spec/SPEC.md` 治理条款 > `module/{module}/gate/RULES.md` 单模块规则；与 CONSTITUTION 冲突时以 CONSTITUTION 为准
+- 强制级别：每条规则标注【硬】（违反即治理违规）/【软】（推荐）/【开】（仅验证存在性），沿用 [`module/binance/gate/RULES.md`](../../module/binance/gate/RULES.md) R1-R10 模式
 
 > 本体系源自 2026-06-25 治理缺口审计。审计确认现有三层治理栈（宪法 §0-§20 / governance Spec→Code 管线 / goal 交付 OS）在 **Spec 治理**上极强，但在**"模块本身"（作为可独立发布的代码制品/仓库单元）的治理**上存在 8 个一致缺口。本总纲将其转化为可执行规则。
 
@@ -48,6 +48,8 @@
 | 6 | 新模块准入 | §2.5 奥卡姆剃刀有原则无流程；无立项 ADR/边界论证/依赖审查/命名审批门禁 | [06-module-onboarding.md](module-governance/06-module-onboarding.md) | 准入 ADR 模板 |
 | 7 | 模块退役/迁移 | 无 sunset/EOL/合并/拆分/重命名标准流程（仅 4 占位模块删除先例） | [07-module-decommission.md](module-governance/07-module-decommission.md) | 退役 ADR 模板 |
 | 8 | 业务域依赖矩阵 | FOUNDATION-DEPS 只覆盖 20 基座+domainx；业务域仅出现在 forbidden 黑名单 | [08-business-domain-deps.md](module-governance/08-business-domain-deps.md) | 扩展 schema 规划（后续工作） |
+
+八域是模块治理的基础面。数据 C/S 模块分级、模板抽取与季度剪枝属于操作性覆盖专题，用于把八域规则落到 `module/data_cs_module/`、`module/binance/` 与后续数据源模块。
 
 ---
 
@@ -108,7 +110,7 @@ module/FOUNDATION-DEPS.yaml     → 依赖矩阵（allowed / forbidden / constra
 
 ## §4 强制级别约定
 
-沿用 `module/binance/RULES.md` 的三级标注：
+沿用 `module/binance/gate/RULES.md` 的三级标注：
 
 | 级别 | 标注 | 含义 | 违规后果 |
 | --- | --- | --- | --- |
@@ -158,12 +160,18 @@ module/FOUNDATION-DEPS.yaml     → 依赖矩阵（allowed / forbidden / constra
 | [module-governance/06-module-onboarding.md](module-governance/06-module-onboarding.md) | 新模块准入流程 |
 | [module-governance/07-module-decommission.md](module-governance/07-module-decommission.md) | 模块退役/迁移流程 |
 | [module-governance/08-business-domain-deps.md](module-governance/08-business-domain-deps.md) | 业务域依赖矩阵扩展规划 |
+| [module-governance/09-data-cs-governance-levels.md](module-governance/09-data-cs-governance-levels.md) | 数据 C/S 模块 L1/L2/L3 治理等级 |
+| [module-governance/09-maintenance-cadence.md](module-governance/09-maintenance-cadence.md) | 模块治理维护节奏与 issue closeout 边界 |
+| [module-governance/10-quarterly-pruning-audit.md](module-governance/10-quarterly-pruning-audit.md) | 季度治理剪枝审计机制 |
+| [module-governance/10-governance-levels.md](module-governance/10-governance-levels.md) | 通用 L1/L2/L3 治理等级与证据口径 |
+| [module-governance/templates/GOVERNANCE-TEMPLATE.md](module-governance/templates/GOVERNANCE-TEMPLATE.md) | 数据 C/S 模块治理模板 |
+| [module-governance/templates/MODULE-GOVERNANCE-REVIEW.md](module-governance/templates/MODULE-GOVERNANCE-REVIEW.md) | 模块季度治理 review 模板 |
 | [module-governance/templates/ADR-MODULE-ONBOARDING.md](module-governance/templates/ADR-MODULE-ONBOARDING.md) | 准入 ADR 模板 |
 | [module-governance/templates/ADR-MODULE-DECOMMISSION.md](module-governance/templates/ADR-MODULE-DECOMMISSION.md) | 退役 ADR 模板 |
 | [`module/registry.yaml`](../../module/registry.yaml) | 统一模块注册表（机器可读） |
 | [`module/FOUNDATION-DEPS.yaml`](../../module/FOUNDATION-DEPS.yaml) | Foundation 依赖矩阵（引用，非本体系管辖） |
 | [`.foundationx/status/index.json`](../../.foundationx/status/index.json) | 成熟度事实层（引用，非本体系管辖） |
-| [`module/binance/RULES.md`](../../module/binance/RULES.md) | 单模块治理规则先例（R1-R10 模式来源） |
+| [`module/binance/gate/RULES.md`](../../module/binance/gate/RULES.md) | 单模块治理规则先例（R1-R10 模式来源） |
 | [`docs/governance/LIFECYCLE.md`](LIFECYCLE.md) | Spec 生命周期（六态，与本体系模块生命周期映射） |
 | [`docs/governance/DEFINITION-OF-READY.md`](DEFINITION-OF-READY.md) | Spec 进入开发前置条件（准入通过后适用） |
 | [`docs/governance/boundary-gates-cross-module-promotion.md`](boundary-gates-cross-module-promotion.md) | 跨模块边界门禁推广先例 |
@@ -174,4 +182,6 @@ module/FOUNDATION-DEPS.yaml     → 依赖矩阵（allowed / forbidden / constra
 
 | 日期 | 版本 | 变更内容 | 作者 |
 | --- | --- | --- | --- |
+| 2026-06-27 | v1.1.1 | 登记模块维护节奏、通用治理等级和季度 review 模板；同步 GitHub/Beads issue closeout 文档边界 | Codex |
+| 2026-06-27 | v1.1.0 | 增加数据 C/S 模块 L1/L2/L3 等级、通用治理模板与季度剪枝审计；同步 binance 迁移后 spec/gate 路径 | ZoneCNH |
 | 2026-06-25 | v1.0.0 | 首次建立。闭合 2026-06-25 治理缺口审计确认的 8 个模块治理缺口，定义三 SSOT 边界、八域总览、强制级别约定与修订流程 | ZoneCNH |

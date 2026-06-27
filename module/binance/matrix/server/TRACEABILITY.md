@@ -221,7 +221,7 @@
 | BR→验证映射率 | 9 / 9 | 100% |
 | TC→FR 回溯率 | 26 / 26 | 100% |
 | AC→验证映射率 | 40 / 40 | 100% |
-| 实现完成率 | 9 Done / 3 Partial / 12 FR | 75% Done（代码实现完成；投影自 root TRACEABILITY Runtime-Anchor `/home/binance@f046e16`；Partial: FR-007/007a/011；TC 测试证据仍 Pending） |
+| 实现完成率 | 9 Done / 3 Partial / 12 FR | 75% Done（代码实现完成；投影自 root TRACEABILITY Runtime-Anchor `/home/binance@0602e78428633a368b0afcd1c578c07ed7144752`；Partial: FR-007/007a/011；TC 测试证据仍 Pending） |
 
 	> **v2.2.1 状态同步 (2026-06-26)**：FR/BR 实现状态从全 Pending 同步为 9 Done / 3 Partial，对齐 root TRACEABILITY v3.7.1 的 24 Done / 10 Partial / 10 Pending 投影。子模块 TC 仍保持 Pending（测试证据未独立闭合）。
 
@@ -238,4 +238,4 @@
 | 2026-06-21 | v2.0.0 | **全面重写**：gRPC/同进程 cs → natsx JetStream 分布式架构；FR-001~009 全部对齐 natsx/redisx/postgresx/taosx/kafkax/Gin/ossx；BR/NFR/TC/AC 全面更新 | ZoneCNH |
 | 2026-06-21 | v2.1.0 | **对齐当时的 server SPEC 基线**：补充 FR-002 Consumer Lifecycle（TC-020/021, AC-031/032）；FR 命名全面对齐 SPEC（FR-002→FR-003 Envelope Validation, FR-003→FR-004 Idempotent Acceptance, FR-004+005→FR-005 Multi-Store Write）；新增 FR-007a（clickhousex Analytics API, TC-022, AC-033~035）、FR-010（clickhousex OLAP, TC-023/024, AC-036~038）、FR-011（Coordinator Lock, TC-025/026, AC-039~040）；BR 从 6 条扩展至 9 条（对齐 SPEC BR-001~006 + Cold-Write-First/Server Owns Storage/No cs Package）；NFR 10→12；TC 19→26；AC 30→40 | ZoneCNH |
 | 2026-06-22 | v2.1.1 | 修正追溯矩阵元数据：对应 server SPEC v2.1.0；实现状态仍保持 Pending，代码待实现 | ZoneCNH |
-| 2026-06-26 | v2.2.1 | **P0 状态同步**：FR/BR 实现状态从全 Pending 同步为 9 Done / 3 Partial（Partial: FR-007/007a/011），对齐 root TRACEABILITY v3.7.1 Runtime-Anchor `/home/binance@f046e16`；TC/NFR 仍保持 Pending（子模块独立测试证据未闭合）；§6 仪表盘刷新 | ZCode |
+| 2026-06-26 | v2.2.1 | **P0 状态同步**：FR/BR 实现状态从全 Pending 同步为 9 Done / 3 Partial（Partial: FR-007/007a/011），对齐 root TRACEABILITY v3.9.0 Runtime-Anchor `/home/binance@0602e78428633a368b0afcd1c578c07ed7144752`；TC/NFR 仍保持 Pending（子模块独立测试证据未闭合）；§6 仪表盘刷新 | ZCode |

@@ -9,6 +9,7 @@
 ## 评分方法
 
 每个问题按三个维度评分：
+
 - **严重度** (Severity)：对体系一致性和可靠性的影响（1-10）
 - **影响面** (Blast Radius)：受影响的模块/流程数量（1-10）
 - **修复难度** (Fix Difficulty)：修复所需的工作量和风险（1-10，越低越易修）
@@ -25,18 +26,19 @@
 
 两套管线在 `AGENTS.md` 中并列存在，共享 6 个相同阶段但使用完全不同的治理机制：
 
-| 维度 | Goal 管线 | Spec→Code 管线 |
-|------|-----------|----------------|
-| 阶段数 | 11（含 G0-G11 门禁） | 6（S1-S6） |
-| 门禁机制 | 四态裁决 (PASS/PASS_WITH_RISK/FAIL/BLOCKED) | `composite_score = min(claude, codex, copilot, rules) >= 98` |
-| 评分源 | 单源（goal-reviewer） | 四源（claude/codex/copilot/rules）+ arbiter |
-| 状态枚举 | 四轴状态模型（13 正常 + 8 异常） | 阶段推进制（Spec→Matrix→Tasks→Plan→Prompt→Code） |
-| Agent | 5 个 goal-* Agent | 10+ 个 spec/task/prompt/score Agent |
-| 共享阶段 | **Spec / Design / Plan / Tasks / Prompt / Code** | ← 完全相同 |
+| 维度     | Goal 管线                                        | Spec→Code 管线                                               |
+| -------- | ------------------------------------------------ | ------------------------------------------------------------ |
+| 阶段数   | 11（含 G0-G11 门禁）                             | 6（S1-S6）                                                   |
+| 门禁机制 | 四态裁决 (PASS/PASS_WITH_RISK/FAIL/BLOCKED)      | `composite_score = min(claude, codex, copilot, rules) >= 98` |
+| 评分源   | 单源（goal-reviewer）                            | 四源（claude/codex/copilot/rules）+ arbiter                  |
+| 状态枚举 | 四轴状态模型（13 正常 + 8 异常）                 | 阶段推进制（Spec→Matrix→Tasks→Plan→Prompt→Code）             |
+| Agent    | 5 个 goal-\* Agent                               | 10+ 个 spec/task/prompt/score Agent                          |
+| 共享阶段 | **Spec / Design / Plan / Tasks / Prompt / Code** | ← 完全相同                                                   |
 
 ### 冲突场景
 
 同一模块的 Spec 阶段：
+
 - Goal 管线 G2 Spec Gate 判定 `PASS`（单 reviewer，阈值 90）
 - Spec→Code 管线 arbiter 判定 `FAIL`（四源 composite_score < 98）
 
@@ -53,12 +55,12 @@ Goal 体系（`docs/goal/`）先建立，Spec→Code 管线（`docs/governance/D
 - 无冲突时的优先级规则不存在
 - binance 模块实际走了 Spec→Code 管线，Goal 管线完全未追踪
 
-| 评分 | 值 |
-|------|-----|
-| 严重度 | **9** — 同一模块可能有两套冲突裁决 |
-| 影响面 | **7** — 影响所有进入开发的模块 |
-| 修复难度 | **8** — 需要重新设计阶段职责划分 |
-| **综合分** | **7.9** |
+| 评分       | 值                                 |
+| ---------- | ---------------------------------- |
+| 严重度     | **9** — 同一模块可能有两套冲突裁决 |
+| 影响面     | **7** — 影响所有进入开发的模块     |
+| 修复难度   | **8** — 需要重新设计阶段职责划分   |
+| **综合分** | **7.9**                            |
 
 ---
 
@@ -70,15 +72,15 @@ Goal 体系（`docs/goal/`）先建立，Spec→Code 管线（`docs/governance/D
 
 从 `.config/goal/gates/state.yaml` 中提取所有 Gate 阈值：
 
-| Gate 组 | PASS 阈值 | PASS_WITH_RISK min | 差异 |
-|---------|-----------|-------------------|------|
-| **标准 G0-G10** (GOAL-20260608-001) | **90** | 80-85 | 基准线 |
-| **标准 G11** | **80** | 70 | -10 vs 基准 |
-| **Kernel GK-0~GK-7** (GOAL-KERNEL-20260609-001) | **90** | 80-85 | 与标准一致 |
-| **Kernel GK-8** (Evidence) | **98** | null（禁止PWR） | **+8** vs 标准 G8 |
-| **Kernel GK-9** (Review) | **98** | null（禁止PWR） | **+8** vs 标准 G9 |
-| **Kernel GK-10** (Release) | **98** | null（禁止PWR） | **+8** vs 标准 G10 |
-| **Kernel GK-11** | **80** | 70 | 与标准一致 |
+| Gate 组                                         | PASS 阈值 | PASS_WITH_RISK min | 差异               |
+| ----------------------------------------------- | --------- | ------------------ | ------------------ |
+| **标准 G0-G10** (GOAL-20260608-001)             | **90**    | 80-85              | 基准线             |
+| **标准 G11**                                    | **80**    | 70                 | -10 vs 基准        |
+| **Kernel GK-0~GK-7** (GOAL-KERNEL-20260609-001) | **90**    | 80-85              | 与标准一致         |
+| **Kernel GK-8** (Evidence)                      | **98**    | null（禁止PWR）    | **+8** vs 标准 G8  |
+| **Kernel GK-9** (Review)                        | **98**    | null（禁止PWR）    | **+8** vs 标准 G9  |
+| **Kernel GK-10** (Release)                      | **98**    | null（禁止PWR）    | **+8** vs 标准 G10 |
+| **Kernel GK-11**                                | **80**    | 70                 | 与标准一致         |
 
 ### 三重不一致
 
@@ -90,12 +92,12 @@ Goal 体系（`docs/goal/`）先建立，Spec→Code 管线（`docs/governance/D
 
 `04-gates.md` §5 定义了"允许 PASS_WITH_RISK 的 Gate"表，但只列出了阈值，**没有定义阈值推导原则**。kernel 模块的 98 阈值似乎是针对特定模块手工设定的，但缺少 `threshold_rationale` 字段或 ADR 记录。
 
-| 评分 | 值 |
-|------|-----|
-| 严重度 | **7** — 执行者无法预测某 Gate 的阈值 |
-| 影响面 | **5** — 目前仅影响 kernel 模块，但模板化后会扩散 |
-| 修复难度 | **3** — 建立统一阈值原则 + 个别调整需 ADR |
-| **综合分** | **11.7** |
+| 评分       | 值                                               |
+| ---------- | ------------------------------------------------ |
+| 严重度     | **7** — 执行者无法预测某 Gate 的阈值             |
+| 影响面     | **5** — 目前仅影响 kernel 模块，但模板化后会扩散 |
+| 修复难度   | **3** — 建立统一阈值原则 + 个别调整需 ADR        |
+| **综合分** | **11.7**                                         |
 
 ---
 
@@ -106,13 +108,15 @@ Goal 体系（`docs/goal/`）先建立，Spec→Code 管线（`docs/governance/D
 ### 证据：kernel 模块的 Gate 状态与 FoundationX 不一致
 
 **`.config/goal/gates/state.yaml`** (最后更新 2026-06-15)：
+
 ```yaml
-GK-8 (Evidence):  BLOCKED — "kernel edges are Dropped with empty evidence_id"
-GK-9 (Review):    BLOCKED — "缺少四源 98+ arbiter 归档"
-GK-10 (Release):  BLOCKED — "kernel in factory_blocking_modules via BLK-011"
+GK-8 (Evidence): BLOCKED — "kernel edges are Dropped with empty evidence_id"
+GK-9 (Review): BLOCKED — "缺少四源 98+ arbiter 归档"
+GK-10 (Release): BLOCKED — "kernel in factory_blocking_modules via BLK-011"
 ```
 
 **`.foundationx/blockers.json`** (最后更新 2026-06-21)：
+
 ```json
 "BLK-011": {
   "status": "resolved",
@@ -124,6 +128,7 @@ GK-10 (Release):  BLOCKED — "kernel in factory_blocking_modules via BLK-011"
 ```
 
 **`.foundationx/status/index.json`** (最后更新 2026-06-25)：
+
 ```json
 "kernel": {
   "factory": true,
@@ -141,6 +146,7 @@ GK-10 (Release):  BLOCKED — "kernel in factory_blocking_modules via BLK-011"
 ### 后果
 
 Goal 管线对 kernel 模块给出了**错误的阻断信号** — 执行者看到 GK-8/GK-9/GK-10 都是 BLOCKED，但实际上所有阻塞条件已解除。这会导致：
+
 - 不必要的升级和排查
 - 对 Gate 体系的信任度下降
 - 执行者学会"无视 Gate 状态"
@@ -149,12 +155,12 @@ Goal 管线对 kernel 模块给出了**错误的阻断信号** — 执行者看�
 
 Goal 管线的 Gate 状态是**手工快照**而非自动聚合。FoundationX blockers.json 和 Goal gates/state.yaml 之间没有自动同步机制。`25-execution-guide.md` §5 要求"在关闭 release_blocking 风险的同一变更中更新上述快照"，但这一规则在 kernel 案例中被违反。
 
-| 评分 | 值 |
-|------|-----|
-| 严重度 | **10** — Gate 给出已失效的阻断信号，动摇体系可信度 |
-| 影响面 | **6** — 影响所有依赖 FoundationX 的模块 |
-| 修复难度 | **4** — 需要自动化同步或 CI 校验 |
-| **综合分** | **15.0** |
+| 评分       | 值                                                 |
+| ---------- | -------------------------------------------------- |
+| 严重度     | **10** — Gate 给出已失效的阻断信号，动摇体系可信度 |
+| 影响面     | **6** — 影响所有依赖 FoundationX 的模块            |
+| 修复难度   | **4** — 需要自动化同步或 CI 校验                   |
+| **综合分** | **15.0**                                           |
 
 ---
 
@@ -166,14 +172,15 @@ Goal 管线的 Gate 状态是**手工快照**而非自动聚合。FoundationX bl
 
 权威映射 `00-authority-map.md` 定义了双层 Matrix：
 
-| 位置 | 性质 |
-|------|------|
-| `.config/goal/matrix/matrix.yaml` | 控制面快照，跨模块 |
-| `module/{module}/matrix/TRACEABILITY.md` | 模块 SSOT |
+| 位置                                     | 性质               |
+| ---------------------------------------- | ------------------ |
+| `.config/goal/matrix/matrix.yaml`        | 控制面快照，跨模块 |
+| `module/{module}/matrix/TRACEABILITY.md` | 模块 SSOT          |
 
 但实际数据呈现三种不一致模式：
 
 **模式 A — 模块有但控制面无**：
+
 ```
 module/binance/matrix/TRACEABILITY.md      ← 存在
 module/binance/matrix/client/TRACEABILITY.md ← 存在
@@ -182,6 +189,7 @@ module/binance/matrix/server/TRACEABILITY.md ← 存在
 ```
 
 **模式 B — 控制面有但模块可能不全**：
+
 ```
 .config/goal/matrix/matrix.yaml 中有 kernel 23 条边
 module/kernel/TRACEABILITY.md 中有 12 FR 对应条目
@@ -197,16 +205,17 @@ module/kernel/TRACEABILITY.md 中有 12 FR 对应条目
 ### 根源
 
 两套 Matrix 的生成路径不同：
+
 - 模块 Matrix 由模块开发者/Agent 手工维护
 - 控制面 Matrix 由 `matrix-gen.py --check-only` 校验
 - 两者没有双向同步机制
 
-| 评分 | 值 |
-|------|-----|
-| 严重度 | **8** — 同一事实有两个可能矛盾的记录 |
-| 影响面 | **7** — 影响所有有 traceability 的模块 |
-| 修复难度 | **6** — 需要定义同步协议 + 自动化 |
-| **综合分** | **9.3** |
+| 评分       | 值                                     |
+| ---------- | -------------------------------------- |
+| 严重度     | **8** — 同一事实有两个可能矛盾的记录   |
+| 影响面     | **7** — 影响所有有 traceability 的模块 |
+| 修复难度   | **6** — 需要定义同步协议 + 自动化      |
+| **综合分** | **9.3**                                |
 
 ---
 
@@ -218,20 +227,21 @@ module/kernel/TRACEABILITY.md 中有 12 FR 对应条目
 
 binance 模块是仓库中**制品最完整**的模块之一：
 
-| 制品 | 数量 |
-|------|------|
-| goal.md | 1（7 条成功标准，4 个 Non-goals） |
-| SPEC.md + 子模块 spec | 5 个文件 |
-| FEATURES.md + ACCEPTANCE.md | 2 个文件 |
-| DESIGN.md + ADR × 3 + 深度分析 × 4 | 8 个文件 |
-| PLAN.md（含 client/server 子计划） | 3 个文件 |
-| Task 文件（client 14 + server 17 + root 8） | **39 个文件** |
-| TRACEABILITY.md（含 client/server） | 3 个文件 |
-| gate/ 文件（6 个） | 6 个文件 |
-| evidence/（按日期 2026-06-26 归档） | 4+ 个文件 |
-| schema/ | 1 个文件 |
+| 制品                                        | 数量                              |
+| ------------------------------------------- | --------------------------------- |
+| goal.md                                     | 1（7 条成功标准，4 个 Non-goals） |
+| SPEC.md + 子模块 spec                       | 5 个文件                          |
+| FEATURES.md + ACCEPTANCE.md                 | 2 个文件                          |
+| DESIGN.md + ADR × 3 + 深度分析 × 4          | 8 个文件                          |
+| PLAN.md（含 client/server 子计划）          | 3 个文件                          |
+| Task 文件（client 14 + server 17 + root 8） | **39 个文件**                     |
+| TRACEABILITY.md（含 client/server）         | 3 个文件                          |
+| gate/ 文件（6 个）                          | 6 个文件                          |
+| evidence/（按日期 2026-06-26 归档）         | 4+ 个文件                         |
+| schema/                                     | 1 个文件                          |
 
 但管线状态完全缺失：
+
 ```
 .config/goal/pipeline/state.yaml  ← 无 binance 条目
 .config/goal/gates/state.yaml     ← 无 binance 条目
@@ -248,12 +258,12 @@ binance 模块在 **Spec→Code 管线**（S1-S6）中推进（证据：`module/
 
 Goal 管线的 pipeline 状态是手工维护的 YAML 文件，没有自动发现新模块 Goal 并初始化管线状态的机制。
 
-| 评分 | 值 |
-|------|-----|
-| 严重度 | **8** — 管线对最完整的模块"不可见" |
-| 影响面 | **4** — 目前仅 binance 明显，但其他 58 个模块可能类似 |
-| 修复难度 | **5** — 需要自动化模块发现 + 管线初始化 |
-| **综合分** | **6.4** |
+| 评分       | 值                                                    |
+| ---------- | ----------------------------------------------------- |
+| 严重度     | **8** — 管线对最完整的模块"不可见"                    |
+| 影响面     | **4** — 目前仅 binance 明显，但其他 58 个模块可能类似 |
+| 修复难度   | **5** — 需要自动化模块发现 + 管线初始化               |
+| **综合分** | **6.4**                                               |
 
 ---
 
@@ -264,6 +274,7 @@ Goal 管线的 pipeline 状态是手工维护的 YAML 文件，没有自动发�
 ### 证据
 
 `docs/goal/` 目录文件统计：
+
 - 核心方法论文档：26 个（00-26）
 - RSI 标准子目录：30 章节
 - 变更请求：2 个
@@ -279,30 +290,31 @@ Goal 管线的 pipeline 状态是手工维护的 YAML 文件，没有自动发�
 ### 影响
 
 高入门门槛导致两个后果：
+
 1. 执行者倾向于**绕过 Goal 管线**（如 binance 走 Spec→Code 管线）
 2. 如果强制执行全套 Gate，小任务的交付速度被显著拖慢
 
 对比：复杂度分级（XS→XL）虽然存在，但 XS Lite Mode 的文档仍然要求 G0 + G1 上下文恢复和目标定义，对"修一个 typo"来说仍显过重。
 
-| 评分 | 值 |
-|------|-----|
-| 严重度 | **6** — 不破坏体系正确性，但削弱采纳率 |
-| 影响面 | **8** — 影响所有新加入的模块和执行者 |
-| 修复难度 | **5** — 需要分层文档 + 自动化引导 |
-| **综合分** | **9.6** |
+| 评分       | 值                                     |
+| ---------- | -------------------------------------- |
+| 严重度     | **6** — 不破坏体系正确性，但削弱采纳率 |
+| 影响面     | **8** — 影响所有新加入的模块和执行者   |
+| 修复难度   | **5** — 需要分层文档 + 自动化引导      |
+| **综合分** | **9.6**                                |
 
 ---
 
 ## 总分汇总
 
-| # | 问题 | 严重度 | 影响面 | 修复难度 | 综合分 | 优先级 |
-|---|------|--------|--------|----------|--------|--------|
-| 3 | 跨系统状态漂移 | 10 | 6 | 4 | **15.0** | 🔴 P0 |
-| 2 | Gate 阈值碎片化 | 7 | 5 | 3 | **11.7** | 🔴 P0 |
-| 6 | 文档体系膨胀 | 6 | 8 | 5 | **9.6** | 🟡 P1 |
-| 4 | Matrix 权威冲突 | 8 | 7 | 6 | **9.3** | 🟡 P1 |
-| 1 | 双管线并存 | 9 | 7 | 8 | **7.9** | 🟡 P1 |
-| 5 | binance 管线断层 | 8 | 4 | 5 | **6.4** | 🟢 P2 |
+| #   | 问题             | 严重度 | 影响面 | 修复难度 | 综合分   | 优先级 |
+| --- | ---------------- | ------ | ------ | -------- | -------- | ------ |
+| 3   | 跨系统状态漂移   | 10     | 6      | 4        | **15.0** | 🔴 P0  |
+| 2   | Gate 阈值碎片化  | 7      | 5      | 3        | **11.7** | 🔴 P0  |
+| 6   | 文档体系膨胀     | 6      | 8      | 5        | **9.6**  | 🟡 P1  |
+| 4   | Matrix 权威冲突  | 8      | 7      | 6        | **9.3**  | 🟡 P1  |
+| 1   | 双管线并存       | 9      | 7      | 8        | **7.9**  | 🟡 P1  |
+| 5   | binance 管线断层 | 8      | 4      | 5        | **6.4**  | 🟢 P2  |
 
 ---
 
@@ -313,6 +325,7 @@ Goal 管线的 pipeline 状态是手工维护的 YAML 文件，没有自动发�
 #### 1. 修复 kernel Gate 状态漂移（问题三）
 
 **具体措施**：
+
 - 将 GK-8/GK-9/GK-10 的 verdict 从 `BLOCKED` 更新为 `PASS`（基于已闭合的证据链：BLK-011 resolved 2026-06-18，kernel.factory=true，Goal Matrix 23 edges Verified）
 - 在 CI 中增加 `state-consistency-check`：对比 FoundationX blockers.json 与 Goal gates/state.yaml，检测漂移
 - 在 `25-execution-guide.md` §5 中增加自动化校验步骤，防止手工快照遗漏
@@ -363,6 +376,7 @@ Goal 管线: G0 → G1 → G2[+四源评分] → G3[+四源评分] → G4[+四�
 #### 5. 入门路径精简（问题六）
 
 为 XS/S 级任务提供 `quickstart-lite.md`：
+
 - 阅读清单从 9 个文件压缩到 3 个：`00-authority-map.md` + `00-quickstart.md` + `25-execution-guide.md`（仅 §1-§4）
 - Lite Mode 预配置模板：Goal → DoD → Code → Test → Evidence → Review（6 步替代 11 步）
 - 在 `00-quickstart.md` 顶部增加"我只想快速开始"一节，直接跳转到 Lite Mode
@@ -378,6 +392,7 @@ bash docs/goal/tools/goal-workflow.sh discover
 ```
 
 同时：
+
 - 新增模块 Goal 时，在 pre-commit hook 中检测并提示
 - 在 CI summary 中增加 "未追踪 Goal" 计数
 
@@ -385,14 +400,14 @@ bash docs/goal/tools/goal-workflow.sh discover
 
 ## 总体评分
 
-| 维度 | 得分 | 满分 | 说明 |
-|------|------|------|------|
-| 概念完整性 | 85 | 100 | 核心概念（Goal→Evidence 闭环）自洽且严谨 |
-| 实现一致性 | **58** | 100 | 阈值碎片化、状态漂移、双管线冲突 |
-| 可操作性 | 70 | 100 | 命令入口清晰但入门文档过重 |
-| 可扩展性 | **55** | 100 | 新模块接入管线存在手工断层 |
-| 跨系统一致性 | **42** | 100 | Goal 管线与 FoundationX/Spec→Code 管线缺乏同步 |
-| **加权总分** | **62** | 100 | 体系设计优秀，工程落地有显著改进空间 |
+| 维度         | 得分   | 满分 | 说明                                           |
+| ------------ | ------ | ---- | ---------------------------------------------- |
+| 概念完整性   | 85     | 100  | 核心概念（Goal→Evidence 闭环）自洽且严谨       |
+| 实现一致性   | **58** | 100  | 阈值碎片化、状态漂移、双管线冲突               |
+| 可操作性     | 70     | 100  | 命令入口清晰但入门文档过重                     |
+| 可扩展性     | **55** | 100  | 新模块接入管线存在手工断层                     |
+| 跨系统一致性 | **42** | 100  | Goal 管线与 FoundationX/Spec→Code 管线缺乏同步 |
+| **加权总分** | **62** | 100  | 体系设计优秀，工程落地有显著改进空间           |
 
 ---
 

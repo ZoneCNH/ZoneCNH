@@ -8,13 +8,13 @@
 - Owner: ZoneCNH
 - Layer: 数据域 · 行情
 - Runtime-Version: v0.2.0
-- Runtime-HEAD: `f046e16` (Plan008 全部 40 Task 代码实现；PR #145 合并)
+- Runtime-HEAD: `0602e78428633a368b0afcd1c578c07ed7144752` (2026-06-27 local evidence refresh；Plan008 / PR #145 closeout remains historical)
 - Repository: [github.com/ZoneCNH/binance](https://github.com/ZoneCNH/binance)
 - Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md), `module/domain_market`, `module/natsx`, `module/redisx`, `module/taosx`, `module/kafkax`, `module/ossx`, `module/postgresx`, `module/clickhousex`
 
 > 子模块规格：`module/binance/client/SPEC.md`、`module/binance/server/SPEC.md`
 >
-> [COMPUTED, HIGH] 2026-06-27 open blocker ledger for GitHub #1268-#1279 / Beads `ZoneCNH-xzcr*` is recorded in [`../evidence/2026-06-27/review/ISSUE-BLOCKERS-1268-1279.md`](../evidence/2026-06-27/review/ISSUE-BLOCKERS-1268-1279.md); it does not change Spec-Version, Runtime-Version, Code-State or Evidence-State.
+> [COMPUTED, HIGH] 2026-06-27 open blocker ledger for GitHub #1268-#1279 / Beads `ZoneCNH-xzcr*` is recorded in [`../evidence/2026-06-27/review/ISSUE-BLOCKERS-1268-1279.md`](../evidence/2026-06-27/review/ISSUE-BLOCKERS-1268-1279.md); GitHub issues remain `OPEN`, Beads issues remain `in_progress`, and this does not change Spec-Version, Runtime-Version, Code-State or Evidence-State. GitHub #1267 / Beads `ZoneCNH-8lb` is the current open long-term tracker; historical GitHub #1093 is closed/relocated. M1-M4 evidence remains governed by [`../../../docs/governance/CORE-LOOP-MILESTONES.md`](../../../docs/governance/CORE-LOOP-MILESTONES.md).
 
 ---
 
@@ -92,7 +92,7 @@ Binance 行情集成面临以下问题：
 
 ### 4.2 Production Readiness Gates
 
-Plan008 的 `release_closeable=YES` 只表示 release gate 可关闭；它不自动把 FR 投影提升为全 Done。任何 production-level claim 必须同时满足下列门禁，并在 `TRACEABILITY.md` / `ACCEPTANCE.md` 绑定 runtime SHA、CI run 或可审计 evidence。
+Plan008 historical closeout 只表示当时 release gate 可关闭；它不自动把 FR 投影提升为全 Done。2026-06-27 runtime evidence package `/home/binance/release/evidence/binance/20260627-agent-audit-2/` 仍记录 `release_closeable=NO`，因为 live websocket、JetStream ack/manualack、external durable storage/fanout/query、remote GitHub Actions 与 release tag 证据未捕获。任何 production-level claim 必须同时满足下列门禁，并在 `TRACEABILITY.md` / `ACCEPTANCE.md` 绑定 runtime SHA、CI run 或可审计 evidence。
 
 | Gate | 生产约束 | 最小证据 |
 |------|----------|----------|

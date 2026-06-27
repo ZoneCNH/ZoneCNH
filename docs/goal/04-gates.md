@@ -332,7 +332,7 @@ risk:
 
 ### Gate Rubric 锚定
 
-G0-G11 的 `result.score` 必须由对应 rubric 维度表支撑；rubric 物理位置在 [`../governance/scoring/`](../governance/scoring/)（`RUBRIC-*.md`）。Spec 阶段可使用 [`scoring/rubric-score.py`](../governance/scoring/rubric-score.py) 进行机器评分（8 维度 + 6 条红线自动检测）。Gate 裁决与 rubric 的映射关系如下：
+G0-G11 的 `result.score` 必须由对应 rubric 维度表支撑；rubric 物理位置在 [`../governance/scoring/`](../governance/scoring/)（`RUBRIC-*.md`）。Spec/Matrix/Tasks/Plan/Prompt/Code 六阶段可使用 [`scoring/rubric-score.py`](../governance/scoring/rubric-score.py) 进行机器评分（多维度 + 红线自动检测）。Gate 裁决与 rubric 的映射关系如下：
 
 | Gate              | Rubric                                                                                                                      |
 | ----------------- | --------------------------------------------------------------------------------------------------------------------------- |

@@ -5,7 +5,7 @@
 > 分析日期：2026-06-26
 > 分析范围（修复前）：root SPEC v3.7.1 + client SPEC v2.1.1 + server SPEC v2.2.0 + 三层 TRACEABILITY 矩阵
 > 修复后：全部统一为 v3.8.0 canonical 编号
-> Runtime-Anchor: `/home/binance@f046e16`
+> Runtime-Anchor: historical Plan008 anchor; current 2026-06-27 evidence projection uses `/home/binance@0602e78428633a368b0afcd1c578c07ed7144752`
 
 ---
 
@@ -56,7 +56,7 @@ server TRACEABILITY 同样：
 **建议修复**：
 
 1. 将 root TRACEABILITY §1 的 24 Done / 10 Partial 投影按 FR 归属拆解到 client TRACEABILITY（8 FR）和 server TRACEABILITY（12 FR）的对应行
-2. 或至少在子矩阵 §6 覆盖率仪表盘增加注释："实现状态以 root TRACEABILITY Runtime-Anchor `/home/binance@f046e16` 为准，本子矩阵保留 Pending 标注反映子模块级 TC 测试证据未独立闭合"
+2. 或至少在子矩阵 §6 覆盖率仪表盘增加注释："实现状态以 root TRACEABILITY Runtime-Anchor `/home/binance@0602e78428633a368b0afcd1c578c07ed7144752` 为准，本子矩阵保留 Pending 标注反映子模块级 TC 测试证据未独立闭合"
 
 **扣分**：−15
 
@@ -74,12 +74,12 @@ server TRACEABILITY 同样：
 | `spec/server/SPEC.md` L16 | `v0.1.0`        |
 | `spec/client/SPEC.md` L10 | `v0.2.0` ✅     |
 
-Server SPEC 还标记为 `v0.1.0`，这意味着在 Plan008 全量 40 Task 实现（PR #145 合并，Runtime-Anchor `f046e16`）后，server 子规格的 runtime 版本未跟随升级。这违反了 RULES R6 版本统一规则。
+Server SPEC 还标记为 `v0.1.0`，这意味着在 Plan008 全量 40 Task 实现（PR #145 合并，historical Runtime-Anchor of that date）后，server 子规格的 runtime 版本未跟随升级。这违反了 RULES R6 版本统一规则。
 
 **影响范围**：
 
 - 读者无法从 server/SPEC.md 判断其对应的 runtime 代码版本
-- 与 root SPEC 的 Runtime-Anchor `f046e16` / Runtime-Version `v0.2.0` 产生矛盾
+- 与 root SPEC 的 Runtime-Anchor / Runtime-Version `v0.2.0` 产生矛盾
 - 违反 `CHANGELOG.md` R3 版本 bump 触发器
 
 **建议修复**：`server/SPEC.md` L16 `Runtime-Version: v0.1.0` → `v0.2.0`，与 root SPEC 对齐。

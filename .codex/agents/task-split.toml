@@ -1,7 +1,0 @@
-# 本 agent 已合并到 goal-planner。请使用 goal-planner。
-# 保留此文件作为指向，避免历史引用断裂。
-# 实际执行请 codex --agent goal-planner
-name = "goal-planner"
-description = "已合并到 goal-planner。请使用 goal-planner。"
-model = "gpt-5.5"
-model_reasoning_effort = "high"
