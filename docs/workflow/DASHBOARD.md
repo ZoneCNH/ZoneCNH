@@ -1,6 +1,6 @@
 # 管线健康度仪表盘
 
-> 生成时间: 2026-06-27T00:57:17Z
+> 生成时间: 2026-06-27T01:05:46Z
 > 数据源: `.foundationx/status/index.json` (21 模块) + `.omc/state/pipeline/` (23 有评分数据)
 
 ## 总览
@@ -34,7 +34,7 @@
 | bootstrap | ▓▓▓░░░ 5/8 🏭 | ⬜⬜⬜⬜⬜⬜ SMTaPlPrC | — |
 | clickhousex | ▓▓▓▓░░ 6/8 🏭 | 🟡🟡🟡🟡🟡🟡 SMTaPlPrC | 6/6 pass |
 | configx | ▓▓▓▓░░ 6/8 🏭 | 🟡🟡🟡🟡🟡🟡 SMTaPlPrC | 6/6 pass |
-| contracts | ▓▓▓▓░░ 6/8 🏭 | 🟡🟡🟡🟡🟡🟡 SMTaPlPrC | 6/6 pass |
+| contracts | ▓▓▓▓░░ 6/8 🏭 | 🟢🟢🟢🟢🟢🟢 SMTaPlPrC | 2/6 pass |
 | domainx | ▓▓▓░░░ 5/8 🏭 | 🟡🟡🟡🟡🟡🟡 SMTaPlPrC | 6/6 pass |
 | goal | ░░░░░░ 0/8 | ⬜🔴⬜⬜⬜⬜ SMTaPlPrC | — |
 | kafkax | ▓▓▓▓░░ 6/8 🏭 | 🟡🟡🟡🟡🟡🟡 SMTaPlPrC | 6/6 pass |
@@ -57,4 +57,4 @@
 > **图例**: 🟢 四源齐全 🔴 部分 🟡 2源 ⬜ 无 | 🏭 Factory 达标
 
 ---
-*自动生成于 2026-06-27T00:57:17Z，数据源更新频率：随 CI pipeline 运行*
+*自动生成于 2026-06-27T01:05:46Z，数据源更新频率：随 CI pipeline 运行*
