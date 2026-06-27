@@ -3,9 +3,42 @@
 所有 notable 变更记录，按 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/) 格式维护。
 
 - Module-Version: v3.9.0
-- Last-Updated: 2026-06-27
+- Last-Updated: 2026-06-28
 - Spec-Reference: `module/binance/spec/SPEC.md` v3.9.0
 - 治理规则：`module/binance/gate/RULES.md` R9 文档存在性
+
+---
+
+## [v3.9.1] — 2026-06-28 全量 E2E 证据闭合
+
+### Closed（GitHub Issues）
+- **#1268** — 生产级证据闭合总任务 epic ✅ CLOSED
+- **#1269** — P0 FR-013/017/025/037 direct TC/live/canary 证据 ✅ CLOSED
+- **#1270** — P1-1 FR-039 tracing OTel/NATS/header E2E 证据 ✅ CLOSED
+- **#1271** — P1-2 FR-040 资源配额与多租户隔离证据 ✅ CLOSED
+- **#1272** — P1-3 FR-041 审计日志字段/保留/归档/权限验收 ✅ CLOSED
+- **#1273** — P1-4 redisx/kafkax/natsx/postgresx/taosx/ossx/clickhousex 真实外部 E2E 证据 ✅ CLOSED
+- **#1274** — P1-5 FR-001 UM/CM/Options mainnet live-gated 验证 ✅ CLOSED
+- **#1275** — P2-1 FR-043 成本可观测 dashboard/alert/report 证据 ✅ CLOSED
+- **#1276** — P2-2 FR-044 数据销毁演练与合规归档证据 ✅ CLOSED
+- **#1277** — P2-3 FR-031~036 ExchangeInfo runtime/direct TC/live 证据 ✅ CLOSED
+- **#1278** — P2-6 #1117 Backfill progress restart 持久化证据 ✅ CLOSED
+- **#1279** — P2-7 #1118 DLQ snapshot/replay 持久化闭环证据 ✅ CLOSED
+- **#1267** — 长期#10: 核心交易闭环跑通 live_integration 7→15+ ✅ CLOSED
+
+### Fixed（根因修复）
+- **taosx+clickhousex E2E 失败根因**：此前测试执行前未 `source .env`，导致环境变量未注入。修复方式：`set -a; source .env; set +a` 后再执行 `STORAGE_LIVE=1` 测试。
+
+### Verified（全量 E2E 证据）
+- 7 个外部依赖全部 live PASS：redisx/kafkax/natsx/postgresx/taosx/ossx/clickhousex
+- 4 条产品线 mainnet live PASS：spot/um_perp/cm_perp/options
+- build/vet/test-race/boundary-gates(14/14)/golangci-lint/govulncheck 全部 PASS
+- release_closeable=YES
+- 10x 重复检查通过（10/10 轮均无 open issues）
+
+### Evidence
+- 归档目录：`/home/binance/release/evidence/binance/20260628-full-e2e-closure/`
+- Runtime commit：`/home/binance@2efc44a`
 
 ---
 
