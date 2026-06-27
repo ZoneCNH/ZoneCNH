@@ -102,7 +102,7 @@
 | FR-043 | Cost Observability：存储容量/带宽 per-product-line Prometheus 指标 + 成本告警（S31） | AC-125 ~ AC-127 | TC-059 | cost metrics/runbook anchors | Partial | Pending |
 | FR-044 | Data Compliance & Destruction：data_classification 标注 + 合规保留期 + 销毁证明 certificate_of_destruction（S32） | AC-128 ~ AC-130 | TC-060, TC-061 | classification/retention/destruction anchors | Partial | Pending |
 
-> [COMPUTED, HIGH] **FR-031~036 规格（v3.8.0 Active）**：原定义于 `SPEC-exchangeinfo-sync.md`（Draft），v3.8.0 合并入根 SPEC.md §7。当前状态 **Pending**（runtime anchors 未完全闭合）。FR-035 是 FR-033/034 写操作的安全前置；FR-036 依赖 FR-033 且涉及 connector 架构重构，建议前置 ADR。
+> [COMPUTED, HIGH] **FR-031~036 规格（v3.8.0 Active）**：原定义于 `SPEC-exchangeinfo-sync.md`（Draft），v3.8.0 合并入根 SPEC.md §7。当前状态 **Code-Partial / Evidence-Pending**（本地再审计发现部分 runtime 代码原语；因 Runtime-Anchor、direct TC 与 live/evidence 未闭合，投影不升格）。FR-035 是 FR-033/034 写操作的安全前置；FR-036 依赖 FR-033 且涉及 connector 架构重构，建议前置 ADR。
 
 > 状态口径（v3.9.0，Runtime-Anchor `/home/binance@f046e16`）：FR 表实现状态采用 Done/Partial/Drifted/Pending 四态模型。当前统计 **22 Done / 26 Partial / 0 Drifted / 0 Pending**（48 行当前有效基线口径），Drifted = 无；Code-Partial 固定为 FR-007、FR-007a、FR-011、FR-013、FR-016、FR-017、FR-023、FR-024、FR-025、FR-026、FR-027、FR-028、FR-031、FR-032、FR-033、FR-034、FR-035、FR-036、FR-037、FR-038、FR-039、FR-040、FR-041、FR-042、FR-043、FR-044；Code-Pending = 无。
 >

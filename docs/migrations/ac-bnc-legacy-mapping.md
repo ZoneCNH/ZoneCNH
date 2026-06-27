@@ -1,8 +1,8 @@
 # AC-BNC 遗留编号映射（v2.0.0 历史遗物）
 
-> 迁移自 `module/binance/spec/SPEC.md` Appendix D（v3.9.0 迁移）。本文件是 v2.0.0 时期的验收口径快照，仅覆盖 FR-001~FR-011 共 18 条 AC。当前模块已扩展至 44 FR / 130 AC，完整 AC 注册表维护于 `module/binance/matrix/TRACEABILITY.md`。
+> 迁移自 `module/binance/spec/SPEC.md` Appendix D（v3.9.0 迁移）。本文件是 v2.0.0 时期的验收口径快照，仅覆盖 FR-001~FR-011 共 18 条 AC。当前模块已扩展至 44 FR / 130 AC，完整 AC 注册表维护于 `module/binance/matrix/TRACEABILITY.md §5`，实现状态见 `module/binance/spec/ACCEPTANCE.md §2` 与 `module/binance/matrix/TRACEABILITY.md §6`。
 
-> **弃用声明**：本 Registry 是 v2.0.0 时期的验收口径快照，仅覆盖 FR-001~FR-011 共 18 条 AC（编号 AC-BNC-001 ~ AC-BNC-018）。当前模块已扩展至 44 FR / 130 AC（AC-001 ~ AC-130），完整 AC 注册表单点维护于 `TRACEABILITY.md §5`，实现状态见 `ACCEPTANCE.md §2` 与 `TRACEABILITY.md §6`。
+> **弃用声明**：本 Registry 是 v2.0.0 时期的验收口径快照，仅覆盖 FR-001~FR-011 共 18 条 AC（编号 AC-BNC-001 ~ AC-BNC-018）。当前模块已扩展至 44 FR / 130 AC（AC-001 ~ AC-130），完整 AC 注册表单点维护于 `module/binance/matrix/TRACEABILITY.md §5`，实现状态见 `module/binance/spec/ACCEPTANCE.md §2` 与 `module/binance/matrix/TRACEABILITY.md §6`。
 >
 > **编号映射**：AC-BNC-001→AC-001、AC-BNC-002→AC-002、…、AC-BNC-018→AC-018（一一对应）。AC-019~AC-130 为 v2.1.0 后扩展，无对应 AC-BNC 编号。
 >

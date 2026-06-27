@@ -71,7 +71,8 @@
 
 ### Changed（状态同步 · 2026-06-27）
 - **FR-013/017/025**：基于 `/home/binance@f046e16` runtime anchor 复核，解除 active Code-Drifted，保守列为 Code-Partial；direct TC 与 live/evidence 尚未闭合，因此不升格 Code-Done / Evidence-Done
-- **P2-8**：新增 binance 状态一致性 CI gate，覆盖 README / FEATURES / ACCEPTANCE / TRACEABILITY 的 Code 统计、Drifted FR 清单，以及 TRACEABILITY §1/§6 汇总一致性
+- **P2-8**：新增 binance 状态一致性 CI gate，覆盖 README / FEATURES / ACCEPTANCE / TRACEABILITY 的 Code 统计、Drifted FR 清单，以及 TRACEABILITY §1/§6 汇总一致性；新增 Code-Partial 原因、退役文件分区、AC-BNC legacy mapping 指针三类语义守卫。
+- **agent team 再审计同步**：todo / FEATURES / TRACEABILITY 将 tracing、audit、exchangeInfo、backfill state、DLQ 的“零实现/未接线”口径修正为“runtime 代码原语已出现但 direct TC/live/evidence 未闭合”；FR 统计保持 `22 Done / 26 Partial / 0 Drifted / 0 Pending`。
 
 ---
 

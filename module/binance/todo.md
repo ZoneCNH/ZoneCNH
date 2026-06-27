@@ -7,6 +7,8 @@
 - **当前状态**：v0.2.0 可编译可发布，但**不可生产运营**；Code-State **22 Done / 26 Partial / 0 Drifted / 0 Pending**；Evidence-State **1 Done (FR-009) / 43 Pending**；7 PRG Evidence-Pending / Code-Partial anchors；FR-031~044 为 Code-Partial / Evidence-Pending。
 
 > [COMPUTED, HIGH] 本文件是 spec 层结构性修复（MA-1~MA-4 + MO-2，已完成）之后的**剩余未完成项**清单。完成状态基于 2026-06-27 对 spec 文件和 `/home/binance` runtime 代码的交叉验证；P0-10、P1-6、P2-8 以及 legacy mapping 等文档可验证状态已同步为完成，runtime/外部环境项仍保留为未完成或阻塞。
+>
+> [COMPUTED, MED] 2026-06-27 agent team 再审计发现若干 runtime 代码原语已出现（trace context header、append-only audit DDL、exchangeInfo refresher、FileHistoryStateStore、persistent DLQ writer hook），但 Runtime-Anchor 投影、direct TC、live/evidence 或 release gate 自动化未闭合；本文件按“代码原语存在≠验收闭合”同步为部分完成/证据待闭合。
 
 ---
 
@@ -99,7 +101,7 @@
 
 - **状态**：⚠️ 部分完成
 - **对应**：FR-039 / PRG-005
-- **当前**：`kafka_dispatch_test.go` 有 `TraceContext.TraceParent` 字段定义，但无 OTel SDK 埋点 + 无 W3C traceparent 跨 NATS/Kafka 传播 + 无 slog trace_id 关联
+- **当前**：`TraceContext` 已进入 wire request，server Kafka fanout 已传播 `traceparent`/`tracestate`/`baggage`；仍缺 OTel SDK span、NATS/header 端到端证据、slog trace_id 关联、采样配置和 no-traceparent fallback/direct TC
 - **目标**：OTel SDK 埋点 + W3C traceparent header 传播 NATS/Kafka + slog trace_id 关联 + 采样率可配（默认 10%）
 - **工作量**：L
 
@@ -113,9 +115,9 @@
 
 ### P1-3：Audit log completeness
 
-- **状态**：❌ 未完成
+- **状态**：⚠️ 部分完成
 - **对应**：FR-041 / PRG-006
-- **当前**：无 append-only 审计表 + 无 `REVOKE UPDATE, DELETE`
+- **当前**：`/home/binance/migrations/003_audit.sql` 已有 `audit_log`、append-only trigger 与 `REVOKE UPDATE, DELETE FROM PUBLIC`；仍缺 admin 写操作字段完整性/幂等性测试、数据生命周期审计保留与 OSS 归档证据、已部署 Postgres 权限验证
 - **目标**：admin 写操作审计 + 数据生命周期审计 + append-only postgresx 审计表（`REVOKE UPDATE, DELETE`）+ ≥1 年保留 + OSS 归档
 - **工作量**：M
 
@@ -176,25 +178,25 @@
 
 ### P2-3：FR-031~036 ExchangeInfo sync runtime 实现
 
-- **状态**：❌ 未完成
+- **状态**：⚠️ 部分完成（代码原语已出现，投影保持 Code-Partial / Evidence-Pending）
 - **对应**：FR-031~036
-- **当前**：Code-Partial / Evidence-Pending（已有本地 anchors，未闭合四线/live/TC）
+- **当前**：exchangeInfo refresher/catalog reload/admin auth 等 runtime 原语已出现；FR-031~036 官方投影仍为 Code-Partial / Evidence-Pending，因为 Runtime-Anchor、direct TC、live/evidence 未闭合。
 - **目标**：四产品线 exchangeInfo 发现 + 持久化 + 6h diff-only 刷新 + sync_tier 分级 + 白名单选择性同步 + admin auth + tier-aware 连接拓扑
 - **工作量**：L
 
 ### P2-6：Backfill progress 持久化
 
-- **状态**：❌ 未完成
+- **状态**：⚠️ 部分完成
 - **对应**：#1117
-- **当前**：`HistoryRuntime.jobs` map in-memory，重启后丢失
+- **当前**：`FileHistoryStateStore`/snapshot load-save 已出现；仍缺部署接线、重启恢复 direct TC 与持久介质验证。
 - **目标**：持久化到 postgresx（`catalog_exchange_info_snapshots` 表已规划），重启后恢复
 - **工作量**：M
 
 ### P2-7：DLQ 持久化 wiring
 
-- **状态**：❌ 未完成
+- **状态**：⚠️ 部分完成
 - **对应**：#1118
-- **当前**：`deadletter.FileWriter` 代码就绪 + 测试 PASS，但未接线到生产 dispatch 路径（当前用 in-memory DLQ）
+- **当前**：`deadletter.FileWriter` 已实现并可由 `appendDeadLetter` 配置 writer path；仍缺默认生产接线、admin snapshot/replay file-backed 闭环与 replay evidence。
 - **目标**：修改 `ingest.go` dispatch 的 dead letter 处理，加 FileWriter 作为持久 backend + replay 流程（读取 JSONL → 重新 Publish → 消费重处理）
 - **工作量**：S
 
@@ -243,9 +245,9 @@
 
 | 步骤 | 工作                                                        | 对应 FR       |
 | ---- | ----------------------------------------------------------- | ------------- |
-| 2.1  | OTel SDK 埋点 + W3C traceparent                             | FR-039        |
+| 2.1  | OTel SDK 埋点 + W3C traceparent direct TC                    | FR-039        |
 | 2.2  | per-line WS 连接池隔离 + per-caller 限流 + CH 超时          | FR-040        |
-| 2.3  | Admin 写操作 append-only 审计                               | FR-041        |
+| 2.3  | Admin 写操作 append-only 审计 evidence                       | FR-041        |
 | 2.4  | 真实外部 E2E（Kafka → Redis → TDengine → ClickHouse → OSS） | Evidence-Done |
 | 2.5  | UM/CM/Options testnet + mainnet live                        | FR-001 G7     |
 | 2.6  | ✅ ADR：FR-024 vs FR-036 架构路径                           | MO-3 / ADR-004 |
@@ -261,9 +263,9 @@
 
 | 步骤 | 工作                                   |
 | ---- | -------------------------------------- |
-| 4.1  | FR-031~036 ExchangeInfo sync runtime   |
-| 4.2  | Backfill progress 持久化               |
-| 4.3  | DLQ 持久化 wiring + replay             |
+| 4.1  | FR-031~036 ExchangeInfo sync Runtime-Anchor/direct TC 闭合 |
+| 4.2  | Backfill progress 持久化部署接线 + restart evidence        |
+| 4.3  | DLQ 持久化默认接线 + file-backed replay                    |
 | 4.4  | ✅ 五处状态一致性 CI gate             |
 | 4.5  | Cost observability (FR-043)            |
 | 4.6  | Data compliance & destruction (FR-044) |
@@ -272,7 +274,7 @@
 
 ## 关键约束
 
-> [KNOWN, HIGH] 本 TODO 清单中仍需 `/home/binance` runtime 或外部环境的项包括 P0-5、P1-1~P1-5、P2-1~P2-3、P2-6、P2-7 及相关 Evidence/PRG 闭合；本次主仓文档同步已完成 P0-10、P1-6、P2-8、prompt 状态投影和 legacy mapping。剩余未完成项集中在 runtime/外部环境/Evidence/PRG。
+> [KNOWN, HIGH] 本 TODO 清单中仍需 `/home/binance` runtime 或外部环境继续闭合的项包括 P0-5、P1-1~P1-5、P2-1~P2-3、P2-6、P2-7 及相关 Evidence/PRG；其中 P1-1、P1-3、P2-3、P2-6、P2-7 已从“零实现/未接线”修正为“runtime 代码原语已出现但验收证据未闭合”。本次主仓同步已完成 P0-10、P1-6、P2-8、prompt 状态投影、legacy mapping 与 agent team 再审计口径同步。
 >
 > [COMPUTED, HIGH] 所有 P0 项完成后才可声明"生产级可发布"。P1 项完成后才可声明"生产级可运营"。P2 项可延后但有替代手段时不应无限期搁置。
 >
