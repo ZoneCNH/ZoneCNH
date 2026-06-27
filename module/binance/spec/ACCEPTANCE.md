@@ -5,9 +5,9 @@
 | 字段 | 值 |
 | --- | --- |
 | Status | Generated from current module SSOT |
-| Last-Updated | 2026-06-26 |
+| Last-Updated | 2026-06-27 |
 | Module-Version | v3.9.0 |
-| Module-State | v3.9.0 双态模型：Code-Done / Code-Partial / Code-Drifted / Code-Pending vs Evidence-Done。L1 边界治理 FR-009 Done（13 gates PASS）；L2 当前状态投影以 Runtime-Anchor `/home/binance@f046e16` 为准：FR Code **21 Done / 10 Partial / 3 Drifted / 10 Pending**，Evidence **1 Done (FR-009) / 43 Pending**。3 个 Code-Drifted = FR-013/017/025（v3.9.0 spec 内容正确性大修后 runtime 未对齐）
+| Module-State | v3.9.0 双态模型：Code-State **22 Done / 26 Partial / 0 Drifted / 0 Pending**；Evidence-State **1 Done (FR-009) / 43 Pending**。Code-Partial 固定为：FR-007、FR-007a、FR-011、FR-013、FR-016、FR-017、FR-023、FR-024、FR-025、FR-026、FR-027、FR-028、FR-031、FR-032、FR-033、FR-034、FR-035、FR-036、FR-037、FR-038、FR-039、FR-040、FR-041、FR-042、FR-043、FR-044；Code-Pending：无；Code-Done/Evidence-Done 仍需 direct TC/live evidence。 |
 | Runtime-Repo | `/home/binance` |
 | Source | `SPEC.md`, `TRACEABILITY.md`, `DATA-LIFECYCLE.md`, `STANDARD.md`, `client/TRACEABILITY.md`, `server/TRACEABILITY.md`, `BOUNDARY-GATES.md` |
 
@@ -190,11 +190,11 @@
 | FR-010 | AC-041~AC-044 | TC-025~TC-026 | Evidence-Pending（Code-Done: OLAP ETL 已装配；AggSource 为 stub） |
 | FR-011 | AC-045~AC-047 | TC-027~TC-028 | Evidence-Pending（Code-Partial: SetNX+续期存在但 CoordinatorLock 注入路径未闭合） |
 | FR-012 | AC-048~AC-051 | TC-029 | Evidence-Pending（Code-Done: stream registry 已装配） |
-| FR-013 | AC-048~AC-051 | TC-030 | Evidence-Pending（**Code-Drifted**: retry budget+weight gate+clock skew 已装配，但 v3.9.0 spec 改为分钟 weight 滑动窗口 + 429/418 差异化 + 退避参数显式化 + clock skew 单调性/drift rate，runtime 仍为秒级模型，待对齐） |
+| FR-013 | AC-048~AC-051 | TC-030 | Evidence-Pending（Code-Partial: `RecordUsedWeight` / `HTTPBackoffController` / `ClockSkewDetector.CheckMonotonic` / `DriftRate` 已装配；仍缺 FR-specific 退避/clock-skew direct TC 与 live exchange evidence） |
 | FR-014 | AC-052~AC-055 | TC-031 | Evidence-Pending（Code-Done: 9 metrics 已装配） |
 | FR-015 | AC-056~AC-059 | TC-032 | Evidence-Pending（Code-Done: InFlightTracker+AuditLog 已装配） |
 | FR-016 | AC-060~AC-062 | TC-033 | Evidence-Pending（Code-Partial: history_rest.go 存在但 fetcher runtime 注入未闭合） |
-| FR-017 | AC-063~AC-065 | TC-034 | Evidence-Pending（**Code-Drifted**: gap 检测存在但 replay job 链路未闭合；v3.9.0 spec 改为按事件类型分策略（trade→trade_id 序列 / bar→open_time 序列 / depth→updateId 序列 / tick→事件驱动），runtime 仍为统一 MaxEventGap 2min，待对齐） |
+| FR-017 | AC-063~AC-065 | TC-034 | Evidence-Pending（Code-Partial: `quality.go` 已按 event_type 分策略检测 gap，trade_id 测试存在；仍缺非 trade direct tests、持久 replay progress/history 与 live repair evidence） |
 | FR-018 | AC-066~AC-068 | TC-035 | Evidence-Pending（Code-Done: archive_manifest.go 已装配） |
 | FR-019 | AC-069~AC-071 | TC-036 | Evidence-Pending（Code-Done: resource_governance.go 已装配） |
 | FR-020 | AC-072~AC-075 | TC-037 | Evidence-Pending（Code-Done: parseFundingRate 已实现） |
@@ -202,26 +202,26 @@
 | FR-022 | AC-078~AC-080 | TC-039 | Evidence-Pending（Code-Done: TRACEABILITY checker 已登记） |
 | FR-023 | AC-081~AC-083 | TC-040~TC-041 | Evidence-Pending（Code-Partial: local evidence 已归档；远程 CI/release 未闭合） |
 | FR-024 | AC-084~AC-086 | TC-042 | Evidence-Pending（Code-Partial: symbol catalog reload 已实现；全量重连非增量 diff） |
-| FR-025 | AC-087~AC-089 | TC-043 | Evidence-Pending（**Code-Drifted**: throttle.go 80/20 已装配，但 v3.9.0 spec 改为 P0/P1/P2 三级优先级 + 分钟 weight 预算，runtime 仍为 80/20 split + 滑动窗口，待对齐） |
+| FR-025 | AC-087~AC-089 | TC-043 | Evidence-Pending（Code-Partial: `ThrottlePriority` P0/P1/P2、默认 `30:20:50`、`AllowPriority()` 与 snapshot 字段已装配；仍缺 direct priority behavior tests 与 live scheduler evidence） |
 | FR-026 | AC-090~AC-092 | TC-044 | Evidence-Pending（Code-Partial: cron_reconcile.go 存在但持久化 state 未闭合） |
 | FR-027 | AC-093~AC-095 | TC-045 | Evidence-Pending（Code-Partial: oss_rehydrate.go 存在但 writer integration 未闭合） |
 | FR-028 | AC-096~AC-098 | TC-046 | Evidence-Pending（Code-Partial: admin.go progress 端点存在但持久化未闭合） |
 | FR-029 | AC-099~AC-101 | TC-047 | Evidence-Pending（Code-Done: sla_window.go P95/P99+StaleCount 已装配） |
 | FR-030 | AC-102~AC-104 | TC-048~TC-049 | Evidence-Pending（Code-Done: rawPassThrough+optionTicker 已实现） |
-| FR-031 | AC-105~AC-108 | TC-050~TC-051 | Evidence-Pending（v3.8.0 Draft→Active；runtime 未实现） |
-| FR-032 | AC-109~AC-113 | TC-052~TC-054 | Evidence-Pending（v3.8.0 Draft→Active；runtime 未实现） |
-| FR-033 | AC-114~AC-117 | TC-055~TC-057 | Evidence-Pending（v3.8.0 Draft→Active；runtime 未实现） |
-| FR-034 | AC-118~AC-121 | TC-058~TC-060 | Evidence-Pending（v3.8.0 Draft→Active；runtime 未实现） |
-| FR-035 | AC-122~AC-124 | TC-061~TC-062 | Evidence-Pending（v3.8.0 Draft→Active；runtime 未实现） |
-| FR-036 | AC-125~AC-130 | TC-063~TC-067 | Evidence-Pending（v3.8.0 Draft→Active；runtime 未实现；依赖 FR-024 裁决） |
-| FR-037 | 待登记 | TC-050, TC-062 | Evidence-Pending（v3.7.0 新增；仅规格登记） |
-| FR-038 | 待登记 | TC-051~TC-052 | Evidence-Pending（v3.7.0 新增；仅规格登记） |
-| FR-039 | 待登记 | TC-053, TC-063 | Evidence-Pending（v3.7.0 新增；仅规格登记） |
-| FR-040 | 待登记 | TC-054~TC-055, TC-064 | Evidence-Pending（v3.7.0 新增；仅规格登记） |
-| FR-041 | 待登记 | TC-056~TC-057, TC-065 | Evidence-Pending（v3.7.0 新增；仅规格登记） |
-| FR-042 | 待登记 | TC-058 | Evidence-Pending（v3.7.0 新增；仅规格登记） |
-| FR-043 | 待登记 | TC-059 | Evidence-Pending（v3.7.0 新增；仅规格登记） |
-| FR-044 | 待登记 | TC-060~TC-061 | Evidence-Pending（v3.7.0 新增；仅规格登记） |
+| FR-031 | ExchangeInfo spot/um/cm/option 四线 discovery + filters matrix | Partial | 本地 `exchangeinfo*.go`/option anchors 存在；四线 live/TC matrix 未闭合。 | Pending |
+| FR-032 | Refresh diff、versioned cache、change alert | Partial | refresh/diff anchor 存在；server consumer/migration/direct TC 未闭合。 | Pending |
+| FR-033 | hot/warm/cold tier 影响 stream/backfill priority | Partial | tier/catalog/throttle anchors 存在；live priority evidence 未闭合。 | Pending |
+| FR-034 | allow/deny/watchlist hot update without restart | Partial | runtime config/admin/catalog anchors 存在；hot-update direct TC 未闭合。 | Pending |
+| FR-035 | pause/resume/reload/drain/readiness admin API guarded | Partial | admin handlers/guards anchors 存在；auth/loopback/write-safety evidence 未闭合。 | Pending |
+| FR-036 | tier-aware WS groups + options expiry smoothing | Partial | stream/tier anchors 存在；options smoothing/live shedding evidence 未闭合。 | Pending |
+| FR-037 | canary/readiness/rollback proof | Partial | feature flag/readiness/runbook anchors 存在；auto gate/rollback drill 未闭合。 | Pending |
+| FR-038 | retention/archive/rehydrate/delete proof | Partial | retention/archive/delete/restore anchors 存在；live drill 未闭合。 | Pending |
+| FR-039 | W3C trace context across HTTP/Kafka/worker/logs | Partial | Kafka W3C header tests 存在；OTel/NATS/live span-chain 未闭合。 | Pending |
+| FR-040 | quota/backpressure metrics and soak | Partial | throttle/catalog/admin/metrics anchors 存在；multi-tenant soak 未闭合。 | Pending |
+| FR-041 | append-only audit with lifecycle/admin proof | Partial | append-only migration/revoke anchors 存在；full lifecycle audit evidence 未闭合。 | Pending |
+| FR-042 | schema compatibility gate blocks unsafe migration | Partial | version/schema guard anchors 存在；compatibility matrix drill 未闭合。 | Pending |
+| FR-043 | cost metrics/dashboard/budget alert | Partial | cost metrics/runbook anchors 存在；dashboard/alert evidence 未闭合。 | Pending |
+| FR-044 | destruction certificate and exception trail | Partial | classification/retention/destruction-proof anchors 存在；cross-env certificate drill 未闭合。 | Pending |
 
 > **总结**：1 Evidence-Done (FR-009) / 43 Evidence-Pending。代码就绪（Code-Done/Code-Partial）≠ 验收通过（Evidence-Done）。
 
@@ -234,7 +234,7 @@
 | 根、Client、Server traceability 存在 | Done | 三个 traceability 文件可定位。 |
 | natsx / ManualAck / redisx / ossx / kafkax 边界已写入规格 | Done | `SPEC.md` 与 `TRACEABILITY.md` 可定位对应 FR/AC/TC。 |
 | Boundary gates 文档化 | Done | `BOUNDARY-GATES.md` 存在。 |
-| 所有 FR implemented | 21 Done / 10 Partial / 3 Drifted / 10 Pending | 当前口径以 `TRACEABILITY.md` v3.9.0 为准：基于 Runtime-Anchor `/home/binance@f046e16` 与 Issue-Ledger `../../report/binance/issues-sync-20260625.md`；Drifted FR 为 FR-013/017/025（v3.9.0 spec 内容正确性大修后 runtime 未对齐）；Partial FR 为 FR-007/007a/011/016/023/024/026/027/028；Pending FR 为 FR-037~044（v3.7.0 新增）+ FR-031~036（Draft）。 |
+| 所有 FR implemented | Code-State 22 Done / 26 Partial / 0 Drifted / 0 Pending；Evidence-State 1 Done (FR-009) / 43 Pending | Drifted FR 为无；Code-Partial 为 FR-007、FR-007a、FR-011、FR-013、FR-016、FR-017、FR-023、FR-024、FR-025、FR-026、FR-027、FR-028、FR-031、FR-032、FR-033、FR-034、FR-035、FR-036、FR-037、FR-038、FR-039、FR-040、FR-041、FR-042、FR-043、FR-044；Code-Pending 为无。 |
 | 所有 AC passed | Not Done | AC-001~AC-130 全部有测试证据。 |
 | 所有 TC passed | Not Done | TC-001~TC-065 全部 PASS。 |
 | Runtime test evidence | Local+CI+Release Evidence Done / Full external E2E Pending | `/home/binance/release/evidence/binance/{20260623,20260625}/` 已归档 build/test/race/vet/lint/smoke/boundary gate/testnet-live/SLO；runtime anchor `/home/binance@f18a329`；Plan008 release gate 已闭合：GitHub Release `v0.2.0`，workflow `28126779885` completed/success，`release_closeable=YES`；真实 Kafka broker e2e、覆盖率/性能与全量 AC/TC 仍按本表单独治理。 |

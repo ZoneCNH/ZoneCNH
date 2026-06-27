@@ -8,14 +8,19 @@
 
 ## 1. 适用范围
 
-| 阶段   | 评分对象                                 | Rubric                     |
-| ------ | ---------------------------------------- | -------------------------- |
-| Spec   | `module/{module}/SPEC.md`                | `scoring/RUBRIC-spec.md`   |
-| Matrix | `module/{module}/TRACEABILITY.md`        | `scoring/RUBRIC-matrix.md` |
-| Tasks  | `module/{module}/tasks/TASK-*.md`        | `scoring/RUBRIC-tasks.md`  |
-| Plan   | `module/{module}/IMPLEMENTATION-PLAN.md` | `scoring/RUBRIC-plan.md`   |
-| Prompt | `module/{module}/TASK-*-PROMPT.md`       | `scoring/RUBRIC-prompt.md` |
-| Code   | 本次 Task diff + 测试 + 验证证据         | `scoring/RUBRIC-code.md`   |
+| 阶段         | 评分对象                                 | Rubric                         |
+| ------------ | ---------------------------------------- | ------------------------------ |
+| Spec         | `module/{module}/SPEC.md`                | `scoring/RUBRIC-spec.md`       |
+| Design       | `module/{module}/DESIGN.md`              | `scoring/RUBRIC-design.md`     |
+| Matrix       | `module/{module}/TRACEABILITY.md`        | `scoring/RUBRIC-matrix.md`     |
+| Tasks        | `module/{module}/tasks/TASK-*.md`        | `scoring/RUBRIC-tasks.md`      |
+| Plan         | `module/{module}/IMPLEMENTATION-PLAN.md` | `scoring/RUBRIC-plan.md`       |
+| Prompt       | `module/{module}/TASK-*-PROMPT.md`       | `scoring/RUBRIC-prompt.md`     |
+| Code         | 本次 Task diff + 测试 + 验证证据         | `scoring/RUBRIC-code.md`       |
+| Test         | 测试结果与覆盖率报告                     | `scoring/RUBRIC-test.md`       |
+| Review       | Review 结论与 Evidence Bundle            | `scoring/RUBRIC-review.md`     |
+| Release      | Release Manifest + Risk Register         | `scoring/RUBRIC-release.md`    |
+| Retrospective| 复盘报告与改进 backlog                   | `scoring/RUBRIC-retrospective.md` |
 
 ---
 

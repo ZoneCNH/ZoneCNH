@@ -5,9 +5,9 @@
 | 字段 | 值 |
 | --- | --- |
 | Status | Generated from current module SSOT |
-| Last-Updated | 2026-06-26 |
+| Last-Updated | 2026-06-27 |
 | Module-Version | v3.9.0 |
-| Module-State | v3.9.0 双态模型：Code-Done / Code-Partial / Code-Drifted / Code-Pending。规格扩展到 v3.9.0（内容正确性大修：限流分钟模型、缺口检测按事件类型分策略、回填三级优先级、symbol 生命周期、WS 连接管理、退避参数补全、config schema 修正）。3 个 FR（FR-013/017/025）因 v3.9.0 spec 修正后 runtime 未对齐，从 Code-Done 降级为 Code-Drifted。FR 状态以 Code 视角记录（代码存在+装配就绪，但 Drifted 表示代码不符合当前 spec 行为模型） |
+| Module-State | v3.9.0 双态模型：Code-State **22 Done / 26 Partial / 0 Drifted / 0 Pending**；Evidence-State **1 Done (FR-009) / 43 Pending**。Code-Partial 固定为：FR-007、FR-007a、FR-011、FR-013、FR-016、FR-017、FR-023、FR-024、FR-025、FR-026、FR-027、FR-028、FR-031、FR-032、FR-033、FR-034、FR-035、FR-036、FR-037、FR-038、FR-039、FR-040、FR-041、FR-042、FR-043、FR-044；Code-Pending：无；FR-031~044 为 Code-Partial / Evidence-Pending，本地 anchors 不等于生产闭合。 |
 | Layer | 数据域 / Binance-specific market_data C/S module |
 | Runtime-Repo | `/home/binance` |
 | Source | `goal.md`, `SPEC.md`, `TRACEABILITY.md`, `DATA-LIFECYCLE.md`, `STANDARD.md`, `BOUNDARY-GATES.md`, `RUNTIME-MAPPING.md`, `IMPLEMENTATION-PLAN.md`, `client/`, `server/`, `tasks/` |
@@ -35,7 +35,7 @@
 
 > v3.5.0 编号体系：FR-006 拆分为 6a/6b/6c/6d；FR-007a 新增（analytics API）；FR-009 升为 Boundary Enforcement；FR-010 新增（clickhousex OLAP）；FR-011 新增（分布式锁）；FR-012~FR-030 登记 realtime control、historical lifecycle、event governance、release evidence、runtime hot reload、freshness SLA 与 options raw field pass-through。
 
-> 状态口径（v3.9.0）：`Done` / `Partial` / `Drifted` / `Pending` 为四态模型；L1 boundary governance 不替代 L2 功能验收。`Drifted` = FR-013、FR-017、FR-025（v3.9.0 spec 内容正确性大修后 runtime 未对齐）。`Partial` 当前固定为 FR-007、FR-007a、FR-011、FR-016、FR-023、FR-024、FR-026、FR-027、FR-028。
+> 状态口径（v3.9.0）：`Done` / `Partial` / `Drifted` / `Pending` 为四态模型；L1 boundary governance 不替代 L2 功能验收。`Drifted` = 无。`Partial` 当前固定为 FR-007、FR-007a、FR-011、FR-013、FR-016、FR-017、FR-023、FR-024、FR-025、FR-026、FR-027、FR-028。
 
 | FR | 功能 | 当前状态 | 已有证据 | 剩余实现面 |
 | --- | --- | --- | --- | --- |
@@ -55,11 +55,11 @@
 | FR-010 | clickhousex OLAP Storage | Done | `storage/olap/clickhouse_olap.go` ETL (RunOnce/Run ticker 调度)；G0 闭合后 `storageFromEnv` 装配 `olap.NewETL` 在独立 goroutine 运行。 | AggSource 暂 stub（TODO P2）；真实 ClickHouse 验证（PENDING-LIVE-RUN）。 |
 | FR-011 | Distributed Coordinator Lock | Partial | `cache/dist_lock.go` SetNX + 续期 + Release 代码存在；Issue-Ledger 将 coordinator lock 显式 runtime 接线列为未闭合。 | CoordinatorLock 注入路径 + 多实例/故障恢复 evidence。 |
 | FR-012 | Stream Session Lifecycle | Done | `controlplane/stream_registry.go` + `stream_control.go`；client runtime 装配。 | 无（client 侧已装配）。 |
-| FR-013 | Exchange Reliability Controls | **Drifted** | `controlplane/reliability.go` RetryBudget + WeightGate + ClockSkew 已装配；⚠️ v3.9.0 spec 改为分钟 weight 滑动窗口 + 429/418 差异化退避 + clock skew 单调性/drift rate 检测，runtime 仍为秒级模型，待对齐。 | runtime 对齐 v3.9.0 分钟 weight 滑动窗口模型 + 418/429 差异化退避。 |
+| FR-013 | Exchange Reliability Controls | **Partial** | `controlplane/reliability.go` 已装配 RetryBudget + WeightGate + `RecordUsedWeight`（X-MBX-USED-WEIGHT-1M）+ `HTTPBackoffController`（429 AIMD / 418 15min pause）+ `ClockSkewDetector.CheckMonotonic` + `DriftRate`。 | 补 FR-specific 退避/clock-skew direct TC、live exchange evidence 与告警证据后再升格 Code-Done/Evidence-Done。 |
 | FR-014 | Runtime Stream Observability | Done | `controlplane/stream_registry.go` + `metrics/metrics.go` 9 指标 prometheus；client runtime 装配。 | SLA 仪表盘文档化（P2 建议）。 |
 | FR-015 | Runtime Pause/Resume/Drain | Done | `controlplane/lifecycle.go` InFlightTracker + AuditLog；client runtime 装配。 | 无（client 侧已装配）。 |
 | FR-016 | Historical Backfill Planner | Partial | Plan007 A1 (`9d95f84`) `history_rest.go` 真实 Binance REST klines/aggTrades（含 weight 限流/分页/重试）替换 stub；Issue-Ledger #1104/#1107/#1109 仍要求 runtime fetcher 注入、UM/CM/Options REST endpoint 与限流平滑证据。 | runtime 注入 ExchangeHistoryFetcher + 产品线 REST endpoint + 分钟 weight 预算 evidence。 |
-| FR-017 | Gap Detection and Replay | **Drifted** | `quality.go` gap 检测（MaxEventGap 2min）+ Prometheus 指标存在；⚠️ v3.9.0 spec 改为按事件类型分策略（trade→trade_id 序列 / bar→open_time 序列 / depth→updateId 序列 / tick→事件驱动），runtime 仍为统一时间间隔法，待对齐。replay job 链路也未闭合。 | runtime 对齐 v3.9.0 分策略缺口检测 + replay job 运行链路 + 持久化 progress/history + 证据。 |
+| FR-017 | Gap Detection and Replay | **Partial** | `quality.go` 已按 event_type 分策略检测 gap（trade_id / bar open_time / depth updateId / tick event-driven / funding_rate+mark_price time interval / default fallback）；trade_id gap/repair/quality snapshot 测试存在，但 replay job 持久链路未闭合。 | 补非 trade direct tests、replay job 持久化 progress/history 与 live repair evidence。 |
 | FR-018 | Archive Manifest and Restore | Done | `archive_manifest.go` RecordArchive/IsArchived/GetMissingRanges + mergeEntries；client runtime 装配（in-memory 计划态）。 | 落 OSS 依赖 G0 的 OssArchiver 装配。 |
 | FR-019 | Backfill Resource Governance | Done | `resource_governance.go` Acquire（并发预算）+ ReserveMem（内存预算）；client runtime 装配。 | 无（client 侧已装配）。 |
 | FR-020 | Funding Rate Event Support | Done | `normalize.go:429` parseFundingRate（FR-020 合约专属）。 | 合约 testnet 凭据验证（G7）。 |
@@ -67,7 +67,7 @@
 | FR-022 | Event-Type Governance Matrix | Done | TRACEABILITY + checker 登记 4×6×5 matrix anchors；matrix checker 持续阻断旧 topic/product_line/endpoint。 | 无。 |
 | FR-023 | Release Evidence Bundle | Partial | `scripts/runtime-release-evidence.sh` + `release/evidence/binance/{20260622,20260623,20260625}/`；Issue-Ledger #1105/#1113 仍要求真实 Kafka broker、100K TPS/backpressure 与远程 CI/release evidence。 | 远程 CI/release tag 产物 + Kafka/live/backpressure evidence。 |
 | FR-024 | Runtime Config Hot Reload | Partial | `admin.go` `/api/v1/admin/symbols/reload` + `stream_control.go` Refresh；Issue-Ledger #1116 仍要求增量 hot reload diff，而非全量重连。 | 增量 stream add/remove + live websocket 证据。 |
-| FR-025 | Backfill Throttle & Priority | **Drifted** | `throttle.go` 80/20 split + 滑动窗口已装配；⚠️ v3.9.0 spec 改为分钟 weight 预算 + P0/P1/P2 三级优先级，runtime 仍为 80/20 split 模型，待对齐。 | runtime 对齐 v3.9.0 分钟 weight 预算 + P0/P1/P2 三级优先级模型。 |
+| FR-025 | Backfill Throttle & Priority | **Partial** | `throttle.go` 已装配 `ThrottlePriority` P0/P1/P2、默认 `30:20:50`、`AllowPriority()` 和 P0/P1/P2 snapshot 字段；旧 `Allow()` 兼容保留。 | 补 direct priority behavior tests、实时延迟自适应降速与 live scheduler evidence。 |
 | FR-026 | Daily Reconciliation Job | Partial | `cron_reconcile.go` Start goroutine + nextTrigger 04:00 UTC + runReconciliation 存在；Issue-Ledger #1117 仍要求持久化 reconciliation state、history/progress 与证据闭合。 | 真实对账运行证据 + 持久化 state/progress。 |
 | FR-027 | Cold Data Rehydration | Partial | `oss_rehydrate.go` Rehydrate 代码真实；Issue-Ledger #1117 仍要求持久化 history/reconcile/rehydration progress 与 writer/runbook evidence。 | 持久化 rehydration progress + writer integration + evidence。 |
 | FR-028 | Backfill Progress API | Partial | `admin.go:106` `/api/v1/admin/backfill/progress` 端点存在；Issue-Ledger #1117 仍要求 progress 后端持久化与重启恢复证据。 | 持久化 progress 存储 + restart/recovery evidence。 |
@@ -76,31 +76,31 @@
 
 | 2026-06-26 | v3.8.0 | 结构性修复：FR/BR 编号统一为根 SPEC canonical 命名空间；Client/Server 子规格废除本地编号改为引用根 FR/BR；FR-031~036 Draft→Active 合并入根 §7；BR-010~BR-012 合并入根 §8；DATA-QUALITY-SLA 合并入 FR-029；ENDPOINTS 迁移至 client 附录；DATA-LIFECYCLE 退役 | ZoneCNH |
 
-> **以下 FR-031~036 为 exchangeInfo 同步规格（v3.8.0 Active）**，原定义于 `SPEC-exchangeinfo-sync.md`（Draft），v3.8.0 合并入根 SPEC。当前状态 **Pending**（runtime 未实现）。
+> **以下 FR-031~036 为 exchangeInfo 同步规格（v3.8.0 Active）**，原定义于 `SPEC-exchangeinfo-sync.md`（Draft），v3.8.0 合并入根 SPEC。当前状态 **Pending**（runtime anchors 未完全闭合）。
 
 | FR | 名称 | 状态 | 核心内容 | 待闭合 |
 | --- | --- | --- | --- | --- |
-| FR-031 | ExchangeInfo Discovery (4 Product Lines) | Pending | client 四产品线 exchangeInfo 发现（修 COIN-M/Options API 陷阱） | runtime 实现 |
-| FR-032 | ExchangeInfo Persistence & Scheduled Refresh | Pending | server 落库 postgresx + 6h diff-only + natsx control stream（LimitsPolicy） | runtime 实现 |
-| FR-033 | Sync Tier Classification | Pending | sync_tier 分级（分类层，不含连接拓扑） | runtime 实现 |
-| FR-034 | Selective Sync Whitelist | Pending | product_lines/allow/deny 白名单（deny 永远赢） | runtime 实现 |
-| FR-035 | Admin Surface Auth Hardening | Pending | admin 写操作 Bearer token + loopback fallback | runtime 实现 |
-| FR-036 | Tier-Aware Connection Topology | Pending | stream manager 按 (productLine,tier) 分组连接；按 ADR-004 自建增量 stream add/remove diff，不依赖 FR-024 升级 | runtime 实现 |
+| FR-031 | REST ExchangeInfo Discovery | 检测 spot/um/cm/option symbol metadata、tick/step/minNotional/filters。 | Partial | `/home/binance/internal/client/exchangeinfo*.go` 与 option `optionSymbols` 已提供本地 anchors；四线 live/TC matrix 未闭合。 |
+| FR-032 | ExchangeInfo Refresh & Diff | 定期刷新、diff、版本化缓存、变更告警。 | Partial | `exchangeinfo_refresh.go` 提供 refresh/diff anchor；server consumer、migration 与 direct evidence 未闭合。 |
+| FR-033 | Symbol Tiering & Priority | hot/warm/cold symbol tier、backfill/stream 优先级。 | Partial | catalog/tier/backfill throttling anchors 已存在；tier-aware stream priority live evidence 未闭合。 |
+| FR-034 | Dynamic Pair Universe | allow/deny/watchlist、hot reload、runtime config。 | Partial | runtime config/admin/catalog anchors 已存在；hot-update TC/live evidence 未闭合。 |
+| FR-035 | Admin Control Surface | pause/resume/reload/drain/health/readiness 管理 API。 | Partial | `internal/server/admin.go` 与 feature/admin guards 提供 anchors；auth/loopback/full write-safety evidence 未闭合。 |
+| FR-036 | Stream Load Shedding | 分层 WS groups、cold tier 降频、options expiry 平滑。 | Partial | stream/catalog/tier anchors 已存在；options expiry smoothing 与 live shedding evidence 未闭合。 |
 
-### v3.7.0 新增 FR-037~044（P0/P1/P2 — 全部 Pending）
+### v3.7.0 新增 FR-037~044（P0/P1/P2 — Code-Partial / Evidence-Pending）
 
-> [COMPUTED, HIGH] 以下 FR 为 2026-06-26 v3.7.0 新增，对齐 Plan008 生产级缺口终审（S26-S32 + G6/S1-S2）的标准化要求。所有新增 FR 当前状态 **Pending**（仅规格登记，runtime 未实现）。对应 GitHub issue #1180-#1186（Plan008 7 项剩余 Task）。
+> [COMPUTED, HIGH] 以下 FR 为 2026-06-26 v3.7.0 新增，对齐 Plan008 生产级缺口终审（S26-S32 + G6/S1-S2）的标准化要求。所有新增 FR 当前状态 **Pending**（已有本地 anchors，未闭合生产 evidence）。对应 GitHub issue #1180-#1186（Plan008 7 项剩余 Task）。
 
 | FR | 名称 | 状态 | 核心内容 | 对应标准化 |
 | --- | --- | --- | --- | --- |
-| FR-037 | Release Safety Net | Pending | feature flag (`XGO_BINANCE_FEATURE_{name}`) + canary 部署 + 健康门禁 + 自动回滚 runbook | S26 |
-| FR-038 | taosx Data Retention Lifecycle | Pending | DB 级 KEEP 365 + 定时 DELETE trade/tick(30d)/bar(90d) + OSS ETag 前置校验 + 删除审计 | G6 / S1 / S2 |
-| FR-039 | Distributed Tracing (OpenTelemetry) | Pending | OTel SDK 埋点 + W3C traceparent header 传播 NATS/Kafka + slog trace_id 关联 + 采样率可配 | S28 |
-| FR-040 | Resource Quota & Isolation | Pending | per-consumer-group Kafka 配额 + per-product-line WS 连接池隔离 + per-caller API 限流 + CH 查询超时 | S29 |
-| FR-041 | Audit Log Completeness | Pending | admin 写操作审计 + 数据生命周期审计 + append-only (REVOKE UPDATE,DELETE) + ≥1 年保留 + OSS 归档 | S30 / S33 |
-| FR-042 | Schema Version Compatibility Policy | Pending | MAJOR terminal reject (BNC-014) + MINOR 向后兼容 + 兼容矩阵 (postgresx) + 升级顺序 | S27 |
-| FR-043 | Cost Observability | Pending | 存储容量/带宽 per-product-line Prometheus 指标 + 成本告警 (AlertManager) | S31 |
-| FR-044 | Data Compliance & Destruction | Pending | data_classification 标注 + 合规保留期 + 不可逆销毁 + certificate_of_destruction | S32 |
+| FR-037 | Canary & Rollback Controls | feature flag、readiness gate、deploy health、rollback runbook。 | Partial | `feature_flag.go`、readiness audit 与 deploy runbook 提供 anchors；自动 canary gate/rollback drill evidence 未闭合。 |
+| FR-038 | Retention / Archive / Rehydrate | retention policy、archive、rehydrate、delete proof。 | Partial | retention/archive/delete/restore anchors 已存在；live retention/rehydrate drill evidence 未闭合。 |
+| FR-039 | Trace Propagation | W3C trace context across HTTP/Kafka/worker/logs。 | Partial | `kafka_dispatch.go` tests assert W3C headers；OTel/NATS/live span-chain evidence 未闭合。 |
+| FR-040 | Resource Quota & Backpressure | per-stream/per-symbol quota、throttle、backpressure metrics。 | Partial | throttle/catalog/admin pause-drain/metrics anchors 已存在；multi-tenant quota soak evidence 未闭合。 |
+| FR-041 | Audit Log Immutability | append-only audit、admin actions、data lifecycle proof。 | Partial | `migrations/003_audit.sql` append-only trigger + revoke anchor；full admin/data lifecycle audit evidence 未闭合。 |
+| FR-042 | Schema Compatibility Gate | schema version guard、compatibility tests、migration blocker。 | Partial | schema/version guard anchors 已存在；compatibility matrix drill evidence 未闭合。 |
+| FR-043 | Cost / Budget Observability | cost metrics、dashboard、budget alert、usage report。 | Partial | metrics/runbook cost anchors 已存在；dashboard/budget alert evidence 未闭合。 |
+| FR-044 | Compliance Destruction Proof | data classification、destruction certificate、retention exception trail。 | Partial | data classification/retention/archive/destruction-proof runbook anchors 已存在；irreversible certificate/cross-env drill evidence 未闭合。 |
 
 ### 能力边界声明（#1113/#1114/#1115/#1116 降级闭合）
 

@@ -5,11 +5,11 @@
 > 规范来源：`docs/governance/TRACEABILITY.md`
 
 - Module-Version: v3.9.0
-- Last-Updated: 2026-06-27 (v3.9.0: 双态模型+Code-Drifted 四态 — 每 FR 增加 Code/Evidence 两列；FR-013/017/025 因 spec 内容正确性大修后 runtime 未对齐降级为 Drifted；限流模型、缺口检测、回填优先级、symbol 生命周期等 spec 内容修复对应的 AC/TC 编号保持）
+- Last-Updated: 2026-06-27 (v3.9.0: 双态模型+Code-Partial/Code-Drifted 四态 — 每 FR 增加 Code/Evidence 两列；FR-013/017/025 已解除 active Drifted 并保守列为 Partial；限流模型、缺口检测、回填优先级、symbol 生命周期等 spec 内容修复对应的 AC/TC 编号保持）
 - Spec-Reference: `module/binance/spec/SPEC.md` v3.9.0
 - Runtime-Anchor: `/home/binance@f046e16`（含 Plan008 全部 40 Task 代码实现；PR #145 合并）
 
-> **v3.9.0 双态模型 + Code-Drifted**：TRACEABILITY 的 FR 状态新增双列 — `Code` = 代码是否存在+装配就绪+是否符合当前 spec 行为模型（Done/Partial/**Drifted**/Pending）；`Evidence` = TC+AC 是否全 PASS+evidence 归档。当前仅 FR-009 Evidence-Done（L1 边界治理 13 gates PASS）。3 个 FR（FR-013/017/025）因 v3.9.0 spec 内容正确性大修后 runtime 未对齐，从 Code-Done 降级为 **Code-Drifted**。其余 40 FR 为 Code-Done/Partial/Pending + Evidence-Pending。
+> **v3.9.0 双态模型 + Code-Partial/Code-Drifted**：TRACEABILITY 的 FR 状态新增双列 — `Code` = 代码是否存在+装配就绪+是否符合当前 spec 行为模型（Done/Partial/**Drifted**/Pending）；`Evidence` = TC+AC 是否全 PASS+evidence 归档。当前仅 FR-009 Evidence-Done（L1 边界治理 13 gates PASS）。FR-013/017/025 已有 runtime anchor 覆盖当前 spec 行为模型，但 direct TC/live evidence 未闭合，因此从 active Code-Drifted 调整为 **Code-Partial**。其余 FR 为 Code-Done/Partial/Pending + Evidence-Pending。
 
 ---
 
@@ -48,8 +48,8 @@
 
 > **2026-06-24 历史 kafkax fanout 本地子集刷新**：目标 server 测试、`go test ./cmd/binance-server ./internal/server -count=1`、`go test ./...`、`go vet ./...`、`./scripts/boundary-gates.sh` 与 `plan006_task_4_7_repeat_checks=100` PASS；本地 adapter 已验证 topic/key 和 strict handoff `BNC-008` before durable/Ack。FR-008 仍未 Done：真实 Kafka broker e2e、production topic/ACL、release evidence 未闭合。该段仅保留为历史记录；当前有效状态以 Runtime-Anchor `/home/binance@f18a329` 与 Issue-Ledger `../../report/binance/issues-sync-20260625.md` 为准。
 
-> **状态模型说明**：FR 表的"实现状态"列采用 Done/Partial/**Drifted**/Pending 四态模型；当前状态以 Runtime-Anchor `/home/binance@f046e16` 与 Issue-Ledger `../../report/binance/issues-sync-20260625.md` 为准。Drifted FR: FR-013、FR-017、FR-025（v3.9.0 spec 内容正确性大修后 runtime 未对齐）。Partial FR: FR-007、FR-007a、FR-011、FR-016、FR-023、FR-024、FR-026、FR-027、FR-028。Pending FR: FR-031~044（v3.8.0 FR-031~036 Draft→Active 合并入根 SPEC；runtime 全部 Pending）。当前有效基线：**21 Done / 10 Partial / 3 Drifted / 10 Pending**。
-> **v3.9.0 双态模型**：`实现状态` 列为 Code-Done/Code-Partial/**Code-Drifted**/Code-Pending（代码存在+装配就绪，但 Drifted 表示代码不符合当前 spec 行为模型）。`Evidence` 列为 Evidence-Done/Evidence-Pending（TC+AC 全 PASS+evidence 归档）。当前全部 44 FR 的 Evidence 均为 Pending，**仅 FR-009 Evidence-Done**（L1 边界治理 13 gates PASS）。
+> **状态模型说明**：FR 表的"实现状态"列采用 Done/Partial/**Drifted**/Pending 四态模型；当前状态以 Runtime-Anchor `/home/binance@f046e16` 与 Issue-Ledger `../../report/binance/issues-sync-20260625.md` 为准。Drifted FR: 无。Code-Partial: FR-007、FR-007a、FR-011、FR-013、FR-016、FR-017、FR-023、FR-024、FR-025、FR-026、FR-027、FR-028、FR-031、FR-032、FR-033、FR-034、FR-035、FR-036、FR-037、FR-038、FR-039、FR-040、FR-041、FR-042、FR-043、FR-044。Code-Pending: 无。当前有效基线：**22 Done / 26 Partial / 0 Drifted / 0 Pending**。
+> **v3.9.0 双态模型**：`实现状态` 列为 Code-Done/Code-Partial/**Code-Drifted**/Code-Pending（代码存在+装配就绪；Drifted 表示代码不符合当前 spec 行为模型）。`Evidence` 列为 Evidence-Done/Evidence-Pending（TC+AC 全 PASS+evidence 归档）。当前 FR 投影的 Evidence 均为 Pending，**仅 FR-009 Evidence-Done**（L1 边界治理 13 gates PASS）。
 
 | FR ID | 功能需求 | AC | TC ID(s) | Task | 实现状态 | Evidence |
 |-------|----------|-----|----------|------|----------|----------|
@@ -69,11 +69,11 @@
 | FR-010 | clickhousex OLAP Storage：定时 ETL 聚合 taosx→clickhousex，为 analytics API 提供 OLAP 查询 | AC-041 ~ AC-044 | TC-025, TC-026 | SERVER-017 | Done | Pending |
 | FR-011 | Distributed Coordinator Lock：redisx SetNX 分布式锁，coordinator HA 选举 + lease 续期 | AC-045 ~ AC-047 | TC-027, TC-028 | SERVER-013 | Partial | Pending |
 | FR-012 | Stream Session Lifecycle：active stream registry 支持运行中增删订阅且不重启进程 | AC-048 ~ AC-050 | TC-029 | CLIENT-015 | Done | Pending |
-| FR-013 | Exchange Reliability Controls：retry budget、rate-limit、clock skew 与 exchange disconnect 策略可观测 | AC-051 ~ AC-053 | TC-030 | CLIENT-016 | **Drifted** | Pending |
+| FR-013 | Exchange Reliability Controls：retry budget、rate-limit、clock skew 与 exchange disconnect 策略可观测 | AC-051 ~ AC-053 | TC-030 | CLIENT-016 | Partial | Pending |
 | FR-014 | Runtime Stream Observability：admin/metrics 暴露 stream state、lag、unhealthy reason | AC-054 ~ AC-056 | TC-031 | CLIENT-017 | Done | Pending |
 | FR-015 | Runtime Pause/Resume/Drain：operator 可暂停、恢复与 drain 订阅且有审计记录 | AC-057 ~ AC-059 | TC-032 | CLIENT-018 | Done | Pending |
 | FR-016 | Historical Backfill Planner：backfill window、cursor、overlap validation 与恢复语义 | AC-060 ~ AC-062 | TC-033 | SERVER-018 | Partial | Pending |
-| FR-017 | Gap Detection and Replay：检测 ingest gap 并生成可幂等 replay job | AC-063 ~ AC-065 | TC-034 | SERVER-019 | **Drifted** | Pending |
+| FR-017 | Gap Detection and Replay：检测 ingest gap 并生成可幂等 replay job | AC-063 ~ AC-065 | TC-034 | SERVER-019 | Partial | Pending |
 | FR-018 | Archive Manifest and Restore：归档 manifest、restore、retention delete 可审计 | AC-066 ~ AC-068 | TC-035 | SERVER-020 | Done | Pending |
 | FR-019 | Backfill Resource Governance：全局与单 instrument 资源限额、取消与 cursor 恢复 | AC-069 ~ AC-071 | TC-036 | SERVER-021 | Done | Pending |
 | FR-020 | Funding Rate Event Support：funding_rate 事件 mapping、存储、查询与广播一致 | AC-072 ~ AC-074 | TC-037 | SERVER-022 | Done | Pending |
@@ -81,33 +81,33 @@
 | FR-022 | Event-Type Governance Matrix：R2 120-cell matrix 锁定 event/product/governance 覆盖面 | AC-078 ~ AC-080 | TC-039 | ROOT-008 | Done | Pending |
 | FR-023 | Release Evidence Bundle：local/CI/live/release evidence 分层归档且不可互相替代 | AC-081 ~ AC-083 | TC-040, TC-041 | ROOT-009 | Partial | Pending |
 | FR-024 | Runtime Config Hot Reload：`POST /api/v1/admin/symbols/reload` 重载目录并应用 stream diff | AC-084 ~ AC-086 | TC-042 | CLIENT-019 | Partial | Pending |
-| FR-025 | Backfill Throttle & Priority：分钟 weight 预算 + P0/P1/P2 三级优先级（P0 实时 30% / P1 repair 20% / P2 cold_start 50%） | AC-087 ~ AC-089 | TC-043 | SERVER-022 | **Drifted** | Pending |
+| FR-025 | Backfill Throttle & Priority：分钟 weight 预算 + P0/P1/P2 三级优先级（P0 实时 30% / P1 repair 20% / P2 cold_start 50%） | AC-087 ~ AC-089 | TC-043 | SERVER-022 | Partial | Pending |
 | FR-026 | Daily Reconciliation Job：04:00 UTC 对账 taosx vs Binance klines + tolerance 0.01% + alerts 表 | AC-090 ~ AC-092 | TC-044 | SERVER-023 | Partial | Pending |
 | FR-027 | Cold Data Rehydration：OSS→taosx 回热 24h TTL + 202 job_id + 轮询 | AC-093 ~ AC-095 | TC-045 | SERVER-024 | Partial | Pending |
 | FR-028 | Backfill Progress API：jobs 列表 + coverage 时间戳 + 诊断字段 | AC-096 ~ AC-098 | TC-046 | SERVER-025 | Partial | Pending |
 | FR-029 | Data Quality & Freshness SLA：端到端 event_time→persist 延迟上限 + schema 漂移检测 + stale alert | AC-099 ~ AC-101 | TC-047 | ROOT-010 | Done | Pending |
 | FR-030 | Options Chain Raw Field Pass-through：option chain 原始字段（strike/expiry/option_type/mark/IV）透传至下游，Greeks 派生归分析域 | AC-102 ~ AC-104 | TC-048, TC-049 | CLIENT-020 | Done | Pending |
-| FR-031 | ExchangeInfo Discovery (4 Product Lines)：client 实现 spot/um/cm/options 四产品线 exchangeInfo 拉取解析，修复 API 陷阱（COIN-M `contractStatus`、Options `eapi`+`optionSymbols`） | AC-105 ~ AC-108 | TC-050, TC-051 | — | Pending | Pending |
-| FR-032 | ExchangeInfo Persistence & Scheduled Refresh：server 消费 `instruments.changed` 落库 postgresx；client 6h 定时刷新 diff-only 发布；DB schema 扩展 | AC-109 ~ AC-112 | TC-052, TC-053 | — | Pending | Pending |
-| FR-033 | Sync Tier Classification：`sync_tier ∈ {L1_core,L2_extended,L3_full,disabled}` 分级；tier 决定采集流类型 + backfill 优先级 | AC-113 ~ AC-116 | TC-054, TC-055 | — | Pending | Pending |
-| FR-034 | Selective Sync Whitelist：实现 `product_lines`/`symbols.allow`/`symbols.deny`；优先级 deny>allow>tier；运行时热更新 | AC-117 ~ AC-120 | TC-056, TC-057 | — | Pending | Pending |
-| FR-035 | Admin Surface Auth Hardening：client `AdminServer` 写操作鉴权（Bearer token / loopback fallback）；FR-033/034 写操作的安全前置 | AC-121 ~ AC-124 | TC-059, TC-060, TC-061, TC-062 | — | Pending | Pending |
-| FR-036 | Tier-Aware Connection Topology：stream manager 按 (productLine,tier) 分组 WS 连接；`StreamsForProductLineTier` 按 productLine 分化（options 仅 optionTicker）；连接分批 + 升降级 drain + options 到期峰值平滑 | AC-125 ~ AC-128 | TC-063, TC-064, TC-065, TC-066, TC-067 | — | Pending | Pending |
-| FR-037 | Release Safety Net：feature flag 机制（`XGO_BINANCE_FEATURE_{name}`）+ canary 部署 + 健康门禁 + 自动回滚 runbook（S26） | AC-105 ~ AC-107 | TC-050, TC-062 | — | Pending | Pending |
-| FR-038 | taosx Data Retention Lifecycle：DB 级 KEEP 365 + 定时 DELETE trade/tick(30d)/bar(90d) + OSS ETag 前置校验 + 删除审计（G6/S1/S2） | AC-108 ~ AC-111 | TC-051, TC-052 | — | Pending | Pending |
-| FR-039 | Distributed Tracing (OpenTelemetry)：SDK 埋点 + W3C traceparent header 传播 NATS/Kafka + slog trace_id 关联 + 采样率可配（S28） | AC-112 ~ AC-114 | TC-053, TC-063 | — | Pending | Pending |
-| FR-040 | Resource Quota & Isolation：per-consumer-group Kafka 配额 + per-product-line WS 连接池隔离 + per-caller API 限流 + CH 查询超时（S29） | AC-115 ~ AC-118 | TC-054, TC-055, TC-064 | — | Pending | Pending |
-| FR-041 | Audit Log Completeness：admin 写操作审计 + 数据生命周期审计 + append-only + ≥1 年保留 + OSS 归档（S30/S33） | AC-119 ~ AC-121 | TC-056, TC-057, TC-065 | — | Pending | Pending |
-| FR-042 | Schema Version Compatibility Policy：MAJOR terminal reject (BNC-014) + MINOR 向后兼容 + 兼容矩阵 + 升级顺序（S27） | AC-122 ~ AC-124 | TC-058 | — | Pending | Pending |
-| FR-043 | Cost Observability：存储容量/带宽 per-product-line Prometheus 指标 + 成本告警（S31） | AC-125 ~ AC-127 | TC-059 | — | Pending | Pending |
-| FR-044 | Data Compliance & Destruction：data_classification 标注 + 合规保留期 + 销毁证明 certificate_of_destruction（S32） | AC-128 ~ AC-130 | TC-060, TC-061 | — | Pending | Pending |
+| FR-031 | ExchangeInfo Discovery (4 Product Lines)：client 实现 spot/um/cm/options 四产品线 exchangeInfo 拉取解析，修复 API 陷阱（COIN-M `contractStatus`、Options `eapi`+`optionSymbols`） | AC-105 ~ AC-108 | TC-050, TC-051 | ExchangeInfo discovery/options anchors | Partial | Pending |
+| FR-032 | ExchangeInfo Persistence & Scheduled Refresh：server 消费 `instruments.changed` 落库 postgresx；client 6h 定时刷新 diff-only 发布；DB schema 扩展 | AC-109 ~ AC-112 | TC-052, TC-053 | ExchangeInfo refresh/diff anchors | Partial | Pending |
+| FR-033 | Sync Tier Classification：`sync_tier ∈ {L1_core,L2_extended,L3_full,disabled}` 分级；tier 决定采集流类型 + backfill 优先级 | AC-113 ~ AC-116 | TC-054, TC-055 | tier/catalog/throttle anchors | Partial | Pending |
+| FR-034 | Selective Sync Whitelist：实现 `product_lines`/`symbols.allow`/`symbols.deny`；优先级 deny>allow>tier；运行时热更新 | AC-117 ~ AC-120 | TC-056, TC-057 | runtime config/admin catalog anchors | Partial | Pending |
+| FR-035 | Admin Surface Auth Hardening：client `AdminServer` 写操作鉴权（Bearer token / loopback fallback）；FR-033/034 写操作的安全前置 | AC-121 ~ AC-124 | TC-059, TC-060, TC-061, TC-062 | admin control surface anchors | Partial | Pending |
+| FR-036 | Tier-Aware Connection Topology：stream manager 按 (productLine,tier) 分组 WS 连接；`StreamsForProductLineTier` 按 productLine 分化（options 仅 optionTicker）；连接分批 + 升降级 drain + options 到期峰值平滑 | AC-125 ~ AC-128 | TC-063, TC-064, TC-065, TC-066, TC-067 | stream/tier load-shedding anchors | Partial | Pending |
+| FR-037 | Release Safety Net：feature flag 机制（`XGO_BINANCE_FEATURE_{name}`）+ canary 部署 + 健康门禁 + 自动回滚 runbook（S26） | AC-105 ~ AC-107 | TC-050, TC-062 | feature flag/readiness/runbook anchors | Partial | Pending |
+| FR-038 | taosx Data Retention Lifecycle：DB 级 KEEP 365 + 定时 DELETE trade/tick(30d)/bar(90d) + OSS ETag 前置校验 + 删除审计（G6/S1/S2） | AC-108 ~ AC-111 | TC-051, TC-052 | retention/archive/rehydrate anchors | Partial | Pending |
+| FR-039 | Distributed Tracing (OpenTelemetry)：SDK 埋点 + W3C traceparent header 传播 NATS/Kafka + slog trace_id 关联 + 采样率可配（S28） | AC-112 ~ AC-114 | TC-053, TC-063 | Kafka W3C trace header test anchors | Partial | Pending |
+| FR-040 | Resource Quota & Isolation：per-consumer-group Kafka 配额 + per-product-line WS 连接池隔离 + per-caller API 限流 + CH 查询超时（S29） | AC-115 ~ AC-118 | TC-054, TC-055, TC-064 | quota/throttle/admin/metrics anchors | Partial | Pending |
+| FR-041 | Audit Log Completeness：admin 写操作审计 + 数据生命周期审计 + append-only + ≥1 年保留 + OSS 归档（S30/S33） | AC-119 ~ AC-121 | TC-056, TC-057, TC-065 | append-only audit migration anchors | Partial | Pending |
+| FR-042 | Schema Version Compatibility Policy：MAJOR terminal reject (BNC-014) + MINOR 向后兼容 + 兼容矩阵 + 升级顺序（S27） | AC-122 ~ AC-124 | TC-058 | schema/version guard anchors | Partial | Pending |
+| FR-043 | Cost Observability：存储容量/带宽 per-product-line Prometheus 指标 + 成本告警（S31） | AC-125 ~ AC-127 | TC-059 | cost metrics/runbook anchors | Partial | Pending |
+| FR-044 | Data Compliance & Destruction：data_classification 标注 + 合规保留期 + 销毁证明 certificate_of_destruction（S32） | AC-128 ~ AC-130 | TC-060, TC-061 | classification/retention/destruction anchors | Partial | Pending |
 
-> [COMPUTED, HIGH] **FR-031~036 规格（v3.8.0 Active）**：原定义于 `SPEC-exchangeinfo-sync.md`（Draft），v3.8.0 合并入根 SPEC.md §7。当前状态 **Pending**（runtime 未实现）。FR-035 是 FR-033/034 写操作的安全前置；FR-036 依赖 FR-033 且涉及 connector 架构重构，建议前置 ADR。
+> [COMPUTED, HIGH] **FR-031~036 规格（v3.8.0 Active）**：原定义于 `SPEC-exchangeinfo-sync.md`（Draft），v3.8.0 合并入根 SPEC.md §7。当前状态 **Pending**（runtime anchors 未完全闭合）。FR-035 是 FR-033/034 写操作的安全前置；FR-036 依赖 FR-033 且涉及 connector 架构重构，建议前置 ADR。
 
-> 状态口径（v3.9.0，Runtime-Anchor `/home/binance@f046e16`）：FR 表实现状态采用 Done/Partial/Drifted/Pending 四态模型。当前统计 **21 Done / 10 Partial / 3 Drifted / 10 Pending**（44 行当前有效基线口径），Drifted = FR-013、FR-017、FR-025（v3.9.0 spec 内容正确性大修后 runtime 未对齐）；Partial 固定为 FR-007、FR-007a、FR-011、FR-016、FR-023、FR-024、FR-026、FR-027、FR-028。
+> 状态口径（v3.9.0，Runtime-Anchor `/home/binance@f046e16`）：FR 表实现状态采用 Done/Partial/Drifted/Pending 四态模型。当前统计 **22 Done / 26 Partial / 0 Drifted / 0 Pending**（48 行当前有效基线口径），Drifted = 无；Code-Partial 固定为 FR-007、FR-007a、FR-011、FR-013、FR-016、FR-017、FR-023、FR-024、FR-025、FR-026、FR-027、FR-028、FR-031、FR-032、FR-033、FR-034、FR-035、FR-036、FR-037、FR-038、FR-039、FR-040、FR-041、FR-042、FR-043、FR-044；Code-Pending = 无。
 >
-> - **10 个 Partial 的保守保留原因**：#1104/#1107/#1109 覆盖 FR-016 historical runtime fetcher、产品线 REST endpoint 与 rate-limit smoothing；#1112/#1115 覆盖 FR-007/FR-007a/FR-011 的存储证据与 ClickHouse ETL 持久化；#1105/#1113 覆盖 FR-023 Kafka broker 与 100K TPS/backpressure evidence；#1116 覆盖 FR-024 增量 hot reload diff；#1117 覆盖 FR-017/FR-026/FR-027/FR-028 持久化 progress/history/reconcile/rehydration；#1118 覆盖持久化 DLQ wiring/replay。上述 issue ledger 已闭合；FR projection 仍保守保留为 Partial，不因 release gate 闭合自动升格。
-> - **Issue closure policy**：GitHub #1104~#1118 与后续 Plan008 issues 已同步闭合；Release closeout 已由 `../../plans/binance/008-issues-sync-report.md` 归档为 `release_closeable=YES`；剩余风险以 FR projection 的 `10 Partial` 表达。
+> - **26 个 Partial 的保守保留原因**：既有 FR-007/007a/011/013/016/017/023/024/025/026/027/028 与 FR-031~044 均已有不同层级本地 anchors，但 direct TC/live/CI/credential/dashboard/multi-tenant/destruction evidence 未闭合；不得因本地 anchors 自动升格 Code-Done/Evidence-Done。
+> - **Issue closure policy**：GitHub #1104~#1118 与后续 Plan008 issues 已同步闭合；Release closeout 已由 `../../plans/binance/008-issues-sync-report.md` 归档为 `release_closeable=YES`；剩余风险以 FR projection 的 `26 Partial` 与 `43 Evidence-Pending` 表达。
 >
 > 历史：v3.5.1（HEAD `8290dc9`）统计为 22 Done / 8 Partial；v3.6.0 的 `28 Done / 2 Partial` 仅保留为已撤回历史口径。FR-009/BR Done 的 2026-06-23 round 2 本地 runtime 证据见 `BOUNDARY-GATES.md` 与 `/home/binance/release/evidence/binance/20260623/`（证据提交 `71e2a6e8bb5591c43e8a2ebfff8c7645bf030786`）。该状态不关闭真实 Kafka broker e2e、远程 release CI、live websocket、合约/期权 testnet 凭据或外部集成证据。
 
@@ -356,16 +356,16 @@
 
 | 指标 | 总数 | 已覆盖 | 覆盖率 | 说明 |
 |------|------|--------|--------|------|
-| 功能需求 (FR) | 34 current + 6 draft | 34 current | 100% current trace | 当前 Status-Projection 分母为 34（24 Done / 10 Partial / 0 Pending）；FR-031~FR-036 为 exchangeInfo draft 行（含 FR-035 admin auth + FR-036 连接拓扑），不计入当前投影；6b/6c/6d/7a 作为实现子切片保留在矩阵中 |
-| 业务规则 (BR) | 10 current + 2 draft | 10 current | 100% current trace | BR-001 ~ BR-010 为当前基线；BR-011 ~ BR-012 为 exchangeInfo draft（含 BR-012 options 到期峰值平滑），不计入当前投影 |
+| 功能需求 (FR) | 48 current | 48 current | 100% current trace | 当前 Status-Projection 分母为 48（22 Done / 26 Partial / 0 Drifted / 0 Pending）；FR-031~044 已登记为当前 Code-Partial / Evidence-Pending；6b/6c/6d/7a 作为实现子切片保留在矩阵中。 |
+| 业务规则 (BR) | 12 current | 12 current | 100% current trace | BR-001 ~ BR-012 为当前基线；BR-011 ~ BR-012 已由 v3.9.0 合并入 active spec。 |
 | 非功能需求 (NFR) | 27 | 27 | 100% | NFR-001 ~ NFR-027 全部有验证方式；NFR-021~027 映射 SPEC §4.2 PRG-001~PRG-007 |
-| 测试用例 (TC) | 49 current + 18 draft | 49 current | 100% current trace | TC-001 ~ TC-049 为当前基线；TC-050 ~ TC-067 为 exchangeInfo draft（含 diff/natsx/auth/连接拓扑/options 到期补强），不计入当前投影 |
-| 验收标准 (AC) | 104 current + 24 draft | 104 current | 100% current trace | AC-001 ~ AC-104 为当前基线；AC-105 ~ AC-128 为 exchangeInfo draft（含 natsx stream/diff 引擎/admin auth/连接拓扑补强），不计入当前投影 |
-| FR→TC 覆盖率 | — | 34/34 current | 100% | — |
-| BR→验证覆盖率 | — | 9/9 current | 100% | — |
-| AC→验证覆盖率 | — | 104/104 current | 100% | — |
+| 测试用例 (TC) | 67 current | 67 current | 100% current trace | TC-001 ~ TC-067 为当前基线；TC-050 ~ TC-067 已由 v3.9.0 合并入 active spec。 |
+| 验收标准 (AC) | 130 current | 130 current | 100% current trace | AC-001 ~ AC-130 为当前基线；legacy mapping 已同步到 `docs/migrations/ac-bnc-legacy-mapping.md`。 |
+| FR→TC 覆盖率 | — | 48/48 current | 100% | — |
+| BR→验证覆盖率 | — | 12/12 current | 100% | — |
+| AC→验证覆盖率 | — | 130/130 current | 100% | — |
 | R2 governance matrix | 120 cells | 120 cells | 100% | 4 product lines × 6 event types × 5 文档/checker anchors |
-| 实现状态（v3.6.2） | — | 24/34 FR Done | 71% Done | 当前有效基线分母 34 = **24 Done / 10 Partial / 0 Pending**；Runtime-Anchor `/home/binance@f18a329`；Issue-Ledger `../../report/binance/issues-sync-20260625.md`；Partial FR 为 FR-007/007a/011/016/017/023/024/026/027/028；FR-031~036 为 draft，不计入当前投影。 |
+| 实现状态（v3.9.0） | — | 22/48 FR Code-Done | 46% Code-Done | 当前有效基线分母 48 = **22 Done / 26 Partial / 0 Drifted / 0 Pending**；Evidence-State **1 Done (FR-009) / 43 Pending**；Runtime-Anchor `/home/binance@f046e16`；Code-Partial 为 FR-007、FR-007a、FR-011、FR-013、FR-016、FR-017、FR-023、FR-024、FR-025、FR-026、FR-027、FR-028、FR-031、FR-032、FR-033、FR-034、FR-035、FR-036、FR-037、FR-038、FR-039、FR-040、FR-041、FR-042、FR-043、FR-044；Code-Pending 为无。 |
 
 ---
 

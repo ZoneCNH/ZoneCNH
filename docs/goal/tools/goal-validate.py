@@ -457,7 +457,8 @@ def parse_gates(path: Path) -> dict[str, dict[str, Any]]:
         if current is None:
             continue
 
-        top_field = re.match(r"^    ([A-Za-z_]+):(?:\s*(.*))?$", raw_line)
+        # Gate-level fields at 2-space indent (under YAML "- gate_id:")
+        top_field = re.match(r"^  ([A-Za-z_]+):(?:\s*(.*))?$", raw_line)
         if top_field:
             key = top_field.group(1)
             value = clean_value(top_field.group(2) or "")
@@ -469,7 +470,8 @@ def parse_gates(path: Path) -> dict[str, dict[str, Any]]:
                 section = None
             continue
 
-        nested = re.match(r"^      ([A-Za-z_]+):\s*(.*)$", raw_line)
+        # Nested fields under risk/result at 4-space indent
+        nested = re.match(r"^    ([A-Za-z_]+):\s*(.*)$", raw_line)
         if nested and section in {"risk", "result"}:
             key, value = nested.group(1), parse_scalar(nested.group(2))
             current.setdefault(section, {})[key] = value

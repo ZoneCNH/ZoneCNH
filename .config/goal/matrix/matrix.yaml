@@ -396,7 +396,7 @@ matrix:
     target_id: SPEC-kernel-v1
     relation: decomposes_to
     status: Verified
-    evidence_id: "kernel-acceptance-20260618"
+    evidence_id: "EVID-TEST-TASK-GOAL-20260618-001-001-001"
     gate_id: G1
     owner: zone
     updated_at: "2026-06-18"
@@ -406,7 +406,7 @@ matrix:
     target_id: FR-KERNEL-001
     relation: contains
     status: Verified
-    evidence_id: "kernel-acceptance-20260618"
+    evidence_id: "EVID-TEST-TASK-GOAL-20260618-001-001-001"
     gate_id: G2
     owner: zone
     updated_at: "2026-06-18"
@@ -415,7 +415,7 @@ matrix:
     target_id: FR-KERNEL-002
     relation: contains
     status: Verified
-    evidence_id: "kernel-acceptance-20260618"
+    evidence_id: "EVID-TEST-TASK-GOAL-20260618-001-001-001"
     gate_id: G2
     owner: zone
     updated_at: "2026-06-18"
@@ -424,7 +424,7 @@ matrix:
     target_id: FR-KERNEL-003
     relation: contains
     status: Verified
-    evidence_id: "kernel-acceptance-20260618"
+    evidence_id: "EVID-TEST-TASK-GOAL-20260618-001-001-001"
     gate_id: G2
     owner: zone
     updated_at: "2026-06-18"
@@ -433,7 +433,7 @@ matrix:
     target_id: FR-KERNEL-004
     relation: contains
     status: Verified
-    evidence_id: "kernel-acceptance-20260618"
+    evidence_id: "EVID-TEST-TASK-GOAL-20260618-001-001-001"
     gate_id: G2
     owner: zone
     updated_at: "2026-06-18"
@@ -442,7 +442,7 @@ matrix:
     target_id: FR-KERNEL-005
     relation: contains
     status: Verified
-    evidence_id: "kernel-acceptance-20260618"
+    evidence_id: "EVID-TEST-TASK-GOAL-20260618-001-001-001"
     gate_id: G2
     owner: zone
     updated_at: "2026-06-18"
@@ -452,7 +452,7 @@ matrix:
     target_id: AC-KERNEL-001
     relation: accepted_by
     status: Verified
-    evidence_id: "kernel-acceptance-20260618"
+    evidence_id: "EVID-TEST-TASK-GOAL-20260618-001-001-001"
     gate_id: G2
     owner: zone
     updated_at: "2026-06-18"
@@ -461,7 +461,7 @@ matrix:
     target_id: AC-KERNEL-002
     relation: accepted_by
     status: Verified
-    evidence_id: "kernel-acceptance-20260618"
+    evidence_id: "EVID-TEST-TASK-GOAL-20260618-001-001-001"
     gate_id: G2
     owner: zone
     updated_at: "2026-06-18"
@@ -470,7 +470,7 @@ matrix:
     target_id: AC-KERNEL-003
     relation: accepted_by
     status: Verified
-    evidence_id: "kernel-acceptance-20260618"
+    evidence_id: "EVID-TEST-TASK-GOAL-20260618-001-001-001"
     gate_id: G2
     owner: zone
     updated_at: "2026-06-18"
@@ -479,7 +479,7 @@ matrix:
     target_id: AC-KERNEL-004
     relation: accepted_by
     status: Verified
-    evidence_id: "kernel-acceptance-20260618"
+    evidence_id: "EVID-TEST-TASK-GOAL-20260618-001-001-001"
     gate_id: G2
     owner: zone
     updated_at: "2026-06-18"
@@ -488,7 +488,7 @@ matrix:
     target_id: AC-KERNEL-005
     relation: accepted_by
     status: Verified
-    evidence_id: "kernel-acceptance-20260618"
+    evidence_id: "EVID-TEST-TASK-GOAL-20260618-001-001-001"
     gate_id: G2
     owner: zone
     updated_at: "2026-06-18"
@@ -497,7 +497,7 @@ matrix:
     target_id: AC-KERNEL-006
     relation: accepted_by
     status: Verified
-    evidence_id: "kernel-acceptance-20260618"
+    evidence_id: "EVID-TEST-TASK-GOAL-20260618-001-001-001"
     gate_id: G2
     owner: zone
     updated_at: "2026-06-18"
@@ -506,7 +506,7 @@ matrix:
     target_id: AC-KERNEL-007
     relation: accepted_by
     status: Verified
-    evidence_id: "kernel-acceptance-20260618"
+    evidence_id: "EVID-TEST-TASK-GOAL-20260618-001-001-001"
     gate_id: G2
     owner: zone
     updated_at: "2026-06-18"
@@ -515,7 +515,7 @@ matrix:
     target_id: AC-KERNEL-008
     relation: accepted_by
     status: Verified
-    evidence_id: "kernel-acceptance-20260618"
+    evidence_id: "EVID-TEST-TASK-GOAL-20260618-001-001-001"
     gate_id: G2
     owner: zone
     updated_at: "2026-06-18"
@@ -525,7 +525,7 @@ matrix:
     target_id: TASK-KERNEL-001
     relation: implemented_by
     status: Verified
-    evidence_id: "kernel-acceptance-20260618"
+    evidence_id: "EVID-TEST-TASK-GOAL-20260618-001-001-001"
     gate_id: G5
     owner: zone
     updated_at: "2026-06-18"
@@ -534,7 +534,7 @@ matrix:
     target_id: TASK-KERNEL-003
     relation: implemented_by
     status: Verified
-    evidence_id: "kernel-acceptance-20260618"
+    evidence_id: "EVID-TEST-TASK-GOAL-20260618-001-001-001"
     gate_id: G5
     owner: zone
     updated_at: "2026-06-18"
@@ -543,7 +543,7 @@ matrix:
     target_id: TASK-KERNEL-002
     relation: implemented_by
     status: Verified
-    evidence_id: "kernel-acceptance-20260618"
+    evidence_id: "EVID-TEST-TASK-GOAL-20260618-001-001-001"
     gate_id: G5
     owner: zone
     updated_at: "2026-06-18"
@@ -552,7 +552,7 @@ matrix:
     target_id: TASK-KERNEL-004
     relation: implemented_by
     status: Verified
-    evidence_id: "kernel-acceptance-20260618"
+    evidence_id: "EVID-TEST-TASK-GOAL-20260618-001-001-001"
     gate_id: G5
     owner: zone
     updated_at: "2026-06-18"
@@ -561,7 +561,7 @@ matrix:
     target_id: TASK-KERNEL-005
     relation: implemented_by
     status: Verified
-    evidence_id: "kernel-acceptance-20260618"
+    evidence_id: "EVID-TEST-TASK-GOAL-20260618-001-001-001"
     gate_id: G5
     owner: zone
     updated_at: "2026-06-18"
@@ -570,7 +570,7 @@ matrix:
     target_id: TASK-KERNEL-006
     relation: implemented_by
     status: Verified
-    evidence_id: "kernel-acceptance-20260618"
+    evidence_id: "EVID-TEST-TASK-GOAL-20260618-001-001-001"
     gate_id: G5
     owner: zone
     updated_at: "2026-06-18"
@@ -579,7 +579,7 @@ matrix:
     target_id: TASK-KERNEL-007
     relation: implemented_by
     status: Verified
-    evidence_id: "kernel-acceptance-20260618"
+    evidence_id: "EVID-TEST-TASK-GOAL-20260618-001-001-001"
     gate_id: G5
     owner: zone
     updated_at: "2026-06-18"
@@ -588,7 +588,7 @@ matrix:
     target_id: TASK-KERNEL-008
     relation: implemented_by
     status: Verified
-    evidence_id: "kernel-acceptance-20260618"
+    evidence_id: "EVID-TEST-TASK-GOAL-20260618-001-001-001"
     gate_id: G5
     owner: zone
     updated_at: "2026-06-18"
@@ -597,7 +597,7 @@ matrix:
     target_id: TASK-KERNEL-000
     relation: implemented_by
     status: Verified
-    evidence_id: "kernel-acceptance-20260618"
+    evidence_id: "EVID-TEST-TASK-GOAL-20260618-001-001-001"
     gate_id: G5
     owner: zone
     updated_at: "2026-06-18"
