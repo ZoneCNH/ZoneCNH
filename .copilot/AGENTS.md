@@ -31,6 +31,19 @@ Copilot CLI 在本仓库中承担三类职责：
 | `pipeline-arbiter`        | 四源评分聚合                             | `docs/governance/scoring/ARBITER-PROTOCOL.md`                   |
 | `meta-arbiter`            | 元仲裁，Goodhart 诊断与 RSI 建议         | `CONSTITUTION.md` §14、`.copilot/state/outer-metrics/SCHEMA.md` |
 
+## Executor 代理清单（2026-06-27 补全）
+
+以下 Agent 是 Copilot 平台的管线执行器投影，与 Claude/Codex 平台执行器功能对等：
+
+| Agent             | 阶段      | 用途                                           | 可写文件        |
+| ----------------- | --------- | ---------------------------------------------- | --------------- |
+| `spec`            | S1-Spec   | 编写或修订模块 Spec，补齐 23 节结构与追溯链    | Spec 文档       |
+| `matrix`          | S2-Matrix | 生成或校验 FR/BR/AC/TC 需求追溯矩阵            | Traceability    |
+| `task-split`      | S3-Tasks  | 将 Approved Spec 拆分为可执行 Task Spec        | Task 文档       |
+| `task-planner`    | S4-Plan   | 生成实现顺序、依赖、验证命令和风险计划（只读） | Plan 文档       |
+| `prompt-builder`  | S5-Prompt | 为单个 Task 生成 Context Packet（只读）        | Prompt 文档     |
+| `task-executor`   | S6-Code   | 按 Task 和 Prompt 编写代码与测试（唯一可写码） | 源码 + 测试     |
+
 ## Goal Delivery OS Agent 投影清单
 
 以下 Agent 是 `docs/goal/` 的 Copilot prompt 投影，不是独立规则源。权威边界以 `docs/goal/00-authority-map.md` 和 `docs/goal/14-agent-protocols.md` 为准。

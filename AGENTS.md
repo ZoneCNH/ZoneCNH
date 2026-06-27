@@ -109,11 +109,11 @@ Spec 编写完成后，不是直接写代码，而是按管线推进：Spec → 
 
 本仓库配置了四源代理/评分体系（Claude Code + Codex + Copilot CLI + rules），功能角色相同，配置格式不同：
 
-| 平台        | 配置目录           | 模型                       | 格式                 |
-| ----------- | ------------------ | -------------------------- | -------------------- |
-| Claude Code | `.claude/agents/`  | Sonnet / Opus              | Markdown frontmatter |
-| Codex       | `.codex/agents/`   | GPT-5.5 + reasoning effort | TOML                 |
-| Copilot CLI | `.copilot/agents/` | Copilot/Claude 模型        | Markdown prompt      |
+| 平台        | 配置目录           | 模型                       | 格式                 | Agent 数 |
+| ----------- | ------------------ | -------------------------- | -------------------- | -------- |
+| Claude Code | `.claude/agents/`  | Sonnet / Opus              | Markdown frontmatter | 28       |
+| Codex       | `.codex/agents/`   | GPT-5.5 + reasoning effort | TOML                 | 20       |
+| Copilot CLI | `.copilot/agents/` | Copilot/Claude 模型        | Markdown prompt      | 19       |
 
 运行时状态目录按平台隔离：Claude 使用 `.omc/state/pipeline/`，Codex 使用 `.omx/state/pipeline/`，Copilot 使用 `.copilot/state/pipeline/`。
 
