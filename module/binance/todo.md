@@ -4,7 +4,7 @@
 - **Last-Updated**：2026-06-27
 - **来源**：本文件、[`spec/ACCEPTANCE.md`](spec/ACCEPTANCE.md)、[`matrix/TRACEABILITY.md`](matrix/TRACEABILITY.md) 与 [`evidence/2026-06-27/review/ISSUE-BLOCKERS-1268-1279.md`](evidence/2026-06-27/review/ISSUE-BLOCKERS-1268-1279.md) 的当前可验证状态
 - **Spec-Version**：v3.9.0
-- **Runtime-Anchor**：`/home/binance@0602e78428633a368b0afcd1c578c07ed7144752` + local working tree evidence package `/home/binance/release/evidence/binance/20260627-agent-audit-2/`
+- **Runtime-Anchor**：`/home/binance@0602e78428633a368b0afcd1c578c07ed7144752` + local working tree evidence package `/home/binance/release/evidence/binance/20260627-agent-audit-2/` + dev.md-only external E2E recheck `/home/binance/release/evidence/binance/20260627-external-e2e-devmd-only/`
 - **当前状态**：v0.2.0 可编译可发布，但**不可生产运营**；Code-State **23 Done / 25 Partial / 0 Drifted / 0 Pending**；Evidence-State **1 Done (FR-009) / 43 Pending**；7 PRG Evidence-Pending / Code-Partial-or-Code-Done anchors；FR-031~036、FR-038~044 为 Code-Partial / Evidence-Pending；FR-037 为 Code-Done / Evidence-Pending。
 
 > [COMPUTED, HIGH] 本文件是 spec 层结构性修复（MA-1~MA-4 + MO-2，已完成）之后的**剩余未完成项**清单。完成状态基于 2026-06-27 对 spec 文件和 `/home/binance` runtime 代码的交叉验证；P0-5、P0-10、P1-6、P2-8 以及 legacy mapping 等文档可验证状态已同步为完成，runtime/外部环境项仍保留为未完成或阻塞。
@@ -13,7 +13,7 @@
 >
 > [COMPUTED, HIGH] 2026-06-27 GitHub #1268-#1279 为 `OPEN`；Beads `ZoneCNH-xzcr*` 为 `in_progress` Evidence-Done blocker ownership；账本位于 [`evidence/2026-06-27/review/ISSUE-BLOCKERS-1268-1279.md`](evidence/2026-06-27/review/ISSUE-BLOCKERS-1268-1279.md)。#1269/#1277/#1278/#1279 有本地直接证据 [`evidence/2026-06-27/test/worker-a-runtime-evidence.md`](evidence/2026-06-27/test/worker-a-runtime-evidence.md)，其中 #1278/#1279 的新增 runtime evidence 已归档到 `/home/binance/release/evidence/binance/20260627-agent-audit-2/backfill-progress-restart-evidence.md` 与 `/home/binance/release/evidence/binance/20260627-agent-audit-2/dlq-snapshot-replay-evidence.md`。tracker open state 只表示缺口归属与执行跟踪，不得解读为 Evidence-Done；direct TC、live/external 或合规演练证据仍按下表阻塞。
 >
-> [COMPUTED, HIGH] 2026-06-27 agent-team sync 已把 Beads `ZoneCNH-xzcr*` 备注和 GitHub #1268-#1279 评论同步到当前 blocker 口径；未关闭任何 issue。`sre/secrets/env/dev.md` 只做 key-family inventory：`redisx`/`kafkax`/`natsx`/`postgresx`/`taosx`/`ossx`/`clickhousex` 配置族存在，未复制任何 secret 值。`/home/binance/release/evidence/binance/20260627-agent-audit-2/status.txt` 为本地 runtime evidence PASS；`issue-repeat-check-10x.log` 对 targeted checks 连续 10/10 PASS。该结果只证明本地证据增强，仍不满足生产 Evidence-Done。
+> [COMPUTED, HIGH] 2026-06-27 agent-team sync 已把 Beads `ZoneCNH-xzcr*` 备注和 GitHub #1268-#1279 评论同步到当前 blocker 口径；未关闭任何 issue。`sre/secrets/env/dev.md` 只作为 clean-env 外部 E2E 配置源使用，未复制任何 secret 值。dev.md-only 复核只发现 `FOUNDATIONX_KAFKAX_*`、`FOUNDATIONX_POSTGRESX_*`、`FOUNDATIONX_REDISX_*`、`FOUNDATIONX_TAOSX_*` 具体配置行；`FOUNDATIONX_TAOSX_ENDPOINT` 由 host/port 派生；未发现具体 `FOUNDATIONX_CLICKHOUSEX_*`、`FOUNDATIONX_NATSX_*`、`FOUNDATIONX_OSSX_*` 行。`/home/binance/release/evidence/binance/20260627-external-e2e-devmd-only/status.tsv` 显示 kafkax live PASS，storage-live FAIL（postgresx/redisx PASS，taosx `status=degraded` + `unexpected EOF`，clickhousex 因缺少 ClickHouse dev 配置而落入默认/auth 失败），ossx SKIP（缺少 OSSX dev 配置），NATSX 仅本地 JetStream integration PASS、不是 dev.md 远端 E2E。`external-gates.log` 仍为 `release_closeable=NO`。`/home/binance/release/evidence/binance/20260627-agent-audit-2/status.txt` 为本地 runtime evidence PASS；`issue-repeat-check-10x.log` 对 targeted checks 连续 10/10 PASS。该结果只证明本地证据增强和部分外部依赖可连通，仍不满足生产 Evidence-Done。
 >
 > [COMPUTED, HIGH] Issue 拆解与剩余 Evidence blocker 对齐如下；该表是未完成 evidence ownership，不改变下方 TODO 完成率。
 
@@ -24,7 +24,7 @@
 | #1270  | `ZoneCNH-xzcr.2`  | FR-039 tracing OTel/NATS/header E2E                               | Tracker open / Evidence pending，OTel/NATS/live span-chain 待闭合 |
 | #1271  | `ZoneCNH-xzcr.3`  | FR-040 quota/backpressure/multi-tenant soak                       | Tracker open / Evidence pending，多租户 soak 待闭合 |
 | #1272  | `ZoneCNH-xzcr.4`  | FR-041 audit log lifecycle/admin proof                            | Tracker open / Evidence pending，完整 lifecycle evidence 待闭合 |
-| #1273  | `ZoneCNH-xzcr.5`  | redisx/kafkax/natsx/postgresx/taosx/ossx/clickhousex external E2E | Tracker open / Evidence pending，外部依赖 E2E 证据未达 Evidence-Done |
+| #1273  | `ZoneCNH-xzcr.5`  | redisx/kafkax/natsx/postgresx/taosx/ossx/clickhousex external E2E | Tracker open / Evidence pending；dev.md-only 复核中 kafkax/postgresx/redisx PASS，taosx FAIL，clickhousex/ossx/natsx 缺少远端 dev 配置或仅本地替代，未达 Evidence-Done |
 | #1274  | `ZoneCNH-xzcr.6`  | FR-001 UM/CM/Options testnet/mainnet live-gated                   | Tracker open / Evidence pending，产品线 credentialed testnet/live 证据未闭合 |
 | #1275  | `ZoneCNH-xzcr.7`  | FR-043 cost dashboard/alert/report                                | Tracker open / Evidence pending，dashboard/alert 证据待闭合 |
 | #1276  | `ZoneCNH-xzcr.8`  | FR-044 destruction drill/cert/archive                             | Tracker open / Evidence pending，合规销毁演练与证书归档待闭合 |
@@ -146,7 +146,7 @@
 
 - **状态**：⚠️ 部分完成
 - **对应**：Evidence-Done 推进
-- **当前**：local gated 测试有（NATS JetStream + Redis mock + 文件 DLQ），真实 Kafka/Redis/TDengine/ClickHouse/OSS 端到端缺
+- **当前**：local gated 测试有（NATS JetStream + Redis mock + 文件 DLQ）；dev.md-only 外部 E2E 复核显示 kafkax live PASS，postgresx/redisx 在 storage-live PASS，taosx FAIL（`status=degraded` + `unexpected EOF`），clickhousex FAIL（缺少 `FOUNDATIONX_CLICKHOUSEX_*` 具体配置导致默认/auth 失败），ossx SKIP（缺少 `FOUNDATIONX_OSSX_*`），NATSX 仅本地 JetStream integration PASS 且缺少 `FOUNDATIONX_NATSX_*` 远端配置
 - **目标**：分批推进 — 先 Redis + NATS（local gated 已部分验证），再 TDengine + Kafka，最后 ClickHouse + OSS
 - **工作量**：L
 
