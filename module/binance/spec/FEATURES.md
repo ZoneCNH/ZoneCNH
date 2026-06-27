@@ -14,7 +14,7 @@
 
 本文档是 `module/binance` 当前规格库的实现投影，不是 runtime 代码验收证据。实际完成状态以 `TRACEABILITY.md`、`client/TRACEABILITY.md`、`server/TRACEABILITY.md` 和 `/home/binance` 的测试证据为准。
 
-> **v3.6.1 状态口径（2026-06-25）**：Done = Runtime-Anchor `/home/binance@f18a329` 下代码、装配与证据闭合；Partial = 代码、子链路或局部证据存在，但 runtime 注入、持久化、外部 E2E/live evidence、FR-specific acceptance evidence 或产品线覆盖未闭合；Pending = 仅规格登记。当前投影以 Issue-Ledger `../../report/binance/issues-sync-20260625.md` 为准，历史 `28 Done / 2 Partial` 仅保留为已撤回历史口径。
+> **v3.9.0 当前状态口径（2026-06-27）**：Code-Done = Runtime-Anchor `/home/binance@f046e16` 下代码存在、装配就绪且 runtime 可编译运行；Code-Partial = 已有代码/子链路 anchors 但 direct TC、live/CI、凭据、dashboard、多租户或销毁证据未闭合；Code-Drifted = 当前无；Code-Pending = 当前无。Evidence-Done 仅 FR-009；其余当前 FR 均为 Evidence-Pending。历史 f18a329 / v3.6.1 口径仅保留在 TRACEABILITY 历史段。
 >
 > **v3.9.0 双态模型**：FEATURES.md 的「Done」均指 **Code-Done**（代码存在+装配就绪+runtime 可编译运行）。**Evidence-Done**（TC+AC 全 PASS+evidence 归档）的判定见 `ACCEPTANCE.md` §4 闭合矩阵。两者不可互相替代：FR-005 Code-Done（RedisStore 已装配）但 Evidence-Pending（TC-007/008 仍 Pending）。
 
@@ -132,7 +132,7 @@
 | BR-008 Wire Contract Externality | Done | `/home/binance/BOUNDARY-GATES.md` §8 证明无本地 `.proto`/gRPC ingest schema；runtime 使用 natsx subject + `internal/wire` 契约类型包（ADR-002 过渡态），canonical 语义外置。 |
 | BR-009 go.mod Dependency Compliance | Done | `/home/binance/BOUNDARY-GATES.md` §11 证明 runtime `go.mod` 与边界依赖合规。 |
 | NFR-001~004 Performance | Partial | SLO benchmark 24 项全 PASS（`release/evidence/binance/20260625/slo-report.md`，NormalizeSpotTrade 3.4μs / IngestProcess 2.8μs / API Query 2.6μs）；完整压测（100K TPS、回压）需 G0 存储装配后重测。 |
-| NFR-005~009 Storage/API | Pending | 数据一致性、查询 SLA、归档安全、故障恢复需 G0 存储装配后的集成测试证据。 |
+| NFR-005~009 Storage/API | Partial | 存储/API runtime 原语与路由/metrics anchors 已出现；数据一致性、查询 SLA、归档安全、故障恢复仍需外部集成/production evidence。 |
 | NFR-010~011 Observability | Done | prometheus 9 指标 + slog + healthz/readyz 真实接入（`metrics/metrics.go` + `logging.go`）。 |
 | NFR-012~013 Security | Partial | gitleaks + govulncheck CI workflow + .gitleaks.toml 已就位；Bearer auth + 限流 1000/min 代码存在（依赖 G0 挂载路由）；凭据管理 Runbook 待补。 |
 
@@ -151,7 +151,7 @@
 | --- | --- | --- |
 | `goal.md` | 业务目标与模块意图 | 作为实现清单的目标来源。 |
 | `SPEC.md` | v2.0.0 功能与边界规格 | 作为 FR/BR/NFR 语义来源。 |
-| `TRACEABILITY.md` | 根级 FR/AC/TC/Task 追溯 | 作为当前状态与验收编号来源；v3.6.1 当前口径对齐 Runtime-Anchor `/home/binance@f18a329` 与 Issue-Ledger `../../report/binance/issues-sync-20260625.md`。 |
+| `TRACEABILITY.md` | 根级 FR/AC/TC/Task 追溯 | 作为当前状态与验收编号来源；v3.9.0 当前口径对齐 Runtime-Anchor `/home/binance@f046e16`，Code-State 22/26/0/0，Evidence-State 1 Done / 43 Pending。 |
 | `client/TRACEABILITY.md` | Client 子域追溯 | 作为 client active/pending 实现面来源。 |
 | `server/TRACEABILITY.md` | Server 子域追溯 | 作为 server active/pending 实现面来源。 |
 | `BOUNDARY-GATES.md` | 边界漂移防线 | 作为 FR-009 与 BR-001~BR-009 的文档和本地 runtime 证据入口。 |
@@ -164,7 +164,7 @@
 | 检查项 | 状态 | 依据 |
 | --- | --- | --- |
 | v2.0.0 根规格存在 | Done | `SPEC.md` v3.8.0。 |
-| 根级 traceability 存在 | Done | `TRACEABILITY.md` v3.6.1；当前口径对齐 Runtime-Anchor `/home/binance@f18a329` 与 Issue-Ledger `../../report/binance/issues-sync-20260625.md`。 |
+| 根级 traceability 存在 | Done | `TRACEABILITY.md` v3.9.0；当前口径对齐 Runtime-Anchor `/home/binance@f046e16`，Code-State 22/26/0/0，Evidence-State 1 Done / 43 Pending。 |
 | Client/Server 子域 traceability 存在 | Done | `client/TRACEABILITY.md`, `server/TRACEABILITY.md`。 |
 | C/S 独立进程边界已定义 | Done | `README.md`, `SPEC.md`, `BOUNDARY-GATES.md`。 |
 | Boundary gate 文档已形成 | Done | `BOUNDARY-GATES.md` v2.2.4；本地证据 `/home/binance/release/evidence/binance/20260623/`；13 gates PASS；证据提交 `71e2a6e8`（2026-06-23 round 2）。 |

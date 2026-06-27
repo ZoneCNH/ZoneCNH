@@ -9,7 +9,7 @@
 - Spec-Reference: `module/binance/spec/SPEC.md` v3.9.0
 - Runtime-Anchor: `/home/binance@f046e16`（含 Plan008 全部 40 Task 代码实现；PR #145 合并）
 
-> **v3.9.0 双态模型 + Code-Partial/Code-Drifted**：TRACEABILITY 的 FR 状态新增双列 — `Code` = 代码是否存在+装配就绪+是否符合当前 spec 行为模型（Done/Partial/**Drifted**/Pending）；`Evidence` = TC+AC 是否全 PASS+evidence 归档。当前仅 FR-009 Evidence-Done（L1 边界治理 13 gates PASS）。FR-013/017/025 已有 runtime anchor 覆盖当前 spec 行为模型，但 direct TC/live evidence 未闭合，因此从 active Code-Drifted 调整为 **Code-Partial**。其余 FR 为 Code-Done/Partial/Pending + Evidence-Pending。
+> **v3.9.0 双态模型 + Code-Partial/Code-Drifted**：TRACEABILITY 的 FR 状态新增双列 — `Code` = 代码是否存在+装配就绪+是否符合当前 spec 行为模型（Done/Partial/**Drifted**/Pending）；`Evidence` = TC+AC 是否全 PASS+evidence 归档。当前仅 FR-009 Evidence-Done（L1 边界治理 13 gates PASS）。FR-013/017/025 已有 runtime anchor 覆盖当前 spec 行为模型，但 direct TC/live evidence 未闭合，因此从 active Code-Drifted 调整为 **Code-Partial**。其余当前 FR 为 Code-Done 或 Code-Partial + Evidence-Pending；Code-Drifted = 无，Code-Pending = 无。
 
 ---
 
