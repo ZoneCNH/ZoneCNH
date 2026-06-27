@@ -76,31 +76,31 @@
 
 | 2026-06-26 | v3.8.0 | 结构性修复：FR/BR 编号统一为根 SPEC canonical 命名空间；Client/Server 子规格废除本地编号改为引用根 FR/BR；FR-031~036 Draft→Active 合并入根 §7；BR-010~BR-012 合并入根 §8；DATA-QUALITY-SLA 合并入 FR-029；ENDPOINTS 迁移至 client 附录；DATA-LIFECYCLE 退役 | ZoneCNH |
 
-> **以下 FR-031~036 为 exchangeInfo 同步规格（v3.8.0 Active）**，原定义于 `SPEC-exchangeinfo-sync.md`（Draft），v3.8.0 合并入根 SPEC。当前状态 **Pending**（runtime anchors 未完全闭合）。
+> **以下 FR-031~036 为 exchangeInfo 同步规格（v3.8.0 Active）**，原定义于 `SPEC-exchangeinfo-sync.md`（Draft），v3.8.0 合并入根 SPEC。当前状态 **Code-Partial / Evidence-Pending**（本地再审计发现 exchangeInfo refresh/catalog/admin 若干代码原语；因 Runtime-Anchor、direct TC 与验收证据未更新，投影不升格）。
 
 | FR | 名称 | 状态 | 核心内容 | 待闭合 |
 | --- | --- | --- | --- | --- |
-| FR-031 | REST ExchangeInfo Discovery | 检测 spot/um/cm/option symbol metadata、tick/step/minNotional/filters。 | Partial | `/home/binance/internal/client/exchangeinfo*.go` 与 option `optionSymbols` 已提供本地 anchors；四线 live/TC matrix 未闭合。 |
-| FR-032 | ExchangeInfo Refresh & Diff | 定期刷新、diff、版本化缓存、变更告警。 | Partial | `exchangeinfo_refresh.go` 提供 refresh/diff anchor；server consumer、migration 与 direct evidence 未闭合。 |
-| FR-033 | Symbol Tiering & Priority | hot/warm/cold symbol tier、backfill/stream 优先级。 | Partial | catalog/tier/backfill throttling anchors 已存在；tier-aware stream priority live evidence 未闭合。 |
-| FR-034 | Dynamic Pair Universe | allow/deny/watchlist、hot reload、runtime config。 | Partial | runtime config/admin/catalog anchors 已存在；hot-update TC/live evidence 未闭合。 |
-| FR-035 | Admin Control Surface | pause/resume/reload/drain/health/readiness 管理 API。 | Partial | `internal/server/admin.go` 与 feature/admin guards 提供 anchors；auth/loopback/full write-safety evidence 未闭合。 |
-| FR-036 | Stream Load Shedding | 分层 WS groups、cold tier 降频、options expiry 平滑。 | Partial | stream/catalog/tier anchors 已存在；options expiry smoothing 与 live shedding evidence 未闭合。 |
+| FR-031 | REST ExchangeInfo Discovery | Partial | 检测 spot/um/cm/option symbol metadata、tick/step/minNotional/filters；`/home/binance/internal/client/exchangeinfo*.go` 与 option `optionSymbols` 已提供本地 anchors。 | 四线 live/TC matrix 未闭合。 |
+| FR-032 | ExchangeInfo Refresh & Diff | Partial | 定期刷新、diff、版本化缓存、变更告警；`exchangeinfo_refresh.go` 提供 refresh/diff anchor。 | server consumer、migration 与 direct evidence 未闭合。 |
+| FR-033 | Symbol Tiering & Priority | Partial | hot/warm/cold symbol tier、backfill/stream 优先级；catalog/tier/backfill throttling anchors 已存在。 | tier-aware stream priority live evidence 未闭合。 |
+| FR-034 | Dynamic Pair Universe | Partial | allow/deny/watchlist、hot reload、runtime config；runtime config/admin/catalog anchors 已存在。 | hot-update TC/live evidence 未闭合。 |
+| FR-035 | Admin Control Surface | Partial | pause/resume/reload/drain/health/readiness 管理 API；`internal/server/admin.go` 与 feature/admin guards 提供 anchors。 | auth/loopback/full write-safety evidence 未闭合。 |
+| FR-036 | Stream Load Shedding | Partial | 分层 WS groups、cold tier 降频、options expiry 平滑；stream/catalog/tier anchors 已存在。 | options expiry smoothing 与 live shedding evidence 未闭合。 |
 
 ### v3.7.0 新增 FR-037~044（P0/P1/P2 — Code-Partial / Evidence-Pending）
 
-> [COMPUTED, HIGH] 以下 FR 为 2026-06-26 v3.7.0 新增，对齐 Plan008 生产级缺口终审（S26-S32 + G6/S1-S2）的标准化要求。所有新增 FR 当前状态 **Pending**（已有本地 anchors，未闭合生产 evidence）。对应 GitHub issue #1180-#1186（Plan008 7 项剩余 Task）。
+> [COMPUTED, HIGH] 以下 FR 为 2026-06-26 v3.7.0 新增，对齐 Plan008 生产级缺口终审（S26-S32 + G6/S1-S2）的标准化要求。所有新增 FR 当前状态 **Code-Partial / Evidence-Pending**（已有本地 anchors，未闭合生产 evidence）。对应 GitHub issue #1180-#1186（Plan008 7 项剩余 Task）。
 
 | FR | 名称 | 状态 | 核心内容 | 对应标准化 |
 | --- | --- | --- | --- | --- |
-| FR-037 | Canary & Rollback Controls | feature flag、readiness gate、deploy health、rollback runbook。 | Partial | `feature_flag.go`、readiness audit 与 deploy runbook 提供 anchors；自动 canary gate/rollback drill evidence 未闭合。 |
-| FR-038 | Retention / Archive / Rehydrate | retention policy、archive、rehydrate、delete proof。 | Partial | retention/archive/delete/restore anchors 已存在；live retention/rehydrate drill evidence 未闭合。 |
-| FR-039 | Trace Propagation | W3C trace context across HTTP/Kafka/worker/logs。 | Partial | `kafka_dispatch.go` tests assert W3C headers；OTel/NATS/live span-chain evidence 未闭合。 |
-| FR-040 | Resource Quota & Backpressure | per-stream/per-symbol quota、throttle、backpressure metrics。 | Partial | throttle/catalog/admin pause-drain/metrics anchors 已存在；multi-tenant quota soak evidence 未闭合。 |
-| FR-041 | Audit Log Immutability | append-only audit、admin actions、data lifecycle proof。 | Partial | `migrations/003_audit.sql` append-only trigger + revoke anchor；full admin/data lifecycle audit evidence 未闭合。 |
-| FR-042 | Schema Compatibility Gate | schema version guard、compatibility tests、migration blocker。 | Partial | schema/version guard anchors 已存在；compatibility matrix drill evidence 未闭合。 |
-| FR-043 | Cost / Budget Observability | cost metrics、dashboard、budget alert、usage report。 | Partial | metrics/runbook cost anchors 已存在；dashboard/budget alert evidence 未闭合。 |
-| FR-044 | Compliance Destruction Proof | data classification、destruction certificate、retention exception trail。 | Partial | data classification/retention/archive/destruction-proof runbook anchors 已存在；irreversible certificate/cross-env drill evidence 未闭合。 |
+| FR-037 | Canary & Rollback Controls | Partial | feature flag、readiness gate、deploy health、rollback runbook；`feature_flag.go`、readiness audit 与 deploy runbook 提供 anchors。 | 自动 canary gate/rollback drill evidence 未闭合。 |
+| FR-038 | Retention / Archive / Rehydrate | Partial | retention policy、archive、rehydrate、delete proof；retention/archive/delete/restore anchors 已存在。 | live retention/rehydrate drill evidence 未闭合。 |
+| FR-039 | Trace Propagation | Partial | W3C trace context across HTTP/Kafka/worker/logs；`kafka_dispatch.go` tests assert W3C headers。 | OTel/NATS/live span-chain evidence 未闭合。 |
+| FR-040 | Resource Quota & Backpressure | Partial | per-stream/per-symbol quota、throttle、backpressure metrics；throttle/catalog/admin pause-drain/metrics anchors 已存在。 | multi-tenant quota soak evidence 未闭合。 |
+| FR-041 | Audit Log Immutability | Partial | append-only audit、admin actions、data lifecycle proof；`migrations/003_audit.sql` append-only trigger + revoke anchor。 | full admin/data lifecycle audit evidence 未闭合。 |
+| FR-042 | Schema Compatibility Gate | Partial | schema version guard、compatibility tests、migration blocker；schema/version guard anchors 已存在。 | compatibility matrix drill evidence 未闭合。 |
+| FR-043 | Cost / Budget Observability | Partial | cost metrics、dashboard、budget alert、usage report；metrics/runbook cost anchors 已存在。 | dashboard/budget alert evidence 未闭合。 |
+| FR-044 | Compliance Destruction Proof | Partial | data classification、destruction certificate、retention exception trail；data classification/retention/archive/destruction-proof runbook anchors 已存在。 | irreversible certificate/cross-env drill evidence 未闭合。 |
 
 ### 能力边界声明（#1113/#1114/#1115/#1116 降级闭合）
 
@@ -113,10 +113,10 @@
 | **#1115** ClickHouse ETL 持久来源 | 当前 AggSource 是进程内内存窗口（单实例）；ClickHouse ETL 从内存聚合写入 | **明确 Partial**：内存窗口在单实例下功能完整；多实例横向扩展需改为从 taosx 聚合，属后续架构变更 | FR-007a Partial；`clickhouse_olap.go` AggSource 内存实现 |
 | **#1116** 增量 hot reload diff | 当前 hot reload 是全量重连（catalog Reload 替换全部条目 → stream 重建）；非增量 stream add/remove diff | **明确 full reconnect 边界**：ADR-004 已 Accepted；FR-024 保持 catalog reload + full reconnect 边界，增量 stream add/remove diff 归属 FR-036 自建实现，不依赖 FR-024 升级。 | A10-FR024-HOT-RELOAD-EVAL.md §总结；FR-024 Partial；ADR-004 |
 | **#1108** Options ticker 字段校验 | `parseOptionTicker` 字段名（`e/E/s/o/c/p/q/d/g/t/v`）基于文档约定；`@optionTicker` WS 报文字段名未经 mainnet 实样确认 | **REST fixture 替代**：使用 eapi exchangeInfo 的 `optionSymbols[]` metadata（symbol/underlying/side/strike/expiry）作为 fixture 校验 `parseOptionSymbolMeta`；WS `@optionTicker` body 字段名待 BINANCE_MAINNET_LIVE 抓样确认（normalize.go:502 TODO） | eapi REST 1,550 symbols 实测；`normalize_option_test.go` 已覆盖 symbol 解析路径 |
-| **#1110** 分布式 tracing | 当前无 OpenTelemetry 集成；trace context 不跨 client→NATS→server→Kafka 传播 | **明确未覆盖链路**：当前可观测性依赖 17 个 Prometheus 指标 + slog JSON 日志（OBSERVABILITY.md）；分布式 tracing 已登记为 FR-039（Pending） | OBSERVABILITY.md 9 metrics；`metrics.go:153-247` |
+| **#1110** 分布式 tracing | TraceContext 已进入 wire request，server→Kafka 已传播 traceparent/tracestate/baggage；OpenTelemetry SDK、NATS 端到端 header、slog trace_id 与采样配置仍未闭合 | **明确部分覆盖链路**：当前可观测性依赖 Prometheus 指标 + slog JSON 日志；trace context 已覆盖 server→Kafka header，完整分布式 tracing 已登记为 FR-039（Code-Partial / Evidence-Pending） | OBSERVABILITY.md metrics；`wire/types.go` TraceContext；`kafka_dispatch.go` trace headers |
 | **#1112** storage mock/fake 标准 | 当前测试用 in-memory fake（fakeKafkaProducer、fakeOSSStore 等），无统一的 mock/live 证据分级准则 | **明确测试证据分级**：fake 测试（in-memory mock）标记为 unit；live 测试（真实 infra）需 `*_LIVE` env gate；报告引用需区分 fake vs live | `consumer_integration_test.go` BINANCE_NATSX_INTEGRATION gate；`kafka_broker_test.go` BINANCE_KAFKA_LIVE gate |
-| **#1117** 持久化 backfill progress | backfill progress 当前 in-memory（HistoryRuntime.jobs map）；重启后丢失 | **明确恢复协议**：重启后 backfill 从头开始（coverage 丢失）；持久化到 postgresx 属 FR-032 exchangeInfo 同步的后续工作（catalog_exchange_info_snapshots 表已规划） | `history_lifecycle.go:166` HistoryRuntime in-memory；migration 005 snapshots 表（Draft） |
-| **#1118** 持久 DLQ wiring/replay | `deadletter.FileWriter` 已实现+测试（JSONL 持久写入），但未接线到生产 dispatch 路径（当前用 in-memory DLQ） | **明确实现边界 + replay runbook**：FileWriter 代码就绪（`deadletter.go` NewFileWriter），接线需修改 `ingest.go` dispatch 的 dead letter 处理（加 FileWriter 作为持久 backend）；replay 流程：读取 JSONL → 重新 Publish 到 natsx → 消费重处理 | `deadletter_test.go` TestFileWriter_Write_OK PASS；`ingest.go:268-270` in-memory DLQ |
+| **#1117** 持久化 backfill progress | FileHistoryStateStore/snapshot load-save 已出现；backfill/reconcile/rehydration 的部署接线、restart evidence 与持久介质口径仍未闭合 | **明确恢复协议 + evidence gap**：代码已有本地 state store 原语，Code/Evidence 升格仍依赖部署接线、重启恢复 direct TC 与持久介质验证 | `history_lifecycle.go` FileHistoryStateStore + snapshot load/save |
+| **#1118** 持久 DLQ wiring/replay | `deadletter.FileWriter` 已实现+测试；`appendDeadLetter` 支持 configured writer path，但 admin snapshot/replay/drain 仍以内存为主，缺默认生产接线与 file-backed replay evidence | **明确实现边界 + replay gap**：持久写入 hook 已存在，关闭仍需默认生产接线与 file-backed replay/drain 证据 | `deadletter.go` FileWriter；`ingest.go` appendDeadLetter writer hook |
 
 ## 3. 边界与质量需求投影
 

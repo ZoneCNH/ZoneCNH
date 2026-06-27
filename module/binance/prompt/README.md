@@ -24,7 +24,7 @@ prompt/
 
 ## 当前状态
 
-**Pipeline State**：Spec→Code 管线的 S5-Prompt 层。v3.9.0 双态模型当前为 Code-State **22 Done / 26 Partial / 0 Drifted / 0 Pending**；Evidence-State **1 Done (FR-009) / 43 Pending**。FR-031~044 为 Code-Partial / Evidence-Pending，本地 anchors 已存在但 production evidence/live/CI/dashboard/credential/multi-tenant/destruction gates 未闭合；后续 Context Package 不得把 anchors 写成生产闭合。
+**Pipeline State**：Spec→Code 管线的 S5-Prompt 层。v3.9.0 双态模型当前为 Code `22 Done / 26 Partial / 0 Drifted / 0 Pending` (Code-State)；Evidence-State **1 Done (FR-009) / 43 Pending**。FR-031~044 为 Code-Partial / Evidence-Pending，本地 anchors 已存在但 production evidence/live/CI/dashboard/credential/multi-tenant/destruction gates 未闭合；后续 Context Package 不得把 anchors 写成生产闭合。
 
 **待生成 Context Package 的 Task**（按优先级排列）：
 - FR-031~036（ExchangeInfo 同步）— Code-Partial / Evidence-Pending，下一轮仅补 direct TC/live/server integration evidence

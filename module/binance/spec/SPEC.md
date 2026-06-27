@@ -2409,7 +2409,7 @@ Binance Exchange (REST/WebSocket)
 
 ## Appendix D: Acceptance Criteria Registry（已迁移）
 
-> **v2.0.0 历史遗物已迁移至 [`docs/migrations/ac-bnc-legacy-mapping.md`](../../../docs/migrations/ac-bnc-legacy-mapping.md)。** AC-BNC-001~018 与 AC-001~018 一一对应，完整 AC 注册表维护于 `TRACEABILITY.md`。
+> **v2.0.0 历史遗物已迁移至 [`docs/migrations/ac-bnc-legacy-mapping.md`](../../../docs/migrations/ac-bnc-legacy-mapping.md)。** AC-BNC-001~018 与 AC-001~018 一一对应；完整 AC 注册表维护于 [module/binance/matrix/TRACEABILITY.md §5](../matrix/TRACEABILITY.md#5-ac--tc-完整映射)，实现状态见 [module/binance/spec/ACCEPTANCE.md §2](ACCEPTANCE.md#2-功能验收矩阵) 与 [module/binance/matrix/TRACEABILITY.md §6](../matrix/TRACEABILITY.md#6-覆盖率仪表盘)。
 
 ---
 

@@ -598,16 +598,20 @@ proposed --graduate--> active <--reactivate-- maintained
 | 规则评分器           | ✅ 已验证（617行，6阶段全覆盖，含中英文节名映射）   | `scripts/rule-scorer.py`           |
 | 仲裁脚本             | ✅ 已验证（358行 + score-validate 143行 + 测试231行） | `scripts/arbiter.py`              |
 | Claude Agents        | ✅ 28 个代理配置（6 执行 + 6 评分 + 2 审查 + 2 仲裁 + 9 Goal + 3 其他） | `.claude/agents/` 完整              |
-| Codex Agents         | ❌ **目录为空**                                  | `.codex/agents/` 无任何文件         |
-| Copilot Agents       | ⚠️ 13 个代理（仅评分/审查/仲裁，缺全部 6 执行器） | `.copilot/agents/` 缺 spec/matrix/task-split 等 |
+| Codex Agents         | ✅ 20 个 TOML agent（6 执行器 + 6 评分 + 2 仲裁 + 6 Goal/审查） | `.codex/agents/` 已补全             |
+| Copilot Agents       | ✅ 19 个 agent（含 6 执行器 + 6 评分 + 审查/仲裁/Goal） | `.copilot/agents/` 执行器已补全     |
 | Pipeline 状态        | ✅ 23 模块 / 260 评分(126 claude + 126 rules) / 125 verdict | 20 模块完成全 6 阶段仲裁            |
 | 外部指标             | ✅ 17 模块 JSON + correlation.json（含 Goodhart 监控） | `outer-metrics/` 活跃              |
 
-### 差距总结 [COMPUTED / 2026-06-27 四轮更新]
+### 差距总结 [COMPUTED / 2026-06-27 五轮更新]
 
-1. **Codex 平台完全未部署**：`.codex/agents/` 为空；pipeline 状态中 codex 评分 0 条（仅 claude + rules 各 126 条）
-2. **Copilot 缺少执行代理**：仅有 13 个评分/审查/仲裁代理，缺全部 6 个执行器（spec/matrix/task-split/task-planner/prompt-builder/task-executor）
-3. **仅 binance 管线完整**：55 个模块中仅 binance 具备从 Goal 到 Gate 的完整制品链
+1. **管线实际运行证据不足**：模块制品停留在早期阶段（多数只有 Spec），四源评分中的 LLM 评分（claude/codex/copilot）实际产出待验证
+2. **仅 binance 管线完整**：55 个模块中仅 binance 具备从 Goal 到 Gate 的完整制品链
+
+### 已修复项（2026-06-27 第五轮）
+
+11. **Codex Agent 矩阵补全** — 创建 14 个 TOML agent（6 执行器 + 6 评分 + 2 仲裁器），采用 `[agent]/[model]/[tools]/[pipeline]/[files]/[instructions]/[protected]` 结构化格式。与现有 6 个 Goal agent 合计 20 个 `.codex/agents/*.toml` 文件，覆盖全部管线角色。
+12. **Copilot 执行器补全** — 创建 6 个 executor Markdown agent（spec/matrix/task-split/task-planner/prompt-builder/task-executor），采用现有 Copilot 格式（`platform: copilot` + `pipeline_role: executor`）。现有 13 个 + 新增 6 个 = 19 个 `.copilot/agents/*.md` 文件，执行/评分/审查/仲裁全角色覆盖。
 
 ### 已修复项（2026-06-27 第四轮）
 
