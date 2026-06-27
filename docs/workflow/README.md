@@ -14,6 +14,7 @@
 | 检查当前模块在哪个阶段 | [阶段对应表](#三阶段对应表) | `.omc/state/pipeline/{module}/` |
 | 了解评分和门禁规则 | [四源评分](#四四源评分) | `STRUCTURAL-SCORING.md` |
 | 小型模块快速上手 | [快速通道](#五快速通道) | §快速通道 |
+| 查看模块健康度 | [仪表盘](DASHBOARD.md) | `scripts/pipeline-dashboard.py` |
 
 ---
 
