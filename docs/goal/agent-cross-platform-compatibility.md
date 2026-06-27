@@ -25,9 +25,9 @@
 | spec-review            | ✅          | ✅          | ✅        |
 | spec-structural-analyzer | ✅          | ✅          | ✅        |
 
-> 另有 14 个 governance / executor / score / arbiter agent 三平台均已对齐，合计三平台各 27 个 agent。
+> 另有 governance / executor / score / arbiter agent 三平台均已对齐。5 个 governance executor（spec/matrix/task-split/task-planner/prompt-builder）在 .claude/.copilot 中为 symlink→goal-*，在 .codex 中为带 canonical name 的 thin wrapper；sync-agents.py 按 name 去重后三平台各 21 个 agent（21=21=21）。
 
-**关键发现**：截至 2026-06-27，三平台 agent 已全量镜像对齐，各 27 个 agent。此前仅 Claude Code 实现的 5 个辅助 goal agent + ci-governance-auditor + spec-structural-analyzer + spec-review 已补全到 Codex（TOML）和 Copilot（MD）。三平台一致性由 scripts/sync-agents.py 在 goal-workflow.sh preflight 阶段自动检测，漂移时 exit 1。
+**关键发现**：截至 2026-06-27，三平台 agent 已全量镜像对齐，各 21 个 agent（去重后）。此前仅 Claude Code 实现的 5 个辅助 goal agent + ci-governance-auditor + spec-structural-analyzer + spec-review 已补全到 Codex（TOML）和 Copilot（MD）。后续将 5 个 governance executor 合并到对应 goal-* agent（symlink + thin wrapper），消除重复后三平台均为 21。三平台一致性由 scripts/sync-agents.py 在 goal-workflow.sh preflight 阶段自动检测，漂移时 exit 1。
 
 ---
 
@@ -265,7 +265,7 @@ Claude `goal-reviewer.md` G10 清单曾经缺少 "Agent 隔离违规" 阻断条�
 | HIGH     | 5     | 4 处 Codex 幻影文档引用 + 1 处 Claude 端 CONSTITUTION.md 缺失（均已修复）                                                                                                        |
 | MEDIUM   | 3→1→0 | G10 阻断条件 7 vs 8 项（✅ 已修复）；Matrix Verified 定义 Code+Test vs 四链路（✅ 已修复）；Claude 独有功能组件未投影（✅ 迁移为 LOW——已通过精简文档索引缓解跨平台文档发现成本）    |
 | LOW      | 1     | Copilot/Codex 缺少完整文档索引表（✅ 已修复，10 个 Agent 均已添加 8 文档精简索引）                                                                                                |
-| INFO     | 1     | 2026-06-27 三平台 agent 全量镜像完成，27=27=27，漂移检测自动化                                                                                                                    |
+| INFO     | 1     | 2026-06-27 三平台 agent 全量镜像完成，21=21=21（symlink + canonical name 去重），漂移检测自动化                                                                                                                    |
 
 ---
 
@@ -278,7 +278,7 @@ Claude `goal-reviewer.md` G10 清单曾经缺少 "Agent 隔离违规" 阻断条�
 5. **已执行**：为 Copilot/Codex Agent 添加精简版文档索引（8 个核心文档 + 角色描述），降低 Agent 在跨平台执行时的文档发现成本
 6. **已执行**：建立 CI 检查——扫描所有 Agent 定义中的 `docs/goal/*.md` 引用，验证目标文件存在（通过 `preflight` + `rule-drift-check.py`）
 7. **无需操作**：辅助 Agent（architect / context-recovery / governance / lint / planner）仅在 Claude Code 端存在，符合设计
-8. **已执行（2026-06-27）**：完成三平台 agent 全量镜像——5 个辅助 goal agent + ci-governance-auditor + spec-structural-analyzer + spec-review 补全到 .codex/agents/（TOML）和 .copilot/agents/（MD），三平台各 27 个 agent 完全对齐。
+8. **已执行（2026-06-27）**：完成三平台 agent 全量镜像——5 个辅助 goal agent + ci-governance-auditor + spec-structural-analyzer + spec-review 补全到 .codex/agents/（TOML）和 .copilot/agents/（MD）。后续将 5 个 governance executor（spec/matrix/task-split/task-planner/prompt-builder）合并到对应 goal-* agent：.claude/.copilot 用 symlink，.codex 用带 canonical name 的 thin wrapper。sync-agents.py 按 name 去重后三平台各 21 个 agent（21=21=21）。
 9. **已执行（2026-06-27）**：新增 scripts/sync-agents.py 漂移检测脚本，集成到 goal-workflow.sh preflight，三平台 agent 数量或名称不一致时 WARN（不阻断）。
 
 ---
