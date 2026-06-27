@@ -15,11 +15,12 @@
 |------|------|
 | [SPEC-TEMPLATE.md](./SPEC-TEMPLATE.md) | C/S Module 23 节 SPEC 模板 — 新建模块时复制填写 |
 | [UPGRADE-ROADMAP.md](./UPGRADE-ROADMAP.md) | SDK → C/S Module 升级路线图 — P0/P1/P2 三批 22 模块 |
+| [../docs/governance/module-governance/templates/GOVERNANCE-TEMPLATE.md](../../docs/governance/module-governance/templates/GOVERNANCE-TEMPLATE.md) | C/S Module 治理模板 — 新建模块时复制到 `gate/` 或拆分为 RULES/BOUNDARY-GATES/NAMING |
 | [README.md](./README.md) | 本文件 |
 
 ## 参考实现
 
-[module/binance/SPEC.md](../binance/SPEC.md) — 首个完整 C/S Module 规格（v0.2.0，bootstrap 接入 + client/server + 4 产品线）
+[module/binance/spec/SPEC.md](../binance/spec/SPEC.md) — 首个完整 C/S Module 规格（v0.2.0，bootstrap 接入 + client/server + 4 产品线）
 
 ## 架构类型
 
@@ -29,5 +30,6 @@
 
 ```bash
 cp module/data_cs_module/SPEC-TEMPLATE.md module/{新模块}/SPEC.md
+cp docs/governance/module-governance/templates/GOVERNANCE-TEMPLATE.md module/{新模块}/gate/GOVERNANCE.md
 # 然后按模板中的使用指南逐项填写
 ```

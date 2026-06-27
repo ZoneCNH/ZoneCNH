@@ -8,7 +8,7 @@
 | ------------------------------------------ | ----------------------- |
 | [ARBITER-PROTOCOL.md](ARBITER-PROTOCOL.md) | 四源评分仲裁规则        |
 | [score.schema.json](score.schema.json)     | scorer 输出 JSON schema |
-| [rubric-score.py](rubric-score.py)         | Spec rubric 自动评分器（8 维度 + 6 条红线，纯 Python stdlib） |
+| [rubric-score.py](rubric-score.py)         | 六阶段 rubric 自动评分器（spec/matrix/tasks/plan/prompt/code，纯 Python stdlib） |
 
 ## Rubric
 

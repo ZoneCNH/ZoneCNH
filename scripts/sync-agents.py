@@ -212,7 +212,12 @@ def mirror_agents(root, dry_run=False):
         codex_target = codex_dir / f"{stem}.toml"
         copilot_target = copilot_dir / f"{stem}.md"
 
-        codex_exists = codex_target.exists()
+        # Claude uses symlink aliases that can share one canonical role name.
+        # Codex rejects duplicate role names, so do not mirror an alias when the
+        # canonical Codex role already exists.
+        codex_exists = codex_target.exists() or canonical_name in scan_platform(
+            root, ".codex"
+        )
         copilot_exists = copilot_target.exists()
 
         if codex_exists and copilot_exists:

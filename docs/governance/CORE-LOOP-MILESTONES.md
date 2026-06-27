@@ -4,6 +4,8 @@
 > 创建: 2026-06-25
 > 状态: Proposed（依赖 #1086 tasks 拆分 + #1087 管线补洞）
 
+> [COMPUTED, HIGH] 2026-06-27: Historical GitHub #1093 is closed as milestone relocation to this document; current GitHub #1267 / Beads `ZoneCNH-8lb` remains `OPEN` / `in_progress` as the long-term tracker. M1-M4 are still incomplete; this is not live_integration 15+ completion.
+
 ## 闭环定义
 
 `数据域(market_data) → 分析域(factor_engine→regime_engine) → 决策域(signal_factory) → 执行域(riskx→orderx→positionx)`

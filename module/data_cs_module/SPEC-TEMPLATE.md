@@ -4,7 +4,7 @@
 >
 > **架构类型**：C/S Module — 独立进程，含 `internal/client`（数据源采集）+ `internal/server`（数据服务）+ `internal/cs`（共享类型）。
 >
-> **参考实现**：[module/binance/SPEC.md](../binance/SPEC.md) — 首个完整 C/S Module 规格。
+> **参考实现**：[module/binance/spec/SPEC.md](../binance/spec/SPEC.md) — 首个完整 C/S Module 规格。
 >
 > **使用方式**：复制本文件为 `module/{module}/SPEC.md`，将 `{MODULE}` 替换为实际模块名（如 `okx`、`fred`），填写所有 `{...}` 占位符。
 
@@ -660,7 +660,9 @@ github.com/ZoneCNH/{module}/
 | 文档 | 用途 |
 |------|------|
 | [`ARCHITECTURE.md`](../../ARCHITECTURE.md#模块架构类型) | C/S Module 架构类型定义 |
-| [`module/binance/SPEC.md`](../binance/SPEC.md) | C/S Module 参考实现 |
+| [`module/binance/spec/SPEC.md`](../binance/spec/SPEC.md) | C/S Module 参考实现 |
+| [`docs/governance/module-governance/09-data-cs-governance-levels.md`](../../docs/governance/module-governance/09-data-cs-governance-levels.md) | C/S Module L1/L2/L3 治理等级 |
+| [`docs/governance/module-governance/templates/GOVERNANCE-TEMPLATE.md`](../../docs/governance/module-governance/templates/GOVERNANCE-TEMPLATE.md) | C/S Module 治理模板 |
 | [`docs/governance/SPEC-TEMPLATE.md`](../../docs/governance/SPEC-TEMPLATE.md) | 通用 23 节 SPEC 模板 |
 | [`docs/governance/LIFECYCLE.md`](../../docs/governance/LIFECYCLE.md) | 规格生命周期状态机 |
 | [`docs/governance/TRACEABILITY.md`](../../docs/governance/TRACEABILITY.md) | 追溯矩阵规范 |

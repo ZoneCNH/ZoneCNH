@@ -1,7 +1,0 @@
-# 本 agent 已合并到 goal-spec。请使用 goal-spec。
-# 保留此文件作为指向，避免历史引用断裂。
-# 实际执行请 codex --agent goal-spec
-name = "goal-spec"
-description = "已合并到 goal-spec。请使用 goal-spec。"
-model = "gpt-5.5"
-model_reasoning_effort = "high"

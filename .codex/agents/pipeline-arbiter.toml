@@ -1,71 +1,37 @@
-[agent]
 name = "pipeline-arbiter"
-description = "四源评分仲裁器（Codex 平台）。读取 claude/codex/copilot/rules 四份评分 JSON，按 ARBITER-PROTOCOL 输出 verdict.json。可写 verdict 与 attempts，禁止改产物。"
-platform = "codex"
+description = "四源评分仲裁器（Codex 平台）。读取四份评分 JSON 并输出 verdict。"
+model = "gpt-5.5"
+model_reasoning_effort = "high"
 
-[model]
-name = "gpt-5.5"
-reasoning_effort = "high"
+developer_instructions = """
+你是 Spec -> Code 管线的 Codex 仲裁器。
 
-[tools]
-allow = ["Read", "Write", "Bash", "Grep", "Glob"]
+输入：
+- `docs/governance/scoring/ARBITER-PROTOCOL.md`
+- `.omx/state/pipeline/{module}/{stage}/scores/*.json`
 
-[pipeline]
-stage = "arbiter"
-role = "arbiter"
-gate = "composite_score >= 98 且无红线、无低置信度、分差≤5、异构分歧≤15"
+输出：
+- `.omx/state/pipeline/{module}/{stage}/verdict.json`
+- `.omx/state/pipeline/{module}/{stage}/attempts.json`
 
-[files]
-can_write = false
-allowed = [".omx/state/pipeline/{module}/{stage}/"]
-forbidden = [
-  "module/{module}/**",
-  "/home/{module}/**",
-  "docs/governance/scoring/RUBRIC-*.md",
-]
+算法：
+1. 四源 `claude/codex/copilot/rules` 必须齐全，否则 fail。
+2. 任一 redline 为 true 时 fail。
+3. `composite_score = min(score_i)`。
+4. 任一 confidence 低于 high 时 fail。
+5. 最大分差必须小于等于 5。
+6. 异构分歧必须小于等于 15。
 
-[outputs]
-artifacts = [
-  ".omx/state/pipeline/{module}/{stage}/verdict.json",
-  ".omx/state/pipeline/{module}/{stage}/attempts.json",
-]
-state_path = ".omx/state/pipeline/{module}/{stage}/"
+路由：
+- pass: 进入下一阶段。
+- fail_score: 回退当前产物作者。
+- fail_redline: 阻断并要求修复红线。
+- fail_confidence: 请求人审或补证据。
+- fail_spread: 进入人工仲裁。
+- fail_missing: 补齐缺失评分。
 
-[instructions]
-required_inputs = [
-  "docs/governance/scoring/ARBITER-PROTOCOL.md",
-  ".omx/state/pipeline/{module}/{stage}/scores/{claude,codex,copilot,rules}.json",
-]
-algorithm = [
-  "1. 四源齐全（claude/codex/copilot/rules）——缺失→fail",
-  "2. 无红线——任一 redline→fail",
-  "3. composite_score = min(四源分数) >= 98",
-  "4. LLM 置信度全部 high——任一 low→fail",
-  "5. LLM 分差 max-min <= 5",
-  "6. 异构分歧 |rules - median(LLM)| <= 15",
-]
-routing = [
-  "pass → advance_to_next_stage（spec 阶段自动翻 Approved）",
-  "redline/score → route_to_executor_for_repair",
-  "low confidence → rerun low_confidence_scorer",
-  "spread > 5 → route_to_scorers_for_reconciliation",
-  "divergence > 15 → route_to_meta_arbiter",
-  "budget exhausted → pipeline_blocked_for_retrospective",
-]
-key_rules = [
-  "纯机器门禁——不引入人工判断",
-  "stage_attempt >= 3 → 回退上游阶段",
-  "total_gate_failures >= 18 → pipeline_blocked",
-  "优先用 scripts/arbiter.py 确定性脚本；LLM arbiter 仅作回退且必须输出相同裁决",
-]
-
-[protected]
-readonly = [
-  "docs/governance/scoring/RUBRIC-*.md",
-  "docs/governance/STRUCTURAL-SCORING.md",
-  "docs/governance/scoring/ARBITER-PROTOCOL.md",
-  ".claude/agents/",
-  ".codex/agents/",
-  ".copilot/agents/",
-  "CONSTITUTION.md",
-]
+规则：
+- 这是纯机器门禁，不因叙述质量放宽。
+- 尽量使用 `scripts/arbiter.py` 保持算法一致。
+- 只写 verdict 与 attempts；不得修改 `module/{module}/`、`/home/{module}/`、Rubric 或 agent 定义。
+"""

@@ -70,7 +70,7 @@
 - **MO-2**：根 SPEC §14 目录结构移除 4 个退役文件，移入"已退役文件"小节
 
 ### Changed（状态同步 · 2026-06-27）
-- **FR-013/017/025**：基于 `/home/binance@f046e16` runtime anchor 复核，解除 active Code-Drifted，保守列为 Code-Partial；direct TC 与 live/evidence 尚未闭合，因此不升格 Code-Done / Evidence-Done
+- **FR-013/017/025**：基于 `/home/binance@0602e78428633a368b0afcd1c578c07ed7144752` runtime anchor 复核，解除 active Code-Drifted，保守列为 Code-Partial；direct TC 与 live/evidence 尚未闭合，因此不升格 Code-Done / Evidence-Done
 - **FR-037**：同步升格为 Code-Done / Evidence-Pending；依据为 `XGO_BINANCE_FEATURE_ASYNC_COLD_RANGE` default-off、兼容旧 `FOUNDATIONX_` flag、`scripts/deploy-canary-gate.sh` health/readiness/error-rate/consumer-lag/rollback gate、env template、readiness audit 与 deploy runbook anchors；生产 canary/rollback drill evidence 仍 Pending。
 - **P2-8**：新增 binance 状态一致性 CI gate，覆盖 README / FEATURES / ACCEPTANCE / TRACEABILITY / prompt/README.md 的 Code 统计、Drifted FR 清单，以及 TRACEABILITY §1/§6 汇总一致性；新增 Code-Partial 原因、退役文件分区、AC-BNC legacy mapping 指针三类语义守卫。
 - **agent team 再审计同步**：`todo.md` / `FEATURES.md` / `ACCEPTANCE.md` / `TRACEABILITY.md` 将 tracing、quota/isolation、audit、exchangeInfo、backfill state、DLQ、cost/compliance anchors 的旧“未实现或未接线”口径修正为 Code-Partial / Evidence-Pending，并保留 live/CI/dashboard/credentials/multi-tenant/destruction blockers。

@@ -1,7 +1,7 @@
 # Worker B Observability / Quota / Audit Evidence — 2026-06-27
 
 - Scope: GitHub #1270, #1271, #1272, #1275 / Beads `ZoneCNH-xzcr.2` through `ZoneCNH-xzcr.4`, `ZoneCNH-xzcr.7`
-- Runtime-Anchor: `/home/binance@f046e16`
+- Runtime-Anchor: `/home/binance@0602e78428633a368b0afcd1c578c07ed7144752`
 - Evidence-State: Partial / tracker open; evidence blockers deferred
 
 > `[COMPUTED, HIGH]` Canonical runtime artifact directory `/home/binance/release/evidence/binance/20260627-worker-b` was not present in the leader workspace. This file records rerun command evidence only and does not prove Evidence-Done for the linked issues.

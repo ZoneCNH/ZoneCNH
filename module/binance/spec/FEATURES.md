@@ -14,7 +14,7 @@
 
 本文档是 `module/binance` 当前规格库的实现投影，不是 runtime 代码验收证据。实际完成状态以 `TRACEABILITY.md`、`client/TRACEABILITY.md`、`server/TRACEABILITY.md` 和 `/home/binance` 的测试证据为准。
 
-> **v3.9.0 当前状态口径（2026-06-27）**：Code-Done = Runtime-Anchor `/home/binance@f046e16` 下代码存在、装配就绪且 runtime 可编译运行；Code-Partial = 已有代码/子链路 anchors 但 direct TC、live/CI、凭据、dashboard、多租户或销毁证据未闭合；Code-Drifted = 当前无；Code-Pending = 当前无。Evidence-Done 仅 FR-009；其余当前 FR 均为 Evidence-Pending。历史 f18a329 / v3.6.1 口径仅保留在 TRACEABILITY 历史段。
+> **v3.9.0 当前状态口径（2026-06-27）**：Code-Done = Runtime-Anchor `/home/binance@0602e78428633a368b0afcd1c578c07ed7144752` 下代码存在、装配就绪且 runtime 可编译运行；Code-Partial = 已有代码/子链路 anchors 但 direct TC、live/CI、凭据、dashboard、多租户或销毁证据未闭合；Code-Drifted = 当前无；Code-Pending = 当前无。Evidence-Done 仅 FR-009；其余当前 FR 均为 Evidence-Pending。历史 f18a329 / v3.6.1 口径仅保留在 TRACEABILITY 历史段。
 >
 > **v3.9.0 双态模型**：FEATURES.md 的「Done」均指 **Code-Done**（代码存在+装配就绪+runtime 可编译运行）。**Evidence-Done**（TC+AC 全 PASS+evidence 归档）的判定见 `ACCEPTANCE.md` §4 闭合矩阵。两者不可互相替代：FR-005 Code-Done（RedisStore 已装配）但 Evidence-Pending（TC-007/008 仍 Pending）。
 >
@@ -153,7 +153,7 @@
 | --- | --- | --- |
 | `goal.md` | 业务目标与模块意图 | 作为实现清单的目标来源。 |
 | `SPEC.md` | v2.0.0 功能与边界规格 | 作为 FR/BR/NFR 语义来源。 |
-| `TRACEABILITY.md` | 根级 FR/AC/TC/Task 追溯 | 作为当前状态与验收编号来源；v3.9.0 当前口径对齐 Runtime-Anchor `/home/binance@f046e16`，Code-State 23/25/0/0，Evidence-State 1 Done / 43 Pending。 |
+| `TRACEABILITY.md` | 根级 FR/AC/TC/Task 追溯 | 作为当前状态与验收编号来源；v3.9.0 当前口径对齐 Runtime-Anchor `/home/binance@0602e78428633a368b0afcd1c578c07ed7144752`，Code-State 23/25/0/0，Evidence-State 1 Done / 43 Pending。 |
 | `client/TRACEABILITY.md` | Client 子域追溯 | 作为 client active/pending 实现面来源。 |
 | `server/TRACEABILITY.md` | Server 子域追溯 | 作为 server active/pending 实现面来源。 |
 | `BOUNDARY-GATES.md` | 边界漂移防线 | 作为 FR-009 与 BR-001~BR-009 的文档和本地 runtime 证据入口。 |
@@ -166,7 +166,7 @@
 | 检查项 | 状态 | 依据 |
 | --- | --- | --- |
 | v2.0.0 根规格存在 | Done | `SPEC.md` v3.8.0。 |
-| 根级 traceability 存在 | Done | `TRACEABILITY.md` v3.9.0；当前口径对齐 Runtime-Anchor `/home/binance@f046e16`，Code-State 23/25/0/0，Evidence-State 1 Done / 43 Pending。 |
+| 根级 traceability 存在 | Done | `TRACEABILITY.md` v3.9.0；当前口径对齐 Runtime-Anchor `/home/binance@0602e78428633a368b0afcd1c578c07ed7144752`，Code-State 23/25/0/0，Evidence-State 1 Done / 43 Pending。 |
 | Client/Server 子域 traceability 存在 | Done | `client/TRACEABILITY.md`, `server/TRACEABILITY.md`。 |
 | C/S 独立进程边界已定义 | Done | `README.md`, `SPEC.md`, `BOUNDARY-GATES.md`。 |
 | Boundary gate 文档已形成 | Done | `BOUNDARY-GATES.md` v2.2.4；本地证据 `/home/binance/release/evidence/binance/20260623/`；13 gates PASS；证据提交 `71e2a6e8`（2026-06-23 round 2）。 |

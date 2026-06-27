@@ -538,3 +538,75 @@ ci:
 state_dictionary:
   canonical_schema: "docs/goal/schema/state-dictionary.yaml"
   note: "状态枚举的权威源。所有状态值和大小写规则以此 schema 为准。"
+
+# ============================================================
+# 四源评分阈值（arbiter.py 与 Goal Gate 共享 SSOT）
+# 权威来源：
+#   - docs/governance/scoring/ARBITER-PROTOCOL.md §2 §6
+#   - docs/goal/04-gates.md §5 PASS_WITH_RISK 策略
+#   - docs/governance/STRUCTURAL-SCORING.md §4
+# 映射规则：
+#   composite_score >= composite_pass_threshold → PASS
+#   pass_with_risk_min <= composite_score < composite_pass_threshold → PASS_WITH_RISK（仅允许的 Gate）
+#   composite_score < pass_with_risk_min → FAIL
+# ============================================================
+scoring:
+  composite_pass_threshold: 98
+  composite_pass_with_risk_min: 85
+  llm_spread_max: 5
+  heterogeneous_divergence_max: 15
+  max_stage_attempts: 3
+  max_total_gate_failures: 18
+
+  # 阶段 → Gate 映射（arbiter 用于判定是否允许 PASS_WITH_RISK）
+  stage_gate_map:
+    spec: G2
+    matrix: G5
+    tasks: G5
+    plan: G4
+    prompt: G6
+    code: G6
+
+  # 不允许 PASS_WITH_RISK 的 Gate（04-gates.md §5）
+  no_pass_with_risk_gates:
+    - G6
+    - G10
+
+  # 各 Gate 的 PASS 阈值与 PASS_WITH_RISK 最低分（04-gates.md §5）
+  gate_thresholds:
+    G0:
+      pass: 90
+      pass_with_risk_min: 80
+    G1:
+      pass: 90
+      pass_with_risk_min: 80
+    G2:
+      pass: 90
+      pass_with_risk_min: 85
+    G3:
+      pass: 90
+      pass_with_risk_min: 85
+    G4:
+      pass: 90
+      pass_with_risk_min: 85
+    G5:
+      pass: 90
+      pass_with_risk_min: 85
+    G6:
+      pass: 90
+      pass_with_risk_min: null
+    G7:
+      pass: 90
+      pass_with_risk_min: 85
+    G8:
+      pass: 90
+      pass_with_risk_min: 85
+    G9:
+      pass: 90
+      pass_with_risk_min: 85
+    G10:
+      pass: 90
+      pass_with_risk_min: null
+    G11:
+      pass: 80
+      pass_with_risk_min: 70

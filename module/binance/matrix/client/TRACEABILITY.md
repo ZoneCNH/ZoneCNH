@@ -193,7 +193,7 @@
 | BR→验证映射率 | 5 / 5 | 100% |
 | TC→FR 回溯率 | 15 / 15 | 100% |
 | AC→验证映射率 | 28 / 28 | 100% |
-| 实现完成率 | 8 / 8 FR | 100%（代码实现完成；投影自 root TRACEABILITY Runtime-Anchor `/home/binance@f046e16`；TC 测试证据仍 Pending） |
+| 实现完成率 | 8 / 8 FR | 100%（代码实现完成；投影自 root TRACEABILITY Runtime-Anchor `/home/binance@0602e78428633a368b0afcd1c578c07ed7144752`；TC 测试证据仍 Pending） |
 
 	> **v2.1.2 状态同步 (2026-06-26)**：FR/BR 实现状态从全 Pending 同步为 Done，对齐 root TRACEABILITY v3.7.1 的 24 Done / 10 Partial / 10 Pending 投影。子模块 TC 仍保持 Pending（测试证据未独立闭合）。
 
@@ -208,4 +208,4 @@
 | 2026-06-17 | v1.2.0 | 同步 SPEC v1.0.1 Status 晋升 | ZoneCNH |
 | 2026-06-21 | v2.0.0 | **v2.0.0 分布式架构对齐**：归档 FR-007（SQLite spool）+ FR-008（checkpoint）+ BR-001/002（spool/checkpoint 约束）；FR-009 重写为 natsx Publisher（替代 gRPC bidi stream）；新增 BR-006（PubAck 同步等待）+ BR-007（禁止同进程）；NFR 删除 spool/gRPC 延迟，新增 natsx PubAck 预算；TC-011~013 替换为 natsx publisher 测试；AC 从 38 条精简为 28 条（归档 spool/checkpoint AC）；CI Gate 更新为 cs 包/同进程禁止检查 | ZoneCNH |
 | 2026-06-22 | v2.1.1 | 命名同步：两套旧合约别名收敛到 `um_perp/cm_perp`（catalog enum + go 文件名 + TC-003）；Spec-Reference 指向 client/SPEC.md v2.1.1 | ZoneCNH |
-| 2026-06-26 | v2.1.2 | **P0 状态同步**：FR/BR 实现状态从全 Pending → Done，对齐 root TRACEABILITY v3.7.1 Runtime-Anchor `/home/binance@f046e16`；TC/NFR 仍保持 Pending（子模块独立测试证据未闭合）；§6 仪表盘刷新 | ZCode |
+| 2026-06-26 | v2.1.2 | **P0 状态同步**：FR/BR 实现状态从全 Pending → Done，对齐 root TRACEABILITY v3.9.0 Runtime-Anchor `/home/binance@0602e78428633a368b0afcd1c578c07ed7144752`；TC/NFR 仍保持 Pending（子模块独立测试证据未闭合）；§6 仪表盘刷新 | ZCode |

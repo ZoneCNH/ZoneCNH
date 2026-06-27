@@ -3,7 +3,7 @@
 - Date: 2026-06-25
 - Scope: binance boundary-gates 实践 → natsx/contracts/domain_*/transportx 推广
 - Priority: P3
-- Source: binance `scripts/boundary-gates.sh`（13 gates）+ `module/binance/BOUNDARY-GATES.md` §20
+- Source: binance `scripts/boundary-gates.sh`（13 gates）+ `module/binance/gate/BOUNDARY-GATES.md` §20
 - Related: ZoneCNH/ZoneCNH#1073
 
 ---

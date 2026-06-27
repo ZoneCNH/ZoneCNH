@@ -122,11 +122,11 @@ def test_redline(env):
 
 
 def test_low_score(env):
-    _write_scores(env, "m1", "matrix", _full_scores(97, 99, 99, 99))
+    _write_scores(env, "m1", "matrix", _full_scores(80, 99, 99, 99))
     v = ar.arbitrate("m1", "matrix", 3, 18)
     assert v["gate"] == "fail"
-    assert any("composite_score(97)" in r for r in v["reasons"])
-    assert v["composite_score"] == 97
+    assert any("composite_score(80)" in r for r in v["reasons"])
+    assert v["composite_score"] == 80
 
 
 # ---- fail: low confidence ----
@@ -173,7 +173,7 @@ def test_heterogeneous_divergence(env):
 def test_stage_attempt_exhausted_routes_back(env):
     # 3 次失败 → 路由回上一阶段
     for _ in range(3):
-        _write_scores(env, "m1", "matrix", _full_scores(95, 99, 99, 99))
+        _write_scores(env, "m1", "matrix", _full_scores(80, 99, 99, 99))
         ar.arbitrate("m1", "matrix", 3, 18)
     last = json.loads((ar.state_root("claude") / "m1/matrix/verdict.json").read_text())
     assert last["next_action"] == "route_back_to_spec"
@@ -181,7 +181,7 @@ def test_stage_attempt_exhausted_routes_back(env):
 
 def test_spec_failure_loops_to_rewrite(env):
     for _ in range(3):
-        _write_scores(env, "m1", "spec", _full_scores(95, 99, 99, 99, stage="spec"))
+        _write_scores(env, "m1", "spec", _full_scores(80, 99, 99, 99, stage="spec"))
         ar.arbitrate("m1", "spec", 3, 18)
     last = json.loads((ar.state_root("claude") / "m1/spec/verdict.json").read_text())
     assert last["next_action"] == "route_back_to_spec_executor_for_rewrite"
@@ -189,10 +189,86 @@ def test_spec_failure_loops_to_rewrite(env):
 
 def test_total_budget_exhausted(env):
     for _ in range(18):
-        _write_scores(env, "m1", "matrix", _full_scores(95, 99, 99, 99))
+        _write_scores(env, "m1", "matrix", _full_scores(80, 99, 99, 99))
         ar.arbitrate("m1", "matrix", 100, 18)  # 大 stage 限制只测总预算
     last = json.loads((ar.state_root("claude") / "m1/matrix/verdict.json").read_text())
     assert last["next_action"] == "pipeline_blocked_for_retrospective"
+
+
+# ---- force deprecation: --force never produces gate=pass ----
+
+
+def test_force_missing_source_still_fails(env):
+    """--force with missing sources must produce gate=fail with force_override=True."""
+    _write_scores(env, "m1", "matrix", {
+        "claude": _score_payload("claude", "m1", "matrix", 99),
+        "codex": _score_payload("codex", "m1", "matrix", 99),
+        "rules": _score_payload("rules", "m1", "matrix", 99),
+        # 缺 copilot
+    })
+    v = ar.arbitrate("m1", "matrix", 3, 18, force=True)
+    assert v["gate"] == "fail"
+    assert v["force_override"] is True
+    assert any("forced_missing_source" in r for r in v["reasons"])
+    assert v["next_action"] == "route_to_missing_score_source"
+
+
+def test_force_all_sources_pass_ignores_force(env):
+    """--force with all 4 sources present should behave normally (force_override=False)."""
+    _write_scores(env, "m1", "matrix", _full_scores())
+    v = ar.arbitrate("m1", "matrix", 3, 18, force=True)
+    assert v["gate"] == "pass"
+    assert v["force_override"] is False
+
+
+def test_force_no_llm_source_fails(env):
+    """--force with only rules source (no LLM) must fail."""
+    _write_scores(env, "m1", "matrix", {
+        "rules": _score_payload("rules", "m1", "matrix", 99),
+        # 缺所有 LLM 源
+    })
+    v = ar.arbitrate("m1", "matrix", 3, 18, force=True)
+    assert v["gate"] == "fail"
+    assert v["force_override"] is True
+    assert v["composite_score"] == 0
+
+
+# ---- PASS_WITH_RISK: composite 85-97 on allowed Gate ----
+
+
+def test_pass_with_risk_allowed_gate(env):
+    """composite 85-97 on G2/G4/G5 (allowed) → PASS_WITH_RISK."""
+    _write_scores(env, "m1", "spec", _full_scores(s_claude=90, s_codex=90, s_copilot=90, s_rules=90, stage="spec"))
+    v = ar.arbitrate("m1", "spec", 3, 18)
+    assert v["gate"] == "pass_with_risk"
+    assert v["next_action"] == "advance_to_next_stage_with_risk_register"
+    assert any("pass_with_risk" in r for r in v["reasons"])
+    assert v["scoring_thresholds"]["stage_gate"] == "G2"
+
+
+def test_pass_with_risk_not_allowed_g6(env):
+    """composite 85-97 on G6 (prompt/code, not allowed) → FAIL."""
+    _write_scores(env, "m1", "code", _full_scores(s_claude=90, s_codex=90, s_copilot=90, s_rules=90, stage="code"))
+    v = ar.arbitrate("m1", "code", 3, 18)
+    assert v["gate"] == "fail"
+    assert any("pass_with_risk_not_allowed" in r for r in v["reasons"])
+
+
+def test_pass_with_risk_below_min_fails(env):
+    """composite < 85 → FAIL (not PASS_WITH_RISK)."""
+    _write_scores(env, "m1", "spec", _full_scores(s_claude=80, s_codex=80, s_copilot=80, s_rules=80, stage="spec"))
+    v = ar.arbitrate("m1", "spec", 3, 18)
+    assert v["gate"] == "fail"
+
+
+def test_pass_with_risk_redline_blocks(env):
+    """Redline present → FAIL even if composite >= 85."""
+    _write_scores(env, "m1", "spec",
+                  _full_scores(s_claude=90, s_codex=90, s_copilot=90, s_rules=90,
+                               redlines={"claude": True}, stage="spec"))
+    v = ar.arbitrate("m1", "spec", 3, 18)
+    assert v["gate"] == "fail"
+    assert "redline_present" in v["reasons"]
 
 
 # ---- verdict schema ----

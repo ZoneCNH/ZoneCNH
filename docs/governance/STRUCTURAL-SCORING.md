@@ -44,7 +44,7 @@
 | Copilot CLI   | `.copilot/agents/{stage}-structural-score.md` | Claude Opus 4.7            |
 | Rules（异构） | `scripts/rule-scorer.py`                      | 纯 Python 规则引擎，零 LLM |
 
-> **Spec rubric 自动评分**：[`scoring/rubric-score.py`](scoring/rubric-score.py) 提供 Spec 阶段 rubric 的机器评分（8 维度 + 6 条红线自动检测），作为 rules 源的 Spec 阶段实现。其他阶段的 rubric auto-scorer 待扩展。
+> **Rubric auto-scorer**：[`scoring/rubric-score.py`](scoring/rubric-score.py) 提供六阶段（spec/matrix/tasks/plan/prompt/code）的机器评分，作为 rules 源的 Spec→Code 阶段实现。Design/Test/Review/Release/Retrospective 阶段的 auto-scorer 待扩展。
 
 三个 LLM 平台必须读取相同 rubric，独立打分，互相不可见对方结果。
 规则引擎不读 rubric 文本，按宪法 §14.4 要求作为**异构信号源**打破同源相关性：
