@@ -32,7 +32,7 @@
 | ZoneCNH-xzcr.2 | #1270 | Tracker open / Evidence pending | `[COMPUTED, HIGH]` Evidence gap persists; archived OTel span export, external Kafka/NATS trace propagation, slog trace_id evidence, sampling/fallback evidence are still missing |
 | ZoneCNH-xzcr.3 | #1271 | Tracker open / Evidence pending | `[COMPUTED, HIGH]` Evidence gap persists; real Kafka quota evidence, pressure/failure isolation evidence, per-caller API limiting evidence, and ClickHouse timeout direct TC output are still missing |
 | ZoneCNH-xzcr.4 | #1272 | Tracker open / Evidence pending | `[COMPUTED, HIGH]` Evidence gap persists; audit field-completeness/idempotency, retention/archive, and deployed Postgres permission evidence are still missing |
-| ZoneCNH-xzcr.5 | #1273 | Tracker open / Evidence pending | `[COMPUTED, HIGH]` Evidence gap persists; live-gated sanitized evidence or explicit blockers for redisx/kafkax/natsx/postgresx/taosx/ossx/clickhousex are still missing |
+| ZoneCNH-xzcr.5 | #1273 | Tracker open / Evidence pending | `[COMPUTED, HIGH]` Latest dev.md-only E2E attaches partial proof: kafkax/postgresx/redisx PASS, taosx FAIL, clickhousex/ossx/natsx missing concrete remote dev config or local-only; Evidence-Done remains pending |
 | ZoneCNH-xzcr.6 | #1274 | Tracker open / Evidence pending | `[COMPUTED, HIGH]` Evidence gap persists; credential path/testnet for UM/CM/Options and mainnet evidence or blocker are still missing |
 | ZoneCNH-xzcr.7 | #1275 | Tracker open / Evidence pending | `[COMPUTED, HIGH]` Evidence gap persists; dashboard, AlertManager budget alert dry/live evidence, usage report, and prod/prod-like redacted evidence are still missing |
 | ZoneCNH-xzcr.8 | #1276 | Tracker open / Evidence pending | `[COMPUTED, HIGH]` Evidence gap persists; cross-env destruction drill, irreversible delete proof, certificate_of_destruction archive, and compliance audit evidence are still missing |
@@ -96,7 +96,9 @@
 
 `[COMPUTED, HIGH]` After the continuation audit, Beads `ZoneCNH-xzcr*` notes were updated again and GitHub #1268-#1279 received synchronized comments that preserve the `OPEN` / Evidence-pending status. No #1268-#1279 item was closed.
 
-`[COMPUTED, HIGH]` `sre/secrets/env/dev.md` was checked only for config-family presence. `redisx`, `kafkax`, `natsx`, `postgresx`, `taosx`, `ossx`, and `clickhousex` keys are present, with all values redacted from this evidence.
+`[COMPUTED, HIGH]` `sre/secrets/env/dev.md` was rechecked as the only clean-env external E2E configuration source. Concrete keys were found for `FOUNDATIONX_KAFKAX_*`, `FOUNDATIONX_POSTGRESX_*`, `FOUNDATIONX_REDISX_*`, and `FOUNDATIONX_TAOSX_*`; `FOUNDATIONX_TAOSX_ENDPOINT` was derived from host/port. Concrete `FOUNDATIONX_CLICKHOUSEX_*`, `FOUNDATIONX_NATSX_*`, and `FOUNDATIONX_OSSX_*` rows were not present. No secret value, endpoint, token, password, or credential was copied into this repository.
+
+`[COMPUTED, HIGH]` The latest dev.md-only evidence package is `/home/binance/release/evidence/binance/20260627-external-e2e-devmd-only/`. `status.tsv` reports kafkax live PASS; storage-live FAIL with postgresx/redisx PASS, taosx `status=degraded` + `unexpected EOF`, and clickhousex default/auth failure from missing dev config; ossx SKIP from missing dev config; NATSX local JetStream integration PASS only, not remote NATSX dev.md E2E. `external-gates.log` still records `release_closeable=NO`.
 
 `[COMPUTED, HIGH]` `/home/binance/release/evidence/binance/20260627-agent-audit-2/issue-repeat-check-10x.log` records 10/10 local PASS across `git diff --check`, `go test ./internal/server/deadletter -run TestReadFile -count=1`, targeted admin DLQ replay tests, and targeted history state tests.
 
@@ -114,3 +116,10 @@
 | #1277 | https://github.com/ZoneCNH/ZoneCNH/issues/1277#issuecomment-4817510484 |
 | #1278 | https://github.com/ZoneCNH/ZoneCNH/issues/1278#issuecomment-4817510641 |
 | #1279 | https://github.com/ZoneCNH/ZoneCNH/issues/1279#issuecomment-4817510793 |
+
+`[COMPUTED, HIGH]` Latest dev.md-only external E2E tracker sync comments:
+
+| GitHub | dev.md-only recheck comment |
+| --- | --- |
+| #1268 | https://github.com/ZoneCNH/ZoneCNH/issues/1268#issuecomment-4818272098 |
+| #1273 | https://github.com/ZoneCNH/ZoneCNH/issues/1273#issuecomment-4818267724 |

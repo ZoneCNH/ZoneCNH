@@ -1,7 +1,7 @@
 # Issue Blocker 10-Pass Audit - 2026-06-27
 
 - Scope: GitHub #1267-#1279 plus historical #1093; Beads `ZoneCNH-8lb` and `ZoneCNH-xzcr*`.
-- Release gate anchor: `/home/binance/release/evidence/binance/20260627-agent-audit-2/external-gates.log`.
+- Release gate anchors: `/home/binance/release/evidence/binance/20260627-agent-audit-2/external-gates.log` and `/home/binance/release/evidence/binance/20260627-external-e2e-devmd-only/external-gates.log`.
 - Audit type: tracker-state, wording consistency, and release-boundary audit.
 - Decision: GitHub #1267-#1279 `OPEN`, Beads `ZoneCNH-8lb` and `ZoneCNH-xzcr*` in_progress as long-term/Evidence-Done blocker ownership; linked Evidence-Done proof remains pending.
 - Git usage: this tracker-accounting audit does not use commit, push, PR, or merge as acceptance evidence; repository delivery can still be committed and merged separately.
@@ -27,6 +27,7 @@
 - [COMPUTED, HIGH] Local observability/control-plane proofs exist for #1270/#1271/#1272/#1275 in `../test/worker-b-observability-evidence.md`; they are not live/external Evidence-Done proof.
 - [COMPUTED, HIGH] External-dependency summary for #1273/#1274/#1276 is recorded in `../test/worker-c-live-evidence-summary.md`; canonical destructive drill and credentialed testnet/live artifacts remain missing.
 - [COMPUTED, HIGH] The archived release-gate package still records `release_closeable=NO`, `live_binance_websocket=NOT_CAPTURED`, `remote_github_actions=NOT_CAPTURED`, and `release_tag=NOT_CAPTURED`; runtime PR #146 later supplies PR-scoped CI evidence only.
+- [COMPUTED, HIGH] The latest dev.md-only external E2E package `/home/binance/release/evidence/binance/20260627-external-e2e-devmd-only/` still records `release_closeable=NO`: kafkax live PASS; postgresx/redisx PASS inside storage-live; taosx FAIL with `status=degraded` + `unexpected EOF`; clickhousex FAIL from missing concrete dev config; ossx SKIP from missing dev config; NATSX local JetStream integration PASS only and not remote dev.md E2E.
 - [COMPUTED, HIGH] Runtime PR #146 merged into main at `d0dcb858793a507ce43f39aa75356224063b0adf` on `2026-06-27T13:10:46Z` after branch checks Build/Boundary Gates/Lint/Security/Test all passed (`28290103150`, `28290103155`, `28290103187`, `28290103154`, `28290103160`).
 - [COMPUTED, HIGH] Post-merge main checks for `d0dcb858793a507ce43f39aa75356224063b0adf` all succeeded: Boundary Gates `28290196959`, Build `28290196961`, Security `28290196970`, Lint `28290196950`, Test `28290196955`.
 - [COMPUTED, HIGH] Release boundary remains not closeable because `external-gates.log` still records live/external storage/release-tag blockers and published tags/releases only cover `v0.1.0`, `v0.1.1`, and `v0.2.0`.
