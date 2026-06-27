@@ -619,6 +619,10 @@ proposed --graduate--> active <--reactivate-- maintained
 | [#1241](https://github.com/ZoneCNH/ZoneCNH/pull/1241) | feat: Codex/Copilot Agent 矩阵补全 — 四平台管线执行能力就绪 | 31 |
 | [#1242](https://github.com/ZoneCNH/ZoneCNH/pull/1242) | docs: Agent 矩阵文档对齐 — 平台 agent 数 + Copilot 执行器清单 | 3 |
 
+### 已修复项（2026-06-27 第九轮：健康度仪表盘）
+
+17. **管线健康度仪表盘** — 创建 `scripts/pipeline-dashboard.py`（130+ 行），双源合并 `.foundationx/status/index.json`（21 模块成熟度）+ `.omc/state/pipeline/`（23 模块阶段评分），自动生成 `docs/workflow/DASHBOARD.md`。含总览统计、8 维成熟度分布（Unicode bar chart）、模块级 pipeline 六阶段图标（🟢四源/🟡二源/🔴部分/⬜无）、仲裁通过数。
+
 ### 已修复项（2026-06-27 第八轮：统一入口）
 
 16. **双管线统一入口** — 创建 `docs/workflow/README.md`：管线关系说明、使用决策树（"我要…走哪条"）、11 阶段双向对应表（G0-G11 ↔ S1-S6）、四源评分速览、快速通道摘要、完整文档索引。`AGENTS.md` 顶部新增导航链接。
@@ -763,7 +767,7 @@ proposed --graduate--> active <--reactivate-- maintained
 ### 长期（架构演进）
 
 7. ~~双管线统一入口~~ ✅ **已实施**：`docs/workflow/README.md` — 双管线关系图、决策树、11阶段对应表、四源评分速览、快速通道、完整文档索引
-8. **管线健康度仪表盘**：基于 `.foundationx/status/index.json` 和 pipeline 状态目录，生成每个模块的管线进度可视化。
+8. ~~管线健康度仪表盘~~ ✅ **已实施**：`scripts/pipeline-dashboard.py` + `docs/workflow/DASHBOARD.md` — 双源合并（.foundationx + .omc/state/pipeline），生成 23 模块全景仪表盘：总览/成熟度分布/模块管线进度（含 visual bar + emoji 图标）
 
 ---
 
