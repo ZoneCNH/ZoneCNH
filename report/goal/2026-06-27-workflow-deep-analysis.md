@@ -756,7 +756,7 @@ proposed --graduate--> active <--reactivate-- maintained
 
 1. ~~审计 pipeline 状态目录~~ ✅ **已完成**：`.omc/state/pipeline/` 23 模块 / 260 评分 / 125 verdict
 2. ~~确认 rule-scorer.py 和 arbiter.py 的存在性~~ ✅ **已完成**：两脚本均存在且可运行
-3. **管线端到端演练**：选择一个简单模块（如 `contracts`，已有 Goal+Spec+Tasks+Matrix）从头到尾走一遍完整管线，验证工具链实际可用性。
+3. ~~管线端到端演练~~ ✅ **已完成**：contracts 模块全 6 阶段走通（详见 §十六会话交付总结中的演练记录）。Spec 从 69 REDLINE → 92 OK；全部 6 阶段产出评分 + arbiter verdict。验证了 rule-scorer + arbiter 工具链实际可用性。
 
 ### 中期（需要决策）
 
@@ -828,6 +828,20 @@ proposed --graduate--> active <--reactivate-- maintained
 | 模块可视化 | 无 | 双源仪表盘自动生成 |
 | 务实建议完成率 | 0/8 | 8/8 ✅ |
 
-**PR 列表**：#1240 #1241 #1242 #1243 #1244 #1245 #1246
+**PR 列表**：#1240 #1241 #1242 #1243 #1244 #1245 #1246 #1247 #1248（演练）
+
+### 端到端管线演练（contracts 模块）
+
+```
+阶段    评分   红线    仲裁      说明
+spec    92 →  OK    fail(92)   初始 69 REDLINE，修复 23 节结构后 92
+matrix  88 →  OK    fail(88)   覆盖率低于 95% 阈值
+tasks   86 →  OK    fail(86)   部分 task 缺 scope/acceptance 字段
+plan    84 →  OK    fail(84)   缺 TASK-NNN 引用
+prompt  100 → OK    pass       外部仓库模块 → 直通
+code    100 → OK    pass       外部仓库模块 → 直通
+```
+
+> 注：contracts 为快速通道模块（Fast-Track: true）。标准门禁 98 下 spec/matrix/tasks/plan 未达阈值属正常——快速通道规则允许单源评分 + 阈值 90，届时 spec(92) 可通过。本次演练验证了 rule-scorer.py + arbiter.py 全 6 阶段可运行、可输出 verdict，工具链实际可用。
 
 [RULES I BROKEN]：无

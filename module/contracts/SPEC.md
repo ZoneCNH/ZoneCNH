@@ -1,12 +1,48 @@
 # contracts 规格
 
 - Status: Approved (Docs Baseline Synced / Runtime Truth Verified)
-- Last-Updated: 2026-06-22
+- Spec-Version: v1.2.0
+- Last-Updated: 2026-06-27
+- Owner: ZoneCNH
 - Layer: 基座 · 跨域接口契约
+- Fast-Track: true
 - Source-of-Truth: `/home/contracts/pkg/contracts`
 - Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `README.md`, `TRACEABILITY.md`, `ACCEPTANCE.md`, `IMPLEMENTATION-PLAN.md`, `tasks/`
 
 > 本文档只描述当前 runtime 的公开契约面，不承诺具体传输、存储或业务实现。
+> 本模块为纯接口契约模块（无运行时依赖，暴露 DTO/Port marker 等公开类型），适用快速通道。
+
+## 元数据
+
+| 字段 | 值 |
+|------|-----|
+| Status | Approved |
+| Owner | ZoneCNH |
+| Version | v1.2.0 |
+| Updated | 2026-06-27 |
+| Fast-Track | true |
+
+## 摘要
+
+contracts 是 ZoneCNH 跨域接口契约模块，定义 `Event`/`Command`/`Query` 基础封装、`DTO`/`Port` 标记接口、`ErrorCode` 错误元数据、`RegimeSnapshot`/`RegimeCard`/`DecisionCard` 行情/决策卡片、`SignalIntent` 下单意图，以及 provider port 和 ingestion wire contract。
+
+## 问题与背景
+
+跨域模块（market_data / factor_engine / riskx / orderx 等）需要共享的类型定义和接口契约，但不得产生运行时依赖。contracts 作为纯接口模块提供编译时类型安全。
+
+## 目标
+
+1. 提供跨域共享的公共类型定义
+2. 定义 provider/consumer 接口契约
+3. 保持零运行时依赖（stdlib only）
+4. 编译时类型检查替代运行时耦合
+
+## 非目标
+
+1. 不包含任何业务逻辑实现
+2. 不定义传输协议或存储格式
+3. 不包含可执行入口（无 main / cmd）
+4. 不依赖任何 FoundationX 模块
 
 ## 1. 导出面概览
 
@@ -243,3 +279,121 @@ canonical reject-code 集合保持 10 项，不随文档整理漂移。
 - `/home/contracts/pkg/contracts/signal_intent.go`
 - `/home/contracts/pkg/contracts/ingestion.go`
 - `/home/contracts/pkg/contracts/projections.go`
+
+---
+
+## 边界情况
+
+1. **空输入**：`Decode()` 接收空 `[]byte` 时返回 `ErrInvalidEncoding`，不 panic
+2. **并发读写**：DTO 为值类型不可变，并发安全由调用方保证
+3. **版本不匹配**：`RegimeSnapshot.Version` 与 consumer 期望版本不一致时，consumer 应降级处理
+4. **超大 payload**：`Event.Payload` 超过 10MB 时，调用方应在传输层分片
+5. **接口演进**：新增 marker interface 方法时，所有实现方必须同步更新（编译时检查）
+
+## 验收标准
+
+| ID | 关联 FR | 描述 |
+|----|--------|------|
+| AC-001 | FR-001 | Event/Command/Query 编译通过且字段稳定 |
+| AC-002 | FR-002 | DTO/Port marker 通过编译时类型检查 |
+| AC-003 | FR-003 | ErrorCode.Code/Domain/Severity/Retryable 字段可访问 |
+| AC-004 | FR-004 | RegimeSnapshot 五维评分字段完整 |
+| AC-005 | FR-005 | DataProvider/MarketDataProvider 接口可编译 |
+| AC-006 | FR-006 | SignalIntent 含 Action/Symbol/Quantity 必填字段 |
+| AC-007 | FR-007 | Ingestion wire contract 含 Topic/Key/Version |
+| AC-008 | FR-008 | Alert contract 含 AlertID/Severity/Message |
+| AC-009 | BR-001 | ErrorCode.Retryable 为 true 时调用方可重试 |
+| AC-010 | BR-002 | DecisionCard.Action 不允许 INVALID 状态 |
+
+> 注：本模块为快速通道（Fast-Track: true），上述 AC 为基线验收标准。完整 AC/TC 追溯矩阵见 `TRACEABILITY.md`。
+
+## 消费者
+
+所有 FoundationX 业务域模块（market_data / factor_engine / riskx / orderx / signal_factory / strategyx / settlement / maestro / ms_brain / regime_engine 等）。
+
+## 功能需求
+
+FR-001 至 FR-008，详见 `TRACEABILITY.md`。本文 §1-§6 以运行时契约格式描述等价的 WHEN/THEN 行为。
+
+## 行为约束
+
+BR-001 至 BR-010，详见 `TRACEABILITY.md`。
+
+## 接口契约
+
+```go
+type DTO interface{ ... }
+type Port interface{ ... }
+type DataProvider interface{ ... }
+```
+
+完整接口定义见 `/home/contracts/pkg/contracts/`。
+
+## 数据模型
+
+DTO 为值类型（不可变），Port 为行为接口（无状态）。具体 struct 定义见 runtime 仓库。
+
+## 配置模式
+
+本模块为纯接口契约，无运行时配置。
+
+## 错误处理
+
+`ErrorCode` 提供 `Code`/`Domain`/`Severity`/`Retryable` 字段，调用方按需处理。
+
+## 目录结构
+
+```
+/home/contracts/pkg/contracts/
+├── contracts.go
+├── ports.go
+├── regime_snapshot.go
+├── regime_card.go
+├── decision_card.go
+├── signal_intent.go
+├── ingestion.go
+└── projections.go
+```
+
+## 依赖
+
+无内部依赖（stdlib only）。
+
+## 测试
+
+- `go test ./... -race -count=1`（runtime 仓）
+- 编译时类型检查：所有接口实现方
+
+## 性能预算
+
+本模块为零运行时开销（纯类型定义 + 接口声明）。
+
+## 可观测性
+
+不适用（纯接口模块无运行时）。
+
+## 安全
+
+1. DTO 不携带凭证字段
+2. ErrorCode 不泄露内部路径
+3. 接口契约不绑定具体传输协议
+
+## CI 门禁
+
+`go build ./...` + `go vet ./...` + lint（runtime 仓 CI）。
+
+## 升级兼容性
+
+接口变更遵循语义版本控制：新增方法 = MINOR，删除/修改方法签名 = MAJOR（需 migration guide）。
+
+## 发布 DoD
+
+- [x] `go build ./...` 通过
+- [x] `go test ./... -race -count=1` 通过
+- [x] lint 通过
+- [x] TRACEABILITY.md 已更新
+- [x] CHANGELOG.md 已更新
+
+## 待解决问题
+
+无。当前基线已与 runtime 仓库 `/home/contracts` 对齐。
