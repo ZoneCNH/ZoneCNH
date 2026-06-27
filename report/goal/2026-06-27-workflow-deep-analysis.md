@@ -619,6 +619,11 @@ proposed --graduate--> active <--reactivate-- maintained
 | [#1241](https://github.com/ZoneCNH/ZoneCNH/pull/1241) | feat: Codex/Copilot Agent 矩阵补全 — 四平台管线执行能力就绪 | 31 |
 | [#1242](https://github.com/ZoneCNH/ZoneCNH/pull/1242) | docs: Agent 矩阵文档对齐 — 平台 agent 数 + Copilot 执行器清单 | 3 |
 
+### 已修复项（2026-06-27 第七轮：文档合并 + 快速通道）
+
+14. **AGENTS.md / DEVELOPMENT-WORKFLOW.md 去重** — AGENTS.md 简化为 Agent 编排参考（保留平台矩阵 + Agent 角色表），管线流程/门禁/递归规则统一引用 `DEVELOPMENT-WORKFLOW.md`（管线定义 SSOT）。移除 ~40 行重复内容。
+15. **小型模块快速通道** — `DEVELOPMENT-WORKFLOW.md` 新增 §快速通道：≤3 方法 + 无内部依赖 + 纯 library → 跳过 Design + 单源评分(rules only) + 门禁 90（正常 98）。含准入条件、CI 检测标记、退出机制。
+
 ### 已修复项（2026-06-27 第六轮：文档对齐）
 
 13. **AGENTS.md 对齐** — 平台概览表新增 Agent 数列（Claude 28 / Codex 20 / Copilot 19）。`.copilot/AGENTS.md` 新增 Executor 代理清单（6 执行器 + 阶段/用途/可写文件）。`.codex/AGENTS.md` 已自动对齐无需修改。
@@ -748,8 +753,8 @@ proposed --graduate--> active <--reactivate-- maintained
 ### 中期（需要决策）
 
 4. ~~Codex 平台决策~~ ✅ **已完成（选项 A）**：已补齐 14 个 TOML agent，`.codex/agents/` 现有 20 个文件
-5. **降低管线启动门槛**：为小型模块（单一接口、无运行时依赖）提供"快速通道"，允许跳过部分评分环节或降低门禁分数阈值。
-6. **合并重复文档**：选择 AGENTS.md 或 `docs/governance/DEVELOPMENT-WORKFLOW.md` 作为管线定义的 SSOT，另一个简化为引用指针。
+5. ~~降低管线启动门槛~~ ✅ **已实施**：`DEVELOPMENT-WORKFLOW.md` 新增 §快速通道（小型模块：≤3 方法 + 无内部依赖 + 纯 library → 跳过 Design + 单源评分 + 门禁 90）
+6. ~~合并重复文档~~ ✅ **已实施**：`AGENTS.md` 简化为 Agent 编排参考 + 引用指针，`DEVELOPMENT-WORKFLOW.md` 为管线定义 SSOT
 
 ### 长期（架构演进）
 

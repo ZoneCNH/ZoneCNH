@@ -86,20 +86,9 @@
 
 ## 分支纪律
 
-> 详见 `CONSTITUTION.md` 第零条。本节约定优先于以下所有管线规则。
-
-- **禁止**在 `main` 分支上直接编辑文件或提交变更。
-- **所有分支必须从 `main` HEAD 创建**。创建前必须先 `git fetch origin && git rebase origin/main` 确保本地 main 为最新。禁止从其他 feature branch 或旧 commit 拉取新分支。
-- 所有开发工作必须通过 `git worktree` 或 feature branch 进行。
-- 工作完成后通过 PR 或 merge 合入 main，随后清理 worktree 和 feature branch。
-
-Agent 创建分支前的检查清单：
-
-1. 确认当前不在 main 分支
-2. 执行 `git fetch origin && git rebase origin/main`
-3. 确认 main HEAD 与 `origin/main` 一致
-4. 从 main HEAD 创建新分支或 worktree
-5. 记录创建来源 commit SHA
+> **SSOT**: `CONSTITUTION.md` §0（优先级最高）。详细操作步骤见 `docs/governance/DEVELOPMENT-WORKFLOW.md` §分支创建纪律。
+>
+> 核心规则：禁止 main 直接编辑 → 从 main HEAD 创建 worktree/branch → PR 合入 → 清理。
 
 ## Spec 开发管线
 
@@ -131,23 +120,11 @@ Spec 编写完成后，不是直接写代码，而是按管线推进：Spec → 
 | `code-reviewer`      | —           | 代码审查                                                                                                | 无                 | 否       | —           | —               |
 | `tdd-guide`          | —           | 测试驱动开发                                                                                            | 测试 / 必要实现    | 是       | —           | —               |
 
-管线流程：
+管线的完整流程、门禁算法、失败路由、有界递归规则等详见 **`docs/governance/DEVELOPMENT-WORKFLOW.md`**（管线定义 SSOT）。评分方法论见 `docs/governance/STRUCTURAL-SCORING.md`，仲裁协议见 `docs/governance/scoring/ARBITER-PROTOCOL.md`。
 
-```text
-每阶段通用门禁：
+### 快速通道（小型模块）
 
-executor → [claude scorer | codex scorer | copilot scorer | rules scorer]（agent team 并行）
-        → pipeline-arbiter（composite_score = min(claude.score, codex.score, copilot.score, rules.score)；composite_score >= 98 且无红线、无 LLM 低置信度、无异常 LLM 分差或 rules 异构分歧）
-        → 下一阶段
-
-规范阶段顺序：
-
-Spec → Matrix → Tasks → Plan → Prompt → Code
-```
-
-每个阶段都必须做结构性问题分析和四源评分。任一评分源低于 98、触发红线、任一 LLM 低置信度、三 LLM 分差超过阈值或 rules 与 LLM 中位数异构分歧过大，均不得进入下一阶段。Spec 阶段由 `pipeline-arbiter` 在 pass 后自动翻转 `Status: Approved`；`spec-review` 仅作为对抗性参考证据，不构成独立门禁。评分方法论详见 `docs/governance/STRUCTURAL-SCORING.md`，仲裁协议详见 `docs/governance/scoring/ARBITER-PROTOCOL.md`。
-
-管线支持有界递归自改进：同阶段最多 3 次自动修复，失败后回退上游；全链路默认最多 18 次 gate fail，耗尽后写出 `pipeline_blocked` 与 `PIPELINE-RETROSPECTIVE.md`，不得无限重写 Spec。工作流、rubric、agent、arbiter 等受保护文件的改进必须作为 `docs/governance/improvements/{YYYYMMDD}-{slug}/SPEC.md` 进入同一条 98 分管线，并遵守 `CONSTITUTION.md` 第十四条。
+小型模块（单一接口 ≤3 方法、无运行时依赖、纯 library）可申请快速通道，详见 `docs/governance/DEVELOPMENT-WORKFLOW.md` §快速通道。
 
 ### OMX Pipeline Skill
 
@@ -176,7 +153,7 @@ Spec → Matrix → Tasks → Plan → Prompt → Code
 | Claude Code | `/project:spec-code-pipeline {module}` | `.claude/commands/spec-code-pipeline.md`    |
 | Copilot CLI | `/project:spec-code-pipeline {module}` | `.copilot/commands/spec-code-pipeline.md`   |
 
-该入口要求每个阶段都通过四源评分门禁：`composite_score = min(claude, codex, copilot, rules) >= 98` 且无红线、无 LLM 低置信度、LLM 分差与 rules 异构分歧在阈值内。Spec 的 `Status: Approved` 由 arbiter pass 后自动翻转；`spec-review` 仅作为额外对抗性证据，不构成独立门禁。
+该入口与上述管线的门禁规则相同（详见 `docs/governance/DEVELOPMENT-WORKFLOW.md`）。
 
 ### 关键文档
 

@@ -815,3 +815,43 @@ PR 描述应引用 Spec：
 | `docs/governance/scoring/ARBITER-PROTOCOL.md` | 仲裁算法、门禁、升级链 |
 | `docs/governance/scoring/RUBRIC-*.md`         | 各阶段评分维度与红线   |
 | `CONSTITUTION.md`                             | 最高治理权威           |
+
+---
+
+## 快速通道（小型模块）
+
+> 适用于满足以下全部条件的模块，可跳过部分阶段或降低评分门禁。
+
+### 准入条件（三条全部满足）
+
+| # | 条件 | 验证方式 |
+|---|------|---------|
+| 1 | **单一接口**：暴露 ≤3 个公开方法/函数 | `grep -c "^func \|^type .* interface"` |
+| 2 | **无运行时依赖**：不依赖任何其他 ZoneCNH 模块（stdlib 除外） | `go list -m all` 无内部 import |
+| 3 | **纯 library**：无可执行入口（无 `cmd/`、无 `main` 包），无 server/client 进程 | `test ! -d cmd/ && test ! -f main.go` |
+
+### 快速通道简化的内容
+
+| 正常管线 | 快速通道 | 说明 |
+|---------|---------|------|
+| S3-Design（G3 Gate） | **跳过** | 无架构决策可记录时跳过 |
+| S2-Matrix 评分 | **单源评分**（rules only） | 小型模块追溯链简单，规则引擎即可验证 |
+| 门禁分数 | **≥90**（正常 ≥98） | 降低准入门槛但不取消 |
+| 红线检查 | **不变** | 安全/凭证/宪法违规红线仍强制 |
+
+### 快速通道流程
+
+```text
+Goal → Spec → [单源 Matrix check] → Tasks → Plan → Prompt → Code
+         └─ composite ≥90（仅 rules 源）
+```
+
+### 申请流程
+
+1. 模块负责人在 `module/{module}/SPEC.md` 元数据中声明 `Fast-Track: true`
+2. 附带准入条件验证证据（3 条检查输出）
+3. CI gate 自动检测 `Fast-Track` 标记并切换门禁阈值
+
+### 退出快速通道
+
+当模块不再满足任一准入条件时（如新增接口 >3 方法或引入内部依赖），必须在下一个 Spec 版本中移除 `Fast-Track` 标记，并补走被跳过的阶段。
