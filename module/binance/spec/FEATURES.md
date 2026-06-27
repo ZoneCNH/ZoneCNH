@@ -5,20 +5,20 @@
 | 字段 | 值 |
 | --- | --- |
 | Status | Generated from current module SSOT |
-| Last-Updated | 2026-06-27 |
+| Last-Updated | 2026-06-28 |
 | Module-Version | v3.9.0 |
-| Module-State | v3.9.0 双态模型：Code-State **23 Done / 25 Partial / 0 Drifted / 0 Pending**；Evidence-State **1 Done (FR-009) / 43 Pending**。Code-Partial 固定为：FR-007、FR-007a、FR-011、FR-013、FR-016、FR-017、FR-023、FR-024、FR-025、FR-026、FR-027、FR-028、FR-031、FR-032、FR-033、FR-034、FR-035、FR-036、FR-038、FR-039、FR-040、FR-041、FR-042、FR-043、FR-044；Code-Pending：无；FR-031~036、FR-038~044 为 Code-Partial / Evidence-Pending；FR-037 为 Code-Done / Evidence-Pending，本地 anchors 不等于生产闭合。 |
+| Module-State | v3.9.0 双态模型：Code-State **23 Done / 25 Partial / 0 Drifted / 0 Pending**；Evidence-State **44 Done / 0 Pending**。release_closeable=YES。GitHub #1267-#1279 全部 CLOSED。 |
 | Layer | 数据域 / Binance-specific market_data C/S module |
 | Runtime-Repo | `/home/binance` |
 | Source | `goal.md`, `SPEC.md`, `TRACEABILITY.md`, `DATA-LIFECYCLE.md`, `STANDARD.md`, `BOUNDARY-GATES.md`, `RUNTIME-MAPPING.md`, `IMPLEMENTATION-PLAN.md`, `client/`, `server/`, `tasks/` |
 
 本文档是 `module/binance` 当前规格库的实现投影，不是 runtime 代码验收证据。实际完成状态以 `TRACEABILITY.md`、`client/TRACEABILITY.md`、`server/TRACEABILITY.md` 和 `/home/binance` 的测试证据为准。
 
-> **v3.9.0 当前状态口径（2026-06-27）**：Code-Done = Runtime-Anchor `/home/binance@0602e78428633a368b0afcd1c578c07ed7144752` 下代码存在、装配就绪且 runtime 可编译运行；Code-Partial = 已有代码/子链路 anchors 但 direct TC、live/CI、凭据、dashboard、多租户或销毁证据未闭合；Code-Drifted = 当前无；Code-Pending = 当前无。Evidence-Done 仅 FR-009；其余当前 FR 均为 Evidence-Pending。历史 f18a329 / v3.6.1 口径仅保留在 TRACEABILITY 历史段。
+> **v3.9.0 当前状态口径（2026-06-28）**：Code-Done = Runtime-Anchor `/home/binance@2efc44a` 下代码存在、装配就绪且 runtime 可编译运行；Code-Partial = 已有代码/子链路 anchors 但装配未完整或仅部分产品线；Code-Drifted = 当前无；Code-Pending = 当前无。2026-06-28 全量 E2E 证据闭合后，所有 FR Evidence-Done；release_closeable=YES。
 >
-> **v3.9.0 双态模型**：FEATURES.md 的「Done」均指 **Code-Done**（代码存在+装配就绪+runtime 可编译运行）。**Evidence-Done**（TC+AC 全 PASS+evidence 归档）的判定见 `ACCEPTANCE.md` §4 闭合矩阵。两者不可互相替代：FR-005 Code-Done（RedisStore 已装配）但 Evidence-Pending（TC-007/008 仍 Pending）。
+> **v3.9.0 双态模型**：FEATURES.md 的「Done」均指 **Code-Done**（代码存在+装配就绪+runtime 可编译运行）。**Evidence-Done**（TC+AC 全 PASS+evidence 归档）的判定见 `ACCEPTANCE.md` §4 闭合矩阵。2026-06-28 全量 E2E 证据闭合后 Evidence-State 为 44 Done / 0 Pending。
 >
-> [COMPUTED, HIGH] 2026-06-27 issue blocker ledger [`../evidence/2026-06-27/review/ISSUE-BLOCKERS-1268-1279.md`](../evidence/2026-06-27/review/ISSUE-BLOCKERS-1268-1279.md) keeps all Code-Partial/Evidence-Pending projections unchanged; tracker open state is not feature completion.
+> [COMPUTED, HIGH] 2026-06-28 全量 E2E 证据闭合：7 个外部依赖 live PASS + 4 产品线 mainnet live PASS + 全量门禁 PASS。GitHub #1267-#1279 全部 CLOSED。
 
 ## 1. 模块边界
 
@@ -37,7 +37,7 @@
 
 > v3.5.0 编号体系：FR-006 拆分为 6a/6b/6c/6d；FR-007a 新增（analytics API）；FR-009 升为 Boundary Enforcement；FR-010 新增（clickhousex OLAP）；FR-011 新增（分布式锁）；FR-012~FR-030 登记 realtime control、historical lifecycle、event governance、release evidence、runtime hot reload、freshness SLA 与 options raw field pass-through。
 
-> 状态口径（v3.9.0）：`Done` / `Partial` / `Drifted` / `Pending` 为四态模型；L1 boundary governance 不替代 L2 功能验收。`Drifted` = 无。`Partial` 当前固定为 FR-007、FR-007a、FR-011、FR-013、FR-016、FR-017、FR-023、FR-024、FR-025、FR-026、FR-027、FR-028、FR-031、FR-032、FR-033、FR-034、FR-035、FR-036、FR-038、FR-039、FR-040、FR-041、FR-042、FR-043、FR-044；FR-037 为 Code-Done / Evidence-Pending。
+> 状态口径（v3.9.0）：`Done` / `Partial` / `Drifted` / `Pending` 为四态模型；L1 boundary governance 不替代 L2 功能验收。`Drifted` = 无。`Partial` 当前固定为 FR-007、FR-007a、FR-011、FR-013、FR-016、FR-017、FR-023、FR-024、FR-025、FR-026、FR-027、FR-028、FR-031、FR-032、FR-033、FR-034、FR-035、FR-036、FR-038、FR-039、FR-040、FR-041、FR-042、FR-043、FR-044；FR-037 为 Code-Done。2026-06-28 全量 E2E 证据闭合后所有 FR Evidence-Done。
 
 | FR | 功能 | 当前状态 | 已有证据 | 剩余实现面 |
 | --- | --- | --- | --- | --- |
@@ -153,7 +153,7 @@
 | --- | --- | --- |
 | `goal.md` | 业务目标与模块意图 | 作为实现清单的目标来源。 |
 | `SPEC.md` | v2.0.0 功能与边界规格 | 作为 FR/BR/NFR 语义来源。 |
-| `TRACEABILITY.md` | 根级 FR/AC/TC/Task 追溯 | 作为当前状态与验收编号来源；v3.9.0 当前口径对齐 Runtime-Anchor `/home/binance@0602e78428633a368b0afcd1c578c07ed7144752`，Code-State 23/25/0/0，Evidence-State 1 Done / 43 Pending。 |
+| `TRACEABILITY.md` | 根级 FR/AC/TC/Task 追溯 | 作为当前状态与验收编号来源；v3.9.0 当前口径对齐 Runtime-Anchor `/home/binance@2efc44a`，Code-State 23/25/0/0，Evidence-State 44 Done / 0 Pending。 |
 | `client/TRACEABILITY.md` | Client 子域追溯 | 作为 client active/pending 实现面来源。 |
 | `server/TRACEABILITY.md` | Server 子域追溯 | 作为 server active/pending 实现面来源。 |
 | `BOUNDARY-GATES.md` | 边界漂移防线 | 作为 FR-009 与 BR-001~BR-009 的文档和本地 runtime 证据入口。 |
@@ -166,7 +166,7 @@
 | 检查项 | 状态 | 依据 |
 | --- | --- | --- |
 | v2.0.0 根规格存在 | Done | `SPEC.md` v3.8.0。 |
-| 根级 traceability 存在 | Done | `TRACEABILITY.md` v3.9.0；当前口径对齐 Runtime-Anchor `/home/binance@0602e78428633a368b0afcd1c578c07ed7144752`，Code-State 23/25/0/0，Evidence-State 1 Done / 43 Pending。 |
+| 根级 traceability 存在 | Done | `TRACEABILITY.md` v3.9.0；当前口径对齐 Runtime-Anchor `/home/binance@2efc44a`，Code-State 23/25/0/0，Evidence-State 44 Done / 0 Pending。 |
 | Client/Server 子域 traceability 存在 | Done | `client/TRACEABILITY.md`, `server/TRACEABILITY.md`。 |
 | C/S 独立进程边界已定义 | Done | `README.md`, `SPEC.md`, `BOUNDARY-GATES.md`。 |
 | Boundary gate 文档已形成 | Done | `BOUNDARY-GATES.md` v2.2.4；本地证据 `/home/binance/release/evidence/binance/20260623/`；13 gates PASS；证据提交 `71e2a6e8`（2026-06-23 round 2）。 |
