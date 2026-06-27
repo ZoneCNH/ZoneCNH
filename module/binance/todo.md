@@ -4,9 +4,9 @@
 - **来源**：[`report/binance/spec-structural-analysis-20260627.md`](../../report/binance/spec-structural-analysis-20260627.md) 生产级可发布差距分析
 - **Spec-Version**：v3.9.0
 - **Runtime-Anchor**：`/home/binance@f046e16`
-- **当前状态**：v0.2.0 可编译可发布，但**不可生产运营**（43/44 Evidence-Pending，7 PRG 全 Pending；ADR-003/ADR-004 与 legacy mapping 文档同步已完成）
+- **当前状态**：v0.2.0 可编译可发布，但**不可生产运营**（43/44 Evidence-Pending，7 PRG 全 Pending；ADR-003/ADR-004、legacy mapping、三文件/四文件状态一致性 CI gate 已同步完成）
 
-> [COMPUTED, HIGH] 本文件是 spec 层结构性修复（MA-1~MA-4 + MO-2，已完成）之后的**剩余未完成项**清单。完成状态基于 2026-06-27 对 spec 文件和 `/home/binance` runtime 代码的交叉验证；P0-10、P1-6 以及 legacy mapping 等文档可验证状态已同步为完成，runtime/外部环境/CI 授权项仍保留为未完成或阻塞。
+> [COMPUTED, HIGH] 本文件是 spec 层结构性修复（MA-1~MA-4 + MO-2，已完成）之后的**剩余未完成项**清单。完成状态基于 2026-06-27 对 spec 文件和 `/home/binance` runtime 代码的交叉验证；P0-10、P1-6、P2-8 以及 legacy mapping 等文档可验证状态已同步为完成，runtime/外部环境项仍保留为未完成或阻塞。
 
 ---
 
@@ -16,8 +16,8 @@
 | ----------- | :----: | :----: | :----: | :-----: |
 | P0 阻塞     |   10   |   9    |   1    |   90%   |
 | P1 强烈建议 |   8    |   3    |   5    |   38%   |
-| P2 可延后   |   8    |   2    |   6    |   25%   |
-| **合计**    | **26** | **14** | **12** | **54%** |
+| P2 可延后   |   8    |   3    |   5    |   38%   |
+| **合计**    | **26** | **15** | **11** | **58%** |
 
 ---
 
@@ -150,11 +150,11 @@
 | ---- | ------------------------------ | ------------------------------------------------------------------------ |
 | P1-6 | ADR：FR-024 vs FR-036 架构路径 | ADR-004 Accepted；FR-036 自建增量 diff，FR-024 保持 full reconnect/no-restart 边界 |
 | P1-7 | 双态模型补充 Code-Drifted 规则 | ACCEPTANCE.md + FEATURES.md + TRACEABILITY.md 已引入 Code-Drifted 第四态 |
-| P1-8 | FR-013/017/025 状态降级        | 三个 FR 从 Code-Done 降级为 Code-Drifted，统计更新为 21/10/3/10          |
+| P1-8 | FR-013/017/025 状态复核        | 三个 FR 从 active Code-Drifted 调整为 Code-Partial，统计更新为 22/12/0/14 |
 
 ---
 
-## P2 可延后 — 有替代手段（6 项未完成）
+## P2 可延后 — 有替代手段（5 项未完成）
 
 ### P2-1：Cost observability
 
@@ -200,20 +200,20 @@
 
 ### P2-8：三文件状态一致性 CI gate
 
-- **状态**：⛔ 阻塞（本次任务禁止修改 CI 脚本/工作流）
+- **状态**：✅ 已完成（2026-06-27）
 - **对应**：MO-1
-- **当前**：`.github/ci/status-consistency-check.sh` 不覆盖 binance 三文件（FEATURES.md ↔ TRACEABILITY.md §6 ↔ ACCEPTANCE.md §4）
-- **目标**：建立 CI gate 确保 FEATURES.md Code-Done ↔ TRACEABILITY.md §6 实现投影 ↔ ACCEPTANCE.md §4 Evidence 状态一致
-- **工作量**：S
+- **完成内容**：新增 `.github/ci/binance-status-consistency-check.sh` 并接入 `.github/workflows/docs-ci.yml`，校验 `README.md`、`FEATURES.md`、`ACCEPTANCE.md`、`TRACEABILITY.md` FR Code 统计、Drifted FR 列表、TRACEABILITY §1 摘要与 §6 仪表盘一致。
+- **验证**：`bash -n .github/ci/binance-status-consistency-check.sh` PASS；`bash .github/ci/binance-status-consistency-check.sh` PASS。
 
 ---
 
-## P2 已完成（2 项，存档参考）
+## P2 已完成（3 项，存档参考）
 
-| #    | 工作项                 | 完成证据                                                                         |
-| ---- | ---------------------- | -------------------------------------------------------------------------------- |
-| P2-4 | 退役文件物理隔离/精简  | 4 文件添加 DEPRECATED 横幅 + 精简（842→95 行）                                   |
-| P2-5 | Appendix D AC-BNC 迁移 | 迁移到 `docs/migrations/ac-bnc-legacy-mapping.md`，根 SPEC Appendix D 替换为指针 |
+| #    | 工作项                      | 完成证据                                                                                                                                                                    |
+| ---- | --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| P2-4 | 退役文件物理隔离/精简       | 4 文件添加 DEPRECATED 横幅 + 精简（842→95 行）                                                                                                                             |
+| P2-5 | Appendix D AC-BNC 迁移      | 迁移到 `docs/migrations/ac-bnc-legacy-mapping.md`，根 SPEC Appendix D 替换为指针                                                                                           |
+| P2-8 | 三文件/四文件状态一致性 CI gate | `.github/ci/binance-status-consistency-check.sh` + `.github/workflows/docs-ci.yml` 已覆盖 README/FEATURES/ACCEPTANCE/TRACEABILITY Code 统计、Drifted FR 与 TRACEABILITY §1/§6 一致性 |
 
 ---
 
@@ -228,7 +228,7 @@
 | 0.1  | 对齐 FR-013：分钟滑动窗口 + 418/429 退避 + clock skew     | `reliability.go`                                    |
 | 0.2  | 对齐 FR-017：按 event_type 分策略缺口检测                 | `server.go` + `quality.go`                          |
 | 0.3  | 对齐 FR-025：分钟 weight + P0/P1/P2 优先级                | `throttle.go`                                       |
-| 0.4  | 状态恢复：FR-013/017/025 从 Code-Drifted 恢复为 Code-Done | `ACCEPTANCE.md` + `FEATURES.md` + `TRACEABILITY.md` |
+| 0.4  | 状态复核：FR-013/017/025 从 active Code-Drifted 调整为 Code-Partial；Code-Done/Evidence-Done 依赖 direct TC/live evidence | `ACCEPTANCE.md` + `FEATURES.md` + `TRACEABILITY.md` |
 
 ### Phase 1：生产级门禁补全（剩余 P0-5，3-4 周）
 
@@ -252,7 +252,7 @@
 
 ### Phase 3：Evidence-Done 推进（持续，8-12 周）
 
-1. 先补 P0 spec-runtime drift → 3 个 FR Code-Done 恢复后重新评估 Evidence
+1. 先补 FR-013/017/025 direct TC/live evidence，再按证据把 Code-Partial 推进到 Code-Done/Evidence-Done
 2. 按 FR 依赖顺序推进：FR-001~009（核心链路）→ FR-006a-e（存储）→ FR-012~015（实时控制）→ 其余
 3. 外部 E2E 分批：Redis + NATS → TDengine + Kafka → ClickHouse + OSS
 4. 每关闭一个 Evidence-Done，同步更新 ACCEPTANCE.md §4 + TRACEABILITY.md
@@ -264,7 +264,7 @@
 | 4.1  | FR-031~036 ExchangeInfo sync runtime   |
 | 4.2  | Backfill progress 持久化               |
 | 4.3  | DLQ 持久化 wiring + replay             |
-| 4.4  | 三文件状态一致性 CI gate               |
+| 4.4  | ✅ 三文件/四文件状态一致性 CI gate     |
 | 4.5  | Cost observability (FR-043)            |
 | 4.6  | Data compliance & destruction (FR-044) |
 
@@ -272,8 +272,8 @@
 
 ## 关键约束
 
-> [KNOWN, HIGH] 本 TODO 清单中仍需 `/home/binance` runtime 或外部环境的项包括 P0-5、P1-1~P1-5、P2-1~P2-3、P2-6、P2-7 及相关 Evidence/PRG 闭合；本次主仓文档同步已完成 P0-10、P1-6 和 legacy mapping。P2-8 需要修改 CI gate，当前任务明确禁止修改 CI 脚本/工作流，因此保持阻塞。
+> [KNOWN, HIGH] 本 TODO 清单中仍需 `/home/binance` runtime 或外部环境的项包括 P0-5、P1-1~P1-5、P2-1~P2-3、P2-6、P2-7 及相关 Evidence/PRG 闭合；本次主仓文档同步已完成 P0-10、P1-6、P2-8 和 legacy mapping。剩余未完成项集中在 runtime/外部环境/Evidence/PRG。
 >
 > [COMPUTED, HIGH] 所有 P0 项完成后才可声明"生产级可发布"。P1 项完成后才可声明"生产级可运营"。P2 项可延后但有替代手段时不应无限期搁置。
 >
-> [COMPUTED, HIGH] 每完成一项，更新本文件状态列（❌/⚠️/✅/⛔）+ 授权范围内的 FEATURES.md 实现投影 + SPEC.md 边界说明 + CHANGELOG.md；ACCEPTANCE.md §4 和 TRACEABILITY.md 不在本次写权限范围内，需后续授权后同步。
+> [COMPUTED, HIGH] 每完成一项，更新本文件状态列（❌/⚠️/✅/⛔）+ FEATURES.md 实现投影 + SPEC.md 边界说明 + ACCEPTANCE.md §4 + TRACEABILITY.md + README.md + CHANGELOG.md；涉及 spec 边界时同步 SPEC.md。

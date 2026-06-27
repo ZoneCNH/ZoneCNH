@@ -64,10 +64,14 @@
 
 ### Fixed（结构性修复 · 2026-06-27 · spec-structural-analysis-20260627 报告驱动）
 - **MA-1**：config schema 字段名统一 — 根 §11.1 `binance.product_lines` 默认值 `[]`→`["spot"]`；补全 `publisher.publish_ack_timeout`/`publisher.backpressure_queue_size`；client/server §11 改为引用根 §11 canonical，废弃 `client.*`/`server.*` 前缀
-- **MA-2**：双态模型新增 Code-Drifted 第四态 — FR-013/017/025 因 v3.9.0 spec 内容正确性大修后 runtime 未对齐，从 Code-Done 降级为 Code-Drifted；ACCEPTANCE.md + FEATURES.md 状态统计更新为 `21 Done / 10 Partial / 3 Drifted / 10 Pending`
+- **MA-2**：双态模型新增 Code-Drifted 第四态；初始审查曾将 FR-013/017/025 从 Code-Done 降级为 Code-Drifted，2026-06-27 runtime anchor 复核后解除 active Drifted 并保守调整为 Code-Partial；README / FEATURES / ACCEPTANCE / TRACEABILITY 当前统计统一为 `22 Done / 12 Partial / 0 Drifted / 14 Pending`
 - **MA-3**：4 个退役文件添加 `⚠️ DEPRECATED` 横幅 + 精简为摘要指针 — DATA-LIFECYCLE.md (159→48 行)、DATA-QUALITY-SLA.md (85→16 行)、ENDPOINTS.md (72→16 行)、SPEC-exchangeinfo-sync.md (526→15 行)
 - **MA-4**：Appendix D AC-BNC 遗留编号迁移到 `docs/migrations/ac-bnc-legacy-mapping.md`；根 SPEC Appendix D 替换为 3 行迁移指针
 - **MO-2**：根 SPEC §14 目录结构移除 4 个退役文件，移入"已退役文件"小节
+
+### Changed（状态同步 · 2026-06-27）
+- **FR-013/017/025**：基于 `/home/binance@f046e16` runtime anchor 复核，解除 active Code-Drifted，保守列为 Code-Partial；direct TC 与 live/evidence 尚未闭合，因此不升格 Code-Done / Evidence-Done
+- **P2-8**：新增 binance 状态一致性 CI gate，覆盖 README / FEATURES / ACCEPTANCE / TRACEABILITY 的 Code 统计、Drifted FR 清单，以及 TRACEABILITY §1/§6 汇总一致性
 
 ---
 

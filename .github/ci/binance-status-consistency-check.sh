@@ -93,7 +93,7 @@ drifted_from_acceptance() {
 echo "=== Binance Status Consistency Check ==="
 echo ""
 
-for file in README.md spec/FEATURES.md spec/ACCEPTANCE.md matrix/TRACEABILITY.md; do
+for file in README.md spec/FEATURES.md spec/ACCEPTANCE.md matrix/TRACEABILITY.md prompt/README.md; do
   if [ ! -f "$BINANCE_DIR/$file" ]; then
     fail "$file not found"
   fi
@@ -114,12 +114,27 @@ acceptance_stats=$(
   summary_stats "$BINANCE_DIR/spec/ACCEPTANCE.md" \
     's/.*FR Code \*\*([0-9]+ Done \/ [0-9]+ Partial \/ [0-9]+ Drifted \/ [0-9]+ Pending)\*\*.*/\1/p'
 )
+prompt_stats=$(
+  summary_stats "$BINANCE_DIR/prompt/README.md" \
+    's/.*Code `([0-9]+ Done \/ [0-9]+ Partial \/ [0-9]+ Drifted \/ [0-9]+ Pending)`.*/\1/p'
+)
 traceability_stats=$(count_status_column "$BINANCE_DIR/matrix/TRACEABILITY.md" 7)
+traceability_summary_stats=$(
+  summary_stats "$BINANCE_DIR/matrix/TRACEABILITY.md" \
+    's/.*当前统计 \*\*([0-9]+ Done \/ [0-9]+ Partial \/ [0-9]+ Drifted \/ [0-9]+ Pending)\*\*.*/\1/p'
+)
+traceability_dashboard_stats=$(
+  summary_stats "$BINANCE_DIR/matrix/TRACEABILITY.md" \
+    's/.*当前有效基线分母 48 = \*\*([0-9]+ Done \/ [0-9]+ Partial \/ [0-9]+ Drifted \/ [0-9]+ Pending)\*\*.*/\1/p'
+)
 
 echo "README.md Code stats:       ${readme_stats:-NOT_FOUND}"
 echo "FEATURES.md Code stats:     ${features_stats:-NOT_FOUND}"
 echo "ACCEPTANCE.md Code stats:   ${acceptance_stats:-NOT_FOUND}"
+echo "prompt/README.md Code stats: ${prompt_stats:-NOT_FOUND}"
 echo "TRACEABILITY.md Code stats: ${traceability_stats:-NOT_FOUND}"
+echo "TRACEABILITY.md Summary:    ${traceability_summary_stats:-NOT_FOUND}"
+echo "TRACEABILITY.md §6 stats:   ${traceability_dashboard_stats:-NOT_FOUND}"
 
 if [ -z "$readme_stats" ]; then
   fail "unable to extract README.md Code stats"
@@ -130,14 +145,26 @@ fi
 if [ -z "$acceptance_stats" ]; then
   fail "unable to extract ACCEPTANCE.md Code stats"
 fi
+if [ -z "$prompt_stats" ]; then
+  fail "unable to extract prompt/README.md Code stats"
+fi
 if [ -z "$traceability_stats" ]; then
   fail "unable to extract TRACEABILITY.md Code stats"
+fi
+if [ -z "$traceability_summary_stats" ]; then
+  fail "unable to extract TRACEABILITY.md summary stats"
+fi
+if [ -z "$traceability_dashboard_stats" ]; then
+  fail "unable to extract TRACEABILITY.md §6 stats"
 fi
 
 if [ "$readme_stats" != "$features_stats" ] ||
   [ "$readme_stats" != "$acceptance_stats" ] ||
-  [ "$readme_stats" != "$traceability_stats" ]; then
-  fail "Code status stats mismatch across README / FEATURES / ACCEPTANCE / TRACEABILITY"
+  [ "$readme_stats" != "$prompt_stats" ] ||
+  [ "$readme_stats" != "$traceability_stats" ] ||
+  [ "$readme_stats" != "$traceability_summary_stats" ] ||
+  [ "$readme_stats" != "$traceability_dashboard_stats" ]; then
+  fail "Code status stats mismatch across README / FEATURES / ACCEPTANCE / prompt README / TRACEABILITY / TRACEABILITY summary/dashboard"
 fi
 
 echo ""

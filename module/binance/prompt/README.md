@@ -24,7 +24,7 @@ prompt/
 
 ## 当前状态
 
-**Pipeline State**：Spec→Code 管线的 S5-Prompt 层。Plan008 全部 40 Task 已在 runtime 仓 `/home/binance@f046e16` 实现完毕（代码级别）。v3.9.0 引入双态模型：Code-Done `24 / 10 Partial / 10 Pending`；Evidence-Done 仅 FR-009（L1 边界治理）。本 Prompt 层保留结构以备未来 Spec→Code 管线迭代使用（如 FR-031~036 ExchangeInfo 同步 v3.8.0 Draft→Active 提升时）。
+**Pipeline State**：Spec→Code 管线的 S5-Prompt 层。Plan008 全部 40 Task 已在 runtime 仓 `/home/binance@f046e16` 实现完毕（代码级别）。v3.9.0 引入双态模型：Code `22 Done / 12 Partial / 0 Drifted / 14 Pending`；Evidence-Done 仅 FR-009（L1 边界治理）。本 Prompt 层保留结构以备未来 Spec→Code 管线迭代使用（如 FR-031~036 ExchangeInfo runtime/evidence 推进时）。
 
 **待生成 Context Package 的 Task**（按优先级排列）：
 - FR-031~036（ExchangeInfo 同步）— v3.8.0 Draft→Active 已合并入根 SPEC，P0 级 S5→S6 输入
