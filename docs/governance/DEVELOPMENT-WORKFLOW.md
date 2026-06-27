@@ -793,6 +793,7 @@ PR 描述应引用 Spec：
 
 | 文档                                         | 用途                                                    |
 | -------------------------------------------- | ------------------------------------------------------- |
+| `docs/workflow/README.md`                    | **工作流统一入口** — 双管线导航、阶段对应表             |
 | `docs/governance/PRE-DEVELOPMENT.md`         | 开发前准备 — 实现策略、Task 拆分、追溯矩阵              |
 | `docs/governance/CODING-SESSION-PROTOCOL.md` | 编码会话协议 — Context Packet、Plan-first、自查、Review |
 | `docs/governance/SPEC-DRIFT-PROTOCOL.md`     | Spec Drift 处理 — 代码与 Spec 不一致时的协议            |

@@ -619,6 +619,10 @@ proposed --graduate--> active <--reactivate-- maintained
 | [#1241](https://github.com/ZoneCNH/ZoneCNH/pull/1241) | feat: Codex/Copilot Agent 矩阵补全 — 四平台管线执行能力就绪 | 31 |
 | [#1242](https://github.com/ZoneCNH/ZoneCNH/pull/1242) | docs: Agent 矩阵文档对齐 — 平台 agent 数 + Copilot 执行器清单 | 3 |
 
+### 已修复项（2026-06-27 第八轮：统一入口）
+
+16. **双管线统一入口** — 创建 `docs/workflow/README.md`：管线关系说明、使用决策树（"我要…走哪条"）、11 阶段双向对应表（G0-G11 ↔ S1-S6）、四源评分速览、快速通道摘要、完整文档索引。`AGENTS.md` 顶部新增导航链接。
+
 ### 已修复项（2026-06-27 第七轮：文档合并 + 快速通道）
 
 14. **AGENTS.md / DEVELOPMENT-WORKFLOW.md 去重** — AGENTS.md 简化为 Agent 编排参考（保留平台矩阵 + Agent 角色表），管线流程/门禁/递归规则统一引用 `DEVELOPMENT-WORKFLOW.md`（管线定义 SSOT）。移除 ~40 行重复内容。
@@ -758,7 +762,7 @@ proposed --graduate--> active <--reactivate-- maintained
 
 ### 长期（架构演进）
 
-7. **双管线统一入口**：创建一个顶层导航文档（如 `docs/workflow/README.md`），说明两条管线的关系、何时用哪条、以及完整的阶段对应表。
+7. ~~双管线统一入口~~ ✅ **已实施**：`docs/workflow/README.md` — 双管线关系图、决策树、11阶段对应表、四源评分速览、快速通道、完整文档索引
 8. **管线健康度仪表盘**：基于 `.foundationx/status/index.json` 和 pipeline 状态目录，生成每个模块的管线进度可视化。
 
 ---

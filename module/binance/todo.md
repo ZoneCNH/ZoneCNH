@@ -109,7 +109,7 @@
 
 - **状态**：⚠️ 部分完成
 - **对应**：FR-040 / PRG-004
-- **当前**：`lifecycle.go` 有部分 isolation，但无 per-line WS 连接池隔离 + 无 per-caller API 限流 + 无 ClickHouse 查询超时
+- **当前**：server admin lifecycle、active catalog scope、Prometheus throttle/backpressure/stream/usage 指标与 P0/P1/P2 throttle anchors 已出现；仍缺 per-consumer-group Kafka 配额、多租户压力/故障隔离 evidence、per-caller API 限流与 ClickHouse 查询超时 direct TC
 - **目标**：per-consumer-group Kafka 配额 + per-product-line WS 连接池隔离 + per-caller API 限流 + CH 查询超时 30s + 单线故障不拖垮其他线
 - **工作量**：L
 
@@ -123,7 +123,7 @@
 
 ### P1-4：真实外部 E2E
 
-- **状态**：❌ 未完成
+- **状态**：⚠️ 部分完成
 - **对应**：Evidence-Done 推进
 - **当前**：local gated 测试有（NATS JetStream + Redis mock + 文件 DLQ），真实 Kafka/Redis/TDengine/ClickHouse/OSS 端到端缺
 - **目标**：分批推进 — 先 Redis + NATS（local gated 已部分验证），再 TDengine + Kafka，最后 ClickHouse + OSS
@@ -162,16 +162,16 @@
 
 - **状态**：❌ 未完成
 - **对应**：FR-043
-- **当前**：已有本地 anchors，未闭合生产 evidence
+- **当前**：`internal/server/metrics/metrics.go` 已有 cost/usage/stream/rate-limit/gap Prometheus 指标 anchors；仍缺 dashboard、AlertManager 成本预算告警、usage report 与生产 evidence。
 - **目标**：存储容量/带宽 per-product-line Prometheus 指标 + 成本告警（AlertManager）
 - **替代**：可用外部监控暂替
 - **工作量**：M
 
 ### P2-2：Data compliance & destruction
 
-- **状态**：❌ 未完成
+- **状态**：⚠️ 部分完成
 - **对应**：FR-044
-- **当前**：已有本地 anchors，未闭合生产 evidence
+- **当前**：`docs/runbooks/data-lifecycle-destruction.md` 与 audit/data lifecycle 迁移 anchors 已出现；仍缺跨环境销毁演练、不可逆删除 proof、`certificate_of_destruction` 归档与合规审计 evidence。
 - **目标**：`data_classification` 标注 + 合规保留期 + 不可逆销毁 + `certificate_of_destruction`
 - **替代**：可用手动流程暂替
 - **工作量**：M
@@ -246,7 +246,7 @@
 | 步骤 | 工作                                                        | 对应 FR       |
 | ---- | ----------------------------------------------------------- | ------------- |
 | 2.1  | OTel SDK 埋点 + W3C traceparent direct TC                    | FR-039        |
-| 2.2  | per-line WS 连接池隔离 + per-caller 限流 + CH 超时          | FR-040        |
+| 2.2  | Kafka quotas + 多租户压力验证 + per-caller 限流 + CH 查询超时 | FR-040        |
 | 2.3  | Admin 写操作 append-only 审计 evidence                       | FR-041        |
 | 2.4  | 真实外部 E2E（Kafka → Redis → TDengine → ClickHouse → OSS） | Evidence-Done |
 | 2.5  | UM/CM/Options testnet + mainnet live                        | FR-001 G7     |
@@ -267,14 +267,14 @@
 | 4.2  | Backfill progress 持久化部署接线 + restart evidence        |
 | 4.3  | DLQ 持久化默认接线 + file-backed replay                    |
 | 4.4  | ✅ 五处状态一致性 CI gate             |
-| 4.5  | Cost observability (FR-043)            |
-| 4.6  | Data compliance & destruction (FR-044) |
+| 4.5  | Cost observability dashboard/alert evidence (FR-043) |
+| 4.6  | Data compliance destruction drill/certificate evidence (FR-044) |
 
 ---
 
 ## 关键约束
 
-> [KNOWN, HIGH] 本 TODO 清单中仍需 `/home/binance` runtime 或外部环境继续闭合的项包括 P0-5、P1-1~P1-5、P2-1~P2-3、P2-6、P2-7 及相关 Evidence/PRG；其中 P1-1、P1-3、P2-3、P2-6、P2-7 已从“零实现/未接线”修正为“runtime 代码原语已出现但验收证据未闭合”。本次主仓同步已完成 P0-10、P1-6、P2-8、prompt 状态投影、legacy mapping 与 agent team 再审计口径同步。
+> [KNOWN, HIGH] 本 TODO 清单中仍需 `/home/binance` runtime 或外部环境继续闭合的项包括 P0-5、P1-1~P1-5、P2-1~P2-3、P2-6、P2-7 及相关 Evidence/PRG；其中 P1-1、P1-2、P1-3、P2-1、P2-2、P2-3、P2-6、P2-7 已从“零实现/未接线”修正为“runtime 代码原语已出现但验收证据未闭合”。本次主仓同步已完成 P0-10、P1-6、P2-8、prompt 状态投影、legacy mapping 与 agent team 再审计口径同步。
 >
 > [COMPUTED, HIGH] 所有 P0 项完成后才可声明"生产级可发布"。P1 项完成后才可声明"生产级可运营"。P2 项可延后但有替代手段时不应无限期搁置。
 >
