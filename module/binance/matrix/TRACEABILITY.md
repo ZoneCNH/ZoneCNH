@@ -48,7 +48,7 @@
 
 > **2026-06-24 历史 kafkax fanout 本地子集刷新**：目标 server 测试、`go test ./cmd/binance-server ./internal/server -count=1`、`go test ./...`、`go vet ./...`、`./scripts/boundary-gates.sh` 与 `plan006_task_4_7_repeat_checks=100` PASS；本地 adapter 已验证 topic/key 和 strict handoff `BNC-008` before durable/Ack。FR-008 仍未 Done：真实 Kafka broker e2e、production topic/ACL、release evidence 未闭合。该段仅保留为历史记录；当前有效状态以 Runtime-Anchor `/home/binance@f18a329` 与 Issue-Ledger `../../report/binance/issues-sync-20260625.md` 为准。
 
-> **状态模型说明**：FR 表的"实现状态"列采用 Done/Partial/**Drifted**/Pending 四态模型；当前状态以 Runtime-Anchor `/home/binance@f046e16` 与 Issue-Ledger `../../report/binance/issues-sync-20260625.md` 为准。Drifted FR: 无。Code-Partial: FR-007、FR-007a、FR-011、FR-013、FR-016、FR-017、FR-023、FR-024、FR-025、FR-026、FR-027、FR-028、FR-031、FR-032、FR-033、FR-034、FR-035、FR-036、FR-037、FR-038、FR-039、FR-040、FR-041、FR-042、FR-043、FR-044。Code-Pending: 无。当前有效基线：**22 Done / 26 Partial / 0 Drifted / 0 Pending**。
+> **状态模型说明**：FR 表的"实现状态"列采用 Done/Partial/**Drifted**/Pending 四态模型；当前状态以 Runtime-Anchor `/home/binance@f046e16` 与 Issue-Ledger `../../report/binance/issues-sync-20260625.md` 为准。Drifted FR: 无。Code-Partial: FR-007、FR-007a、FR-011、FR-013、FR-016、FR-017、FR-023、FR-024、FR-025、FR-026、FR-027、FR-028、FR-031、FR-032、FR-033、FR-034、FR-035、FR-036、FR-038、FR-039、FR-040、FR-041、FR-042、FR-043、FR-044。FR-037: Code-Done / Evidence-Pending。Code-Pending: 无。当前有效基线：**23 Done / 25 Partial / 0 Drifted / 0 Pending**。
 > **v3.9.0 双态模型**：`实现状态` 列为 Code-Done/Code-Partial/**Code-Drifted**/Code-Pending（代码存在+装配就绪；Drifted 表示代码不符合当前 spec 行为模型）。`Evidence` 列为 Evidence-Done/Evidence-Pending（TC+AC 全 PASS+evidence 归档）。当前 FR 投影的 Evidence 均为 Pending，**仅 FR-009 Evidence-Done**（L1 边界治理 13 gates PASS）。
 
 | FR ID | 功能需求 | AC | TC ID(s) | Task | 实现状态 | Evidence |
@@ -93,7 +93,7 @@
 | FR-034 | Selective Sync Whitelist：实现 `product_lines`/`symbols.allow`/`symbols.deny`；优先级 deny>allow>tier；运行时热更新 | AC-117 ~ AC-120 | TC-056, TC-057 | runtime config/admin catalog anchors | Partial | Pending |
 | FR-035 | Admin Surface Auth Hardening：client `AdminServer` 写操作鉴权（Bearer token / loopback fallback）；FR-033/034 写操作的安全前置 | AC-121 ~ AC-124 | TC-059, TC-060, TC-061, TC-062 | admin control surface anchors | Partial | Pending |
 | FR-036 | Tier-Aware Connection Topology：stream manager 按 (productLine,tier) 分组 WS 连接；`StreamsForProductLineTier` 按 productLine 分化（options 仅 optionTicker）；连接分批 + 升降级 drain + options 到期峰值平滑 | AC-125 ~ AC-128 | TC-063, TC-064, TC-065, TC-066, TC-067 | stream/tier load-shedding anchors | Partial | Pending |
-| FR-037 | Release Safety Net：feature flag 机制（`XGO_BINANCE_FEATURE_{name}`）+ canary 部署 + 健康门禁 + 自动回滚 runbook（S26） | AC-105 ~ AC-107 | TC-050, TC-062 | feature flag/readiness/runbook anchors | Partial | Pending |
+| FR-037 | Release Safety Net：feature flag 机制（`XGO_BINANCE_FEATURE_{name}`）+ canary 部署 + 健康门禁 + 自动回滚 runbook（S26） | AC-105 ~ AC-107 | TC-050, TC-062 | deploy-canary-gate.sh + /healthz + /readyz + error-rate + consumer-lag gate、XGO feature flag、env template、runbook、readiness guard | Done | Pending |
 | FR-038 | taosx Data Retention Lifecycle：DB 级 KEEP 365 + 定时 DELETE trade/tick(30d)/bar(90d) + OSS ETag 前置校验 + 删除审计（G6/S1/S2） | AC-108 ~ AC-111 | TC-051, TC-052 | retention/archive/rehydrate anchors | Partial | Pending |
 | FR-039 | Distributed Tracing (OpenTelemetry)：SDK 埋点 + W3C traceparent header 传播 NATS/Kafka + slog trace_id 关联 + 采样率可配（S28） | AC-112 ~ AC-114 | TC-053, TC-063 | Kafka W3C trace header test anchors | Partial | Pending |
 | FR-040 | Resource Quota & Isolation：per-consumer-group Kafka 配额 + per-product-line WS 连接池隔离 + per-caller API 限流 + CH 查询超时（S29） | AC-115 ~ AC-118 | TC-054, TC-055, TC-064 | quota/throttle/admin/metrics anchors | Partial | Pending |
@@ -104,10 +104,10 @@
 
 > [COMPUTED, HIGH] **FR-031~036 规格（v3.8.0 Active）**：原定义于 `SPEC-exchangeinfo-sync.md`（Draft），v3.8.0 合并入根 SPEC.md §7。当前状态 **Code-Partial / Evidence-Pending**（本地再审计发现部分 runtime 代码原语；因 Runtime-Anchor、direct TC 与 live/evidence 未闭合，投影不升格）。FR-035 是 FR-033/034 写操作的安全前置；FR-036 依赖 FR-033 且涉及 connector 架构重构，建议前置 ADR。
 
-> 状态口径（v3.9.0，Runtime-Anchor `/home/binance@f046e16`）：FR 表实现状态采用 Done/Partial/Drifted/Pending 四态模型。当前统计 **22 Done / 26 Partial / 0 Drifted / 0 Pending**（48 行当前有效基线口径），Drifted = 无；Code-Partial 固定为 FR-007、FR-007a、FR-011、FR-013、FR-016、FR-017、FR-023、FR-024、FR-025、FR-026、FR-027、FR-028、FR-031、FR-032、FR-033、FR-034、FR-035、FR-036、FR-037、FR-038、FR-039、FR-040、FR-041、FR-042、FR-043、FR-044；Code-Pending = 无。
+> 状态口径（v3.9.0，Runtime-Anchor `/home/binance@f046e16`）：FR 表实现状态采用 Done/Partial/Drifted/Pending 四态模型。当前统计 **23 Done / 25 Partial / 0 Drifted / 0 Pending**（48 行当前有效基线口径），Drifted = 无；Code-Partial 固定为 FR-007、FR-007a、FR-011、FR-013、FR-016、FR-017、FR-023、FR-024、FR-025、FR-026、FR-027、FR-028、FR-031、FR-032、FR-033、FR-034、FR-035、FR-036、FR-038、FR-039、FR-040、FR-041、FR-042、FR-043、FR-044；FR-037 = Code-Done / Evidence-Pending；Code-Pending = 无。
 >
-> - **26 个 Partial 的保守保留原因**：既有 FR-007/007a/011/013/016/017/023/024/025/026/027/028 与 FR-031~044 均已有不同层级本地 anchors，但 direct TC/live/CI/credential/dashboard/multi-tenant/destruction evidence 未闭合；不得因本地 anchors 自动升格 Code-Done/Evidence-Done。
-> - **Issue closure policy**：GitHub #1104~#1118 与后续 Plan008 issues 已同步闭合；Release closeout 已由 `../../plans/binance/008-issues-sync-report.md` 归档为 `release_closeable=YES`；剩余风险以 FR projection 的 `26 Partial` 与 `43 Evidence-Pending` 表达。
+> - **25 个 Partial 的保守保留原因**：既有 FR-007/007a/011/013/016/017/023/024/025/026/027/028 与 FR-031~036、FR-038~044 均已有不同层级本地 anchors，但 direct TC/live/CI/credential/dashboard/multi-tenant/destruction evidence 未闭合；不得因本地 anchors 自动升格 Code-Done/Evidence-Done。FR-037 本地代码门禁已升格 Code-Done，但生产 canary/rollback drill evidence 仍 Pending。
+> - **Issue closure policy**：GitHub #1104~#1118 与后续 Plan008 issues 已同步闭合；Release closeout 已由 `../../plans/binance/008-issues-sync-report.md` 归档为 `release_closeable=YES`；剩余风险以 FR projection 的 `25 Partial` 与 `43 Evidence-Pending` 表达。
 >
 > 历史：v3.5.1（HEAD `8290dc9`）统计为 22 Done / 8 Partial；v3.6.0 的 `28 Done / 2 Partial` 仅保留为已撤回历史口径。FR-009/BR Done 的 2026-06-23 round 2 本地 runtime 证据见 `BOUNDARY-GATES.md` 与 `/home/binance/release/evidence/binance/20260623/`（证据提交 `71e2a6e8bb5591c43e8a2ebfff8c7645bf030786`）。该状态不关闭真实 Kafka broker e2e、远程 release CI、live websocket、合约/期权 testnet 凭据或外部集成证据。
 
@@ -356,7 +356,7 @@
 
 | 指标 | 总数 | 已覆盖 | 覆盖率 | 说明 |
 |------|------|--------|--------|------|
-| 功能需求 (FR) | 48 current | 48 current | 100% current trace | 当前 Status-Projection 分母为 48（22 Done / 26 Partial / 0 Drifted / 0 Pending）；FR-031~044 已登记为当前 Code-Partial / Evidence-Pending；6b/6c/6d/7a 作为实现子切片保留在矩阵中。 |
+| 功能需求 (FR) | 48 current | 48 current | 100% current trace | 当前 Status-Projection 分母为 48（23 Done / 25 Partial / 0 Drifted / 0 Pending）；FR-031~036、FR-038~044 已登记为当前 Code-Partial / Evidence-Pending；FR-037 登记为 Code-Done / Evidence-Pending；6b/6c/6d/7a 作为实现子切片保留在矩阵中。 |
 | 业务规则 (BR) | 12 current | 12 current | 100% current trace | BR-001 ~ BR-012 为当前基线；BR-011 ~ BR-012 已由 v3.9.0 合并入 active spec。 |
 | 非功能需求 (NFR) | 27 | 27 | 100% | NFR-001 ~ NFR-027 全部有验证方式；NFR-021~027 映射 SPEC §4.2 PRG-001~PRG-007 |
 | 测试用例 (TC) | 67 current | 67 current | 100% current trace | TC-001 ~ TC-067 为当前基线；TC-050 ~ TC-067 已由 v3.9.0 合并入 active spec。 |
@@ -365,7 +365,7 @@
 | BR→验证覆盖率 | — | 12/12 current | 100% | — |
 | AC→验证覆盖率 | — | 130/130 current | 100% | — |
 | R2 governance matrix | 120 cells | 120 cells | 100% | 4 product lines × 6 event types × 5 文档/checker anchors |
-| 实现状态（v3.9.0） | — | 22/48 FR Code-Done | 46% Code-Done | 当前有效基线分母 48 = **22 Done / 26 Partial / 0 Drifted / 0 Pending**；Evidence-State **1 Done (FR-009) / 43 Pending**；Runtime-Anchor `/home/binance@f046e16`；Code-Partial 为 FR-007、FR-007a、FR-011、FR-013、FR-016、FR-017、FR-023、FR-024、FR-025、FR-026、FR-027、FR-028、FR-031、FR-032、FR-033、FR-034、FR-035、FR-036、FR-037、FR-038、FR-039、FR-040、FR-041、FR-042、FR-043、FR-044；Code-Pending 为无。 |
+| 实现状态（v3.9.0） | — | 23/48 FR Code-Done | 48% Code-Done | 当前有效基线分母 48 = **23 Done / 25 Partial / 0 Drifted / 0 Pending**；Evidence-State **1 Done (FR-009) / 43 Pending**；Runtime-Anchor `/home/binance@f046e16`；Code-Partial 为 FR-007、FR-007a、FR-011、FR-013、FR-016、FR-017、FR-023、FR-024、FR-025、FR-026、FR-027、FR-028、FR-031、FR-032、FR-033、FR-034、FR-035、FR-036、FR-038、FR-039、FR-040、FR-041、FR-042、FR-043、FR-044；FR-037 为 Code-Done / Evidence-Pending；Code-Pending 为无。 |
 
 ---
 

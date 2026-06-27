@@ -4,8 +4,8 @@
 
 - Module-Version: v3.9.0
 - Last-Updated: 2026-06-27
-- Spec-Reference: `module/binance/SPEC.md` v3.9.0
-- 治理规则：`module/binance/RULES.md` R9 文档存在性
+- Spec-Reference: `module/binance/spec/SPEC.md` v3.9.0
+- 治理规则：`module/binance/gate/RULES.md` R9 文档存在性
 
 ---
 
@@ -64,7 +64,7 @@
 
 ### Fixed（结构性修复 · 2026-06-27 · spec-structural-analysis-20260627 报告驱动）
 - **MA-1**：config schema 字段名统一 — 根 §11.1 `binance.product_lines` 默认值 `[]`→`["spot"]`；补全 `publisher.publish_ack_timeout`/`publisher.backpressure_queue_size`；client/server §11 改为引用根 §11 canonical，废弃 `client.*`/`server.*` 前缀
-- **MA-2**：双态模型新增 Code-Drifted 第四态；初始审查曾将 FR-013/017/025 从 Code-Done 降级为 Code-Drifted，2026-06-27 runtime anchor 复核后解除 active Drifted 并保守调整为 Code-Partial；README / FEATURES / ACCEPTANCE / TRACEABILITY 当前统计统一为 `22 Done / 26 Partial / 0 Drifted / 0 Pending`
+- **MA-2**：双态模型新增 Code-Drifted 第四态；初始审查曾将 FR-013/017/025 从 Code-Done 降级为 Code-Drifted，2026-06-27 runtime anchor 复核后解除 active Drifted 并保守调整为 Code-Partial；README / FEATURES / ACCEPTANCE / TRACEABILITY 当前统计统一为 `23 Done / 25 Partial / 0 Drifted / 0 Pending`
 - **MA-3**：4 个退役文件添加 `⚠️ DEPRECATED` 横幅 + 精简为摘要指针 — DATA-LIFECYCLE.md (159→48 行)、DATA-QUALITY-SLA.md (85→16 行)、ENDPOINTS.md (72→16 行)、SPEC-exchangeinfo-sync.md (526→15 行)
 - **MA-4**：Appendix D AC-BNC 遗留编号迁移到 `docs/migrations/ac-bnc-legacy-mapping.md`；根 SPEC Appendix D 替换为 3 行迁移指针
 - **MO-2**：根 SPEC §14 目录结构移除 4 个退役文件，移入"已退役文件"小节
@@ -73,6 +73,7 @@
 - **FR-013/017/025**：基于 `/home/binance@f046e16` runtime anchor 复核，解除 active Code-Drifted，保守列为 Code-Partial；direct TC 与 live/evidence 尚未闭合，因此不升格 Code-Done / Evidence-Done
 - **P2-8**：新增 binance 状态一致性 CI gate，覆盖 README / FEATURES / ACCEPTANCE / TRACEABILITY 的 Code 统计、Drifted FR 清单，以及 TRACEABILITY §1/§6 汇总一致性；新增 Code-Partial 原因、退役文件分区、AC-BNC legacy mapping 指针三类语义守卫。
 - **agent team 再审计同步**：`todo.md` / `FEATURES.md` / `ACCEPTANCE.md` / `TRACEABILITY.md` 将 tracing、quota/isolation、audit、exchangeInfo、backfill state、DLQ、cost/compliance anchors 的“零实现/未接线”口径修正为 Code-Partial / Evidence-Pending，并保留 live/CI/dashboard/credentials/multi-tenant/destruction blockers。
+- **runtime follow-up 对齐**：`/home/binance` 已补齐 FR-017 bar `open_time` 传播、gap metadata 入库、quality tracker nil-metrics 安全与 canary gate 负数阈值拒绝；本地验证 `go test ./internal/server ./internal/client` 与 `bash scripts/deploy-canary-gate.sh --self-test` PASS。FR-037/P0-5 本地 release safety code gate 已闭合并升格 Code-Done；生产 canary / rollback drill evidence 仍保持 Pending，不声明生产闭合。
 
 ---
 

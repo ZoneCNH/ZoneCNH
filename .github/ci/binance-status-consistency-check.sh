@@ -258,6 +258,11 @@ done
 require_pattern "$FEATURES_FILE" "^\\|[[:space:]]*FR-013[[:space:]]*\\|.*Partial.*X-MBX-USED-WEIGHT-1M.*429" "FR-013 Partial reason must preserve used-weight and 429 evidence"
 require_pattern "$FEATURES_FILE" "^\\|[[:space:]]*FR-017[[:space:]]*\\|.*Partial.*event_type.*trade_id.*depth updateId" "FR-017 Partial reason must preserve event_type gap strategy evidence"
 require_pattern "$FEATURES_FILE" "^\\|[[:space:]]*FR-025[[:space:]]*\\|.*Partial.*ThrottlePriority.*30:20:50" "FR-025 Partial reason must preserve priority throttle evidence"
+require_table_status "$FEATURES_FILE" "FR-037" 4 "Done" "FR-037 FEATURES.md status must be Code-Done after canary gate anchors"
+require_table_status "$TRACEABILITY_FILE" "FR-037" 7 "Done" "FR-037 TRACEABILITY.md status must be Code-Done after canary gate anchors"
+require_pattern "$ACCEPTANCE_FILE" "^\\|[[:space:]]*FR-037[[:space:]]*\\|.*Done.*Pending" "FR-037 ACCEPTANCE.md must record Code-Done / Evidence-Pending"
+require_pattern "$FEATURES_FILE" "^\\|[[:space:]]*FR-037[[:space:]]*\\|.*Done.*XGO_BINANCE_FEATURE_ASYNC_COLD_RANGE.*deploy-canary-gate" "FR-037 FEATURES.md must reference XGO flag and deploy-canary-gate"
+require_pattern "$TRACEABILITY_FILE" "^\\|[[:space:]]*FR-037[[:space:]]*\\|.*deploy-canary-gate.*Done.*Pending" "FR-037 TRACEABILITY.md must reference deploy-canary-gate and remain Evidence-Pending"
 
 echo ""
 echo "Checking retired spec artifact guards..."

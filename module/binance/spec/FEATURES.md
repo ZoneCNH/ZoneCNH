@@ -7,7 +7,7 @@
 | Status | Generated from current module SSOT |
 | Last-Updated | 2026-06-27 |
 | Module-Version | v3.9.0 |
-| Module-State | v3.9.0 双态模型：Code-State **22 Done / 26 Partial / 0 Drifted / 0 Pending**；Evidence-State **1 Done (FR-009) / 43 Pending**。Code-Partial 固定为：FR-007、FR-007a、FR-011、FR-013、FR-016、FR-017、FR-023、FR-024、FR-025、FR-026、FR-027、FR-028、FR-031、FR-032、FR-033、FR-034、FR-035、FR-036、FR-037、FR-038、FR-039、FR-040、FR-041、FR-042、FR-043、FR-044；Code-Pending：无；FR-031~044 为 Code-Partial / Evidence-Pending，本地 anchors 不等于生产闭合。 |
+| Module-State | v3.9.0 双态模型：Code-State **23 Done / 25 Partial / 0 Drifted / 0 Pending**；Evidence-State **1 Done (FR-009) / 43 Pending**。Code-Partial 固定为：FR-007、FR-007a、FR-011、FR-013、FR-016、FR-017、FR-023、FR-024、FR-025、FR-026、FR-027、FR-028、FR-031、FR-032、FR-033、FR-034、FR-035、FR-036、FR-038、FR-039、FR-040、FR-041、FR-042、FR-043、FR-044；Code-Pending：无；FR-031~036、FR-038~044 为 Code-Partial / Evidence-Pending；FR-037 为 Code-Done / Evidence-Pending，本地 anchors 不等于生产闭合。 |
 | Layer | 数据域 / Binance-specific market_data C/S module |
 | Runtime-Repo | `/home/binance` |
 | Source | `goal.md`, `SPEC.md`, `TRACEABILITY.md`, `DATA-LIFECYCLE.md`, `STANDARD.md`, `BOUNDARY-GATES.md`, `RUNTIME-MAPPING.md`, `IMPLEMENTATION-PLAN.md`, `client/`, `server/`, `tasks/` |
@@ -87,13 +87,13 @@
 | FR-035 | Admin Control Surface | Partial | pause/resume/reload/drain/health/readiness 管理 API；`internal/server/admin.go` 与 feature/admin guards 提供 anchors。 | auth/loopback/full write-safety evidence 未闭合。 |
 | FR-036 | Stream Load Shedding | Partial | 分层 WS groups、cold tier 降频、options expiry 平滑；stream/catalog/tier anchors 已存在。 | options expiry smoothing 与 live shedding evidence 未闭合。 |
 
-### v3.7.0 新增 FR-037~044（P0/P1/P2 — Code-Partial / Evidence-Pending）
+### v3.7.0 新增 FR-037~044（P0/P1/P2 — FR-037 Code-Done / Evidence-Pending；其余 Code-Partial / Evidence-Pending）
 
-> [COMPUTED, HIGH] 以下 FR 为 2026-06-26 v3.7.0 新增，对齐 Plan008 生产级缺口终审（S26-S32 + G6/S1-S2）的标准化要求。所有新增 FR 当前状态 **Code-Partial / Evidence-Pending**（已有本地 anchors，未闭合生产 evidence）。对应 GitHub issue #1180-#1186（Plan008 7 项剩余 Task）。
+> [COMPUTED, HIGH] 以下 FR 为 2026-06-26 v3.7.0 新增，对齐 Plan008 生产级缺口终审（S26-S32 + G6/S1-S2）的标准化要求。FR-037 当前为 **Code-Done / Evidence-Pending**；FR-038~044 当前为 **Code-Partial / Evidence-Pending**（已有本地 anchors，未闭合生产 evidence）。对应 GitHub issue #1180-#1186（Plan008 7 项剩余 Task）。
 
 | FR | 名称 | 状态 | 核心内容 | 对应标准化 |
 | --- | --- | --- | --- | --- |
-| FR-037 | Canary & Rollback Controls | Partial | feature flag、readiness gate、deploy health、rollback runbook；`feature_flag.go`、readiness audit 与 deploy runbook 提供 anchors。 | 自动 canary gate/rollback drill evidence 未闭合。 |
+| FR-037 | Canary & Rollback Controls | Done | XGO_BINANCE_FEATURE_ASYNC_COLD_RANGE feature flag（兼容 FOUNDATIONX_BINANCE_FEATURE_ASYNC_COLD_RANGE）、deploy-canary-gate.sh、/healthz+/readyz canary gate、error-rate/consumer-lag gate、rollback command、env template、deploy runbook 与 readiness guard 已形成本地代码门禁。 | 生产 canary 执行与 rollback drill evidence 未闭合。 |
 | FR-038 | Retention / Archive / Rehydrate | Partial | retention policy、archive、rehydrate、delete proof；retention/archive/delete/restore anchors 已存在。 | live retention/rehydrate drill evidence 未闭合。 |
 | FR-039 | Trace Propagation | Partial | W3C trace context across HTTP/Kafka/worker/logs；`kafka_dispatch.go` tests assert W3C headers。 | OTel/NATS/live span-chain evidence 未闭合。 |
 | FR-040 | Resource Quota & Backpressure | Partial | per-stream/per-symbol quota、throttle、backpressure metrics；throttle/catalog/admin pause-drain/metrics anchors 已存在。 | multi-tenant quota soak evidence 未闭合。 |
@@ -151,7 +151,7 @@
 | --- | --- | --- |
 | `goal.md` | 业务目标与模块意图 | 作为实现清单的目标来源。 |
 | `SPEC.md` | v2.0.0 功能与边界规格 | 作为 FR/BR/NFR 语义来源。 |
-| `TRACEABILITY.md` | 根级 FR/AC/TC/Task 追溯 | 作为当前状态与验收编号来源；v3.9.0 当前口径对齐 Runtime-Anchor `/home/binance@f046e16`，Code-State 22/26/0/0，Evidence-State 1 Done / 43 Pending。 |
+| `TRACEABILITY.md` | 根级 FR/AC/TC/Task 追溯 | 作为当前状态与验收编号来源；v3.9.0 当前口径对齐 Runtime-Anchor `/home/binance@f046e16`，Code-State 23 Done / 25 Partial / 0 Drifted / 0 Pending，Evidence-State 1 Done / 43 Pending。 |
 | `client/TRACEABILITY.md` | Client 子域追溯 | 作为 client active/pending 实现面来源。 |
 | `server/TRACEABILITY.md` | Server 子域追溯 | 作为 server active/pending 实现面来源。 |
 | `BOUNDARY-GATES.md` | 边界漂移防线 | 作为 FR-009 与 BR-001~BR-009 的文档和本地 runtime 证据入口。 |
@@ -164,7 +164,7 @@
 | 检查项 | 状态 | 依据 |
 | --- | --- | --- |
 | v2.0.0 根规格存在 | Done | `SPEC.md` v3.8.0。 |
-| 根级 traceability 存在 | Done | `TRACEABILITY.md` v3.9.0；当前口径对齐 Runtime-Anchor `/home/binance@f046e16`，Code-State 22/26/0/0，Evidence-State 1 Done / 43 Pending。 |
+| 根级 traceability 存在 | Done | `TRACEABILITY.md` v3.9.0；当前口径对齐 Runtime-Anchor `/home/binance@f046e16`，Code-State 23 Done / 25 Partial / 0 Drifted / 0 Pending，Evidence-State 1 Done / 43 Pending。 |
 | Client/Server 子域 traceability 存在 | Done | `client/TRACEABILITY.md`, `server/TRACEABILITY.md`。 |
 | C/S 独立进程边界已定义 | Done | `README.md`, `SPEC.md`, `BOUNDARY-GATES.md`。 |
 | Boundary gate 文档已形成 | Done | `BOUNDARY-GATES.md` v2.2.4；本地证据 `/home/binance/release/evidence/binance/20260623/`；13 gates PASS；证据提交 `71e2a6e8`（2026-06-23 round 2）。 |
@@ -178,7 +178,7 @@
 
 ## 7. 当前缺口登记（2026-06-26 刷新：所有引用 issue 已闭合）
 
-> [COMPUTED, HIGH] 以下 issue 在 `report/binance/issues-sync-20260625.md` 中已全部 Closed（16/16）。本节标注已更新为"已关闭（issues-sync-20260625）"。Plan008 40 Task 也已全部 Closed；7 项剩余 P2 Task（#1180-#1186）对应 FR-037~044 的实现。
+> [COMPUTED, HIGH] 以下 issue 在 `report/binance/issues-sync-20260625.md` 中已全部 Closed（16/16）。本节标注已更新为"已关闭（issues-sync-20260625）"。Plan008 40 Task 也已全部 Closed；Plan008 #1180-#1186 对应 FR-037~044；FR-037 本地代码门禁已闭合，FR-038~044 与生产证据仍待闭合。
 
 | 缺口 | 影响 | 关闭条件 |
 | --- | --- | --- |
@@ -191,4 +191,4 @@
 | **#1114/#1116 runtime 增量状态机（P2，已关闭）** | order book rebuild 与 hot reload 曾需增量 diff/state machine 证据。 | 以能力边界文档化 Closed（#1114 明确排除，#1116 维持 Partial）。 |
 | **#1115 ClickHouse ETL 持久化（P2，已关闭）** | FR-007a 曾需持久化、多实例 source 与 live OLAP evidence。 | 以能力边界文档化 Closed。 |
 | **#1117/#1118 持久化进度与 DLQ（P2，已关闭）** | FR-017/026/027/028 曾缺持久化 progress/history/reconcile/rehydration 证据；DLQ 曾缺持久化 wiring/replay。 | 以能力边界文档化 Closed。 |
-| **#1180-#1186 Plan008 剩余 P2 Task（P0/P1/P2，开放）** | FR-037~044（v3.7.0 新增）的 runtime 实现。 | 追踪：https://github.com/ZoneCNH/ZoneCNH/issues?q=is%3Aopen+label%3Aplan008 |
+| **#1180-#1186 Plan008 剩余 Task（P0/P1/P2，已关闭）** | FR-037 已完成本地 release safety code gate；FR-038~044 与生产 canary/rollback drill evidence 仍待闭合。 | Plan008 issue ledger 已关闭；后续按 FR Evidence-Pending 单独补证。 |

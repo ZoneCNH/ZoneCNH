@@ -7,7 +7,7 @@
 | Status | Generated from current module SSOT |
 | Last-Updated | 2026-06-27 |
 | Module-Version | v3.9.0 |
-| Module-State | v3.9.0 双态模型：FR Code **22 Done / 26 Partial / 0 Drifted / 0 Pending**；Evidence-State **1 Done (FR-009) / 43 Pending**。Code-Partial 固定为：FR-007、FR-007a、FR-011、FR-013、FR-016、FR-017、FR-023、FR-024、FR-025、FR-026、FR-027、FR-028、FR-031、FR-032、FR-033、FR-034、FR-035、FR-036、FR-037、FR-038、FR-039、FR-040、FR-041、FR-042、FR-043、FR-044；Code-Pending：无；Code-Done/Evidence-Done 仍需 direct TC/live evidence。 |
+| Module-State | v3.9.0 双态模型：FR Code **23 Done / 25 Partial / 0 Drifted / 0 Pending**；Evidence-State **1 Done (FR-009) / 43 Pending**。Code-Partial 固定为：FR-007、FR-007a、FR-011、FR-013、FR-016、FR-017、FR-023、FR-024、FR-025、FR-026、FR-027、FR-028、FR-031、FR-032、FR-033、FR-034、FR-035、FR-036、FR-038、FR-039、FR-040、FR-041、FR-042、FR-043、FR-044；Code-Pending：无；FR-037 为 Code-Done / Evidence-Pending；Code-Done/Evidence-Done 仍需 direct TC/live evidence。 |
 | Runtime-Repo | `/home/binance` |
 | Source | `SPEC.md`, `TRACEABILITY.md`, `DATA-LIFECYCLE.md`, `STANDARD.md`, `client/TRACEABILITY.md`, `server/TRACEABILITY.md`, `BOUNDARY-GATES.md` |
 
@@ -214,7 +214,7 @@
 | FR-034 | allow/deny/watchlist hot update without restart | Partial | runtime config/admin/catalog anchors 存在；hot-update direct TC 未闭合。 | Pending |
 | FR-035 | pause/resume/reload/drain/readiness admin API guarded | Partial | admin handlers/guards anchors 存在；auth/loopback/write-safety evidence 未闭合。 | Pending |
 | FR-036 | tier-aware WS groups + options expiry smoothing | Partial | stream/tier anchors 存在；options smoothing/live shedding evidence 未闭合。 | Pending |
-| FR-037 | canary/readiness/rollback proof | Partial | feature flag/readiness/runbook anchors 存在；auto gate/rollback drill 未闭合。 | Pending |
+| FR-037 | canary/readiness/rollback proof | Done | XGO feature flag、/healthz+/readyz canary gate、rollback command、env template、deploy runbook 与 readiness guard 已形成本地代码门禁；生产 canary/rollback drill 证据未闭合。 | Pending |
 | FR-038 | retention/archive/rehydrate/delete proof | Partial | retention/archive/delete/restore anchors 存在；live drill 未闭合。 | Pending |
 | FR-039 | W3C trace context across HTTP/Kafka/worker/logs | Partial | Kafka W3C header tests 存在；OTel/NATS/live span-chain 未闭合。 | Pending |
 | FR-040 | quota/backpressure metrics and soak | Partial | throttle/catalog/admin/metrics anchors 存在；multi-tenant soak 未闭合。 | Pending |
@@ -234,10 +234,10 @@
 | 根、Client、Server traceability 存在 | Done | 三个 traceability 文件可定位。 |
 | natsx / ManualAck / redisx / ossx / kafkax 边界已写入规格 | Done | `SPEC.md` 与 `TRACEABILITY.md` 可定位对应 FR/AC/TC。 |
 | Boundary gates 文档化 | Done | `BOUNDARY-GATES.md` 存在。 |
-| 所有 FR implemented | Code-State 22 Done / 26 Partial / 0 Drifted / 0 Pending；Evidence-State 1 Done (FR-009) / 43 Pending | Drifted FR 为无；Code-Partial 为 FR-007、FR-007a、FR-011、FR-013、FR-016、FR-017、FR-023、FR-024、FR-025、FR-026、FR-027、FR-028、FR-031、FR-032、FR-033、FR-034、FR-035、FR-036、FR-037、FR-038、FR-039、FR-040、FR-041、FR-042、FR-043、FR-044；Code-Pending 为无。 |
+| 所有 FR implemented | Code-State 23 Done / 25 Partial / 0 Drifted / 0 Pending；Evidence-State 1 Done (FR-009) / 43 Pending | Drifted FR 为无；Code-Partial 为 FR-007、FR-007a、FR-011、FR-013、FR-016、FR-017、FR-023、FR-024、FR-025、FR-026、FR-027、FR-028、FR-031、FR-032、FR-033、FR-034、FR-035、FR-036、FR-038、FR-039、FR-040、FR-041、FR-042、FR-043、FR-044；FR-037 为 Code-Done / Evidence-Pending；Code-Pending 为无。 |
 | 所有 AC passed | Not Done | AC-001~AC-130 全部有测试证据。 |
 | 所有 TC passed | Not Done | TC-001~TC-065 全部 PASS。 |
-| Runtime test evidence | Local+CI+Release Evidence Done / Full external E2E Pending | `/home/binance/release/evidence/binance/{20260623,20260625}/` 已归档 build/test/race/vet/lint/smoke/boundary gate/testnet-live/SLO；runtime anchor `/home/binance@f046e16`；Plan008 release gate 已闭合：GitHub Release `v0.2.0`，workflow `28126779885` completed/success，`release_closeable=YES`；当前 Code-State 22/26/0/0，Evidence-State 1 Done (FR-009) / 43 Pending；真实 Kafka broker e2e、覆盖率/性能与全量 AC/TC 仍按本表单独治理。 |
+| Runtime test evidence | Local+CI+Release Evidence Done / Full external E2E Pending | `/home/binance/release/evidence/binance/{20260623,20260625}/` 已归档 build/test/race/vet/lint/smoke/boundary gate/testnet-live/SLO；runtime anchor `/home/binance@f046e16`；Plan008 release gate 已闭合：GitHub Release `v0.2.0`，workflow `28126779885` completed/success，`release_closeable=YES`；当前 Code-State 23 Done / 25 Partial / 0 Drifted / 0 Pending，Evidence-State 1 Done (FR-009) / 43 Pending；FR-037 本地 release safety gate 已闭合；生产 canary/rollback drill evidence pending；真实 Kafka broker e2e、覆盖率/性能与全量 AC/TC 仍按本表单独治理。 |
 | Coverage and performance evidence | Not Done | 覆盖率、延迟、吞吐、重放与故障注入报告归档。 |
 | CI pass | Done (release workflow) | GitHub Actions workflow `28126779885` completed/success and linked to release closeout. |
 
@@ -247,7 +247,7 @@
 | --- | --- | --- |
 | release gate 已闭合但不等于 48 FR Evidence-Done | Release `v0.2.0` + workflow `28126779885` 关闭发布证据与 Plan008 ledger，不自动关闭 remaining FR/AC/TC。 | 后续按 `TRACEABILITY.md` 单独重判 48 FR 的 AC/TC 与 production-grade external E2E。 |
 | 产品线与 identity acceptance evidence 未全闭合 | 四 product line live/credential evidence 与跨线 acceptance evidence 仍未完整归档。 | 补齐 UM/CM/Options credential/live acceptance 与 identity collision/e2e evidence。 |
-| 除 FR-009 外其余 43 FR Evidence-Pending | C/S runtime、存储、API、广播、归档、实时控制面、历史生命周期、事件治理、数据质量、Options 字段透传与 FR-031~044 当前只有 Code-Done/Code-Partial 投影；release gate 已由 Plan008 闭合但不自动关闭这些 FR 的 Evidence。 | 按 `TRACEABILITY.md` 的 Code/Evidence 双列逐项补 direct TC、live/CI 与归档证据。 |
+| 除 FR-009 外其余 43 FR Evidence-Pending | C/S runtime、存储、API、广播、归档、实时控制面、历史生命周期、事件治理、数据质量、Options 字段透传、FR-031~036/038~044 Code-Partial 与 FR-037 Code-Done 投影均仍缺 full Evidence；release gate 已由 Plan008 闭合但不自动关闭这些 FR 的 Evidence。 | 按 `TRACEABILITY.md` 的 Code/Evidence 双列逐项补 direct TC、live/CI 与归档证据。 |
 | 生产级 DoD 未达成 | 已发布 `v0.2.0` 不等于生产级全量 DoD。 | 补齐全量 AC/TC、覆盖率/性能与外部 E2E 后再声明 48 FR Evidence-Done 或生产运营就绪。 |
 
 ## 7. GitHub Issue Closure Ledger（2026-06-23）

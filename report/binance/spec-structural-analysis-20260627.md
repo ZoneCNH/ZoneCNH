@@ -15,7 +15,7 @@
 
 **综合评分：72/100** — 无红线，2 项 CRITICAL，4 项 MAJOR，4 项 MODERATE
 
-**判定**：`Not Production-Ready` — 规格治理工艺已达高水平（v3.8.0 红线全修复），但 Code-State **22 Done / 26 Partial / 0 Drifted / 0 Pending**、Evidence-State **1 Done (FR-009) / 43 Pending** 与 7 PRG Evidence-Pending / Code-Partial anchors 构成生产级阻塞。当前状态为**可编译可发布的 v0.2.0**，但**不可生产运营**。
+**判定**：`Not Production-Ready` — 规格治理工艺已达高水平（v3.8.0 红线全修复），但 Code-State **23 Done / 25 Partial / 0 Drifted / 0 Pending**、Evidence-State **1 Done (FR-009) / 43 Pending** 与 7 PRG Evidence-Pending / Code-Partial-or-Code-Done anchors 构成生产级阻塞。当前状态为**可编译可发布的 v0.2.0**，但**不可生产运营**。
 
 **与前序报告对比**：
 
@@ -59,13 +59,13 @@
 
 ### CR-1 — 既有 Spec-Runtime 漂移已由 Code-State 口径收敛；Evidence 仍未闭合
 
-- **现状**：FR-013、FR-017、FR-025 不再作为 active Code-Drifted 统计；当前 Code-State 为 **22 Done / 26 Partial / 0 Drifted / 0 Pending**。
+- **现状**：FR-013、FR-017、FR-025 不再作为 active Code-Drifted 统计；当前 Code-State 为 **23 Done / 25 Partial / 0 Drifted / 0 Pending**。
 - **保守判定**：这些项仍随 43 个 Evidence-Pending 一起保留为证据缺口，不得升级为生产可用。
 - **后续动作**：补齐 direct TC/live/CI 证据后，才允许把对应 Evidence-State 从 Pending 改为 Done。
 
 ---
 
-### CR-2 — FR-037~044 已有 Code-Partial anchors；生产证据未闭合
+### CR-2 — FR-037~044 已有 Code-Partial-or-Code-Done anchors；生产证据未闭合
 
 - **Evidence**：`module/binance/spec/FEATURES.md` 与 `spec/ACCEPTANCE.md` 已把 FR-037~044 标为 Code-Partial / Evidence-Pending。
 - **Runtime anchors**：`/home/binance` 存在 feature flag/readiness/deploy runbook、retention/archive/delete/restore、Kafka W3C header tests、quota/throttle/admin/metrics、append-only audit migration、schema/version guards、cost metrics/runbook、classification/retention/destruction proof anchors。
@@ -81,12 +81,12 @@
 
 | 指标                | 当前值     | 生产级目标               | 差距 |
 | ------------------- | ---------- | ------------------------ | ---- |
-| FR Code-Done        | 22/44      | 44/44（或显式 deferral） | 20   |
-| FR Code-Partial     | 26/44      | 0                        | 10   |
-| FR Code-Pending     | 26/44      | 0                        | 10   |
+| FR Code-Done        | 23/44      | 44/44（或显式 deferral） | 21   |
+| FR Code-Partial     | 25/44      | 0                        | 25   |
+| FR Code-Pending     | 0/44       | 0                        | 0    |
 | Evidence-Done       | 1/44       | 44/44（或显式 deferral） | 43   |
 | PRG gates Pending   | 7/7        | 0/7                      | 7    |
-| Spec-Runtime drift  | 3 处       | 0                        | 3    |
+| Spec-Runtime drift  | 0 active   | 0                        | 0    |
 | 产品线 runtime 装配 | 仅 spot    | 4 线                     | 3    |
 | 外部 E2E            | local only | real infra               | 全缺 |
 
@@ -96,52 +96,52 @@
 
 按优先级分层，以下是从当前状态到"生产级可发布"必须补全的工作：
 
-#### P0 阻塞 — 不补全不可上线
+#### P0 本地代码门禁 — 已完成（证据待闭合）
 
-| #     | 工作项                                                 | 对应 FR/PRG      | 工作量 | 说明             |
-| ----- | ------------------------------------------------------ | ---------------- | ------ | ---------------- |
-| P0-1  | 对齐 FR-013 runtime（分钟限流 + 418/429 退避）         | FR-013           | M      | 防 IP 封禁       |
-| P0-2  | 对齐 FR-017 runtime（按事件类型分策略缺口检测）        | FR-017           | M      | 防数据漏检       |
-| P0-3  | 对齐 FR-025 runtime（分钟 weight + P0/P1/P2 优先级）   | FR-025           | M      | 防回填/实时争抢  |
-| P0-4  | Wire envelope schema version enforcement               | FR-042 / PRG-003 | M      | 防升级不兼容     |
-| P0-5  | Release safety net（feature flag + canary + rollback） | FR-037 / PRG-003 | L      | 防上线即全量     |
-| P0-6  | taosx data retention lifecycle                         | FR-038 / PRG-007 | M      | 防热数据膨胀     |
-| P0-7  | Config schema 字段名统一                               | MA-1             | S      | 防配置加载错误   |
-| P0-8  | kafkax retry/DLQ topic contract                        | PRG-002          | M      | 防下游故障无兜底 |
-| P0-9  | ClickHouse ReplicatedMergeTree + TTL                   | PRG-001          | M      | 防 OLAP 数据膨胀 |
-| P0-10 | ADR：order book rebuild 排除决策                       | MO-4             | S      | 架构决策记录     |
+| #     | 工作项                                                 | 对应 FR/PRG      | 当前状态             | 剩余证据                         |
+| ----- | ------------------------------------------------------ | ---------------- | -------------------- | -------------------------------- |
+| P0-1  | FR-013 runtime：分钟限流 + 418/429 退避                | FR-013           | ✅ 本地闭合          | direct TC/live evidence          |
+| P0-2  | FR-017 runtime：按事件类型分策略缺口检测               | FR-017           | ✅ 本地闭合          | direct TC/live evidence          |
+| P0-3  | FR-025 runtime：分钟 weight + P0/P1/P2 优先级          | FR-025           | ✅ 本地闭合          | direct TC/live evidence          |
+| P0-4  | Wire envelope schema version enforcement               | FR-042 / PRG-003 | ✅ 本地闭合          | compatibility / direct TC 证据   |
+| P0-5  | Release safety net（feature flag + canary + rollback） | FR-037 / PRG-003 | ✅ 本地代码门禁闭合  | production canary / rollback drill |
+| P0-6  | taosx data retention lifecycle                         | FR-038 / PRG-007 | ✅ 本地闭合          | lifecycle/archive evidence       |
+| P0-7  | Config schema 字段名统一                               | MA-1             | ✅ 已完成            | 无                               |
+| P0-8  | kafkax retry/DLQ topic contract                        | PRG-002          | ✅ 本地闭合          | retry/DLQ/replay evidence        |
+| P0-9  | ClickHouse ReplicatedMergeTree + TTL                   | PRG-001          | ✅ contract 闭合     | external storage evidence        |
+| P0-10 | ADR：order book rebuild 排除决策                       | MO-4             | ✅ ADR-003 Accepted  | 无                               |
 
-#### P1 强烈建议 — 不补全运营风险高
+#### P1 强烈建议 — 5 项未完成，3 项已完成
 
-| #    | 工作项                                              | 对应 FR/PRG      | 工作量 | 说明         |
-| ---- | --------------------------------------------------- | ---------------- | ------ | ------------ |
-| P1-1 | 分布式 tracing (OTel)                               | FR-039 / PRG-005 | L      | 故障定位     |
-| P1-2 | 资源配额/隔离                                       | FR-040 / PRG-004 | L      | 故障隔离     |
-| P1-3 | Audit log completeness                              | FR-041 / PRG-006 | M      | 合规审计     |
-| P1-4 | 真实外部 E2E（Kafka/Redis/TDengine/ClickHouse/OSS） | Evidence-Done    | L      | 端到端验证   |
-| P1-5 | UM/CM/Options 产品线 testnet 凭据 + live 验证       | FR-001 G7        | M      | 四线覆盖     |
-| P1-6 | ADR：FR-024 vs FR-036 架构路径                      | MO-3             | S      | 架构依赖裁决 |
-| P1-7 | 双态模型补充 Code-Drifted 规则                      | MA-2             | S      | 状态口径修正 |
-| P1-8 | FR-013/017/025 状态降级 Code-Partial                | MA-2             | S      | 状态口径修正 |
+| #    | 工作项                                              | 对应 FR/PRG      | 当前状态    | 说明         |
+| ---- | --------------------------------------------------- | ---------------- | ----------- | ------------ |
+| P1-1 | 分布式 tracing (OTel)                               | FR-039 / PRG-005 | 未完成      | 故障定位     |
+| P1-2 | 资源配额/隔离                                       | FR-040 / PRG-004 | 未完成      | 故障隔离     |
+| P1-3 | Audit log completeness                              | FR-041 / PRG-006 | 未完成      | 合规审计     |
+| P1-4 | 真实外部 E2E（Kafka/Redis/TDengine/ClickHouse/OSS） | Evidence-Done    | 未完成      | 端到端验证   |
+| P1-5 | UM/CM/Options 产品线 testnet 凭据 + live 验证       | FR-001 G7        | 未完成      | 四线覆盖     |
+| P1-6 | ADR：FR-024 vs FR-036 架构路径                      | MO-3             | ✅ 已完成   | ADR-002      |
+| P1-7 | 双态模型补充 Code-Drifted 规则                      | MA-2             | ✅ 已完成   | 状态口径修正 |
+| P1-8 | FR-013/017/025 状态降级 Code-Partial                | MA-2             | ✅ 已完成   | 状态口径修正 |
 
-#### P2 可延后 — 有替代手段
+#### P2 可延后 — 5 项未完成，3 项已完成
 
-| #    | 工作项                                    | 对应 FR/PRG | 工作量 | 说明             |
-| ---- | ----------------------------------------- | ----------- | ------ | ---------------- |
-| P2-1 | Cost observability                        | FR-043      | M      | 可用外部监控暂替 |
-| P2-2 | Data compliance & destruction             | FR-044      | M      | 可用手动流程暂替 |
-| P2-3 | FR-031~036 ExchangeInfo sync runtime 实现 | FR-031~036  | L      | 选择性同步       |
-| P2-4 | 退役文件物理隔离/精简                     | MA-3        | S      | 文档治理         |
-| P2-5 | Appendix D AC-BNC 迁移                    | MA-4        | S      | 文档治理         |
-| P2-6 | Backfill progress 持久化                  | #1117       | M      | 重启恢复         |
-| P2-7 | DLQ 持久化 wiring                         | #1118       | S      | 持久死信         |
-| P2-8 | 三文件状态一致性 CI gate                  | MO-1        | S      | 防状态漂移       |
+| #    | 工作项                                    | 对应 FR/PRG | 当前状态  | 说明             |
+| ---- | ----------------------------------------- | ----------- | --------- | ---------------- |
+| P2-1 | Cost observability                        | FR-043      | 未完成    | 可用外部监控暂替 |
+| P2-2 | Data compliance & destruction             | FR-044      | 未完成    | 可用手动流程暂替 |
+| P2-3 | FR-031~036 ExchangeInfo sync runtime 实现 | FR-031~036  | 未完成    | 选择性同步       |
+| P2-4 | 退役文件物理隔离/精简                     | MA-3        | ✅ 已完成 | 文档治理         |
+| P2-5 | Appendix D AC-BNC 迁移                    | MA-4        | ✅ 已完成 | 文档治理         |
+| P2-6 | Backfill progress 持久化                  | #1117       | 未完成    | 重启恢复         |
+| P2-7 | DLQ 持久化 wiring                         | #1118       | 未完成    | 持久死信         |
+| P2-8 | 五处状态一致性 CI gate                    | MO-1        | ✅ 已完成 | 防状态漂移       |
 
 ### Evidence-Done 推进策略
 
 `[COMPUTED, HIGH]` 当前 Evidence-State 1 Done (FR-009) / 43 Pending。Evidence-Done 的判定标准是"TC 全 PASS + AC 全满足 + runtime evidence 归档"。推进策略：
 
-1. **先补 P0 spec-runtime drift**（P0-1/2/3）→ 这三个 FR 的 Code-Done 修复后可重新评估 Evidence
+1. **先补 FR-013/017/025 direct TC/live evidence**（对应 Phase 0 direct evidence 项）→ 证据归档后可重新评估 Evidence
 2. **按 FR 依赖顺序推进 Evidence**：FR-001~009（核心链路）→ FR-006a-e（存储）→ FR-012~015（实时控制）→ 其余
 3. **外部 E2E 分批**：先 Redis + NATS（local gated 已部分验证），再 TDengine + Kafka，最后 ClickHouse + OSS
 4. **每关闭一个 Evidence-Done，同步更新 ACCEPTANCE.md §4 闭合矩阵 + TRACEABILITY.md**
@@ -150,26 +150,26 @@
 
 ## 优化路线图
 
-### Phase 0：Spec-Runtime 漂移修复（P0 阻塞，2 周）
+### Phase 0：Spec-Runtime 状态复核与证据闭合（P0 本地复核已完成，证据待闭合）
 
 | 步骤 | 工作                                                                                             | 影响文件                                                    |
 | ---- | ------------------------------------------------------------------------------------------------ | ----------------------------------------------------------- |
-| 0.1  | 对齐 FR-013 runtime：`reliability.go` 分钟滑动窗口 + 418/429 退避 + clock skew                   | `/home/binance/internal/client/controlplane/reliability.go` |
-| 0.2  | 对齐 FR-017 runtime：`quality.go` 按 event_type 分策略缺口检测                                   | `/home/binance/internal/server/quality.go`                  |
-| 0.3  | 对齐 FR-025 runtime：`throttle.go` 分钟 weight + P0/P1/P2 优先级                                 | `/home/binance/internal/client/throttle.go`                 |
-| 0.4  | 状态降级：ACCEPTANCE.md + FEATURES.md 中 FR-013/017/025 改标 Code-Partial → 修复后恢复 Code-Done | `module/binance/spec/ACCEPTANCE.md`, `FEATURES.md`          |
+| 0.1  | FR-013 direct TC/live evidence：分钟滑动窗口 + 418/429 退避 + clock skew                         | `/home/binance/internal/client/controlplane/reliability.go` |
+| 0.2  | FR-017 direct TC/live evidence：按 event_type 分策略缺口检测                                     | `/home/binance/internal/server/quality.go`                  |
+| 0.3  | FR-025 direct TC/live evidence：分钟 weight + P0/P1/P2 优先级                                   | `/home/binance/internal/client/throttle.go`                 |
+| 0.4  | ✅ 状态复核：FR-013/017/025 从 active Code-Drifted 调整为 Code-Partial；Code-Done/Evidence-Done 依赖 direct TC/live evidence | `module/binance/spec/ACCEPTANCE.md`, `FEATURES.md`          |
 
-### Phase 1：生产级门禁补全（P0 阻塞，3-4 周）
+### Phase 1：生产级门禁证据补全（P0 本地代码门禁已闭合，3-4 周）
 
 | 步骤 | 工作                                                                   | 对应 PRG         |
 | ---- | ---------------------------------------------------------------------- | ---------------- |
-| 1.1  | Wire envelope schema version 字段 + server 校验                        | PRG-003 / FR-042 |
-| 1.2  | Feature flag 机制（`XGO_BINANCE_FEATURE_{name}`） + canary health gate | PRG-003 / FR-037 |
-| 1.3  | taosx retention scheduler + OSS ETag 前置校验                          | PRG-007 / FR-038 |
-| 1.4  | kafkax retry/DLQ topic contract                                        | PRG-002          |
-| 1.5  | ClickHouse ReplicatedMergeTree + TTL                                   | PRG-001          |
-| 1.6  | Config schema 字段名统一                                               | MA-1             |
-| 1.7  | ADR：order book rebuild 排除                                           | MO-4             |
+| 1.1  | schema version server 校验 + 兼容矩阵证据                              | PRG-003 / FR-042 |
+| 1.2  | ✅ feature flag 通用框架 + canary health gate 本地代码门禁；仍缺生产 canary/rollback drill evidence | PRG-003 / FR-037 |
+| 1.3  | taosx retention scheduler + OSS ETag 前置校验证据                      | PRG-007 / FR-038 |
+| 1.4  | kafkax DLQ topic contract + replay evidence                            | PRG-002          |
+| 1.5  | ClickHouse ReplicatedMergeTree + TTL 外部存储证据                      | PRG-001          |
+| 1.6  | ✅ Config schema 字段名统一                                             | MA-1             |
+| 1.7  | ✅ ADR：order book rebuild 排除                                         | MO-4 / ADR-003   |
 
 ### Phase 2：运维治理补全（P1，4-6 周）
 
@@ -180,8 +180,8 @@
 | 2.3  | Admin 写操作 append-only 审计 + postgresx 审计表                   | FR-041        |
 | 2.4  | 真实外部 E2E（Kafka broker → Redis → TDengine → ClickHouse → OSS） | Evidence-Done |
 | 2.5  | UM/CM/Options testnet 凭据 + mainnet live 验证                     | FR-001 G7     |
-| 2.6  | ADR：FR-024 vs FR-036 架构路径                                     | MO-3          |
-| 2.7  | 双态模型 Code-Drifted 规则补充                                     | MA-2          |
+| 2.6  | ✅ ADR：FR-024 vs FR-036 架构路径                                  | MO-3 / ADR-002 |
+| 2.7  | ✅ 双态模型 Code-Drifted 规则补充                                  | MA-2          |
 
 ### Phase 3：Evidence-Done 推进（持续，8-12 周）
 
@@ -193,14 +193,16 @@
 | 3.4  | 其余 FR Evidence-Done 分批推进                               |
 | 3.5  | PRG-001~007 evidence 归档                                    |
 
-### Phase 4：文档治理优化（P2，1-2 周）
+### Phase 4：P2 可延后项（有替代手段时按需推进）
 
 | 步骤 | 工作                                              |
 | ---- | ------------------------------------------------- |
-| 4.1  | 退役文件添加醒目 DEPRECATED 横幅 + 内容精简为摘要 |
-| 4.2  | Appendix D AC-BNC 迁移到 docs/migrations/         |
-| 4.3  | 根 SPEC §14 目录结构移除退役文件                  |
-| 4.4  | 三文件状态一致性 CI gate                          |
+| 4.1  | ✅ 退役文件添加醒目 DEPRECATED 横幅 + 内容精简为摘要 |
+| 4.2  | ✅ Appendix D AC-BNC 迁移到 docs/migrations/         |
+| 4.3  | ✅ 根 SPEC §14 目录结构移除退役文件                  |
+| 4.4  | ✅ 五处状态一致性 CI gate                            |
+| 4.5  | Cost observability dashboard/alert evidence          |
+| 4.6  | Data compliance destruction drill/certificate evidence |
 
 ---
 
