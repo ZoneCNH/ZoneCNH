@@ -13,6 +13,8 @@
 >
 > [COMPUTED, HIGH] 2026-06-27 GitHub #1268-#1279 为 `OPEN`；Beads `ZoneCNH-xzcr*` 为 `in_progress` Evidence-Done blocker ownership；账本位于 [`evidence/2026-06-27/review/ISSUE-BLOCKERS-1268-1279.md`](evidence/2026-06-27/review/ISSUE-BLOCKERS-1268-1279.md)。#1269/#1277/#1278/#1279 有本地直接证据 [`evidence/2026-06-27/test/worker-a-runtime-evidence.md`](evidence/2026-06-27/test/worker-a-runtime-evidence.md)，其中 #1278/#1279 的新增 runtime evidence 已归档到 `/home/binance/release/evidence/binance/20260627-agent-audit-2/backfill-progress-restart-evidence.md` 与 `/home/binance/release/evidence/binance/20260627-agent-audit-2/dlq-snapshot-replay-evidence.md`。tracker open state 只表示缺口归属与执行跟踪，不得解读为 Evidence-Done；direct TC、live/external 或合规演练证据仍按下表阻塞。
 >
+> [COMPUTED, HIGH] 2026-06-27 agent-team sync 已把 Beads `ZoneCNH-xzcr*` 备注和 GitHub #1268-#1279 评论同步到当前 blocker 口径；未关闭任何 issue。`sre/secrets/env/dev.md` 只做 key-family inventory：`redisx`/`kafkax`/`natsx`/`postgresx`/`taosx`/`ossx`/`clickhousex` 配置族存在，未复制任何 secret 值。`/home/binance/release/evidence/binance/20260627-agent-audit-2/status.txt` 为本地 runtime evidence PASS；`issue-repeat-check-10x.log` 对 targeted checks 连续 10/10 PASS。该结果只证明本地证据增强，仍不满足生产 Evidence-Done。
+>
 > [COMPUTED, HIGH] Issue 拆解与剩余 Evidence blocker 对齐如下；该表是未完成 evidence ownership，不改变下方 TODO 完成率。
 
 | GitHub | Beads             | 覆盖范围                                                          | 当前判定                                                                                |
