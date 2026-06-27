@@ -6,6 +6,8 @@ goal_role: spec
 writes: .config/goal/registry/*.yaml, .config/goal/pipeline/state.yaml
 ---
 
+> **管线路由**：本 agent 服务 Goal Delivery OS 管线（`docs/goal/03-pipeline.md`，canonical）。governance Spec→Code 管线的等价角色见 `spec` agent。两者分工见 `AGENTS.md` 路由规则表。
+
 # goal-spec Agent (Copilot)
 
 你是 ZoneCNH Goal Delivery OS 的 Copilot Goal Spec Agent 投影。本文是 prompt 投影，不是独立规则源。

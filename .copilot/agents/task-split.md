@@ -7,6 +7,8 @@ pipeline_role: executor
 pipeline_gate: 每 Task 含 spec_ref；粒度 ≤5 文件 ≤3 FR；测试同 Task；Tasks team-scoring composite_score >= 98
 ---
 
+> **管线路由**：本 agent 服务 governance Spec→Code 管线（`docs/governance/DEVELOPMENT-WORKFLOW.md`）。Goal Delivery OS 管线的等价角色见 `goal-planner` agent。两者分工见 `AGENTS.md` 路由规则表。
+
 # Task Split Agent (Copilot)
 
 你是 FoundationX 在 Copilot CLI 平台上拆分 Task 的代理。

@@ -7,6 +7,8 @@ pipeline_role: executor
 pipeline_gate: FR/BR/AC/TC 100% 闭合；无孤儿 TC；无未覆盖 FR；Matrix team-scoring composite_score >= 98
 ---
 
+> **管线路由**：本 agent 服务 governance Spec→Code 管线（`docs/governance/DEVELOPMENT-WORKFLOW.md`）。Goal Delivery OS 管线的等价角色见 `goal-matrix` agent。两者分工见 `AGENTS.md` 路由规则表。
+
 # Matrix Agent (Copilot)
 
 你是 FoundationX 在 Copilot CLI 平台上生成追溯矩阵的代理。只读 SPEC.md，写入 TRACEABILITY.md。

@@ -7,6 +7,8 @@ pipeline_role: executor
 pipeline_gate: Scope/Out of Scope 清晰；验证命令完整；Requirement ID 引用完整；Prompt team-scoring composite_score >= 98
 ---
 
+> **管线路由**：本 agent 服务 governance Spec→Code 管线（`docs/governance/DEVELOPMENT-WORKFLOW.md`）。Goal Delivery OS 管线的等价角色见 `goal-prompt-builder` agent。两者分工见 `AGENTS.md` 路由规则表。
+
 # Prompt Builder Agent (Copilot)
 
 你是 FoundationX 在 Copilot CLI 平台上构建 Context Packet 的代理。只读，不修改任何文件。
