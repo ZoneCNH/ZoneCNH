@@ -2,27 +2,32 @@
 
 > 基于 `14-agent-protocols.md` §0 要求：Agent 定义漂移时 MUST 生成 Change Request。本报告是对 Claude Code / Copilot CLI / Codex CLI 三平台 `goal-*` Agent 投影的一阶兼容性审计。
 
-生成日期：2026-06-12
+生成日期：2026-06-12｜更新：2026-06-27
 审计范围：`.claude/agents/goal-*.md`、`.copilot/agents/goal-*.md`、`.codex/agents/goal-*.toml`
 
 ---
 
 ## 1. Agent 存在性矩阵
 
-| Agent                 | Claude Code | Copilot CLI | Codex CLI |
-| --------------------- | ----------- | ----------- | --------- |
-| goal-spec             | ✅ 348 行    | ✅ 63 行     | ✅ 51 行   |
-| goal-matrix           | ✅ 253 行    | ✅ 64 行     | ✅ 53 行   |
-| goal-reviewer         | ✅ 284 行    | ✅ 70 行     | ✅ 59 行   |
-| goal-prompt-builder   | ✅ 451 行    | ✅ 63 行     | ✅ 52 行   |
-| goal-evidence         | ✅ 430 行    | ✅ 81 行     | ✅ 69 行   |
-| goal-architect        | ✅           | ❌           | ❌         |
-| goal-context-recovery | ✅           | ❌           | ❌         |
-| goal-governance       | ✅           | ❌           | ❌         |
-| goal-lint             | ✅           | ❌           | ❌         |
-| goal-planner          | ✅           | ❌           | ❌         |
+| Agent                  | Claude Code | Copilot CLI | Codex CLI |
+| ---------------------- | ----------- | ----------- | --------- |
+| ci-governance-auditor  | ✅          | ✅          | ✅        |
+| goal-architect         | ✅          | ✅          | ✅        |
+| goal-context-recovery  | ✅          | ✅          | ✅        |
+| goal-evidence          | ✅          | ✅          | ✅        |
+| goal-governance        | ✅          | ✅          | ✅        |
+| goal-lint              | ✅          | ✅          | ✅        |
+| goal-matrix            | ✅          | ✅          | ✅        |
+| goal-planner           | ✅          | ✅          | ✅        |
+| goal-prompt-builder    | ✅          | ✅          | ✅        |
+| goal-reviewer          | ✅          | ✅          | ✅        |
+| goal-spec              | ✅          | ✅          | ✅        |
+| spec-review            | ✅          | ✅          | ✅        |
+| spec-structural-analyzer | ✅          | ✅          | ✅        |
 
-**关键发现**：5 个核心 Agent 三平台同步，5 个辅助 Agent 仅 Claude Code 实现。按 `14-agent-protocols.md` 设计，Copilot/Codex 只需覆盖核心 5 个（spec / matrix / reviewer / prompt-builder / evidence），其余为可选的 Claude 专属能力——此差异符合设计，非漂移。
+> 另有 governance / executor / score / arbiter agent 三平台均已对齐。5 个 governance executor（spec/matrix/task-split/task-planner/prompt-builder）在 .claude/.copilot 中为 symlink→goal-*，在 .codex 中为带 canonical name 的 thin wrapper；sync-agents.py 按 name 去重后三平台各 21 个 agent（21=21=21）。
+
+**关键发现**：截至 2026-06-27，三平台 agent 已全量镜像对齐，各 21 个 agent（去重后）。此前仅 Claude Code 实现的 5 个辅助 goal agent + ci-governance-auditor + spec-structural-analyzer + spec-review 已补全到 Codex（TOML）和 Copilot（MD）。后续将 5 个 governance executor 合并到对应 goal-* agent（symlink + thin wrapper），消除重复后三平台均为 21。三平台一致性由 scripts/sync-agents.py 在 goal-workflow.sh preflight 阶段自动检测，漂移时 exit 1。
 
 ---
 
@@ -260,6 +265,7 @@ Claude `goal-reviewer.md` G10 清单曾经缺少 "Agent 隔离违规" 阻断条�
 | HIGH     | 5     | 4 处 Codex 幻影文档引用 + 1 处 Claude 端 CONSTITUTION.md 缺失（均已修复）                                                                                                        |
 | MEDIUM   | 3→1→0 | G10 阻断条件 7 vs 8 项（✅ 已修复）；Matrix Verified 定义 Code+Test vs 四链路（✅ 已修复）；Claude 独有功能组件未投影（✅ 迁移为 LOW——已通过精简文档索引缓解跨平台文档发现成本）    |
 | LOW      | 1     | Copilot/Codex 缺少完整文档索引表（✅ 已修复，10 个 Agent 均已添加 8 文档精简索引）                                                                                                |
+| INFO     | 1     | 2026-06-27 三平台 agent 全量镜像完成，21=21=21（symlink + canonical name 去重），漂移检测自动化                                                                                                                    |
 
 ---
 
@@ -272,6 +278,8 @@ Claude `goal-reviewer.md` G10 清单曾经缺少 "Agent 隔离违规" 阻断条�
 5. **已执行**：为 Copilot/Codex Agent 添加精简版文档索引（8 个核心文档 + 角色描述），降低 Agent 在跨平台执行时的文档发现成本
 6. **已执行**：建立 CI 检查——扫描所有 Agent 定义中的 `docs/goal/*.md` 引用，验证目标文件存在（通过 `preflight` + `rule-drift-check.py`）
 7. **无需操作**：辅助 Agent（architect / context-recovery / governance / lint / planner）仅在 Claude Code 端存在，符合设计
+8. **已执行（2026-06-27）**：完成三平台 agent 全量镜像——5 个辅助 goal agent + ci-governance-auditor + spec-structural-analyzer + spec-review 补全到 .codex/agents/（TOML）和 .copilot/agents/（MD）。后续将 5 个 governance executor（spec/matrix/task-split/task-planner/prompt-builder）合并到对应 goal-* agent：.claude/.copilot 用 symlink，.codex 用带 canonical name 的 thin wrapper。sync-agents.py 按 name 去重后三平台各 21 个 agent（21=21=21）。
+9. **已执行（2026-06-27）**：新增 scripts/sync-agents.py 漂移检测脚本，集成到 goal-workflow.sh preflight，三平台 agent 数量或名称不一致时 WARN（不阻断）。
 
 ---
 

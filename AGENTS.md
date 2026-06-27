@@ -8,7 +8,7 @@
 
 ## 项目结构与模块组织
 
-本仓库是 `ZoneCNH/ZoneCNH` 个人主页与架构索引，不是应用模块。根目录应保持精简，并以文档为主：
+本仓库是 FoundationX 治理体系仓——定义 Goal 驱动交付管线、模块治理规则、Spec→Code 工作流和四源评分体系，同时承载个人架构索引。治理对象覆盖 21 个基座模块仓（见 `.foundationx/status/index.json`）和 59 个 module 规格目录。本仓库不含模块源码；模块实现统一在 `/home/{module}` 对应 GitHub 仓库中完成。根目录应保持精简，并以文档为主：
 
 - `README.md` 展示公开简介、技术栈、分层架构摘要和核心项目链接。
 - `ARCHITECTURE.md` 是向后兼容重定向存根；架构内容已拆分迁移至 `docs/architecture/`（01-overview / 02-domain-layers / 03-boundaries / 04-principles / 05-foundation / 06-dataflow / 07-three-engines / 08-contracts / adr）。
@@ -102,20 +102,22 @@ Spec 编写完成后，不是直接写代码，而是按管线推进：Spec → 
 
 | 平台        | 配置目录           | 模型                       | 格式                 | Agent 数 |
 | ----------- | ------------------ | -------------------------- | -------------------- | -------- |
-| Claude Code | `.claude/agents/`  | Sonnet / Opus              | Markdown frontmatter | 28       |
-| Codex       | `.codex/agents/`   | GPT-5.5 + reasoning effort | TOML                 | 20       |
-| Copilot CLI | `.copilot/agents/` | Copilot/Claude 模型        | Markdown prompt      | 19       |
+| Claude Code | `.claude/agents/`  | Sonnet / Opus              | Markdown frontmatter | 21       |
+| Codex       | `.codex/agents/`   | GPT-5.5 + reasoning effort | TOML                 | 21       |
+| Copilot CLI | `.copilot/agents/` | Copilot/Claude 模型        | Markdown prompt      | 21       |
+
+三平台 agent 镜像对齐（21=21=21，零漂移），由 scripts/sync-agents.py 在 goal-workflow.sh preflight 阶段自动检测漂移。5 个 governance executor agent（spec/matrix/task-split/task-planner/prompt-builder）在 .claude/.copilot 中为 symlink→goal-*，在 .codex 中为带 canonical name 的 thin wrapper，sync-agents.py 按 name 去重后三平台均为 21。
 
 运行时状态目录按平台隔离：Claude 使用 `.omc/state/pipeline/`，Codex 使用 `.omx/state/pipeline/`，Copilot 使用 `.copilot/state/pipeline/`。
 
 | Agent                | 流水线阶段  | 用途                                                                                                    | 可改文件           | 可写代码 | Claude 模型 | Codex reasoning |
 | -------------------- | ----------- | ------------------------------------------------------------------------------------------------------- | ------------------ | -------- | ----------- | --------------- |
-| `spec`               | S1-Spec     | 编写或修订项目 spec，补齐 23 节结构与追溯链                                                             | Spec 文档          | 否       | Opus        | high            |
+| `spec → 见 goal-spec`               | S1-Spec     | 编写或修订项目 spec，补齐 23 节结构与追溯链（已合并到 goal-spec）                                                             | Spec 文档          | 否       | Opus        | high            |
 | `spec-review`        | S1-Review   | 对抗性审查 spec，作为结构评分证据与参考                                                                 | 无                 | 否       | Opus        | high            |
-| `matrix`             | S2-Matrix   | 生成或校验需求追溯矩阵，闭合 FR/BR/AC/TC 链条                                                           | Traceability 文档  | 否       | Sonnet      | high            |
-| `task-split`         | S3-Tasks    | 将 Approved Spec 和 Matrix 拆成可执行 Task Spec                                                         | Task / Matrix 文档 | 否       | Sonnet      | high            |
-| `task-planner`       | S4-Plan     | 生成实现顺序、依赖、验证命令和风险计划                                                                  | Plan 文档          | 否       | Opus        | high            |
-| `prompt-builder`     | S5-Prompt   | 为单个 Task 生成 Context Packet 与开发 Prompt                                                           | Prompt 文档        | 否       | Sonnet      | medium          |
+| `matrix → 见 goal-matrix`             | S2-Matrix   | 生成或校验需求追溯矩阵，闭合 FR/BR/AC/TC 链条（已合并到 goal-matrix）                                                           | Traceability 文档  | 否       | Sonnet      | high            |
+| `task-split → 见 goal-planner`         | S3-Tasks    | 将 Approved Spec 和 Matrix 拆成可执行 Task Spec（已合并到 goal-planner）                                                         | Task / Matrix 文档 | 否       | Sonnet      | high            |
+| `task-planner → 见 goal-planner`       | S4-Plan     | 生成实现顺序、依赖、验证命令和风险计划（已合并到 goal-planner）                                                                  | Plan 文档          | 否       | Opus        | high            |
+| `prompt-builder → 见 goal-prompt-builder`     | S5-Prompt   | 为单个 Task 生成 Context Packet 与开发 Prompt（已合并到 goal-prompt-builder）                                                           | Prompt 文档        | 否       | Sonnet      | medium          |
 | `task-executor`      | S6-Code     | 按单个 Task 和 Prompt 编写代码与测试，验证后回填证据                                                    | Task 指定源码/测试 | 是       | Sonnet      | high            |
 | `*-structural-score` | S1-S6 Score | 每阶段结构性问题分析，Claude / Codex / Copilot + rules 四源输出评分、红线和扣分账本                     | 无                 | 否       | Opus        | high            |
 | `pipeline-arbiter`   | S1-S6 Gate  | 汇总四源评分（`claude/codex/copilot/rules`），计算 `composite_score = min(...)`，判定是否达到 98 分门禁 | Verdict / Attempts | 否       | Opus        | high            |
@@ -189,6 +191,22 @@ Goal 驱动交付体系确保每一行代码都能追溯到一个可验证的业
 | `goal-matrix`         | 追溯矩阵管理               | `.config/goal/matrix/matrix.yaml`                                  | Sonnet |
 | `goal-prompt-builder` | Context Package 构建       | `.config/goal/prompts/TASK-*/`                                     | Sonnet |
 | `goal-evidence`       | 证据收集与验证             | `.config/goal/evidence/EVID-*.md`                                  | Sonnet |
+
+#### Goal Agent 与 Governance Agent 路由规则
+
+| 职能       | Goal agent（module/{m}/ 制品） | Governance agent（docs/ 制品）             | 路由规则                                                      |
+| -------- | ----------------------------- | ------------------------------------------- | ------------------------------------------------------------- |
+| Spec 编写 | goal-spec                     | spec, spec-author                           | 模块 spec 用 goal-spec；跨模块/工具级 spec 用 spec-author      |
+| Spec 审查 | goal-reviewer                 | spec-review, spec-structural-score          | Goal Gate 审查用 goal-reviewer；四源评分用 *-structural-score |
+| Design   | goal-architect                | —                                           | 统一用 goal-architect                                         |
+| Plan/Tasks | goal-planner                | task-planner, task-split                    | 模块计划用 goal-planner；governance 管线用 task-planner       |
+| Matrix   | goal-matrix                   | matrix, matrix-structural-score             | 模块追溯用 goal-matrix；评分用 matrix-structural-score       |
+| Prompt   | goal-prompt-builder           | prompt-builder, prompt-structural-score     | 模块 prompt 用 goal-prompt-builder；评分用 prompt-structural-score |
+| Code     | —                             | task-executor, code-structural-score        | 代码实现统一用 governance 的 task-executor                     |
+| Evidence | goal-evidence                 | —                                           | 统一用 goal-evidence                                          |
+| Governance | goal-governance             | pipeline-arbiter, meta-arbiter              | 一致性审计用 goal-governance；评分仲裁用 arbiter              |
+
+路由规则说明：当 Goal 管线与 governance 管线同时适用时，Goal Gate 为权威裁决（见 `docs/goal/00-authority-map.md` §双管线优先级）。Goal agent 负责制品创建与 Gate 审查；governance agent 负责四源评分与仲裁。
 
 ### 统一配置中心
 

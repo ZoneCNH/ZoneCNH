@@ -91,15 +91,20 @@ bash docs/goal/tools/goal-workflow.sh ci
 └── runtime/                    # 本地运行态，忽略提交
 ```
 
-**Agent 职责分工**：
+**Agent 职责分工**（10 个 Goal Agent）：
 
-| Agent               | 维护文件                                 | 职责                                       |
-| ------------------- | ---------------------------------------- | ------------------------------------------ |
-| goal-spec           | `registry/*.yaml`, `pipeline/state.yaml` | Goal/Task/Issue/Release/Risk/Decision 注册 |
-| goal-matrix         | `matrix/matrix.yaml`                     | 追溯矩阵生成与维护                         |
-| goal-reviewer       | `gates/state.yaml`                       | Gate 状态检查与记录                        |
-| goal-prompt-builder | `prompts/TASK-*/`                        | Context Package 构建与版本管理             |
-| goal-evidence       | `evidence/EVID-*.md`                     | 证据收集与验证                             |
+| Agent                 | 维护文件                                 | 职责                                       |
+| --------------------- | ---------------------------------------- | ------------------------------------------ |
+| goal-spec             | `registry/*.yaml`, `pipeline/state.yaml` | Goal/Spec/Registry 注册                    |
+| goal-architect        | `module/{m}/design/`, ADR                | Design 文档与 ADR                          |
+| goal-planner          | `module/{m}/plan/`, `module/{m}/tasks/`  | Plan/Tasks 拆分                            |
+| goal-matrix           | `matrix/matrix.yaml`                     | 追溯矩阵                                   |
+| goal-prompt-builder   | `prompts/TASK-*/`                        | Context Package 构建                       |
+| goal-evidence         | `evidence/EVID-*.md`                     | 证据收集与验证                             |
+| goal-reviewer         | `gates/state.yaml`                       | Gate 状态与对抗审查                        |
+| goal-governance       | 校验/审计（不直接写）                    | SSOT 一致性审计与漂移检测                  |
+| goal-lint             | `schema/rules.yaml`（校验）              | Lint 规则与漂移检查                        |
+| goal-context-recovery | `runtime/`（恢复缓存）                   | 会话中断后上下文恢复                       |
 
 ## 与 docs/spec、module/ 和 docs/governance/ 的同步边界
 
@@ -152,11 +157,11 @@ Goal 体系定义目标交付规则、状态机、Gate、Registry 和证据闭�
 | [23-workflow-governance-checks.md](23-workflow-governance-checks.md)           | 工作流治理检查：Drift Checks、Test Deletion Guard、Workflow Test Pyramid、Release Simulation                |
 | [24-standard-unification-analysis.md](24-standard-unification-analysis.md)     | 标准统一深度分析：ID、schema、状态、Matrix、Evidence、Gate 与工具一致性                                     |
 | [25-execution-guide.md](25-execution-guide.md)                                 | 执行指南：Agent 读序、命令入口、阻断规则、Change Request 与停止条件                                         |
-| [26-rsi-full-standard.md](26-rsi-full-standard.md)                             | RSI 完整标准索引（拆分版见 rsi-standard/ 子目录，30 章节）                                                  |
+| [26-rsi-full-standard.md](26-rsi-full-standard.md)                             | RSI 完整标准索引（拆分版见 rsi-standard/ 子目录，已归档删除）                                               |
 | [agent-cross-platform-compatibility.md](agent-cross-platform-compatibility.md) | 三平台 Agent 兼容性报告                                                                                     |
 | [deploy/README.md](deploy/README.md)                                           | 单仓库最小部署包：5 分钟采纳、3 级指南、CI 模板                                                             |
 | [deploy/roadmap.md](deploy/roadmap.md)                                         | Delivery OS 5 Phase 落地路线图                                                                              |
-| [rsi-standard/](rsi-standard/)                                                 | RSI 完整标准（30 章节，RSI-SG-001）                                                                         |
+| [rsi-standard/](rsi-standard/)                                                 | RSI 完整标准（已归档删除，见 21-controlled-rsi.md）                                                        |
 | [schema/](schema/)                                                             | 8 个 YAML Schema（4 数据 + 4 契约）                                                                         |
 | [change-requests/](change-requests/)                                           | 受保护资产或跨控制面漂移的提案记录；不是当前强规则源                                                        |
 

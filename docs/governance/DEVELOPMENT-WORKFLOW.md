@@ -89,6 +89,8 @@ AI 代理在创建分支前必须：
 
 ## 总览
 
+> **管线投影声明**（2026-06-27）：本文件定义的 Spec→Code 管线（S1-S6）是 `docs/goal/03-pipeline.md`（Goal 驱动交付管线，canonical 主流程）的 **governance 评分实现投影**。当本文件与 `docs/goal/` 冲突时，以 Goal 管线为准。Gate 判定以 `docs/goal/04-gates.md` G0-G11 为权威裁决；本文件定义的四源评分（claude/codex/copilot/rules）为 Goal Gate G2/G5/G6/G9 的 score 实现机制。详见 `docs/goal/00-authority-map.md` §双管线优先级。
+
 ```text
 Spec 编写
   ↓

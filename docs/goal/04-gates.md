@@ -329,3 +329,35 @@ risk:
 - PASS_WITH_RISK 不得用于绕过 P0/P1 验收标准、权限、数据、回滚或观测性要求
 - 存在 Open/Escalated release_blocking 风险时 G10 必须 FAIL 或 BLOCKED
 - 豁免（WAIVED）是策略记录不是 Gate 结果值；豁免的 Gate 最终映射为 PASS_WITH_RISK 或 BLOCKED
+
+### Gate Rubric 锚定
+
+G0-G11 的 `result.score` 必须由对应 rubric 维度表支撑；rubric 物理位置在 [`../governance/scoring/`](../governance/scoring/)（`RUBRIC-*.md`）。Spec 阶段可使用 [`scoring/rubric-score.py`](../governance/scoring/rubric-score.py) 进行机器评分（8 维度 + 6 条红线自动检测）。Gate 裁决与 rubric 的映射关系如下：
+
+| Gate              | Rubric                                                                                                                      |
+| ----------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| G1 Goal           | [`scoring/RUBRIC-goal.md`](../governance/scoring/RUBRIC-goal.md)（待创建，暂引用 [`02-goal-standard.md`](02-goal-standard.md) 的 SMART 检查项） |
+| G2 Spec           | [`scoring/RUBRIC-spec.md`](../governance/scoring/RUBRIC-spec.md)                                                            |
+| G3 Design         | [`scoring/RUBRIC-design.md`](../governance/scoring/RUBRIC-design.md)                                                        |
+| G5 Task/Matrix    | [`scoring/RUBRIC-matrix.md`](../governance/scoring/RUBRIC-matrix.md) + [`scoring/RUBRIC-tasks.md`](../governance/scoring/RUBRIC-tasks.md) |
+| G6 Implementation | [`scoring/RUBRIC-prompt.md`](../governance/scoring/RUBRIC-prompt.md) + [`scoring/RUBRIC-code.md`](../governance/scoring/RUBRIC-code.md)     |
+| G7 Test           | [`scoring/RUBRIC-test.md`](../governance/scoring/RUBRIC-test.md)                                                            |
+| G9 Review         | [`scoring/RUBRIC-review.md`](../governance/scoring/RUBRIC-review.md)                                                      |
+| G10 Release       | [`scoring/RUBRIC-release.md`](../governance/scoring/RUBRIC-release.md)                                                      |
+| G11 Retrospective | [`scoring/RUBRIC-retrospective.md`](../governance/scoring/RUBRIC-retrospective.md)                                          |
+
+语义 Gate（G1-G4、G9、G11）若无对应 rubric，则 `result.score` 字段可省略，仅使用 verdict（`PASS` / `PASS_WITH_RISK` / `FAIL` / `BLOCKED`）；此时 §5 的 90/85 阈值不适用，改由 reviewer 按各 Gate 检查项逐条判定。已具备 rubric 的语义 Gate（如 G2、G3、G9）应优先使用 rubric 评分。
+
+## 6. 复杂度 Gate 矩阵
+
+Gate 要求随复杂度分级（XS/S/M/L/XL，定义见 [`README.md` §复杂度分级](README.md#复杂度分级)）缩放，低复杂度任务只需 Gate 子集。
+
+| 复杂度 | 必备 Gate                           | 可选/跳过                       | 说明                           |
+| ------ | ----------------------------------- | ------------------------------- | ------------------------------ |
+| XS     | G1, G5, G7, G10                     | G0/G2/G3/G4/G6/G8/G9/G11 可跳过 | 小修复，低风险；G10 仅在涉及发布时要求 |
+| S      | G1, G2, G5, G7, G10                 | G0/G3/G4/G6/G8/G9/G11 可跳过    | 单模块小功能                   |
+| M      | G1, G2, G3, G4, G5, G6, G7, G9, G10 | G0/G8/G11 可选                  | 多模块中型功能；Matrix 横切维护 |
+| L      | G0-G11 全部                         | 无                              | 跨团队大功能                   |
+| XL     | G0-G11 全部 + RFC + 风险评审        | 无                              | 架构级，高风险                 |
+
+跳过的 Gate 必须在 Pipeline state（`.config/goal/pipeline/state.yaml`）中记录 `SKIPPED` 并附 `reason`；Release（G10）在任何复杂度下涉及上线时不可跳过。

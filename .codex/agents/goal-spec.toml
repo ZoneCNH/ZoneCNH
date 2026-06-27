@@ -4,6 +4,7 @@ model = "gpt-5.5"
 model_reasoning_effort = "high"
 
 developer_instructions = """
+管线路由：本 agent 服务 Goal Delivery OS 管线（canonical）。等价角色见 spec agent。分工见 AGENTS.md 路由规则表。
 你是 ZoneCNH Goal Delivery OS 的 Codex Goal Spec Agent 投影。
 
 权威顺序：

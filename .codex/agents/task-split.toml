@@ -1,47 +1,7 @@
-[agent]
-name = "task-split"
-description = "将 Approved SPEC.md 拆分为可执行 Task Spec。管线第三步。"
-platform = "codex"
-
-[model]
-name = "gpt-5.5"
-reasoning_effort = "high"
-
-[tools]
-allow = ["Read", "Write", "Grep", "Glob"]
-
-[pipeline]
-stage = "S3-Tasks"
-prev = "matrix"
-next = "task-planner"
-gate = "每 Task 含 spec_ref；粒度 ≤5 文件 ≤3 FR；测试同 Task；Tasks composite >= 98"
-role = "executor"
-
-[files]
-can_write = false
-allowed = ["module/{module}/tasks/**", "module/{module}/matrix/**"]
-forbidden = ["/home/{module}/**"]
-
-[outputs]
-artifacts = ["module/{module}/tasks/TASK-{MODULE}-NNN.md"]
-state_path = ".omx/state/pipeline/{module}/tasks/"
-
-[instructions]
-required_inputs = ["module/{module}/SPEC.md", "module/{module}/TRACEABILITY.md"]
-workflow = [
-  "1. 读取 Approved SPEC.md 的 FR/BR/AC/TC 清单",
-  "2. 按功能内聚性拆分 Task（≤5 文件 + ≤3 FR）",
-  "3. 测试文件与实现在同一 Task",
-  "4. 为每个 Task 编写 spec_ref",
-  "5. 生成聚合追溯矩阵（Task→FR 覆盖）",
-]
-key_rules = [
-  "≤5 文件/Task",
-  "≤3 FR/Task",
-  "测试与实现同 Task",
-  "禁止跨模块 Task",
-  "每个 Task 含 DoD",
-]
-
-[protected]
-readonly = ["docs/governance/scoring/RUBRIC-*.md", "CONSTITUTION.md"]
+# 本 agent 已合并到 goal-planner。请使用 goal-planner。
+# 保留此文件作为指向，避免历史引用断裂。
+# 实际执行请 codex --agent goal-planner
+name = "goal-planner"
+description = "已合并到 goal-planner。请使用 goal-planner。"
+model = "gpt-5.5"
+model_reasoning_effort = "high"

@@ -2,6 +2,8 @@
 
 **量化交易基础设施工程师** | 构建高性能、高可靠的金融数据与交易系统
 
+> 本仓库是 FoundationX 治理体系仓——定义 Goal 驱动交付管线、模块治理规则、Spec→Code 工作流和四源评分体系，同时承载个人架构索引。治理对象覆盖 21 个基座模块仓和 59 个 module 规格目录；模块实现统一在 `/home/{module}` 对应 GitHub 仓库中完成。
+
 ## 🔧 技术栈
 
 Go 🐹 (主要) · Rust 🦀 (底层) · Python 🐍 (脚本/数据) · TypeScript ⚡ (前端)
@@ -124,7 +126,7 @@ L2.5: domainx / decimalx / domain_market / domain_macro / domain_exchange (5/5 �
 
 **交易所 SDK / C/S Module：**
 
-- [binance](https://github.com/ZoneCNH/binance) — 币安 Binance Market Data C/S Module (Spot/USDⓈ-M/COIN-M/Options)；spec v3.9.0 Approved；Runtime-Version `v0.2.0`（Runtime-Anchor `/home/binance@f046e16`）；Code-State `22 Done / 26 Partial / 0 Drifted / 0 Pending`；Evidence-State `1 Done (FR-009) / 43 Pending`；FR-031~044 已有本地 code anchors，production gates 仍 blocked。 `公开`
+- [binance](https://github.com/ZoneCNH/binance) — 币安 Binance Market Data C/S Module (Spot/USDⓈ-M/COIN-M/Options)；spec v3.9.0 Approved；Runtime-Version `v0.2.0`（Runtime-Anchor `/home/binance@f046e16`）；Code-State `23 Done / 25 Partial / 0 Drifted / 0 Pending`；Evidence-State `1 Done (FR-009) / 43 Pending`；FR-037 本地部署安全网 code gate 已闭合，production canary / rollback / live evidence 仍 pending。 `公开`
 - [okx](https://github.com/ZoneCNH/okx) — OKX `公开`
 - [bybit](https://github.com/ZoneCNH/bybit) — Bybit `公开`
 - [bitget](https://github.com/ZoneCNH/bitget) — Bitget `公开`

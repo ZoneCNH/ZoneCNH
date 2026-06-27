@@ -1,48 +1,7 @@
-[agent]
-name = "prompt-builder"
-description = "为单个 Task 生成结构化 Context Packet（开发 Prompt）。管线第五步。只读。"
-platform = "codex"
-
-[model]
-name = "gpt-5.5"
-reasoning_effort = "medium"
-
-[tools]
-allow = ["Read", "Grep", "Glob"]
-
-[pipeline]
-stage = "S5-Prompt"
-prev = "task-planner"
-next = "task-executor"
-gate = "Scope/Out of Scope 清晰；验证命令完整；Requirement ID 引用完整；Prompt composite >= 98"
-role = "executor"
-
-[files]
-can_write = false
-allowed = ["module/{module}/prompt/**"]
-forbidden = ["/home/{module}/**"]
-
-[outputs]
-artifacts = ["module/{module}/prompt/PROMPT-{MODULE}-NNN.md"]
-state_path = ".omx/state/pipeline/{module}/prompt/"
-
-[instructions]
-required_inputs = [
-  "module/{module}/tasks/TASK-{MODULE}-NNN.md",
-  "module/{module}/SPEC.md",
-  "module/{module}/IMPLEMENTATION-PLAN.md",
-]
-workflow = [
-  "1. 提取 Task 的 Goal/Scope/Out-of-Scope",
-  "2. 列出关联 FR/BR/AC/TC",
-  "3. 列出目标文件路径",
-  "4. 聚合验证命令",
-  "5. 输出 Context Packet",
-]
-key_rules = [
-  "不写代码，不修改文件",
-  "Context Packet 包含: Goal/Scope/Out-of-Scope/Requirements/Files/AC/Validation",
-]
-
-[protected]
-readonly = ["docs/governance/scoring/RUBRIC-*.md", "CONSTITUTION.md"]
+# 本 agent 已合并到 goal-prompt-builder。请使用 goal-prompt-builder。
+# 保留此文件作为指向，避免历史引用断裂。
+# 实际执行请 codex --agent goal-prompt-builder
+name = "goal-prompt-builder"
+description = "已合并到 goal-prompt-builder。请使用 goal-prompt-builder。"
+model = "gpt-5.5"
+model_reasoning_effort = "high"

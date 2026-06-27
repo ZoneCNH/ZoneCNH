@@ -15,6 +15,7 @@
 - 对齐账本和分析报告只记录发现、差异和建议，不覆盖 SSOT。
 - `.config/goal/` 是控制面配置、schema 与可审查快照目录；临时运行态和恢复缓存不得混入权威定义。
 - `change-requests/` 只记录待审批提案，不是当前强规则源；Human Approval 前不得把提案内容写入受保护资产。
+- 当 Goal Gate（G2/G5/G6/G9）与 governance 四源评分（`composite_score`）同时适用时，Goal Gate 为权威裁决，四源评分作为该 Gate 的 score 实现机制；两者结果不一致时以 Goal Gate verdict 为准，并把四源评分差异记入 Risk Register。
 
 ## 2. 权威表
 
@@ -22,6 +23,7 @@
 | ------------------------------------------ | -------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
 | 最高治理与受保护资产边界                   | [`CONSTITUTION.md`](../../CONSTITUTION.md)、本文件                                                 | `docs/goal/change-requests/`、[`21-controlled-rsi.md`](21-controlled-rsi.md)                | 用 `docs/goal/` 直接覆盖 Constitution、CI、agent 或 schema 投影                         |
 | 交付管线与四轴状态模型                     | [`03-pipeline.md`](03-pipeline.md)（完整管线见 §1、四轴状态模型见 §2）                             | `README.md`、`.config/goal/schema/rules.yaml`、`.config/goal/pipeline/state.yaml`           | 在 SOP、Runtime、CI 或 schema 中新增主流程阶段；把历史执行步骤令牌当成 `pipeline_state` |
+| 双管线优先级与评分实现关系                 | [`03-pipeline.md`](03-pipeline.md)（canonical 主流程）+ [`../governance/DEVELOPMENT-WORKFLOW.md`](../governance/DEVELOPMENT-WORKFLOW.md)（评分实现） | `../governance/STRUCTURAL-SCORING.md`、`.claude/agents/*-structural-score.md`               | 把 governance arbiter 作为独立于 Goal Gate 的并行门禁；在 Spec/Matrix/Tasks/Plan/Prompt/Code 阶段设置两套相互冲突的放行裁决 |
 | Matrix 横切口径                            | [`05-layer-standards.md`](05-layer-standards.md#9-matrix-横切标准)                                 | `.config/goal/matrix/`、校验脚本、报告                                                      | 把 Matrix 放回主流程阶段                                                                |
 | Gate 编号与结果                            | [`04-gates.md`](04-gates.md)                                                                       | `.config/goal/gates/state.yaml`、CI 报告                                                    | 把 `XG-CHK-*`、`H-CHK-*` 或适配器检查注册成 Goal Gate                                   |
 | ID 格式                                    | [`07-id-system.md`](07-id-system.md)                                                               | Registry、Matrix、Evidence、Prompt 包                                                       | 在局部文档中定义新的 ID 前缀或格式                                                      |
@@ -44,7 +46,7 @@
 | API/Data 契约                              | [`schema/api-data-contract.yaml`](schema/api-data-contract.yaml)                                   | Spec、Design、Release Manifest                                                              | 公共 API 变更不触发 CL3+；存储迁移无 dry-run                                            |
 | 安全/隐私契约                              | [`schema/security-contract.yaml`](schema/security-contract.yaml)                                   | Spec、Review、RSI                                                                           | RSI 自动放宽安全/隐私约束；生产数据入测试环境                                           |
 | 运维契约（Perf/Reliability/Observability） | [`schema/ops-contract.yaml`](schema/ops-contract.yaml)                                             | Spec、Release Manifest、Metrics Review                                                      | 发布无 rollback plan；外部调用无超时/retry；无指标观察窗口                              |
-| RSI 完整标准（拆分版）                     | [`rsi-standard/README.md`](rsi-standard/README.md)（30 章节）                                      | `26-rsi-full-standard.md`（索引）                                                           | 绕过 R0-R9 Gate 自动应用 RSI 补丁                                                       |
+| RSI 完整标准（拆分版）                     | [`rsi-standard/README.md`](rsi-standard/README.md)（已归档，仅指针）                              | `26-rsi-full-standard.md`（索引）                                                           | 绕过 R0-R9 Gate 自动应用 RSI 补丁                                                       |
 | 最小部署包                                 | [`deploy/README.md`](deploy/README.md)                                                             | 各仓库 `.config/goal/`                                                                      | 将部署包当作 SSOT 替代品                                                                |
 
 ## 3. 四轴状态模型

@@ -5,6 +5,8 @@ model: sonnet
 tools: [Read, Write, Grep, Glob]
 ---
 
+> **管线路由**：本 agent 服务 Goal Delivery OS 管线（`docs/goal/03-pipeline.md`，canonical）。governance Spec→Code 管线的等价角色见 `task-planner` / `task-split` agent。两者分工见 `AGENTS.md` 路由规则表。
+
 # Goal Planner Agent
 
 你是 Goal 驱动交付体系的任务规划者。你的职责是将已批准的 Spec 拆分为可执行的任务计划。

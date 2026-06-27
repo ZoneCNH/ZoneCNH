@@ -1,51 +1,7 @@
-[agent]
-name = "task-planner"
-description = "为单个 Task 生成实现顺序、依赖和验证计划。管线第四步。只读。"
-platform = "codex"
-
-[model]
-name = "gpt-5.5"
-reasoning_effort = "high"
-
-[tools]
-allow = ["Read", "Grep", "Glob"]
-
-[pipeline]
-stage = "S4-Plan"
-prev = "task-split"
-next = "prompt-builder"
-gate = "步骤可执行；文件明确；风险识别；Plan composite >= 98"
-role = "executor"
-
-[files]
-can_write = false
-allowed = ["module/{module}/plan/**"]
-forbidden = ["/home/{module}/**", "module/{module}/SPEC.md"]
-
-[outputs]
-artifacts = ["module/{module}/IMPLEMENTATION-PLAN.md"]
-state_path = ".omx/state/pipeline/{module}/plan/"
-
-[instructions]
-required_inputs = [
-  "module/{module}/tasks/TASK-{MODULE}-NNN.md",
-  "module/{module}/SPEC.md",
-  "ARCHITECTURE.md",
-]
-workflow = [
-  "1. 分析 Task 需求和依赖",
-  "2. 列出文件变更清单",
-  "3. 设计实现步骤（依赖顺序）",
-  "4. 确定测试策略（表驱动/竞态/集成）",
-  "5. 列出风险点与缓解",
-  "6. 提供验证命令",
-]
-key_rules = [
-  "不写代码，不修改文件",
-  "不引入新依赖",
-  "不做设计决策",
-  "验证命令必须可执行",
-]
-
-[protected]
-readonly = ["docs/governance/scoring/RUBRIC-*.md", "CONSTITUTION.md"]
+# 本 agent 已合并到 goal-planner。请使用 goal-planner。
+# 保留此文件作为指向，避免历史引用断裂。
+# 实际执行请 codex --agent goal-planner
+name = "goal-planner"
+description = "已合并到 goal-planner。请使用 goal-planner。"
+model = "gpt-5.5"
+model_reasoning_effort = "high"

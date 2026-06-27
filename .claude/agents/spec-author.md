@@ -1,1 +1,1 @@
-spec.md
+goal-spec.md

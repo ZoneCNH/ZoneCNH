@@ -75,6 +75,16 @@ PASS_WITH_RISK_REQUIRED = {
 }
 PASS_WITH_RISK_OWNER_FIELDS = {"risk_owner", "owner"}
 
+GATE_THRESHOLDS = {
+    # gate_id: (pass_threshold, pass_with_risk_min, pass_with_risk_allowed)
+    "G0": (90, 80, True), "G1": (90, 80, True), "G2": (90, 85, True),
+    "G3": (90, 85, True), "G4": (90, 85, True), "G5": (90, 85, True),
+    "G6": (90, None, False),
+    "G7": (90, 85, True), "G8": (90, 85, True), "G9": (90, 85, True),
+    "G10": (90, None, False),
+    "G11": (80, 70, True),
+}
+
 OPEN_RISK_STATUSES = {"OPEN", "ESCALATED"}
 RELEASED_STATUSES = {"RELEASED"}
 DONE_PIPELINE_STATES = {"DONE"}
@@ -1015,15 +1025,86 @@ def check_gate(root: Path, report: Report) -> None:
             )
             if not any(risk.get(field) for field in PASS_WITH_RISK_OWNER_FIELDS):
                 missing_risk.append("risk_owner|owner")
-            if missing_risk:
-                report.error(
-                    "GV-GATE-PASS-WITH-RISK-METADATA",
-                    "gate",
-                    gate_path,
-                    "PASS_WITH_RISK must carry auditable risk metadata",
-                    "risk_id, risk_owner|owner, mitigation, due_at, release_blocking, status",
-                    missing_risk,
-                )
+                if missing_risk:
+                    report.error(
+                        "GV-GATE-PASS-WITH-RISK-METADATA",
+                        "gate",
+                        gate_path,
+                        "PASS_WITH_RISK must carry auditable risk metadata",
+                        "risk_id, risk_owner|owner, mitigation, due_at, release_blocking, status",
+                        missing_risk,
+                    )
+
+        errors, _warnings = validate_gate_score_verdict_consistency(gate, gate_id, gate_path, report)
+
+
+def validate_gate_score_verdict_consistency(
+    gate_record: dict[str, Any], gate_id: str, path: str, report: Report
+) -> tuple[int, int]:
+    result: dict[str, Any] = (
+        gate_record.get("result") if isinstance(gate_record.get("result"), dict) else {}
+    )
+    score = parse_int_value(result.get("score"))
+    verdict = normalize_status(result.get("verdict"))
+
+    if score is None:
+        return 0, 0
+    if gate_id not in GATE_THRESHOLDS:
+        return 0, 0
+    if not verdict or verdict not in GATE_DECISION_STATUSES:
+        return 0, 0
+
+    pass_threshold, risk_min, risk_allowed = GATE_THRESHOLDS[gate_id]
+    errors = 0
+
+    if score >= pass_threshold:
+        if verdict != "PASS":
+            report.error(
+                "GV-GATE-SCORE-VERDICT-MISMATCH",
+                "gate",
+                path,
+                f"score={score} 达到 PASS 阈值({pass_threshold})，但 verdict={verdict}，应为 PASS",
+                f"verdict=PASS when score >= {pass_threshold}",
+                {"score": score, "verdict": verdict, "gate_id": gate_id},
+            )
+            errors += 1
+        return errors, 0
+
+    # score < pass_threshold
+    if verdict == "PASS":
+        report.error(
+            "GV-GATE-SCORE-VERDICT-MISMATCH",
+            "gate",
+            path,
+            f"score={score} 未达 PASS 阈值({pass_threshold})，但 verdict=PASS",
+            f"score >= {pass_threshold} for PASS",
+            {"score": score, "verdict": verdict, "gate_id": gate_id},
+        )
+        errors += 1
+    elif not risk_allowed:
+        if verdict != "FAIL":
+            report.error(
+                "GV-GATE-SCORE-VERDICT-MISMATCH",
+                "gate",
+                path,
+                f"{gate_id} 不允许 PASS_WITH_RISK，score={score} 未达 {pass_threshold}，verdict 应为 FAIL",
+                "verdict=FAIL",
+                {"score": score, "verdict": verdict, "gate_id": gate_id},
+            )
+            errors += 1
+    elif risk_min is not None and score >= risk_min:
+        if verdict != "PASS_WITH_RISK":
+            report.error(
+                "GV-GATE-SCORE-VERDICT-MISMATCH",
+                "gate",
+                path,
+                f"score={score} 在 PASS_WITH_RISK 区间({risk_min}-{pass_threshold - 1})，但 verdict={verdict}，应为 PASS_WITH_RISK",
+                "verdict=PASS_WITH_RISK",
+                {"score": score, "verdict": verdict, "gate_id": gate_id},
+            )
+            errors += 1
+
+    return errors, 0
 
 
 def check_risk(root: Path, report: Report) -> None:

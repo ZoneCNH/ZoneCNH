@@ -197,11 +197,24 @@ self_test() {
   run bash "$SCRIPT_DIR/self-test.sh"
 }
 
+agent_drift_check() {
+  step "Agent drift check"
+  local script="$ROOT/scripts/sync-agents.py"
+  if [[ ! -f "$script" ]]; then
+    printf 'skip agent drift check: scripts/sync-agents.py not found\n'
+    return 0
+  fi
+  if ! run python3 "$script"; then
+    printf 'WARN: agent drift detected across platforms\n' >&2
+  fi
+}
+
 preflight() {
   python_compile
   shell_syntax
   rule_drift
   lint_goal
+  agent_drift_check
 }
 
 validate() {
