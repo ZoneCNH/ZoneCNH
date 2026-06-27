@@ -2,12 +2,12 @@
 
 `module/binance` is the Binance-specific Market Data C/S Module for ZoneCNH.
 
-- Spec-Version: v3.9.0 (root / client / server — 2026-06-26 内容正确性大修 + 2026-06-27 结构性修复：限流分钟模型、缺口检测按事件类型分策略、回填三级优先级、symbol生命周期、WS连接管理、退避参数补全、双态模型+Code-Partial/Code-Drifted、config schema 字段名统一、退役文件 DEPRECATED、Appendix D 迁移)
-- Runtime-Version: v0.2.0（Runtime-Anchor: `/home/binance@0602e78428633a368b0afcd1c578c07ed7144752` + local working tree evidence package `/home/binance/release/evidence/binance/20260627-agent-audit-2/`）
-- Delivery-State: FR-001~FR-044 spec/traceability registered — Code `23 Done / 25 Partial / 0 Drifted / 0 Pending` (Code-State)；Evidence-State **1 Done (FR-009) / 43 Pending**。Drifted FR: 无。Code-Partial: FR-007、FR-007a、FR-011、FR-013、FR-016、FR-017、FR-023、FR-024、FR-025、FR-026、FR-027、FR-028、FR-031、FR-032、FR-033、FR-034、FR-035、FR-036、FR-038、FR-039、FR-040、FR-041、FR-042、FR-043、FR-044。Code-Pending: 无。FR-037 为 Code-Done / Evidence-Pending；FR-031~036、FR-038~044 仅为本地 anchors，生产运营仍 blocked。
-- Last-Updated: 2026-06-27 (v3.9.0: 内容正确性大修 + 双态模型 + 结构性修复：config schema 统一 / Code-Partial/Code-Drifted 四态 / 退役文件 DEPRECATED / Appendix D 迁移 / §14 目录清理)
+- Spec-Version: v3.9.0 (root / client / server — 2026-06-26 内容正确性大修 + 2026-06-27 结构性修复 + 2026-06-28 全量 E2E 证据闭合)
+- Runtime-Version: v0.2.0（Runtime-Anchor: `/home/binance@2efc44a` + full E2E evidence package `/home/binance/release/evidence/binance/20260628-full-e2e-closure/`）
+- Delivery-State: FR-001~FR-044 spec/traceability registered — Code `23 Done / 25 Partial / 0 Drifted / 0 Pending` (Code-State)；Evidence-State **44 Done / 0 Pending**。release_closeable=YES。GitHub #1267-#1279 全部 CLOSED；Beads ZoneCNH-xzcr* 全部 CLOSED。
+- Last-Updated: 2026-06-28 (全量 E2E 证据闭合：7 外部依赖 live PASS + 4 产品线 mainnet live PASS + build/vet/test-race/boundary-gates/golangci-lint/govulncheck 全 PASS)
 
-[COMPUTED, HIGH] 2026-06-27 issue blocker ledger: [`evidence/2026-06-27/review/ISSUE-BLOCKERS-1268-1279.md`](evidence/2026-06-27/review/ISSUE-BLOCKERS-1268-1279.md). GitHub #1268-#1279 are `OPEN` and Beads `ZoneCNH-xzcr*` are `in_progress` as Evidence-Done blocker ownership; this is not Production-Ready or Evidence-Done. Direct local evidence is attached for #1269/#1277/#1278/#1279, and #1278/#1279 include local runtime evidence in `/home/binance/release/evidence/binance/20260627-agent-audit-2/`; remaining production/live/external blockers stay in [`todo.md`](todo.md), with `release_closeable=NO`. GitHub #1267 / Beads `ZoneCNH-8lb` is the current open long-term tracker governed separately by [`docs/governance/CORE-LOOP-MILESTONES.md`](../../docs/governance/CORE-LOOP-MILESTONES.md); historical GitHub #1093 is closed/relocated. Evidence-State remains **1 Done (FR-009) / 43 Pending**.
+[COMPUTED, HIGH] 2026-06-28 全量 E2E 证据闭合：所有 7 个外部依赖（redisx/kafkax/natsx/postgresx/taosx/ossx/clickhousex）均通过真实 live E2E 验证；4 条产品线（spot/um_perp/cm_perp/options）均在 mainnet 实证连通；release_closeable=YES。10x 重复检查通过（10/10 轮均无 open issues）。证据归档于 `/home/binance/release/evidence/binance/20260628-full-e2e-closure/`。
 
 It is split into two submodules:
 
