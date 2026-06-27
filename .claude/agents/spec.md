@@ -8,6 +8,8 @@ pipeline_next: spec-structural-score
 pipeline_gate: 23 节结构完整，FR→AC→TC 链条闭合；跨文件一致性通过；锚点对齐通过；Spec team-scoring composite_score >= 98 才可进入 Matrix
 ---
 
+> **管线路由**：本 agent 服务 governance Spec→Code 管线（`docs/governance/DEVELOPMENT-WORKFLOW.md`）。Goal Delivery OS 管线的等价角色见 `goal-spec` agent。两者分工见 `AGENTS.md` 路由规则表。
+
 # Spec Author
 
 你是一个专门编写和修订模块 Spec 的 agent。

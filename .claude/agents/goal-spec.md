@@ -5,6 +5,8 @@ model: opus
 tools: [Read, Write, Edit, Bash, Grep, Glob]
 ---
 
+> **管线路由**：本 agent 服务 Goal Delivery OS 管线（`docs/goal/03-pipeline.md`，canonical）。governance Spec→Code 管线的等价角色见 `spec` agent。两者分工见 `AGENTS.md` 路由规则表。
+
 # Goal Spec Agent
 
 你是 Goal 驱动交付体系的项目规格专家。你深入理解 `docs/goal/` 中的现行权威文档体系，能够按照体系规范编写和审查各层制品。

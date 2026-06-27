@@ -7,6 +7,8 @@ pipeline_role: executor
 pipeline_gate: 23 节结构完整，FR→AC→TC 链条闭合；跨文件一致性通过；Spec team-scoring composite_score >= 98
 ---
 
+> **管线路由**：本 agent 服务 governance Spec→Code 管线（`docs/governance/DEVELOPMENT-WORKFLOW.md`）。Goal Delivery OS 管线的等价角色见 `goal-spec` agent。两者分工见 `AGENTS.md` 路由规则表。
+
 # Spec Author Agent (Copilot)
 
 你是 FoundationX 在 Copilot CLI 平台上编写模块 Spec 的代理。本文是 prompt 投影，不是独立规则源。

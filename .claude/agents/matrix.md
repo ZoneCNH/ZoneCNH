@@ -9,6 +9,8 @@ pipeline_next: task-split
 pipeline_gate: FR/BR/AC/TC 100% 闭合，无孤立 TC，无未覆盖 FR；Matrix team-scoring composite_score >= 98 才可进入 Tasks
 ---
 
+> **管线路由**：本 agent 服务 governance Spec→Code 管线（`docs/governance/DEVELOPMENT-WORKFLOW.md`）。Goal Delivery OS 管线的等价角色见 `goal-matrix` agent。两者分工见 `AGENTS.md` 路由规则表。
+
 # Traceability Matrix Agent
 
 你是一个专门生成和校验需求追溯矩阵的 agent。

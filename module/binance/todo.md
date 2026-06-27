@@ -150,8 +150,8 @@
 | #    | 工作项                         | 完成证据                                                                 |
 | ---- | ------------------------------ | ------------------------------------------------------------------------ |
 | P1-6 | ADR：FR-024 vs FR-036 架构路径 | ADR-004 Accepted；FR-036 自建增量 diff，FR-024 保持 full reconnect/no-restart 边界 |
-| P1-7 | 双态模型补充 Code-Drifted 规则 | ACCEPTANCE.md + FEATURES.md + TRACEABILITY.md 已引入 Code-Drifted 第四态 |
-| P1-8 | FR-013/017/025 状态复核        | 三个 FR 从 active Code-Drifted 调整为 Code-Partial，统计更新为 Code-State **23/25/0/0**；Evidence-State **1 Done (FR-009) / 43 Pending**，Code-Pending 为无；FR-031~036、FR-038~044 保持 Code-Partial / Evidence-Pending；FR-037 为 Code-Done / Evidence-Pending。 |
+| P1-7 | 双态模型补充 Code-Drifted 规则 | `spec/ACCEPTANCE.md` + `spec/FEATURES.md` + `matrix/TRACEABILITY.md` 已引入 Code-Drifted 第四态 |
+| P1-8 | FR-013/017/025 状态复核        | 三个 FR 从 active Code-Drifted 调整为 Code-Partial，统计更新为 Code-State **23 Done / 25 Partial / 0 Drifted / 0 Pending**；Evidence-State **1 Done (FR-009) / 43 Pending**，Code-Pending 为无；FR-031~036、FR-038~044 保持 Code-Partial / Evidence-Pending；FR-037 为 Code-Done / Evidence-Pending。 |
 
 ---
 
@@ -256,7 +256,7 @@
 1. 先补 FR-013/017/025 direct TC/live evidence 与 FR-037 生产 canary/rollback drill evidence，再按证据把 remaining Partial 推进到 Code-Done/Evidence-Done
 2. 按 FR 依赖顺序推进：FR-001~009（核心链路）→ FR-006a-e（存储）→ FR-012~015（实时控制）→ 其余
 3. 外部 E2E 分批：Redis + NATS → TDengine + Kafka → ClickHouse + OSS
-4. 每关闭一个 Evidence-Done，同步更新 ACCEPTANCE.md §4 + TRACEABILITY.md
+4. 每关闭一个 Evidence-Done，同步更新 `spec/ACCEPTANCE.md` §4 + `matrix/TRACEABILITY.md`
 
 ### Phase 4：P2 可延后项（有替代手段时按需推进）
 
@@ -273,8 +273,8 @@
 
 ## 关键约束
 
-> [KNOWN, HIGH] 本 TODO 清单中仍需 `/home/binance` runtime 或外部环境继续闭合的项包括 P1-1~P1-5、P2-1~P2-3、P2-6、P2-7 及相关 Evidence/PRG；其中 P1-1、P1-2、P1-3、P2-1、P2-2、P2-3、P2-6、P2-7 已从旧“未实现或未接线”口径修正为“runtime 代码原语与本地 env 接线已出现但验收证据未闭合”；FR-037 的本地代码门禁已闭合，但真实生产 canary / rollback drill 归档证据仍按 Evidence-Pending 治理。本次主仓同步已完成 P0-5、P0-10、P1-6、P2-8、prompt 状态投影、legacy mapping 与 agent team 再审计口径同步。
+> [COMPUTED, HIGH] 本 TODO 清单中仍需 `/home/binance` runtime 或外部环境继续闭合的项包括 P1-1~P1-5、P2-1~P2-3、P2-6、P2-7 及相关 Evidence/PRG；其中 P1-1、P1-2、P1-3、P2-1、P2-2、P2-3、P2-6、P2-7 已从旧“未实现或未接线”口径修正为“runtime 代码原语与本地 env 接线已出现但验收证据未闭合”；FR-037 的本地代码门禁已闭合，但真实生产 canary / rollback drill 归档证据仍按 Evidence-Pending 治理。本次主仓同步已完成 P0-5、P0-10、P1-6、P2-8、prompt 状态投影、legacy mapping 与 agent team 再审计口径同步。
 >
 > [COMPUTED, HIGH] 本地 P0 代码门禁完成不等于生产级可发布；必须补齐 production canary / rollback drill、direct TC、live/evidence、外部 E2E/CI/dashboard/credential/multi-tenant/destruction 等证据后，才可声明"生产级可发布"。P1 项完成后才可声明"生产级可运营"。P2 项可延后但有替代手段时不应无限期搁置。
 >
-> [COMPUTED, HIGH] 每完成一项，更新本文件状态列（❌/⚠️/✅/⛔）+ FEATURES.md 实现投影 + SPEC.md 边界说明 + ACCEPTANCE.md §4 + TRACEABILITY.md + README.md + prompt/README.md + CHANGELOG.md；涉及 spec 边界时同步 SPEC.md。
+> [COMPUTED, HIGH] 每完成一项，更新本文件状态列（❌/⚠️/✅/⛔）+ `spec/FEATURES.md` 实现投影 + `spec/SPEC.md` 边界说明 + `spec/ACCEPTANCE.md` §4 + `matrix/TRACEABILITY.md` + `README.md` + `prompt/README.md` + `CHANGELOG.md`；涉及 spec 边界时同步 `spec/SPEC.md`。

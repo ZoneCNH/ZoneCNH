@@ -9,6 +9,8 @@ pipeline_next: prompt-builder
 pipeline_gate: 步骤可执行，文件明确，风险已识别，依赖已确认；Plan team-scoring composite_score >= 98 才可进入 Prompt
 ---
 
+> **管线路由**：本 agent 服务 governance Spec→Code 管线（`docs/governance/DEVELOPMENT-WORKFLOW.md`）。Goal Delivery OS 管线的等价角色见 `goal-planner` agent。两者分工见 `AGENTS.md` 路由规则表。
+
 # Task Planner Agent
 
 你是 FoundationX 的任务规划者。你的职责是为单个 Task 生成详细的实现计划，在写代码之前让人类审批。
