@@ -4,7 +4,7 @@
 - **来源**：[`report/binance/spec-structural-analysis-20260627.md`](../../report/binance/spec-structural-analysis-20260627.md) 生产级可发布差距分析
 - **Spec-Version**：v3.9.0
 - **Runtime-Anchor**：`/home/binance@f046e16`
-- **当前状态**：v0.2.0 可编译可发布，但**不可生产运营**（43/44 Evidence-Pending，7 PRG 全 Pending；ADR-003/ADR-004、legacy mapping、三文件/四文件状态一致性 CI gate 已同步完成）
+- **当前状态**：v0.2.0 可编译可发布，但**不可生产运营**（43/44 Evidence-Pending，7 PRG 全 Pending；ADR-003/ADR-004、legacy mapping、README/FEATURES/ACCEPTANCE/TRACEABILITY/prompt 状态一致性 CI gate 已同步完成）
 
 > [COMPUTED, HIGH] 本文件是 spec 层结构性修复（MA-1~MA-4 + MO-2，已完成）之后的**剩余未完成项**清单。完成状态基于 2026-06-27 对 spec 文件和 `/home/binance` runtime 代码的交叉验证；P0-10、P1-6、P2-8 以及 legacy mapping 等文档可验证状态已同步为完成，runtime/外部环境项仍保留为未完成或阻塞。
 
@@ -198,11 +198,11 @@
 - **目标**：修改 `ingest.go` dispatch 的 dead letter 处理，加 FileWriter 作为持久 backend + replay 流程（读取 JSONL → 重新 Publish → 消费重处理）
 - **工作量**：S
 
-### P2-8：三文件状态一致性 CI gate
+### P2-8：五处状态一致性 CI gate
 
 - **状态**：✅ 已完成（2026-06-27）
 - **对应**：MO-1
-- **完成内容**：新增 `.github/ci/binance-status-consistency-check.sh` 并接入 `.github/workflows/docs-ci.yml`，校验 `README.md`、`FEATURES.md`、`ACCEPTANCE.md`、`TRACEABILITY.md` FR Code 统计、Drifted FR 列表、TRACEABILITY §1 摘要与 §6 仪表盘一致。
+- **完成内容**：新增 `.github/ci/binance-status-consistency-check.sh` 并接入 `.github/workflows/docs-ci.yml`，校验 `README.md`、`FEATURES.md`、`ACCEPTANCE.md`、`TRACEABILITY.md`、`prompt/README.md` 的 FR Code 统计，并校验 Drifted FR 列表、TRACEABILITY §1 摘要与 §6 仪表盘一致。
 - **验证**：`bash -n .github/ci/binance-status-consistency-check.sh` PASS；`bash .github/ci/binance-status-consistency-check.sh` PASS。
 
 ---
@@ -213,7 +213,7 @@
 | ---- | --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | P2-4 | 退役文件物理隔离/精简       | 4 文件添加 DEPRECATED 横幅 + 精简（842→95 行）                                                                                                                             |
 | P2-5 | Appendix D AC-BNC 迁移      | 迁移到 `docs/migrations/ac-bnc-legacy-mapping.md`，根 SPEC Appendix D 替换为指针                                                                                           |
-| P2-8 | 三文件/四文件状态一致性 CI gate | `.github/ci/binance-status-consistency-check.sh` + `.github/workflows/docs-ci.yml` 已覆盖 README/FEATURES/ACCEPTANCE/TRACEABILITY Code 统计、Drifted FR 与 TRACEABILITY §1/§6 一致性 |
+| P2-8 | 五处状态一致性 CI gate | `.github/ci/binance-status-consistency-check.sh` + `.github/workflows/docs-ci.yml` 已覆盖 README/FEATURES/ACCEPTANCE/TRACEABILITY/prompt README Code 统计、Drifted FR 与 TRACEABILITY §1/§6 一致性 |
 
 ---
 
@@ -264,7 +264,7 @@
 | 4.1  | FR-031~036 ExchangeInfo sync runtime   |
 | 4.2  | Backfill progress 持久化               |
 | 4.3  | DLQ 持久化 wiring + replay             |
-| 4.4  | ✅ 三文件/四文件状态一致性 CI gate     |
+| 4.4  | ✅ 五处状态一致性 CI gate             |
 | 4.5  | Cost observability (FR-043)            |
 | 4.6  | Data compliance & destruction (FR-044) |
 
@@ -272,8 +272,8 @@
 
 ## 关键约束
 
-> [KNOWN, HIGH] 本 TODO 清单中仍需 `/home/binance` runtime 或外部环境的项包括 P0-5、P1-1~P1-5、P2-1~P2-3、P2-6、P2-7 及相关 Evidence/PRG 闭合；本次主仓文档同步已完成 P0-10、P1-6、P2-8 和 legacy mapping。剩余未完成项集中在 runtime/外部环境/Evidence/PRG。
+> [KNOWN, HIGH] 本 TODO 清单中仍需 `/home/binance` runtime 或外部环境的项包括 P0-5、P1-1~P1-5、P2-1~P2-3、P2-6、P2-7 及相关 Evidence/PRG 闭合；本次主仓文档同步已完成 P0-10、P1-6、P2-8、prompt 状态投影和 legacy mapping。剩余未完成项集中在 runtime/外部环境/Evidence/PRG。
 >
 > [COMPUTED, HIGH] 所有 P0 项完成后才可声明"生产级可发布"。P1 项完成后才可声明"生产级可运营"。P2 项可延后但有替代手段时不应无限期搁置。
 >
-> [COMPUTED, HIGH] 每完成一项，更新本文件状态列（❌/⚠️/✅/⛔）+ FEATURES.md 实现投影 + SPEC.md 边界说明 + ACCEPTANCE.md §4 + TRACEABILITY.md + README.md + CHANGELOG.md；涉及 spec 边界时同步 SPEC.md。
+> [COMPUTED, HIGH] 每完成一项，更新本文件状态列（❌/⚠️/✅/⛔）+ FEATURES.md 实现投影 + SPEC.md 边界说明 + ACCEPTANCE.md §4 + TRACEABILITY.md + README.md + prompt/README.md + CHANGELOG.md；涉及 spec 边界时同步 SPEC.md。
