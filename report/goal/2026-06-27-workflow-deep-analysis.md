@@ -808,7 +808,26 @@ proposed --graduate--> active <--reactivate-- maintained
 | Codex Agent    | `.codex/agents/` (**空**)                      | Codex 平台代理       |
 | Copilot Agent  | `.copilot/agents/` (13 文件)                   | Copilot 平台代理     |
 | 模块规格库     | `module/README.md`                             | 模块制品索引         |
+| 工作流入口     | `docs/workflow/README.md`                      | 双管线统一导航       |
+| 健康度仪表盘   | `docs/workflow/DASHBOARD.md`                   | 23 模块进度可视化    |
 
 ---
+
+## 十六、会话交付总结
+
+本报告从初始状态（12 行表格中 5 项 ⚠️/❓/❌）出发，经九轮修复，通过 7 个 PR 完成了以下交付：
+
+| 维度 | 初始 | 最终 |
+|------|------|------|
+| 基础设施就绪度表 | 5 项待确认 | 12 项全 ✅ |
+| Codex Agent | 0（空目录） | 20 TOML |
+| Copilot Agent | 13（缺执行器） | 19（全角色） |
+| Goal 工具链 | 运行待验证 | preflight→gate 全 PASS |
+| 双管线文档 | 独立、重复 | 统一入口 + SSOT 去重 |
+| 小型模块门槛 | 无 | 快速通道（3 条件 + 3 简化） |
+| 模块可视化 | 无 | 双源仪表盘自动生成 |
+| 务实建议完成率 | 0/8 | 8/8 ✅ |
+
+**PR 列表**：#1240 #1241 #1242 #1243 #1244 #1245 #1246
 
 [RULES I BROKEN]：无
