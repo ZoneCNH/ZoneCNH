@@ -6,6 +6,7 @@ package assembly
 import (
 	"errors"
 	"fmt"
+	"log"
 
 	binance "github.com/ZoneCNH/runtime-patches/binance"
 	"github.com/ZoneCNH/runtime-patches/binancex"
@@ -77,6 +78,7 @@ func Assemble(deps ServerDeps, middlewares ...Middleware) (ServerDeps, error) {
 
 	for _, mw := range middlewares {
 		if mw == nil {
+			log.Println("assembly: skipping nil middleware")
 			continue
 		}
 		if vm, ok := mw.(ValidatorMiddleware); ok {
