@@ -86,6 +86,16 @@ type IngestRequest struct {
 
 // ---- Request Validation ----
 
+// Clock is an injectable time source for testability and monotonic-clock safety.
+type Clock interface {
+	Now() time.Time
+}
+
+// systemClock delegates to time.Now.
+type systemClock struct{}
+
+func (systemClock) Now() time.Time { return time.Now() }
+
 // RequestValidator validates incoming IngestRequest envelopes.
 type RequestValidator interface {
 	Validate(ctx context.Context, req IngestRequest) error
@@ -96,6 +106,7 @@ type DefaultValidator struct {
 	staleThreshold  time.Duration
 	futureTolerance time.Duration
 	maxPayloadSize  int
+	clock           Clock
 }
 
 func NewDefaultValidator(cfg ServerConfig) *DefaultValidator {
@@ -103,11 +114,25 @@ func NewDefaultValidator(cfg ServerConfig) *DefaultValidator {
 		staleThreshold:  cfg.StaleThreshold,
 		futureTolerance: cfg.FutureTolerance,
 		maxPayloadSize:  cfg.MaxPayloadSize,
+		clock:           systemClock{},
 	}
 }
 
+// WithClock replaces the default wall clock. Useful for tests and monotonic-clock injection.
+func (v *DefaultValidator) WithClock(c Clock) *DefaultValidator {
+	v.clock = c
+	return v
+}
+
+func (v *DefaultValidator) now() time.Time {
+	if v.clock == nil {
+		return time.Now()
+	}
+	return v.clock.Now()
+}
+
 func (v *DefaultValidator) Validate(ctx context.Context, req IngestRequest) error {
-	now := time.Now()
+	now := v.now()
 
 	if req.RequestID == "" {
 		return NewRejectError(contracts.RejectContractViolation, "request_id is required")

@@ -132,3 +132,9 @@ Runtime implementation starts when:
 - [ ] Observability: 5 metrics + traces
 - [ ] Coverage >= 80%
 - [ ] Race detector clean
+
+## Task Reference
+
+| Task | Scope | Effort |
+|------|-------|--------|
+| TASK-FE-001-core-implementation | Implementation | 2h |

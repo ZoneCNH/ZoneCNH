@@ -98,3 +98,9 @@ Runtime 序列：generated contracts → domain mapping → server mock → clie
 - [ ] wallet secret 零泄露（gitleaks + 自定义 hex pattern）
 - [ ] confirmation_threshold gate 通过
 - [ ] integration test 演示 offchain + onchain 双源 → server → downstream port 数据流
+
+## Task Reference
+
+| Task | Scope | Effort |
+|------|-------|--------|
+| TASK-HL-001-core-implementation | Implementation | 2h |
