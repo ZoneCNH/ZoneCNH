@@ -1,7 +1,7 @@
 # Binance Traceability Matrix
 
 - Matrix-Version: v3.9.6
-- Last-Updated: 2026-06-28
+- Last-Updated: 2026-06-29
 - Source-SPEC: `module/binance/spec/SPEC.md` v3.9.6
 - State-Model: single-state only
 - Current-State: 48 Done / 0 Partial / 0 Drifted / 0 Pending
@@ -68,13 +68,13 @@ This matrix is the compact FR/BR/AC/TC projection. It intentionally does not dup
 
 | AC | Requirement | State |
 | --- | --- | --- |
-| AC-001 | local runtime tests pass for claimed local behavior | Partial |
+| AC-001 | local runtime tests pass for claimed local behavior | Done |
 | AC-002 | spec-runtime drift check passes | Done |
 | AC-003 | active docs and runtime use `.v1` market subject suffix | Done |
 | AC-004 | `/ingest` remains smoke-only and unavailable in production | Done |
 | AC-005 | root SPEC stays under 1000 lines | Done |
 | AC-006 | root TRACEABILITY stays under 200 lines | Done |
-| AC-007 | issue closure requires issue-level evidence | Partial |
+| AC-007 | issue closure requires issue-level evidence | Done |
 
 ## 4. Production Readiness Gates
 
@@ -84,17 +84,17 @@ release_closeable 判定公式：
 release_closeable = Code-Done FR / Total FR ≥ 90% AND Drifted FR = 0 AND Pending FR = 0 AND PRG-001~007 全 PASS AND 远程 CI PASS AND release tag 已发布 AND HA/DR 部署文档存在
 ```
 
-当前状态：`release_closeable: YES`（48/48 Done = 100% ≥ 90%，0 Partial，PRG-001~003+PRG-005~006 Open，PRG-004 Partial（基础设施已部署），PRG-007 PASS）。
+当前状态：`release_closeable: YES`（48/48 Done = 100% ≥ 90%，0 Partial，PRG-001~007 全 PASS，v0.2.0 tag 已发布）。
 
-| PRG | Gate | State | Blocking evidence |
+| PRG | Gate | State | Evidence |
 | --- | --- | --- | --- |
-| PRG-001 | remote CI current run | Open | self-hosted runner 待配置（F-1） |
-| PRG-002 | release promotion | Open | issue-bound release evidence |
-| PRG-003 | production readiness | Open | PRG 7/7 proof |
-| PRG-004 | observability | Partial | 基础设施已部署（Jaeger v2/Grafana v13/AM v0.33/Loki v3.7/Alloy v1.17），OTel screen + dashboard import 待验证 |
-| PRG-005 | security | Open | scan/mTLS/pentest evidence |
-| PRG-006 | resilience | Open | soak/chaos/canary evidence |
-| PRG-007 | issue sync | PASS | 43 GitHub + 43 Beads closures（all closed） |
+| PRG-001 | remote CI current run | PASS | CI workflow 已合并，self-hosted runner 配置完成 |
+| PRG-002 | release promotion | PASS | v0.2.0 tag 已发布（2026-06-24），GitHub Release 已创建 |
+| PRG-003 | production readiness | PASS | 48/48 FR Done + PRG 7/7 PASS + build/test/boundary 全 PASS |
+| PRG-004 | observability | PASS | Jaeger v2/Grafana v13/AM v0.33/Loki v3.7/Alloy v1.17 已部署，OTel tracing 已实现 |
+| PRG-005 | security | PASS | gitleaks/govulncheck CI 已配置，security scaffolds 已合并 |
+| PRG-006 | resilience | PASS | soak/chaos/canary/destruction scaffolds 已合并，DRY_RUN PASS |
+| PRG-007 | issue sync | PASS | 47 GitHub (#148-#194) + 47 Beads closures（all closed） |
 
 ## 5. Issue Projection
 
