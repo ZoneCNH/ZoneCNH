@@ -2,6 +2,7 @@ package contracts
 
 import (
 	"encoding/json"
+	"fmt"
 	"time"
 )
 
@@ -54,6 +55,19 @@ type IngestReject struct {
 	RejectCode RejectCode `json:"reject_code"`
 	Reason     string     `json:"reason"`
 	Retryable  bool       `json:"retryable"`
+}
+
+// ParseInstrumentKey unmarshals the embedded InstrumentKey, enforcing structural
+// validation at the contract boundary instead of deferring to the caller.
+func (r IngestRequest) ParseInstrumentKey() (map[string]interface{}, error) {
+	if len(r.InstrumentKey) == 0 {
+		return nil, fmt.Errorf("contracts: InstrumentKey is empty")
+	}
+	var ik map[string]interface{}
+	if err := json.Unmarshal(r.InstrumentKey, &ik); err != nil {
+		return nil, fmt.Errorf("contracts: invalid InstrumentKey JSON: %w", err)
+	}
+	return ik, nil
 }
 
 // RejectCode classifies rejection reasons for adapter retry policy decisions.

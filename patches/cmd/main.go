@@ -58,7 +58,7 @@ func Run(ctx context.Context, cfg binancecfg.Config, deps assembly.ServerDeps, m
 	defer cancel()
 
 	sigCh := make(chan os.Signal, 1)
-	signal.Notify(sigCh, syscall.SIGINT, syscall.SIGTERM)
+	signal.Notify(sigCh, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
 
 	if err := assembled.Feed.Connect(ctx); err != nil {
 		return fmt.Errorf("cmd: feed connect failed: %w", err)
