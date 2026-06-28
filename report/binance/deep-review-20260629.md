@@ -526,7 +526,7 @@ pkg/
 | 15  | MEDIUM | Auth/rate-limit 静默降级                   | `api/query.go:188-217`              | ✅ FIXED — 降级日志 + 明确行为 |
 | 16  | MEDIUM | `network_mode: host` 移除网络隔离          | `docker-compose*.yml`               | ⏭ SKIP — 部署配置，PR #220 |
 | 17  | MEDIUM | SSH `StrictHostKeyChecking=no`             | `deploy/deploy.sh:24`               | ✅ FIXED — accept-new 替换 no（首次接受，变更拒绝） |
-| 18  | MEDIUM | `go.mod` 本地 replace 与 CI 不一致         | `go.mod:112`                        | ⏭ SKIP — CI 配置，超出本次范围 |
+| 18  | MEDIUM | `go.mod` 本地 replace 与 CI 不一致         | `go.mod:112`                        | ⚠ BLOCKED — natsx pkg/natsx/ingest 仅存在于本地开发副本，无法移除 replace |
 | 19  | MEDIUM | 日志混用 `log.Printf` / `slog`             | 12 个文件                           | ✅ FIXED — 全仓 slog 迁移（8 文件，~50 调用点） |
 | 20  | MEDIUM | Docker 构建缺失版本 LDFLAGS                | `Dockerfile:25-26`                  | ✅ FIXED — VERSION/COMMIT/BUILD_TIME ldflags |
 | 21  | MEDIUM | Analytics 端点无 rate limiting             | `api/analytics.go:71`               | ✅ FIXED — 已添加限流 |
@@ -542,7 +542,7 @@ pkg/
 | 26  | HIGH   | `assembly.go` 覆盖率 6.7%                          | `server/assembly/`     | ⏭ SKIP — 测试补强，超出本次范围 |
 | 27  | HIGH   | `binancex/adapter.go` 覆盖率 17.2%                 | `pkg/binancex/`        | ⏭ SKIP — 测试补强，超出本次范围 |
 | 28  | MEDIUM | `cmd/binance-server` / `cmd/binance-smoke` 0% 覆盖 | `cmd/`                 | ⏭ SKIP — 测试补强，超出本次范围 |
-| 29  | LOW    | OTLP `WithInsecure()` 硬编码                       | `server/tracing.go:33` | ⏭ SKIP — 超出本次范围 |
+| 29  | LOW    | OTLP `WithInsecure()` 硬编码                       | `server/tracing.go:33` | ✅ FIXED — TLS 默认开启, FOUNDATIONX_OTEL_INSECURE=1 关闭 |
 | 30  | LOW    | `govulncheck \|\| true` 静默通过                   | `Makefile:123`         | ✅ FIXED — 改为显式 WARNING 输出 + exit 0 |
 
 ### P3 — 低优先级（代码整洁）✅ 3/7
@@ -555,7 +555,7 @@ pkg/
 | 34  | LOW    | binancex 中文错误消息           | adapter.go:87,118,160,178                                | ✅ FIXED — 26 处中文字符串翻译为英文 |
 | 35  | LOW    | `MODE=test` smoke 触发器        | binancecfg/config.go:220-228                             | ⏭ SKIP — 超出本次范围 |
 | 36  | LOW    | `NormalizedEvent` fat struct    | client/normalize.go:17-83                                | ⏭ SKIP — 超出本次范围 |
-| 37  | LOW    | 内存幂等存储无 TTL GC           | server/idempotency.go:101-104                            | ⏭ SKIP — 超出本次范围 |
+| 37  | LOW    | 内存幂等存储无 TTL GC           | server/idempotency.go:101-104                            | ✅ FIXED — Cleanup() 实现 TTL=1h GC, XGO_IDEM_TTL_SECONDS 可配 |
 
 ---
 
@@ -654,10 +654,10 @@ go test ./... -cover              # 总计 ~61.5%
 | 优先级 | 总数 | 已修复 | 已验证 | 跳过 |
 |--------|------|--------|--------|------|
 | P0     | 10   | 9      | 1      | 0    |
-| P1     | 15   | 11     | 2      | 2    |
-| P2     | 5    | 1      | 0      | 4    |
+| P1     | 15   | 11     | 2      | 1    |
+| P2     | 5    | 2      | 0      | 3    |
 | P3     | 7    | 3      | 0      | 4    |
-| **合计** | **37** | **24** | **3** | **10** |
+| **合计** | **37** | **25** | **3** | **8** |
 
 ### 验证结果
 - `go build ./...` — ✅ PASS
