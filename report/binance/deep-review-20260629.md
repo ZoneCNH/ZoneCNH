@@ -553,7 +553,7 @@ pkg/
 | 32  | LOW    | `interface{}` vs `any`          | adapter.go:460 等                                        | ✅ FIXED — interface{} → any |
 | 33  | LOW    | Config/binanceFields 结构体重复 | binancecfg/config.go                                     | ⏭ SKIP — 超出本次范围 |
 | 34  | LOW    | binancex 中文错误消息           | adapter.go:87,118,160,178                                | ✅ FIXED — 26 处中文字符串翻译为英文 |
-| 35  | LOW    | `MODE=test` smoke 触发器        | binancecfg/config.go:220-228                             | ⏭ SKIP — 超出本次范围 |
+| 35  | LOW    | `MODE=test` smoke 触发器        | binancecfg/config.go:220-228                             | ✅ FIXED — MODE=test 不再触发 smoke，仅 XGO_BINANCE_SMOKE=1 |
 | 36  | LOW    | `NormalizedEvent` fat struct    | client/normalize.go:17-83                                | ⏭ SKIP — 超出本次范围 |
 | 37  | LOW    | 内存幂等存储无 TTL GC           | server/idempotency.go:101-104                            | ✅ FIXED — Cleanup() 实现 TTL=1h GC, XGO_IDEM_TTL_SECONDS 可配 |
 
@@ -657,7 +657,7 @@ go test ./... -cover              # 总计 ~61.5%
 | P1     | 15   | 11     | 2      | 1    |
 | P2     | 5    | 2      | 0      | 3    |
 | P3     | 7    | 3      | 0      | 4    |
-| **合计** | **37** | **25** | **3** | **8** |
+| **合计** | **37** | **26** | **3** | **7** |
 
 ### 验证结果
 - `go build ./...` — ✅ PASS
