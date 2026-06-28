@@ -43,7 +43,9 @@ def scan_traceability(modules=None, verbose=False):
         if s6 > 0 and '| Done ' not in content[s6:s6+800]:
             mi.append('S6-FMT')
 
-        if '| Task ' not in content[:3000]:
+        # Check Task column: accepts "Task" or "任务锚点" (contracts convention)
+        first_3k = content[:3000]
+        if '| Task ' not in first_3k and '任务锚点' not in first_3k:
             mi.append('NO-TASK')
 
         if mi:
