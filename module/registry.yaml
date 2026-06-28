@@ -17,7 +17,7 @@
 # 强制级别：本文件字段变更须遵循 01-module-registry.md §4 登记变更规则。
 
 schema_version: module-registry/v1
-updated: 2026-06-25
+updated: 2026-06-29
 
 # ============================================================================
 # 基座层（Foundation）— 20 模块
@@ -38,7 +38,7 @@ xlib_standard:
   spec_ref: module/xlib_standard/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml
   maturity_ref: .foundationx/status/index.json#xlib_standard
-  spec_version: v1.0.1
+  spec_version: v1.1.0
   release:
     latest_tag: v1.0.1
     release_date: 2026-06-01
@@ -56,7 +56,7 @@ xlib_harness:
   spec_ref: module/xlib_harness/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml
   maturity_ref: .foundationx/status/index.json#xlib_harness
-  spec_version: v1.0.0
+  spec_version: v1.3.0
   release:
     latest_tag: v0.1.6
     cadence: stable
@@ -73,7 +73,7 @@ xlib_evidence:
   spec_ref: module/xlib_evidence/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml
   maturity_ref: .foundationx/status/index.json#xlib_evidence
-  spec_version: v0.2.4
+  spec_version: v1.2.1
   release:
     latest_tag: v0.2.4
     cadence: stable
@@ -90,7 +90,7 @@ xlibgate:
   spec_ref: module/xlibgate/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml
   maturity_ref: .foundationx/status/index.json#xlibgate
-  spec_version: v1.0.0
+  spec_version: v1.2.0
   release:
     latest_tag: v1.0.0
     cadence: stable
