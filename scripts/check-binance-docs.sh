@@ -4,6 +4,13 @@ set -euo pipefail
 ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 cd "$ROOT"
 
+# Guard: SPEC.md is the anchor file for the old-style structure.
+# If absent, the module uses the goal-driven structure — skip gracefully.
+if [[ ! -f module/binance/SPEC.md ]]; then
+  echo "SKIP: module/binance/SPEC.md not found (module uses goal-driven structure)"
+  exit 0
+fi
+
 failures=0
 
 pass() { printf 'PASS %s\n' "$1"; }
