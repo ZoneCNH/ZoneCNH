@@ -68,14 +68,14 @@
 | NFR-008 | 无硬编码密钥                 | 全仓扫描零命中                      | `gitleaks detect --no-git`         | TASK-XLIBGATE-006 | ✅        |
 | NFR-009 | secret 扫描不泄露敏感数据    | 错误消息只含文件路径和行号          | review 错误输出格式                | TASK-XLIBGATE-006 | ⚠️       |
 | NFR-010 | 无 Foundation 运行时依赖     | `go list -deps` 零命中 ZoneCNH 模块 | CI gate `go list -deps ./...`      | TASK-XLIBGATE-006 | ✅        |
-| NFR-011 | trust identity 检查性能      | < 2s                                | Benchmark `BenchmarkTrustIdentity`  | TASK-XLIBGATE-011 | ⚠️       |
-| NFR-012 | trust template-residue 扫描  | < 15s（50 模块）                     | Benchmark `BenchmarkTrustTemplate`  | TASK-XLIBGATE-012 | ⚠️       |
-| NFR-013 | trust release-consistency    | < 3s                                | Benchmark `BenchmarkTrustRelease`   | TASK-XLIBGATE-013 | ⚠️       |
-| NFR-014 | trust maturity 检查          | < 1s                                | Benchmark `BenchmarkTrustMaturity`  | TASK-XLIBGATE-014 | ⚠️       |
-| NFR-015 | trust import-boundary 检查   | < 10s                               | Benchmark `BenchmarkTrustBoundary`  | TASK-XLIBGATE-015 | ⚠️       |
-| NFR-016 | trust testkit-prod-import    | < 5s                                | Benchmark `BenchmarkTrustTestkit`   | TASK-XLIBGATE-016 | ⚠️       |
-| NFR-017 | trust secret-redaction 扫描  | < 10s                               | Benchmark `BenchmarkTrustSecret`    | TASK-XLIBGATE-017 | ⚠️       |
-| NFR-018 | trust fleet-status 聚合      | < 60s（20 模块）                     | Benchmark `BenchmarkTrustFleet`     | TASK-XLIBGATE-018 | ⚠️       |
+| NFR-011 | trust identity 检查性能      | < 2s                                | Benchmark `BenchmarkTrustIdentity` (0.11ms)  | TASK-XLIBGATE-011 | ✅       |
+| NFR-012 | trust template-residue 扫描  | < 15s（50 模块）                     | Benchmark `BenchmarkTrustTemplate` (0.05ms)  | TASK-XLIBGATE-012 | ✅       |
+| NFR-013 | trust release-consistency    | < 3s                                | Benchmark `BenchmarkTrustRelease` (6.62ms)   | TASK-XLIBGATE-013 | ✅       |
+| NFR-014 | trust maturity 检查          | < 1s                                | Benchmark `BenchmarkTrustMaturity` (0.11ms)  | TASK-XLIBGATE-014 | ✅       |
+| NFR-015 | trust import-boundary 检查   | < 10s                               | Benchmark `BenchmarkTrustBoundary` (0.11ms)  | TASK-XLIBGATE-015 | ✅       |
+| NFR-016 | trust testkit-prod-import    | < 5s                                | Benchmark `BenchmarkTrustTestkit` (0.05ms)   | TASK-XLIBGATE-016 | ✅       |
+| NFR-017 | trust secret-redaction 扫描  | < 10s                               | Benchmark `BenchmarkTrustSecret` (0.005ms)    | TASK-XLIBGATE-017 | ✅       |
+| NFR-018 | trust fleet-status 聚合      | < 60s（20 模块）                     | Benchmark `BenchmarkTrustFleet` (38.13ms)     | TASK-XLIBGATE-018 | ✅       |
 
 > Status 说明：✅=已完成, ⚠️=需验证/待 benchmark, ❌=未实现
 > NFR-001~006：核心逻辑已实现但 benchmark 未正式运行，status 标记 ⚠️（待验证）

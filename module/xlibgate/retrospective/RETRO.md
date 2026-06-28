@@ -55,7 +55,7 @@
 | F-003 | 实现 trust release-consistency（FR-014） | P1 | ✅ 已完成 |
 | F-004 | 实现 trust maturity --factory（FR-015） | P1 | ✅ 已完成 |
 | F-005 | 迁移到嵌套目录结构 | P2 | ✅ 已完成 |
-| F-006 | 补充 Benchmark 持续验证 | P2 | 待做 |
+| F-006 | 补充 Benchmark 持续验证 | P2 | ✅ 已完成（NFR-011~018 全部达标） |
 
 ---
 

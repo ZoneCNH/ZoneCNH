@@ -1,10 +1,12 @@
 # Binance v0.2.0 生产发布 — 任务清单
 
 > 创建日期：2026-06-28
+> 最后更新：2026-06-29
 > 基线：`report/binance/production-release-execution-plan-20260628.md`
-> 目标：`release_closeable=YES` → v0.2.0 生产发布
+> 目标：`release_closeable=YES` → v0.2.0 生产发布 ✅ 已达成
 > 当前：48/48 FR Done (100%) → release_closeable=YES
-> Issue 追踪：Beads (47 issues) + GitHub #148-#194
+> Issue 追踪：Beads (47 issues) + GitHub #148-#194（全部 closed）
+> 代码修复：PR #204 golangci-lint 8→0 issues（gofmt + staticcheck + gocyclo）
 
 ---
 
