@@ -2,14 +2,14 @@
 module: xlib_harness
 scope: "xlib_harness FR-006 coverage"
 spec_ref:
-  - "module/xlib_harness/SPEC.md#FR-006"
+  - "module/xlib_harness/spec/SPEC.md#FR-006"
 acceptance_criteria:
   - "FR-006 traceability gate coverage"
 files:
-  - "/home/xlib_harness/internal/harness/harness.go"
-  - "/home/xlib_harness/internal/harness/harness_test.go"
-  - "/home/xlib_harness/fixtures/broken-trace/SPEC.md"
-  - "/home/xlib_harness/fixtures/broken-trace/TRACEABILITY.md"
+  - "/home/xlib-harness/internal/harness/harness.go"
+  - "/home/xlib-harness/internal/harness/harness_test.go"
+  - "/home/xlib-harness/fixtures/broken-trace/SPEC.md"
+  - "/home/xlib-harness/fixtures/broken-trace/TRACEABILITY.md"
 priority: P1
 status: completed
 ---

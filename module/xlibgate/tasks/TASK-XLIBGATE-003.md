@@ -9,7 +9,7 @@ task_id: TASK-XLIBGATE-003
 module: xlibgate
 scope: "实现 check gomod 命令：运行 go mod tidy 检查 diff"
 spec_ref:
-  - "module/xlibgate/SPEC.md#FR-002"
+  - "module/xlibgate/spec/SPEC.md#FR-002"
 files:
   - "check_gomod.go"
   - "check_gomod_test.go"

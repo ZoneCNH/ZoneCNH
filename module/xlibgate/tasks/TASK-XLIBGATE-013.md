@@ -9,9 +9,9 @@ task_id: TASK-XLIBGATE-013
 module: xlibgate
 scope: "实现 trust release-consistency 命令：七源版本一致性校验（.repo-contract.yaml / go.mod / VERSION / CHANGELOG / git tag / release manifest / GitHub release）"
 spec_ref:
-  - "module/xlibgate/SPEC.md#FR-014"
-  - "module/xlibgate/SPEC.md#TC-018"
-  - "module/xlibgate/SPEC.md#TC-019"
+  - "module/xlibgate/spec/SPEC.md#FR-014"
+  - "module/xlibgate/spec/SPEC.md#TC-018"
+  - "module/xlibgate/spec/SPEC.md#TC-019"
 files:
   - "cmd/trust_release.go"
   - "scanner/trust/release.go"

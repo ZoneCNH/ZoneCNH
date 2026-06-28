@@ -15,7 +15,7 @@ xlib_harness 是 Foundation 的**模块生成器与门禁执行器**——从标
 - generate 在 5 秒内完成骨架生成（BR-001）
 - check 不得修改被检模块的任何文件（BR-002）
 - check 失败退出码必须非零（BR-003）
-- 允许只读 xlib_standard 模板；禁止 `github.com/ZoneCNH/xlib_standard` Go import/module dependency（NFR-004）
+- 允许只读 xlib_standard 模板；禁止 `github.com/ZoneCNH/xlib-standard` Go import/module dependency（NFR-004）
 - 禁止依赖 observex/configx/resiliencx/schedulex 及业务域模块
 
 ## 4. 不负责什么
@@ -39,7 +39,7 @@ module/xlib_harness/
   IMPLEMENTATION-PLAN.md
   tasks/               # 5 个 task markdown
 
-/home/xlib_harness/    # 运行时代码（独立 Go module）
+/home/xlib-harness/    # 运行时代码（独立 Go module）
   Generator / HarnessGate 接口实现
   GateProfile: full / spec / boundary
   fixtures/            # compliant/broken/bad-dep/format-issues/broken-trace 测试夹具
@@ -126,7 +126,7 @@ v1 门禁 profile 名称保持稳定（full/spec/boundary）。check 输出格�
 ## 28. Forbidden Patterns
 - generate 写入路径越界（path traversal）
 - check 修改被检模块文件（BR-002 违反）
-- import `github.com/ZoneCNH/xlib_standard`（NFR-004 禁止 Go import/module dependency）
+- import `github.com/ZoneCNH/xlib-standard`（NFR-004 禁止 Go import/module dependency）
 - check 失败退出码为零（BR-003 违反）
 - 依赖业务域模块或未授权基座
 

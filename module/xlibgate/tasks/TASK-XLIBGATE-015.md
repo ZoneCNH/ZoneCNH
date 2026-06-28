@@ -9,9 +9,9 @@ task_id: TASK-XLIBGATE-015
 module: xlibgate
 scope: "实现 trust import-boundary 命令：消费 FOUNDATION-DEPS.yaml 的 allowed_deps 和 forbidden_foundation_edges"
 spec_ref:
-  - "module/xlibgate/SPEC.md#FR-016"
-  - "module/xlibgate/SPEC.md#TC-022"
-  - "module/xlibgate/SPEC.md#TC-023"
+  - "module/xlibgate/spec/SPEC.md#FR-016"
+  - "module/xlibgate/spec/SPEC.md#TC-022"
+  - "module/xlibgate/spec/SPEC.md#TC-023"
 files:
   - "cmd/trust_boundary.go"
   - "scanner/trust/boundary.go"

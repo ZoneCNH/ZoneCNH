@@ -46,11 +46,12 @@
 
 | 编号  | 任务                                                 | 优先级 | 负责          |
 | ----- | ---------------------------------------------------- | ------ | ------------- |
-| F-001 | 更新 rule-drift-check.py 支持新 Evidence 格式        | P1     | goal-evidence |
-| F-002 | 更新 goal-delivery.sh 生成 `- **Field**: value` 格式 | P1     | goal-evidence |
-| F-003 | 更新 Matrix checker 支持 canonical edge 格式         | P1     | goal-matrix   |
-| F-004 | 更新 Release precheck 脚本读取 state.yaml 风险       | P1     | goal-evidence |
-| F-005 | Agent scoring 超时回退到手动评分                     | P2     | goal-reviewer |
+| F-001 | 更新 rule-drift-check.py 支持新 Evidence 格式 | P1 | ✅ 已完成 |
+| F-002 | 更新 goal-delivery.sh 生成 `- **Field**: value` 格式 | P1 | ✅ 已完成 |
+| F-003 | 更新 Matrix checker 支持 canonical edge 格式 | P1 | ✅ 已完成 |
+| F-004 | 更新 Release precheck 脚本读取 state.yaml 风险 | P1 | ✅ 已完成 |
+| F-005 | Agent scoring 超时回退到手动评分 | P2 | ✅ 已完成 |
+| F-006 | 迁移到嵌套目录结构 | P2 | ✅ 已完成 |
 
 ---
 

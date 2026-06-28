@@ -9,9 +9,9 @@ task_id: TASK-XLIB-005
 module: xlib_standard
 scope: "生成库验收、100 次自检脚本、tag v1.0.0"
 spec_ref:
-  - "module/xlib_standard/SPEC.md#22"
-  - "module/xlib_standard/goal.md#12"
-  - "module/xlib_standard/goal.md#13"
+  - "module/xlib_standard/spec/SPEC.md#22"
+  - "module/xlib_standard/goal/goal.md#12"
+  - "module/xlib_standard/goal/goal.md#13"
 files:
   - "selfcheck-100.sh"
 

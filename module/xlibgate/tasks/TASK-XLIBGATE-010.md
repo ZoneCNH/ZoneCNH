@@ -9,9 +9,9 @@ task_id: TASK-XLIBGATE-010
 module: xlibgate
 scope: "实现 trust 父命令注册、统一 JSON 输出 schema、reason_code 枚举定义"
 spec_ref:
-  - "module/xlibgate/SPEC.md#FR-006"
-  - "module/xlibgate/SPEC.md#9.3.1 Trust Alignment 统一输出格式"
-  - "module/xlibgate/SPEC.md#BR-007"
+  - "module/xlibgate/spec/SPEC.md#FR-006"
+  - "module/xlibgate/spec/SPEC.md#9.3.1 Trust Alignment 统一输出格式"
+  - "module/xlibgate/spec/SPEC.md#BR-007"
 files:
   - "cmd/trust.go"
   - "scanner/trust/common.go"

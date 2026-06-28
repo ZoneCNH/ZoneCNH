@@ -9,12 +9,12 @@ task_id: TASK-XLIBGATE-006
 module: xlibgate
 scope: "实现 check all 命令（聚合所有子检查）和统一输出格式"
 spec_ref:
-  - "module/xlibgate/SPEC.md#FR-005"
-  - "module/xlibgate/SPEC.md#FR-006"
-  - "module/xlibgate/SPEC.md#BR-001"
-  - "module/xlibgate/SPEC.md#BR-005"
-  - "module/xlibgate/SPEC.md#BR-006"
-  - "module/xlibgate/SPEC.md#BR-007"
+  - "module/xlibgate/spec/SPEC.md#FR-005"
+  - "module/xlibgate/spec/SPEC.md#FR-006"
+  - "module/xlibgate/spec/SPEC.md#BR-001"
+  - "module/xlibgate/spec/SPEC.md#BR-005"
+  - "module/xlibgate/spec/SPEC.md#BR-006"
+  - "module/xlibgate/spec/SPEC.md#BR-007"
 files:
   - "check_all.go"
   - "output.go"

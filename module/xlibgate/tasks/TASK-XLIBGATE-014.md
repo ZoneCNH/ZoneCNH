@@ -9,9 +9,9 @@ task_id: TASK-XLIBGATE-014
 module: xlibgate
 scope: "实现 trust maturity --factory 命令：11 维工厂级成熟度判定"
 spec_ref:
-  - "module/xlibgate/SPEC.md#FR-015"
-  - "module/xlibgate/SPEC.md#TC-020"
-  - "module/xlibgate/SPEC.md#TC-021"
+  - "module/xlibgate/spec/SPEC.md#FR-015"
+  - "module/xlibgate/spec/SPEC.md#TC-020"
+  - "module/xlibgate/spec/SPEC.md#TC-021"
 files:
   - "cmd/trust_maturity.go"
   - "scanner/trust/maturity.go"

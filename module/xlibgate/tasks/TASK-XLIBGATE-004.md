@@ -9,8 +9,8 @@ task_id: TASK-XLIBGATE-004
 module: xlibgate
 scope: "实现 check baseline 命令：检查所有模块 Go 版本一致性"
 spec_ref:
-  - "module/xlibgate/SPEC.md#FR-003"
-  - "module/xlibgate/SPEC.md#BR-003"
+  - "module/xlibgate/spec/SPEC.md#FR-003"
+  - "module/xlibgate/spec/SPEC.md#BR-003"
 files:
   - "check_baseline.go"
   - "check_baseline_test.go"

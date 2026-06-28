@@ -9,8 +9,8 @@ task_id: TASK-XLIB-003
 module: xlib_standard
 scope: "实现 Config 结构体、Validate、Sanitize，覆盖 FR-001 和 Version API"
 spec_ref:
-  - "module/xlib_standard/SPEC.md#7"
-  - "module/xlib_standard/goal.md#7"
+  - "module/xlib_standard/spec/SPEC.md#7"
+  - "module/xlib_standard/goal/goal.md#7"
 files:
   - "pkg/templatex/doc.go"
   - "pkg/templatex/config.go"

@@ -9,9 +9,9 @@ task_id: TASK-XLIB-001
 module: xlib_standard
 scope: "重写 README.md 和 docs/ 目录，确保只描述 xlib 标准源职责（Standard Source / Go Reference Template / Generator / Harness Gate / Evidence Runtime），docs 只保留 9 个文件"
 spec_ref:
-  - "module/xlib_standard/SPEC.md#2"
-  - "module/xlib_standard/SPEC.md#4"
-  - "module/xlib_standard/goal.md#5"
+  - "module/xlib_standard/spec/SPEC.md#2"
+  - "module/xlib_standard/spec/SPEC.md#4"
+  - "module/xlib_standard/goal/goal.md#5"
 files:
   - "README.md"
   - "docs/standard.md"

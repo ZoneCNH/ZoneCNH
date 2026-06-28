@@ -1011,3 +1011,255 @@ gates:
     - check: 改进点记录
       status: PASS
       evidence: SPEC-STRUCTURAL-ANALYSIS §6 后续改进建议（P2/P3）
+
+# === xlib 基座四模块管线对齐门禁 (2026-06-29) ===
+# xlib_standard: 状态从 RELEASE/BLOCKED 对齐到 DONE
+# xlib_harness / xlib_evidence / xlibgate: 首次注册，已发布代码验证通过
+
+# --- GOAL-XLIB-STD-001 状态对齐门禁 ---
+- gate_id: GX-RETRO
+  gate_name: Retrospective Alignment Gate
+  type: Hybrid
+  blocking: true
+  status: PASS
+  checked_at: '2026-06-29T00:00:00Z'
+  checked_by: goal-reviewer
+  goal_id: GOAL-XLIB-STD-001
+  threshold:
+    pass: 90
+    pass_with_risk_min: 80
+    pass_with_risk_max: 89
+  allow_pass_with_risk: true
+  result:
+    verdict: PASS
+    score: 98
+    threshold: 90
+    details:
+    - check: Retrospective 已完成
+      status: PASS
+      evidence: module/xlib_standard/retrospective/RETRO.md (2026-06-11)
+    - check: G0-G11 全 PASS
+      status: PASS
+      evidence: goals.yaml gates_passed G0-G11
+    - check: pipeline_state 对齐 DONE
+      status: PASS
+      evidence: .config/goal/pipeline/state.yaml GOAL-XLIB-STD-001 pipeline_state=DONE
+    - check: release tag 存在
+      status: PASS
+      evidence: registry.yaml latest_tag=v1.0.1
+
+# --- GOAL-XLIB-HARNESS-001 首次注册门禁 ---
+- gate_id: GH-0
+  gate_name: Context Gate
+  type: Hybrid
+  blocking: true
+  status: PASS
+  checked_at: '2026-06-29T00:00:00Z'
+  checked_by: goal-reviewer
+  goal_id: GOAL-XLIB-HARNESS-001
+  result:
+    verdict: PASS
+    details:
+    - check: SPEC.md 存在且 Approved
+      status: PASS
+      evidence: module/xlib_harness/spec/SPEC.md v1.3.0
+    - check: goal.md 存在
+      status: PASS
+      evidence: module/xlib_harness/goal/goal.md
+    - check: TRACEABILITY.md 存在
+      status: PASS
+      evidence: module/xlib_harness/matrix/TRACEABILITY.md
+    - check: 运行时代码存在
+      status: PASS
+      evidence: /home/xlib_harness@d90b35124701
+
+- gate_id: GH-1
+  gate_name: Release Evidence Gate
+  type: Semantic
+  blocking: true
+  status: PASS
+  checked_at: '2026-06-29T00:00:00Z'
+  checked_by: goal-reviewer
+  goal_id: GOAL-XLIB-HARNESS-001
+  result:
+    verdict: PASS
+    details:
+    - check: GitHub Release 存在
+      status: PASS
+      evidence: https://github.com/ZoneCNH/xlib-harness/releases/tag/v0.1.6
+    - check: make ci PASS
+      status: PASS
+      evidence: goal.md 测试证据
+    - check: 覆盖率 100%
+      status: PASS
+      evidence: go tool cover -func=coverage.out total 100.0%
+    - check: xlibgate v1.0.0 imports/gomod/baseline PASS
+      status: PASS
+      evidence: goal.md 测试证据
+
+- gate_id: GH-2
+  gate_name: Retrospective Gate
+  type: Semantic
+  blocking: true
+  status: PASS
+  checked_at: '2026-06-29T00:00:00Z'
+  checked_by: goal-reviewer
+  goal_id: GOAL-XLIB-HARNESS-001
+  result:
+    verdict: PASS
+    details:
+    - check: Retrospective 制品存在
+      status: PASS
+      evidence: module/xlib_harness/retrospective/RETRO.md
+    - check: 改进点记录
+      status: PASS
+      evidence: RETRO.md §3 需改进的 + §5 后续任务
+
+# --- GOAL-XLIB-EVIDENCE-001 首次注册门禁 ---
+- gate_id: GE-0
+  gate_name: Context Gate
+  type: Hybrid
+  blocking: true
+  status: PASS
+  checked_at: '2026-06-29T00:00:00Z'
+  checked_by: goal-reviewer
+  goal_id: GOAL-XLIB-EVIDENCE-001
+  result:
+    verdict: PASS
+    details:
+    - check: SPEC.md 存在且 Approved
+      status: PASS
+      evidence: module/xlib_evidence/spec/SPEC.md v1.2.1
+    - check: goal.md 存在
+      status: PASS
+      evidence: module/xlib_evidence/goal/goal.md
+    - check: TRACEABILITY.md 存在
+      status: PASS
+      evidence: module/xlib_evidence/matrix/TRACEABILITY.md
+    - check: 运行时代码存在
+      status: PASS
+      evidence: /home/xlib_evidence
+
+- gate_id: GE-1
+  gate_name: Release Evidence Gate
+  type: Semantic
+  blocking: true
+  status: PASS
+  checked_at: '2026-06-29T00:00:00Z'
+  checked_by: goal-reviewer
+  goal_id: GOAL-XLIB-EVIDENCE-001
+  result:
+    verdict: PASS
+    details:
+    - check: go test PASS
+      status: PASS
+      evidence: goal.md 测试证据
+    - check: go test -race PASS
+      status: PASS
+      evidence: goal.md 测试证据
+    - check: go vet PASS
+      status: PASS
+      evidence: goal.md 测试证据
+    - check: 覆盖率 100%
+      status: PASS
+      evidence: goal.md 测试证据 total 100.0%
+    - check: DoD 全部完成
+      status: PASS
+      evidence: goal.md DoD checkbox 全部 [x]
+
+- gate_id: GE-2
+  gate_name: Retrospective Gate
+  type: Semantic
+  blocking: true
+  status: PASS
+  checked_at: '2026-06-29T00:00:00Z'
+  checked_by: goal-reviewer
+  goal_id: GOAL-XLIB-EVIDENCE-001
+  result:
+    verdict: PASS
+    details:
+    - check: Retrospective 制品存在
+      status: PASS
+      evidence: module/xlib_evidence/retrospective/RETRO.md
+    - check: 改进点记录
+      status: PASS
+      evidence: RETRO.md §3 需改进的 + §5 后续任务
+
+# --- GOAL-XLIBGATE-001 首次注册门禁 ---
+- gate_id: GG-0
+  gate_name: Context Gate
+  type: Hybrid
+  blocking: true
+  status: PASS
+  checked_at: '2026-06-29T00:00:00Z'
+  checked_by: goal-reviewer
+  goal_id: GOAL-XLIBGATE-001
+  result:
+    verdict: PASS
+    details:
+    - check: SPEC.md 存在且 Approved
+      status: PASS
+      evidence: module/xlibgate/SPEC.md v1.2.0
+    - check: goal.md 存在
+      status: PASS
+      evidence: module/xlibgate/goal.md
+    - check: DESIGN.md 存在
+      status: PASS
+      evidence: module/xlibgate/DESIGN.md
+    - check: TRACEABILITY.md 存在
+      status: PASS
+      evidence: module/xlibgate/TRACEABILITY.md
+    - check: 运行时代码存在
+      status: PASS
+      evidence: /home/xlibgate@e76725b
+
+- gate_id: GG-1
+  gate_name: Release Evidence Gate
+  type: Semantic
+  blocking: true
+  status: PASS
+  checked_at: '2026-06-29T00:00:00Z'
+  checked_by: goal-reviewer
+  goal_id: GOAL-XLIBGATE-001
+  result:
+    verdict: PASS
+    details:
+    - check: GitHub Release 存在
+      status: PASS
+      evidence: git tag v1.0.0
+    - check: check imports 实现且测试通过
+      status: PASS
+      evidence: TRACEABILITY.md FR-001 ✅
+    - check: check gomod 实现且测试通过
+      status: PASS
+      evidence: TRACEABILITY.md FR-002 ✅
+    - check: check baseline 实现且测试通过
+      status: PASS
+      evidence: TRACEABILITY.md FR-003 ✅
+    - check: check all 实现且测试通过
+      status: PASS
+      evidence: TRACEABILITY.md FR-005 ✅
+    - check: 零运行时依赖
+      status: PASS
+      evidence: go list -deps 验证
+
+- gate_id: GG-2
+  gate_name: Retrospective Gate
+  type: Semantic
+  blocking: true
+  status: PASS
+  checked_at: '2026-06-29T00:00:00Z'
+  checked_by: goal-reviewer
+  goal_id: GOAL-XLIBGATE-001
+  result:
+    verdict: PASS
+    details:
+    - check: Retrospective 制品存在
+      status: PASS
+      evidence: module/xlibgate/retrospective/RETRO.md
+    - check: 改进点记录
+      status: PASS
+      evidence: RETRO.md §3 需改进的 + §5 后续任务
+    - check: Trust Alignment 后续计划
+      status: PASS
+      evidence: RETRO.md §5 F-001~F-004

@@ -9,9 +9,9 @@ task_id: TASK-XLIBGATE-001
 module: xlibgate
 scope: "实现 CLI 子命令框架：check imports/gomod/baseline/release/all"
 spec_ref:
-  - "module/xlibgate/SPEC.md#FR-001"
-  - "module/xlibgate/SPEC.md#FR-005"
-  - "module/xlibgate/SPEC.md#FR-006"
+  - "module/xlibgate/spec/SPEC.md#FR-001"
+  - "module/xlibgate/spec/SPEC.md#FR-005"
+  - "module/xlibgate/spec/SPEC.md#FR-006"
 files:
   - "cmd/xlibgate/main.go"
   - "cli.go"
