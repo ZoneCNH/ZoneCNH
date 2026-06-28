@@ -515,7 +515,7 @@ pkg/
 | 9   | HIGH     | `mustFloat64` 静默返回 0，可能提交 price=0 订单 | `pkg/binancex/adapter.go:529-534`        | ✅ FIXED — safeFloat64 返回 error |
 | 10  | HIGH     | `parseBinanceOrderResponse` 空字段 panic        | `pkg/binancex/adapter.go:489`            | ✅ FIXED — 空字符串 guard |
 
-### P1 — 近期修复（架构 + 质量）✅ 12/15
+### P1 — 近期修复（架构 + 质量）✅ 13/15
 
 | #   | 严重性 | 问题                                       | 位置                                | 状态 |
 | --- | ------ | ------------------------------------------ | ----------------------------------- | ---- |
@@ -525,7 +525,7 @@ pkg/
 | 14  | MEDIUM | `assembly.go` 1088 行 god file             | `server/assembly/assembly.go`       | ⏭ SKIP — 架构重构，超出本次范围 |
 | 15  | MEDIUM | Auth/rate-limit 静默降级                   | `api/query.go:188-217`              | ✅ FIXED — 降级日志 + 明确行为 |
 | 16  | MEDIUM | `network_mode: host` 移除网络隔离          | `docker-compose*.yml`               | ⏭ SKIP — 部署配置，PR #220 |
-| 17  | MEDIUM | SSH `StrictHostKeyChecking=no`             | `deploy/deploy.sh:24`               | ⏭ SKIP — 部署配置，超出本次范围 |
+| 17  | MEDIUM | SSH `StrictHostKeyChecking=no`             | `deploy/deploy.sh:24`               | ✅ FIXED — accept-new 替换 no（首次接受，变更拒绝） |
 | 18  | MEDIUM | `go.mod` 本地 replace 与 CI 不一致         | `go.mod:112`                        | ⏭ SKIP — CI 配置，超出本次范围 |
 | 19  | MEDIUM | 日志混用 `log.Printf` / `slog`             | 12 个文件                           | ✅ FIXED — 全仓 slog 迁移（8 文件，~50 调用点） |
 | 20  | MEDIUM | Docker 构建缺失版本 LDFLAGS                | `Dockerfile:25-26`                  | ✅ FIXED — VERSION/COMMIT/BUILD_TIME ldflags |
@@ -535,7 +535,7 @@ pkg/
 | 24  | MEDIUM | 无角色配置验证                             | `binancecfg/config.go:170-210`      | ✅ FIXED — Validate() 按 Role 检查必需字段 |
 | 25  | MEDIUM | `QueryRange` 表名拼接无内部防御            | `assembly.go:967`                   | ✅ FIXED — 表名 defense-in-depth |
 
-### P2 — 中期改进（测试 + 可观测性）⏭ 0/5
+### P2 — 中期改进（测试 + 可观测性）✅ 1/5
 
 | #   | 严重性 | 问题                                               | 位置                   | 状态 |
 | --- | ------ | -------------------------------------------------- | ---------------------- | ---- |
@@ -543,7 +543,7 @@ pkg/
 | 27  | HIGH   | `binancex/adapter.go` 覆盖率 17.2%                 | `pkg/binancex/`        | ⏭ SKIP — 测试补强，超出本次范围 |
 | 28  | MEDIUM | `cmd/binance-server` / `cmd/binance-smoke` 0% 覆盖 | `cmd/`                 | ⏭ SKIP — 测试补强，超出本次范围 |
 | 29  | LOW    | OTLP `WithInsecure()` 硬编码                       | `server/tracing.go:33` | ⏭ SKIP — 超出本次范围 |
-| 30  | LOW    | `govulncheck \|\| true` 静默通过                   | `Makefile:123`         | ⏭ SKIP — 超出本次范围 |
+| 30  | LOW    | `govulncheck \|\| true` 静默通过                   | `Makefile:123`         | ✅ FIXED — 改为显式 WARNING 输出 + exit 0 |
 
 ### P3 — 低优先级（代码整洁）✅ 3/7
 
@@ -648,16 +648,16 @@ go test ./... -cover              # 总计 ~61.5%
 **日期**: 2026-06-29  
 **分支**: `feat/jp1-observability-deploy`  
 **Tag**: `v0.7.0`  
-**PRs**: #221, #222, #223 (binance) + #1356 (ZoneCNH STATUS.md)
+**PRs**: #221, #222, #223, #224 (binance) + #1356, #1357, #1358, #1360 (ZoneCNH docs) + #1364, #1366, #1367 (ZoneCNH CI)
 
 ### 总体统计
 | 优先级 | 总数 | 已修复 | 已验证 | 跳过 |
 |--------|------|--------|--------|------|
 | P0     | 10   | 9      | 1      | 0    |
-| P1     | 15   | 10     | 2      | 3    |
-| P2     | 5    | 0      | 0      | 5    |
+| P1     | 15   | 11     | 2      | 2    |
+| P2     | 5    | 1      | 0      | 4    |
 | P3     | 7    | 3      | 0      | 4    |
-| **合计** | **37** | **22** | **3** | **12** |
+| **合计** | **37** | **24** | **3** | **10** |
 
 ### 验证结果
 - `go build ./...` — ✅ PASS
