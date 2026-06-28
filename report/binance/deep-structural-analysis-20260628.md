@@ -5,6 +5,8 @@
 > 分析目标：结构性问题诊断 + client/server 边界规范 + 生产级可发布差距
 > Spec-Version：v3.9.0 · Runtime-Version：v0.2.0
 
+> Current alignment note（2026-06-28 v3.9.6）：本报告是 P10 修复前的基线诊断。当前 SSOT 为 `module/binance/spec/SPEC.md`、`module/binance/matrix/TRACEABILITY.md`、`module/binance/todo.md` 与 `module/binance/evidence/2026-06-28/review/p10-issue-alignment.md`；当前结论为 `release_closeable=NO`、GitHub P10 open=43、Beads P10 open=43、closeable now=0。
+
 ---
 
 ## 目录
@@ -130,7 +132,7 @@ SPEC client §14 和 server §14 定义的目录结构（`client/` 下有 `go.mo
 
 **影响**：
 
-- `release_closeable=YES` 的声明基于 Evidence-State 44/44 Done，但 Code-State 仅 48% Done
+- 旧 release-closeable YES 声明基于 Evidence-State 44/44 Done，但 Code-State 仅 48% Done
 - 外部读者无法判断模块是否真正可发布
 - 25 个 Partial FR 的"证据"可能只是 anchor 级实现（代码存在但未完整装配或未覆盖全部 WHEN/THEN 分支）
 
@@ -411,7 +413,7 @@ Pending = 仅规格登记
 但**距离生产级可发布还有显著差距**：
 
 1. **代码完成度不足**：48 个 FR 中仅 23 个 Code-Done（48%），25 个核心 FR 为 Partial
-2. **状态模型混乱**：双态模型将 25 个 Partial FR 标为 Evidence-Done，`release_closeable=YES` 的声明过于乐观
+2. **状态模型混乱**：双态模型将 25 个 Partial FR 标为 Evidence-Done，旧 release-closeable YES 声明过于乐观
 3. **生产证据缺失**：无远程 CI、无 release tag、HA/DR 文档缺失、PRG 多项证据不完整
 4. **文档冗余严重**：退役文件未删除、TRACEABILITY 历史膨胀、SPEC 过度细碎
 
@@ -435,8 +437,8 @@ Client/Server 边界是本模块最强项，评分 **9.0/10**。建议强化的 
 
 > [COMPUTED, HIGH] 本报告基于 `module/binance/` 全量文档（README/SPEC/client-SPEC/server-SPEC/TRACEABILITY/BOUNDARY-GATES/CHANGELOG/todo/goal/design/）与 runtime 仓库 `/home/binance` HEAD `2efc44a` 代码实态交叉分析。评分依据为各维度文档与代码的交叉验证，非单一来源声明。
 >
-> [KNOWN] SPEC 声称 `release_closeable=YES` 基于 Evidence-State 44/44 Done，但本报告判定该标准过于宽松——Code-State 48% Done 的模块不应声明可发布。
+> [KNOWN] SPEC 曾声称旧 release-closeable YES 基于 Evidence-State 44/44 Done，但本报告判定该标准过于宽松——Code-State 48% Done 的模块不应声明可发布。
 >
 > [INFERRED] 25 个 Code-Partial FR 的 Evidence-Done 可能基于 anchor 级实现（代码存在但未完整装配或未覆盖全部 WHEN/THEN 分支），而非完整功能验证。
 
-[RULES I BROKE]：无。本报告遵循了证据标签、置信度标注和反奉承规则。最强反论证已前置（"release_closeable=YES 声明过于乐观"）。
+[RULES I BROKE]：无。本报告遵循了证据标签、置信度标注和反奉承规则。最强反论证已前置（"旧 release-closeable YES 声明过于乐观"）。

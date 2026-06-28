@@ -5,7 +5,7 @@
 > **SC 编号说明**：本文件的 SC-001~SC-015 为子模块本地场景 ID（Scenario），不与 root TRACEABILITY 的 canonical TC-001~TC-083 冲突。正式 TC 编号以 `module/binance/matrix/TRACEABILITY.md` §4 为准。
 
 - Module-Version: v3.9.0（FR/BR 编号统一为 root canonical；与 root SPEC v3.9.0 一致）
-- Last-Updated: 2026-06-28（2026-06-28 全量 E2E 证据闭合：SC 全部 Done；Evidence-State 44 Done / 0 Pending）
+- Last-Updated: 2026-06-28（P10 状态对齐：SC 本地投影 Done；全局 single state 为 23 Done / 25 Partial / 0 Drifted / 0 Pending，release_closeable=NO）
 - Spec-Reference: `module/binance/spec/client/SPEC.md` v3.9.0
 
 ---
@@ -163,7 +163,7 @@
 | AC ID | 验收标准 | 验证方式 |
 |-------|---------|----------|
 | AC-019 | mapper 输出的 `MarketFactEnvelope` 通过 `js.Publish(subj, json)` 发布，等待 PubAck | SC-011, SC-012 |
-| AC-020 | subject 格式 `binance.market.{product_line}.{event_type}`，均小写 | SC-011: 验证 subject 参数 |
+| AC-020 | subject 格式 `binance.market.{product_line}.{event_type}.v1`，均小写 | SC-011: 验证 subject 参数 |
 | AC-021 | PubAck 同步等待成功后 Publish 返回 nil（不 fire-and-forget） | SC-012: mock PubAck 阻塞验证 |
 | AC-022 | JetStream 不可达或超时时 Publish 返回 error，由调用方决定重试 | SC-013: mock 超时 → error |
 | AC-023 | Publisher 不导入 `internal/server`、`internal/cs` 或任何 server 类型 | CI-BOUNDARY-SERVER gate |
@@ -194,9 +194,9 @@
 | BR→验证映射率 | 5 / 5 | 100% |
 | SC→FR 回溯率 | 15 / 15 | 100% |
 | AC→验证映射率 | 28 / 28 | 100% |
-| 实现完成率 | 8 / 8 FR | 100%（代码实现完成；投影自 root TRACEABILITY Runtime-Anchor `/home/binance@2efc44a`；2026-06-28 全量 E2E 证据闭合后 SC 全部 Done） |
+| 实现完成率 | 8 / 8 FR | 100%（client 本地 SC 投影 Done；全局发布仍以 root single state `23 Done / 25 Partial / 0 Drifted / 0 Pending` 与 release_closeable=NO 为准） |
 
-	> **v2.1.3 状态同步 (2026-06-28)**：2026-06-28 全量 E2E 证据闭合后，SC/NFR 从 Pending 更新为 Done。投影自 root TRACEABILITY Runtime-Anchor `/home/binance@2efc44a`；Evidence-State 44 Done / 0 Pending。
+	> **v2.1.3 状态同步更正 (2026-06-28)**：2026-06-28 full E2E 包仅作为历史运行证据，不构成发布关闭结论。当前采用 single state；root 当前为 `23 Done / 25 Partial / 0 Drifted / 0 Pending`，release_closeable=NO。
 
 ---
 

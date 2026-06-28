@@ -12,7 +12,7 @@
 | Owner | ZoneCNH |
 | Layer | 数据域 · 行情接入层 |
 | Role | Binance 行情数据的处理 + 存储服务端（natsx 消费 + redisx + postgresx + taosx + clickhousex + kafkax + ossx + Gin REST API） |
-| Port Interface | natsx JetStream subject `binance.market.*` (消费) + Gin REST HTTP `:8080` (提供给 market_data) |
+| Port Interface | natsx JetStream subscription filter `binance.market.>`；实际消息 subject `binance.market.*.*.v1`；Gin REST HTTP `:8080` (提供给 market_data) |
 | Language | Go |
 | Runtime-Version | v0.2.0 |
 | Repository | [github.com/ZoneCNH/binance](https://github.com/ZoneCNH/binance)（server/ 子目录） |
@@ -291,7 +291,7 @@ client 和 server **互不感知彼此的进程位置**。server 只知道 NATS 
 
 ```text
 Stream: BINANCE_MARKET
-Subjects: binance.market.*
+Subjects: binance.market.*.*.v1 (subscription filter: binance.market.>)
 Durable: binance-server
 Ack policy: ManualAck after validation + idempotency + storage + kafkax handoff
 Payload: domain_market.MarketFactEnvelope JSON
@@ -510,7 +510,7 @@ server 不反向依赖 client，二者通过 `natsx` subject + `domain_market` e
 
 server 必须通过 consumer contract tests：
 - decode `MarketFactEnvelope` fixture
-- subject routing 匹配 `binance.market.*`
+- subject routing 匹配实际消息 subject `binance.market.*.*.v1`（订阅过滤器为 `binance.market.>`）
 - Ack only after injected storage/fanout success
 
 ### 16.3 测试工具
@@ -678,7 +678,7 @@ server 必须通过 consumer contract tests：
 
 | AC ID | FR 引用 | 验收标准 | 验证方式 |
 |-------|---------|----------|----------|
-| AC-001 | FR-003 | `natsx` durable consumer 绑定成功，接收 `binance.market.*` message | TC-001 |
+| AC-001 | FR-003 | `natsx` durable consumer 绑定成功，接收 `binance.market.*.*.v1` message | TC-001 |
 | AC-002 | FR-005 | 必填字段缺失返回 terminal_validation reject | TC-003 |
 | AC-003 | FR-005 | 首次 idempotency key 通过验收 | TC-005 |
 | AC-004 | FR-005 | 重复 key 不产生重复 storage/fanout | TC-006 |

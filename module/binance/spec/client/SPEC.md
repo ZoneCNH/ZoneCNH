@@ -4,12 +4,14 @@
 
 - Status: Approved
 - Spec-Version: v3.9.0
+- Last-Updated: 2026-06-28 (§14 目录结构修正 — 删除独立 go.mod/go.sum，改为 monorepo internal/client/ 布局，与 server/SPEC §14 对称)
 - Last-Updated: 2026-06-26 (v3.9.0: 幂等键策略修正 — 按事件类型强制维度；depth key 固定 U/u updateId；trade key 强制 trade_id；bar key 强制 open_time+interval；tick key 使用 event_time+bid+ask。§17 性能预算扩展 — WS 吞吐、内存预算、延迟分解)
-- Last-Updated: 2026-06-26 (v2.1.1→v3.8.0: 结构性修复 — 废除本地 FR/BR 编号，全部改为引用根 SPEC canonical FR/BR；§7 重构为根 FR 的 client 实现视图；合并 ENDPOINTS.md 为附录）
+- Last-Updated: 2026-06-26 (v2.1.1→v3.8.0: 结构性修复 — 废除本地 FR/BR 编号，全部改为引用根 SPEC canonical FR/BR；§7 重构为根 FR 的 client 实现视图；端点策略合并为附录）
 - Owner: ZoneCNH
 - Layer: 数据域 · Binance 交易所接入
 - Runtime-Version: v0.2.0
-- Repository: [github.com/ZoneCNH/binance](https://github.com/ZoneCNH/binance)（client/ 子目录）
+- Repository: [github.com/ZoneCNH/binance](https://github.com/ZoneCNH/binance)（client 端通过 `cmd/binance-client` + `internal/client` 提供）
+- Go Module Path: `github.com/ZoneCNH/binance`（monorepo，client 端通过 `cmd/binance-client` + `internal/client` 提供）
 - Related: [CONSTITUTION.md](../../../CONSTITUTION.md), [ARCHITECTURE.md](../../../ARCHITECTURE.md), [module/binance/SPEC.md](../SPEC.md), [module/domain_market](../../domain_market/), [module/natsx](../../natsx/)
 
 ---
@@ -29,7 +31,7 @@
                                                     ↓
                                     natsx.Publish(subj, json)
                                     跨网络发布到 NATS JetStream
-                                    subject: binance.market.{line}.{type}
+                                    subject: binance.market.{line}.{type}.v1
 ```
 
 client 完成发布即结束职责。持久化、幂等、存储、API 全部由 `binance-server` 负责。
@@ -56,7 +58,7 @@ client 完成发布即结束职责。持久化、幂等、存储、API 全部由
 - 将交易所原生事件规范化为 `domain_market.MarketFactEnvelope`
 - 生成跨重试稳定的幂等键（放入 envelope Header，由 server 消费）
 - **通过 natsx JetStream 发布事件**（网络通信，不依赖 server 进程）
-  - subject 格式：`binance.market.{product_line}.{event_type}`
+  - subject 格式：`binance.market.{product_line}.{event_type}.v1`
   - 同步等待 JetStream Publish ACK（确认消息已持久化到 NATS）
 - 提供 Gin admin 端点（:8081），仅操作本地状态：`/healthz /readyz`
 - 所有可观测性通过 `observex` 集成
@@ -123,7 +125,7 @@ client 完成发布即结束职责。持久化、幂等、存储、API 全部由
 
 **WHEN** 规范化事件生成幂等键后
 **THEN** 构造 `domain_market.MarketFactEnvelope` JSON payload，调用 `js.Publish(subject, payload)` 同步发布
-**AND** subject 格式：`binance.market.{product_line}.{event_type}`
+**AND** subject 格式：`binance.market.{product_line}.{event_type}.v1`
 
 **WHEN** JetStream 返回 PubAck
 **THEN** 投递视为成功；JetStream 已在 NATS 集群持久化该消息
@@ -377,7 +379,7 @@ type IdempotencyKeyer interface {
 
 | 字段 | 类型 | 必填 | 说明 |
 |------|------|------|------|
-| Subject | `string` | ✅ | natsx subject，格式 `binance.market.{line}.{type}` |
+| Subject | `string` | ✅ | natsx subject，格式 `binance.market.{line}.{type}.v1` |
 | IdempotencyKey | `string` | ✅ | 幂等键（放入 Envelope Header） |
 | Payload | `[]byte` | ✅ | JSON 序列化的 MarketFactEnvelope |
 | State | `PublishState` | ✅ | 发布状态 |
@@ -458,50 +460,60 @@ const (
 
 ## 14. Directory Structure
 
+### Documentation（`module/binance/spec/client/`）
+
 ```text
-client/
-├── go.mod
-├── go.sum
-├── README.md
-├── SPEC.md
-├── client.go                    # client 顶层组装与生命周期
-├── catalog/
-│   ├── catalog.go               # 产品线目录实现
-│   └── catalog_test.go
-├── parser/
-│   ├── parser.go                # Binance 符号解析器
-│   └── parser_test.go
-├── connector/
-│   ├── connector.go             # Connector 接口与公共逻辑
-│   ├── spot.go                  # Spot connector
-│   ├── um_perp.go               # USDⓈ-M connector（um_perp）
-│   ├── cm_perp.go               # COIN-M connector（cm_perp）
-│   ├── options.go               # Options connector
-│   └── connector_test.go
-├── normalize/
-│   ├── normalize.go             # 原始事件规范化
-│   └── normalize_test.go
-├── mapper/
-│   ├── mapper.go                # 规范化→规范映射
-│   └── mapper_test.go
-├── idempotency/
-│   ├── keyer.go                 # 幂等键生成
-│   └── keyer_test.go
-├── publisher/
-│   ├── publisher.go             # natsx JetStream publisher
-│   ├── publisher_test.go
-│   └── retry.go                 # 退避重试策略
-├── admin/
-│   ├── admin.go                 # Gin admin 端点
-│   └── admin_test.go
-├── errors.go                    # 公共错误定义
-├── testdata/                    # 测试数据
-│   ├── spot_raw.json
-│   ├── usdm_raw.json
-│   ├── coinm_raw.json
-│   └── options_raw.json
-└── tasks/                       # Task spec 文件
+module/binance/spec/client/
+├── SPEC.md                  # 本文件
+└── tasks/                   # Client task spec
 ```
+
+### Runtime（`/home/binance` client 端目录）
+
+> monorepo flat layout — 所有 client 逻辑以包级文件直接放在 `internal/client/` 下，仅 `connectors/`、`publisher/`、`testdata/` 为子目录。
+
+```text
+/home/binance/
+├── cmd/
+│   └── binance-client/
+│       └── main.go                 # catalog → connectors → normalize → mapper → publisher 进程入口
+└── internal/client/
+    ├── doc.go                      # 包文档（wire 契约角色说明）
+    ├── runtime.go                  # 顶层组装与生命周期入口
+    ├── lifecycle.go                # 进程生命周期管理（启动/优雅关闭/drain）
+    ├── stream_control.go           # stream 暂停/恢复/控制
+    ├── catalog.go                  # 产品线目录实现
+    ├── exchangeinfo.go             # ExchangeInfo catalog 基础
+    ├── exchangeinfo_option.go      # Options ExchangeInfo 特化
+    ├── exchangeinfo_refresh.go     # catalog 热重载
+    ├── connector.go                # Connector 接口与公共逻辑
+    ├── connectors/                 # 各产品线 connector 实现（spot / um_perp / cm_perp / options）
+    ├── spot.go                     # spot 产品线特定逻辑
+    ├── parser.go                   # Binance 符号解析器
+    ├── product_line.go             # 产品线定义与配置
+    ├── normalize.go                # 原始事件规范化
+    ├── mapper.go                   # 规范化→规范行情映射
+    ├── idempotency.go              # 幂等键生成（按事件类型强制维度）
+    ├── publisher/                  # natsx JetStream publisher + 退避重试
+    ├── queue.go                    # 内存有界队列（backpressure）
+    ├── relay.go                    # 事件中继
+    ├── admin.go                    # Gin admin 端点（/healthz /readyz）
+    ├── http_ingest_endpoint.go     # smoke-only /ingest 端点（生产 404）
+    ├── ingest_request.go           # ingest 请求类型
+    ├── throttle.go                 # 限流与 weight 预算
+    ├── resource_governance.go      # 并发上限与资源治理
+    ├── cursor.go                   # 历史回填游标
+    ├── history_fetcher.go          # 历史数据拉取
+    ├── history_lifecycle.go        # 历史回填生命周期
+    ├── history_rest.go             # 历史 REST 请求
+    ├── history_state_postgres.go   # 历史状态持久化（PostgreSQL）
+    ├── cron_reconcile.go           # 定时对账
+    ├── archive_manifest.go         # 归档清单
+    ├── testdata/                   # 测试数据（spot/usdm/coinm/options raw JSON）
+    └── *_test.go                   # 单元测试 + contract 测试 + benchmark
+```
+
+> **monorepo 边界约束**：`internal/client/*` 不得 import `internal/server/*`，对应 BR-002 + BOUNDARY-GATES §3 CI gate。`internal/client` 仅通过 `natsx` subject + `domain_market` envelope 与 server 解耦，禁止 `contracts` / gRPC / `internal/cs` bridge。
 
 ---
 
@@ -540,7 +552,7 @@ module/domain_market ← module/natsx
         │                    │
 module/binance/client ────────┘
         │
-        ↓ (natsx JetStream publish, subject: binance.market.*)
+        ↓ (natsx JetStream publish, subject: binance.market.*.*.v1)
 NATS JetStream (BINANCE_MARKET stream)
         │
         ↓ (natsx JetStream consume)
@@ -724,7 +736,7 @@ module/binance/server
 
 | ID | 问题 | 状态 | 负责人 |
 |----|------|------|--------|
-| OQ-001 | `natsx` subject 与 payload schema 是否冻结？ | 已解决：以 root SPEC §9 `domain_market.MarketFactEnvelope` JSON + `binance.market.*` subjects 为准 | ZoneCNH |
+| OQ-001 | `natsx` subject 与 payload schema 是否冻结？ | 已解决：以 root SPEC §9 `domain_market.MarketFactEnvelope` JSON + `binance.market.*.*.v1` subjects 为准 | ZoneCNH |
 
 ### Non-blocking（不阻塞开发）
 
@@ -744,9 +756,9 @@ module/binance/server
 
 ---
 
-## Appendix A: Mainnet-Only Endpoint Strategy（原 `ENDPOINTS.md`，v3.8.0 合并）
+## Appendix A: Mainnet-Only Endpoint Strategy（v3.8.0 合并）
 
-> 来源：`module/binance/spec/deprecated/ENDPOINTS.md`（v3.7.1 Active），2026-06-26 合并入本附录。原文件已移至 `spec/deprecated/`。
+> 来源：2026-06-26 从端点策略草案合并入本附录。原草案已于 v3.9.5 物理删除，历史可通过 `git log` 追溯。
 
 ### A.1 四产品线 Mainnet 端点清单
 

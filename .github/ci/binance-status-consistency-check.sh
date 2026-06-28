@@ -12,6 +12,7 @@ FEATURES_FILE="$BINANCE_DIR/spec/FEATURES.md"
 ACCEPTANCE_FILE="$BINANCE_DIR/spec/ACCEPTANCE.md"
 TRACEABILITY_FILE="$BINANCE_DIR/matrix/TRACEABILITY.md"
 LEGACY_MAPPING_FILE="$REPO_ROOT/docs/migrations/ac-bnc-legacy-mapping.md"
+EXPECTED_STATS="23 Done / 25 Partial / 0 Drifted / 0 Pending"
 
 fail() {
   echo "FAIL: $*"
@@ -171,25 +172,21 @@ fi
 
 readme_stats=$(
   summary_stats "$BINANCE_DIR/README.md" \
-    's/.*Code `([0-9]+ Done \/ [0-9]+ Partial \/ [0-9]+ Drifted \/ [0-9]+ Pending)`.*/\1/p'
+    's/.*single state `([0-9]+ Done \/ [0-9]+ Partial \/ [0-9]+ Drifted \/ [0-9]+ Pending)`.*/\1/p'
 )
 features_stats=$(count_status_column "$BINANCE_DIR/spec/FEATURES.md" 4)
 acceptance_stats=$(
   summary_stats "$BINANCE_DIR/spec/ACCEPTANCE.md" \
-    's/.*FR Code \*\*([0-9]+ Done \/ [0-9]+ Partial \/ [0-9]+ Drifted \/ [0-9]+ Pending)\*\*.*/\1/p'
+    's/.*FR \*\*([0-9]+ Done \/ [0-9]+ Partial \/ [0-9]+ Drifted \/ [0-9]+ Pending)\*\*.*/\1/p'
 )
 prompt_stats=$(
   summary_stats "$BINANCE_DIR/prompt/README.md" \
-    's/.*Code `([0-9]+ Done \/ [0-9]+ Partial \/ [0-9]+ Drifted \/ [0-9]+ Pending)`.*/\1/p'
+    's/.*单状态模型：`([0-9]+ Done \/ [0-9]+ Partial \/ [0-9]+ Drifted \/ [0-9]+ Pending)`.*/\1/p'
 )
-traceability_stats=$(count_status_column "$BINANCE_DIR/matrix/TRACEABILITY.md" 7)
+traceability_stats=$(count_status_column "$BINANCE_DIR/matrix/TRACEABILITY.md" 6)
 traceability_summary_stats=$(
   summary_stats "$BINANCE_DIR/matrix/TRACEABILITY.md" \
-    's/.*当前统计 \*\*([0-9]+ Done \/ [0-9]+ Partial \/ [0-9]+ Drifted \/ [0-9]+ Pending)\*\*.*/\1/p'
-)
-traceability_dashboard_stats=$(
-  summary_stats "$BINANCE_DIR/matrix/TRACEABILITY.md" \
-    's/.*当前有效基线分母 48 = \*\*([0-9]+ Done \/ [0-9]+ Partial \/ [0-9]+ Drifted \/ [0-9]+ Pending)\*\*.*/\1/p'
+    's/^- Current-State: ([0-9]+ Done \/ [0-9]+ Partial \/ [0-9]+ Drifted \/ [0-9]+ Pending).*/\1/p'
 )
 
 echo "README.md Code stats:       ${readme_stats:-NOT_FOUND}"
@@ -198,7 +195,6 @@ echo "ACCEPTANCE.md Code stats:   ${acceptance_stats:-NOT_FOUND}"
 echo "prompt/README.md Code stats: ${prompt_stats:-NOT_FOUND}"
 echo "TRACEABILITY.md Code stats: ${traceability_stats:-NOT_FOUND}"
 echo "TRACEABILITY.md Summary:    ${traceability_summary_stats:-NOT_FOUND}"
-echo "TRACEABILITY.md §6 stats:   ${traceability_dashboard_stats:-NOT_FOUND}"
 
 if [ -z "$readme_stats" ]; then
   fail "unable to extract README.md Code stats"
@@ -218,24 +214,22 @@ fi
 if [ -z "$traceability_summary_stats" ]; then
   fail "unable to extract TRACEABILITY.md summary stats"
 fi
-if [ -z "$traceability_dashboard_stats" ]; then
-  fail "unable to extract TRACEABILITY.md §6 stats"
-fi
-
 if [ "$readme_stats" != "$features_stats" ] ||
   [ "$readme_stats" != "$acceptance_stats" ] ||
   [ "$readme_stats" != "$prompt_stats" ] ||
   [ "$readme_stats" != "$traceability_stats" ] ||
-  [ "$readme_stats" != "$traceability_summary_stats" ] ||
-  [ "$readme_stats" != "$traceability_dashboard_stats" ]; then
-  fail "Code status stats mismatch across README / FEATURES / ACCEPTANCE / prompt README / TRACEABILITY / TRACEABILITY summary/dashboard"
+  [ "$readme_stats" != "$traceability_summary_stats" ]; then
+  fail "Code status stats mismatch across README / FEATURES / ACCEPTANCE / prompt README / TRACEABILITY / TRACEABILITY summary"
+fi
+if [ "$readme_stats" != "$EXPECTED_STATS" ]; then
+  fail "single-state stats must remain $EXPECTED_STATS"
 fi
 
 echo ""
 readme_drifted=$(drifted_from_readme)
 features_drifted=$(drifted_from_status_column "$BINANCE_DIR/spec/FEATURES.md" 4)
 acceptance_drifted=$(drifted_from_acceptance)
-traceability_drifted=$(drifted_from_status_column "$BINANCE_DIR/matrix/TRACEABILITY.md" 7)
+traceability_drifted=$(drifted_from_status_column "$BINANCE_DIR/matrix/TRACEABILITY.md" 6)
 
 echo "README.md Drifted FR:       ${readme_drifted:-NONE}"
 echo "FEATURES.md Drifted FR:     ${features_drifted:-NONE}"
@@ -250,37 +244,90 @@ fi
 
 echo ""
 echo "Checking semantic status guards..."
+require_pattern "$SPEC_FILE" "^- State-Model: single-state only$" "SPEC.md must declare single-state model"
+require_pattern "$SPEC_FILE" "^## 5\\. State Model$" "SPEC.md must retain State Model section"
+require_pattern "$TRACEABILITY_FILE" "^- State-Model: single-state only$" "TRACEABILITY.md must declare single-state model"
+require_pattern "$SPEC_FILE" "release_closeable: NO" "SPEC.md must keep release_closeable=NO"
+require_pattern "$TRACEABILITY_FILE" "release_closeable: NO" "TRACEABILITY.md must keep release_closeable=NO"
+require_pattern "$BINANCE_DIR/README.md" "release_closeable=NO" "module README must keep release_closeable=NO"
+require_pattern "$ACCEPTANCE_FILE" "release_closeable=NO" "ACCEPTANCE.md must keep release_closeable=NO"
+require_pattern "$BINANCE_DIR/prompt/README.md" "release_closeable=NO" "prompt README must keep release_closeable=NO"
+require_pattern "$SPEC_FILE" "Open-P10-Issues:" "SPEC.md must expose current P10 issue projection"
+require_pattern "$TRACEABILITY_FILE" "GitHub P10 open" "TRACEABILITY.md must expose GitHub P10 open count"
+require_pattern "$TRACEABILITY_FILE" "Beads P10 open" "TRACEABILITY.md must expose Beads P10 open count"
 for fr in FR-013 FR-017 FR-025; do
   require_table_status "$FEATURES_FILE" "$fr" 4 "Partial" "$fr FEATURES.md status must remain Partial"
-  require_table_status "$TRACEABILITY_FILE" "$fr" 7 "Partial" "$fr TRACEABILITY.md status must remain Partial"
-  require_pattern "$ACCEPTANCE_FILE" "^\\|[[:space:]]*$fr[[:space:]]*\\|.*Code-Partial" "$fr ACCEPTANCE.md must record Code-Partial"
+  require_table_status "$TRACEABILITY_FILE" "$fr" 6 "Partial" "$fr TRACEABILITY.md status must remain Partial"
+  require_pattern "$ACCEPTANCE_FILE" "^\\|[[:space:]]*$fr[[:space:]]*\\|.*Pending" "$fr ACCEPTANCE.md must record open evidence"
 done
 require_pattern "$FEATURES_FILE" "^\\|[[:space:]]*FR-013[[:space:]]*\\|.*Partial.*X-MBX-USED-WEIGHT-1M.*429" "FR-013 Partial reason must preserve used-weight and 429 evidence"
 require_pattern "$FEATURES_FILE" "^\\|[[:space:]]*FR-017[[:space:]]*\\|.*Partial.*event_type.*trade_id.*depth updateId" "FR-017 Partial reason must preserve event_type gap strategy evidence"
 require_pattern "$FEATURES_FILE" "^\\|[[:space:]]*FR-025[[:space:]]*\\|.*Partial.*ThrottlePriority.*30:20:50" "FR-025 Partial reason must preserve priority throttle evidence"
-require_table_status "$FEATURES_FILE" "FR-037" 4 "Done" "FR-037 FEATURES.md status must be Code-Done after canary gate anchors"
-require_table_status "$TRACEABILITY_FILE" "FR-037" 7 "Done" "FR-037 TRACEABILITY.md status must be Code-Done after canary gate anchors"
-require_pattern "$ACCEPTANCE_FILE" "^\\|[[:space:]]*FR-037[[:space:]]*\\|.*Done.*Pending" "FR-037 ACCEPTANCE.md must record Code-Done / Evidence-Pending"
+require_table_status "$FEATURES_FILE" "FR-037" 4 "Done" "FR-037 FEATURES.md status must be Done after smoke-only production gate anchors"
+require_table_status "$TRACEABILITY_FILE" "FR-037" 6 "Done" "FR-037 TRACEABILITY.md status must be Done after smoke-only production gate anchors"
+require_pattern "$ACCEPTANCE_FILE" "^\\|[[:space:]]*FR-037[[:space:]]*\\|.*Done" "FR-037 ACCEPTANCE.md must record Done"
 require_pattern "$FEATURES_FILE" "^\\|[[:space:]]*FR-037[[:space:]]*\\|.*Done.*XGO_BINANCE_FEATURE_ASYNC_COLD_RANGE.*deploy-canary-gate" "FR-037 FEATURES.md must reference XGO flag and deploy-canary-gate"
-require_pattern "$TRACEABILITY_FILE" "^\\|[[:space:]]*FR-037[[:space:]]*\\|.*deploy-canary-gate.*Done.*Pending" "FR-037 TRACEABILITY.md must reference deploy-canary-gate and remain Evidence-Pending"
+require_pattern "$TRACEABILITY_FILE" "^\\|[[:space:]]*FR-037[[:space:]]*\\|.*production .*/ingest.* disabled.*Done[[:space:]]*\\|" "FR-037 TRACEABILITY.md must preserve production ingest disabled anchor"
 require_pattern "$FEATURES_FILE" "^\\|[[:space:]]*\\*\\*#1117\\*\\*.*XGO_BINANCE_HISTORY_STATE_FILE.*restart evidence" "FEATURES #1117 must record local history-state env wiring and restart evidence gap"
 require_pattern "$FEATURES_FILE" "^\\|[[:space:]]*\\*\\*#1118\\*\\*.*XGO_BINANCE_DLQ_FILE.*file-backed replay" "FEATURES #1118 must record local DLQ env wiring and replay evidence gap"
-require_pattern "$ACCEPTANCE_FILE" "^\\|[[:space:]]*FR-028[[:space:]]*\\|.*Evidence-Pending.*XGO_BINANCE_HISTORY_STATE_FILE" "ACCEPTANCE FR-028 must keep history-state wiring Evidence-Pending"
-require_pattern "$TRACEABILITY_FILE" "^\\|[[:space:]]*FR-028[[:space:]]*\\|.*XGO_BINANCE_HISTORY_STATE_FILE.*Partial.*Pending" "TRACEABILITY FR-028 must keep history-state wiring Partial/Pending"
-require_pattern "$TRACEABILITY_FILE" "^\\|[[:space:]]*FR-004[[:space:]]*\\|.*XGO_BINANCE_DLQ_FILE.*Done.*Pending" "TRACEABILITY FR-004 must keep DLQ env wiring Done/Pending"
+require_pattern "$ACCEPTANCE_FILE" "^\\|[[:space:]]*FR-028[[:space:]]*\\|.*Pending.*XGO_BINANCE_HISTORY_STATE_FILE" "ACCEPTANCE FR-028 must keep history-state wiring Pending"
+require_pattern "$TRACEABILITY_FILE" "^\\|[[:space:]]*FR-028[[:space:]]*\\|.*error taxonomy evidence needed.*Partial[[:space:]]*\\|" "TRACEABILITY FR-028 must remain Partial until restart/recovery evidence closes"
+require_pattern "$TRACEABILITY_FILE" "^\\|[[:space:]]*FR-004[[:space:]]*\\|.*server consumer boundary.*Done[[:space:]]*\\|" "TRACEABILITY FR-004 must preserve server consumer boundary Done anchor"
+
+echo ""
+echo "Checking release_closeable ratio consistency..."
+traceability_done=$(echo "$traceability_stats" | awk '{print $1}')
+traceability_partial=$(echo "$traceability_stats" | awk '{print $4}')
+traceability_drifted=$(echo "$traceability_stats" | awk '{print $7}')
+traceability_pending=$(echo "$traceability_stats" | awk '{print $10}')
+traceability_total=$((traceability_done + traceability_partial + traceability_drifted + traceability_pending))
+done_ratio=$((traceability_done * 100 / traceability_total))
+echo "Code-Done ratio: ${traceability_done}/${traceability_total} = ${done_ratio}%"
+echo "Drifted: ${traceability_drifted}, Pending: ${traceability_pending}"
+
+if [ "$traceability_drifted" -eq 0 ] && [ "$traceability_pending" -eq 0 ] && [ "$done_ratio" -ge 90 ]; then
+  require_pattern "$TRACEABILITY_FILE" "release_closeable: YES" "release_closeable must be YES when Code-Done ≥ 90% and Drifted=0 and Pending=0"
+else
+  require_pattern "$TRACEABILITY_FILE" "release_closeable: NO" "release_closeable must be NO when Code-Done < 90% or Drifted>0 or Pending>0"
+fi
+
+echo ""
+echo "Checking dual-state model residue..."
+for active_file in "$SPEC_FILE" "$TRACEABILITY_FILE" "$FEATURES_FILE" "$ACCEPTANCE_FILE" "$BINANCE_DIR/README.md" "$BINANCE_DIR/prompt/README.md"; do
+  residue=$(grep -E 'Evidence-Done|Evidence-State|Code-State' "$active_file" 2>/dev/null | grep -Ev '废除|abolished|deprecated|历史|legacy|已删除|removed|双态' || true)
+  if [ -n "$residue" ]; then
+    fail "$active_file must not contain active dual-state model residue (Evidence-Done/Evidence-State/Code-State outside abolition context)"
+  fi
+done
+
+echo ""
+echo "Checking release_closeable formula presence..."
+require_pattern "$TRACEABILITY_FILE" "release_closeable = Code-Done FR / Total FR" "TRACEABILITY.md must document the release_closeable formula"
+require_pattern "$TRACEABILITY_FILE" "PRG-001~007" "TRACEABILITY.md must reference PRG-001~007 in the release_closeable formula"
 
 echo ""
 echo "Checking retired spec artifact guards..."
-require_pattern "$SPEC_FILE" "^  # 已退役文件（仅保留历史参考，不作为活跃规范）" "SPEC Appendix D must keep retired file section"
 for retired in spec/SPEC-exchangeinfo-sync.md spec/DATA-LIFECYCLE.md spec/DATA-QUALITY-SLA.md spec/ENDPOINTS.md; do
-  require_pattern "$SPEC_FILE" "^[[:space:]]*$retired[[:space:]]+# DEPRECATED" "$retired must stay in the retired-file partition"
+  if [ -e "$BINANCE_DIR/$retired" ]; then
+    fail "$retired must not exist as an active spec artifact"
+  fi
 done
-require_pattern "$SPEC_FILE" "docs/migrations/ac-bnc-legacy-mapping\\.md" "SPEC Appendix D must point to AC-BNC legacy mapping"
-require_pattern "$SPEC_FILE" "module/binance/matrix/TRACEABILITY\\.md" "SPEC Appendix D must name the active TRACEABILITY registry"
-require_pattern "$SPEC_FILE" "module/binance/spec/ACCEPTANCE\\.md" "SPEC Appendix D must name the active ACCEPTANCE status source"
-for active_file in "$SPEC_FILE" "$TRACEABILITY_FILE" "$ACCEPTANCE_FILE" "$FEATURES_FILE"; do
+if [ -d "$BINANCE_DIR/spec/deprecated" ]; then
+  fail "spec/deprecated must not exist after deprecated artifact archival"
+fi
+if [ -e "$BINANCE_DIR/todo.md" ]; then
+  if ! grep -Eq 'read-only projection|projection.only|not.*closure.*SSOT|Closure SSOT' "$BINANCE_DIR/todo.md" 2>/dev/null; then
+    fail "module/binance/todo.md must be a read-only projection, not an active closure SSOT"
+  fi
+fi
+if [ ! -f "$BINANCE_DIR/evidence/2026-06-28/todo-archived.md" ]; then
+  fail "archived todo evidence must exist"
+fi
+for active_file in "$SPEC_FILE" "$TRACEABILITY_FILE" "$FEATURES_FILE"; do
+  forbid_pattern "$active_file" "spec/(deprecated/)?(SPEC-exchangeinfo-sync|DATA-LIFECYCLE|DATA-QUALITY-SLA|ENDPOINTS)\\.md" "retired spec filenames must not appear in active specs"
   forbid_pattern "$active_file" "^\\|[[:space:]]*AC-BNC-[0-9][0-9][0-9][[:space:]]*\\|" "AC-BNC active rows must remain isolated to the legacy mapping"
 done
+forbid_pattern "$ACCEPTANCE_FILE" "^\\|[[:space:]]*AC-BNC-[0-9][0-9][0-9][[:space:]]*\\|" "AC-BNC active rows must remain isolated to the legacy mapping"
 
 echo ""
 echo "Checking legacy AC-BNC mapping guards..."

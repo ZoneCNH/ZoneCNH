@@ -33,10 +33,10 @@ type MarketPublisher struct {
 }
 
 // Publish 将 envelope 序列化为 JSON 并同步发布到 JetStream。
-// subject 格式：binance.market.{product_line}.{event_type}
+// subject 格式：binance.market.{product_line}.{event_type}.v1
 // 返回前等待 JetStream PubAck（消息已持久化到 NATS）。
 func (p *MarketPublisher) Publish(ctx context.Context, env *domainmarket.MarketFactEnvelope) error {
-    subj := fmt.Sprintf("binance.market.%s.%s",
+subj := fmt.Sprintf("binance.market.%s.%s.v1",
         strings.ToLower(string(env.ProductLine)),
         strings.ToLower(string(env.EventType)),
     )
@@ -57,7 +57,7 @@ func (p *MarketPublisher) Publish(ctx context.Context, env *domainmarket.MarketF
 
 **FR-PUB-003**: WHEN JetStream 不可达或超时 THEN publisher 返回 error，由调用方决定重试策略（指数退避）。
 
-**FR-PUB-004**: subject 格式必须为 `binance.market.{product_line}.{event_type}`，product_line 和 event_type 均小写。
+**FR-PUB-004**: subject 格式必须为 `binance.market.{product_line}.{event_type}.v1`，product_line 和 event_type 均小写。
 
 **FR-PUB-005**: publisher 不持有 server 地址、server 接口或 `internal/cs` 包。
 
@@ -66,7 +66,7 @@ func (p *MarketPublisher) Publish(ctx context.Context, env *domainmarket.MarketF
 | AC | 验证方式 |
 |----|---------|
 | PubAck 同步等待 | mock JetStream 注入，验证 Publish 在 ACK 前阻塞 |
-| subject 格式正确 | 单测验证 `spot + tick → binance.market.spot.tick` |
+| subject 格式正确 | 单测验证 `spot + tick → binance.market.spot.tick.v1` |
 | JetStream 不可达时返回 error | mock 注入 timeout，验证返回 err 且不 panic |
 | 无 server 依赖 | `go list -deps ./internal/client/...` 不含 internal/server |
 | 无 cs 包导入 | `grep -r '"github.com/ZoneCNH/binance/internal/cs"' internal/client/` 无结果 |
