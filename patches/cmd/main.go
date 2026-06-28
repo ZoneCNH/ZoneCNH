@@ -7,6 +7,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"net/url"
 	"os"
 	"os/signal"
 	"syscall"
@@ -15,6 +16,15 @@ import (
 	binance "github.com/ZoneCNH/runtime-patches/binance"
 	"github.com/ZoneCNH/runtime-patches/binancecfg"
 )
+
+// sanitizeEndpoint logs only host:port from a WebSocket URL, stripping credentials and path.
+func sanitizeEndpoint(raw string) string {
+	u, err := url.Parse(raw)
+	if err != nil {
+		return "(invalid)"
+	}
+	return u.Host
+}
 
 // Run is the testable entry point. It:
 //  1. Validates configuration
@@ -60,7 +70,7 @@ func Run(ctx context.Context, cfg binancecfg.Config, deps assembly.ServerDeps, m
 	}()
 
 	logger.Info("ingest pipeline started",
-		"endpoint", cfg.WSEndpoint,
+		"endpoint", sanitizeEndpoint(cfg.WSEndpoint),
 		"max_streams", cfg.MaxStreams,
 	)
 
