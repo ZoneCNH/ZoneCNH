@@ -4,7 +4,7 @@
 >
 > 数据来源：各 GitHub 仓库实际状态，定期更新
 >
-> 最后更新：2026-06-28（binance v0.2.0 生产发布 ✅）
+> 最后更新：2026-06-29（binance v0.7.0 deep-review 修复 ✅）
 >
 > 同步基线：`module/` 为模块规格库 SSOT，`docs/governance/` 为 Spec 治理 SSOT，`docs/goal/` 为 Goal 规则 SSOT，`specs/` 已移除。
 > 机器事实源：`.foundationx/status/index.json` — 由 `xlibgate fleet-status` 生成，供 CI 和自动投影消费。多维成熟度以该文件为准，本文手工块为投影。
@@ -110,7 +110,7 @@
 | 组件                                                          | 架构类型     | 版本   | 进度     | 覆盖率要求 | 说明                  |
 | ------------------------------------------------------------- | -------- | ------ | -------- | ---------- | --------------------- |
 | [market_data](https://github.com/ZoneCNH/market_data)         | 独立进程 | v1.0.0 | ██░░ 30% | 100%       | dispatch 聚合（域入口）：Receiver + DualWriteSink；FR-MD-001~008；v1.0.0 released |
-| [binance](https://github.com/ZoneCNH/binance)                 | C/S Module | v0.2.0 ✅ / v3.9.6 (spec) | ████ 100% | 100%       | C/S 分布式：48/48 FR Done（100%）；release_closeable=YES 🎉；v0.2.0 tag 已发布；15/15 gates；21/21 tests race-free；controlplane 100%（72 tests）；47/47 tasks Done |
+| [binance](https://github.com/ZoneCNH/binance)                 | C/S Module | v0.7.0 ✅ / v3.9.6 (spec) | ████ 100% | 100%       | C/S 分布式：48/48 FR Done（100%）；release_closeable=YES 🎉；v0.7.0 tag 已发布；deep-review 25/37 fixed；15/15 gates；21/21 tests race-free；controlplane 100%（72 tests）；47/47 tasks Done |
 | [okx](https://github.com/ZoneCNH/okx)                         | C/S Module      | v0.1.1 | ███░ 80% | 100%       | OKX CEX 行情采集；待升级 client/server 拆分 |
 | [bybit](https://github.com/ZoneCNH/bybit)                     | C/S Module      | v0.1.1 | ███░ 80% | 100%       | Bybit CEX             |
 | [bitget](https://github.com/ZoneCNH/bitget)                   | C/S Module      | v0.1.1 | ███░ 80% | 100%       | Bitget CEX            |
@@ -129,7 +129,7 @@
 
 | 模块            | SPEC | IMPL | RELEASE | LIVE INT | EXT CI | ADOPT | SOAK | FACTORY | 备注                               |
 | --------------- | :--: | :--: | :-----: | :------: | :----: | :---: | :--: | :-----: | ---------------------------------- |
-| binance         |  ✅  |  ✅  |   ✅    |   ✅    |  ⏳   |  N/A  | N/A  |   ✅    | C/S Module；spec v3.9.6 ✅；v0.2.0 released；48/48 Done (100%)；release_closeable=YES 🎉；15/15 gates；21/21 tests |
+| binance         |  ✅  |  ✅  |   ✅    |   ✅    |  ⏳   |  N/A  | N/A  |   ✅    | C/S Module；spec v3.9.6 ✅；v0.7.0 released；48/48 Done (100%)；release_closeable=YES 🎉；15/15 gates；21/21 tests |
 | okx             |  ✅  |  ✅  |   ✅    |   ⏳待验证 |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；OKX CEX；factory ❌ 原因：LIVE INT 待 market_data dispatch 集成验证 |
 | bybit           |  ✅  |  ✅  |   ✅    |   ⏳待验证 |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；Bybit CEX；factory ❌ 同上 |
 | bitget          |  ✅  |  ✅  |   ✅    |   ⏳待验证 |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；Bitget CEX；factory ❌ 同上 |
@@ -350,8 +350,8 @@
 
 - market_data 域：14 组件（13 C/S Module + 1 独立进程 dispatch）
 - dispatch（market_data）：独立进程，v1.0.0，Receiver + DualWriteSink，进度 30%
-- C/S Module（13）：binance 为规格参考实现（spec v3.9.6 ✅；v0.2.0 released；48/48 Done (100%)；release_closeable=YES 🎉；47/47 tasks Done）；其余 12 个 v0.1.1，待升级
-- **factory 升级路径**：binance 已达 factory-ready ✅（v0.2.0 released、48/48 Done、release_closeable=YES）；其余 12 C/S Module 待 client/server 拆分 + bootstrap 接入 + dispatch 集成验证
+- C/S Module（13）：binance 为规格参考实现（spec v3.9.6 ✅；v0.7.0 released；48/48 Done (100%)；release_closeable=YES 🎉；47/47 tasks Done）；其余 12 个 v0.1.1，待升级
+- **factory 升级路径**：binance 已达 factory-ready ✅（v0.7.0 released、48/48 Done、release_closeable=YES、deep-review 25/37 fixed）；其余 12 C/S Module 待 client/server 拆分 + bootstrap 接入 + dispatch 集成验证
 
 ### 🟡 数据域 · macro_data（注意）
 
