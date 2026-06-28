@@ -1,6 +1,10 @@
 name: Foundation Release
 
 on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
     inputs:
       release_version:
@@ -22,7 +26,7 @@ jobs:
 
   release-prep:
     name: Release Pre-flight
-    runs-on: [self-hosted, Linux, X64, homepage]
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     needs: quality-gate
     steps:
@@ -75,7 +79,7 @@ jobs:
   release-modules:
     name: Release ${{ matrix.module }}
     needs: release-prep
-    runs-on: [self-hosted, Linux, X64, homepage]
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     strategy:
       fail-fast: false
@@ -140,7 +144,7 @@ jobs:
 
   aggregate-manifest:
     name: Aggregate Release Manifest
-    runs-on: [self-hosted, Linux, X64, homepage]
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     needs: release-modules
     if: always() && needs.release-modules.result != 'failure' && needs.release-modules.result != 'cancelled'
