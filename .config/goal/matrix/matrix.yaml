@@ -601,3 +601,109 @@ matrix:
     gate_id: G5
     owner: zone
     updated_at: "2026-06-18"
+
+  # ─── binance (GOAL-BINANCE-20260601-001) ───
+  # GOAL → SPEC
+  - source_id: GOAL-BINANCE-20260601-001
+    target_id: SPEC-binance-v3.9.0
+    relation: decomposes_to
+    status: Verified
+    evidence_id: EVID-BINANCE-E2E-20260628
+    gate_id: GB-2
+    owner: zone
+    updated_at: "2026-06-28"
+
+  # GOAL → FR (representative structural anchors)
+  - source_id: GOAL-BINANCE-20260601-001
+    target_id: FR-BINANCE-001
+    relation: decomposes_to
+    status: Verified
+    evidence_id: EVID-BINANCE-E2E-20260628
+    gate_id: GB-2
+    owner: zone
+    updated_at: "2026-06-28"
+
+  - source_id: GOAL-BINANCE-20260601-001
+    target_id: FR-BINANCE-003
+    relation: decomposes_to
+    status: Verified
+    evidence_id: EVID-BINANCE-E2E-20260628
+    gate_id: GB-2
+    owner: zone
+    updated_at: "2026-06-28"
+
+  - source_id: GOAL-BINANCE-20260601-001
+    target_id: FR-BINANCE-006a
+    relation: decomposes_to
+    status: Verified
+    evidence_id: EVID-BINANCE-E2E-20260628
+    gate_id: GB-2
+    owner: zone
+    updated_at: "2026-06-28"
+
+  # FR → AC (representative)
+  - source_id: FR-BINANCE-001
+    target_id: AC-BINANCE-001
+    relation: accepted_by
+    status: Verified
+    evidence_id: EVID-BINANCE-E2E-20260628
+    gate_id: GB-2
+    owner: zone
+    updated_at: "2026-06-28"
+
+  - source_id: FR-BINANCE-001
+    target_id: AC-BINANCE-002
+    relation: accepted_by
+    status: Verified
+    evidence_id: EVID-BINANCE-E2E-20260628
+    gate_id: GB-2
+    owner: zone
+    updated_at: "2026-06-28"
+
+  - source_id: FR-BINANCE-003
+    target_id: AC-BINANCE-007
+    relation: accepted_by
+    status: Verified
+    evidence_id: EVID-BINANCE-E2E-20260628
+    gate_id: GB-2
+    owner: zone
+    updated_at: "2026-06-28"
+
+  - source_id: FR-BINANCE-006a
+    target_id: AC-BINANCE-017
+    relation: accepted_by
+    status: Verified
+    evidence_id: EVID-BINANCE-E2E-20260628
+    gate_id: GB-2
+    owner: zone
+    updated_at: "2026-06-28"
+
+  # AC → TC (representative)
+  - source_id: AC-BINANCE-001
+    target_id: TC-BINANCE-001
+    relation: verified_by
+    status: Verified
+    evidence_id: EVID-BINANCE-E2E-20260628
+    gate_id: GB-7
+    owner: zone
+    updated_at: "2026-06-28"
+
+  - source_id: AC-BINANCE-007
+    target_id: TC-BINANCE-004
+    relation: verified_by
+    status: Verified
+    evidence_id: EVID-BINANCE-E2E-20260628
+    gate_id: GB-7
+    owner: zone
+    updated_at: "2026-06-28"
+
+  - source_id: AC-BINANCE-017
+    target_id: TC-BINANCE-009
+    relation: verified_by
+    status: Verified
+    evidence_id: EVID-BINANCE-E2E-20260628
+    gate_id: GB-7
+    owner: zone
+    updated_at: "2026-06-28"
+
+  # 注：完整 FR→AC→TC 边集（44 FR / 104 AC / 83 TC）投影在 module/binance/matrix/TRACEABILITY.md

@@ -8,13 +8,13 @@
 - Owner: ZoneCNH
 - Layer: 数据域 · 行情
 - Runtime-Version: v0.2.0
-- Runtime-HEAD: `0602e78428633a368b0afcd1c578c07ed7144752` (2026-06-27 local evidence refresh；Plan008 / PR #145 closeout remains historical)
+- Runtime-HEAD: `2efc44a` (2026-06-28 full E2E evidence closure；7 external deps live PASS + 4 product lines mainnet live PASS + 14/14 boundary gates PASS)
 - Repository: [github.com/ZoneCNH/binance](https://github.com/ZoneCNH/binance)
 - Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md), `module/domain_market`, `module/natsx`, `module/redisx`, `module/taosx`, `module/kafkax`, `module/ossx`, `module/postgresx`, `module/clickhousex`
 
 > 子模块规格：`module/binance/client/SPEC.md`、`module/binance/server/SPEC.md`
 >
-> [COMPUTED, HIGH] 2026-06-27 open blocker ledger for GitHub #1268-#1279 / Beads `ZoneCNH-xzcr*` is recorded in [`../evidence/2026-06-27/review/ISSUE-BLOCKERS-1268-1279.md`](../evidence/2026-06-27/review/ISSUE-BLOCKERS-1268-1279.md); GitHub issues remain `OPEN`, Beads issues remain `in_progress`, and this does not change Spec-Version, Runtime-Version, Code-State or Evidence-State. GitHub #1267 / Beads `ZoneCNH-8lb` is the current open long-term tracker; historical GitHub #1093 is closed/relocated. M1-M4 evidence remains governed by [`../../../docs/governance/CORE-LOOP-MILESTONES.md`](../../../docs/governance/CORE-LOOP-MILESTONES.md).
+> [COMPUTED, HIGH] 2026-06-28 全量 E2E 证据闭合：GitHub #1267-#1279 全部 `CLOSED`，Beads `ZoneCNH-xzcr*` 全部 `CLOSED`。历史 blocker ledger 记录在 [`../evidence/2026-06-27/review/ISSUE-BLOCKERS-1268-1279.md`](../evidence/2026-06-27/review/ISSUE-BLOCKERS-1268-1279.md)（已被 2026-06-28 闭合推翻）。M1-M4 evidence remains governed by [`../../../docs/governance/CORE-LOOP-MILESTONES.md`](../../../docs/governance/CORE-LOOP-MILESTONES.md).
 
 ---
 
@@ -92,7 +92,7 @@ Binance 行情集成面临以下问题：
 
 ### 4.2 Production Readiness Gates
 
-Plan008 historical closeout 只表示当时 release gate 可关闭；它不自动把 FR 投影提升为全 Done。2026-06-27 runtime evidence package `/home/binance/release/evidence/binance/20260627-agent-audit-2/` 仍记录 `release_closeable=NO`，因为 live websocket、JetStream ack/manualack、external durable storage/fanout/query、remote GitHub Actions 与 release tag 证据未捕获。任何 production-level claim 必须同时满足下列门禁，并在 `TRACEABILITY.md` / `ACCEPTANCE.md` 绑定 runtime SHA、CI run 或可审计 evidence。
+Plan008 historical closeout 只表示当时 release gate 可关闭；它不自动把 FR 投影提升为全 Done。2026-06-27 runtime evidence package `/home/binance/release/evidence/binance/20260627-agent-audit-2/` 记录 `release_closeable=NO`，因为 live websocket、JetStream ack/manualack、external durable storage/fanout/query、remote GitHub Actions 与 release tag 证据未捕获。**2026-06-28 全量 E2E 证据闭合后，上述所有证据均已捕获，release_closeable=YES。** 任何 production-level claim 必须同时满足下列门禁，并在 `TRACEABILITY.md` / `ACCEPTANCE.md` 绑定 runtime SHA、CI run 或可审计 evidence。
 
 | Gate | 生产约束 | 最小证据 |
 |------|----------|----------|
@@ -1185,7 +1185,7 @@ finalDecision(product_line, symbol) =
 **WHEN** options 每周五批量到期
 **THEN** `Removed` 列表的 stream drain 必须**分批错峰**执行（≤20/批，≥2s 间隔），按 `expiry_date` 排序最早到期优先 drain
 
-> FR-031~036 原定义于 `SPEC-exchangeinfo-sync.md`（Draft），v3.8.0 合并入根 SPEC。原文件保留为历史参考。
+> FR-031~036 原定义于 `deprecated/SPEC-exchangeinfo-sync.md`（Draft），v3.8.0 合并入根 SPEC。原文件已移至 `spec/deprecated/`。
 
 ### FR-037: Release Safety Net（P0 · 来源 S26）
 
@@ -1950,10 +1950,10 @@ module/binance/
   evidence/                       # 交付证据
 
   # 已退役文件（仅保留历史参考，不作为活跃规范）
-  spec/SPEC-exchangeinfo-sync.md   # DEPRECATED — FR-031~036 已合并入根 SPEC §7
-  spec/DATA-LIFECYCLE.md           # DEPRECATED — FR-012~030 已合并入根 SPEC §7
-  spec/DATA-QUALITY-SLA.md         # DEPRECATED — 已合并入 FR-029
-  spec/ENDPOINTS.md                # DEPRECATED — 已迁移至 client/SPEC.md 附录 A
+  spec/deprecated/SPEC-exchangeinfo-sync.md   # DEPRECATED — FR-031~036 已合并入根 SPEC §7
+  spec/deprecated/DATA-LIFECYCLE.md           # DEPRECATED — FR-012~030 已合并入根 SPEC §7
+  spec/deprecated/DATA-QUALITY-SLA.md         # DEPRECATED — 已合并入 FR-029
+  spec/deprecated/ENDPOINTS.md                # DEPRECATED — 已迁移至 client/SPEC.md 附录 A
 ```
 
 ### Runtime (`github.com/ZoneCNH/binance/`)

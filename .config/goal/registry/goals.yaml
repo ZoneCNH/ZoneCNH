@@ -84,3 +84,28 @@ goals:
       - 9 个 CI Gate 全部通过
       - 生成库可编译无残留
       - release manifest 生成且 checksum 校验通过
+
+  - goal_id: GOAL-BINANCE-20260601-001
+    document_version: "2026-06-28"
+    title: "binance v0.2.0 — Binance market data C/S ingest module"
+    status: Active
+    owner: ZoneCNH
+    priority: P0
+    north_star: "提供可靠的 Binance 专属 market_data 采集管线（Spot / USDⓈ-M / COIN-M / Options），通过 natsx JetStream 发布 canonical 事件，server 端校验去重持久查询广播"
+    pipeline_state: DONE
+    current_phase: RETROSPECTIVE
+    phase_status: DONE
+    workflow_step: RETROSPECTIVE_EXECUTION
+    created_at: "2026-06-01"
+    updated_at: "2026-06-28"
+    related_specs:
+      - module/binance/spec/SPEC.md
+      - module/binance/goal/goal.md
+      - module/binance/design/DESIGN.md
+    success_criteria:
+      - 48 FR 全部 spec 注册（Code-State 23 Done / 25 Partial / 0 Drifted / 0 Pending）
+      - 130 AC / 67 TC 全部 PASS（Evidence-State 44 Done / 0 Pending）
+      - 12 BR 全部 boundary gate PASS（14/14 gates）
+      - 7 外部依赖 live E2E PASS（redisx/kafkax/natsx/postgresx/taosx/ossx/clickhousex）
+      - 4 产品线 mainnet live PASS（spot/um_perp/cm_perp/options）
+      - release_closeable=YES；GitHub #1267-#1279 全部 CLOSED

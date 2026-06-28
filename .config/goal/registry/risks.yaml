@@ -89,7 +89,34 @@ risks:
     related_tasks:
       - TASK-GOAL-20260608-001-003
 
-# 示例条目：
+  - risk_id: RISK-BINANCE-SPEC-001
+    document_version: "2026-06-28"
+    goal_id: GOAL-BINANCE-20260601-001
+    title: SPEC 结构性评分 97/100（差 98 门禁 1 分）
+    severity: Low
+    probability: High
+    impact: Low
+    status: Closed
+    release_blocking: false
+    owner: zone
+    created_at: "2026-06-28"
+    updated_at: "2026-06-28"
+    review_gate: GB-10
+    evidence_id: EVID-BINANCE-SPEC-STRUCTURAL-20260628
+    risk_owner: zone
+    risk_level: low
+    risk_reason: "原评分 97/100，P2（DEPRECATED 文件目录重组）+ P3（子模块 TC→SC 重编号）已修复，评分提升至 98/100，达到门禁。风险已关闭。"
+    mitigation:
+      - P2 已修复：4 个 DEPRECATED 文件移至 spec/deprecated/ 子目录
+      - P3 已修复：子模块本地 TC 编号改为 SC（Scenario ID）
+      - 已修复 8 项问题（90→98 分）：spec_ref 路径、registry spec_version、README 过期段落、ACCEPTANCE/FEATURES/SPEC 状态同步、DEPRECATED 目录重组、TC→SC 重编号
+    contingency:
+      - 风险已关闭，无需应急计划
+    related_gates:
+      - GB-2
+      - GB-10
+    related_tasks: []
+
 # - risk_id: RISK-GOAL-20260608-001-001
 #   document_version: "2026-06-09"
 #   goal_id: GOAL-20260608-001

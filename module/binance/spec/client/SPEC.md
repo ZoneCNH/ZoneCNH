@@ -746,7 +746,7 @@ module/binance/server
 
 ## Appendix A: Mainnet-Only Endpoint Strategy（原 `ENDPOINTS.md`，v3.8.0 合并）
 
-> 来源：`module/binance/spec/ENDPOINTS.md`（v3.7.1 Active），2026-06-26 合并入本附录。原文件保留为历史参考。
+> 来源：`module/binance/spec/deprecated/ENDPOINTS.md`（v3.7.1 Active），2026-06-26 合并入本附录。原文件已移至 `spec/deprecated/`。
 
 ### A.1 四产品线 Mainnet 端点清单
 

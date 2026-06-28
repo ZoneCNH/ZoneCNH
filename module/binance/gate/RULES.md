@@ -201,7 +201,7 @@ bash scripts/check-binance-docs.sh   # 含 R6 全量版本统一校验
 | `server/SPEC.md` + `server/TRACEABILITY.md` | 服务端子规格 |
 | `{client,server}/tasks/archive/README.md` | 归档映射 |
 | `STANDARD.md` | 模块标准入口（runtime control + evidence 薄层索引） |
-| `DATA-LIFECYCLE.md` | 数据生命周期正式提案（FR-012~030 impact ledger；runtime pending） |
+| `deprecated/DATA-LIFECYCLE.md` | 数据生命周期（已退役，FR-012~030 已合并入根 SPEC §7） |
 | `scripts/check-binance-docs.sh` | binance 文档漂移 CI gate（仓库脚本） |
 
 **检测**：
