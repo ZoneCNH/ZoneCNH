@@ -5,6 +5,7 @@ package dispatch
 
 import (
 	"context"
+	"encoding/json"
 	"time"
 )
 
@@ -43,7 +44,7 @@ type AcceptedMarketEvent struct {
 	// SourceSequence is the optional monotonic sequence number from the source stream.
 	SourceSequence int64
 	// Payload carries the canonical market fact.
-	Payload interface{}
+	Payload json.RawMessage
 	// Quality indicates source quality, latency, reliability, and degradation reasons.
 	Quality DataQuality
 	// IdempotencyKey is the stable dedup key.

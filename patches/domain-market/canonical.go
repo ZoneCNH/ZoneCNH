@@ -1,6 +1,7 @@
 package domainmarket
 
 import (
+	"encoding/json"
 	"fmt"
 	"time"
 )
@@ -126,7 +127,7 @@ type MarketFactEnvelope struct {
 	DecisionTime  time.Time
 	Source        string
 	Quality       MarketDataQuality
-	Payload       interface{}
+	Payload       json.RawMessage
 }
 
 func (e MarketFactEnvelope) Validate() error {
