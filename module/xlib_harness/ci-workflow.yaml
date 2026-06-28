@@ -30,7 +30,7 @@ jobs:
           test -s FEATURES.md
           test -s ACCEPTANCE.md
           test -s .github/workflows/ci.yml
-          grep -q "github.com/ZoneCNH/xlib-harness" README.md
+          grep -q "github.com/ZoneCNH/xlib_harness" README.md
           grep -q "module/xlib_harness/spec/SPEC.md" README.md
           grep -q "module/xlib_harness/goal/goal.md" README.md
           grep -q "module/xlib_harness/matrix/TRACEABILITY.md" README.md
@@ -128,7 +128,7 @@ jobs:
           test -s ACCEPTANCE.md
           test -s .github/workflows/ci.yml
           test -s .github/workflows/release.yml
-          grep -q "github.com/ZoneCNH/xlib-harness" README.md
+          grep -q "github.com/ZoneCNH/xlib_harness" README.md
           grep -q "module/xlib_harness/spec/SPEC.md" README.md
           grep -q "module/xlib_harness/goal/goal.md" README.md
           grep -q "module/xlib_harness/matrix/TRACEABILITY.md" README.md

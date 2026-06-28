@@ -74,4 +74,4 @@ Required coverage threshold: 100.0%.
 - release tag: `v0.1.6`
 - GitHub Actions Release run `27855366871`: PASS
 - GitHub Actions main CI run `27855396013`: PASS
-- GitHub Release: <https://github.com/ZoneCNH/xlib-harness/releases/tag/v0.1.6>
+- GitHub Release: <https://github.com/ZoneCNH/xlib_harness/releases/tag/v0.1.6>

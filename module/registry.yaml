@@ -48,7 +48,7 @@ xlib_standard:
     cadence: stable
 
 xlib_harness:
-  repo: github.com/ZoneCNH/xlib-harness
+  repo: github.com/ZoneCNH/xlib_harness
   local_path: /home/xlib-harness
   domain: foundation
   layer: harness
