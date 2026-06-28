@@ -551,7 +551,7 @@ pkg/
 | --- | ------ | ------------------------------- | -------------------------------------------------------- | ---- |
 | 31  | LOW    | 3 处 `var _ =` 死代码           | config.go:362, idempotency.go:56, clickhouse_olap.go:660 | ✅ FIXED — 3 处死代码已删除 |
 | 32  | LOW    | `interface{}` vs `any`          | adapter.go:460 等                                        | ✅ FIXED — interface{} → any |
-| 33  | LOW    | Config/binanceFields 结构体重复 | binancecfg/config.go                                     | ⏭ SKIP — 超出本次范围 |
+| 33  | LOW    | Config/binanceFields 结构体重复 | binancecfg/config.go                                     | ✅ FIXED — PR #227 embed binanceFields in Config, eliminate 16-field duplication |
 | 34  | LOW    | binancex 中文错误消息           | adapter.go:87,118,160,178                                | ✅ FIXED — 26 处中文字符串翻译为英文 |
 | 35  | LOW    | `MODE=test` smoke 触发器        | binancecfg/config.go:220-228                             | ✅ FIXED — MODE=test 不再触发 smoke，仅 XGO_BINANCE_SMOKE=1 |
 | 36  | LOW    | `NormalizedEvent` fat struct    | client/normalize.go:17-83                                | ⏭ SKIP — 超出本次范围 |
@@ -657,7 +657,7 @@ go test ./... -cover              # 总计 ~61.5%
 | P1     | 15   | 11     | 3      | 1    |
 | P2     | 5    | 2      | 0      | 3    |
 | P3     | 7    | 3      | 0      | 4    |
-| **合计** | **37** | **27** | **4** | **6** |
+| **合计** | **37** | **28** | **4** | **5** |
 
 ### 验证结果
 - `go build ./...` — ✅ PASS
