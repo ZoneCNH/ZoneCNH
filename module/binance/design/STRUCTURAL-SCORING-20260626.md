@@ -5,7 +5,7 @@
 > 分析日期：2026-06-26
 > 分析范围（修复前）：root SPEC v3.7.1 + client SPEC v2.1.1 + server SPEC v2.2.0 + 三层 TRACEABILITY 矩阵
 > 修复后：全部统一为 v3.8.0 canonical 编号
-> Runtime-Anchor: historical Plan008 anchor; current 2026-06-27 evidence projection uses `/home/binance@0602e78428633a368b0afcd1c578c07ed7144752`
+> Runtime-Anchor: historical Plan008 anchor; 2026-06-27 evidence projection used `/home/binance@0602e78428633a368b0afcd1c578c07ed7144752`（已被 2026-06-28 `/home/binance@2efc44a` 取代）
 
 ---
 
@@ -56,7 +56,7 @@ server TRACEABILITY 同样：
 **建议修复**：
 
 1. 将 root TRACEABILITY §1 的 24 Done / 10 Partial 投影按 FR 归属拆解到 client TRACEABILITY（8 FR）和 server TRACEABILITY（12 FR）的对应行
-2. 或至少在子矩阵 §6 覆盖率仪表盘增加注释："实现状态以 root TRACEABILITY Runtime-Anchor `/home/binance@0602e78428633a368b0afcd1c578c07ed7144752` 为准，本子矩阵保留 Pending 标注反映子模块级 TC 测试证据未独立闭合"
+2. 或至少在子矩阵 §6 覆盖率仪表盘增加注释："实现状态以 root TRACEABILITY Runtime-Anchor 为准（当前 `/home/binance@2efc44a`），本子矩阵保留 Pending 标注反映子模块级 TC 测试证据未独立闭合"
 
 **扣分**：−15
 

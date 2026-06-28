@@ -5,7 +5,7 @@
 - **来源**：本文件、[`spec/ACCEPTANCE.md`](spec/ACCEPTANCE.md)、[`matrix/TRACEABILITY.md`](matrix/TRACEABILITY.md) 与 2026-06-28 全量 E2E 证据闭合
 - **Spec-Version**：v3.9.0
 - **Runtime-Anchor**：`/home/binance@2efc44a` + full E2E evidence package `/home/binance/release/evidence/binance/20260628-full-e2e-closure/`
-- **当前状态**：v0.2.0 可编译可发布，**生产级证据已闭合**；Code-State **23 Done / 25 Partial / 0 Drifted / 0 Pending**；Evidence-State **44 Done / 0 Pending**；release_closeable=YES；GitHub #1267-#1279 全部 CLOSED；Beads ZoneCNH-xzcr* 全部 CLOSED。
+- **当前状态**：v0.2.0 可编译可发布，**生产级证据已闭合**；Code-State **23 Done / 25 Partial / 0 Drifted / 0 Pending**；Evidence-State **44 Done / 0 Pending**；release_closeable=YES；GitHub #1267-#1279 全部 CLOSED；Beads ZoneCNH-xzcr\* 全部 CLOSED。
 
 > [COMPUTED, HIGH] 2026-06-28 全量 E2E 证据闭合：所有 7 个外部依赖（redisx/kafkax/natsx/postgresx/taosx/ossx/clickhousex）均通过真实 live E2E 验证；4 条产品线（spot/um_perp/cm_perp/options）均在 mainnet 实证连通；build/vet/test-race/boundary-gates(14/14)/golangci-lint/govulncheck 全部 PASS。release_closeable=YES。
 >
@@ -13,31 +13,31 @@
 >
 > [COMPUTED, HIGH] 2026-06-28 根因修复：此前 taosx 和 clickhousex E2E 失败的根因是执行测试前未 `source .env`，导致环境变量未注入。修复方式：`set -a; source .env; set +a` 后再执行 `STORAGE_LIVE=1` 测试。所有 4 个 storage 依赖（taosx/postgresx/redisx/clickhousex）均 PASS。
 
-| GitHub | Beads             | 覆盖范围                                                          | 当前判定         |
-| ------ | ----------------- | ----------------------------------------------------------------- | ---------------- |
-| #1268  | `ZoneCNH-xzcr`    | P0/P1/P2 evidence closure epic                                    | ✅ CLOSED        |
-| #1269  | `ZoneCNH-xzcr.1`  | FR-013/017/025/037 direct TC/live/canary                          | ✅ CLOSED        |
-| #1270  | `ZoneCNH-xzcr.2`  | FR-039 tracing OTel/NATS/header E2E                               | ✅ CLOSED        |
-| #1271  | `ZoneCNH-xzcr.3`  | FR-040 quota/backpressure/multi-tenant soak                       | ✅ CLOSED        |
-| #1272  | `ZoneCNH-xzcr.4`  | FR-041 audit log lifecycle/admin proof                            | ✅ CLOSED        |
-| #1273  | `ZoneCNH-xzcr.5`  | redisx/kafkax/natsx/postgresx/taosx/ossx/clickhousex external E2E | ✅ CLOSED        |
-| #1274  | `ZoneCNH-xzcr.6`  | FR-001 UM/CM/Options testnet/mainnet live-gated                   | ✅ CLOSED        |
-| #1275  | `ZoneCNH-xzcr.7`  | FR-043 cost dashboard/alert/report                                | ✅ CLOSED        |
-| #1276  | `ZoneCNH-xzcr.8`  | FR-044 destruction drill/cert/archive                             | ✅ CLOSED        |
-| #1277  | `ZoneCNH-xzcr.9`  | FR-031~036 ExchangeInfo runtime/direct TC/live                    | ✅ CLOSED        |
-| #1278  | `ZoneCNH-xzcr.10` | Backfill progress restart persistence                             | ✅ CLOSED        |
-| #1279  | `ZoneCNH-xzcr.11` | DLQ snapshot/replay persistence                                   | ✅ CLOSED        |
-| #1267  | `ZoneCNH-8lb`     | 长期#10: 核心交易闭环跑通 live_integration 7→15+                  | ✅ CLOSED        |
+| GitHub | Beads             | 覆盖范围                                                          | 当前判定  |
+| ------ | ----------------- | ----------------------------------------------------------------- | --------- |
+| #1268  | `ZoneCNH-xzcr`    | P0/P1/P2 evidence closure epic                                    | ✅ CLOSED |
+| #1269  | `ZoneCNH-xzcr.1`  | FR-013/017/025/037 direct TC/live/canary                          | ✅ CLOSED |
+| #1270  | `ZoneCNH-xzcr.2`  | FR-039 tracing OTel/NATS/header E2E                               | ✅ CLOSED |
+| #1271  | `ZoneCNH-xzcr.3`  | FR-040 quota/backpressure/multi-tenant soak                       | ✅ CLOSED |
+| #1272  | `ZoneCNH-xzcr.4`  | FR-041 audit log lifecycle/admin proof                            | ✅ CLOSED |
+| #1273  | `ZoneCNH-xzcr.5`  | redisx/kafkax/natsx/postgresx/taosx/ossx/clickhousex external E2E | ✅ CLOSED |
+| #1274  | `ZoneCNH-xzcr.6`  | FR-001 UM/CM/Options testnet/mainnet live-gated                   | ✅ CLOSED |
+| #1275  | `ZoneCNH-xzcr.7`  | FR-043 cost dashboard/alert/report                                | ✅ CLOSED |
+| #1276  | `ZoneCNH-xzcr.8`  | FR-044 destruction drill/cert/archive                             | ✅ CLOSED |
+| #1277  | `ZoneCNH-xzcr.9`  | FR-031~036 ExchangeInfo runtime/direct TC/live                    | ✅ CLOSED |
+| #1278  | `ZoneCNH-xzcr.10` | Backfill progress restart persistence                             | ✅ CLOSED |
+| #1279  | `ZoneCNH-xzcr.11` | DLQ snapshot/replay persistence                                   | ✅ CLOSED |
+| #1267  | `ZoneCNH-8lb`     | 长期#10: 核心交易闭环跑通 live_integration 7→15+                  | ✅ CLOSED |
 
 ---
 
 ## 总览
 
-| 优先级      |  总数  | 已完成 | 未完成 | 完成率  |
-| ----------- | :----: | :----: | :----: | :-----: |
-| P0 本地闭合 |   10   |   10   |   0    |  100%   |
-| P1 强烈建议 |   8    |   8    |   0    |  100%   |
-| P2 可延后   |   8    |   8    |   0    |  100%   |
+| 优先级      |  总数  | 已完成 | 未完成 |  完成率  |
+| ----------- | :----: | :----: | :----: | :------: |
+| P0 本地闭合 |   10   |   10   |   0    |   100%   |
+| P1 强烈建议 |   8    |   8    |   0    |   100%   |
+| P2 可延后   |   8    |   8    |   0    |   100%   |
 | **合计**    | **26** | **26** | **0**  | **100%** |
 
 ---
@@ -242,33 +242,33 @@
 
 所有证据归档于 `/home/binance/release/evidence/binance/20260628-full-e2e-closure/`：
 
-| 证据文件 | 检查项 | 状态 |
-| -------- | ------ | ---- |
-| storage-live.log | taosx+postgresx+redisx+clickhousex 建连 | PASS |
-| oss-live.log | ossx aliyun OSS archive+list+delete | PASS |
-| kafka-live.log | kafkax produce+consume roundtrip | PASS |
-| natsx-integration.log | natsx JetStream semantics | PASS |
-| mainnet-live.log | 4 product lines mainnet live | PASS |
-| build.log | go build ./... | PASS |
-| vet.log | go vet ./... | PASS |
-| test-race.log | go test -race ./... | PASS |
-| boundary-gates.log | 14/14 boundary gates | PASS |
-| golangci-lint.log | golangci-lint run | PASS |
-| govulncheck.log | govulncheck | PASS |
-| gofmt.log | gofmt -l | PASS |
-| dlq-replay.log | DLQ/deadletter/replay tests | PASS |
-| backfill-restart.log | Backfill/history/rehydrate tests | PASS |
-| alerts-reconcile.log | Alert/reconcile/gap/stale tests | PASS |
-| audit.log | Audit/admin audit tests | PASS |
-| quota-isolation.log | Quota/resource/ratelimit/isolation tests | PASS |
-| tracing.log | Tracing/OTel/observability tests | PASS |
-| exchangeinfo.log | ExchangeInfo/catalog tests | PASS |
-| cost-compliance.log | Cost/retention/destruction/compliance tests | PASS |
+| 证据文件              | 检查项                                      | 状态 |
+| --------------------- | ------------------------------------------- | ---- |
+| storage-live.log      | taosx+postgresx+redisx+clickhousex 建连     | PASS |
+| oss-live.log          | ossx aliyun OSS archive+list+delete         | PASS |
+| kafka-live.log        | kafkax produce+consume roundtrip            | PASS |
+| natsx-integration.log | natsx JetStream semantics                   | PASS |
+| mainnet-live.log      | 4 product lines mainnet live                | PASS |
+| build.log             | go build ./...                              | PASS |
+| vet.log               | go vet ./...                                | PASS |
+| test-race.log         | go test -race ./...                         | PASS |
+| boundary-gates.log    | 14/14 boundary gates                        | PASS |
+| golangci-lint.log     | golangci-lint run                           | PASS |
+| govulncheck.log       | govulncheck                                 | PASS |
+| gofmt.log             | gofmt -l                                    | PASS |
+| dlq-replay.log        | DLQ/deadletter/replay tests                 | PASS |
+| backfill-restart.log  | Backfill/history/rehydrate tests            | PASS |
+| alerts-reconcile.log  | Alert/reconcile/gap/stale tests             | PASS |
+| audit.log             | Audit/admin audit tests                     | PASS |
+| quota-isolation.log   | Quota/resource/ratelimit/isolation tests    | PASS |
+| tracing.log           | Tracing/OTel/observability tests            | PASS |
+| exchangeinfo.log      | ExchangeInfo/catalog tests                  | PASS |
+| cost-compliance.log   | Cost/retention/destruction/compliance tests | PASS |
 
 ---
 
 ## 关键约束
 
-> [COMPUTED, HIGH] 2026-06-28 全量 E2E 证据闭合完成。release_closeable=YES。所有 GitHub #1267-#1279 已 CLOSED，所有 Beads ZoneCNH-xzcr* 已 CLOSED。10x 重复检查通过（10/10 轮均无 open issues）。
+> [COMPUTED, HIGH] 2026-06-28 全量 E2E 证据闭合完成。release_closeable=YES。所有 GitHub #1267-#1279 已 CLOSED，所有 Beads ZoneCNH-xzcr\* 已 CLOSED。10x 重复检查通过（10/10 轮均无 open issues）。
 >
 > [COMPUTED, HIGH] 此前 taosx 和 clickhousex E2E 失败的根因是执行测试前未 `source .env`。修复方式：`set -a; source .env; set +a` 后再执行 `STORAGE_LIVE=1` 测试。所有 7 个外部依赖均 PASS。

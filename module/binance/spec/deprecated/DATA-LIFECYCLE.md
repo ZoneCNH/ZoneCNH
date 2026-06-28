@@ -1,4 +1,4 @@
-> ⚠️ **DEPRECATED** — 本文件已退役（v3.8.0），所有活跃内容已合并至 [`SPEC.md`](SPEC.md) §7 FR-012~FR-030。仅保留为历史参考，不作为活跃规范。
+> ⚠️ **DEPRECATED** — 本文件已退役（v3.8.0），所有活跃内容已合并至 [`SPEC.md`](../SPEC.md) §7 FR-012~FR-030。仅保留为历史参考，不作为活跃规范。
 
 # module/binance DATA-LIFECYCLE.md — 数据生命周期（已退役）
 
@@ -13,7 +13,7 @@
 | Spec-Impact | 已 fold：FR-012~FR-030 已登记到 `SPEC.md`/`TRACEABILITY.md`，相关命名落点已投影到 `NAMING.md`；本文件仍不声明 runtime contract |
 | Source Plan | `report/binance/goal-execution-plan-20260622.md` 阶段 2 / AC-3 |
 
-> §1-§8 内容（15 个生命周期缺口、13 个 FR 落点、issue 映射、版本影响矩阵）已合并至 [`SPEC.md`](SPEC.md) §7 FR-012~FR-030。以下仅保留 §9 Issue #926 形式化闭合备忘录作为历史证据。
+> §1-§8 内容（15 个生命周期缺口、13 个 FR 落点、issue 映射、版本影响矩阵）已合并至 [`SPEC.md`](../SPEC.md) §7 FR-012~FR-030。以下仅保留 §9 Issue #926 形式化闭合备忘录作为历史证据。
 
 ## 9. Issue #926 形式化闭合备忘录（2026-06-23）
 

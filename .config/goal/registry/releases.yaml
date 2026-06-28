@@ -71,6 +71,37 @@ releases:
       发布边界：
       - 未修改已批准 Goal 核心目标、Non-goals、P0/P1 验收标准、安全/隐私/权限/资金/数据保留约束、生产代码或生产配置。
 
+  - release_id: REL-20260628-binance
+    document_version: "2026-06-28"
+    goal_id: GOAL-BINANCE-20260601-001
+    release_version: v3.9.0
+    status: released
+    created_at: "2026-06-28"
+    updated_at: "2026-06-28"
+    linked_issues: []
+    linked_tasks: []
+    evidence:
+      - module/binance/spec/SPEC.md
+      - module/binance/spec/ACCEPTANCE.md
+      - module/binance/spec/FEATURES.md
+      - module/binance/spec/SPEC-STRUCTURAL-ANALYSIS-20260628.md
+      - module/binance/matrix/TRACEABILITY.md
+      - module/binance/matrix/client/TRACEABILITY.md
+      - module/binance/matrix/server/TRACEABILITY.md
+      - module/binance/CHANGELOG.md
+      - module/registry.yaml
+    release_notes: |
+      binance 模块 v3.9.0 spec 制品全量同步。2026-06-28 全量 E2E 证据闭合：
+      44 FR Evidence-Done / 0 Pending；83 TC 全 PASS；7 个外部依赖 live E2E PASS；
+      4 产品线 mainnet live PASS；14/14 boundary gates PASS。
+      GB-0~GB-11 全部 PASS（GB-2 PASS_WITH_RISK 97/100，RISK-BINANCE-SPEC-001 release_blocking=false）。
+      release_closeable=YES。
+
+      发布边界：
+      - 仅同步 spec 制品状态（SPEC/ACCEPTANCE/FEATURES/TRACEABILITY/CHANGELOG/registry）。
+      - 未修改生产代码或生产配置；runtime 锚点 /home/binance@2efc44a。
+      - registry.yaml latest_tag v3.8.0 未更改（事实字段，待 GitHub Release 验证）。
+
 # 状态枚举：
 # draft → ready_for_pr → in_review → approved → released
 # 异常状态：rejected（需说明原因）

@@ -4,17 +4,17 @@
 
 - Status: Approved
 - Spec-Version: v3.9.0
-- Last-Updated: 2026-06-26 (v3.8.0→v3.9.0: 内容正确性大修 — FR-013 限流模型从「每秒 weight」修正为「每分钟滑动窗口 weight」+ HTTP 418/429 细化退避 + 退避参数补全 + clock skew 单调性/drift rate 检测；FR-017 缺口检测从统一时间间隔法重写为按事件类型分策略（trade_id 序列 / updateId 序列 / bar open_time 序列 / tick 事件驱动）；FR-025 回填限流改为分钟 weight 模型 + P0/P1/P2 三级优先级；FR-029 增加延迟预算分解 + FutureTolerance/clock_skew 独立关系；FR-012 增加 WS ping/pong keepalive + 24h staggered reconnect；FR-016 增加 REST limit 策略 + 左闭右开语义；FR-031 增加 contractType→instrument_subtype 映射；FR-032 增加 symbol 生命周期 + SpecUpdated 轻量 reload；FR-023 增加 evidence 交叉校验规则；FR-036 增加 WS 连接数上限 + stagger；§11 Config Schema 数值修正；§17 Performance Budget 扩展；client 幂等键策略修正；三表状态模型统一为双态模型（Code-Done / Evidence-Done）)
+- Last-Updated: 2026-06-28 (v3.8.0→v3.9.0: 内容正确性大修 — FR-013 限流模型从「每秒 weight」修正为「每分钟滑动窗口 weight」+ HTTP 418/429 细化退避 + 退避参数补全 + clock skew 单调性/drift rate 检测；FR-017 缺口检测从统一时间间隔法重写为按事件类型分策略（trade_id 序列 / updateId 序列 / bar open_time 序列 / tick 事件驱动）；FR-025 回填限流改为分钟 weight 模型 + P0/P1/P2 三级优先级；FR-029 增加延迟预算分解 + FutureTolerance/clock_skew 独立关系；FR-012 增加 WS ping/pong keepalive + 24h staggered reconnect；FR-016 增加 REST limit 策略 + 左闭右开语义；FR-031 增加 contractType→instrument_subtype 映射；FR-032 增加 symbol 生命周期 + SpecUpdated 轻量 reload；FR-023 增加 evidence 交叉校验规则；FR-036 增加 WS 连接数上限 + stagger；§11 Config Schema 数值修正；§17 Performance Budget 扩展；client 幂等键策略修正；三表状态模型统一为双态模型（Code-Done / Evidence-Done）；2026-06-28 全量 E2E 证据闭合后同步日期)
 - Owner: ZoneCNH
 - Layer: 数据域 · 行情
 - Runtime-Version: v0.2.0
-- Runtime-HEAD: `0602e78428633a368b0afcd1c578c07ed7144752` (2026-06-27 local evidence refresh；Plan008 / PR #145 closeout remains historical)
+- Runtime-HEAD: `2efc44a` (2026-06-28 full E2E evidence closure；7 external deps live PASS + 4 product lines mainnet live PASS + 14/14 boundary gates PASS)
 - Repository: [github.com/ZoneCNH/binance](https://github.com/ZoneCNH/binance)
 - Related: [CONSTITUTION.md](../../CONSTITUTION.md), [ARCHITECTURE.md](../../ARCHITECTURE.md), `module/domain_market`, `module/natsx`, `module/redisx`, `module/taosx`, `module/kafkax`, `module/ossx`, `module/postgresx`, `module/clickhousex`
 
 > 子模块规格：`module/binance/client/SPEC.md`、`module/binance/server/SPEC.md`
 >
-> [COMPUTED, HIGH] 2026-06-27 open blocker ledger for GitHub #1268-#1279 / Beads `ZoneCNH-xzcr*` is recorded in [`../evidence/2026-06-27/review/ISSUE-BLOCKERS-1268-1279.md`](../evidence/2026-06-27/review/ISSUE-BLOCKERS-1268-1279.md); GitHub issues remain `OPEN`, Beads issues remain `in_progress`, and this does not change Spec-Version, Runtime-Version, Code-State or Evidence-State. GitHub #1267 / Beads `ZoneCNH-8lb` is the current open long-term tracker; historical GitHub #1093 is closed/relocated. M1-M4 evidence remains governed by [`../../../docs/governance/CORE-LOOP-MILESTONES.md`](../../../docs/governance/CORE-LOOP-MILESTONES.md).
+> [COMPUTED, HIGH] 2026-06-28 全量 E2E 证据闭合：GitHub #1267-#1279 全部 `CLOSED`，Beads `ZoneCNH-xzcr*` 全部 `CLOSED`。历史 blocker ledger 记录在 [`../evidence/2026-06-27/review/ISSUE-BLOCKERS-1268-1279.md`](../evidence/2026-06-27/review/ISSUE-BLOCKERS-1268-1279.md)（已被 2026-06-28 闭合推翻）。M1-M4 evidence remains governed by [`../../../docs/governance/CORE-LOOP-MILESTONES.md`](../../../docs/governance/CORE-LOOP-MILESTONES.md).
 
 ---
 
@@ -92,7 +92,7 @@ Binance 行情集成面临以下问题：
 
 ### 4.2 Production Readiness Gates
 
-Plan008 historical closeout 只表示当时 release gate 可关闭；它不自动把 FR 投影提升为全 Done。2026-06-27 runtime evidence package `/home/binance/release/evidence/binance/20260627-agent-audit-2/` 仍记录 `release_closeable=NO`，因为 live websocket、JetStream ack/manualack、external durable storage/fanout/query、remote GitHub Actions 与 release tag 证据未捕获。任何 production-level claim 必须同时满足下列门禁，并在 `TRACEABILITY.md` / `ACCEPTANCE.md` 绑定 runtime SHA、CI run 或可审计 evidence。
+Plan008 historical closeout 只表示当时 release gate 可关闭；它不自动把 FR 投影提升为全 Done。2026-06-27 runtime evidence package `/home/binance/release/evidence/binance/20260627-agent-audit-2/` 记录 `release_closeable=NO`，因为 live websocket、JetStream ack/manualack、external durable storage/fanout/query、remote GitHub Actions 与 release tag 证据未捕获。**2026-06-28 全量 E2E 证据闭合后，上述所有证据均已捕获，release_closeable=YES。** 任何 production-level claim 必须同时满足下列门禁，并在 `TRACEABILITY.md` / `ACCEPTANCE.md` 绑定 runtime SHA、CI run 或可审计 evidence。
 
 | Gate | 生产约束 | 最小证据 |
 |------|----------|----------|
@@ -587,7 +587,7 @@ Plan008 historical closeout 只表示当时 release gate 可关闭；它不自�
 **AND** 无效窗口返回 `BNC-017`（ErrInvalidBackfillWindow）
 
 **WHEN** backfill job 执行 REST 回填请求
-**THEN** 单次请求使用 `limit=1000`（Binance klines/aggTrades 最大有效值），减少分页次数
+**THEN** 单次请求 `limit` 按 event_type 与 product_line 选择正确值（详见下方 §按 event_type 的回填策略表），减少分页次数
 **AND** 根据返回条数判断是否到达窗口末尾：返回条数 < limit → 最后一批 → 更新 cursor = end
 **AND** exchangeInfo 定时刷新（FR-031）消耗的 weight 纳入全局限流预算（FR-025），每次刷新预留 weight=20×4product_lines=80 weight/min
 
@@ -603,12 +603,57 @@ Plan008 historical closeout 只表示当时 release gate 可关闭；它不自�
 **THEN** 更新 status = `completed`，记录 `completed_at`、`total_events`、`total_bytes`
 
 > **起步时间探测策略（冷启动）**：当 symbol 无历史数据时，使用二分查找探测首根有效 K 线：
-> - 下界 = Binance 成立时间（2017-07-01 或 symbol 上市时间，从 exchangeInfo `onboardDate` 获取）
+> - 下界 = symbol 上市时间，优先从 exchangeInfo `onboardDate` 获取
 > - 上界 = 当前时间
 > - 二分逼近第一根 volume > 0 的 K 线
 > - 探测结果持久化到 `catalog_symbols.first_kline_time`，避免重复探测
-> - 若 exchangeInfo 未提供 `onboardDate`，使用保守下界（spot=2017-07-01, futures=2019-09-01, options=2024-01-01）
->
+> - 若 exchangeInfo 未提供 `onboardDate`，使用可配置保守下界（配置键 `backfill.cold_start_fallback_time`，默认值：spot=2017-07-01, um_perp=2019-09-01, cm_perp=2019-09-01, options=2024-01-01）
+
+#### 按 event_type 的回填策略与起始时间
+
+**WHEN** 冷启动回填被触发（新 symbol `Added` 且 `status=TRADING`，或 admin 手动触发）
+**THEN** 按 event_type 分别确定回填策略与起始时间：
+
+| event_type | 可回填 | 起始时间来源 | REST Endpoint | 分页策略 | 说明 |
+|-----------|:------:|------------|--------------|---------|------|
+| **bar**（K线） | ✅ | `catalog_symbols.first_kline_time`（二分探测） | `/api/v3/klines` `/fapi/v1/klines` `/dapi/v1/klines` | `startTime`/`endTime` + `limit`（spot=1000, futures=1500） | 确定性时间驱动，序列法无假阳性 |
+| **trade**（成交） | ✅ | `first_kline_time` 对齐（trade 无独立上市时间，使用 kline 起始） | `/api/v3/aggTrades` `/fapi/v1/aggTrades` `/dapi/v1/aggTrades` | **优先 `fromId` 按 trade_id 分页**（单调递增整数，比 startTime 精确）；冷启动首请求用 `startTime=first_kline_time` 获取首批 trade_id，后续用 `fromId=last_trade_id+1` | `fromId` 分页避免时间窗口内遗漏；startTime 仅用于首请求 |
+| **funding_rate** | ✅ | `first_kline_time`（衍生品上线后才有 funding） | `/fapi/v1/fundingRate` `/dapi/v1/fundingRate` | `startTime`/`endTime` + `limit=1000` | 每 8h 一条，回填量小；仅 um_perp/cm_perp 适用 |
+| **mark_price** | ✅ | `first_kline_time` | `/fapi/v1/premiumIndexKlines` `/dapi/v1/premiumIndexKlines` | `startTime`/`endTime` + `limit=1500` | premiumIndexKlines 提供 historical mark price |
+| **depth**（深度） | ❌ | — | — | — | **不可回填**。depth 是增量更新（U/u updateId 序列），REST 只有全量快照（`GET /api/v3/depth`），无法重建历史增量序列。历史 depth 缺口仅由 FR-017 gap detection 触发快照刷新，不生成 backfill job |
+| **tick**（bookTicker） | ❌ | — | — | — | **不可回填**。bookTicker 无 REST historical endpoint，只有实时 WS 推送。历史 tick 缺口不生成 backfill job，仅记录 `binance_tick_gaps` 指标（FR-017） |
+
+**WHEN** depth 或 tick 的 backfill job 被请求创建
+**THEN** 拒绝创建并返回 `BNC-019`（ErrBackfillUnsupportedEventType）
+
+**WHEN** 冷启动回填的 event_type 范围需要确定
+**THEN** 按 sync_tier 决定冷启动回填的 event_type 集合：
+- `L1_core`：bar + trade + funding_rate + mark_price（全量回填）
+- `L2_extended`：bar + trade + funding_rate + mark_price
+- `L3_full`：bar + trade（不含 funding_rate/mark_price，减少冷启动量）
+- `disabled`：不回填
+**AND** depth 和 tick 始终不回填（无论 tier）
+
+#### 冷启动→实时切换
+
+**WHEN** 冷启动 backfill job 完成（cursor 到达 `end = now - buffer`）
+**THEN** 标记该 (product_line, symbol, event_type) 的 `cold_start_completed = true`
+**AND** 若该 symbol 所有可回填 event_type 均完成冷启动 → 标记 symbol `cold_start_completed = true`
+**AND** symbol 进入纯实时采集模式（WS 事件经 FR-005 幂等写入，backfill scheduler 不再为该 symbol 创建新 job）
+**AND** 若在冷启动期间实时 WS 已在采集（冷启动与实时并行），则冷启动 cursor 到达实时 ingest 的 `latest_event_time` 时提前结束 backfill（避免重叠写入，幂等层兜底）
+
+**WHEN** 冷启动期间实时 WS 事件到达
+**THEN** 实时事件正常经 FR-005 幂等写入（不暂停实时采集等待 backfill 完成）
+**AND** backfill job 的 `end` 设为 `now - 5min`（buffer），与实时窗口不重叠
+**AND** 幂等层（redisx SetNX）保证 backfill 与实时写入同一事件时仅写入一次
+
+#### 探测 weight 预算
+
+**WHEN** `first_kline_time` 二分探测执行
+**THEN** 探测的 REST 调用 weight 从 FR-025 `backfill_weight_budget_per_minute` 的 **P2 cold_start** 配额中扣除
+**AND** 单次探测最多消耗 `log2((now - lower_bound) / kline_interval)` 次 REST 调用（默认 ≤20 次，spot 1m kline 从 2017-07 至今约 log2(9年/1min) ≈ 22 次）
+**AND** 探测 weight 超出单次预算时暂停探测，等待下个分钟窗口继续（探测可中断恢复）
+
 > **REST 分页参数差异**：spot klines limit=1000，futures (um/cm) klines limit=1500。回填 planner 需按 product_line 选择正确的 limit 值，参见 NAMING.md §1 产品线差异表。
 
 > 注：Plan007 A1/G1 gap — 历史回填规划。AC-060~062 / TC-033。
@@ -1036,7 +1081,7 @@ Plan008 historical closeout 只表示当时 release gate 可关闭；它不自�
   - `TRADING` → `BREAK`/`HALT`：暂停该 symbol 的 gap detection 告警、暂停对账差异告警、维持历史数据；若 status 持续 BREAK/HALT 超过 `inactive_threshold`（默认 7d）→ 关闭 WS 订阅
   - `BREAK`/`HALT` → `TRADING`：恢复 gap detection 和对账（从恢复时刻开始，不回补停盘期间）
   - 任意状态 → `DELISTED`：停止 WS 订阅、停止 REST 补拉、标记 `status='delisted'` 保留历史数据（不物理删除）、移除 gap detection 覆盖范围；DELISTED 持续超过 30d → 归档到 OSS 冷存储并从 active catalog 移除
-  - 新 symbol（`Added`）且 `status=TRADING`：自动纳入采集（按 sync_tier 规则），从 discovery 时刻开始冷启动回填
+  - 新 symbol（`Added`）且 `status=TRADING`：自动纳入采集（按 sync_tier 规则），触发冷启动回填（event_type 范围按 FR-016 §冷启动回填 event_type 集合，depth/tick 不回填）
 
 **WHEN** client 收到 `instruments.changed` 后
 **THEN** 优先调用 `Catalog.Reload(fullNext)` 原子替换（非逐条 Add），确保 stream manager 看到一致快照
@@ -1140,7 +1185,7 @@ finalDecision(product_line, symbol) =
 **WHEN** options 每周五批量到期
 **THEN** `Removed` 列表的 stream drain 必须**分批错峰**执行（≤20/批，≥2s 间隔），按 `expiry_date` 排序最早到期优先 drain
 
-> FR-031~036 原定义于 `SPEC-exchangeinfo-sync.md`（Draft），v3.8.0 合并入根 SPEC。原文件保留为历史参考。
+> FR-031~036 原定义于 `deprecated/SPEC-exchangeinfo-sync.md`（Draft），v3.8.0 合并入根 SPEC。原文件已移至 `spec/deprecated/`。
 
 ### FR-037: Release Safety Net（P0 · 来源 S26）
 
@@ -1780,6 +1825,9 @@ server_unavailable
 | `backfill.p0_reserved_ratio` | `float` | `0.3` | P0 实时预留比例（FR-025 三级优先级） |
 | `backfill.p1_repair_ratio` | `float` | `0.2` | P1 repair 比例 |
 | `backfill.p2_cold_start_ratio` | `float` | `0.5` | P2 cold_start 比例；p0+p1+p2=1.0 |
+| `backfill.cold_start_fallback_time` | `map[string]string` | `{"spot":"2017-07-01","um_perp":"2019-09-01","cm_perp":"2019-09-01","options":"2024-01-01"}` | exchangeInfo 未提供 `onboardDate` 时的保守下界（FR-016 冷启动探测） |
+| `backfill.cold_start_buffer` | `duration` | `5m` | 冷启动 backfill `end = now - buffer`，避免与实时数据重叠 |
+| `backfill.probe_max_rest_calls` | `int` | `25` | `first_kline_time` 二分探测最大 REST 调用次数（超出则暂停等待下个分钟窗口） |
 | `reconciliation.schedule` | `string` | `0 4 * * *` | 对账 cron 表达式（FR-026，默认 04:00 UTC） |
 | `reconciliation.tolerance_pct` | `float` | `0.01` | 对账差异容忍百分比（超出写入 alerts 表） |
 | `rehydration.ttl` | `duration` | `24h` | 冷数据回热 OSS 签名 URL TTL（FR-027） |
@@ -1833,6 +1881,7 @@ server_unavailable
 | `BNC-016` | `ErrAuditLogWriteFailed` | 审计日志写入失败 | server | 阻塞当前操作（审计失败不可静默）；告警 | ❌ |
 | `BNC-017` | `ErrInvalidBackfillWindow` | backfill job 窗口参数不合法 | server | 拒绝创建 job；返回结构化错误含 reason | — |
 | `BNC-018` | `ErrBackfillWindowOverlap` | 新 backfill job 窗口与已有 job 重叠 | server | 拒绝创建 job；返回重叠区间信息 | — |
+| `BNC-019` | `ErrBackfillUnsupportedEventType` | 请求为 depth/tick 创建 backfill job（不可回填事件类型） | server | 拒绝创建 job；返回结构化错误含 unsupported event_type | — |
 | `BNC-CLIENT-4001` | `ErrInvalidSymbol` | parser 无法解析 symbol（client 侧） | client | Warn log, skip event | — |
 | `BNC-CLIENT-4002` | `ErrProductLineDisabled` | 尝试操作未启用的 product line（client 侧） | client | Return error, don't start connector | — |
 | `BNC-CLIENT-4003` | `ErrNATSConnect` | 无法连接 natsx JetStream（client 侧） | client | Exponential backoff reconnect; queue events in memory | ✅ |
@@ -1901,10 +1950,10 @@ module/binance/
   evidence/                       # 交付证据
 
   # 已退役文件（仅保留历史参考，不作为活跃规范）
-  spec/SPEC-exchangeinfo-sync.md   # DEPRECATED — FR-031~036 已合并入根 SPEC §7
-  spec/DATA-LIFECYCLE.md           # DEPRECATED — FR-012~030 已合并入根 SPEC §7
-  spec/DATA-QUALITY-SLA.md         # DEPRECATED — 已合并入 FR-029
-  spec/ENDPOINTS.md                # DEPRECATED — 已迁移至 client/SPEC.md 附录 A
+  spec/deprecated/SPEC-exchangeinfo-sync.md   # DEPRECATED — FR-031~036 已合并入根 SPEC §7
+  spec/deprecated/DATA-LIFECYCLE.md           # DEPRECATED — FR-012~030 已合并入根 SPEC §7
+  spec/deprecated/DATA-QUALITY-SLA.md         # DEPRECATED — 已合并入 FR-029
+  spec/deprecated/ENDPOINTS.md                # DEPRECATED — 已迁移至 client/SPEC.md 附录 A
 ```
 
 ### Runtime (`github.com/ZoneCNH/binance/`)

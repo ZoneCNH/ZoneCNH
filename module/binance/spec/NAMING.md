@@ -1,7 +1,7 @@
 # module/binance NAMING.md — 命名 SSOT
 
 - Module-Version: v3.9.0
-- Last-Updated: 2026-06-26
+- Last-Updated: 2026-06-28
 - Applies-To: `module/binance/SPEC.md` v3.9.0, `module/binance/gate/RULES.md` v3.9.0
 - Scope: product_line、event_type、natsx subject、Kafka topic、TDengine stable、Redis key、REST endpoint、OSS path
 
@@ -114,8 +114,8 @@
 | `GET /api/v1/market/bars/:symbol` | `bar` |
 | `GET /api/v1/market/bars/:symbol/range` | `bar` |
 | `GET /api/v1/market/depth/:symbol` | `depth` |
-| `GET /api/v1/market/funding_rates/:symbol` | `funding_rate` |
-| `GET /api/v1/market/mark_prices/:symbol` | `mark_price` |
+| `GET /api/v1/market/funding-rate/:symbol` | `funding_rate` |
+| `GET /api/v1/market/mark-price/:symbol` | `mark_price` |
 
 > [CONVENTION] REST API URL 路径统一使用 snake_case，与 product_line / event_type / subject / topic / TDengine / Redis / OSS / ENV 全命名面一致。优先于 RFC 3986 kebab-case 惯例：本模块命名一致性优先于通用 REST 风格指南。
 

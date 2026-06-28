@@ -9,6 +9,65 @@
 
 ---
 
+## [v3.9.4] — 2026-06-28 结构性评分 98 门禁闭合（P2+P3 修复）
+
+### Fixed（P2: DEPRECATED 文件目录重组）
+- **4 个 DEPRECATED 文件移至 `spec/deprecated/`**：`DATA-LIFECYCLE.md`、`SPEC-exchangeinfo-sync.md`、`ENDPOINTS.md`、`DATA-QUALITY-SLA.md` 从 `spec/` 根移至 `spec/deprecated/` 子目录
+- **SPEC.md**：DEPRECATED 文件路径引用更新为 `spec/deprecated/...`；Runtime-HEAD 从 `0602e784...` 更新为 `2efc44a`；blocker ledger 段更新为"全部 CLOSED"
+- **TRACEABILITY.md**：8 处"当前有效状态以...0602e784...为准"改为"当时有效状态"（历史记录不再声称当前有效性）
+- **client/SPEC.md**：ENDPOINTS.md 来源路径更新为 `spec/deprecated/ENDPOINTS.md`
+- **ACCEPTANCE.md / FEATURES.md**：Source 行 DATA-LIFECYCLE.md 路径更新
+- **gate/RULES.md**：DATA-LIFECYCLE.md 路径更新 + 描述改为"已退役"
+- **design/ADR-003 / design/STRUCTURAL-SCORING-20260626.md**：runtime anchor 引用更新
+
+### Fixed（P3: 子模块本地 TC→SC 重编号）
+- **client/TRACEABILITY.md**：TC-001~TC-015 重编号为 SC-001~SC-015（Scenario ID）；表头、仪表盘、说明文字同步更新；新增 SC 编号说明
+- **server/TRACEABILITY.md**：TC-001~TC-026 重编号为 SC-001~SC-026；同上
+- **SPEC-STRUCTURAL-ANALYSIS-20260628.md**：P2/P3 问题标记为已修复；评分从 97/100 提升至 98/100；距 98 门禁差距从 1 分改为 0 分
+
+### Added（Goal 控制面补全）
+- **.config/goal/matrix/matrix.yaml**：新增 binance 代表性追溯边（Goal→Spec→FR→AC→TC）
+- **.config/goal/registry/risks.yaml**：新增 `RISK-BINANCE-SPEC-001`（97/100，release_blocking=false，status=Mitigated）
+- **.config/goal/registry/releases.yaml**：新增 `REL-20260628-binance` v3.9.0 released
+
+---
+
+## [v3.9.3] — 2026-06-28 goal 驱动交付管线全模块同步
+
+### Fixed（全模块状态同步）
+- **module/registry.yaml**：spec_version v3.8.0→v3.9.0；spec_ref 路径从 `module/binance/SPEC.md` 修正为 `module/binance/spec/SPEC.md`（嵌套结构迁移后路径未同步）
+- **README.md**：清除过期 2026-06-27 对齐段（Evidence-State `1 Done / 43 Pending` → `44 Done / 0 Pending`；GitHub #1267-#1279 `OPEN`→`CLOSED`）
+- **ACCEPTANCE.md §2 AC 表**：AC-001~AC-031、AC-036~AC-104 从 `Pending`/`Partial / TC Pending` 更新为 `Done`（与 §4 闭合矩阵一致）
+- **ACCEPTANCE.md §3 TC 表**：TC-001、TC-002 从 `Partial` 更新为 `Done`；TC-018、TC-019 从 `Partial` 更新为 `Done`（与 TRACEABILITY §4 一致）
+- **ACCEPTANCE.md §4 FR-031~044**：Evidence 列从 `Pending` 更新为 `Done`；格式统一为 AC/TC 覆盖列 + Evidence 闭合状态列（与 FR-001~030 一致）
+- **ACCEPTANCE.md §7 历史段**：`release_closeable=NO` 标注为已被 2026-06-28 闭合推翻
+- **FEATURES.md**：FR-038~044 `Evidence-Pending`→`Evidence-Done`；`#1110` tracing `Evidence-Pending`→`Evidence-Done`；`#1117/#1118` `Evidence-Pending`→`Evidence-Done`；FR-031~036 `Evidence-Pending`→`Evidence-Done`；全量 AC/TC 通过 `Not Done`→`Done`；SPEC 版本引用 v3.8.0→v3.9.0；`#1180-#1186` 从"开放"更新为"已关闭"
+- **SPEC.md §4.2**：`release_closeable=NO` 历史引用标注为已被 2026-06-28 闭合推翻
+- **TRACEABILITY.md**：v3.6.2/v3.6.1 历史摘要中 `release_closeable=NO` 标注为已被推翻
+
+### Added（Goal 控制面注册）
+- **.config/goal/registry/goals.yaml**：新增 `GOAL-BINANCE-20260601-001` 条目（pipeline_state=DONE, phase=RETROSPECTIVE）
+- **.config/goal/pipeline/state.yaml**：新增 binance 管线状态快照（GB-0~GB-11 全 PASS, blockers=[]）
+- **.config/goal/gates/state.yaml**：新增 GB-0~GB-11 门禁条目（10 PASS + 1 PASS_WITH_RISK[GB-2 Spec Gate 97/100]）
+
+---
+
+## [v3.9.2] — 2026-06-28 spec 结构性分析与修复
+
+### Fixed（spec 结构性修复）
+- **ACCEPTANCE.md Evidence-Done 定义矛盾**：定义表原将 `Evidence-Done` 定义为"未通过"（与 §4 矩阵用法矛盾），修正为 `Evidence-Done`（已通过）/ `Evidence-Pending`（未通过），与 §4 矩阵和 FEATURES.md 实际用法一致
+- **ACCEPTANCE.md §1 验收命令表格式损坏**：rg pattern 中的 `|` 字符未转义导致 Markdown 表格列错乱，修正为 `\|` 转义 + 单引号包裹
+- **ACCEPTANCE.md TC-004/TC-006 关闭证据**：移除 Pending 时期的历史 caveat（"仍需独立进程证明"），替换为 2026-06-28 全量 E2E 闭合证据
+- **FEATURES.md FR 投影表结构破坏**：changelog 行混入 FR 表中导致列数不匹配，移出为独立 `### 2.1 变更历史` 子节
+- **NAMING.md §7 REST 端点命名不一致**：`funding_rates/:symbol` / `mark_prices/:symbol` 修正为 `funding-rate/:symbol` / `mark-price/:symbol`，与 SPEC FR-020/FR-021 WHEN/THEN 对齐
+- **RUNTIME-MAPPING.md 端点命名同步**：同上端点名同步修正
+- **SPEC.md / NAMING.md 日期同步**：Last-Updated 从 2026-06-26 同步至 2026-06-28，与 FEATURES.md / ACCEPTANCE.md 一致
+
+### Added
+- **SPEC-STRUCTURAL-ANALYSIS-20260628.md**：spec/ 目录全量结构性分析报告（8 维度评分，修复前 90 → 修复后 97/100）
+
+---
+
 ## [v3.9.1] — 2026-06-28 全量 E2E 证据闭合
 
 ### Closed（GitHub Issues）
