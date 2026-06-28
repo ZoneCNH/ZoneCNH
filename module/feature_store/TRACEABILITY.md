@@ -1,6 +1,6 @@
 # feature_store 需求追溯矩阵
 
-> 更新：2026-06-17
+> 更新：2026-06-29
 > 来源：module/feature_store/SPEC.md
 > 规范：docs/governance/TRACEABILITY.md
 
