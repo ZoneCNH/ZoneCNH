@@ -7,6 +7,7 @@ import (
 	"context"
 	"time"
 
+	contracts "github.com/ZoneCNH/runtime-patches/contracts"
 	domainmarket "github.com/ZoneCNH/runtime-patches/domain-market"
 )
 
@@ -109,40 +110,40 @@ func (v *DefaultValidator) Validate(ctx context.Context, req IngestRequest) erro
 	now := time.Now()
 
 	if req.RequestID == "" {
-		return NewRejectError(RejectContractViolation, "request_id is required")
+		return NewRejectError(contracts.RejectContractViolation, "request_id is required")
 	}
 	if req.Source == "" {
-		return NewRejectError(RejectContractViolation, "source is required")
+		return NewRejectError(contracts.RejectContractViolation, "source is required")
 	}
 	if req.ProductLine == "" {
-		return NewRejectError(RejectContractViolation, "product_line is required")
+		return NewRejectError(contracts.RejectContractViolation, "product_line is required")
 	}
 	if req.EventType == "" {
-		return NewRejectError(RejectContractViolation, "event_type is required")
+		return NewRejectError(contracts.RejectContractViolation, "event_type is required")
 	}
 	if req.EventTime.IsZero() {
-		return NewRejectError(RejectContractViolation, "event_time is required")
+		return NewRejectError(contracts.RejectContractViolation, "event_time is required")
 	}
 	if req.ReceivedAt.IsZero() {
-		return NewRejectError(RejectContractViolation, "received_at is required")
+		return NewRejectError(contracts.RejectContractViolation, "received_at is required")
 	}
 	if req.SchemaVersion == "" {
-		return NewRejectError(RejectContractViolation, "schema_version is required")
+		return NewRejectError(contracts.RejectContractViolation, "schema_version is required")
 	}
 	if len(req.Payload) == 0 {
-		return NewRejectError(RejectContractViolation, "payload is required")
+		return NewRejectError(contracts.RejectContractViolation, "payload is required")
 	}
 	if v.maxPayloadSize > 0 && len(req.Payload) > v.maxPayloadSize {
-		return NewRejectError(RejectContractViolation, "payload exceeds max size")
+		return NewRejectError(contracts.RejectContractViolation, "payload exceeds max size")
 	}
 
 	// Stale gate
 	if now.Sub(req.EventTime) > v.staleThreshold {
-		return NewRejectError(RejectQualityGate, "event is stale")
+		return NewRejectError(contracts.RejectQualityGate, "event is stale")
 	}
 	// Future gate
 	if req.EventTime.Sub(now) > v.futureTolerance {
-		return NewRejectError(RejectQualityGate, "event time is too far in the future")
+		return NewRejectError(contracts.RejectQualityGate, "event time is too far in the future")
 	}
 	return nil
 }
@@ -165,7 +166,7 @@ type IdempotencyStore interface {
 }
 
 // ErrConflict is returned when idempotency key exists with different payload.
-var ErrConflict = &RejectError{Code: RejectTerminalConflict, Message: "idempotency conflict"}
+var ErrConflict = &RejectError{Code: contracts.RejectTerminalConflict, Message: "idempotency conflict"}
 
 // ---- Downstream Dispatch ----
 
@@ -188,27 +189,14 @@ type AcceptedEvent struct {
 
 // ---- Reject Error ----
 
-// RejectCode matches contracts §8.4 RejectCode.
-type RejectCode string
 
-const (
-	RejectRetryable          RejectCode = "retryable"
-	RejectTerminalValidation RejectCode = "terminal_validation"
-	RejectTerminalConflict   RejectCode = "terminal_conflict"
-	RejectUnauthorized       RejectCode = "unauthorized"
-	RejectRateLimited        RejectCode = "rate_limited"
-	RejectServerUnavailable  RejectCode = "server_unavailable"
-	RejectContractViolation  RejectCode = "contract_violation"
-	RejectQualityGate        RejectCode = "quality_gate"
-	RejectOrderingViolation  RejectCode = "ordering_violation"
-)
 
 type RejectError struct {
-	Code    RejectCode
+	Code    contracts.RejectCode
 	Message string
 }
 
-func NewRejectError(code RejectCode, msg string) *RejectError {
+func NewRejectError(code contracts.RejectCode, msg string) *RejectError {
 	return &RejectError{Code: code, Message: msg}
 }
 
@@ -217,5 +205,5 @@ func (e *RejectError) Error() string {
 }
 
 func (e *RejectError) IsRetryable() bool {
-	return e.Code == RejectRetryable || e.Code == RejectServerUnavailable || e.Code == RejectRateLimited
+	return e.Code.IsRetryable()
 }
