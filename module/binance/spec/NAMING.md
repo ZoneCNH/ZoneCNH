@@ -57,14 +57,14 @@
 
 ## 3. natsx Subject Matrix
 
-格式：`binance.market.{product_line}.{event_type}`
+格式：`binance.market.{product_line}.{event_type}.v1`
 
 | product_line | tick | trade | bar | depth | funding_rate | mark_price |
 |---|---|---|---|---|---|---|
-| `spot` | `binance.market.spot.tick` | `binance.market.spot.trade` | `binance.market.spot.bar` | `binance.market.spot.depth` | `binance.market.spot.funding_rate` | `binance.market.spot.mark_price` |
-| `um_perp` | `binance.market.um_perp.tick` | `binance.market.um_perp.trade` | `binance.market.um_perp.bar` | `binance.market.um_perp.depth` | `binance.market.um_perp.funding_rate` | `binance.market.um_perp.mark_price` |
-| `cm_perp` | `binance.market.cm_perp.tick` | `binance.market.cm_perp.trade` | `binance.market.cm_perp.bar` | `binance.market.cm_perp.depth` | `binance.market.cm_perp.funding_rate` | `binance.market.cm_perp.mark_price` |
-| `options` | `binance.market.options.tick` | `binance.market.options.trade` | `binance.market.options.bar` | `binance.market.options.depth` | `binance.market.options.funding_rate` | `binance.market.options.mark_price` |
+| `spot` | `binance.market.spot.tick.v1` | `binance.market.spot.trade.v1` | `binance.market.spot.bar.v1` | `binance.market.spot.depth.v1` | `binance.market.spot.funding_rate.v1` | `binance.market.spot.mark_price.v1` |
+| `um_perp` | `binance.market.um_perp.tick.v1` | `binance.market.um_perp.trade.v1` | `binance.market.um_perp.bar.v1` | `binance.market.um_perp.depth.v1` | `binance.market.um_perp.funding_rate.v1` | `binance.market.um_perp.mark_price.v1` |
+| `cm_perp` | `binance.market.cm_perp.tick.v1` | `binance.market.cm_perp.trade.v1` | `binance.market.cm_perp.bar.v1` | `binance.market.cm_perp.depth.v1` | `binance.market.cm_perp.funding_rate.v1` | `binance.market.cm_perp.mark_price.v1` |
+| `options` | `binance.market.options.tick.v1` | `binance.market.options.trade.v1` | `binance.market.options.bar.v1` | `binance.market.options.depth.v1` | `binance.market.options.funding_rate.v1` | `binance.market.options.mark_price.v1` |
 
 ### 3.1 Control Subjects（FR-012 / FR-024）
 
@@ -73,7 +73,7 @@
 | `binance.control.instruments.changed` | client 每 6h 刷新 exchangeInfo 发现合约目录变更 | server | 触发 server 重读 instrument catalog（FR-012） |
 | `binance.control.symbols.changed` | `POST /api/v1/admin/symbols/reload` 应用白黑名单 diff | client | client 增减 active stream，不重启进程（FR-024） |
 
-> [COMPUTED, HIGH] control subjects 不属于 4×6 market 矩阵，是独立控制面 subject；用 `binance.control.*` 前缀与 `binance.market.*` 区分。
+> [COMPUTED, HIGH] control subjects 不属于 4×6 market 矩阵，是独立控制面 subject；用 `binance.control.*` 前缀与 `binance.market.*.*.v1` 区分。
 
 ## 4. Kafka Topic Matrix
 

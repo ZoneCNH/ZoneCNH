@@ -3,7 +3,7 @@
 - Date: 2026-06-25
 - Scope: binance boundary-gates 实践 → natsx/contracts/domain_*/transportx 推广
 - Priority: P3
-- Source: binance `scripts/boundary-gates.sh`（13 gates）+ `module/binance/gate/BOUNDARY-GATES.md` §20
+- Source: binance `scripts/boundary-gates.sh`（13 gates）+ [`boundary-gates-template.md`](boundary-gates-template.md)
 - Related: ZoneCNH/ZoneCNH#1073
 
 ---
@@ -12,7 +12,7 @@
 
 `[FRAME, HIGH]` binance 模块的 `boundary-gates.sh`（13 道 CI 边界门禁）已验证有效（v0.2.0 CI 全绿）。本指南把该实践推广到其他 infra 模块仓，确保每个 ZoneCNH 模块都有可执行的边界门禁。
 
-### 推广矩阵（binance BOUNDARY-GATES.md §20）
+### 推广矩阵（[`boundary-gates-template.md`](boundary-gates-template.md)）
 
 | 模块 | gate 状态 | 推广优先级 |
 | --- | --- | --- |
@@ -92,7 +92,7 @@ jobs:
 
 ### 步骤 3：在 `module/<module>/BOUNDARY-GATES.md` 记录
 
-各模块的规格仓（ZoneCNH/ZoneCNH `module/<module>/`）新增 `BOUNDARY-GATES.md`，登记 gate 清单 + §20 推广矩阵回填。
+各模块的规格仓（ZoneCNH/ZoneCNH `module/<module>/`）新增 `BOUNDARY-GATES.md`，登记 gate 清单 + 推广矩阵回填至 [`boundary-gates-template.md`](boundary-gates-template.md)。
 
 ---
 
@@ -115,7 +115,7 @@ jobs:
 `[FRAME, HIGH]` 推广完成的标志：
 1. 各目标仓有 `scripts/boundary-gates.sh`（CI 可执行）
 2. 各目标仓有 `.github/workflows/boundary-gates.yml`（CI 集成）
-3. ZoneCNH `module/<module>/BOUNDARY-GATES.md` 登记 + §20 矩阵回填
+3. ZoneCNH `module/<module>/BOUNDARY-GATES.md` 登记 + 推广矩阵回填至 [`boundary-gates-template.md`](boundary-gates-template.md)
 4. 各仓 CI boundary-gates PASS
 
 ---

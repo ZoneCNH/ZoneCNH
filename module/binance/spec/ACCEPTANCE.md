@@ -7,41 +7,30 @@
 | Status         | Generated from current module SSOT                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | Last-Updated   | 2026-06-28                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | Module-Version | v3.9.0                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Module-State   | v3.9.0 双态模型：FR Code **23 Done / 25 Partial / 0 Drifted / 0 Pending**；Evidence-State **44 Done / 0 Pending**。release_closeable=YES。GitHub #1267-#1279 全部 CLOSED。                                                                                                                                                                                                                                                                                                    |
+| Module-State   | v3.9.0 单一状态模型：FR **23 Done / 25 Partial / 0 Drifted / 0 Pending**；Evidence 列 23 Done / 25 Pending。release_closeable=NO（Code-Done 23/48=48% < 90% 门禁）。当前 P10 tracker：GitHub #1289-#1331 / Beads 43 项全部 CLOSED（10 轮验证 ALL PASS）；但 Code-Done 47.9% < 90% 门禁，release 仍不可关闭。                                                                                                                                                                                                 |
 | Runtime-Repo   | `/home/binance`                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| Source         | `SPEC.md`, `TRACEABILITY.md`, `deprecated/DATA-LIFECYCLE.md`, `STANDARD.md`, `client/TRACEABILITY.md`, `server/TRACEABILITY.md`, `BOUNDARY-GATES.md`                                                                                                                                                                                                                                                                                                                                  |
+| Source         | `SPEC.md`, `TRACEABILITY.md`, `STANDARD.md`, `client/TRACEABILITY.md`, `server/TRACEABILITY.md`, `BOUNDARY-GATES.md`                                                                                                                                                                                                                                                                                                                                  |
 
 本文档是验收执行清单，不是通过证明。每个 Pending 项必须由实际命令输出、CI run、测试报告或 traceability 状态更新关闭。
 
-> [COMPUTED, HIGH] 2026-06-28 全量 E2E 证据闭合：所有 7 个外部依赖（redisx/kafkax/natsx/postgresx/taosx/ossx/clickhousex）均通过真实 live E2E 验证；4 条产品线（spot/um_perp/cm_perp/options）均在 mainnet 实证连通；release_closeable=YES。GitHub #1267-#1279 全部 CLOSED；10x 重复检查通过。证据归档于 `/home/binance/release/evidence/binance/20260628-full-e2e-closure/`。
+> [COMPUTED, HIGH] 2026-06-28 P10 状态对齐：历史 full E2E 证据包保留为运行证据，但当前 Perfect-10 release gate 未闭合。Beads P10 open=0（43 closed）；GitHub p10 open=0（43 closed）；release_closeable=NO（Code-Done 23/48 ≈ 47.9% < 90% 门禁）；SPEC/TRACEABILITY size、remote CI、release tag、PRG、coverage、soak/chaos/security/observability 仍需证据闭合。
 
-### 状态口径 L1/L2 分层（RULES R4）+ 双态模型（v3.9.0）
+### 状态口径 L1/L2 分层（RULES R4）+ 单一状态模型（v3.9.0）
 
-> **v3.9.0 引入双态模型**：`Code-Done` 和 `Evidence-Done` 是两种不同的完成度视角，不可互相替代。阅读本文件和其他状态文件时请明确区分。
+> **v3.9.0 单一状态模型**：FR 状态采用 Done/Partial/Drifted/Pending 四态单一模型。`Done` = 代码完整+装配就绪+TC PASS+evidence 归档；`Partial` = 代码存在但有缺口；`Drifted` = 代码存在但 spec 已变更；`Pending` = 仅规格登记。Evidence 列反映该 FR 的 evidence 归档状态：Done FR evidence 归档完毕（Done），Partial FR evidence 存在缺口（Pending）。
 
-#### 代码层（Code-Done / Code-Partial / Code-Pending）
+#### 代码+验收统一层（Done / Partial / Drifted / Pending）
 
-定义：代码是否存在、runtime 是否可编译运行、装配是否连接了真实基础设施。
+定义：FR 实现状态综合代码存在性、装配就绪、TC PASS 和 evidence 归档。
 
-| Code 状态      | 含义                                                                    | 证据要求                                      |
-| -------------- | ----------------------------------------------------------------------- | --------------------------------------------- |
-| `Code-Done`    | 代码存在 + 装配就绪 + runtime 可编译运行                                | `go build` PASS + 对应文件/装配路径可定位     |
-| `Code-Partial` | 代码存在但装配未完整或仅部分产品线                                      | 装配缺口有明确文档说明                        |
-| `Code-Drifted` | 代码存在且装配就绪，但 spec 已变更导致 runtime 不符合当前 spec 行为模型 | ⚠️ 标注 "runtime 待对齐" + 对应 spec 变更说明 |
-| `Code-Pending` | runtime 仓未推送对应代码实现                                            | 仅有 spec 登记                                |
+| 状态      | 含义                                                                    | 证据要求                                      |
+| --------- | ----------------------------------------------------------------------- | --------------------------------------------- |
+| `Done`    | 代码完整+装配就绪+TC PASS+evidence 归档                                 | `go build` PASS + 对应文件/装配路径可定位 + TC/AC 测试输出 + runtime SHA + CI URL |
+| `Partial` | 代码存在但有缺口（装配未完整或仅部分产品线）                             | 装配缺口有明确文档说明                        |
+| `Drifted` | 代码存在但 spec 已变更导致 runtime 不符合当前 spec 行为模型              | ⚠️ 标注 "runtime 待对齐" + 对应 spec 变更说明 |
+| `Pending` | 仅规格登记，runtime 仓未推送对应代码实现                                 | 仅有 spec 登记                                |
 
-> FEATURES.md 和 TRACEABILITY.md 的历史「Done」状态均指 Code-Done。
-
-#### 验收层（Evidence-Pass / Evidence-Done）
-
-定义：TC 是否全部 PASS、AC 是否全部通过、runtime evidence 是否归档。
-
-| Evidence 状态      | 含义                                               | 证据要求                                   |
-| ------------------ | -------------------------------------------------- | ------------------------------------------ |
-| `Evidence-Done`    | TC 全部 PASS + AC 全部满足 + runtime evidence 归档 | 对应 TC/AC 测试输出 + runtime SHA + CI URL |
-| `Evidence-Pending` | 任一 TC/AC 未通过或 evidence 未归档                | 不满足 Evidence-Done 条件                  |
-
-> ACCEPTANCE.md §4 闭合矩阵使用 Evidence 视角。2026-06-28 全量 E2E 证据闭合后，所有 FR Evidence-Done。
+> FEATURES.md 和 TRACEABILITY.md 的「Done」状态均指上述单一状态模型的 Done。ACCEPTANCE.md §4 闭合矩阵使用 Evidence 列标注 evidence 归档状态。
 
 #### 原 L1/L2 分层（保留）
 
@@ -49,10 +38,10 @@
 
 | 原状态值               | 层级                   | 含义                                                                                     | 证据要求                                    | v3.9.0 映射                       |
 | ---------------------- | ---------------------- | ---------------------------------------------------------------------------------------- | ------------------------------------------- | --------------------------------- |
-| `PASS`                 | L1 Boundary/Governance | 边界治理 AC（FR-009/BR-001~009）通过 boundary-gate.sh 或 CI workflow，并绑定 runtime SHA | local evidence log / CI URL + runtime SHA   | = Evidence-Pass                   |
-| `Done`                 | L1 Boundary/Governance | 边界治理 BR/TC 已有 runtime 证据（BOUNDARY-GATES.md + 变更历史 SHA）                     | runtime SHA + local evidence log 或 CI URL  | = Code-Done（非 Evidence-Pass！） |
-| `Partial / TC Pending` | L2 Functional          | 功能 FR 已部分实现（如 Spot 产品线），但 TC 未全绿                                       | feature/integration test 输出 + runtime SHA | = Code-Partial                    |
-| `Pending`              | L2 Functional          | runtime 仓未推送对应功能实现；默认 `Pending — 以 runtime 仓为准`                         | runtime feature test + integration test     | = Code-Pending / Evidence-Done |
+| `PASS`                 | L1 Boundary/Governance | 边界治理 AC（FR-009/BR-001~009）通过 boundary-gate.sh 或 CI workflow，并绑定 runtime SHA | local evidence log / CI URL + runtime SHA   | = Done（边界治理维度）            |
+| `Done`                 | L1 Boundary/Governance | 边界治理 BR/TC 已有 runtime 证据（BOUNDARY-GATES.md + 变更历史 SHA）                     | runtime SHA + local evidence log 或 CI URL  | = Done                            |
+| `Partial / TC Pending` | L2 Functional          | 功能 FR 已部分实现（如 Spot 产品线），但 TC 未全绿                                       | feature/integration test 输出 + runtime SHA | = Partial                         |
+| `Pending`              | L2 Functional          | runtime 仓未推送对应功能实现；默认 `Pending — 以 runtime 仓 为准`                        | runtime feature test + integration test     | = Pending                         |
 
 > [COMPUTED, HIGH] L1 状态可由本地 boundary gate 或 CI 证据标记，但必须绑定 runtime SHA；L2 状态必须附 runtime feature/integration test 输出与 runtime git SHA，runtime 仓未推送时所有 L2 FR 默认 Pending。
 >
@@ -99,7 +88,7 @@
 | AC-005        | FR-002                        | Spot、USDM、COINM、Options 同名 symbol 不冲突；Binance 原生字段缺失时由 product-line 配置补全。                                                  | TC-002         | Done                                                                                                     |
 | AC-006        | FR-002                        | Options expiry/strike/right 等身份字段可回放校验；同 symbol 跨 product_line 时 InstrumentKey 可区分。                                            | TC-003         | Done                                                                                                     |
 | AC-007        | FR-003                        | Client 使用 `natsx` JetStream publish 并等待 PubAck；通过 `natsx.Publish(subj, json)` 发送且确保持久化。                                         | TC-004         | Done                                                                                                     |
-| AC-008        | FR-003                        | Subject 遵循 `binance.market.{product_line}.{event_type}`，大小写统一小写；Server 通过 `natsx.Subscribe(durable)` 订阅并与 client 进程隔离。     | TC-004, TC-005 | Done                                                                                                     |
+| AC-008        | FR-003                        | Subject 遵循 `binance.market.{product_line}.{event_type}.v1`，大小写统一小写；Server 通过 `natsx.Subscribe(durable)` 订阅并与 client 进程隔离。  | TC-004, TC-005 | Done                                                                                                     |
 | AC-009        | FR-003                        | Publish 等待 PubAck，失败返回可观测错误；C/S 可在不同机器独立启动且 CI gate 验证无跨进程 import。                                                | TC-005         | Done                                                                                                     |
 | AC-010        | FR-003                        | Server 使用 durable consumer `binance-server` 消费；consumer 重启后从上次 Ack 位置恢复。                                                         | TC-006         | Done                                                                                                     |
 | AC-011        | FR-004                        | Server 使用 ManualAck；处理成功后执行 `msg.Ack()`。                                                                                              | TC-006         | Done                                                                                                     |
@@ -171,61 +160,61 @@
 
 ## 4. 覆盖闭合矩阵（Evidence 视角）
 
-> **v3.9.0 双态模型**：此矩阵使用 Evidence 视角判定。`Evidence-Done` = TC 全部 PASS + AC 全部满足 + runtime evidence 归档。2026-06-28 全量 E2E 证据闭合后所有 FR Evidence-Done。`Code-Partial` 标注表示代码层装配未完整，不影响 Evidence 层闭合判定。
+> **v3.9.0 单一状态模型**：此矩阵 Evidence 列标注各 FR 的 evidence 归档状态。`Done` = TC 全部 PASS + AC 全部满足 + runtime evidence 归档；`Pending` = evidence 存在缺口。23 个 Done FR evidence 归档完毕（Done）；25 个 Partial FR evidence 存在缺口（Pending）。release_closeable=NO（Code-Done 23/48=48% < 90% 门禁）。
 
 | FR      | AC 覆盖                                                        | TC 覆盖        | Evidence 闭合状态                                                                                                                                                                                                                         |
 | ------- | -------------------------------------------------------------- | -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
-| FR-001  | AC-001~AC-003                                                  | TC-001         | Evidence-Done（Code-Partial: Spot 通路可用，UM/CM/Options 未完成）                                                                                                                                                                     |
-| FR-002  | AC-004~AC-006                                                  | TC-002~TC-003  | Evidence-Done（Code-Done: Plan007 A4 碰撞断言已加）                                                                                                                                                                                    |
-| FR-003  | AC-007~AC-010                                                  | TC-004~TC-005  | Evidence-Done（Code-Done: publisher+consumer 双侧装配）                                                                                                                                                                                |
-| FR-004  | AC-011~AC-013                                                  | TC-006         | Evidence-Done（Code-Done: NakWithDelay+DLQ+JetStream gated；`XGO_BINANCE_DLQ_FILE` 本地 env 接线已补，file-backed replay evidence 待归档）                                                                                              |
-| FR-005  | AC-014~AC-016                                                  | TC-007~TC-008  | Evidence-Done（Code-Done: RedisStore 已装配）                                                                                                                                                                                          |
-| FR-006a | AC-016~AC-017                                                  | TC-009, TC-011 | Evidence-Done（Code-Done: TaosWriter 已装配）                                                                                                                                                                                          |
-| FR-006b | AC-017~AC-019                                                  | TC-010         | Evidence-Done（Code-Done: PgCatalog 已装配）                                                                                                                                                                                           |
-| FR-006c | AC-036~AC-037                                                  | TC-023         | Evidence-Done（Code-Done: HotCache 已装配）                                                                                                                                                                                            |
-| FR-006d | AC-026~AC-028                                                  | TC-016~TC-017  | Evidence-Done（Code-Done: OssArchiver 已装配）                                                                                                                                                                                         |
-| FR-006e | 合并入 FR-038（taosx Data Retention Lifecycle）                | TC-051~TC-052  | Evidence-Done                                                                                                                                                                                                                          |
-| FR-007  | AC-021~AC-025                                                  | TC-012~TC-015  | Evidence-Done（Code-Partial: 路由代码存在但未挂载+查询证据）                                                                                                                                                                           |
-| FR-007a | AC-038~AC-040                                                  | TC-024         | Evidence-Done（Code-Partial: ETL 存在但 AggSource 为 stub）                                                                                                                                                                            |
-| FR-008  | AC-029~AC-031                                                  | TC-018~TC-019  | Evidence-Done（Code-Done: 生产默认 kafkax dispatcher 已装配；broker e2e pending）                                                                                                                                                      |
-| FR-009  | AC-032~AC-035                                                  | TC-020~TC-022  | **Evidence-Done**（L1 边界治理 13 gates PASS；本地 runtime evidence 已归档）                                                                                                                                                              |
-| FR-010  | AC-041~AC-044                                                  | TC-025~TC-026  | Evidence-Done（Code-Done: OLAP ETL 已装配；AggSource 为 stub）                                                                                                                                                                         |
-| FR-011  | AC-045~AC-047                                                  | TC-027~TC-028  | Evidence-Done（Code-Partial: SetNX+续期存在但 CoordinatorLock 注入路径未闭合）                                                                                                                                                         |
-| FR-012  | AC-048~AC-051                                                  | TC-029         | Evidence-Done（Code-Done: stream registry 已装配）                                                                                                                                                                                     |
-| FR-013  | AC-048~AC-051                                                  | TC-030         | Evidence-Done（Code-Partial: `RecordUsedWeight` / `HTTPBackoffController` / `ClockSkewDetector.CheckMonotonic` / `DriftRate` 已装配；仍缺 FR-specific 退避/clock-skew direct TC 与 live exchange evidence）                            |
-| FR-014  | AC-052~AC-055                                                  | TC-031         | Evidence-Done（Code-Done: 9 metrics 已装配）                                                                                                                                                                                           |
-| FR-015  | AC-056~AC-059                                                  | TC-032         | Evidence-Done（Code-Done: InFlightTracker+AuditLog 已装配）                                                                                                                                                                            |
-| FR-016  | AC-060~AC-062                                                  | TC-033         | Evidence-Done（Code-Partial: history_rest.go 存在但 fetcher runtime 注入未闭合）                                                                                                                                                       |
-| FR-017  | AC-063~AC-065                                                  | TC-034         | Evidence-Done（Code-Partial: `quality.go` 已按 event_type 分策略检测 gap，trade_id 测试存在；仍缺非 trade direct tests、持久 replay progress/history 与 live repair evidence）                                                         |
-| FR-018  | AC-066~AC-068                                                  | TC-035         | Evidence-Done（Code-Done: archive_manifest.go 已装配）                                                                                                                                                                                 |
-| FR-019  | AC-069~AC-071                                                  | TC-036         | Evidence-Done（Code-Done: resource_governance.go 已装配）                                                                                                                                                                              |
-| FR-020  | AC-072~AC-075                                                  | TC-037         | Evidence-Done（Code-Done: parseFundingRate 已实现）                                                                                                                                                                                    |
-| FR-021  | AC-076~AC-078                                                  | TC-038         | Evidence-Done（Code-Done: parseMarkPrice 已实现）                                                                                                                                                                                      |
-| FR-022  | AC-078~AC-080                                                  | TC-039         | Evidence-Done（Code-Done: TRACEABILITY checker 已登记）                                                                                                                                                                                |
-| FR-023  | AC-081~AC-083                                                  | TC-040~TC-041  | Evidence-Done（Code-Partial: local evidence 已归档；远程 CI/release 未闭合）                                                                                                                                                           |
-| FR-024  | AC-084~AC-086                                                  | TC-042         | Evidence-Done（Code-Partial: symbol catalog reload 已实现；全量重连非增量 diff）                                                                                                                                                       |
-| FR-025  | AC-087~AC-089                                                  | TC-043         | Evidence-Done（Code-Partial: `ThrottlePriority` P0/P1/P2、默认 `30:20:50`、`AllowPriority()` 与 snapshot 字段已装配；仍缺 direct priority behavior tests 与 live scheduler evidence）                                                  |
-| FR-026  | AC-090~AC-092                                                  | TC-044         | Evidence-Done（Code-Partial: cron_reconcile.go 与 `XGO_BINANCE_HISTORY_STATE_FILE` 本地 state-store 接线已出现；reconciliation state direct evidence 未闭合）                                                                           |
-| FR-027  | AC-093~AC-095                                                  | TC-045         | Evidence-Done（Code-Partial: oss_rehydrate.go 与 `XGO_BINANCE_HISTORY_STATE_FILE` 本地 state-store 接线已出现；writer integration/direct evidence 未闭合）                                                                              |
-| FR-028  | AC-096~AC-098                                                  | TC-046         | Evidence-Done（Code-Partial: admin.go progress 端点、FileHistoryStateStore 与 `XGO_BINANCE_HISTORY_STATE_FILE` 本地接线已出现；restart/persistent medium evidence 未闭合）                                                              |
-| FR-029  | AC-099~AC-101                                                  | TC-047         | Evidence-Done（Code-Done: sla_window.go P95/P99+StaleCount 已装配）                                                                                                                                                                    |
-| FR-030  | AC-102~AC-104                                                  | TC-048~TC-049  | Evidence-Done（Code-Done: rawPassThrough+optionTicker 已实现）                                                                                                                                                                         |
-| FR-031  | AC-105~AC-108                                                  | TC-050, TC-051 | Evidence-Done（Code-Partial: 本地 `exchangeinfo*.go`/option anchors 存在；四线 live/TC matrix 已闭合）                                                                                                                                 |
-| FR-032  | AC-109~AC-112                                                  | TC-052, TC-053 | Evidence-Done（Code-Partial: refresh/diff anchor 存在；server consumer/migration/direct TC 已闭合）                                                                                                                                    |
-| FR-033  | AC-113~AC-116                                                  | TC-054, TC-055 | Evidence-Done（Code-Partial: tier/catalog/throttle anchors 存在；live priority evidence 已闭合）                                                                                                                                       |
-| FR-034  | AC-117~AC-120                                                  | TC-056, TC-057 | Evidence-Done（Code-Partial: runtime config/admin/catalog anchors 存在；hot-update direct TC 已闭合）                                                                                                                                  |
-| FR-035  | AC-121~AC-124                                                  | TC-059~TC-062  | Evidence-Done（Code-Partial: admin handlers/guards anchors 存在；auth/loopback/write-safety evidence 已闭合）                                                                                                                           |
-| FR-036  | AC-125~AC-128                                                  | TC-063~TC-067  | Evidence-Done（Code-Partial: stream/tier anchors 存在；options smoothing/live shedding evidence 已闭合）                                                                                                                                |
-| FR-037  | AC-105~AC-107                                                  | TC-050, TC-062 | Evidence-Done（Code-Done: `XGO_BINANCE_FEATURE_ASYNC_COLD_RANGE` 默认关闭、`FOUNDATIONX_` 兼容读取、`scripts/deploy-canary-gate.sh` 覆盖 health/readiness/error-rate/consumer-lag/rollback，env/runbook/readiness anchors 已补；生产 canary/rollback drill evidence 已闭合） |
-| FR-038  | AC-108~AC-111                                                  | TC-051, TC-052 | Evidence-Done（Code-Partial: retention/archive/delete/restore anchors 存在；live drill evidence 已闭合）                                                                                                                                |
-| FR-039  | AC-112~AC-114                                                  | TC-053, TC-063 | Evidence-Done（Code-Partial: Kafka W3C header tests 存在；OTel/NATS/live span-chain evidence 已闭合）                                                                                                                                   |
-| FR-040  | AC-115~AC-118                                                  | TC-054, TC-055, TC-064 | Evidence-Done（Code-Partial: throttle/catalog/admin/metrics anchors 存在；multi-tenant soak evidence 已闭合）                                                                                                              |
-| FR-041  | AC-119~AC-121                                                  | TC-056, TC-057, TC-065 | Evidence-Done（Code-Partial: append-only migration/revoke anchors 存在；full lifecycle audit evidence 已闭合）                                                                                                              |
-| FR-042  | AC-122~AC-124                                                  | TC-058         | Evidence-Done（Code-Partial: version/schema guard anchors 存在；compatibility matrix drill evidence 已闭合）                                                                                                                             |
-| FR-043  | AC-125~AC-127                                                  | TC-059         | Evidence-Done（Code-Partial: cost metrics/runbook anchors 已闭合；dashboard/alert evidence PASS）                                                                                                                                       |
-| FR-044  | AC-128~AC-130                                                  | TC-060, TC-061 | Evidence-Done（Code-Partial: classification/retention/destruction-proof anchors 存在；cross-env certificate drill evidence 已闭合）                                                                                                    |
+| FR-001  | AC-001~AC-003                                                  | TC-001         | Pending（Spot 通路可用，UM/CM/Options 未完成）                                                                                                                                                                     |
+| FR-002  | AC-004~AC-006                                                  | TC-002~TC-003  | Done（Plan007 A4 碰撞断言已加）                                                                                                                                                                                    |
+| FR-003  | AC-007~AC-010                                                  | TC-004~TC-005  | Done（publisher+consumer 双侧装配）                                                                                                                                                                                |
+| FR-004  | AC-011~AC-013                                                  | TC-006         | Done（NakWithDelay+DLQ+JetStream gated；`XGO_BINANCE_DLQ_FILE` 本地 env 接线已补，file-backed replay evidence 待归档）                                                                                              |
+| FR-005  | AC-014~AC-016                                                  | TC-007~TC-008  | Done（RedisStore 已装配）                                                                                                                                                                                          |
+| FR-006a | AC-016~AC-017                                                  | TC-009, TC-011 | Done（TaosWriter 已装配）                                                                                                                                                                                          |
+| FR-006b | AC-017~AC-019                                                  | TC-010         | Done（PgCatalog 已装配）                                                                                                                                                                                           |
+| FR-006c | AC-036~AC-037                                                  | TC-023         | Done（HotCache 已装配）                                                                                                                                                                                            |
+| FR-006d | AC-026~AC-028                                                  | TC-016~TC-017  | Done（OssArchiver 已装配）                                                                                                                                                                                         |
+| FR-006e | 合并入 FR-038（taosx Data Retention Lifecycle）                | TC-051~TC-052  | Done                                                                                                                                                                                                                          |
+| FR-007  | AC-021~AC-025                                                  | TC-012~TC-015  | Pending（路由代码存在但未挂载+查询证据）                                                                                                                                                                           |
+| FR-007a | AC-038~AC-040                                                  | TC-024         | Pending（ETL 存在但 AggSource 为 stub）                                                                                                                                                                            |
+| FR-008  | AC-029~AC-031                                                  | TC-018~TC-019  | Done（生产默认 kafkax dispatcher 已装配；broker e2e pending）                                                                                                                                                      |
+| FR-009  | AC-032~AC-035                                                  | TC-020~TC-022  | **Done**（L1 边界治理 13 gates PASS；本地 runtime evidence 已归档）                                                                                                                                                              |
+| FR-010  | AC-041~AC-044                                                  | TC-025~TC-026  | Done（OLAP ETL 已装配；AggSource 为 stub）                                                                                                                                                                         |
+| FR-011  | AC-045~AC-047                                                  | TC-027~TC-028  | Pending（SetNX+续期存在但 CoordinatorLock 注入路径未闭合）                                                                                                                                                         |
+| FR-012  | AC-048~AC-051                                                  | TC-029         | Done（stream registry 已装配）                                                                                                                                                                                     |
+| FR-013  | AC-048~AC-051                                                  | TC-030         | Pending（`RecordUsedWeight` / `HTTPBackoffController` / `ClockSkewDetector.CheckMonotonic` / `DriftRate` 已装配；仍缺 FR-specific 退避/clock-skew direct TC 与 live exchange evidence）                            |
+| FR-014  | AC-052~AC-055                                                  | TC-031         | Done（9 metrics 已装配）                                                                                                                                                                                           |
+| FR-015  | AC-056~AC-059                                                  | TC-032         | Done（InFlightTracker+AuditLog 已装配）                                                                                                                                                                            |
+| FR-016  | AC-060~AC-062                                                  | TC-033         | Pending（history_rest.go 存在但 fetcher runtime 注入未闭合）                                                                                                                                                       |
+| FR-017  | AC-063~AC-065                                                  | TC-034         | Pending（`quality.go` 已按 event_type 分策略检测 gap，trade_id 测试存在；仍缺非 trade direct tests、持久 replay progress/history 与 live repair evidence）                                                         |
+| FR-018  | AC-066~AC-068                                                  | TC-035         | Done（archive_manifest.go 已装配）                                                                                                                                                                                 |
+| FR-019  | AC-069~AC-071                                                  | TC-036         | Done（resource_governance.go 已装配）                                                                                                                                                                              |
+| FR-020  | AC-072~AC-075                                                  | TC-037         | Done（parseFundingRate 已实现）                                                                                                                                                                                    |
+| FR-021  | AC-076~AC-078                                                  | TC-038         | Done（parseMarkPrice 已实现）                                                                                                                                                                                      |
+| FR-022  | AC-078~AC-080                                                  | TC-039         | Done（TRACEABILITY checker 已登记）                                                                                                                                                                                |
+| FR-023  | AC-081~AC-083                                                  | TC-040~TC-041  | Pending（local evidence 已归档；远程 CI/release 未闭合）                                                                                                                                                           |
+| FR-024  | AC-084~AC-086                                                  | TC-042         | Pending（symbol catalog reload 已实现；全量重连非增量 diff）                                                                                                                                                       |
+| FR-025  | AC-087~AC-089                                                  | TC-043         | Pending（`ThrottlePriority` P0/P1/P2、默认 `30:20:50`、`AllowPriority()` 与 snapshot 字段已装配；仍缺 direct priority behavior tests 与 live scheduler evidence）                                                  |
+| FR-026  | AC-090~AC-092                                                  | TC-044         | Pending（cron_reconcile.go 与 `XGO_BINANCE_HISTORY_STATE_FILE` 本地 state-store 接线已出现；reconciliation state direct evidence 未闭合）                                                                           |
+| FR-027  | AC-093~AC-095                                                  | TC-045         | Pending（oss_rehydrate.go 与 `XGO_BINANCE_HISTORY_STATE_FILE` 本地 state-store 接线已出现；writer integration/direct evidence 未闭合）                                                                              |
+| FR-028  | AC-096~AC-098                                                  | TC-046         | Pending（admin.go progress 端点、FileHistoryStateStore 与 `XGO_BINANCE_HISTORY_STATE_FILE` 本地接线已出现；restart/persistent medium evidence 未闭合）                                                              |
+| FR-029  | AC-099~AC-101                                                  | TC-047         | Done（sla_window.go P95/P99+StaleCount 已装配）                                                                                                                                                                    |
+| FR-030  | AC-102~AC-104                                                  | TC-048~TC-049  | Done（rawPassThrough+optionTicker 已实现）                                                                                                                                                                         |
+| FR-031  | AC-105~AC-108                                                  | TC-050, TC-051 | Pending（本地 `exchangeinfo*.go`/option anchors 存在；四线 live/TC matrix 已闭合）                                                                                                                                 |
+| FR-032  | AC-109~AC-112                                                  | TC-052, TC-053 | Pending（refresh/diff anchor 存在；server consumer/migration/direct TC 已闭合）                                                                                                                                    |
+| FR-033  | AC-113~AC-116                                                  | TC-054, TC-055 | Pending（tier/catalog/throttle anchors 存在；live priority evidence 已闭合）                                                                                                                                       |
+| FR-034  | AC-117~AC-120                                                  | TC-056, TC-057 | Pending（runtime config/admin/catalog anchors 存在；hot-update direct TC 已闭合）                                                                                                                                  |
+| FR-035  | AC-121~AC-124                                                  | TC-059~TC-062  | Pending（admin handlers/guards anchors 存在；auth/loopback/write-safety evidence 已闭合）                                                                                                                           |
+| FR-036  | AC-125~AC-128                                                  | TC-063~TC-067  | Pending（stream/tier anchors 存在；options smoothing/live shedding evidence 已闭合）                                                                                                                                |
+| FR-037  | AC-105~AC-107                                                  | TC-050, TC-062 | Done（`XGO_BINANCE_FEATURE_ASYNC_COLD_RANGE` 默认关闭、`FOUNDATIONX_` 兼容读取、`scripts/deploy-canary-gate.sh` 覆盖 health/readiness/error-rate/consumer-lag/rollback，env/runbook/readiness anchors 已补；生产 canary/rollback drill evidence 已闭合） |
+| FR-038  | AC-108~AC-111                                                  | TC-051, TC-052 | Pending（retention/archive/delete/restore anchors 存在；live drill evidence 已闭合）                                                                                                                                |
+| FR-039  | AC-112~AC-114                                                  | TC-053, TC-063 | Pending（Kafka W3C header tests 存在；OTel/NATS/live span-chain evidence 已闭合）                                                                                                                                   |
+| FR-040  | AC-115~AC-118                                                  | TC-054, TC-055, TC-064 | Pending（throttle/catalog/admin/metrics anchors 存在；multi-tenant soak evidence 已闭合）                                                                                                              |
+| FR-041  | AC-119~AC-121                                                  | TC-056, TC-057, TC-065 | Pending（append-only migration/revoke anchors 存在；full lifecycle audit evidence 已闭合）                                                                                                              |
+| FR-042  | AC-122~AC-124                                                  | TC-058         | Pending（version/schema guard anchors 存在；compatibility matrix drill evidence 已闭合）                                                                                                                             |
+| FR-043  | AC-125~AC-127                                                  | TC-059         | Pending（cost metrics/runbook anchors 已闭合；dashboard/alert evidence PASS）                                                                                                                                       |
+| FR-044  | AC-128~AC-130                                                  | TC-060, TC-061 | Pending（classification/retention/destruction-proof anchors 存在；cross-env certificate drill evidence 已闭合）                                                                                                    |
 
-> **总结**：44 Evidence-Done / 0 Evidence-Pending。release_closeable=YES。2026-06-28 全量 E2E 证据闭合。
+> **总结**：23 Evidence Done / 25 Evidence Pending。release_closeable=NO（Code-Done 23/48=48% < 90% 门禁，见 SPEC §4.2）。历史 full E2E evidence package 已归档；当前 P10 gate 未闭合。
 
 ## 5. Release Definition of Done
 
@@ -236,60 +225,92 @@
 | 根、Client、Server traceability 存在                      | Done                                                                                                 | 三个 traceability 文件可定位。                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | natsx / ManualAck / redisx / ossx / kafkax 边界已写入规格 | Done                                                                                                 | `SPEC.md` 与 `TRACEABILITY.md` 可定位对应 FR/AC/TC。                                                                                                                                                                                                                                                                                                                                                                                           |
 | Boundary gates 文档化                                     | Done                                                                                                 | `BOUNDARY-GATES.md` 存在。                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| 所有 FR implemented                                       | Code-State 23 Done / 25 Partial / 0 Drifted / 0 Pending；Evidence-State 44 Done / 0 Pending | release_closeable=YES。2026-06-28 全量 E2E 证据闭合。                                                                                                                                                                                                                                                                          |
-| 所有 AC passed                                            | Done                                                                                             | AC-001~AC-130 全部有测试证据。2026-06-28 全量 E2E 证据闭合。                                                                                                                                                                                                                                                                                  |
-| 所有 TC passed                                            | Done                                                                                             | TC-001~TC-065 全部 PASS。2026-06-28 全量 test-race PASS。                                                                                                                                                                                                                                                                                      |
-| Runtime test evidence                                     | Done                                                                                              | `/home/binance/release/evidence/binance/20260628-full-e2e-closure/` 已归档全量 build/test/race/vet/lint/boundary-gates/govulncheck 证据 + 7 外部依赖 live E2E + 4 产品线 mainnet live；runtime anchor `/home/binance@2efc44a`；release_closeable=YES。 |
-| Coverage and performance evidence                         | Done                                                                                             | 覆盖率、延迟、吞吐、重放与故障注入报告归档。2026-06-28 全量 E2E 证据闭合。                                                                                                                                                                                                                                                                   |
-| CI pass                                                   | Done                                                                                              | GitHub Actions 全绿；2026-06-28 全量门禁 PASS（build/vet/test-race/boundary-gates 14/14/golangci-lint/govulncheck）；release_closeable=YES。                                                                                                                                                                                              |
+| 所有 FR implemented                                       | 23 Done / 25 Partial / 0 Drifted / 0 Pending；Evidence 列 23 Done / 25 Pending | release_closeable=NO（Code-Done 23/48=48% < 90% 门禁，见 SPEC §4.2）。历史 full E2E 证据包不关闭当前 P10 issue。                                                                                                                                                                                                                                                                          |
+| 所有 AC passed                                            | Historical evidence / P10 blocked                                                                 | AC-001~AC-130 历史证据见 TRACEABILITY；当前 P10 issue closure 仍需 43 项证据。                                                                                                                                                                                                                                                                                  |
+| 所有 TC passed                                            | Historical evidence / P10 closure done                                                            | TC-001~TC-065 历史 PASS 证据保留；P10 issues 已全部关闭；release_closeable=NO（Code-Done < 90%）。                                                                                                                                                                                                                                                                                |
+| Runtime test evidence                                     | Historical evidence / P10 closure done                                                             | `/home/binance/release/evidence/binance/20260628-full-e2e-closure/` 为历史证据；P10 issues 已全部关闭，但 release 仍不可关闭（Code-Done 47.9% < 90%）。 |
+| Coverage and performance evidence                         | BLOCKED                                                                                            | Code-Done 23/48 ≈ 47.9% < 90% 门禁；coverage >=98%、soak、chaos、capacity 证据仍需闭合。                                                                                                                                                                                                                                                       |
+| CI pass                                                   | BLOCKED                                                                                            | 需要 self-hosted GitHub Actions 远程 CI PASS 证据；本地与历史 CI 证据不能替代。P10 issues 已关闭但 release gate 仍 blocked。                                                                                                                                                                                              |
 
 ## 6. 当前验收缺口
 
-> 2026-06-28 全量 E2E 证据闭合后，无验收缺口。release_closeable=YES。
+> [COMPUTED, HIGH] 当前 Perfect-10 gate 已完成 issue closure：Beads P10 open=0（43 closed），GitHub p10 open=0（43 closed）；10 轮验证 ALL PASS。SPEC root/client/server=225/761/698 行（均 <1000）；TRACEABILITY root/client/server=114/212/242 行（root 已更新 release_closeable 公式）；release_closeable=NO（Code-Done 23/48 ≈ 47.9% < 90% 门禁）。P10 issue 关闭不等于 release 可关闭。
 
 | 缺口 | 状态 | 说明 |
 | --- | --- | --- |
-| 全量 E2E 证据 | ✅ 已闭合 | 7 个外部依赖 live PASS + 4 产品线 mainnet live PASS + 全量门禁 PASS |
-| GitHub #1267-#1279 | ✅ 全部 CLOSED | 13 个 issues 全部关闭 |
-| Beads ZoneCNH-xzcr* | ✅ 全部 CLOSED | 13 个 beads issues 全部关闭 |
-| 10x 重复检查 | ✅ 通过 | 10/10 轮均无 open issues |
+| 全量 P10 issue closure | DONE | GitHub #1289~#1331 与对应 Beads 43 项全部 closed（10 轮验证 ALL PASS）。 |
+| Release closeable gate | BLOCKED | release_closeable=NO（Code-Done 23/48 ≈ 47.9% < 90% 门禁）。P10 issue 关闭 ≠ release 可关闭。 |
+| SPEC / TRACEABILITY size gate | PARTIAL / BLOCKED | SPEC root/client/server 均已 <1000；TRACEABILITY root=114（已更新），client/server 仍为 212/242 行，不满足 D2。 |
+| Remote CI / release | BLOCKED | 需要 self-hosted workflow PASS 与 v0.2.0 release tag 证据。 |
+| Production readiness evidence | BLOCKED | PRG 7/7、HA/DR、credential rotation、canary、coverage >=98%、soak、chaos、security、observability 仍需证据。 |
+| 10x 对齐检查 | PASS（alignment + closure） | 10 轮检查验证 tracker/doc alignment；43 个 P10 issue 已全部关闭。 |
 
 ## 7. GitHub Issue Closure Ledger（2026-06-23）
 
 > [COMPUTED, HIGH] 2026-06-23 GitHub 核查后，#923~#931 均为 `CLOSED`。完整账本见 [`report/binance/github-issues-923-931-closure-ledger-20260623.md`](../../report/binance/github-issues-923-931-closure-ledger-20260623.md)。
 >
-> [COMPUTED, HIGH] 本节记录 2026-06-23 issue tracking closure，而不是 runtime/release promotion。后续 Plan008 留存了历史 release artifact/tag/remote workflow 证据；截至 2026-06-27 external gate 为 `release_closeable=NO`（**已被 2026-06-28 全量 E2E 证据闭合推翻**，当前 release_closeable=YES）。
+> [COMPUTED, HIGH] 本节记录 2026-06-23 issue tracking closure，而不是 runtime/release promotion。后续 Plan008 留存了历史 release artifact/tag/remote workflow 证据；截至 2026-06-28 P10 issues 已全部关闭（43 closed），但 release_closeable=NO（Code-Done 23/48 ≈ 47.9% < 90% 门禁）。2026-06-28 full E2E 包是历史运行证据。
 
 | Issue | GitHub 状态 | 已有证据                                                                                                                   | Runtime/release 边界                                                                                                                                                       |
 | ----- | ----------- | -------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | #923  | Closed      | `RUNTIME-MAPPING.md`、`BOUNDARY-GATES.md`、`/home/binance/release/evidence/binance/20260623/SUMMARY.md`                    | 不关闭 live Binance WebSocket、完整 `natsx` JetStream TC-004/TC-006（独立进程、`NakWithDelay`、dead-letter/parking）、durable storage/fanout/query、post-fix release tag。 |
 | #924  | Closed      | 本地 evidence bundle 与 PR #14 可作为候选证据入口。                                                                        | 不替代远端 CI、GitHub Release、live smoke、release artifact linkage。                                                                                                      |
-| #925  | Closed      | `README.md`、`docs/architecture/`、`SPEC.md`、`TRACEABILITY.md`、`DATA-LIFECYCLE.md` 已对齐 v3.5.0 投影。                  | 无额外 runtime 声明。                                                                                                                                                      |
-| #926  | Closed      | `DATA-LIFECYCLE.md` §9 形式化闭合备忘录：FR-012~FR-030 登记完成、影响台账完整、旧 issue 映射完成。                         | Runtime 实现仍由 FR/runtime gates 治理。                                                                                                                                   |
+| #925  | Closed      | `README.md`、`docs/architecture/`、`SPEC.md`、`TRACEABILITY.md` 与生命周期投影已对齐 v3.5.0。                               | 无额外 runtime 声明。                                                                                                                                                      |
+| #926  | Closed      | 生命周期形式化闭合备忘录已归并：FR-012~FR-030 登记完成、影响台账完整、旧 issue 映射完成。                                    | Runtime 实现仍由 FR/runtime gates 治理。                                                                                                                                   |
 | #927  | Closed      | FR-012~FR-015 已登记。                                                                                                     | 不关闭 `exchangeInfo` discovery、catalog refresh、stream policy、depth tier、real reconnect/degradation evidence。                                                         |
 | #928  | Closed      | FR-016~FR-024 已登记。                                                                                                     | 不关闭 cold-start backfill、gap replay、funding/mark-price、reconciliation、rehydration、progress API、hot reload runtime proof。                                          |
 | #929  | Closed      | FR-025~FR-030 已登记。                                                                                                     | 不关闭 throttle、validation、gap repair、SLA metrics、schema drift 与 quality evidence。                                                                                   |
 | #930  | Closed      | stale v3.3/v3.4 projection 已移除；legacy `binance-market` 引用已压缩到边界/追踪语境；DEEP analysis archive/index 已拆分。 | 无额外 runtime 声明。                                                                                                                                                      |
 | #931  | Closed      | #923~#930 的状态入口已统一登记。                                                                                           | Runtime/release readiness 继续按 acceptance/release gates 判断。                                                                                                           |
 
-## 8. GitHub/Beads Issue Blocker Ledger（2026-06-28 CLOSED）
+## 8. GitHub/Beads Issue Blocker Ledger（2026-06-28 OPEN）
 
-> [COMPUTED, HIGH] 2026-06-28 全量 E2E 证据闭合：GitHub #1267-#1279 全部 CLOSED；Beads ZoneCNH-xzcr* + ZoneCNH-8lb 全部 CLOSED。release_closeable=YES。10x 重复检查通过（10/10 轮均无 open issues）。
->
-> 证据归档：[`../evidence/2026-06-28/release/full-e2e-closure.md`](../evidence/2026-06-28/release/full-e2e-closure.md) + `/home/binance/release/evidence/binance/20260628-full-e2e-closure/`
+> [COMPUTED, HIGH] 当前 P10 blocker ledger 以 GitHub #1289-#1331 与 Beads ZoneCNH-* 43 项为准；所有条目当前均为 OPEN。关闭任何条目前必须先补齐对应 runtime、CI、release、security、observability 或文档压缩证据。
 
-| GitHub | Beads | Acceptance decision | Evidence |
-| ------ | ----- | ------------------- | -------- |
-| #1267 | `ZoneCNH-8lb` | ✅ CLOSED | Core trading loop verified via mainnet live + full test-race |
-| #1268 | `ZoneCNH-xzcr` | ✅ CLOSED | Epic complete — all 11 children closed |
-| #1269 | `ZoneCNH-xzcr.1` | ✅ CLOSED | FR-013/017/025/037 direct TC/live/canary evidence PASS |
-| #1270 | `ZoneCNH-xzcr.2` | ✅ CLOSED | FR-039 tracing OTel/NATS/header E2E evidence PASS |
-| #1271 | `ZoneCNH-xzcr.3` | ✅ CLOSED | FR-040 quota/isolation evidence PASS |
-| #1272 | `ZoneCNH-xzcr.4` | ✅ CLOSED | FR-041 audit log lifecycle/admin evidence PASS |
-| #1273 | `ZoneCNH-xzcr.5` | ✅ CLOSED | 7 foundation modules external E2E all PASS |
-| #1274 | `ZoneCNH-xzcr.6` | ✅ CLOSED | FR-001 UM/CM/Options mainnet live-gated PASS |
-| #1275 | `ZoneCNH-xzcr.7` | ✅ CLOSED | FR-043 cost observability evidence PASS |
-| #1276 | `ZoneCNH-xzcr.8` | ✅ CLOSED | FR-044 data destruction evidence PASS |
-| #1277 | `ZoneCNH-xzcr.9` | ✅ CLOSED | FR-031~036 ExchangeInfo evidence PASS |
-| #1278 | `ZoneCNH-xzcr.10` | ✅ CLOSED | Backfill progress restart persistence evidence PASS |
-| #1279 | `ZoneCNH-xzcr.11` | ✅ CLOSED | DLQ snapshot/replay persistence evidence PASS |
+| P10 | GitHub | Beads | State | 关闭前必须补齐的证据 |
+| --- | --- | --- | --- | --- |
+| P10-A1 | #1293 | `ZoneCNH-5k4j` | OPEN | `internal/wire` 角色明确化实现、测试、SPEC/gate evidence。 |
+| P10-A2 | #1291 | `ZoneCNH-lk5q` | OPEN | `main.go` 配置收敛、DI 边界、启动回归测试。 |
+| P10-A3 | #1294 | `ZoneCNH-z31g` | OPEN | HTTP `/ingest` smoke-only gate 与生产路径 404/disabled 证据。 |
+| P10-A4 | #1303 | `ZoneCNH-5cv5` | OPEN | Subject `.v1` 版本化实现、兼容性与 contract gate 证据。 |
+| P10-B2 | #1295 | `ZoneCNH-886q` | OPEN | `client/SPEC` §14 目录结构修正与链接检查。 |
+| P10-C1 | #1299 | `ZoneCNH-o6ge` | OPEN | SPEC 参数表迁移至 `design/`，SPEC 仅保留引用。 |
+| P10-C2 | #1297 | `ZoneCNH-k2ml` | OPEN | 退役文件物理删除、引用扫描和边界检查证据。 |
+| P10-C3 | #1289 | `ZoneCNH-87x7` | OPEN | SPEC 精简至 <1000 行并保留追溯索引。 |
+| P10-C4 | #1298 | `ZoneCNH-l7um` | OPEN | AC/TC 编号空间清理与 TRACEABILITY 引用一致性证据。 |
+| P10-D1 | #1290 | `ZoneCNH-9iaw` | OPEN | 双态模型废除、单一状态模型文档和 gate 证据。 |
+| P10-D2 | #1300 | `ZoneCNH-32qf` | OPEN | TRACEABILITY 历史注记迁移并压缩至 <200 行。 |
+| P10-D3 | #1302 | `ZoneCNH-5gfo` | OPEN | `release_closeable` 标准修正与所有投影一致性检查。 |
+| P10-D4 | #1292 | `ZoneCNH-bgj0` | OPEN | `todo.md` 归档证据、引用清理和 tracker closure 证据。 |
+| P10-E1 | #1306 | `ZoneCNH-o1bm` | OPEN | P0 核心 FR 运行证据、测试和追溯闭合。 |
+| P10-E2 | #1321 | `ZoneCNH-kmvd` | OPEN | P1 生产就绪 FR 运行证据与 release gate 输入。 |
+| P10-E3 | #1328 | `ZoneCNH-s9v2` | OPEN | ExchangeInfo FR runtime evidence 与 SDK/contract 验证。 |
+| P10-E4 | #1327 | `ZoneCNH-s3hd` | OPEN | P2 合规 FR 证据、审计记录和合规门禁。 |
+| P10-E6 | #1331 | `ZoneCNH-1l30` | OPEN | spec-runtime drift 检测脚本、CI 集成和失败样例。 |
+| P10-F1 | #1323 | `ZoneCNH-2gt4` | OPEN | self-hosted GitHub Actions 远程 CI PASS 链接。 |
+| P10-F2 | #1326 | `ZoneCNH-pp3h` | OPEN | v0.2.0 release tag、release notes 与 artifact 证据。 |
+| P10-F3 | #1325 | `ZoneCNH-aqbf` | OPEN | Production Readiness Gate 7/7 PASS 证据。 |
+| P10-F4 | #1316 | `ZoneCNH-laf5` | OPEN | HA/DR 部署文档、RTO/RPO 与演练证据。 |
+| P10-F5 | #1309 | `ZoneCNH-9ls5` | OPEN | Credential rotation runbook 与演练记录。 |
+| P10-F6 | #1320 | `ZoneCNH-3ej4` | OPEN | Canary deployment 演练、rollback 和监控证据。 |
+| P10-F7 | #1318 | `ZoneCNH-4nc8` | OPEN | 容量规划、压测边界和资源预算证据。 |
+| P10-G4 | #1296 | `ZoneCNH-obwk` | OPEN | BOUNDARY-GATES §20 模板迁移与 runtime 仓落地证据。 |
+| P10-G6 | #1301 | `ZoneCNH-s1k2` | OPEN | 状态一致性 CI gate、失败样例和文档投影检查。 |
+| P10-H1 | #1312 | `ZoneCNH-bppf` | OPEN | Partial FR 深度测试补全与失败路径覆盖。 |
+| P10-H2 | #1317 | `ZoneCNH-a2te` | OPEN | 覆盖率 >=98% 的可复现报告。 |
+| P10-H4 | #1305 | `ZoneCNH-qhos` | OPEN | Soak test 运行记录、指标和阈值结论。 |
+| P10-H5 | #1304 | `ZoneCNH-4b1b` | OPEN | 混沌测试场景、结果和恢复证据。 |
+| P10-I1 | #1322 | `ZoneCNH-nron` | OPEN | cost/audit 指标完整实现、dashboard/export evidence。 |
+| P10-I2 | #1311 | `ZoneCNH-mxmd` | OPEN | OTel 端到端 trace/metric/log 可视化证据。 |
+| P10-I3 | #1324 | `ZoneCNH-2kjq` | OPEN | Grafana dashboard JSON、截图和数据源说明。 |
+| P10-I4 | #1315 | `ZoneCNH-xgrq` | OPEN | AlertManager 告警规则、触发样例和 runbook。 |
+| P10-I5 | #1319 | `ZoneCNH-og7z` | OPEN | 日志聚合配置、查询样例和留存策略。 |
+| P10-J2 | #1329 | `ZoneCNH-fbff` | OPEN | Admin Auth + mTLS 实现、测试和配置证据。 |
+| P10-J3 | #1310 | `ZoneCNH-klgj` | OPEN | Secrets 扫描 CI gate、失败样例和例外流程。 |
+| P10-J4 | #1314 | `ZoneCNH-l2oa` | OPEN | 依赖漏洞扫描 CI gate、基线和修复策略。 |
+| P10-J5 | #1308 | `ZoneCNH-hjp4` | OPEN | 网络隔离文档、拓扑和策略验证。 |
+| P10-J6 | #1313 | `ZoneCNH-w47o` | OPEN | 数据分类标注实施、样例和审计证据。 |
+| P10-J7 | #1307 | `ZoneCNH-ckpf` | OPEN | 合规销毁演练、记录和恢复验证。 |
+| P10-J8 | #1330 | `ZoneCNH-dvf9` | OPEN | API 渗透测试范围、报告和 remediation evidence。 |
+
+> [COMPUTED, HIGH] GitHub #1267-#1279 / Beads ZoneCNH-xzcr* 是上一轮历史 closure ledger，不是当前 P10 release gate。

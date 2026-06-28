@@ -37,7 +37,7 @@ module/binance
 ```text
 Binance Exchange (WS/REST)
   → binance-client catalog → parser → normalize → mapper
-  → natsx.Publish(subject: binance.market.*)
+  → natsx.Publish(subject: binance.market.*.*.v1)
   → natsx JetStream
   → binance-server consumer → validation → idempotency (redisx)
   → processor → [taosx | postgresx | redisx cache | kafkax | ossx]

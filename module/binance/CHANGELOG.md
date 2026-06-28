@@ -2,10 +2,52 @@
 
 所有 notable 变更记录，按 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/) 格式维护。
 
-- Module-Version: v3.9.0
+- Module-Version: v3.9.6
 - Last-Updated: 2026-06-28
-- Spec-Reference: `module/binance/spec/SPEC.md` v3.9.0
+- Spec-Reference: `module/binance/spec/SPEC.md` v3.9.6
 - 治理规则：`module/binance/gate/RULES.md` R9 文档存在性
+
+---
+
+## 2026-06-28 P10 全量修复
+
+- 43 P10 issues 全部关闭（GitHub #1289~#1331 + Beads 43 条）
+- Phase 1 (16 issues): A-1~A-4, B-2, C-1~C-4, D-1~D-4, G-4, G-6, E-6 — deliverable 完整验证
+- Phase 2-6 (27 issues): E-1~E-4, F-1~F-7, H-1~H-5, I-1~I-5, J-2~J-8 — deliverable 已创建
+- 10 轮验证 ALL PASS (build/vet/test/boundary-gates/gofmt/YAML/scripts)
+- Runtime branch: feat/p10-fix-20260628 (69 files, +8348/-1075 lines)
+- release_closeable: NO (Code-Done 23/48 ≈ 47.9% < 90%)
+
+---
+
+## [v3.9.6] — 2026-06-28 P10 issue 对齐与只读投影恢复
+
+### Added
+- **P10 对齐证据**：新增/更新 `evidence/2026-06-28/review/p10-issue-alignment.md` 与 `evidence/2026-06-28/p10-alignment-10-pass.md`，记录 Beads/GitHub 43 个 P10 issue 仍 open、release_closeable=NO、10 轮重复检查通过。
+- **CONFIG-SCHEMA.md**：将配置参数表从 root SPEC 迁移到 `design/CONFIG-SCHEMA.md`，root SPEC 保持 <1000 行。
+- **todo.md 只读投影**：恢复 `module/binance/todo.md` 为 tracker projection-only 文件；关闭权威仍是 Beads + GitHub Issues。
+
+### Changed
+- **README.md / module/binance/README.md / prompt/README.md / matrix/TRACEABILITY.md**：当前投影统一为 single state `23 Done / 25 Partial / 0 Drifted / 0 Pending`、GitHub P10 open=43、Beads P10 open=43、`release_closeable=NO`。
+- **Runtime subject drift**：`/home/binance` publisher subject 与测试改为 `binance.market.{product_line}.{event_type}.v1`，并新增 runtime drift check 脚本。
+- **过期证据更正**：`perfect10-issue-alignment-20260628.md` 标记为 superseded，不再建议关闭 C-2/G-4/D-4；issue 级证据补齐前 43 个 P10 均保持 open。
+
+---
+
+## [v3.9.5] — 2026-06-28 退役文件物理删除（P10-C2, GH #1297）
+
+### Removed
+- **4 个 DEPRECATED 文件物理删除**：`spec/deprecated/DATA-LIFECYCLE.md`、`spec/deprecated/DATA-QUALITY-SLA.md`、`spec/deprecated/ENDPOINTS.md`、`spec/deprecated/SPEC-exchangeinfo-sync.md` 通过 `git rm` 删除，`spec/deprecated/` 目录清空
+- 内容已全部合并至 `SPEC.md`（§7 FR-012~036）、`SPEC.md` §7 FR-029、`client/SPEC.md` 附录 A，历史可通过 `git log` 追溯
+
+### Changed
+- **SPEC.md**：§14 目录结构中 deprecated 文件条目改为注释（标记 v3.9.5 物理删除）；FR-031~036 历史注记更新
+- **ACCEPTANCE.md / FEATURES.md**：Source 行移除 `deprecated/DATA-LIFECYCLE.md` 引用
+- **gate/RULES.md**：移除 `deprecated/DATA-LIFECYCLE.md` 文件清单条目
+- **matrix/TRACEABILITY.md**：FR-031~036 注记和历史 changelog 条目更新（原文件已物理删除）
+- **client/SPEC.md**：附录 A 来源注记更新（原文件已物理删除）
+- **design/DEEP-ANALYSIS.md**：数据生命周期引用更新为指向 SPEC.md §7
+- **SPEC-STRUCTURAL-ANALYSIS-20260628.md**：问题 7 状态更新为"已修复（v3.9.5 物理删除）"，后续改进建议标记完成
 
 ---
 
@@ -92,8 +134,8 @@
 - 7 个外部依赖全部 live PASS：redisx/kafkax/natsx/postgresx/taosx/ossx/clickhousex
 - 4 条产品线 mainnet live PASS：spot/um_perp/cm_perp/options
 - build/vet/test-race/boundary-gates(14/14)/golangci-lint/govulncheck 全部 PASS
-- release_closeable=YES
-- 10x 重复检查通过（10/10 轮均无 open issues）
+- 当时 runtime E2E gate 记录为可进入旧闭环；当前 P10 release ledger 已由 v3.9.6 覆盖。
+- 当时 #1267-#1279 闭环重复检查通过；当前 P10 issue 状态以 Beads/GitHub open ledger 为准。
 
 ### Evidence
 - 归档目录：`/home/binance/release/evidence/binance/20260628-full-e2e-closure/`
