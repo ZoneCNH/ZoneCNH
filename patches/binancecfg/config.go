@@ -26,6 +26,7 @@ type Config struct {
 	IdempotencyTTL  time.Duration // FOUNDATIONX_BINANCE_IDEMPOTENCY_TTL
 	MaxStreams      int           // FOUNDATIONX_BINANCE_MAX_STREAMS
 	DrainTimeout    time.Duration // FOUNDATIONX_BINANCE_DRAIN_TIMEOUT
+	MaxPayloadSize  int           // FOUNDATIONX_BINANCE_MAX_PAYLOAD_SIZE
 
 	// ---- Feed ----
 	WSEndpoint           string        // FOUNDATIONX_BINANCE_WS_ENDPOINT
@@ -50,6 +51,7 @@ func DefaultConfig() Config {
 		IdempotencyTTL:       24 * time.Hour,
 		MaxStreams:           10,
 		DrainTimeout:         30 * time.Second,
+		MaxPayloadSize:       1 << 20, // 1 MiB
 		ReconnectBackoff:     time.Second,
 		MaxReconnectBackoff:  30 * time.Second,
 		MaxReconnectAttempts: 10,
@@ -86,6 +88,9 @@ func LoadConfig() Config {
 	if v := parseDurationEnv("FOUNDATIONX_BINANCE_DRAIN_TIMEOUT"); v > 0 {
 		cfg.DrainTimeout = v
 	}
+	if v := parseIntEnv("FOUNDATIONX_BINANCE_MAX_PAYLOAD_SIZE"); v > 0 {
+		cfg.MaxPayloadSize = v
+	}
 	if v := parseDurationEnv("FOUNDATIONX_BINANCE_RECONNECT_BACKOFF"); v > 0 {
 		cfg.ReconnectBackoff = v
 	}
@@ -120,11 +125,26 @@ func (c Config) Validate() error {
 	if c.MaxStreams <= 0 {
 		return fmt.Errorf("binancecfg: MaxStreams must be positive, got %d", c.MaxStreams)
 	}
+	if c.MaxStreams > 200 {
+		return fmt.Errorf("binancecfg: MaxStreams must not exceed 200, got %d", c.MaxStreams)
+	}
 	if c.DrainTimeout <= 0 {
 		return fmt.Errorf("binancecfg: DrainTimeout must be positive, got %v", c.DrainTimeout)
 	}
+	if c.DrainTimeout > 5*time.Minute {
+		return fmt.Errorf("binancecfg: DrainTimeout must not exceed 5m, got %v", c.DrainTimeout)
+	}
 	if c.ShutdownTimeout <= 0 {
 		return fmt.Errorf("binancecfg: ShutdownTimeout must be positive, got %v", c.ShutdownTimeout)
+	}
+	if c.ShutdownTimeout > 5*time.Minute {
+		return fmt.Errorf("binancecfg: ShutdownTimeout must not exceed 5m, got %v", c.ShutdownTimeout)
+	}
+	if c.MaxPayloadSize < 0 {
+		return fmt.Errorf("binancecfg: MaxPayloadSize must be non-negative, got %d", c.MaxPayloadSize)
+	}
+	if c.MaxPayloadSize > 32<<20 {
+		return fmt.Errorf("binancecfg: MaxPayloadSize must not exceed 32 MiB, got %d", c.MaxPayloadSize)
 	}
 	return nil
 }
@@ -137,6 +157,7 @@ func (c Config) ServerConfig() binance.ServerConfig {
 		IdempotencyTTL:  c.IdempotencyTTL,
 		MaxStreams:      c.MaxStreams,
 		DrainTimeout:    c.DrainTimeout,
+		MaxPayloadSize:  c.MaxPayloadSize,
 	}
 }
 

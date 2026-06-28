@@ -1,0 +1,7 @@
+{
+  "tool_name": "Bash",
+  "tool_input_preview": "{\"command\":\"git checkout -b feat/patches-test-coverage origin/main && git add patches/binancecfg/config_test.go patches/binancex/adapter_test.go patches/assembly/assembly_test.go && git commit -m \\\"te...",
+  "error": "Exit code 128\n切换到一个新分支 'feat/patches-test-coverage'\n分支 'feat/patches-test-coverage' 设置为跟踪 'origin/main'。\nwarning: 无法打开目录 'patches/patches/': 没有那个文件或目录\nfatal: 路径规格 'patches/binancecfg/config_test.go' 未匹配任何文件",
+  "timestamp": "2026-06-28T20:11:26.782Z",
+  "retry_count": 1
+}
