@@ -108,3 +108,9 @@ Acceptance:
 - [ ] Feature matrix with NaN fill
 - [ ] Postgresx adapter
 - [ ] Coverage >= 80%
+
+## Task Reference
+
+| Task | Scope | Effort |
+|------|-------|--------|
+| TASK-FS-001-core-implementation | Implementation | 2h |

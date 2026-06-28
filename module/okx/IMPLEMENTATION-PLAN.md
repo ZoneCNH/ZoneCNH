@@ -107,3 +107,9 @@ Runtime 实现序列与 binance §11 PR-007 一致：generated contracts → dom
 - [ ] simulated/production 严格隔离
 - [ ] 无 passive `okx` SDK active 引用
 - [ ] integration test 演示 client → server → downstream port 完整数据流
+
+## Task Reference
+
+| Task | Scope | Effort |
+|------|-------|--------|
+| TASK-OKX-001-core-implementation | Implementation | 2h |

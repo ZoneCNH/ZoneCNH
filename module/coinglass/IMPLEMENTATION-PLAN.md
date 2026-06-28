@@ -96,3 +96,9 @@ Runtime 序列：generated contracts → domain mapping → server mock → clie
 - [ ] venue map 完整且 unmapped venue 触发告警
 - [ ] COINGLASS_API_KEY 零泄露
 - [ ] integration test 演示 4 channel → server → downstream port 数据流
+
+## Task Reference
+
+| Task | Scope | Effort |
+|------|-------|--------|
+| TASK-CGL-001-core-implementation | Implementation | 2h |

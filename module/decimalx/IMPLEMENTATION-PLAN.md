@@ -27,3 +27,16 @@
 | invariant-tests | 补齐不可变、精度、rounding 与错误测试 |
 | ci-release-gates | 加入 race/staticcheck/govulncheck/adoption gate |
 | release-v1.0.0 | 发布 tag、release notes 与 manifest |
+
+## Task Reference
+
+| Task | Scope | Effort |
+|------|-------|--------|
+| TASK-DEC-001 | Implementation | 2h |
+| TASK-DEC-002 | Implementation | 2h |
+| TASK-DEC-003 | Implementation | 2h |
+| TASK-DEC-004 | Implementation | 2h |
+| TASK-DEC-005 | Implementation | 2h |
+| TASK-DEC-006 | Implementation | 2h |
+| TASK-DEC-007 | Implementation | 2h |
+| TASK-DEC-008 | Implementation | 2h |

@@ -53,3 +53,11 @@ Runtime implementation starts when:
 - [ ] Observability: metrics by venue/productLine/channel/outcome/reason
 - [ ] Contract tests pass
 - [ ] Coverage >= 80%
+
+## Task Reference
+
+| Task | Scope | Effort |
+|------|-------|--------|
+| TASK-MARKET-DATA-001-downstream-dispatch-port | Implementation | 2h |
+| TASK-MARKET-DATA-002-receiver-spec | Implementation | 2h |
+| TASK-MARKET-DATA-002-receiving-side-validation | Implementation | 2h |
