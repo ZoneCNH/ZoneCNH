@@ -2,7 +2,7 @@
 
 `module/binance` is the Binance-specific Market Data C/S Module for ZoneCNH.
 
-- Spec-Version: v3.9.0 (root / client / server — 2026-06-26 内容正确性大修 + 2026-06-27 结构性修复 + 2026-06-28 P10 状态对齐)
+- Spec-Version: v3.9.6 (root / client / server — 2026-06-26 内容正确性大修 + 2026-06-27 结构性修复 + 2026-06-28 P10 全量修复 + 执行计划发布)
 - Runtime-Version: v0.2.0（Runtime-Anchor: `/home/binance@2efc44a`；历史 full E2E evidence package `/home/binance/release/evidence/binance/20260628-full-e2e-closure/` 仅作为运行证据，不构成发布关闭结论）
 - Delivery-State: FR-001~FR-044 spec/traceability registered — single state `23 Done / 25 Partial / 0 Drifted / 0 Pending`。release_closeable=NO。43 个 Binance P10 issue 已全部关闭（GitHub #1289~#1331 + Beads 43 条）；10 轮验证 ALL PASS；但 Code-Done 23/48 ≈ 47.9% < 90% 门禁，不得声称 release 可关闭。
 - Last-Updated: 2026-06-28 (P10 全量修复完成：43 issues 全部 closed；release_closeable 仍为 NO)

@@ -6,7 +6,7 @@
 | -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Status         | Generated from current module SSOT                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | Last-Updated   | 2026-06-28                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| Module-Version | v3.9.0                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| Module-Version | v3.9.6                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Module-State   | v3.9.0 单一状态模型：FR **23 Done / 25 Partial / 0 Drifted / 0 Pending**；Evidence 列 23 Done / 25 Pending。release_closeable=NO（Code-Done 23/48=48% < 90% 门禁）。当前 P10 tracker：GitHub #1289-#1331 / Beads 43 项全部 CLOSED（10 轮验证 ALL PASS）；但 Code-Done 47.9% < 90% 门禁，release 仍不可关闭。                                                                                                                                                                                                 |
 | Runtime-Repo   | `/home/binance`                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | Source         | `SPEC.md`, `TRACEABILITY.md`, `STANDARD.md`, `client/TRACEABILITY.md`, `server/TRACEABILITY.md`, `BOUNDARY-GATES.md`                                                                                                                                                                                                                                                                                                                                  |
@@ -67,15 +67,17 @@
 
 ### 1.1 Production Readiness Gate 登记
 
-| Gate    | 来源                | 验收证据                                                                                                                      | 当前状态         |
-| ------- | ------------------- | ----------------------------------------------------------------------------------------------------------------------------- | ---------------- |
-| PRG-001 | SPEC §4.2 / NFR-021 | ClickHouse DDL diff、migration/test output、TTL 验证。                                                                        | PASS             |
-| PRG-002 | SPEC §4.2 / NFR-022 | `kafkax` retry/DLQ topic contract、failure-injection evidence、broker e2e 或等价 gated test。                                 | PASS             |
-| PRG-003 | SPEC §4.2 / NFR-023 | feature flag default、canary `/readyz`/error-rate evidence、rollback drill 或 runbook；FR-031~036 全量上线依赖本 gate。       | PASS             |
-| PRG-004 | SPEC §4.2 / NFR-024 | quota config、resource limit、failure isolation test。                                                                        | PASS             |
-| PRG-005 | SPEC §4.2 / NFR-025 | OpenTelemetry trace span/log evidence；未交付时 release notes 显式标 Deferred。                                               | PASS             |
-| PRG-006 | SPEC §4.2 / NFR-026 | append-only audit test、HA/DR/RPO/RTO 文档链接。                                                                              | PASS             |
-| PRG-007 | SPEC §4.2 / NFR-027 | capacity/cost metrics、data classification/retention/destroy evidence、credential rotation、stale/gap/DLQ/reconcile runbook；`XGO_BINANCE_HISTORY_STATE_FILE` / `XGO_BINANCE_DLQ_FILE` 本地接线 anchors。 | PASS             |
+> **v3.9.6 更新**：PRG 定义已对齐 `matrix/TRACEABILITY.md` §4（权威来源）。历史 NFR-021~027 映射的 PRG 定义已于 v3.9.6 废弃，统一使用以下口径。
+
+| Gate    | 来源              | 标准                                        | 当前状态 | 阻塞 evidence                         |
+| ------- | ----------------- | ------------------------------------------- | -------- | ------------------------------------- |
+| PRG-001 | TRACEABILITY §4   | remote CI current run（self-hosted runner） | Open     | F-1 self-hosted runner 未配置         |
+| PRG-002 | TRACEABILITY §4   | release promotion（release tag + notes）    | Open     | v0.2.0 release tag 未发布             |
+| PRG-003 | TRACEABILITY §4   | production readiness（PRG 7/7 proof）       | Open     | 全部 PRG PASS 后闭合                  |
+| PRG-004 | TRACEABILITY §4   | observability（metrics/OTel/dashboard）     | Open     | Jaeger/Grafana/AlertManager/Loki 未部署 |
+| PRG-005 | TRACEABILITY §4   | security（scan/mTLS/pentest）               | Open     | J-3/J-4 CI scan 未运行                |
+| PRG-006 | TRACEABILITY §4   | resilience（soak/chaos/canary）             | Open     | H-4/H-5/F-6 drill evidence 未归档     |
+| PRG-007 | TRACEABILITY §4   | issue sync（GitHub + Beads closures）       | PASS     | 43 GitHub + 43 Beads P10 issues 全关闭 |
 
 ## 2. Acceptance Criteria 登记
 

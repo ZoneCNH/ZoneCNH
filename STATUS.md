@@ -110,7 +110,7 @@
 | 组件                                                          | 架构类型     | 版本   | 进度     | 覆盖率要求 | 说明                  |
 | ------------------------------------------------------------- | -------- | ------ | -------- | ---------- | --------------------- |
 | [market_data](https://github.com/ZoneCNH/market_data)         | 独立进程 | v1.0.0 | ██░░ 30% | 100%       | dispatch 聚合（域入口）：Receiver + DualWriteSink；FR-MD-001~008；v1.0.0 released |
-| [binance](https://github.com/ZoneCNH/binance)                 | C/S Module | v0.2.0 / v3.7.1 (spec) | ██░░ 55% | 100%       | C/S 分布式：client(natsx publish) + server(7 infra + Gin :8080)；Runtime-Anchor `/home/binance@f046e16`（PR #145 + #1189 合并）；FR-001~044：24 Done / 10 Partial / 10 Pending（含 FR-037~044 + FR-031~036 Draft）；remote CI / Kafka broker E2E / FR-031~036 Draft 未闭合 |
+| [binance](https://github.com/ZoneCNH/binance)                 | C/S Module | v0.2.0 / v3.9.6 (spec) | ██░░ 48% | 100%       | C/S 分布式：client(natsx publish) + server(7 infra + Gin :8080)；Runtime-Anchor `/home/binance@2efc44a`；single state `23 Done / 25 Partial / 0 Drifted / 0 Pending`（48 FR total）；release_closeable=NO（Code-Done 47.9% < 90% 门禁）；P10 43 issues 全关闭；执行计划 `report/binance/production-release-execution-plan-20260628.md` |
 | [okx](https://github.com/ZoneCNH/okx)                         | C/S Module      | v0.1.1 | ███░ 80% | 100%       | OKX CEX 行情采集；待升级 client/server 拆分 |
 | [bybit](https://github.com/ZoneCNH/bybit)                     | C/S Module      | v0.1.1 | ███░ 80% | 100%       | Bybit CEX             |
 | [bitget](https://github.com/ZoneCNH/bitget)                   | C/S Module      | v0.1.1 | ███░ 80% | 100%       | Bitget CEX            |
@@ -129,7 +129,7 @@
 
 | 模块            | SPEC | IMPL | RELEASE | LIVE INT | EXT CI | ADOPT | SOAK | FACTORY | 备注                               |
 | --------------- | :--: | :--: | :-----: | :------: | :----: | :---: | :--: | :-----: | ---------------------------------- |
-| binance         |  ✅  |  ✅  |   ✅    |   ❌    |  ❌   |  N/A  | N/A  |   ❌    | C/S Module；spec v3.7.1 Approved；v0.2.0 released (PR #145 + #1189)；24 Done / 10 Partial / 10 Pending；remote CI / live websocket / Kafka broker E2E 未闭合 |
+| binance         |  ✅  |  ✅  |   ✅    |   ❌    |  ❌   |  N/A  | N/A  |   ❌    | C/S Module；spec v3.9.6 Approved；v0.2.0 released；single state 23 Done / 25 Partial / 0 Drifted / 0 Pending；release_closeable=NO；P10 43 issues closed；self-hosted CI / production evidence pending |
 | okx             |  ✅  |  ✅  |   ✅    |   ⏳待验证 |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；OKX CEX；factory ❌ 原因：LIVE INT 待 market_data dispatch 集成验证 |
 | bybit           |  ✅  |  ✅  |   ✅    |   ⏳待验证 |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；Bybit CEX；factory ❌ 同上 |
 | bitget          |  ✅  |  ✅  |   ✅    |   ⏳待验证 |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；Bitget CEX；factory ❌ 同上 |
@@ -350,7 +350,7 @@
 
 - market_data 域：14 组件（13 C/S Module + 1 独立进程 dispatch）
 - dispatch（market_data）：独立进程，v1.0.0，Receiver + DualWriteSink，进度 30%
-- C/S Module（13）：binance 为规格参考实现（spec v3.7.1 Approved；v0.2.0 released；24 Done / 10 Partial / 10 Pending；remote CI / Kafka broker E2E 未闭合）；其余 12 个 v0.1.1，待升级
+- C/S Module（13）：binance 为规格参考实现（spec v3.9.6 Approved；v0.2.0 released；single state 23 Done / 25 Partial / 0 Drifted / 0 Pending；release_closeable=NO；P10 43 issues closed；执行计划已发布）；其余 12 个 v0.1.1，待升级
 - **factory 升级路径**：13 C/S Module 需完成 client/server 拆分 + bootstrap 接入 + dispatch 集成验证后批量触发 factory-ready 评估
 
 ### 🟡 数据域 · macro_data（注意）

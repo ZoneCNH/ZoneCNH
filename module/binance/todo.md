@@ -1,111 +1,171 @@
-# Binance P10 Issue Projection (2026-06-28)
+# Binance v0.2.0 生产发布 — 任务清单
 
-[COMPUTED, HIGH] This file is a read-only projection of the current Binance P10 tracker state.
-[COMPUTED, HIGH] Closure SSOTs are Beads and GitHub Issues; editing this file does not close or claim any issue.
-[COMPUTED, HIGH] release_closeable=NO until every P10 issue has issue-level evidence and the release gates are satisfied.
-[COMPUTED, HIGH] 2026-06-28 P10 fix round COMPLETE: all 43 issues closed (GitHub + Beads), all deliverables merged to main, 10 verification rounds PASS, branch governance complete.
+> 创建日期：2026-06-28
+> 基线：`report/binance/production-release-execution-plan-20260628.md`
+> 目标：`release_closeable=YES` → v0.2.0 生产发布
+> 当前：23/48 FR Done (47.9%) → 目标 48/48 (100%)
+> Issue 追踪：Beads (47 issues) + GitHub #148-#194
 
-## Summary
+---
 
-| Metric                              | Value        |
-| ----------------------------------- | ------------ |
-| GitHub P10 issues                   | 0 open (43 closed) |
-| Beads P10 issues                    | 0 open (43 closed) |
-| Projection rows                     | 43           |
-| Deliverables created                | 43           |
-| Deliverables merged to main         | 43           |
-| Phase 1 fully closed (evidence attached) | 16      |
-| Phase 2-6 deliverables merged (pending live validation) | 27 |
-| Issue-level evidence still required | 27 (live validation) |
-| release_closeable                   | NO           |
+## E-1 P0 Batch — Week 1（6 FRs，9 days）
 
-## Tracker State
+| #   | FR      | GitHub | Beads       | 任务                                                        | 状态  |
+| --- | ------- | ------ | ----------- | ----------------------------------------------------------- | ----- |
+| 1   | FR-016  | #150   | ZoneCNH-8qd | REST fetcher 注入 + 历史回填 + cursor 恢复 e2e              | `[ ]` |
+| 2   | FR-007  | #148   | ZoneCNH-ydd | Gin REST 路由完整装配 + e2e                                 | `[ ]` |
+| 3   | FR-017  | #151   | ZoneCNH-r3s | depth snapshot refresh（updateId 跳跃→snapshot）            | `[ ]` |
+| 4   | FR-024  | #153   | ZoneCNH-ngz | 完整 reload proof（no-restart 集成测试）                    | `[ ]` |
+| 5   | FR-007a | #149   | ZoneCNH-7k1 | Analytics API（vwap/top-movers/correlation/volume-profile） | `[ ]` |
+| 6   | FR-023  | #152   | ZoneCNH-if7 | 远程 CI evidence 归档                                       | `[ ]` |
 
-[COMPUTED, HIGH] GitHub P10 open=0 — all 43 issues (#1289~#1331) closed with evidence comments.
-[COMPUTED, HIGH] Beads P10 open=0 — all 43 issues closed with closure notes.
-[COMPUTED, HIGH] ZoneCNH main: `aa4b18da` (merged PR #1333 + #1334).
-[COMPUTED, HIGH] Binance runtime main: `848e393` (merged PR #147).
-[COMPUTED, HIGH] Status consistency check: PASS.
-[COMPUTED, HIGH] Runtime: go build PASS, go vet PASS, go test 19 packages PASS, boundary-gates 15/15 PASS, gofmt clean.
+**完成标准**：6 FR Partial→Done，Code-Done 23→29/48
 
-## Repository State (post-governance)
+---
 
-| Repo | Branch | Commit | Local | Remote | Clean |
-| --- | --- | --- | --- | --- | --- |
-| ZoneCNH | main | `aa4b18da` | 1 branch | 1 branch | ✅ |
-| Binance | main | `848e393` | 1 branch | 1 branch | ✅ |
+## E-2 P1 Batch — Week 2（6 FRs，6 days）
 
-## Current Projection
+| #   | FR     | GitHub | Beads       | 任务                                               | 状态  |
+| --- | ------ | ------ | ----------- | -------------------------------------------------- | ----- |
+| 7   | FR-011 | #154   | ZoneCNH-7eo | HA 选举（多实例锁竞争 + lease 续期 + failover）    | `[ ]` |
+| 8   | FR-013 | #155   | ZoneCNH-z7p | 限流全覆盖（AIMD 恢复 + 418 熔断 + clock skew）    | `[ ]` |
+| 9   | FR-025 | #156   | ZoneCNH-9he | 自适应降速（P2 降为 0 + 恢复策略 e2e）             | `[ ]` |
+| 10  | FR-026 | #157   | ZoneCNH-vi7 | 对账完整运行（04:00 UTC job + tolerance + alerts） | `[ ]` |
+| 11  | FR-027 | #158   | ZoneCNH-qyk | 回热完整运行（OSS→taosx 回热 + 24h TTL 过期）      | `[ ]` |
+| 12  | FR-028 | #159   | ZoneCNH-zmr | 持久化验证（postgresx state-store + 重启恢复）     | `[ ]` |
 
-| Action  | GitHub | Beads        | Deliverable                                                                                              | Status    |
-| ------- | ------ | ------------ | -------------------------------------------------------------------------------------------------------- | --------- |
-| A-1     | #1293  | ZoneCNH-5k4j | `internal/wire/doc.go` role clarification + SPEC note                                                    | ✅ CLOSED |
-| A-2/E-5 | #1291  | ZoneCNH-lk5q | main.go 383→47 lines, `pkg/binancecfg/config.go`, `internal/server/assembly/assembly.go`                 | ✅ CLOSED |
-| A-3/B-1 | #1294  | ZoneCNH-z31g | Smoke-only /ingest gate in assembly.go, boundary-gates.sh §16 (15 gates)                                 | ✅ CLOSED |
-| A-4/B-3 | #1303  | ZoneCNH-5cv5 | Subject `.v1` versioning verified, drift check PASS                                                      | ✅ CLOSED |
-| B-2     | #1295  | ZoneCNH-886q | client/SPEC §14 fixed to monorepo `internal/client/` layout                                              | ✅ CLOSED |
-| C-1/G-3 | #1299  | ZoneCNH-o6ge | SPEC 225 lines, parameter tables in design/                                                              | ✅ CLOSED |
-| C-2/G-2 | #1297  | ZoneCNH-k2ml | 4 retired files physically deleted                                                                       | ✅ CLOSED |
-| C-3     | #1289  | ZoneCNH-87x7 | SPEC.md 225 lines (< 1000 target)                                                                        | ✅ CLOSED |
-| C-4     | #1298  | ZoneCNH-l7um | AC/TC namespace clean, no coordination notes                                                             | ✅ CLOSED |
-| D-1     | #1290  | ZoneCNH-9iaw | Dual-state model abolished, single-state (Done/Partial/Drifted/Pending)                                  | ✅ CLOSED |
-| D-2/G-1 | #1300  | ZoneCNH-32qf | TRACEABILITY.md 114 lines (< 200 target), history migrated                                               | ✅ CLOSED |
-| D-3     | #1302  | ZoneCNH-5gfo | release_closeable formula documented, current=NO (23/48 ≈ 47.9%)                                         | ✅ CLOSED |
-| D-4/G-5 | #1292  | ZoneCNH-bgj0 | todo.md is read-only projection, archived at evidence/2026-06-28/todo-archived.md                        | ✅ CLOSED |
-| G-4     | #1296  | ZoneCNH-obwk | BOUNDARY-GATES §20 migrated to docs/governance/boundary-gates-template.md                                | ✅ CLOSED |
-| G-6     | #1301  | ZoneCNH-s1k2 | Status consistency CI gate enhanced (release_closeable + dual-state + FR ratio)                          | ✅ CLOSED |
-| E-6     | #1331  | ZoneCNH-1l30 | `scripts/spec-runtime-drift-check.sh` exists, 22 checks PASS                                             | ✅ CLOSED |
-| E-1     | #1306  | ZoneCNH-o1bm | FR closure plan: `docs/plans/fr-closure/e1-p0-core-fr.md`                                                | ⏳ PLAN   |
-| E-2     | #1321  | ZoneCNH-kmvd | FR closure plan: `docs/plans/fr-closure/e2-p1-production-fr.md`                                          | ⏳ PLAN   |
-| E-3     | #1328  | ZoneCNH-s9v2 | FR closure plan: `docs/plans/fr-closure/e3-p2-exchangeinfo-fr.md`                                        | ⏳ PLAN   |
-| E-4     | #1327  | ZoneCNH-s3hd | FR closure plan: `docs/plans/fr-closure/e4-p2-compliance-fr.md`                                          | ⏳ PLAN   |
-| F-1     | #1323  | ZoneCNH-2gt4 | `.github/workflows/binance-ci.yml` (self-hosted runners, 10 workflows)                                   | ⏳ CI RUN |
-| F-2     | #1326  | ZoneCNH-pp3h | `docs/release/v0.2.0-release-notes.md` + `v0.2.0-checklist.md`                                           | ⏳ TAG    |
-| F-3     | #1325  | ZoneCNH-aqbf | 7 PRG templates: `docs/prg/prg-001~007.md`                                                               | ⏳ PRG    |
-| F-4     | #1316  | ZoneCNH-laf5 | 7 HA/DR docs: `docs/deployment/{nats,redis,postgres,tdengine,kafka,minio-oss,ha-dr-summary}-ha.md`      | ⏳ DEPLOY |
-| F-5/J-1 | #1309  | ZoneCNH-9ls5 | `docs/runbooks/credential-rotation.md` (9 credential types)                                              | ⏳ REVIEW |
-| F-6     | #1320  | ZoneCNH-3ej4 | `scripts/deploy-canary.sh` + `deploy-canary-gate.sh`                                                     | ⏳ DRILL  |
-| F-7     | #1318  | ZoneCNH-4nc8 | `docs/capacity-planning.md` (9 components, 30/90/365d projection)                                        | ⏳ REVIEW |
-| H-1     | #1312  | ZoneCNH-bppf | `test/depth/depth_test.go` (25 FRs × 5 subtests) + `run.sh`                                              | ⏳ TEST   |
-| H-2     | #1317  | ZoneCNH-a2te | `scripts/coverage-check.sh` (98% gate) + `docs/evidence-templates/coverage-evidence.md`                  | ⏳ RUN    |
-| H-4     | #1305  | ZoneCNH-qhos | `test/soak/soak_test.go` (30min, 4 product lines) + `run.sh`                                             | ⏳ RUN    |
-| H-5     | #1304  | ZoneCNH-4b1b | `test/chaos/chaos_test.go` (5 scenarios) + `run.sh`                                                      | ⏳ RUN    |
-| I-1     | #1322  | ZoneCNH-nron | `internal/server/metrics/cost.go` + `audit.go` (FR-043/044 full metrics)                                 | ✅ CODE   |
-| I-2     | #1311  | ZoneCNH-mxmd | `docs/observability/tracing-setup.md` + `configs/otel-collector.yaml`                                    | ⏳ SCREEN |
-| I-3     | #1324  | ZoneCNH-2kjq | `docs/observability/grafana-dashboard.json` (10 panels)                                                  | ⏳ IMPORT |
-| I-4     | #1315  | ZoneCNH-xgrq | `docs/observability/alerts.yaml` (9 alert rules)                                                         | ⏳ LOAD   |
-| I-5     | #1319  | ZoneCNH-og7z | `docs/observability/logging.yaml` (Loki Promtail, 5 scrape jobs)                                         | ⏳ DEPLOY |
-| J-2     | #1329  | ZoneCNH-fbff | Admin Bearer token + TLS + mTLS in `admin.go`, env config                                                | ✅ CODE   |
-| J-3     | #1310  | ZoneCNH-klgj | `.github/workflows/secrets-scan.yml` (gitleaks)                                                          | ⏳ CI RUN |
-| J-4     | #1314  | ZoneCNH-l2oa | `.github/workflows/vuln-scan.yml` (govulncheck)                                                          | ⏳ CI RUN |
-| J-5     | #1308  | ZoneCNH-hjp4 | `docs/security/network-isolation.md` (3-zone, 14 policies)                                               | ⏳ REVIEW |
-| J-6     | #1313  | ZoneCNH-w47o | `migrations/005_data_classification.sql` + `taos_ddl.sql` TAG                                            | ✅ CODE   |
-| J-7     | #1307  | ZoneCNH-ckpf | `scripts/destruction-drill.sh` (DRY_RUN support)                                                         | ⏳ DRILL  |
-| J-8     | #1330  | ZoneCNH-dvf9 | `test/security/api_security_test.go` (6 test types) + `run.sh`                                           | ⏳ RUN    |
+**完成标准**：6 FR Partial→Done，Code-Done 29→35/48
 
-## Verification Evidence
+---
 
-| Check | Result |
-| --- | --- |
-| GitHub P10 open | 0 (43 closed) |
-| Beads P10 open | 0 (43 closed) |
-| ZoneCNH main | `aa4b18da` = `origin/main` |
-| Binance main | `848e393` = `origin/main` |
-| Status consistency check | PASS |
-| go build | PASS |
-| go vet | PASS |
-| go test (19 packages) | PASS |
-| boundary-gates (15 gates) | PASS |
-| gofmt | clean (0 files) |
-| SPEC.md | 225 lines (< 1000) |
-| TRACEABILITY.md | 114 lines (< 200) |
-| Retired files | 0 (all deleted) |
-| Stashes | 0 |
-| Non-main branches | 0 (local + remote) |
+## E-3 P2 Batch — Week 3（6 FRs，4.5 days）
 
-## Stop Condition
+| #   | FR     | GitHub | Beads       | 任务                                                    | 状态  |
+| --- | ------ | ------ | ----------- | ------------------------------------------------------- | ----- |
+| 13  | FR-031 | #160   | ZoneCNH-6i6 | 四线 ExchangeInfo 发现完整                              | `[ ]` |
+| 14  | FR-032 | #161   | ZoneCNH-afb | 持久化 + 刷新（upsert + 6h diff-only + control stream） | `[ ]` |
+| 15  | FR-033 | #162   | ZoneCNH-azc | tier 分级（SymbolsByTier + admin PATCH）                | `[ ]` |
+| 16  | FR-034 | #163   | ZoneCNH-wdz | 白名单（deny>allow>tier 裁决 + admin reload）           | `[ ]` |
+| 17  | FR-035 | #164   | ZoneCNH-r54 | admin auth（Bearer token + loopback + audit_log）       | `[ ]` |
+| 18  | FR-036 | #165   | ZoneCNH-03y | 连接拓扑（StreamsForProductLineTier + 升降级 drain）    | `[ ]` |
 
-[COMPUTED, HIGH] P10 fix round complete: 43 issues closed (GitHub + Beads), 43 deliverables merged to main, 10 verification rounds PASS, branch governance complete (only main remains).
-[COMPUTED, HIGH] Phase 2-6 (27 issues) deliverables merged to main but pending live infrastructure validation: CI run, FR code closure, soak/chaos/security tests, canary drill, destruction drill, OTel screenshot, Grafana import, AlertManager load, Promtail deploy.
-[COMPUTED, HIGH] release_closeable=NO (Code-Done 23/48 ≈ 47.9% < 90%, PRG open, no release tag, no remote CI evidence).
-[COMPUTED, HIGH] 后续路径：按 Phase 2→3→4→5→6 顺序执行 live validation，每完成一个 issue 的 live evidence 后更新 release_closeable 评估。
+**完成标准**：6 FR Partial→Done，Code-Done 35→41/48
+
+---
+
+## E-4 P2 Batch — Week 3（7 FRs，5 days）
+
+| #   | FR     | GitHub | Beads       | 任务                                               | 状态  |
+| --- | ------ | ------ | ----------- | -------------------------------------------------- | ----- |
+| 19  | FR-038 | #166   | ZoneCNH-jbu | retention 完整（DELETE + OSS ETag + DB KEEP）      | `[ ]` |
+| 20  | FR-039 | #167   | ZoneCNH-2eb | tracing 完整（OTel SDK + W3C + slog trace_id）     | `[ ]` |
+| 21  | FR-040 | #168   | ZoneCNH-aqg | quota 完整（Kafka quota + WS 连接池 + CH 超时）    | `[ ]` |
+| 22  | FR-041 | #169   | ZoneCNH-xq1 | audit 完整（admin 写审计 + append-only + 保留期）  | `[ ]` |
+| 23  | FR-042 | #170   | ZoneCNH-cw0 | schema version（MAJOR reject + MINOR 兼容）        | `[ ]` |
+| 24  | FR-043 | #171   | ZoneCNH-t7f | cost 完整（存储/带宽指标 + 预算告警）              | `[ ]` |
+| 25  | FR-044 | #172   | ZoneCNH-1nm | destruction 完整（data_classification + 销毁证明） | `[ ]` |
+
+**完成标准**：7 FR Partial→Done，Code-Done 41→48/48 (100%)
+
+---
+
+## Infrastructure — Week 1 并行
+
+| #   | ID  | GitHub | Beads       | 任务                          | 状态  |
+| --- | --- | ------ | ----------- | ----------------------------- | ----- |
+| 26  | F-1 | #173   | ZoneCNH-2sx | Self-hosted CI runner 配置    | `[ ]` |
+| 27  | I-2 | #174   | ZoneCNH-lvu | Jaeger 部署 + OTel trace 验证 | `[ ]` |
+| 28  | I-3 | #175   | ZoneCNH-k05 | Grafana dashboard import      | `[ ]` |
+| 29  | I-4 | #176   | ZoneCNH-qbt | AlertManager rules load       | `[ ]` |
+| 30  | I-5 | #177   | ZoneCNH-m9k | Promtail/Loki 部署            | `[ ]` |
+
+---
+
+## Tests — Week 1-3
+
+| #   | ID  | GitHub | Beads       | 任务                               | 状态  |
+| --- | --- | ------ | ----------- | ---------------------------------- | ----- |
+| 31  | H-1 | #178   | ZoneCNH-868 | Depth test（25 FRs × 5 subtests）  | `[ ]` |
+| 32  | H-2 | #179   | ZoneCNH-4vb | Coverage check（≥98%）             | `[ ]` |
+| 33  | H-4 | #180   | ZoneCNH-b6h | Soak test（30min baseline）        | `[ ]` |
+| 34  | H-5 | #181   | ZoneCNH-g8v | Chaos test（5 scenarios baseline） | `[ ]` |
+| 35  | J-8 | #182   | ZoneCNH-d8z | Security test（6 types baseline）  | `[ ]` |
+
+---
+
+## Drills — Week 2
+
+| #   | ID  | GitHub | Beads       | 任务                         | 状态  |
+| --- | --- | ------ | ----------- | ---------------------------- | ----- |
+| 36  | F-6 | #183   | ZoneCNH-85c | Canary drill（dev 环境）     | `[ ]` |
+| 37  | J-7 | #184   | ZoneCNH-opp | Destruction drill（DRY_RUN） | `[ ]` |
+
+---
+
+## Security CI — Week 2
+
+| #   | ID  | GitHub | Beads       | 任务                         | 状态  |
+| --- | --- | ------ | ----------- | ---------------------------- | ----- |
+| 38  | J-3 | #185   | ZoneCNH-5je | gitleaks secrets scan CI run | `[ ]` |
+| 39  | J-4 | #186   | ZoneCNH-rsf | govulncheck vuln scan CI run | `[ ]` |
+
+---
+
+## PRG Gates — Week 4
+
+| #   | PRG     | GitHub | Beads       | 任务                       | 状态  |
+| --- | ------- | ------ | ----------- | -------------------------- | ----- |
+| 40  | PRG-001 | #187   | ZoneCNH-rf7 | remote CI current run PASS | `[ ]` |
+| 41  | PRG-002 | #188   | ZoneCNH-lfh | release promotion PASS     | `[ ]` |
+| 42  | PRG-003 | #189   | ZoneCNH-3y9 | production readiness PASS  | `[ ]` |
+| 43  | PRG-004 | #190   | ZoneCNH-bil | observability PASS         | `[ ]` |
+| 44  | PRG-005 | #191   | ZoneCNH-ryu | security PASS              | `[ ]` |
+| 45  | PRG-006 | #192   | ZoneCNH-54k | resilience PASS            | `[ ]` |
+| 46  | PRG-007 | #193   | ZoneCNH-8yf | issue sync PASS            | `[ ]` |
+
+---
+
+## Release — Week 4
+
+| #   | ID  | GitHub | Beads       | 任务                                     | 状态  |
+| --- | --- | ------ | ----------- | ---------------------------------------- | ----- |
+| 47  | F-2 | #194   | ZoneCNH-9vr | v0.2.0 release tag + post-release verify | `[ ]` |
+
+---
+
+## 里程碑
+
+| 里程碑                | 时间      | 验收标准                                            | Code-Done    |
+| --------------------- | --------- | --------------------------------------------------- | ------------ |
+| M1: CI + 可观测性就绪 | Week 1 末 | F-1 PASS + I-2~I-5 PASS + PRG-001/004 PASS          | 29/48 (60%)  |
+| M2: E-1 + E-2 闭合    | Week 2 末 | 12 FR Partial→Done + J-3/J-4 PASS + drills evidence | 35/48 (73%)  |
+| M3: 全 FR 闭合        | Week 3 末 | 48/48 Done + H-1/H-2 PASS + PRG-005/006 PASS        | 48/48 (100%) |
+| M4: v0.2.0 Release    | Week 4 末 | PRG 7/7 PASS + release tag + post-release verify    | 48/48 (100%) |
+
+---
+
+## 依赖链
+
+```
+E-1 (FR-016→FR-007→FR-017→FR-024→FR-007a) + F-1 → FR-023
+    ↓
+E-2 (FR-011→FR-013→FR-025→FR-026→FR-027→FR-028)
+    ↓
+E-3 (FR-031→FR-032→FR-033→FR-034→FR-035/FR-036) ‖ E-4 (FR-038~044)
+    ↓
+H-1 depth test → H-2 coverage
+    ↓
+PRG-001~007 → F-2 release
+```
+
+## 并行工作流
+
+| 工作流                          | 前置                        | 可立即开始 |
+| ------------------------------- | --------------------------- | :--------: |
+| F-1 Self-hosted CI runner       | 基础设施配置                |    YES     |
+| I-2~I-5 可观测性部署            | Jaeger/Grafana/AM/Loki 安装 |    YES     |
+| H-4 Soak test baseline          | 基础设施连通                |    YES     |
+| H-5 Chaos test baseline         | 基础设施连通                |    YES     |
+| J-8 Security test baseline      | 基础设施连通                |    YES     |
+| F-6 Canary drill (dev)          | 基础设施连通                |    YES     |
+| J-7 Destruction drill (DRY_RUN) | 基础设施连通                |    YES     |
