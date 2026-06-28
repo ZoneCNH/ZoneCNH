@@ -3,12 +3,13 @@
 ## Phase 1
 | Task | Scope | Effort |
 |------|-------|--------|
-| TASK-XH-001 | generate 10 module assets | 2h
-| TASK-XH-002 | check spec gate | 2h
-| TASK-XH-003 | check boundary gate | 1h
-| TASK-XH-004 | check CI/CD gate | 1h
-| TASK-XH-005 | check format gate | 1h
-| TASK-XH-006 | check trace gate | 1h
+| TASK-XLIBHARNESS-001 | Implementation | 2h |
+| TASK-XLIBHARNESS-002 | Implementation | 2h |
+| TASK-XLIBHARNESS-003 | Implementation | 2h |
+| TASK-XLIBHARNESS-004 | Implementation | 2h |
+| TASK-XLIBHARNESS-005 | Implementation | 2h |
+| TASK-XLIBHARNESS-006 | Implementation | 2h |
+| TASK-XLIBHARNESS-007 | Implementation | 2h |
 ## CI Gate
 | Gate | 条件 |
 |------|------|

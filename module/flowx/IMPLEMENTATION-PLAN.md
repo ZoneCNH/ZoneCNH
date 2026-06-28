@@ -3,7 +3,8 @@
 ## Phase 1
 | Task | Scope | Effort |
 |------|-------|--------|
-| TASK-FLOWX-001 | 工作流编排引擎核心 | 4h |
+| README | Implementation | 2h |
+| TASK-FLOWX-001-core-implementation | Implementation | 2h |
 ## CI Gate
 | Gate | 条件 |
 |------|------|

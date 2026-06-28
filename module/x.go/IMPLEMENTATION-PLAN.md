@@ -6,8 +6,7 @@
 
 | Task | Scope | Effort |
 |------|-------|--------|
-| TASK-XGO-001 | goalcli + templatex 命令行 | 3h |
-
+| TASK-XGO-001-core-implementation | Implementation | 2h |
 ## CI Gate
 
 | Gate | 条件 |

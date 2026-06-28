@@ -3,7 +3,8 @@
 ## Phase 1
 | Task | Scope | Effort |
 |------|-------|--------|
-| TASK-RE-001 | market+macro regime 融合引擎 | 4h
+| README | Implementation | 2h |
+| TASK-REGIME_ENGINE-001 | Implementation | 2h |
 ## CI Gate
 | Gate | 条件 |
 |------|------|

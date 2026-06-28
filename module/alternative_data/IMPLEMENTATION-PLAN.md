@@ -6,8 +6,7 @@
 
 | Task | Scope | Effort |
 |------|-------|--------|
-| TASK-ALT-001 | 链上/社交/NLP 归一化 + 聚合层分发 | 4h |
-
+| TASK-ALT-001-core-implementation | Implementation | 2h |
 ## CI Gate
 
 | Gate | 条件 |

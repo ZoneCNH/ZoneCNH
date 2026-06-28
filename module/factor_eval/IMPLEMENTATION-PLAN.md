@@ -3,7 +3,8 @@
 ## Phase 1
 | Task | Scope | Effort |
 |------|-------|--------|
-| TASK-FEV-001 | IC 分析/分层回测/因子衰减/相关性矩阵 | 4h |
+| README | Implementation | 2h |
+| TASK-FEV-001-core-implementation | Implementation | 2h |
 ## CI Gate
 | Gate | 条件 |
 |------|------|

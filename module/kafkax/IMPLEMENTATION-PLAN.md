@@ -22,22 +22,12 @@ TASK-KAFKAX-001 (Phase 1: foundation)
 
 | Task | Scope | Effort |
 |------|-------|--------|
-| TASK-KAFKAX-001 | Core implementation | 2h |
-| TASK-KAFKAX-002 | Core implementation | 2h |
-
-### Phase 2: Features (4 tasks)
-
-| Task | Scope | Effort |
-|------|-------|--------|
-| TASK-KAFKAX-003 | Feature implementation | 2h |
-| TASK-KAFKAX-004 | Feature implementation | 2h |
-| TASK-KAFKAX-005 | Feature implementation | 2h |
-
-### Phase 3: Quality Gates (1 task)
-
-| TASK-KAFKAX-006 | CI/Benchmark/Docs | 2h |
-
-
+| TASK-KAFKAX-001 | Implementation | 2h |
+| TASK-KAFKAX-002 | Implementation | 2h |
+| TASK-KAFKAX-003 | Implementation | 2h |
+| TASK-KAFKAX-004 | Implementation | 2h |
+| TASK-KAFKAX-005 | Implementation | 2h |
+| TASK-KAFKAX-006 | Implementation | 2h |
 ## 3. 总 Effort
 
 | Phase | Tasks | Effort |

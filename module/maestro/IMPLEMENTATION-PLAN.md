@@ -3,7 +3,8 @@
 ## Phase 1
 | Task | Scope | Effort |
 |------|-------|--------|
-| TASK-MAE-001 | 策略注册/调度/生命周期/多策略并发 | 4h |
+| README | Implementation | 2h |
+| TASK-MAE-001-core-implementation | Implementation | 2h |
 ## CI Gate
 | Gate | 条件 |
 |------|------|

@@ -3,7 +3,8 @@
 ## Phase 1
 | Task | Scope | Effort |
 |------|-------|--------|
-| TASK-STG-001 | 策略接口/信号集成/参数管理 | 4h
+| README | Implementation | 2h |
+| TASK-STG-001-core-implementation | Implementation | 2h |
 ## CI Gate
 | Gate | 条件 |
 |------|------|

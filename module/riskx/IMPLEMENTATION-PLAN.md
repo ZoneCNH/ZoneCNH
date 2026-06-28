@@ -3,7 +3,7 @@
 ## Phase 1
 | Task | Scope | Effort |
 |------|-------|--------|
-| TASK-RX-001 | 风险检查/头寸限制/订单门禁 | 3h
+| TASK-RSK-001 | Implementation | 2h |
 ## CI Gate
 | Gate | 条件 |
 |------|------|

@@ -3,11 +3,17 @@
 ## Phase 1: Fakes
 | Task | Scope | Effort |
 |------|-------|--------|
-| TASK-TESTKITX-001 | FakeConfig/Logger/Meter/Tracer/Clock/Breaker | 3h
-| TASK-TESTKITX-006 | Eventually | 1h
-| TASK-TESTKITX-007 | GoldenUpdate | 1h
-| TASK-TESTKITX-008 | BoundaryCheck | 1h
-| TASK-TESTKITX-009 | GoroutineLeakCheck | 1h
+| TASK-TESTKITX-000 | Implementation | 2h |
+| TASK-TESTKITX-001 | Implementation | 2h |
+| TASK-TESTKITX-002 | Implementation | 2h |
+| TASK-TESTKITX-003 | Implementation | 2h |
+| TASK-TESTKITX-004 | Implementation | 2h |
+| TASK-TESTKITX-005 | Implementation | 2h |
+| TASK-TESTKITX-006 | Implementation | 2h |
+| TASK-TESTKITX-007 | Implementation | 2h |
+| TASK-TESTKITX-008 | Implementation | 2h |
+| TASK-TESTKITX-009 | Implementation | 2h |
+| TASK-TESTKITX-010 | Implementation | 2h |
 ## CI Gate
 | Gate | 条件 |
 |------|------|

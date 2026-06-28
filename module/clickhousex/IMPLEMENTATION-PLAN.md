@@ -23,23 +23,13 @@ TASK-CLICKHOUSEX-001 (Phase 1: foundation)
 
 | Task | Scope | Effort |
 |------|-------|--------|
-| TASK-CLICKHOUSEX-001 | Core implementation | 2h |
-| TASK-CLICKHOUSEX-002 | Core implementation | 2h |
-
-### Phase 2: Features (5 tasks)
-
-| Task | Scope | Effort |
-|------|-------|--------|
-| TASK-CLICKHOUSEX-003 | Feature implementation | 2h |
-| TASK-CLICKHOUSEX-004 | Feature implementation | 2h |
-| TASK-CLICKHOUSEX-005 | Feature implementation | 2h |
-| TASK-CLICKHOUSEX-006 | Feature implementation | 2h |
-
-### Phase 3: Quality Gates (1 task)
-
-| TASK-CLICKHOUSEX-007 | CI/Benchmark/Docs | 2h |
-
-
+| TASK-CLICKHOUSEX-001 | Implementation | 2h |
+| TASK-CLICKHOUSEX-002 | Implementation | 2h |
+| TASK-CLICKHOUSEX-003 | Implementation | 2h |
+| TASK-CLICKHOUSEX-004 | Implementation | 2h |
+| TASK-CLICKHOUSEX-005 | Implementation | 2h |
+| TASK-CLICKHOUSEX-006 | Implementation | 2h |
+| TASK-CLICKHOUSEX-007 | Implementation | 2h |
 ## 3. 总 Effort
 
 | Phase | Tasks | Effort |

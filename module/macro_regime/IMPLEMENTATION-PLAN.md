@@ -3,7 +3,8 @@
 ## Phase 1
 | Task | Scope | Effort |
 |------|-------|--------|
-| TASK-MR-001 | 经济周期识别/宏观状态机/状态转变检测 | 3h |
+| README | Implementation | 2h |
+| TASK-MR-001-core-implementation | Implementation | 2h |
 ## CI Gate
 | Gate | 条件 |
 |------|------|

@@ -6,8 +6,7 @@
 
 | Task | Scope | Effort |
 |------|-------|--------|
-| TASK-TRY-001 | 国债收益率/TIC/MacroPoint 归一化 + MacroDataProvider | 4h |
-
+| TASK-TRY-001-core-implementation | Implementation | 2h |
 ## CI Gate
 
 | Gate | 条件 |

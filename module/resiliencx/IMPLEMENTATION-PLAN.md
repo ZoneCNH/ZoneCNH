@@ -27,27 +27,17 @@ TASK-RESILIENCX-000 (Phase 1: foundation)
 
 | Task | Scope | Effort |
 |------|-------|--------|
-| TASK-RESILIENCX-000 | Core implementation | 2h |
-| TASK-RESILIENCX-001 | Core implementation | 2h |
-
-### Phase 2: Features (9 tasks)
-
-| Task | Scope | Effort |
-|------|-------|--------|
-| TASK-RESILIENCX-002 | Feature implementation | 2h |
-| TASK-RESILIENCX-003 | Feature implementation | 2h |
-| TASK-RESILIENCX-004 | Feature implementation | 2h |
-| TASK-RESILIENCX-005 | Feature implementation | 2h |
-| TASK-RESILIENCX-006 | Feature implementation | 2h |
-| TASK-RESILIENCX-007 | Feature implementation | 2h |
-| TASK-RESILIENCX-008 | Feature implementation | 2h |
-| TASK-RESILIENCX-009 | Feature implementation | 2h |
-
-### Phase 3: Quality Gates (1 task)
-
-| TASK-RESILIENCX-010 | CI/Benchmark/Docs | 2h |
-
-
+| TASK-RESILIENCX-000 | Implementation | 2h |
+| TASK-RESILIENCX-001 | Implementation | 2h |
+| TASK-RESILIENCX-002 | Implementation | 2h |
+| TASK-RESILIENCX-003 | Implementation | 2h |
+| TASK-RESILIENCX-004 | Implementation | 2h |
+| TASK-RESILIENCX-005 | Implementation | 2h |
+| TASK-RESILIENCX-006 | Implementation | 2h |
+| TASK-RESILIENCX-007 | Implementation | 2h |
+| TASK-RESILIENCX-008 | Implementation | 2h |
+| TASK-RESILIENCX-009 | Implementation | 2h |
+| TASK-RESILIENCX-010 | Implementation | 2h |
 ## 3. 总 Effort
 
 | Phase | Tasks | Effort |

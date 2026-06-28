@@ -3,10 +3,10 @@
 ## Phase 1: Middleware Injection
 | Task | Scope | Effort |
 |------|-------|--------|
-| TASK-ASM-001 | ServerDeps + Validate | 1h |
-| TASK-ASM-002 | Assemble + Build | 2h |
-| TASK-ASM-003 | NopMiddleware | 1h |
-| TASK-ASM-004 | Test suite | 2h |
+| TASK-ASM-001-serverdeps-and-validation | Implementation | 2h |
+| TASK-ASM-002-assemble-and-build | Implementation | 2h |
+| TASK-ASM-003-nop-middleware | Implementation | 2h |
+| TASK-ASM-004-test-suite-and-gates | Implementation | 2h |
 ## CI Gate
 | Gate | 条件 |
 |------|------|

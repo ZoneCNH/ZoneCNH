@@ -3,7 +3,8 @@
 ## Phase 1
 | Task | Scope | Effort |
 |------|-------|--------|
-| TASK-MKR-001 | 趋势/震荡/高波动识别 + RegimeCard 生成 | 3h |
+| README | Implementation | 2h |
+| TASK-MKR-001-core-implementation | Implementation | 2h |
 ## CI Gate
 | Gate | 条件 |
 |------|------|

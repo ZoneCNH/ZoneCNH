@@ -22,22 +22,12 @@ TASK-TAOSX-001 (Phase 1: foundation)
 
 | Task | Scope | Effort |
 |------|-------|--------|
-| TASK-TAOSX-001 | Core implementation | 2h |
-| TASK-TAOSX-002 | Core implementation | 2h |
-
-### Phase 2: Features (4 tasks)
-
-| Task | Scope | Effort |
-|------|-------|--------|
-| TASK-TAOSX-003 | Feature implementation | 2h |
-| TASK-TAOSX-004 | Feature implementation | 2h |
-| TASK-TAOSX-005 | Feature implementation | 2h |
-
-### Phase 3: Quality Gates (1 task)
-
-| TASK-TAOSX-006 | CI/Benchmark/Docs | 2h |
-
-
+| TASK-TAOSX-001 | Implementation | 2h |
+| TASK-TAOSX-002 | Implementation | 2h |
+| TASK-TAOSX-003 | Implementation | 2h |
+| TASK-TAOSX-004 | Implementation | 2h |
+| TASK-TAOSX-005 | Implementation | 2h |
+| TASK-TAOSX-006 | Implementation | 2h |
 ## 3. 总 Effort
 
 | Phase | Tasks | Effort |

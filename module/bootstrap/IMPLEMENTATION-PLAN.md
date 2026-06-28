@@ -3,7 +3,7 @@
 ## Phase 1: L1 Assembly
 | Task | Scope | Effort |
 |------|-------|--------|
-| TASK-BS-001 | Build/Run/Shutdown + configx/observex/lifecycle + Stores=None | 4h |
+| TASK-BS-001-core-implementation | Implementation | 2h |
 ## Phase 2: Stores
 | Task | Scope | Effort |
 |------|-------|--------|
