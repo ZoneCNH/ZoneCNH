@@ -1,6 +1,6 @@
 # backtestx 需求追溯矩阵
 
-> 更新：2026-06-16
+> 更新：2026-06-29
 > 来源：module/backtestx/SPEC.md v1.0.0
 > 规范：docs/governance/TRACEABILITY.md
 
