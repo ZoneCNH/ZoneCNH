@@ -50,9 +50,9 @@ BenchmarkCheckFullProfile-16      676   2468222 ns/op     626253 B/op      5575 
 - `.github/workflows/ci.yml` runs docs contract, Go validation via `make ci`, `xlibgate@v1.0.0` imports/gomod/baseline trust checks, and pinned open-source `gitleaks` CLI secret scan.
 - `.github/workflows/release.yml` validates release docs contract, runs `make ci`, trust checks, and creates or updates GitHub Release on `v*` tags.
 - Local tag `v0.1.6` points at `/home/xlib_harness@d90b35124701`.
-- GitHub Actions Release run `27855366871` completed successfully for `d90b3512470134e3cd467fa009f3147b23304d2c`: <https://github.com/ZoneCNH/xlib-harness/actions/runs/27855366871>.
-- GitHub Actions main CI run `27855396013` completed successfully for `d90b3512470134e3cd467fa009f3147b23304d2c`: <https://github.com/ZoneCNH/xlib-harness/actions/runs/27855396013>.
-- GitHub Release `v0.1.6` is published as a non-draft, non-prerelease release: <https://github.com/ZoneCNH/xlib-harness/releases/tag/v0.1.6>.
+- GitHub Actions Release run `27855366871` completed successfully for `d90b3512470134e3cd467fa009f3147b23304d2c`: <https://github.com/ZoneCNH/xlib_harness/actions/runs/27855366871>.
+- GitHub Actions main CI run `27855396013` completed successfully for `d90b3512470134e3cd467fa009f3147b23304d2c`: <https://github.com/ZoneCNH/xlib_harness/actions/runs/27855396013>.
+- GitHub Release `v0.1.6` is published as a non-draft, non-prerelease release: <https://github.com/ZoneCNH/xlib_harness/releases/tag/v0.1.6>.
 
 ## Security Evidence
 

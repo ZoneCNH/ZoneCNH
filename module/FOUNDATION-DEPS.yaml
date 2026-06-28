@@ -68,7 +68,7 @@ modules:
     description: "标准事实源 / Go Reference Template / schema / template"
 
   xlib_harness:
-    path: github.com/ZoneCNH/xlib-harness
+    path: github.com/ZoneCNH/xlib_harness
     layer: harness
     stdlib_only: false
     runtime_dependency: false
@@ -195,17 +195,17 @@ forbidden_deps:
   - github.com/ZoneCNH/lighter
   - github.com/ZoneCNH/upbit
   - github.com/ZoneCNH/coinglass
-  - github.com/ZoneCNH/yield-curve
-  - github.com/ZoneCNH/bybit-market
-  - github.com/ZoneCNH/bitget-market
-  - github.com/ZoneCNH/okx-market
-  - github.com/ZoneCNH/coinbase-market
+  - github.com/ZoneCNH/yield_curve
+  - github.com/ZoneCNH/bybit_market
+  - github.com/ZoneCNH/bitget_market
+  - github.com/ZoneCNH/okx_market
+  - github.com/ZoneCNH/coinbase_market
   - github.com/ZoneCNH/fred
   - github.com/ZoneCNH/treasury
   - github.com/ZoneCNH/bea
   - github.com/ZoneCNH/ecb
-  - github.com/ZoneCNH/uk-cb
-  - github.com/ZoneCNH/japan-cb
+  - github.com/ZoneCNH/uk_cb
+  - github.com/ZoneCNH/japan_cb
   - github.com/ZoneCNH/eastmoney
   - github.com/ZoneCNH/jin10
   - github.com/ZoneCNH/yahoo

@@ -56,7 +56,7 @@ Foundation 20 模块需要一个独立的最小合规脚手架与验收门禁，
 - 本地 release tag：`v0.1.6`
 - GitHub Actions Release run `27855366871`：PASS
 - GitHub Actions main CI run `27855396013`：PASS
-- GitHub Release：<https://github.com/ZoneCNH/xlib-harness/releases/tag/v0.1.6>
+- GitHub Release：<https://github.com/ZoneCNH/xlib_harness/releases/tag/v0.1.6>
 - `make ci`：PASS
 - `go test ./...`：PASS
 - `go test ./... -race -count=1`：PASS
