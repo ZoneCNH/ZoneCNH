@@ -317,4 +317,141 @@ pipeline:
     blockers: []
     updated_at: "2026-06-28T23:59:00Z"
 
-# 阻塞与异常条件记录到 blockers[]、gate_failures[]、Decision 或 Evidence。
+  # --- xlib 基座四模块管线状态对齐 (2026-06-29) ---
+  # xlib_standard: retrospective 已于 2026-06-11 完成（G0-G11 全 PASS，98 分），
+  # 但 goals.yaml 状态未同步推进到 DONE。本次对齐将状态从 RELEASE/BLOCKED → DONE。
+  - goal_id: GOAL-XLIB-STD-001
+    pipeline_state: DONE
+    previous_pipeline_state: IN_PROGRESS
+    current_phase: RETROSPECTIVE
+    phase_status: DONE
+    workflow_step: RETROSPECTIVE_EXECUTION
+    state_model: four_axis
+    state_axes:
+      pipeline_state: docs/goal/03-pipeline.md#20-状态轴边界
+      current_phase: docs/goal/03-pipeline.md#20-状态轴边界
+      phase_status: docs/goal/03-pipeline.md#20-状态轴边界
+      workflow_step: docs/goal/03-pipeline.md#20-状态轴边界
+    artifacts_ready:
+      - matrix
+      - prompt
+      - code
+      - test
+      - review
+      - release
+      - retrospective
+    gates_passed:
+      - G0
+      - G1
+      - G2
+      - G3
+      - G4
+      - G5
+      - G6
+      - G7
+      - G8
+      - G9
+      - G10
+      - G11
+    gates_pending: []
+    blockers: []
+    updated_at: "2026-06-29T00:00:00Z"
+    notes: "retrospective 已于 2026-06-11 完成，状态从 RELEASE/BLOCKED 对齐到 DONE"
+
+  # xlib_harness: 代码已发布 v0.1.6，100% 覆盖率，CI PASS。
+  # 本次首次注册到 Goal 管线系统，标记为 DONE。
+  - goal_id: GOAL-XLIB-HARNESS-001
+    pipeline_state: DONE
+    previous_pipeline_state: N/A
+    current_phase: RETROSPECTIVE
+    phase_status: DONE
+    workflow_step: RETROSPECTIVE_EXECUTION
+    state_model: four_axis
+    state_axes:
+      pipeline_state: docs/goal/03-pipeline.md#20-状态轴边界
+      current_phase: docs/goal/03-pipeline.md#20-状态轴边界
+      phase_status: docs/goal/03-pipeline.md#20-状态轴边界
+      workflow_step: docs/goal/03-pipeline.md#20-状态轴边界
+    artifacts_ready:
+      - matrix
+      - code
+      - test
+      - release
+      - retrospective
+    gates_passed:
+      - GH-0
+      - GH-1
+      - GH-2
+      - GH-3
+      - GH-4
+      - GH-5
+    gates_pending: []
+    blockers: []
+    updated_at: "2026-06-29T00:00:00Z"
+    notes: "首次注册 Goal 管线；代码已发布 v0.1.6，覆盖率 100%，CI PASS"
+
+  # xlib_evidence: 代码已发布 v0.2.4，100% 覆盖率，DoD 全部完成。
+  # 本次首次注册到 Goal 管线系统，标记为 DONE。
+  - goal_id: GOAL-XLIB-EVIDENCE-001
+    pipeline_state: DONE
+    previous_pipeline_state: N/A
+    current_phase: RETROSPECTIVE
+    phase_status: DONE
+    workflow_step: RETROSPECTIVE_EXECUTION
+    state_model: four_axis
+    state_axes:
+      pipeline_state: docs/goal/03-pipeline.md#20-状态轴边界
+      current_phase: docs/goal/03-pipeline.md#20-状态轴边界
+      phase_status: docs/goal/03-pipeline.md#20-状态轴边界
+      workflow_step: docs/goal/03-pipeline.md#20-状态轴边界
+    artifacts_ready:
+      - matrix
+      - code
+      - test
+      - release
+      - retrospective
+    gates_passed:
+      - GE-0
+      - GE-1
+      - GE-2
+      - GE-3
+      - GE-4
+      - GE-5
+    gates_pending: []
+    blockers: []
+    updated_at: "2026-06-29T00:00:00Z"
+    notes: "首次注册 Goal 管线；代码已发布 v0.2.4，覆盖率 100%，DoD 全部完成"
+
+  # xlibgate: 代码已发布 v1.0.0，CI PASS。
+  # 本次首次注册到 Goal 管线系统，标记为 DONE。
+  - goal_id: GOAL-XLIBGATE-001
+    pipeline_state: DONE
+    previous_pipeline_state: N/A
+    current_phase: RETROSPECTIVE
+    phase_status: DONE
+    workflow_step: RETROSPECTIVE_EXECUTION
+    state_model: four_axis
+    state_axes:
+      pipeline_state: docs/goal/03-pipeline.md#20-状态轴边界
+      current_phase: docs/goal/03-pipeline.md#20-状态轴边界
+      phase_status: docs/goal/03-pipeline.md#20-状态轴边界
+      workflow_step: docs/goal/03-pipeline.md#20-状态轴边界
+    artifacts_ready:
+      - matrix
+      - design
+      - plan
+      - code
+      - test
+      - release
+      - retrospective
+    gates_passed:
+      - GG-0
+      - GG-1
+      - GG-2
+      - GG-3
+      - GG-4
+      - GG-5
+    gates_pending: []
+    blockers: []
+    updated_at: "2026-06-29T00:00:00Z"
+    notes: "首次注册 Goal 管线；代码已发布 v1.0.0，CI PASS"

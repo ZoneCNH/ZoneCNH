@@ -63,18 +63,18 @@ goals:
       - Public API 冻结
 
   - goal_id: GOAL-XLIB-STD-001
-    document_version: "2026-06-09"
+    document_version: "2026-06-29"
     title: "xlib_standard v1.0.0 — Go 基础库模板标准源"
-    status: Active
+    status: Achieved
     owner: zone
     priority: P0
     north_star: "成为 xlib 体系的唯一标准源，定义所有模块必须遵循的工程规则、接口规则、配置规则、错误规则、观测规则、测试规则、版本规则和扩展规则"
-    pipeline_state: IN_PROGRESS
-    current_phase: RELEASE
-    phase_status: BLOCKED
-    workflow_step: RELEASE_GATE
+    pipeline_state: DONE
+    current_phase: RETROSPECTIVE
+    phase_status: DONE
+    workflow_step: RETROSPECTIVE_EXECUTION
     created_at: "2026-06-09"
-    updated_at: "2026-06-09"
+    updated_at: "2026-06-29"
     related_specs:
       - module/xlib_standard/SPEC.md
       - module/xlib_standard/goal.md
@@ -84,6 +84,98 @@ goals:
       - 9 个 CI Gate 全部通过
       - 生成库可编译无残留
       - release manifest 生成且 checksum 校验通过
+    release_evidence:
+      latest_tag: v1.0.1
+      spec_version: v1.1.0
+      retrospective: module/xlib_standard/retrospective/RETRO.md
+
+  - goal_id: GOAL-XLIB-HARNESS-001
+    document_version: "2026-06-29"
+    title: "xlib_harness v0.1.6 — Foundation 模块生成器与门禁执行器"
+    status: Achieved
+    owner: ZoneCNH
+    priority: P0
+    north_star: "提供独立的最小合规脚手架与验收门禁，生成标准模块资产集合并执行规格结构、追踪闭环、运行时依赖边界、Markdown 格式和 CI/CD 引用门禁"
+    pipeline_state: DONE
+    current_phase: RETROSPECTIVE
+    phase_status: DONE
+    workflow_step: RETROSPECTIVE_EXECUTION
+    created_at: "2026-06-01"
+    updated_at: "2026-06-29"
+    related_specs:
+      - module/xlib_harness/SPEC.md
+      - module/xlib_harness/goal.md
+    success_criteria:
+      - 生成 10 个模块资产（generate CLI）
+      - 规格门禁覆盖 23 节结构、FR/AC/TC 可验证性
+      - 边界门禁禁止禁止模块的运行时引用
+      - 追踪矩阵门禁能发现未闭合 FR/AC/TC
+      - harness 自身 make ci 完整通过
+      - Go 覆盖率达到 100%
+    release_evidence:
+      latest_tag: v0.1.6
+      spec_version: v1.3.0
+      implementation_baseline: "/home/xlib_harness@d90b35124701"
+      github_release: "https://github.com/ZoneCNH/xlib_harness/releases/tag/v0.1.6"
+      ci_pass: true
+      coverage: "100.0%"
+
+  - goal_id: GOAL-XLIB-EVIDENCE-001
+    document_version: "2026-06-29"
+    title: "xlib_evidence v0.2.4 — Foundation CI 证据运行时"
+    status: Achieved
+    owner: ZoneCNH
+    priority: P0
+    north_star: "提供 Foundation 的证据收集与发布运行时——收集各模块的覆盖率、门禁结果、发布 manifest，生成统一证据报告，支持远程证据验证"
+    pipeline_state: DONE
+    current_phase: RETROSPECTIVE
+    phase_status: DONE
+    workflow_step: RETROSPECTIVE_EXECUTION
+    created_at: "2026-06-01"
+    updated_at: "2026-06-29"
+    related_specs:
+      - module/xlib_evidence/SPEC.md
+      - module/xlib_evidence/goal.md
+    success_criteria:
+      - 5 FR 全部实现并通过 SPEC.md FR-001..005 的 WHEN/THEN 验证
+      - collect → generate → validate 端到端可跑通
+      - 测试覆盖率 = 100.0%
+      - manifest 生成 → 验证 闭环 golden 测试通过
+      - manifest 篡改检测通过
+    release_evidence:
+      latest_tag: v0.2.4
+      spec_version: v1.2.1
+      ci_pass: true
+      coverage: "100.0%"
+
+  - goal_id: GOAL-XLIBGATE-001
+    document_version: "2026-06-29"
+    title: "xlibgate v1.0.0 — Foundation 机器可执行门禁 CLI"
+    status: Achieved
+    owner: ZoneCNH
+    priority: P0
+    north_star: "作为 Foundation 的机器可执行门禁 CLI 工具，在 CI 中验证依赖矩阵、import 边界、Go baseline 和 release evidence"
+    pipeline_state: DONE
+    current_phase: RETROSPECTIVE
+    phase_status: DONE
+    workflow_step: RETROSPECTIVE_EXECUTION
+    created_at: "2026-06-01"
+    updated_at: "2026-06-29"
+    related_specs:
+      - module/xlibgate/SPEC.md
+      - module/xlibgate/goal.md
+      - module/xlibgate/DESIGN.md
+    success_criteria:
+      - check imports/gomod/baseline/release/all 子命令全部实现
+      - exit code 标准化 0/1/2 全场景验证通过
+      - JSON 输出格式稳定
+      - gitleaks secret 扫描集成完成
+      - 自检通过 xlibgate check all
+      - 不依赖任何 Foundation 运行时模块
+    release_evidence:
+      latest_tag: v1.0.0
+      spec_version: v1.2.0
+      ci_pass: true
 
   - goal_id: GOAL-BINANCE-20260601-001
     document_version: "2026-06-28"
