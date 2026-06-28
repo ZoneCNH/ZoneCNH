@@ -110,7 +110,7 @@
 | 组件                                                          | 架构类型     | 版本   | 进度     | 覆盖率要求 | 说明                  |
 | ------------------------------------------------------------- | -------- | ------ | -------- | ---------- | --------------------- |
 | [market_data](https://github.com/ZoneCNH/market_data)         | 独立进程 | v1.0.0 | ██░░ 30% | 100%       | dispatch 聚合（域入口）：Receiver + DualWriteSink；FR-MD-001~008；v1.0.0 released |
-| [binance](https://github.com/ZoneCNH/binance)                 | C/S Module | v0.2.0 ✅ / v3.9.6 (spec) | ████ 100% | 100%       | C/S 分布式：48/48 FR Done（100%）；release_closeable=YES 🎉；v0.2.0 tag 已发布；15/15 gates；21/21 tests race-free；47/47 tasks Done |
+| [binance](https://github.com/ZoneCNH/binance)                 | C/S Module | v0.2.0 ✅ / v3.9.6 (spec) | ████ 100% | 100%       | C/S 分布式：48/48 FR Done（100%）；release_closeable=YES 🎉；v0.2.0 tag 已发布；15/15 gates；21/21 tests race-free；controlplane 100%（72 tests）；47/47 tasks Done |
 | [okx](https://github.com/ZoneCNH/okx)                         | C/S Module      | v0.1.1 | ███░ 80% | 100%       | OKX CEX 行情采集；待升级 client/server 拆分 |
 | [bybit](https://github.com/ZoneCNH/bybit)                     | C/S Module      | v0.1.1 | ███░ 80% | 100%       | Bybit CEX             |
 | [bitget](https://github.com/ZoneCNH/bitget)                   | C/S Module      | v0.1.1 | ███░ 80% | 100%       | Bitget CEX            |
