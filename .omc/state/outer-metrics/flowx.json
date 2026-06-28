@@ -1,0 +1,24 @@
+{
+  "module": "flowx",
+  "last_updated": "2026-06-28T22:56:12Z",
+  "ship_history": [
+    {
+      "computed_at": "2026-06-28T22:56:12Z",
+      "spec_sha": "8bf1373fc5274da478da667221d184d087051297",
+      "outer_metrics": {
+        "real_bug_count_30d": null,
+        "real_bug_count_90d": null,
+        "rework_commit_count": 6,
+        "rework_loc_ratio": 0.2593,
+        "test_flakiness_7d": null,
+        "ci_failure_rate_post_merge_7d": null,
+        "production_incident_count": null,
+        "p99_latency_regression_pct": null,
+        "security_advisory_count": null,
+        "developer_override_count": 0,
+        "rollback_occurred": null
+      }
+    }
+  ],
+  "_note": "由 scripts/outer-metrics-from-git.sh 写入。LLM agent 严禁修改。"
+}

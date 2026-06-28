@@ -1,24 +1,7 @@
 {
-  "module": "clickhousex",
+  "module": "decimalx",
   "last_updated": "2026-06-28T22:56:11Z",
   "ship_history": [
-    {
-      "computed_at": "2026-06-10T22:15:27Z",
-      "spec_sha": "14c6bb220ca834134f93214ac00551bd72262a4a",
-      "outer_metrics": {
-        "real_bug_count_30d": null,
-        "real_bug_count_90d": null,
-        "rework_commit_count": 3,
-        "rework_loc_ratio": 0.0000,
-        "test_flakiness_7d": null,
-        "ci_failure_rate_post_merge_7d": null,
-        "production_incident_count": null,
-        "p99_latency_regression_pct": null,
-        "security_advisory_count": null,
-        "developer_override_count": 0,
-        "rollback_occurred": null
-      }
-    },
     {
       "computed_at": "2026-06-28T22:56:11Z",
       "spec_sha": "4047669dc8d0f6e7f7a567db37d85b61179fbdc6",
@@ -26,7 +9,7 @@
         "real_bug_count_30d": null,
         "real_bug_count_90d": null,
         "rework_commit_count": 2,
-        "rework_loc_ratio": 0.5571,
+        "rework_loc_ratio": 0.2903,
         "test_flakiness_7d": null,
         "ci_failure_rate_post_merge_7d": null,
         "production_incident_count": null,
