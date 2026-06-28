@@ -43,7 +43,7 @@
 
 **交割合约承载**：`um_perp` / `cm_perp` product_line 下永续与交割合约通过 `instrument_subtype`（perpetual/delivery）维度区分（NAMING §1.1、SPEC §9 identity 矩阵、FR-002a），**不拆分 product_line、不扩矩阵**。subject/topic/path 仍只含 product_line + event_type；`instrument_subtype` 只进入 InstrumentKey identity 与 TDengine tag / Redis key identity 段。
 
-**违规**：缺失任一组合（例如缺 `binance.market.options.depth`）；或把交割合约拆为独立 product_line（如 `um_delivery`）破坏 4×6 矩阵
+**违规**：缺失任一组合（例如缺 `binance.market.options.depth.v1`）；或把交割合约拆为独立 product_line（如 `um_delivery`）破坏 4×6 矩阵
 
 **检测**：
 ```bash
@@ -132,7 +132,7 @@ grep -lE "^\> \[ARCHIVED" module/binance/ --include="*.md" -r | grep -v "DEEP-AN
 
 1. **字段名收敛**：仅允许 2 种版本字段名
    - `Spec-Version`：仅 root/client/server 的 `SPEC.md`
-   - `Module-Version`：所有其他治理文档（ACCEPTANCE / FEATURES / IMPLEMENTATION-PLAN / TRACEABILITY / CHANGELOG / NAMING / RULES / DATA-LIFECYCLE / STANDARD / ARCHITECTURE-DRIFT-WATCHLIST / README）
+   - `Module-Version`：所有其他治理文档（ACCEPTANCE / FEATURES / IMPLEMENTATION-PLAN / TRACEABILITY / CHANGELOG / NAMING / RULES / STANDARD / ARCHITECTURE-DRIFT-WATCHLIST / README）
    - `Runtime-Version`：仅 SPEC.md 的 runtime 版本（与 Spec-Version 语义区分，独立不 bump）
    - **禁止** `Doc-Version` / `Matrix-Version` / `Version` 等异名字段
 2. **顶层版本号统一**：所有顶层治理文档的 `Module-Version` 必须 == root `SPEC.md` 的 `Spec-Version`
@@ -201,7 +201,6 @@ bash scripts/check-binance-docs.sh   # 含 R6 全量版本统一校验
 | `server/SPEC.md` + `server/TRACEABILITY.md` | 服务端子规格 |
 | `{client,server}/tasks/archive/README.md` | 归档映射 |
 | `STANDARD.md` | 模块标准入口（runtime control + evidence 薄层索引） |
-| `deprecated/DATA-LIFECYCLE.md` | 数据生命周期（已退役，FR-012~030 已合并入根 SPEC §7） |
 | `scripts/check-binance-docs.sh` | binance 文档漂移 CI gate（仓库脚本） |
 
 **检测**：

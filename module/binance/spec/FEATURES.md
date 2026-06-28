@@ -7,18 +7,18 @@
 | Status | Generated from current module SSOT |
 | Last-Updated | 2026-06-28 |
 | Module-Version | v3.9.0 |
-| Module-State | v3.9.0 双态模型：Code-State **23 Done / 25 Partial / 0 Drifted / 0 Pending**；Evidence-State **44 Done / 0 Pending**。release_closeable=YES。GitHub #1267-#1279 全部 CLOSED。 |
+| Module-State | v3.9.0 单一状态模型：**23 Done / 25 Partial / 0 Drifted / 0 Pending**；Evidence 列 23 Done / 25 Pending。release_closeable=NO（Code-Done 23/48=48% < 90% 门禁）。当前 P10 tracker: GitHub #1289-#1331 / Beads 43 open；历史 #1267-#1279 仅为上一轮 closed ledger。 |
 | Layer | 数据域 / Binance-specific market_data C/S module |
 | Runtime-Repo | `/home/binance` |
-| Source | `goal.md`, `SPEC.md`, `TRACEABILITY.md`, `deprecated/DATA-LIFECYCLE.md`, `STANDARD.md`, `BOUNDARY-GATES.md`, `RUNTIME-MAPPING.md`, `IMPLEMENTATION-PLAN.md`, `client/`, `server/`, `tasks/` |
+| Source | `goal.md`, `SPEC.md`, `TRACEABILITY.md`, `STANDARD.md`, `BOUNDARY-GATES.md`, `RUNTIME-MAPPING.md`, `IMPLEMENTATION-PLAN.md`, `client/`, `server/`, `tasks/` |
 
 本文档是 `module/binance` 当前规格库的实现投影，不是 runtime 代码验收证据。实际完成状态以 `TRACEABILITY.md`、`client/TRACEABILITY.md`、`server/TRACEABILITY.md` 和 `/home/binance` 的测试证据为准。
 
-> **v3.9.0 当前状态口径（2026-06-28）**：Code-Done = Runtime-Anchor `/home/binance@2efc44a` 下代码存在、装配就绪且 runtime 可编译运行；Code-Partial = 已有代码/子链路 anchors 但装配未完整或仅部分产品线；Code-Drifted = 当前无；Code-Pending = 当前无。2026-06-28 全量 E2E 证据闭合后，所有 FR Evidence-Done；release_closeable=YES。
+> **v3.9.0 当前状态口径（2026-06-28）**：单一状态模型 — `Done` = 代码完整+装配就绪+TC PASS+evidence 归档；`Partial` = 代码存在但有缺口；`Drifted` = 代码存在但 spec 已变更；`Pending` = 仅规格登记。当前 Done 23 / Partial 25 / Drifted 0 / Pending 0。Evidence 列：23 Done / 25 Pending。release_closeable=NO（Code-Done 23/48=48% < 90% 门禁，见 SPEC §4.2）。
 >
-> **v3.9.0 双态模型**：FEATURES.md 的「Done」均指 **Code-Done**（代码存在+装配就绪+runtime 可编译运行）。**Evidence-Done**（TC+AC 全 PASS+evidence 归档）的判定见 `ACCEPTANCE.md` §4 闭合矩阵。2026-06-28 全量 E2E 证据闭合后 Evidence-State 为 44 Done / 0 Pending。
+> **v3.9.0 单一状态模型**：FEATURES.md 的「Done」均指单一状态模型的 Done（代码完整+装配就绪+TC PASS+evidence 归档）。Evidence 列的判定见 `ACCEPTANCE.md` §4 闭合矩阵。
 >
-> [COMPUTED, HIGH] 2026-06-28 全量 E2E 证据闭合：7 个外部依赖 live PASS + 4 产品线 mainnet live PASS + 全量门禁 PASS。GitHub #1267-#1279 全部 CLOSED。
+> [COMPUTED, HIGH] 2026-06-28 P10 状态对齐：历史 7 个外部依赖 live PASS + 4 产品线 mainnet live PASS + 全量门禁 PASS 证据继续保留；当前 Perfect-10 release gate 未闭合。GitHub #1289-#1331 与 Beads 43 个 P10 issue 仍 open；**release_closeable=NO**。
 
 ## 1. 模块边界
 
@@ -37,13 +37,13 @@
 
 > v3.5.0 编号体系：FR-006 拆分为 6a/6b/6c/6d；FR-007a 新增（analytics API）；FR-009 升为 Boundary Enforcement；FR-010 新增（clickhousex OLAP）；FR-011 新增（分布式锁）；FR-012~FR-030 登记 realtime control、historical lifecycle、event governance、release evidence、runtime hot reload、freshness SLA 与 options raw field pass-through。
 
-> 状态口径（v3.9.0）：`Done` / `Partial` / `Drifted` / `Pending` 为四态模型；L1 boundary governance 不替代 L2 功能验收。`Drifted` = 无。`Partial` 当前固定为 FR-007、FR-007a、FR-011、FR-013、FR-016、FR-017、FR-023、FR-024、FR-025、FR-026、FR-027、FR-028、FR-031、FR-032、FR-033、FR-034、FR-035、FR-036、FR-038、FR-039、FR-040、FR-041、FR-042、FR-043、FR-044；FR-037 为 Code-Done。2026-06-28 全量 E2E 证据闭合后所有 FR Evidence-Done。
+> 状态口径（v3.9.0）：`Done` / `Partial` / `Drifted` / `Pending` 为四态单一模型；L1 boundary governance 不替代 L2 功能验收。`Drifted` = 无。`Partial` 当前固定为 FR-007、FR-007a、FR-011、FR-013、FR-016、FR-017、FR-023、FR-024、FR-025、FR-026、FR-027、FR-028、FR-031、FR-032、FR-033、FR-034、FR-035、FR-036、FR-038、FR-039、FR-040、FR-041、FR-042、FR-043、FR-044；FR-037 为 Done。Evidence 列：25 个 Partial FR evidence Pending。release_closeable=NO（Code-Done 48% < 90% 门禁）。
 
 | FR | 功能 | 当前状态 | 已有证据 | 剩余实现面 |
 | --- | --- | --- | --- | --- |
 | FR-001 | Product-Line Support | Done | 四产品线 connector 实现齐全（`connectors/{spot,um_perp,cm_perp,options}.go` + 共享 `NewProductLineConnector`）；runtime 仅装配 spot，um/cm/options 需 testnet 凭据验证（G7）。 | 合约/期权 testnet 凭据 + 产品线差异测试。 |
 | FR-002 | Instrument Identity | Done | Plan007 A4 (`f9c2c01`) 跨产品线碰撞断言 `TestNewInstrumentKey_CrossProductLine_NoCollision`；InstrumentKey 含 exchange/product_line/symbol 维度。 | 合约/期权 normalize 分发层差异测试（identity 层已闭合）。 |
-| FR-003 | natsx Communication | Done | publisher (`publisher.go:56`) + consumer (`consumer.go:141`) 双侧装配；subject `binance.market.{pl}.{et}`；JetStream PubAck testnet live 验证。 | 无（testnet live 已验证）。 |
+| FR-003 | natsx Communication | Done | publisher (`publisher.go:56`) + consumer (`consumer.go:141`) 双侧装配；subject `binance.market.{pl}.{et}.v1`；JetStream PubAck testnet live 验证。 | 无（testnet live 已验证）。 |
 | FR-004 | At-Least-Once Delivery | Done | Plan007 A3 (`1ec9d26`) NakWithDelay(5s) + MaxDeliver=5 + deadletter 包；本地 NATS JetStream gated 测试验证 PubAck/duplicate/Nak/MaxDeliver 语义。 | deadletter 为 in-memory（非持久化 DLQ），生产持久化 DLQ 可作后续增强。 |
 | FR-005 | Idempotent Acceptance | Done | `idempotency/redis_store.go` SetNX 72h TTL；G0 闭合后 `storageFromEnv` 装配 RedisStore（+PostgresLog durable）替换 MemoryIdempotencyStore。 | 真实 Redis 端到端验证（PENDING-LIVE-RUN）。 |
 | FR-006a | taosx Time-Series Storage | Done | `storage/taos_writer.go` WriteBatch；G0 闭合后 `storageFromEnv` 装配 TaosWriter 注入 `ServerConfig.StorageWriter`，`persist()` 不再静默跳过。 | 真实 TDengine 端到端落盘验证（PENDING-LIVE-RUN）。 |
@@ -57,7 +57,7 @@
 | FR-010 | clickhousex OLAP Storage | Done | `storage/olap/clickhouse_olap.go` ETL (RunOnce/Run ticker 调度)；G0 闭合后 `storageFromEnv` 装配 `olap.NewETL` 在独立 goroutine 运行。 | AggSource 暂 stub（TODO P2）；真实 ClickHouse 验证（PENDING-LIVE-RUN）。 |
 | FR-011 | Distributed Coordinator Lock | Partial | `cache/dist_lock.go` SetNX + 续期 + Release 代码存在；Issue-Ledger 将 coordinator lock 显式 runtime 接线列为未闭合。 | CoordinatorLock 注入路径 + 多实例/故障恢复 evidence。 |
 | FR-012 | Stream Session Lifecycle | Done | `controlplane/stream_registry.go` + `stream_control.go`；client runtime 装配。 | 无（client 侧已装配）。 |
-| FR-013 | Exchange Reliability Controls | **Partial** | `controlplane/reliability.go` 已装配 RetryBudget + WeightGate + `RecordUsedWeight`（X-MBX-USED-WEIGHT-1M）+ `HTTPBackoffController`（429 AIMD / 418 15min pause）+ `ClockSkewDetector.CheckMonotonic` + `DriftRate`。 | 补 FR-specific 退避/clock-skew direct TC、live exchange evidence 与告警证据后再升格 Code-Done/Evidence-Done。 |
+| FR-013 | Exchange Reliability Controls | **Partial** | `controlplane/reliability.go` 已装配 RetryBudget + WeightGate + `RecordUsedWeight`（X-MBX-USED-WEIGHT-1M）+ `HTTPBackoffController`（429 AIMD / 418 15min pause）+ `ClockSkewDetector.CheckMonotonic` + `DriftRate`。 | 补 FR-specific 退避/clock-skew direct TC、live exchange evidence 与告警证据后再升格 Done。 |
 | FR-014 | Runtime Stream Observability | Done | `controlplane/stream_registry.go` + `metrics/metrics.go` 9 指标 prometheus；client runtime 装配。 | SLA 仪表盘文档化（P2 建议）。 |
 | FR-015 | Runtime Pause/Resume/Drain | Done | `controlplane/lifecycle.go` InFlightTracker + AuditLog；client runtime 装配。 | 无（client 侧已装配）。 |
 | FR-016 | Historical Backfill Planner | Partial | Plan007 A1 (`9d95f84`) `history_rest.go` 真实 Binance REST klines/aggTrades（含 weight 限流/分页/重试）替换 stub；Issue-Ledger #1104/#1107/#1109 仍要求 runtime fetcher 注入、UM/CM/Options REST endpoint 与限流平滑证据。 | runtime 注入 ExchangeHistoryFetcher + 产品线 REST endpoint + 分钟 weight 预算 evidence。 |
@@ -80,9 +80,9 @@
 
 | 日期 | 版本 | 变更 | 作者 |
 | --- | --- | --- | --- |
-| 2026-06-26 | v3.8.0 | 结构性修复：FR/BR 编号统一为根 SPEC canonical 命名空间；Client/Server 子规格废除本地编号改为引用根 FR/BR；FR-031~036 Draft→Active 合并入根 §7；BR-010~BR-012 合并入根 §8；DATA-QUALITY-SLA 合并入 FR-029；ENDPOINTS 迁移至 client 附录；DATA-LIFECYCLE 退役 | ZoneCNH |
+| 2026-06-26 | v3.8.0 | 结构性修复：FR/BR 编号统一为根 SPEC canonical 命名空间；Client/Server 子规格废除本地编号改为引用根 FR/BR；FR-031~036 Draft→Active 合并入根 §7；BR-010~BR-012 合并入根 §8；数据质量 SLA 合并入 FR-029；端点策略迁移至 client 附录；生命周期草案并入根规格 | ZoneCNH |
 
-> **以下 FR-031~036 为 exchangeInfo 同步规格（v3.8.0 Active）**，原定义于 `SPEC-exchangeinfo-sync.md`（Draft），v3.8.0 合并入根 SPEC。当前状态 **Code-Partial / Evidence-Done**（2026-06-28 全量 E2E 证据闭合后 Evidence-Done）。
+> **以下 FR-031~036 为 exchangeInfo 同步规格（v3.8.0 Active）**，2026-06-26 从草案并入根 SPEC。当前状态 **Partial**（evidence Pending）。
 
 | FR | 名称 | 状态 | 核心内容 | 待闭合 |
 | --- | --- | --- | --- | --- |
@@ -95,7 +95,7 @@
 
 ### v3.7.0 新增 FR-037~044（生产证据未全闭合）
 
-> [COMPUTED, HIGH] 以下 FR 为 2026-06-26 v3.7.0 新增，对齐 Plan008 生产级缺口终审（S26-S32 + G6/S1-S2）的标准化要求。2026-06-28 全量 E2E 证据闭合后，FR-038~044 保持 **Code-Partial / Evidence-Done**（已有本地 anchors，生产 evidence 已闭合）。FR-037 当前状态 **Code-Done / Evidence-Done**。对应 GitHub issue #1180-#1186（Plan008 7 项剩余 Task）。
+> [COMPUTED, HIGH] 以下 FR 为 2026-06-26 v3.7.0 新增，对齐 Plan008 生产级缺口终审（S26-S32 + G6/S1-S2）的标准化要求。FR-038~044 保持 **Partial**（evidence Pending）。FR-037 当前状态 **Done**。对应 GitHub issue #1180-#1186（Plan008 7 项剩余 Task）。
 
 | FR | 名称 | 状态 | 核心内容 | 对应标准化 |
 | --- | --- | --- | --- | --- |
@@ -119,7 +119,7 @@
 | **#1115** ClickHouse ETL 持久来源 | 当前 AggSource 是进程内内存窗口（单实例）；ClickHouse ETL 从内存聚合写入 | **明确 Partial**：内存窗口在单实例下功能完整；多实例横向扩展需改为从 taosx 聚合，属后续架构变更 | FR-007a Partial；`clickhouse_olap.go` AggSource 内存实现 |
 | **#1116** 增量 hot reload diff | 当前 hot reload 是全量重连（catalog Reload 替换全部条目 → stream 重建）；非增量 stream add/remove diff | **明确 full reconnect 边界**：ADR-004 已 Accepted；FR-024 保持 catalog reload + full reconnect 边界，增量 stream add/remove diff 归属 FR-036 自建实现，不依赖 FR-024 升级。 | A10-FR024-HOT-RELOAD-EVAL.md §总结；FR-024 Partial；ADR-004 |
 | **#1108** Options ticker 字段校验 | `parseOptionTicker` 字段名（`e/E/s/o/c/p/q/d/g/t/v`）基于文档约定；`@optionTicker` WS 报文字段名未经 mainnet 实样确认 | **REST fixture 替代**：使用 eapi exchangeInfo 的 `optionSymbols[]` metadata（symbol/underlying/side/strike/expiry）作为 fixture 校验 `parseOptionSymbolMeta`；WS `@optionTicker` body 字段名待 BINANCE_MAINNET_LIVE 抓样确认（normalize.go:502 TODO） | eapi REST 1,550 symbols 实测；`normalize_option_test.go` 已覆盖 symbol 解析路径 |
-| **#1110** 分布式 tracing | TraceContext 已进入 wire request，server→Kafka 已传播 traceparent/tracestate/baggage；OpenTelemetry SDK、NATS 端到端 header、slog trace_id 与采样配置已闭合 | **明确部分覆盖链路**：当前可观测性依赖 Prometheus 指标 + slog JSON 日志；trace context 已覆盖 server→Kafka header，完整分布式 tracing 已登记为 FR-039（Code-Partial / Evidence-Done） | OBSERVABILITY.md metrics；`wire/types.go` TraceContext；`kafka_dispatch.go` trace headers |
+| **#1110** 分布式 tracing | TraceContext 已进入 wire request，server→Kafka 已传播 traceparent/tracestate/baggage；OpenTelemetry SDK、NATS 端到端 header、slog trace_id 与采样配置已闭合 | **明确部分覆盖链路**：当前可观测性依赖 Prometheus 指标 + slog JSON 日志；trace context 已覆盖 server→Kafka header，完整分布式 tracing 已登记为 FR-039（Partial；live span-chain evidence 仍缺） | OBSERVABILITY.md metrics；`wire/types.go` TraceContext；`kafka_dispatch.go` trace headers |
 | **#1112** storage mock/fake 标准 | 当前测试用 in-memory fake（fakeKafkaProducer、fakeOSSStore 等），无统一的 mock/live 证据分级准则 | **明确测试证据分级**：fake 测试（in-memory mock）标记为 unit；live 测试（真实 infra）需 `*_LIVE` env gate；报告引用需区分 fake vs live | `consumer_integration_test.go` BINANCE_NATSX_INTEGRATION gate；`kafka_broker_test.go` BINANCE_KAFKA_LIVE gate |
 | **#1117** 持久化 backfill progress | FileHistoryStateStore/snapshot load-save 与 `cmd/binance-client` 的 `XGO_BINANCE_HISTORY_STATE_FILE` 本地接线已出现；backfill/reconcile/rehydration 的 restart evidence、持久介质口径与证据归档仍未闭合 | **明确恢复协议 + evidence gap**：代码已有本地 state store 原语和 env 接线，Code/Evidence 升格仍依赖重启恢复 direct TC 与持久介质验证 | `history_lifecycle.go` FileHistoryStateStore + snapshot load/save；`cmd/binance-client` XGO_BINANCE_HISTORY_STATE_FILE |
 | **#1118** 持久 DLQ wiring/replay | `deadletter.FileWriter` 已实现+测试；`appendDeadLetter` 支持 configured writer path；`cmd/binance-server` 的 `XGO_BINANCE_DLQ_FILE` 本地接线已出现；admin snapshot/replay/drain 仍以内存为主，file-backed replay evidence 未闭合 | **明确实现边界 + replay gap**：持久写入 hook 与 env 接线已存在，关闭仍需 file-backed replay/drain 证据 | `deadletter.go` FileWriter；`ingest.go` appendDeadLetter writer hook；`cmd/binance-server` XGO_BINANCE_DLQ_FILE |
@@ -157,7 +157,7 @@
 | --- | --- | --- |
 | `goal.md` | 业务目标与模块意图 | 作为实现清单的目标来源。 |
 | `SPEC.md` | v2.0.0 功能与边界规格 | 作为 FR/BR/NFR 语义来源。 |
-| `TRACEABILITY.md` | 根级 FR/AC/TC/Task 追溯 | 作为当前状态与验收编号来源；v3.9.0 当前口径对齐 Runtime-Anchor `/home/binance@2efc44a`，Code-State 23/25/0/0，Evidence-State 44 Done / 0 Pending。 |
+| `TRACEABILITY.md` | 根级 FR/AC/TC/Task 追溯 | 作为当前状态与验收编号来源；v3.9.0 当前口径对齐 Runtime-Anchor `/home/binance@2efc44a`，23 Done / 25 Partial / 0 Drifted / 0 Pending；Evidence 列 23 Done / 25 Pending。 |
 | `client/TRACEABILITY.md` | Client 子域追溯 | 作为 client active/pending 实现面来源。 |
 | `server/TRACEABILITY.md` | Server 子域追溯 | 作为 server active/pending 实现面来源。 |
 | `BOUNDARY-GATES.md` | 边界漂移防线 | 作为 FR-009 与 BR-001~BR-009 的文档和本地 runtime 证据入口。 |
@@ -170,7 +170,7 @@
 | 检查项 | 状态 | 依据 |
 | --- | --- | --- |
 | v2.0.0 根规格存在 | Done | `SPEC.md` v3.9.0。 |
-| 根级 traceability 存在 | Done | `TRACEABILITY.md` v3.9.0；当前口径对齐 Runtime-Anchor `/home/binance@2efc44a`，Code-State 23/25/0/0，Evidence-State 44 Done / 0 Pending。 |
+| 根级 traceability 存在 | Done | `TRACEABILITY.md` v3.9.0；当前口径对齐 Runtime-Anchor `/home/binance@2efc44a`，23 Done / 25 Partial / 0 Drifted / 0 Pending；Evidence 列 23 Done / 25 Pending。 |
 | Client/Server 子域 traceability 存在 | Done | `client/TRACEABILITY.md`, `server/TRACEABILITY.md`。 |
 | C/S 独立进程边界已定义 | Done | `README.md`, `SPEC.md`, `BOUNDARY-GATES.md`。 |
 | Boundary gate 文档已形成 | Done | `BOUNDARY-GATES.md` v2.2.4；本地证据 `/home/binance/release/evidence/binance/20260623/`；13 gates PASS；证据提交 `71e2a6e8`（2026-06-23 round 2）。 |
@@ -180,11 +180,11 @@
 | ManualAck 与 at-least-once runtime 闭合 | Done | FR-004 Done（Plan007 A3 NakWithDelay+DLQ + JetStream gated 测试）。 |
 | Server idempotency runtime 闭合 | Done | FR-005 Done（RedisStore/PostgresLog 装配已纳入 current projection；真实外部 Redis evidence 仍按 release/live gate 跟踪，不把 FR-005 列入 Partial）。 |
 | Storage/API/archival/broadcast/runtime 扩展闭合 | Partial | FR-005/006a-d/008/010/012~015/018~022/025/029/030 Done；当前 Partial 固定为 FR-007/007a/011/016/017/023/024/026/027/028。 |
-| 全量 AC/TC 通过 | Done | Boundary gates 14/14 PASS；全量 TC-001~TC-067 PASS（2026-06-28 全量 E2E 证据闭合）。 |
+| 全量 AC/TC 通过 | Historical evidence / P10 blocked | Boundary gates 14/14 PASS 与 TC-001~TC-067 PASS 为历史证据；当前 P10 H1/H2/H4/H5 仍需深度测试、覆盖率、soak、chaos 证据。 |
 
-## 7. 当前缺口登记（2026-06-26 刷新：所有引用 issue 已闭合）
+## 7. 历史缺口登记与当前 P10 阻塞
 
-> [COMPUTED, HIGH] 以下 issue 在 `report/binance/issues-sync-20260625.md` 中已全部 Closed（16/16）。本节标注已更新为"已关闭（issues-sync-20260625）"。Plan008 40 Task 也已全部 Closed；7 项剩余 P2 Task（#1180-#1186）对应 FR-037~044 的实现。
+> [COMPUTED, HIGH] 下表 #1104~#1118 / #1180~#1186 为历史 closed ledger；当前 Perfect-10 阻塞不在本表关闭。当前 P10 以 GitHub #1289~#1331 和 Beads 43 个 open issue 为准，详见 README Issue Gate、ACCEPTANCE.md §8 和 `module/binance/evidence/2026-06-28/p10-alignment-10-pass.md`。
 
 | 缺口 | 影响 | 关闭条件 |
 | --- | --- | --- |
@@ -196,5 +196,5 @@
 | **#1112 存储 mock/fake/live 标准（P1，已关闭）** | FR-007/FR-007a/FR-011 的 Done 判定曾需统一证据标准。 | 以能力边界文档化 Closed。 |
 | **#1114/#1116 runtime 增量状态机（P2，已关闭）** | order book rebuild 与 hot reload 曾需增量 diff/state machine 证据。 | 以能力边界文档化 Closed（#1114 明确排除，#1116 维持 Partial）。 |
 | **#1115 ClickHouse ETL 持久化（P2，已关闭）** | FR-007a 曾需持久化、多实例 source 与 live OLAP evidence。 | 以能力边界文档化 Closed。 |
-| **#1117/#1118 持久化进度与 DLQ（P2，已关闭）** | FR-017/026/027/028 曾缺持久化 progress/history/reconcile/rehydration 证据；DLQ 曾缺持久化 wiring/replay；2026-06-28 全量 E2E 证据闭合后 Evidence-Done。 | 以能力边界文档化 Closed。 |
-| **#1180-#1186 Plan008 剩余 P2 Task（P0/P1/P2，已关闭）** | FR-037~044（v3.7.0 新增）的 runtime 实现。 | 2026-06-28 全量 E2E 证据闭合后全部 CLOSED；release_closeable=YES。 |
+| **#1117/#1118 持久化进度与 DLQ（P2，已关闭）** | FR-017/026/027/028 曾缺持久化 progress/history/reconcile/rehydration 证据；DLQ 曾缺持久化 wiring/replay；Evidence 列仍为 Pending（Partial FR 代码缺口未闭合）。 | 以能力边界文档化 Closed。 |
+| **#1180-#1186 Plan008 剩余 P2 Task（P0/P1/P2 历史已关闭）** | FR-037~044（v3.7.0 新增）的 runtime 实现。 | 该行仅记录上一轮历史 closure；当前 P10 release gate 以 #1289~#1331 / Beads 43 个 open issue 为准。 |

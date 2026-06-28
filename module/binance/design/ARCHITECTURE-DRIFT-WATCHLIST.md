@@ -21,7 +21,7 @@ grep -rnE "(usdm_futures|coinm_futures|futures_usdt|futures_coin)" module/binanc
 ## D2. Options depth subject / topic 缺失
 
 **风险级别**：HIGH
-**历史**：2026-06-22 审计发现 `binance.market.options.depth` 在 natsx subject 表缺失（PR #858 修复）
+**历史**：2026-06-22 审计发现 `binance.market.options.depth.v1` 在 natsx subject 表缺失（PR #858 修复；当时未显式记录 `.v1` 后缀）
 **违反规则**：R2
 **检测命令**：
 ```bash
@@ -146,17 +146,15 @@ rg "2\s*\*\s*interval|2\s*\*\s*expected" /home/binance/internal/ -l --include='*
 
 ---
 
-## D11. 双态分歧（Code-Done vs Evidence-Done）
+## D11. 状态模型回归（禁止代码/证据双状态）
 
-**风险级别**：MEDIUM
-**历史**：v3.8.0 及之前 FEATURES.md/ACCEPTANCE.md/TRACEABILITY.md 三份文档对同一 FR 的「Done」状态定义互相矛盾（FEATURES Code-Done vs ACCEPTANCE Evidence-Pending），导致无法从单一文档判断真实完成状态。v3.9.0 引入双态模型（Code-Done / Evidence-Done），三表各明确视角。
+**风险级别**：HIGH
+**历史**：v3.8.0 及之前 FEATURES.md/ACCEPTANCE.md/TRACEABILITY.md 三份文档对同一 FR 的「Done」状态定义互相矛盾，导致无法从单一文档判断真实完成状态。v3.9.0 曾引入代码完成/证据完成分层；P10 D-1 已撤销该结论，当前只能使用单一 Done/Partial/Drifted/Pending 状态。当前 root 状态为 23 Done / 25 Partial / 0 Drifted / 0 Pending，release_closeable=NO。
 **违反规则**：R4
 **检测命令**：
 ```bash
-# 检测三表中 Code-Done 数量与 Evidence-Done 数量的偏差
-echo "FEATURES Done: $(rg -c '| FR-.*\| Done' module/binance/spec/FEATURES.md)"
-echo "ACCEPTANCE Evidence-Done: $(rg -c 'Evidence-Done' module/binance/spec/ACCEPTANCE.md)"
-# 偏差 > 10% 触发 D11 告警
+# 检测当前文档是否重新引入代码/证据双状态或发布可关闭误判
+rg "Code[-]State|Evidence[-]State|Evidence[-]Done|Code[-]Done|release_closeable[=]YES|44[[:space:]]Done" module/binance
 ```
 
 ---

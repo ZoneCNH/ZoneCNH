@@ -5,6 +5,8 @@
 > 目标：每个维度从当前评分提升至 10/10，达到生产级可发布状态
 > Spec-Version：v3.9.0 · Runtime-Version：v0.2.0 · Runtime-Anchor：`/home/binance@2efc44a`
 
+> Current alignment note（2026-06-28 v3.9.6 → P10 fix round）：本方案是 P10 修复前的行动基线。P10 修复轮已完成：43 GitHub issues + 43 Beads issues 全部关闭；Phase 1（16 issues）deliverable 完整验证；Phase 2-6（27 issues）deliverable 已创建，pending live validation。当前 SSOT 为 `module/binance/spec/SPEC.md`、`module/binance/matrix/TRACEABILITY.md`、`module/binance/todo.md` 与 `module/binance/evidence/2026-06-28/review/p10-issue-alignment.md`；当前结论为 `release_closeable=NO`（Code-Done 23/48 ≈ 47.9% < 90%）。10 轮验证全部 PASS。Runtime branch: `feat/p10-fix-20260628`。
+
 ---
 
 ## 评分总览与目标
@@ -209,7 +211,7 @@ git rm module/binance/spec/SPEC-exchangeinfo-sync.md
 |--------|:----:|------|
 | 双态模型导致状态认知混乱 | -0.8 | 25 个 Code-Partial 标为 Evidence-Done |
 | TRACEABILITY 历史注记占 40%+ | -0.5 | v3.5.1/v3.6.0/v3.6.1 等历史变更注记未迁移 |
-| `release_closeable=YES` 基于 Evidence-State 而非 Code-State | -0.4 | 标准过于宽松 |
+| 旧 release-closeable YES 声明基于 Evidence-State 而非 Code-State | -0.4 | 标准过于宽松 |
 | todo.md 声称 26/26 完成与 Code-State 矛盾 | -0.3 | 状态不一致 |
 
 ### 达到 10 的行动清单
@@ -909,6 +911,6 @@ ALTER TABLE binance_bar
 >
 > [INFERRED] 阶段 1（文档治理）可在 1 周内完成且不依赖代码变更，建议立即启动。阶段 2（代码闭合）是关键路径，需按 P0→P1→P2 顺序执行。
 >
-> [KNOWN] 当前 `release_closeable=YES` 声明基于已废除的双态模型 Evidence-State，本方案执行后应基于 Code-State 单态模型重新判定。
+> [KNOWN] 旧 release-closeable YES 声明基于已废除的双态模型 Evidence-State；当前 v3.9.6 口径已改为 `release_closeable=NO`，后续重新判定必须基于单态模型与 issue-level evidence。
 
 [RULES I BROKE]：无。本方案遵循了证据标签、置信度标注和反奉承规则。

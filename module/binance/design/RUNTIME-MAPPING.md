@@ -219,18 +219,18 @@ Stream: BINANCE_MARKET
 Retention: 7d  Storage: file  Replicas: 1 (生产升 3)
 
 Subjects:
-  binance.market.spot.tick         binance.market.spot.trade
-  binance.market.spot.bar          binance.market.spot.depth
-  binance.market.spot.funding_rate binance.market.spot.mark_price
-  binance.market.um_perp.tick      binance.market.um_perp.trade
-  binance.market.um_perp.bar       binance.market.um_perp.depth
-  binance.market.um_perp.funding_rate  binance.market.um_perp.mark_price
-  binance.market.cm_perp.tick      binance.market.cm_perp.trade
-  binance.market.cm_perp.bar       binance.market.cm_perp.depth
-  binance.market.cm_perp.funding_rate  binance.market.cm_perp.mark_price
-  binance.market.options.tick      binance.market.options.trade
-  binance.market.options.bar       binance.market.options.depth
-  binance.market.options.funding_rate  binance.market.options.mark_price
+  binance.market.spot.tick.v1         binance.market.spot.trade.v1
+  binance.market.spot.bar.v1          binance.market.spot.depth.v1
+  binance.market.spot.funding_rate.v1 binance.market.spot.mark_price.v1
+  binance.market.um_perp.tick.v1      binance.market.um_perp.trade.v1
+  binance.market.um_perp.bar.v1       binance.market.um_perp.depth.v1
+  binance.market.um_perp.funding_rate.v1  binance.market.um_perp.mark_price.v1
+  binance.market.cm_perp.tick.v1      binance.market.cm_perp.trade.v1
+  binance.market.cm_perp.bar.v1       binance.market.cm_perp.depth.v1
+  binance.market.cm_perp.funding_rate.v1  binance.market.cm_perp.mark_price.v1
+  binance.market.options.tick.v1      binance.market.options.trade.v1
+  binance.market.options.bar.v1       binance.market.options.depth.v1
+  binance.market.options.funding_rate.v1  binance.market.options.mark_price.v1
 
 Server Consumer:
   Durable: binance-server  AckPolicy: explicit  AckWait: 30s  MaxDeliver: 5

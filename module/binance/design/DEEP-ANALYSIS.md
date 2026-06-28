@@ -30,7 +30,7 @@
 - **Runtime 映射**：`module/binance/RUNTIME-MAPPING.md`
 - **边界门禁**：`module/binance/BOUNDARY-GATES.md`
 - **治理规则**：`module/binance/RULES.md`
-- **数据生命周期**：`module/binance/spec/deprecated/DATA-LIFECYCLE.md`
+- **数据生命周期**：`module/binance/spec/SPEC.md` §7 FR-012~FR-030（原 `DATA-LIFECYCLE.md` 已物理删除）
 - **迁移记录**：`docs/migrations/binance-v2-upgrade.md`、`docs/migrations/remove-binance-market.md`
 - **治理归档报告**：`report/binance/INDEX.md`
 

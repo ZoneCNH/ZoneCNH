@@ -769,7 +769,7 @@ gates:
     risk_owner: ZoneCNH
     risk_level: low
     risk_reason: 原评分 97/100，P2（DEPRECATED 文件目录重组）+ P3（子模块 TC→SC 重编号）已修复，评分提升至 98/100，达到门禁。
-    mitigation: 已完成 — 4 个 DEPRECATED 文件移至 spec/deprecated/；子模块本地 TC 编号改为 SC（Scenario ID）
+    mitigation: 已完成 — 4 个 DEPRECATED 文件移至 spec/deprecated/（v3.9.5 物理删除）；子模块本地 TC 编号改为 SC（Scenario ID）
     due_at: '2026-06-28T23:59:59Z'
     review_gate: GB-8
     release_blocking: false
