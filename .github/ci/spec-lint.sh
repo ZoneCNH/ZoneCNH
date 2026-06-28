@@ -355,7 +355,7 @@ check_xlib_standard_artifacts() {
       FAIL=1
     fi
     if ! grep -qP '归档说明.*不再作为.*可执行规格' "$xlib_dir/SPEC.md"; then
-      echo "  ❌ module/xlib_standard/SPEC.md must carry an archived/non-authoritative notice"
+      echo "  ❌ module/xlib_standard/spec/SPEC.md must carry an archived/non-authoritative notice"
       FAIL=1
     fi
   fi
@@ -384,14 +384,14 @@ check_xlib_standard_artifacts() {
   local trace_file="$xlib_dir/TRACEABILITY.md"
   if [[ -f "$trace_file" ]]; then
     if ! grep -qP '^\| FR \|.*\| 证据类型 \|' "$trace_file"; then
-      echo "  ❌ module/xlib_standard/TRACEABILITY.md missing 证据类型 column"
+      echo "  ❌ module/xlib_standard/matrix/TRACEABILITY.md missing 证据类型 column"
       FAIL=1
     fi
 
     local fr_rows
     fr_rows=$(grep -cP '^\| `FR-[0-9]{3}` ' "$trace_file" || true)
     if [[ "$fr_rows" -ne 52 ]]; then
-      echo "  ❌ module/xlib_standard/TRACEABILITY.md has $fr_rows FR rows, expected 52"
+      echo "  ❌ module/xlib_standard/matrix/TRACEABILITY.md has $fr_rows FR rows, expected 52"
       FAIL=1
     fi
 
@@ -423,7 +423,7 @@ check_xlib_standard_artifacts() {
       ' "$trace_file"
     )
     if [[ -n "$bad_types" ]]; then
-      echo "  ❌ module/xlib_standard/TRACEABILITY.md has invalid evidence types:"
+      echo "  ❌ module/xlib_standard/matrix/TRACEABILITY.md has invalid evidence types:"
       echo "$bad_types" | sed 's/^/     - /'
       FAIL=1
     fi

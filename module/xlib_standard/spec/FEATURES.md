@@ -14,8 +14,8 @@
 
 | 项目 | 证据 |
 | --- | --- |
-| 功能分支提交 | `/home/xlib_standard/.worktree/workspaces/xlib_standard` branch `xlib_standard` / `c899cf530f29ade438da048ddeff3f30584b6b04` |
-| 本地 main 合并提交 | `/home/xlib_standard/.worktree/workspaces/main-merge` branch `main` / `8c41021d5d2573c8c97ccd968d5d3fbf0b0bf872` |
+| 功能分支提交 | `/home/xlib-standard/.worktree/workspaces/xlib_standard` branch `xlib_standard` / `c899cf530f29ade438da048ddeff3f30584b6b04` |
+| 本地 main 合并提交 | `/home/xlib-standard/.worktree/workspaces/main-merge` branch `main` / `8c41021d5d2573c8c97ccd968d5d3fbf0b0bf872` |
 | Release 版本 | `v1.0.2` |
 | Release facts target | `26792dc01317794fb337a0dc81bd732285e49100`；`ci_pull_request` 本地上下文跳过 tag 校验 |
 | 本地发布验收 | `GOWORK=off XLIB_CONTEXT=ci_pull_request make release-check` 在功能分支与本地 main 合并提交均通过 |

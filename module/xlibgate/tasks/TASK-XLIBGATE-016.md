@@ -9,9 +9,9 @@ task_id: TASK-XLIBGATE-016
 module: xlibgate
 scope: "实现 trust testkit-prod-import 命令：检测生产代码中的 testkitx import"
 spec_ref:
-  - "module/xlibgate/SPEC.md#FR-017"
-  - "module/xlibgate/SPEC.md#TC-024"
-  - "module/xlibgate/SPEC.md#TC-025"
+  - "module/xlibgate/spec/SPEC.md#FR-017"
+  - "module/xlibgate/spec/SPEC.md#TC-024"
+  - "module/xlibgate/spec/SPEC.md#TC-025"
 files:
   - "cmd/trust_testkit.go"
   - "scanner/trust/testkit.go"

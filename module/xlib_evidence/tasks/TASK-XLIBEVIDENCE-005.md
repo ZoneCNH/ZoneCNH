@@ -1,7 +1,7 @@
 ---
 scope: "xlib_evidence FR-001 coverage"
 spec_ref:
-  - "module/xlib_evidence/SPEC.md#FR-001"
+  - "module/xlib_evidence/spec/SPEC.md#FR-001"
 acceptance_criteria:
   - "FR-001 baseline coverage"
 files:

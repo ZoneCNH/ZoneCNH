@@ -9,8 +9,8 @@ task_id: TASK-XLIBGATE-005
 module: xlibgate
 scope: "实现 check release 命令：检查 evidence.json 完整性"
 spec_ref:
-  - "module/xlibgate/SPEC.md#FR-004"
-  - "module/xlibgate/SPEC.md#BR-004"
+  - "module/xlibgate/spec/SPEC.md#FR-004"
+  - "module/xlibgate/spec/SPEC.md#BR-004"
 files:
   - "check_release.go"
   - "check_release_test.go"

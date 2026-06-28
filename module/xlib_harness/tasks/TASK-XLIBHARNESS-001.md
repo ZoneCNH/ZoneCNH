@@ -2,12 +2,12 @@
 module: xlib_harness
 scope: "xlib_harness FR-001 coverage"
 spec_ref:
-  - "module/xlib_harness/SPEC.md#FR-001"
+  - "module/xlib_harness/spec/SPEC.md#FR-001"
 acceptance_criteria:
   - "FR-001 baseline coverage"
 files:
-  - "/home/xlib_harness/internal/harness/harness.go"
-  - "/home/xlib_harness/internal/harness/harness_test.go"
+  - "/home/xlib-harness/internal/harness/harness.go"
+  - "/home/xlib-harness/internal/harness/harness_test.go"
 priority: P1
 status: completed
 ---

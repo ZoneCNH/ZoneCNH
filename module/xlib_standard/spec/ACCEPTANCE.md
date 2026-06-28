@@ -14,8 +14,8 @@
 
 | 项目 | 证据 |
 | --- | --- |
-| 功能分支提交 | `/home/xlib_standard/.worktree/workspaces/xlib_standard` branch `xlib_standard` / `c899cf530f29ade438da048ddeff3f30584b6b04` |
-| 本地 main 合并提交 | `/home/xlib_standard/.worktree/workspaces/main-merge` branch `main` / `8c41021d5d2573c8c97ccd968d5d3fbf0b0bf872` |
+| 功能分支提交 | `/home/xlib-standard/.worktree/workspaces/xlib_standard` branch `xlib_standard` / `c899cf530f29ade438da048ddeff3f30584b6b04` |
+| 本地 main 合并提交 | `/home/xlib-standard/.worktree/workspaces/main-merge` branch `main` / `8c41021d5d2573c8c97ccd968d5d3fbf0b0bf872` |
 | Release 版本 | `v1.0.2` |
 | Release facts target | `26792dc01317794fb337a0dc81bd732285e49100`；`ci_pull_request` 本地上下文跳过 tag 校验 |
 | 本地发布验收 | `GOWORK=off XLIB_CONTEXT=ci_pull_request make release-check` 在功能分支与本地 main 合并提交均通过 |
@@ -30,13 +30,13 @@
 
 | 类别 | 命令 | 通过标准 |
 | --- | --- | --- |
-| v1.0.2 单元测试 | `/home/xlib_standard/.worktree/workspaces/xlib_standard`: `GOWORK=off go test ./...` | 通过 |
-| v1.0.2 覆盖率证据 | `/home/xlib_standard/.worktree/workspaces/xlib_standard`: `GOWORK=off go test ./... -covermode=atomic -coverprofile=coverage.out && go tool cover -func=coverage.out` | 通过；所有 statement-bearing package 与函数为 100.0% |
-| v1.0.2 覆盖率门槛 | `/home/xlib_standard/.worktree/workspaces/xlib_standard`: `GOWORK=off make coverage-check` | 通过，`coverage 100.0% >= 100.0%` |
-| v1.0.2 PR 发布验收 | `/home/xlib_standard/.worktree/workspaces/xlib_standard`: `GOWORK=off XLIB_CONTEXT=ci_pull_request make release-check` | 通过，evidence hash `6c8d786bb4cbe4fd6eff54c5fe823538d2b035700d9869e49746af7f92f7dfd9` |
-| v1.0.2 本地 main 发布验收 | `/home/xlib_standard/.worktree/workspaces/main-merge`: `GOWORK=off XLIB_CONTEXT=ci_pull_request make release-check` | 通过，`tree_state=clean`，evidence hash `7e1d43ec6fc0e2f9c77fbbdfd37556ff2de4d5139868ad86aca00820e0000fbd` |
-| v1.0.2 goal score | `/home/xlib_standard/.worktree/workspaces/xlib_standard`: `GOWORK=off go run ./cmd/goalcli score --min 9.8` | 通过，score `10` |
-| v1.0.2 CI/CD 配置 | `/home/xlib_standard/.worktree/workspaces/xlib_standard`: inspect `.github/workflows/ci.yml` and `.github/workflows/goal-gates.yml` | coverage/release manifest artifacts、pinned golangci-lint、coverage-check 与 evidence-check 已配置；远端未运行 |
+| v1.0.2 单元测试 | `/home/xlib-standard/.worktree/workspaces/xlib_standard`: `GOWORK=off go test ./...` | 通过 |
+| v1.0.2 覆盖率证据 | `/home/xlib-standard/.worktree/workspaces/xlib_standard`: `GOWORK=off go test ./... -covermode=atomic -coverprofile=coverage.out && go tool cover -func=coverage.out` | 通过；所有 statement-bearing package 与函数为 100.0% |
+| v1.0.2 覆盖率门槛 | `/home/xlib-standard/.worktree/workspaces/xlib_standard`: `GOWORK=off make coverage-check` | 通过，`coverage 100.0% >= 100.0%` |
+| v1.0.2 PR 发布验收 | `/home/xlib-standard/.worktree/workspaces/xlib_standard`: `GOWORK=off XLIB_CONTEXT=ci_pull_request make release-check` | 通过，evidence hash `6c8d786bb4cbe4fd6eff54c5fe823538d2b035700d9869e49746af7f92f7dfd9` |
+| v1.0.2 本地 main 发布验收 | `/home/xlib-standard/.worktree/workspaces/main-merge`: `GOWORK=off XLIB_CONTEXT=ci_pull_request make release-check` | 通过，`tree_state=clean`，evidence hash `7e1d43ec6fc0e2f9c77fbbdfd37556ff2de4d5139868ad86aca00820e0000fbd` |
+| v1.0.2 goal score | `/home/xlib-standard/.worktree/workspaces/xlib_standard`: `GOWORK=off go run ./cmd/goalcli score --min 9.8` | 通过，score `10` |
+| v1.0.2 CI/CD 配置 | `/home/xlib-standard/.worktree/workspaces/xlib_standard`: inspect `.github/workflows/ci.yml` and `.github/workflows/goal-gates.yml` | coverage/release manifest artifacts、pinned golangci-lint、coverage-check 与 evidence-check 已配置；远端未运行 |
 | 文档存在性 | cd /home/ZoneCNH && test -f module/xlib_standard/FEATURES.md && test -f module/xlib_standard/ACCEPTANCE.md | FEATURES.md 与 ACCEPTANCE.md 均存在 |
 | 文档格式 | cd /home/ZoneCNH && git diff --check -- module/xlib_standard | 无尾随空格或补丁格式错误 |
 | 运行时测试 | cd /home/xlib_standard && GOWORK=off go test ./... | 所有包测试通过 |

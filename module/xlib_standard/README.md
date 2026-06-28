@@ -1,6 +1,6 @@
 # xlib_standard 分析索引
 
-本目录是 `github.com/ZoneCNH/xlib_standard` 上游仓库在本仓库的 **本地分析快照**。汇总自 `.worktree/*.md`、`docs/**` 与外部规划文档的整理结果，作为本仓库（`ZoneCNH/ZoneCNH`）架构索引的一部分；它不是上游 SSOT，也不是可执行规格。
+本目录是 `github.com/ZoneCNH/xlib-standard` 上游仓库在本仓库的 **本地分析快照**。汇总自 `.worktree/*.md`、`docs/**` 与外部规划文档的整理结果，作为本仓库（`ZoneCNH/ZoneCNH`）架构索引的一部分；它不是上游 SSOT，也不是可执行规格。
 
 模块级文档 `goal.md` 和 `SPEC.md` 位于本目录根，定义 xlib_standard 的五类职责（标准事实源、Go Reference Template、Generator、Harness Gate、Evidence Runtime，引自 CONSTITUTION.md P2 / ARCHITECTURE.md）。分析快照文件（`ANALYSIS.md`、`FR-DETAIL.md` 等）是对上游仓库标准的本地整理，不替代模块级文档。
 
@@ -8,7 +8,7 @@
 
 | 字段            | 值                                                                                                                      |
 | --------------- | ----------------------------------------------------------------------------------------------------------------------- |
-| Upstream        | `github.com/ZoneCNH/xlib_standard`                                                                                      |
+| Upstream        | `github.com/ZoneCNH/xlib-standard`                                                                                      |
 | Snapshot Date   | 2026-06-08（原始快照）/ 2026-06-12（文档对齐更新）                                                                      |
 | Upstream Commit | `93753b30e6d01fb4a9b096acaa0d7d53a2fb231c`（= remote tag `v0.6.5`，tree `296e3b91…`，pinned 2026-06-08 04:59 +08:00）   |
 | Upstream HEAD   | `09c9ec2`（tag `v1.0.0`，2026-06-12 文档-代码对齐基准）                                                                 |
@@ -17,7 +17,7 @@
 
 ## 模块定位
 
-`xlib_standard` 是本仓库的本地分析快照目录，同步自上游 `github.com/ZoneCNH/xlib_standard`。模块承担五类职责：
+`xlib_standard` 是本仓库的本地分析快照目录，同步自上游 `github.com/ZoneCNH/xlib-standard`。模块承担五类职责：
 
 | 角色                  | 职责                               | 权威工件                  |
 | --------------------- | ---------------------------------- | ------------------------- |

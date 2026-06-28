@@ -70,7 +70,7 @@ PR-5 (Release)
 | 项       | 值                        |
 | -------- | ------------------------- |
 | 分支     | `feat/xlib-v1-prune`      |
-| worktree | `/home/xlib_standard/.worktree/workspaces/feat/xlib-v1-prune` |
+| worktree | `/home/xlib-standard/.worktree/workspaces/feat/xlib-v1-prune` |
 | 任务     | TASK-XLIB-000             |
 | 预估     | 0.5h                      |
 
@@ -101,7 +101,7 @@ test -f Makefile
 | 项       | 值                       |
 | -------- | ------------------------ |
 | 分支     | `feat/xlib-v1-docs`      |
-| worktree | `/home/xlib_standard/.worktree/workspaces/feat/xlib-v1-docs` |
+| worktree | `/home/xlib-standard/.worktree/workspaces/feat/xlib-v1-docs` |
 | 任务     | TASK-XLIB-001            |
 | 依赖     | PR-1                     |
 | 预估     | 2h                       |
@@ -133,7 +133,7 @@ grep -q "## 测试规则" docs/standard.md
 | 项       | 值                        |
 | -------- | ------------------------- |
 | 分支     | `feat/xlib-v1-build`      |
-| worktree | `/home/xlib_standard/.worktree/workspaces/feat/xlib-v1-build` |
+| worktree | `/home/xlib-standard/.worktree/workspaces/feat/xlib-v1-build` |
 | 任务     | TASK-XLIB-002             |
 | 依赖     | PR-1                      |
 | 预估     | 2h                        |
@@ -167,7 +167,7 @@ test -f .github/workflows/ci.yml
 | 项       | 值                           |
 | -------- | ---------------------------- |
 | 分支     | `feat/xlib-v1-packages`      |
-| worktree | `/home/xlib_standard/.worktree/workspaces/feat/xlib-v1-packages` |
+| worktree | `/home/xlib-standard/.worktree/workspaces/feat/xlib-v1-packages` |
 | 任务     | TASK-XLIB-003                |
 | 依赖     | PR-1 + PR-2                  |
 | 预估     | 4h                           |
@@ -199,7 +199,7 @@ cd examples && go run main.go
 | 项       | 值                          |
 | -------- | --------------------------- |
 | 分支     | `feat/xlib-v1-release`      |
-| worktree | `/home/xlib_standard/.worktree/workspaces/feat/xlib-v1-release` |
+| worktree | `/home/xlib-standard/.worktree/workspaces/feat/xlib-v1-release` |
 | 任务     | TASK-XLIB-004               |
 | 依赖     | PR-3 + PR-4                 |
 | 预估     | 1h                          |
@@ -228,10 +228,10 @@ go test ./... -race
 
 ```bash
 # 1. 创建 worktree
-git fetch origin && git worktree add /home/xlib_standard/.worktree/workspaces/feat/xlib-v1-xxx -b feat/xlib-v1-xxx origin/main
+git fetch origin && git worktree add /home/xlib-standard/.worktree/workspaces/feat/xlib-v1-xxx -b feat/xlib-v1-xxx origin/main
 
 # 2. 进入 worktree
-cd /home/xlib_standard/.worktree/workspaces/feat/xlib-v1-xxx
+cd /home/xlib-standard/.worktree/workspaces/feat/xlib-v1-xxx
 
 # 3. 执行变更（按 Context Packet）
 
@@ -247,7 +247,7 @@ gh pr create --base main --head feat/xlib-v1-xxx --title "feat(xlib_standard): P
 
 # 7. 合并后清理
 cd /home/xlib_standard
-git worktree remove /home/xlib_standard/.worktree/workspaces/feat/xlib-v1-xxx
+git worktree remove /home/xlib-standard/.worktree/workspaces/feat/xlib-v1-xxx
 git branch -d feat/xlib-v1-xxx
 ```
 

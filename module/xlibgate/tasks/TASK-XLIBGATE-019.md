@@ -9,8 +9,8 @@ task_id: TASK-XLIBGATE-019
 module: xlibgate
 scope: "Trust 子命令组集成测试、README trust 章节、CHANGELOG 更新"
 spec_ref:
-  - "module/xlibgate/SPEC.md#16.5 集成测试"
-  - "module/xlibgate/SPEC.md#22 Release DoD"
+  - "module/xlibgate/spec/SPEC.md#16.5 集成测试"
+  - "module/xlibgate/spec/SPEC.md#22 Release DoD"
 files:
   - "README.md"
   - "CHANGELOG.md"

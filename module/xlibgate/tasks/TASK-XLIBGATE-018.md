@@ -9,9 +9,9 @@ task_id: TASK-XLIBGATE-018
 module: xlibgate
 scope: "实现 trust fleet-status 命令：20 模块舰队状态聚合 → .foundationx/status/index.json"
 spec_ref:
-  - "module/xlibgate/SPEC.md#FR-019"
-  - "module/xlibgate/SPEC.md#TC-028"
-  - "module/xlibgate/SPEC.md#TC-029"
+  - "module/xlibgate/spec/SPEC.md#FR-019"
+  - "module/xlibgate/spec/SPEC.md#TC-028"
+  - "module/xlibgate/spec/SPEC.md#TC-029"
 files:
   - "cmd/trust_fleet.go"
   - "scanner/trust/fleet.go"

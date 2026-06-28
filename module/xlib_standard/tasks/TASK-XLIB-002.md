@@ -9,8 +9,8 @@ task_id: TASK-XLIB-002
 module: xlib_standard
 scope: "重写 Makefile、scripts/、.github/，确保只有最小 gate 集和标准脚本"
 spec_ref:
-  - "module/xlib_standard/SPEC.md#20"
-  - "module/xlib_standard/goal.md#6"
+  - "module/xlib_standard/spec/SPEC.md#20"
+  - "module/xlib_standard/goal/goal.md#6"
 files:
   - "Makefile"
   - "scripts/render_template.sh"

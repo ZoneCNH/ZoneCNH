@@ -9,10 +9,10 @@ task_id: TASK-XLIBGATE-012
 module: xlibgate
 scope: "实现 trust template-residue 命令：扫描下游仓库中的 BR-010 禁止模板身份短语"
 spec_ref:
-  - "module/xlibgate/SPEC.md#FR-013"
-  - "module/xlibgate/SPEC.md#BR-010"
-  - "module/xlibgate/SPEC.md#TC-016"
-  - "module/xlibgate/SPEC.md#TC-017"
+  - "module/xlibgate/spec/SPEC.md#FR-013"
+  - "module/xlibgate/spec/SPEC.md#BR-010"
+  - "module/xlibgate/spec/SPEC.md#TC-016"
+  - "module/xlibgate/spec/SPEC.md#TC-017"
 files:
   - "cmd/trust_template.go"
   - "scanner/trust/template.go"

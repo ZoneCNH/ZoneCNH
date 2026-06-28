@@ -1062,13 +1062,13 @@ gates:
     details:
     - check: SPEC.md 存在且 Approved
       status: PASS
-      evidence: module/xlib_harness/SPEC.md v1.3.0
+      evidence: module/xlib_harness/spec/SPEC.md v1.3.0
     - check: goal.md 存在
       status: PASS
-      evidence: module/xlib_harness/goal.md
+      evidence: module/xlib_harness/goal/goal.md
     - check: TRACEABILITY.md 存在
       status: PASS
-      evidence: module/xlib_harness/TRACEABILITY.md
+      evidence: module/xlib_harness/matrix/TRACEABILITY.md
     - check: 运行时代码存在
       status: PASS
       evidence: /home/xlib_harness@d90b35124701
@@ -1086,7 +1086,7 @@ gates:
     details:
     - check: GitHub Release 存在
       status: PASS
-      evidence: https://github.com/ZoneCNH/xlib_harness/releases/tag/v0.1.6
+      evidence: https://github.com/ZoneCNH/xlib-harness/releases/tag/v0.1.6
     - check: make ci PASS
       status: PASS
       evidence: goal.md 测试证据
@@ -1129,13 +1129,13 @@ gates:
     details:
     - check: SPEC.md 存在且 Approved
       status: PASS
-      evidence: module/xlib_evidence/SPEC.md v1.2.1
+      evidence: module/xlib_evidence/spec/SPEC.md v1.2.1
     - check: goal.md 存在
       status: PASS
-      evidence: module/xlib_evidence/goal.md
+      evidence: module/xlib_evidence/goal/goal.md
     - check: TRACEABILITY.md 存在
       status: PASS
-      evidence: module/xlib_evidence/TRACEABILITY.md
+      evidence: module/xlib_evidence/matrix/TRACEABILITY.md
     - check: 运行时代码存在
       status: PASS
       evidence: /home/xlib_evidence

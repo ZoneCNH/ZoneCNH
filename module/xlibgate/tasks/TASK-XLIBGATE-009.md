@@ -9,11 +9,11 @@ task_id: TASK-XLIBGATE-009
 module: xlibgate
 scope: "实现 l2 子命令组（FR-007~FR-011）：L2 发布就绪门禁"
 spec_ref:
-  - "module/xlibgate/SPEC.md#FR-007"
-  - "module/xlibgate/SPEC.md#FR-008"
-  - "module/xlibgate/SPEC.md#FR-009"
-  - "module/xlibgate/SPEC.md#FR-010"
-  - "module/xlibgate/SPEC.md#FR-011"
+  - "module/xlibgate/spec/SPEC.md#FR-007"
+  - "module/xlibgate/spec/SPEC.md#FR-008"
+  - "module/xlibgate/spec/SPEC.md#FR-009"
+  - "module/xlibgate/spec/SPEC.md#FR-010"
+  - "module/xlibgate/spec/SPEC.md#FR-011"
 files:
   - "internal/l2/manifest/manifest.go"
   - "internal/l2/manifest/manifest_test.go"

@@ -9,8 +9,8 @@ task_id: TASK-XLIB-000
 module: xlib_standard
 scope: "删除 governance-runtime、evidence-runtime、debt-governance、adrs、internal 等非目标目录和文件"
 spec_ref:
-  - "module/xlib_standard/SPEC.md#5"
-  - "module/xlib_standard/goal.md#4"
+  - "module/xlib_standard/spec/SPEC.md#5"
+  - "module/xlib_standard/goal/goal.md#4"
 files:
   - ".agent/ (删除)"
   - ".codex/ (删除)"

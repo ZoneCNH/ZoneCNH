@@ -9,10 +9,10 @@ task_id: TASK-XLIBGATE-002
 module: xlibgate
 scope: "实现 check imports 命令：解析依赖矩阵配置，检查 import 路径合规性"
 spec_ref:
-  - "module/xlibgate/SPEC.md#FR-001"
-  - "module/xlibgate/SPEC.md#BR-002"
-  - "module/xlibgate/SPEC.md#BR-008"
-  - "module/xlibgate/SPEC.md#BR-009"
+  - "module/xlibgate/spec/SPEC.md#FR-001"
+  - "module/xlibgate/spec/SPEC.md#BR-002"
+  - "module/xlibgate/spec/SPEC.md#BR-008"
+  - "module/xlibgate/spec/SPEC.md#BR-009"
 files:
   - "check_imports.go"
   - "check_imports_test.go"

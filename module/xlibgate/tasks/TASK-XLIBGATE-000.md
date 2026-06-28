@@ -9,8 +9,8 @@ task_id: TASK-XLIBGATE-000
 module: xlibgate
 scope: "创建 go.mod、cmd/xlibgate/main.go、errors.go"
 spec_ref:
-  - "module/xlibgate/SPEC.md#AC-008"
-  - "module/xlibgate/SPEC.md#BR-009"
+  - "module/xlibgate/spec/SPEC.md#AC-008"
+  - "module/xlibgate/spec/SPEC.md#BR-009"
 files:
   - "go.mod"
   - "cmd/xlibgate/main.go"

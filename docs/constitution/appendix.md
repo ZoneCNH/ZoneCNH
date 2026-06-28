@@ -15,10 +15,10 @@
 | L1 运行时      | resiliencx    | [SPEC](./module/resiliencx/SPEC.md)    | [resiliencx](https://github.com/ZoneCNH/resiliencx)       |
 | L1 运行时      | schedulex     | [SPEC](./module/schedulex/SPEC.md)     | [schedulex](https://github.com/ZoneCNH/schedulex)         |
 | L1 test-only   | testkitx      | [SPEC](./module/testkitx/SPEC.md)      | [testkitx](https://github.com/ZoneCNH/testkitx)           |
-| 标准源         | xlib_standard | [SPEC](./module/xlib_standard/SPEC.md) | [xlib_standard](https://github.com/ZoneCNH/xlib_standard) |
-| 门禁           | xlibgate      | [SPEC](./module/xlibgate/SPEC.md)      | [xlibgate](https://github.com/ZoneCNH/xlibgate)           |
-| 门禁           | xlib_harness  | [SPEC](./module/xlib_harness/SPEC.md)  | [xlib_harness](https://github.com/ZoneCNH/xlib_harness)   |
-| 门禁           | xlib_evidence | [SPEC](./module/xlib_evidence/SPEC.md) | [xlib_evidence](https://github.com/ZoneCNH/xlib_evidence) |
+| 标准源         | xlib_standard | [SPEC](./module/xlib_standard/spec/SPEC.md) | [xlib_standard](https://github.com/ZoneCNH/xlib-standard) |
+| 门禁           | xlibgate      | [SPEC](./module/xlibgate/spec/SPEC.md)      | [xlibgate](https://github.com/ZoneCNH/xlibgate)           |
+| 门禁           | xlib_harness  | [SPEC](./module/xlib_harness/spec/SPEC.md)  | [xlib_harness](https://github.com/ZoneCNH/xlib-harness)   |
+| 门禁           | xlib_evidence | [SPEC](./module/xlib_evidence/spec/SPEC.md) | [xlib_evidence](https://github.com/ZoneCNH/xlib-evidence) |
 | 存储扩展       | redisx        | [SPEC](./module/redisx/SPEC.md)        | [redisx](https://github.com/ZoneCNH/redisx)               |
 | 存储扩展       | kafkax        | [SPEC](./module/kafkax/SPEC.md)        | [kafkax](https://github.com/ZoneCNH/kafkax)               |
 | 存储扩展       | natsx         | [SPEC](./module/natsx/SPEC.md)         | [natsx](https://github.com/ZoneCNH/natsx)                 |

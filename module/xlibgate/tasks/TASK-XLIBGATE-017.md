@@ -9,9 +9,9 @@ task_id: TASK-XLIBGATE-017
 module: xlibgate
 scope: "实现 trust secret-redaction 命令：扫描 release/evidence 文档中的密钥和私有端点"
 spec_ref:
-  - "module/xlibgate/SPEC.md#FR-018"
-  - "module/xlibgate/SPEC.md#TC-026"
-  - "module/xlibgate/SPEC.md#TC-027"
+  - "module/xlibgate/spec/SPEC.md#FR-018"
+  - "module/xlibgate/spec/SPEC.md#TC-026"
+  - "module/xlibgate/spec/SPEC.md#TC-027"
 files:
   - "cmd/trust_secret.go"
   - "scanner/trust/secret.go"

@@ -9,9 +9,9 @@ task_id: TASK-XLIBGATE-011
 module: xlibgate
 scope: "实现 trust identity 命令：五源身份比对（README H1 / go.mod / .repo-contract.yaml / public_package / 身份声明）"
 spec_ref:
-  - "module/xlibgate/SPEC.md#FR-012"
-  - "module/xlibgate/SPEC.md#TC-014"
-  - "module/xlibgate/SPEC.md#TC-015"
+  - "module/xlibgate/spec/SPEC.md#FR-012"
+  - "module/xlibgate/spec/SPEC.md#TC-014"
+  - "module/xlibgate/spec/SPEC.md#TC-015"
 files:
   - "cmd/trust_identity.go"
   - "scanner/trust/identity.go"

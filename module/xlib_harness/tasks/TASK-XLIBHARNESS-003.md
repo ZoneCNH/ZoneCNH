@@ -2,14 +2,14 @@
 module: xlib_harness
 scope: "xlib_harness FR-003 coverage"
 spec_ref:
-  - "module/xlib_harness/SPEC.md#FR-003"
+  - "module/xlib_harness/spec/SPEC.md#FR-003"
 acceptance_criteria:
   - "FR-003 baseline coverage"
 files:
-  - "/home/xlib_harness/internal/harness/harness.go"
-  - "/home/xlib_harness/internal/harness/harness_test.go"
-  - "/home/xlib_harness/fixtures/module-with-bad-dep/go.mod"
-  - "/home/xlib_harness/fixtures/module-with-bad-dep/bad.go"
+  - "/home/xlib-harness/internal/harness/harness.go"
+  - "/home/xlib-harness/internal/harness/harness_test.go"
+  - "/home/xlib-harness/fixtures/module-with-bad-dep/go.mod"
+  - "/home/xlib-harness/fixtures/module-with-bad-dep/bad.go"
 priority: P1
 status: completed
 ---
