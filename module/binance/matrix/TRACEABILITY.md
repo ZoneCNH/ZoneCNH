@@ -94,7 +94,7 @@ release_closeable = Code-Done FR / Total FR ≥ 90% AND Drifted FR = 0 AND Pendi
 | PRG-004 | observability | Open | metrics/OTel/dashboard/alert evidence |
 | PRG-005 | security | Open | scan/mTLS/pentest evidence |
 | PRG-006 | resilience | Open | soak/chaos/canary evidence |
-| PRG-007 | issue sync | Open | 43 GitHub + 43 Beads closures |
+| PRG-007 | issue sync | PASS | 43 GitHub + 43 Beads closures（all closed） |
 
 ## 5. Issue Projection
 
@@ -109,6 +109,6 @@ Beads and GitHub issues are the current P10 tracking SSOT. The retired local pro
 | Partial | 25 |
 | Drifted | 0 |
 | Pending | 0 |
-| GitHub P10 open | 43 |
-| Beads P10 open | 43 |
+| GitHub P10 open | 0 |
+| Beads P10 open | 0 |
 | release_closeable | NO |
