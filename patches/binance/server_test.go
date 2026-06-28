@@ -6,6 +6,7 @@ import (
 	"testing"
 	"time"
 
+	contracts "github.com/ZoneCNH/runtime-patches/contracts"
 	domainmarket "github.com/ZoneCNH/runtime-patches/domain-market"
 )
 
@@ -23,8 +24,8 @@ func TestDefaultValidatorRejectsMissingPayload(t *testing.T) {
 	if !errors.As(err, &reject) {
 		t.Fatalf("expected RejectError, got %T", err)
 	}
-	if reject.Code != RejectContractViolation {
-		t.Fatalf("expected %s, got %s", RejectContractViolation, reject.Code)
+	if reject.Code != contracts.RejectContractViolation {
+		t.Fatalf("expected %s, got %s", contracts.RejectContractViolation, reject.Code)
 	}
 }
 
