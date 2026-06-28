@@ -1,19 +1,23 @@
 name: Harness Check
-# NOTE: self-hosted runner 已下线（zone-runner unregistered 2026-06-18），仅保留 workflow_dispatch 防止 queued 堆积。
-# 重装 runner 后恢复 push/pull_request trigger。
+# Self-hosted runner decommissioned 2026-06-18. Migrated to ubuntu-latest.
+# Restored push/pull_request triggers.
 on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
 jobs:
   check:
-    runs-on: [self-hosted, Linux, X64, homepage]
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        - name: Use Node.js
-          uses: actions/setup-node@v4
-          with:
-            node-version: 20
-        - name: Run Binance docs drift check
-          run: bash scripts/check-binance-docs.sh
-        - name: Run harness health check
-          run: node scripts/check.mjs
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Run Binance docs drift check
+        run: bash scripts/check-binance-docs.sh
+      - name: Run harness health check
+        run: node scripts/check.mjs
