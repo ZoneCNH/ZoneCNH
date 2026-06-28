@@ -9,6 +9,22 @@
 
 ---
 
+## [v3.9.2] — 2026-06-28 spec 结构性分析与修复
+
+### Fixed（spec 结构性修复）
+- **ACCEPTANCE.md Evidence-Done 定义矛盾**：定义表原将 `Evidence-Done` 定义为"未通过"（与 §4 矩阵用法矛盾），修正为 `Evidence-Done`（已通过）/ `Evidence-Pending`（未通过），与 §4 矩阵和 FEATURES.md 实际用法一致
+- **ACCEPTANCE.md §1 验收命令表格式损坏**：rg pattern 中的 `|` 字符未转义导致 Markdown 表格列错乱，修正为 `\|` 转义 + 单引号包裹
+- **ACCEPTANCE.md TC-004/TC-006 关闭证据**：移除 Pending 时期的历史 caveat（"仍需独立进程证明"），替换为 2026-06-28 全量 E2E 闭合证据
+- **FEATURES.md FR 投影表结构破坏**：changelog 行混入 FR 表中导致列数不匹配，移出为独立 `### 2.1 变更历史` 子节
+- **NAMING.md §7 REST 端点命名不一致**：`funding_rates/:symbol` / `mark_prices/:symbol` 修正为 `funding-rate/:symbol` / `mark-price/:symbol`，与 SPEC FR-020/FR-021 WHEN/THEN 对齐
+- **RUNTIME-MAPPING.md 端点命名同步**：同上端点名同步修正
+- **SPEC.md / NAMING.md 日期同步**：Last-Updated 从 2026-06-26 同步至 2026-06-28，与 FEATURES.md / ACCEPTANCE.md 一致
+
+### Added
+- **SPEC-STRUCTURAL-ANALYSIS-20260628.md**：spec/ 目录全量结构性分析报告（8 维度评分，修复前 90 → 修复后 97/100）
+
+---
+
 ## [v3.9.1] — 2026-06-28 全量 E2E 证据闭合
 
 ### Closed（GitHub Issues）
