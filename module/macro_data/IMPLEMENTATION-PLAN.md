@@ -6,8 +6,7 @@
 
 | Task | Scope | Effort |
 |------|-------|--------|
-| TASK-MACD-001 | dispatch port/idempotency/revision ordering/no-lookahead gate | 6h |
-
+| TASK-MACD-001-core-implementation | Implementation | 2h |
 ## Pre-Gates
 
 | Gate | 条件 |

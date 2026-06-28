@@ -3,7 +3,8 @@
 ## Phase 1
 | Task | Scope | Effort |
 |------|-------|--------|
-| TASK-MSB-001 | order flow 分析/微观结构特征/流动性分析 | 3h
+| README | Implementation | 2h |
+| TASK-MSB-001-core-implementation | Implementation | 2h |
 ## CI Gate
 | Gate | 条件 |
 |------|------|

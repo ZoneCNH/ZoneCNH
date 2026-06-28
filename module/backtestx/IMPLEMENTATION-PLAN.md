@@ -6,8 +6,16 @@
 
 | Task | Scope | Effort |
 |------|-------|--------|
-| TASK-BTX-001 | 事件驱动仿真/绩效指标/Walk-Forward/Monte Carlo/压力测试 | 8h |
-
+| AC-BTX-001 | Implementation | 2h |
+| AC-BTX-002 | Implementation | 2h |
+| AC-BTX-003 | Implementation | 2h |
+| AC-BTX-004 | Implementation | 2h |
+| AC-BTX-005 | Implementation | 2h |
+| AC-BTX-006 | Implementation | 2h |
+| AC-BTX-007 | Implementation | 2h |
+| AC-BTX-008 | Implementation | 2h |
+| README | Implementation | 2h |
+| TASK-BTX-001-core-implementation | Implementation | 2h |
 ## CI Gate
 
 | Gate | 条件 |

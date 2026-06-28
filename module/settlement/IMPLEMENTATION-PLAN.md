@@ -3,7 +3,8 @@
 ## Phase 1
 | Task | Scope | Effort |
 |------|-------|--------|
-| TASK-STL-001 | 交易结算/资金划转/手续费计算 | 3h
+| README | Implementation | 2h |
+| TASK-STL-001-core-implementation | Implementation | 2h |
 ## CI Gate
 | Gate | 条件 |
 |------|------|

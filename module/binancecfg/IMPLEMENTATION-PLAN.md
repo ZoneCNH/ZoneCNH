@@ -6,11 +6,10 @@
 
 | Task | Scope | Effort |
 |------|-------|--------|
-| TASK-BCFG-001 | LoadConfig + env parsing | 2h |
-| TASK-BCFG-002 | DefaultConfig + Validate | 1h |
-| TASK-BCFG-003 | Type conversions | 1h |
-| TASK-BCFG-004 | Test suite + gates | 2h |
-
+| TASK-BCFG-001-config-loading | Implementation | 2h |
+| TASK-BCFG-002-defaults-and-validation | Implementation | 2h |
+| TASK-BCFG-003-type-conversions | Implementation | 2h |
+| TASK-BCFG-004-test-suite-and-gates | Implementation | 2h |
 ## CI Gate
 
 | Gate | 条件 |

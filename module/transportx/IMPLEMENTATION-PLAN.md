@@ -43,43 +43,33 @@ TASK-TRANSPORTX-001 (Phase 1: foundation)
 
 | Task | Scope | Effort |
 |------|-------|--------|
-| TASK-TRANSPORTX-001 | Core implementation | 2h |
-| TASK-TRANSPORTX-002 | Core implementation | 2h |
-
-### Phase 2: Features (25 tasks)
-
-| Task | Scope | Effort |
-|------|-------|--------|
-| TASK-TRANSPORTX-003 | Feature implementation | 2h |
-| TASK-TRANSPORTX-004 | Feature implementation | 2h |
-| TASK-TRANSPORTX-005 | Feature implementation | 2h |
-| TASK-TRANSPORTX-006 | Feature implementation | 2h |
-| TASK-TRANSPORTX-006b | Feature implementation | 2h |
-| TASK-TRANSPORTX-006c | Feature implementation | 2h |
-| TASK-TRANSPORTX-007 | Feature implementation | 2h |
-| TASK-TRANSPORTX-008 | Feature implementation | 2h |
-| TASK-TRANSPORTX-009 | Feature implementation | 2h |
-| TASK-TRANSPORTX-010 | Feature implementation | 2h |
-| TASK-TRANSPORTX-011 | Feature implementation | 2h |
-| TASK-TRANSPORTX-012 | Feature implementation | 2h |
-| TASK-TRANSPORTX-013 | Feature implementation | 2h |
-| TASK-TRANSPORTX-014 | Feature implementation | 2h |
-| TASK-TRANSPORTX-015 | Feature implementation | 2h |
-| TASK-TRANSPORTX-016 | Feature implementation | 2h |
-| TASK-TRANSPORTX-017 | Feature implementation | 2h |
-| TASK-TRANSPORTX-018 | Feature implementation | 2h |
-| TASK-TRANSPORTX-019 | Feature implementation | 2h |
-| TASK-TRANSPORTX-020 | Feature implementation | 2h |
-| TASK-TRANSPORTX-021 | Feature implementation | 2h |
-| TASK-TRANSPORTX-022 | Feature implementation | 2h |
-| TASK-TRANSPORTX-023 | Feature implementation | 2h |
-| TASK-TRANSPORTX-024 | Feature implementation | 2h |
-
-### Phase 3: Quality Gates (1 task)
-
-| TASK-TRANSPORTX-025 | CI/Benchmark/Docs | 2h |
-
-
+| TASK-TRANSPORTX-001 | Implementation | 2h |
+| TASK-TRANSPORTX-002 | Implementation | 2h |
+| TASK-TRANSPORTX-003 | Implementation | 2h |
+| TASK-TRANSPORTX-004 | Implementation | 2h |
+| TASK-TRANSPORTX-005 | Implementation | 2h |
+| TASK-TRANSPORTX-006 | Implementation | 2h |
+| TASK-TRANSPORTX-006b | Implementation | 2h |
+| TASK-TRANSPORTX-006c | Implementation | 2h |
+| TASK-TRANSPORTX-007 | Implementation | 2h |
+| TASK-TRANSPORTX-008 | Implementation | 2h |
+| TASK-TRANSPORTX-009 | Implementation | 2h |
+| TASK-TRANSPORTX-010 | Implementation | 2h |
+| TASK-TRANSPORTX-011 | Implementation | 2h |
+| TASK-TRANSPORTX-012 | Implementation | 2h |
+| TASK-TRANSPORTX-013 | Implementation | 2h |
+| TASK-TRANSPORTX-014 | Implementation | 2h |
+| TASK-TRANSPORTX-015 | Implementation | 2h |
+| TASK-TRANSPORTX-016 | Implementation | 2h |
+| TASK-TRANSPORTX-017 | Implementation | 2h |
+| TASK-TRANSPORTX-018 | Implementation | 2h |
+| TASK-TRANSPORTX-019 | Implementation | 2h |
+| TASK-TRANSPORTX-020 | Implementation | 2h |
+| TASK-TRANSPORTX-021 | Implementation | 2h |
+| TASK-TRANSPORTX-022 | Implementation | 2h |
+| TASK-TRANSPORTX-023 | Implementation | 2h |
+| TASK-TRANSPORTX-024 | Implementation | 2h |
+| TASK-TRANSPORTX-025 | Implementation | 2h |
 ## 3. 总 Effort
 
 | Phase | Tasks | Effort |

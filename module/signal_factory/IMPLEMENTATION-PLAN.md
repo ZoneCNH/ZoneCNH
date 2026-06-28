@@ -3,7 +3,8 @@
 ## Phase 1
 | Task | Scope | Effort |
 |------|-------|--------|
-| TASK-SF-001 | 信号生成管线/多因子融合 | 4h
+| README | Implementation | 2h |
+| TASK-SIGNAL_FACTORY-001 | Implementation | 2h |
 ## CI Gate
 | Gate | 条件 |
 |------|------|

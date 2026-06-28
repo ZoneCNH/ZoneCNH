@@ -3,7 +3,8 @@
 ## Phase 1
 | Task | Scope | Effort |
 |------|-------|--------|
-| TASK-OPT-001 | 均值-方差/风险平价/Black-Litterman/约束优化 | 4h
+| README | Implementation | 2h |
+| TASK-OPT-001-core-implementation | Implementation | 2h |
 ## CI Gate
 | Gate | 条件 |
 |------|------|

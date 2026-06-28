@@ -3,7 +3,12 @@
 ## Phase 1
 | Task | Scope | Effort |
 |------|-------|--------|
-| TASK-XE-001 | collect-coverage/generate-manifest/validate-manifest/report | 4h
+| TASK-XLIBEVIDENCE-001 | Implementation | 2h |
+| TASK-XLIBEVIDENCE-002 | Implementation | 2h |
+| TASK-XLIBEVIDENCE-003 | Implementation | 2h |
+| TASK-XLIBEVIDENCE-003b | Implementation | 2h |
+| TASK-XLIBEVIDENCE-004 | Implementation | 2h |
+| TASK-XLIBEVIDENCE-005 | Implementation | 2h |
 ## CI Gate
 | Gate | 条件 |
 |------|------|

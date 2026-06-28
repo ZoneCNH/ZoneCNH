@@ -3,10 +3,10 @@
 ## Phase 1: SDK Abstraction
 | Task | Scope | Effort |
 |------|-------|--------|
-| TASK-BX-001 | MarketDataFeed interface | 2h |
-| TASK-BX-002 | Data types | 1h |
-| TASK-BX-003 | FeedConfig + validation | 1h |
-| TASK-BX-004 | Test suite | 2h |
+| TASK-BX-001-marketdatafeed-interface | Implementation | 2h |
+| TASK-BX-002-data-types | Implementation | 2h |
+| TASK-BX-003-feedconfig | Implementation | 2h |
+| TASK-BX-004-test-suite-and-gates | Implementation | 2h |
 ## CI Gate
 | Gate | 条件 |
 |------|------|

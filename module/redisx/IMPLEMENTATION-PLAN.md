@@ -26,26 +26,16 @@ TASK-REDISX-000 (Phase 1: foundation)
 
 | Task | Scope | Effort |
 |------|-------|--------|
-| TASK-REDISX-000 | Core implementation | 2h |
-| TASK-REDISX-001 | Core implementation | 2h |
-
-### Phase 2: Features (8 tasks)
-
-| Task | Scope | Effort |
-|------|-------|--------|
-| TASK-REDISX-002 | Feature implementation | 2h |
-| TASK-REDISX-003 | Feature implementation | 2h |
-| TASK-REDISX-004 | Feature implementation | 2h |
-| TASK-REDISX-005 | Feature implementation | 2h |
-| TASK-REDISX-006 | Feature implementation | 2h |
-| TASK-REDISX-007 | Feature implementation | 2h |
-| TASK-REDISX-008 | Feature implementation | 2h |
-
-### Phase 3: Quality Gates (1 task)
-
-| TASK-REDISX-009 | CI/Benchmark/Docs | 2h |
-
-
+| TASK-REDISX-000 | Implementation | 2h |
+| TASK-REDISX-001 | Implementation | 2h |
+| TASK-REDISX-002 | Implementation | 2h |
+| TASK-REDISX-003 | Implementation | 2h |
+| TASK-REDISX-004 | Implementation | 2h |
+| TASK-REDISX-005 | Implementation | 2h |
+| TASK-REDISX-006 | Implementation | 2h |
+| TASK-REDISX-007 | Implementation | 2h |
+| TASK-REDISX-008 | Implementation | 2h |
+| TASK-REDISX-009 | Implementation | 2h |
 ## 3. 总 Effort
 
 | Phase | Tasks | Effort |

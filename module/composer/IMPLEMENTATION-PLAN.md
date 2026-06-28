@@ -6,8 +6,7 @@
 
 | Task | Scope | Effort |
 |------|-------|--------|
-| TASK-CMP-001 | 25 进程编排/依赖注入/HTTP health/Docker Compose/RegimeCoordinator | 6h |
-
+| TASK-CMP-001-core-implementation | Implementation | 2h |
 ## CI Gate
 
 | Gate | 条件 |

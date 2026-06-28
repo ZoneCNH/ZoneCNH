@@ -3,7 +3,8 @@
 ## Phase 1
 | Task | Scope | Effort |
 |------|-------|--------|
-| TASK-POSX-001 | Position 追踪/盈亏计算/持仓风险指标 | 3h
+| README | Implementation | 2h |
+| TASK-POSX-001-core-implementation | Implementation | 2h |
 ## CI Gate
 | Gate | 条件 |
 |------|------|

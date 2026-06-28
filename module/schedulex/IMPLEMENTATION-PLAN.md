@@ -28,28 +28,18 @@ TASK-SCHEDULEX-000 (Phase 1: foundation)
 
 | Task | Scope | Effort |
 |------|-------|--------|
-| TASK-SCHEDULEX-000 | Core implementation | 2h |
-| TASK-SCHEDULEX-001 | Core implementation | 2h |
-
-### Phase 2: Features (10 tasks)
-
-| Task | Scope | Effort |
-|------|-------|--------|
-| TASK-SCHEDULEX-002 | Feature implementation | 2h |
-| TASK-SCHEDULEX-003 | Feature implementation | 2h |
-| TASK-SCHEDULEX-004 | Feature implementation | 2h |
-| TASK-SCHEDULEX-005 | Feature implementation | 2h |
-| TASK-SCHEDULEX-006 | Feature implementation | 2h |
-| TASK-SCHEDULEX-007 | Feature implementation | 2h |
-| TASK-SCHEDULEX-008 | Feature implementation | 2h |
-| TASK-SCHEDULEX-009 | Feature implementation | 2h |
-| TASK-SCHEDULEX-010 | Feature implementation | 2h |
-
-### Phase 3: Quality Gates (1 task)
-
-| TASK-SCHEDULEX-011 | CI/Benchmark/Docs | 2h |
-
-
+| TASK-SCHEDULEX-000 | Implementation | 2h |
+| TASK-SCHEDULEX-001 | Implementation | 2h |
+| TASK-SCHEDULEX-002 | Implementation | 2h |
+| TASK-SCHEDULEX-003 | Implementation | 2h |
+| TASK-SCHEDULEX-004 | Implementation | 2h |
+| TASK-SCHEDULEX-005 | Implementation | 2h |
+| TASK-SCHEDULEX-006 | Implementation | 2h |
+| TASK-SCHEDULEX-007 | Implementation | 2h |
+| TASK-SCHEDULEX-008 | Implementation | 2h |
+| TASK-SCHEDULEX-009 | Implementation | 2h |
+| TASK-SCHEDULEX-010 | Implementation | 2h |
+| TASK-SCHEDULEX-011 | Implementation | 2h |
 ## 3. 总 Effort
 
 | Phase | Tasks | Effort |

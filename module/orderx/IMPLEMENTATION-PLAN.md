@@ -3,7 +3,8 @@
 ## Phase 1
 | Task | Scope | Effort |
 |------|-------|--------|
-| TASK-ORDX-001 | Order 生命周期/多交易所适配/执行报告 | 4h
+| README | Implementation | 2h |
+| TASK-ORDX-001-core-implementation | Implementation | 2h |
 ## CI Gate
 | Gate | 条件 |
 |------|------|

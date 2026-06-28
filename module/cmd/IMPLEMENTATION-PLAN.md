@@ -3,10 +3,10 @@
 ## Phase 1: Composition Root
 | Task | Scope | Effort |
 |------|-------|--------|
-| TASK-CMD-001 | Run pipeline | 2h |
-| TASK-CMD-002 | Config + error handling | 1h |
-| TASK-CMD-003 | Signal handling + shutdown | 2h |
-| TASK-CMD-004 | main() + test suite | 1h |
+| TASK-CMD-001-run-pipeline | Implementation | 2h |
+| TASK-CMD-002-config-and-error-handling | Implementation | 2h |
+| TASK-CMD-003-signals-and-shutdown | Implementation | 2h |
+| TASK-CMD-004-main-and-test-suite | Implementation | 2h |
 ## CI Gate
 | Gate | 条件 |
 |------|------|

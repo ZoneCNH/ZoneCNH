@@ -6,8 +6,7 @@
 
 | Task | Scope | Effort |
 |------|-------|--------|
-| TASK-PE-001 | 13F/内部交易/机构持仓采集 + PEvent 归一化 | 4h |
-
+| TASK-PE-001-core-implementation | Implementation | 2h |
 ## CI Gate
 
 | Gate | 条件 |
