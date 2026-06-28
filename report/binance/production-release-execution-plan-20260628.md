@@ -33,7 +33,7 @@
 | 生产就绪    |    8.0     |   10   |   2.0    | CI run / release tag / PRG drill 未执行    |
 | 文档治理    |    10.0    |   10   |    0     | —                                          |
 | 测试覆盖    |    8.0     |   10   |   2.0    | depth/soak/chaos/security test 未 live run |
-| 可观测性    |    8.5     |   10   |   1.5    | Jaeger/Grafana/AlertManager/Loki 未部署    |
+| 可观测性    |    9.0     |   10   |   1.0    | OTel screen + dashboard import 待验证      |
 | 安全合规    |    8.0     |   10   |   2.0    | secrets/vuln scan CI 未运行 / drill 未执行 |
 | **总计**    |  **8.9**   | **10** | **1.1**  | **5 维度 pending live validation**         |
 
@@ -372,10 +372,10 @@ E-1 (9d) → E-2 (6d) → E-3 (4.5d) → E-4 (5d) → H-1 depth test (2d) → PR
 | #   | 检查项            | 标准                    | 当前             | 目标            |
 | --- | ----------------- | ----------------------- | ---------------- | --------------- |
 | 32  | /metrics 端点     | 暴露核心指标            | 已实现           | CI 验证         |
-| 33  | OTel tracing      | Jaeger/Tempo screenshot | config 已合并    | screenshot 归档 |
-| 34  | Grafana dashboard | JSON import 确认        | 10 panels 已合并 | import 确认     |
-| 35  | AlertManager      | rules loaded 确认       | 9 rules 已合并   | load 确认       |
-| 36  | 日志聚合          | Promtail deploy 确认    | YAML 已合并      | deploy 确认     |
+| 33  | OTel tracing      | Jaeger screenshot       | Jaeger 已部署 ✅  | screenshot 归档 |
+| 34  | Grafana dashboard | JSON import 确认        | Grafana 已部署 ✅  | import 确认     |
+| 35  | AlertManager      | rules loaded 确认       | AlertManager 已部署 ✅ | load 确认       |
+| 36  | 日志聚合          | Loki/Alloy deploy 确认  | Loki+Alloy 已部署 ✅ | deploy 确认     |
 
 ### 7.5 文档门禁
 
