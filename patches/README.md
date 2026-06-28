@@ -9,6 +9,10 @@
 2. contracts        → github.com/ZoneCNH/contracts
 3. market_data      → github.com/ZoneCNH/market_data (空仓库，从零初始化)
 4. binance          → github.com/ZoneCNH/binance (老 SDK 升级)
+5. binancecfg       → github.com/ZoneCNH/binance (配置层: FOUNDATIONX_* env → typed config)
+6. binancex         → github.com/ZoneCNH/binance (SDK 接口抽象层)
+7. assembly         → github.com/ZoneCNH/binance (中间件注入与装配层)
+8. cmd              → github.com/ZoneCNH/binance (组合根入口，可测试 main)
 ```
 
 ## 各仓库应用方法
@@ -56,6 +60,42 @@ cp ../patches/binance/server.go internal/server/
 go build ./...
 ```
 
+### binancecfg (typed config layer)
+
+```bash
+cd binance
+mkdir -p pkg/binancecfg
+cp ../patches/binancecfg/config.go pkg/binancecfg/
+go build ./...
+```
+
+### binancex (SDK interface extraction)
+
+```bash
+cd binance
+mkdir -p pkg/binancex
+cp ../patches/binancex/adapter.go pkg/binancex/
+go build ./...
+```
+
+### assembly (middleware injection & wiring)
+
+```bash
+cd binance
+mkdir -p internal/assembly
+cp ../patches/assembly/assembly.go internal/assembly/
+go build ./...
+```
+
+### cmd (testable main entry point)
+
+```bash
+cd binance
+mkdir -p cmd/ingest
+cp ../patches/cmd/main.go cmd/ingest/
+go build ./...
+```
+
 ## 依赖链
 
 ```
@@ -64,11 +104,19 @@ domain_market (canonical types)
 contracts (ingestion DTOs)
     ↓
 market_data (dispatch port) ← binance (server implementation)
+                                  ↑
+                            binancecfg (config layer)
+                                  ↑
+                            binancex (SDK abstraction)
+                                  ↑
+                            assembly (middleware injection)
+                                  ↑
+                            cmd (composition root)
 ```
 
 ## 生成信息
 
-- 日期: 2026-06-17
+- 日期: 2026-06-17 (original), extended 2026-06-29
 - 来源: ZoneCNH/ZoneCNH docs hub SPEC v0.1.1 ~ v1.1.0
 - 语言: Go 1.23
 - Patch harness: `cd patches && go test ./...`
