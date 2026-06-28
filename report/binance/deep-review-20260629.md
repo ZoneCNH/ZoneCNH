@@ -524,7 +524,7 @@ pkg/
 | 13  | MEDIUM | `SpotConnector` god object（18 字段单锁）  | `client/spot.go:172-198`            | ⏭ SKIP — 架构重构，超出本次范围 |
 | 14  | MEDIUM | `assembly.go` 1088 行 god file             | `server/assembly/assembly.go`       | ⏭ SKIP — 架构重构，超出本次范围 |
 | 15  | MEDIUM | Auth/rate-limit 静默降级                   | `api/query.go:188-217`              | ✅ FIXED — 降级日志 + 明确行为 |
-| 16  | MEDIUM | `network_mode: host` 移除网络隔离          | `docker-compose*.yml`               | ⏭ SKIP — 部署配置，PR #220 |
+| 16  | MEDIUM | `network_mode: host` 移除网络隔离          | `docker-compose*.yml`               | ✅ RESOLVED — PR #220 已移除（docker-compose 使用默认桥接网络） |
 | 17  | MEDIUM | SSH `StrictHostKeyChecking=no`             | `deploy/deploy.sh:24`               | ✅ FIXED — accept-new 替换 no（首次接受，变更拒绝） |
 | 18  | MEDIUM | `go.mod` 本地 replace 与 CI 不一致         | `go.mod:112`                        | ⚠ BLOCKED — natsx pkg/natsx/ingest 仅存在于本地开发副本，无法移除 replace |
 | 19  | MEDIUM | 日志混用 `log.Printf` / `slog`             | 12 个文件                           | ✅ FIXED — 全仓 slog 迁移（8 文件，~50 调用点） |
@@ -654,10 +654,10 @@ go test ./... -cover              # 总计 ~61.5%
 | 优先级 | 总数 | 已修复 | 已验证 | 跳过 |
 |--------|------|--------|--------|------|
 | P0     | 10   | 9      | 1      | 0    |
-| P1     | 15   | 11     | 2      | 1    |
+| P1     | 15   | 11     | 3      | 1    |
 | P2     | 5    | 2      | 0      | 3    |
 | P3     | 7    | 3      | 0      | 4    |
-| **合计** | **37** | **26** | **3** | **7** |
+| **合计** | **37** | **27** | **4** | **6** |
 
 ### 验证结果
 - `go build ./...` — ✅ PASS
