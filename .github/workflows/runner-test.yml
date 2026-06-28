@@ -1,9 +1,13 @@
 name: Runner Test
 on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
 jobs:
   test:
-    runs-on: [self-hosted, Linux, X64, homepage]
+    runs-on: ubuntu-latest
     steps:
       - run: echo "runner works" && hostname && whoami && date

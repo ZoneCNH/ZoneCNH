@@ -1,14 +1,17 @@
 name: Foundation Dependency Matrix
 
-# NOTE: self-hosted runner 已下线（zone-runner unregistered 2026-06-18），仅保留 workflow_dispatch 防止 queued 堆积。
-# 重装 runner 后恢复 pull_request/push trigger。
+# Self-hosted runner decommissioned 2026-06-18. Migrated to ubuntu-latest.
 on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
 jobs:
   yaml-lint:
     name: Validate YAML
-    runs-on: [self-hosted, Linux, X64, homepage]
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Validate FOUNDATION-DEPS.yaml
@@ -27,7 +30,7 @@ jobs:
 
   deps-check:
     name: Check Dependencies
-    runs-on: [self-hosted, Linux, X64, homepage]
+    runs-on: ubuntu-latest
     needs: yaml-lint
     outputs:
       violations: ${{ steps.check.outputs.violations }}
@@ -164,7 +167,7 @@ jobs:
 
   pr-comment:
     name: PR Comment
-    runs-on: [self-hosted, Linux, X64, homepage]
+    runs-on: ubuntu-latest
     needs: deps-check
     if: github.event_name == 'pull_request' && needs.deps-check.outputs.has_violations == 'true'
     steps:
@@ -203,7 +206,7 @@ jobs:
 
   summary:
     name: Summary
-    runs-on: [self-hosted, Linux, X64, homepage]
+    runs-on: ubuntu-latest
     needs: [deps-check]
     if: always()
     steps:

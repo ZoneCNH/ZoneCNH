@@ -1,14 +1,18 @@
 name: Foundation Integration
 
-# NOTE: self-hosted runner 已下线（zone-runner unregistered 2026-06-18），仅保留 workflow_dispatch 防止 queued 堆积。
+# Self-hosted runner decommissioned 2026-06-18. Migrated to ubuntu-latest.
 # 删除 schedule 防止每日定时任务 queued 堆积。重装 runner 后恢复 schedule。
 on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
 jobs:
   yaml-lint:
     name: Validate FOUNDATION-DEPS.yaml
-    runs-on: [self-hosted, Linux, X64, homepage]
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
@@ -28,7 +32,7 @@ jobs:
 
   deps-matrix-full:
     name: Full Dependency Matrix Check
-    runs-on: [self-hosted, Linux, X64, homepage]
+    runs-on: ubuntu-latest
     timeout-minutes: 30
     needs: yaml-lint
     steps:
@@ -41,7 +45,7 @@ jobs:
 
   boundary-cross-check:
     name: Cross-Module Boundary Check
-    runs-on: [self-hosted, Linux, X64, homepage]
+    runs-on: ubuntu-latest
     timeout-minutes: 20
     needs: deps-matrix-full
     steps:
@@ -51,7 +55,7 @@ jobs:
 
   joint-build-test:
     name: Joint Build and Test (go.work)
-    runs-on: [self-hosted, Linux, X64, homepage]
+    runs-on: ubuntu-latest
     timeout-minutes: 30
     needs: boundary-cross-check
     steps:
@@ -64,7 +68,7 @@ jobs:
 
   evidence-collect:
     name: Aggregate Foundation Evidence
-    runs-on: [self-hosted, Linux, X64, homepage]
+    runs-on: ubuntu-latest
     timeout-minutes: 15
     needs: joint-build-test
     if: always()
@@ -84,7 +88,7 @@ jobs:
 
   summary:
     name: Integration Summary
-    runs-on: [self-hosted, Linux, X64, homepage]
+    runs-on: ubuntu-latest
     timeout-minutes: 5
     needs: [yaml-lint, deps-matrix-full, boundary-cross-check, joint-build-test, evidence-collect]
     if: always()
