@@ -23,6 +23,24 @@ type IngestServer struct {
 	config      ServerConfig
 }
 
+// NewServer constructs an IngestServer with injected dependencies.
+// Used by assembly.Assemble and cmd.Run to wire the server with middleware.
+//
+//nolint:unused
+func NewServer(
+	validator RequestValidator,
+	idempotency IdempotencyStore,
+	dispatcher DownstreamDispatcher,
+	config ServerConfig,
+) *IngestServer {
+	return &IngestServer{
+		validator:   validator,
+		idempotency: idempotency,
+		dispatcher:  dispatcher,
+		config:      config,
+	}
+}
+
 // ServerConfig holds server-level configuration.
 type ServerConfig struct {
 	// StaleThreshold rejects events where EventTime is older than now - threshold.
