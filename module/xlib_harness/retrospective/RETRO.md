@@ -28,7 +28,7 @@
 ## 3. 需改进的
 
 - **Goal 管线注册延迟**：模块已发布 v0.1.6 但未及时注册到 `.config/goal/` 管线系统，导致治理跟踪缺口。
-- **文档结构未迁移**：仍使用平铺结构（goal.md/SPEC.md 在根目录），未按嵌套标准结构（goal/goal.md, spec/SPEC.md）迁移。
+- **文档结构已迁移**：已从平铺结构迁移到嵌套标准结构（goal/goal.md, spec/SPEC.md, matrix/TRACEABILITY.md, plan/PLAN.md）。
 - **Prompt 制品缺失**：管线 S5 阶段的 Context Package 未生成，不影响发布但影响可追溯性。
 
 ## 4. 经验教训
@@ -43,8 +43,8 @@
 
 | 编号 | 任务 | 优先级 |
 | --- | --- | --- |
-| F-001 | 迁移到嵌套目录结构（goal/goal.md, spec/SPEC.md） | P2 |
-| F-002 | 补充 Prompt 制品（Context Package） | P3 |
+| F-001 | 迁移到嵌套目录结构（goal/goal.md, spec/SPEC.md） | P2 | ✅ 已完成 |
+| F-002 | 补充 Prompt 制品（Context Package） | P3 | 待做 |
 | F-003 | 评估 v0.2.0 功能范围（如支持自定义检查规则） | P3 |
 
 ---

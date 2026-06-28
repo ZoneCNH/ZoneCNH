@@ -59,16 +59,16 @@
 
 | 模块          | 1.0 Goal                           |
 | ------------- | ---------------------------------- |
-| xlib_standard | [goal.md](./xlib_standard/goal.md) |
-| xlib_harness  | [goal.md](./xlib_harness/goal.md)  |
-| xlib_evidence | [goal.md](./xlib_evidence/goal.md) |
+| xlib_standard | [goal.md](./xlib_standard/goal/goal.md) |
+| xlib_harness  | [goal.md](./xlib_harness/goal/goal.md)  |
+| xlib_evidence | [goal.md](./xlib_evidence/goal/goal.md) |
 | kernel        | [goal.md](./kernel/goal.md)        |
 | configx       | [goal.md](./configx/goal.md)       |
 | observex      | [goal.md](./observex/goal.md)      |
 | testkitx      | [goal.md](./testkitx/goal.md)      |
 | resiliencx    | [goal.md](./resiliencx/goal.md)    |
 | schedulex     | [goal.md](./schedulex/goal.md)     |
-| xlibgate      | [goal.md](./xlibgate/goal.md)      |
+| xlibgate      | [goal.md](./xlibgate/goal/goal.md)      |
 | redisx        | [goal.md](./redisx/goal.md)        |
 | kafkax        | [goal.md](./kafkax/goal.md)        |
 | natsx         | [goal.md](./natsx/goal.md)         |
@@ -131,10 +131,10 @@ test-only，不参与生产运行时。
 
 | 模块          | 规格                                                                  | 核心职责                                                                                                                                      |
 | ------------- | --------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| xlib_standard | [SPEC.md](./xlib_standard/SPEC.md) · [tasks/](./xlib_standard/tasks/) | 标准事实源、Go Reference Template（声明式标准定义，15 FR + goalcli，12 tasks；v1.0.1 已发布，release-preflight 通过）                          |
-| xlib_harness  | [SPEC.md](./xlib_harness/SPEC.md) · [goal.md](./xlib_harness/goal.md) · [TRACEABILITY.md](./xlib_harness/TRACEABILITY.md) · [tasks/](./xlib_harness/tasks/) | 模块生成器与门禁执行器：generate/scaffold、spec-lint、boundary-check、format-check、traceability-gate、template-validate（6 FR，6 TC） |
-| xlib_evidence | [SPEC.md](./xlib_evidence/SPEC.md) · [goal.md](./xlib_evidence/goal.md) · [TRACEABILITY.md](./xlib_evidence/TRACEABILITY.md) · [tasks/](./xlib_evidence/tasks/) | 证据收集与发布运行时：collect-coverage、generate-manifest、validate-manifest、remote-evidence、report；v0.2.4 已发布，100.0% 覆盖率与 release evidence assets 已归档 |
-| xlibgate      | [SPEC.md](./xlibgate/SPEC.md) · [tasks/](./xlibgate/tasks/)           | check imports/gomod/baseline/release/all、输出格式、l2 validate-manifest/plan/check-contracts/check-evidence/release-check（11 FR，10 tasks） |
+| xlib_standard | [SPEC.md](./xlib_standard/spec/SPEC.md) · [goal.md](./xlib_standard/goal/goal.md) · [tasks/](./xlib_standard/tasks/) | 标准事实源、Go Reference Template（声明式标准定义，15 FR + goalcli，12 tasks；v1.0.1 已发布，release-preflight 通过）                          |
+| xlib_harness  | [SPEC.md](./xlib_harness/spec/SPEC.md) · [goal.md](./xlib_harness/goal/goal.md) · [TRACEABILITY.md](./xlib_harness/matrix/TRACEABILITY.md) · [tasks/](./xlib_harness/tasks/) | 模块生成器与门禁执行器：generate/scaffold、spec-lint、boundary-check、format-check、traceability-gate、template-validate（6 FR，6 TC） |
+| xlib_evidence | [SPEC.md](./xlib_evidence/spec/SPEC.md) · [goal.md](./xlib_evidence/goal/goal.md) · [TRACEABILITY.md](./xlib_evidence/matrix/TRACEABILITY.md) · [tasks/](./xlib_evidence/tasks/) | 证据收集与发布运行时：collect-coverage、generate-manifest、validate-manifest、remote-evidence、report；v0.2.4 已发布，100.0% 覆盖率与 release evidence assets 已归档 |
+| xlibgate      | [SPEC.md](./xlibgate/spec/SPEC.md) · [goal.md](./xlibgate/goal/goal.md) · [design/](./xlibgate/design/) · [tasks/](./xlibgate/tasks/) | check imports/gomod/baseline/release/all、l2 validate-manifest/plan/check-contracts/check-evidence/release-check、trust identity/template-residue/release-consistency/maturity/import-boundary/testkit-prod-import/secret-redaction（19 FR，20 tasks；v1.0.0 已发布） |
 
 ---
 

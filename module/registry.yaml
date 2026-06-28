@@ -26,16 +26,19 @@ updated: 2026-06-29
 # ============================================================================
 
 # --- 标准源 / 生成器 / 证据 / 门禁（4）---
+# 注：xlib-standard / xlib-harness / xlib-evidence 的 GitHub 仓库使用 kebab-case
+# （早于 snake_case 命名规范建立），module 目录使用 snake_case。repo 和 local_path
+# 字段反映实际 GitHub 仓库和本地克隆路径。
 xlib_standard:
-  repo: github.com/ZoneCNH/xlib_standard
-  local_path: /home/xlib_standard
+  repo: github.com/ZoneCNH/xlib-standard
+  local_path: /home/xlib-standard
   domain: foundation
   layer: standard_source
   arch_type: library
   lifecycle: active
   owner: ZoneCNH
   registered: 2026-06-01
-  spec_ref: module/xlib_standard/SPEC.md
+  spec_ref: module/xlib_standard/spec/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml
   maturity_ref: .foundationx/status/index.json#xlib_standard
   spec_version: v1.1.0
@@ -45,15 +48,15 @@ xlib_standard:
     cadence: stable
 
 xlib_harness:
-  repo: github.com/ZoneCNH/xlib_harness
-  local_path: /home/xlib_harness
+  repo: github.com/ZoneCNH/xlib-harness
+  local_path: /home/xlib-harness
   domain: foundation
   layer: harness
   arch_type: library
   lifecycle: active
   owner: ZoneCNH
   registered: 2026-06-01
-  spec_ref: module/xlib_harness/SPEC.md
+  spec_ref: module/xlib_harness/spec/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml
   maturity_ref: .foundationx/status/index.json#xlib_harness
   spec_version: v1.3.0
@@ -62,15 +65,15 @@ xlib_harness:
     cadence: stable
 
 xlib_evidence:
-  repo: github.com/ZoneCNH/xlib_evidence
-  local_path: /home/xlib_evidence
+  repo: github.com/ZoneCNH/xlib-evidence
+  local_path: /home/xlib-evidence
   domain: foundation
   layer: evidence
   arch_type: library
   lifecycle: active
   owner: ZoneCNH
   registered: 2026-06-01
-  spec_ref: module/xlib_evidence/SPEC.md
+  spec_ref: module/xlib_evidence/spec/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml
   maturity_ref: .foundationx/status/index.json#xlib_evidence
   spec_version: v1.2.1
@@ -87,7 +90,7 @@ xlibgate:
   lifecycle: active
   owner: ZoneCNH
   registered: 2026-06-01
-  spec_ref: module/xlibgate/SPEC.md
+  spec_ref: module/xlibgate/spec/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml
   maturity_ref: .foundationx/status/index.json#xlibgate
   spec_version: v1.2.0

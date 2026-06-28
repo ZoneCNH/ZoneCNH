@@ -2,8 +2,8 @@
   "schema_version": "fleet-status/v1",
   "generated_at": "2026-06-17T23:45:29Z",
   "generated_by": "xlibgate fleet-status",
-  "metadata_refreshed_at": "2026-06-25T20:36:13Z",
-  "metadata_refresh_note": "manual metadata refresh by audit 2026-06-25; generated_at unchanged (module data not re-aggregated; trust fleet-status schema migration pending)",
+  "metadata_refreshed_at": "2026-06-29T00:00:00Z",
+  "metadata_refresh_note": "manual metadata refresh 2026-06-29: xlib_harness version corrected from v1.0.0 to v0.1.6 (matching GitHub Release tag); xlib base 4-module Goal pipeline alignment",
   "source": ".foundationx/status/index.json",
   "total_modules": 21,
   "verified_against": {
@@ -38,7 +38,7 @@
     },
     "xlib_harness": {
       "layer": "harness",
-      "version": "v1.0.0",
+      "version": "v0.1.6",
       "spec": true,
       "impl": true,
       "release": true,

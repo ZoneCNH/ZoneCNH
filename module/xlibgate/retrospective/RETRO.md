@@ -33,8 +33,8 @@
 ## 3. 需改进的
 
 - **Goal 管线注册延迟**：模块已发布 v1.0.0 但未及时注册到 Goal 管线系统。
-- **Trust Alignment 未完成**：FR-012~FR-019（trust 子命令）在 TRACEABILITY 中标记为 ❌，属于 post-1.0 范围但 SPEC 已定义。
-- **文档结构未迁移**：仍使用平铺结构，未按嵌套标准结构迁移。
+- **Trust Alignment 实现但 TRACEABILITY 未同步**：FR-012~FR-019（trust 子命令组）已在 internal/trust/ 包中全部实现并通过测试，但 TRACEABILITY.md 未及时更新状态（本次对齐已修正）。
+- **文档结构未迁移**：已从平铺结构迁移到嵌套标准结构（goal/goal.md, spec/SPEC.md, matrix/TRACEABILITY.md, design/DESIGN.md, plan/）。
 - **Benchmark 待补**：SPEC 中定义的 benchmark 目标（50 模块 < 30s）需要持续验证。
 
 ## 4. 经验教训
@@ -50,12 +50,12 @@
 
 | 编号 | 任务 | 优先级 |
 | --- | --- | --- |
-| F-001 | 实现 trust identity（FR-012） | P1 |
-| F-002 | 实现 trust template-residue（FR-013） | P1 |
-| F-003 | 实现 trust release-consistency（FR-014） | P1 |
-| F-004 | 实现 trust maturity --factory（FR-015） | P1 |
-| F-005 | 迁移到嵌套目录结构 | P2 |
-| F-006 | 补充 Benchmark 持续验证 | P2 |
+| F-001 | 实现 trust identity（FR-012） | P1 | ✅ 已完成 |
+| F-002 | 实现 trust template-residue（FR-013） | P1 | ✅ 已完成 |
+| F-003 | 实现 trust release-consistency（FR-014） | P1 | ✅ 已完成 |
+| F-004 | 实现 trust maturity --factory（FR-015） | P1 | ✅ 已完成 |
+| F-005 | 迁移到嵌套目录结构 | P2 | ✅ 已完成 |
+| F-006 | 补充 Benchmark 持续验证 | P2 | 待做 |
 
 ---
 

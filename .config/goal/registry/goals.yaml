@@ -76,8 +76,8 @@ goals:
     created_at: "2026-06-09"
     updated_at: "2026-06-29"
     related_specs:
-      - module/xlib_standard/SPEC.md
-      - module/xlib_standard/goal.md
+      - module/xlib_standard/spec/SPEC.md
+      - module/xlib_standard/goal/goal.md
     success_criteria:
       - 14 条 FR 全部实现
       - 24 个 TC 全部通过
@@ -103,8 +103,8 @@ goals:
     created_at: "2026-06-01"
     updated_at: "2026-06-29"
     related_specs:
-      - module/xlib_harness/SPEC.md
-      - module/xlib_harness/goal.md
+      - module/xlib_harness/spec/SPEC.md
+      - module/xlib_harness/goal/goal.md
     success_criteria:
       - 生成 10 个模块资产（generate CLI）
       - 规格门禁覆盖 23 节结构、FR/AC/TC 可验证性
@@ -134,8 +134,8 @@ goals:
     created_at: "2026-06-01"
     updated_at: "2026-06-29"
     related_specs:
-      - module/xlib_evidence/SPEC.md
-      - module/xlib_evidence/goal.md
+      - module/xlib_evidence/spec/SPEC.md
+      - module/xlib_evidence/goal/goal.md
     success_criteria:
       - 5 FR 全部实现并通过 SPEC.md FR-001..005 的 WHEN/THEN 验证
       - collect → generate → validate 端到端可跑通
@@ -162,9 +162,9 @@ goals:
     created_at: "2026-06-01"
     updated_at: "2026-06-29"
     related_specs:
-      - module/xlibgate/SPEC.md
-      - module/xlibgate/goal.md
-      - module/xlibgate/DESIGN.md
+      - module/xlibgate/spec/SPEC.md
+      - module/xlibgate/goal/goal.md
+      - module/xlibgate/design/DESIGN.md
     success_criteria:
       - check imports/gomod/baseline/release/all 子命令全部实现
       - exit code 标准化 0/1/2 全场景验证通过
