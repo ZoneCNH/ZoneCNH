@@ -1,14 +1,14 @@
 # contracts 追溯矩阵
 
 - Status: Docs Baseline Synced / Coverage Closed
-- Last-Updated: 2026-06-22
+- Last-Updated: 2026-06-29
 - Layer: 基座 · 跨域接口契约
 - Source-of-Truth: `/home/contracts/pkg/contracts`
 - Related: `SPEC.md`, `README.md`, `goal.md`, `ACCEPTANCE.md`, `FEATURES.md`, `IMPLEMENTATION-PLAN.md`, `tasks/`
 
 > 本文档把当前 runtime truth 的公开符号映射到 SPEC 的 FR/BR/NFR、验证任务与文档制品；不再保留旧分层、旧版本标记或改名叙事。
 
-## 1. 功能需求追溯
+## §1 功能需求追溯（FR）
 
 | ID | 规格摘要 | runtime 锚点 | 文档锚点 | 任务锚点 |
 | --- | --- | --- | --- | --- |
@@ -21,7 +21,9 @@
 | FR-007 | `RegimeSnapshotEvent`、`RegimeCardEvent`、`DecisionCardEvent`、`MarketRegimePort`、`MacroRegimePort`、`RegimeEnginePort` | `projections.go` | `SPEC.md`、`README.md`、`FEATURES.md` | `TASK-CONTRACTS-003` |
 | FR-008 | 文档基线与 runtime truth 同步 | `/home/contracts/pkg/contracts`、`module/contracts/*` | `SPEC.md`、`README.md`、`goal.md`、`TRACEABILITY.md`、`ACCEPTANCE.md`、`FEATURES.md`、`IMPLEMENTATION-PLAN.md`、`tasks/` | `TASK-CONTRACTS-004` |
 
-## 2. 约束追溯
+---
+
+## §2 业务规则追溯（BR）
 
 | ID | 规格摘要 | runtime / 检查锚点 | 文档锚点 | 任务锚点 |
 | --- | --- | --- | --- | --- |
@@ -36,7 +38,7 @@
 | BR-009 | 文档必须保持同一组事实源 | `module/contracts/*` | `SPEC.md`、`README.md`、`TRACEABILITY.md`、`ACCEPTANCE.md`、`FEATURES.md`、`IMPLEMENTATION-PLAN.md`、`tasks/` | `TASK-CONTRACTS-004` |
 | BR-010 | 公开 rename/removal 先修兼容层与追溯文档 | `projections.go`、`module/contracts/*` | `SPEC.md`、`goal.md`、`TRACEABILITY.md`、`ACCEPTANCE.md`、`FEATURES.md`、`IMPLEMENTATION-PLAN.md` | `TASK-CONTRACTS-003`、`TASK-CONTRACTS-004` |
 
-## 3. 非功能追溯
+## §3 非功能需求追溯（NFR）
 
 | ID | 规格摘要 | 验证锚点 | 文档锚点 | 任务锚点 |
 | --- | --- | --- | --- | --- |
@@ -49,7 +51,7 @@
 | NFR-007 | 不把 transport 实现写成契约本体 | `SPEC.md`、`README.md` | `SPEC.md`、`FEATURES.md` | `TASK-CONTRACTS-000`、`TASK-CONTRACTS-004` |
 | NFR-008 | 不回流旧叙事 | `module/contracts/*` 的旧术语扫描 | `SPEC.md`、`goal.md`、`TRACEABILITY.md`、`ACCEPTANCE.md`、`FEATURES.md` | `TASK-CONTRACTS-004` |
 
-## 4. 检查用例
+## §4 TC -> FR 反向追溯
 
 | TC | 检查项 | 覆盖需求 | 证据 |
 | --- | --- | --- | --- |
@@ -62,16 +64,38 @@
 | TC-007 | 运行时检查命令可复验 | NFR-001、NFR-002、NFR-003 | `ACCEPTANCE.md` |
 | TC-008 | 依赖边界不回流到业务层 | BR-001、BR-004、NFR-007 | `SPEC.md`、`goal.md` |
 
-## 5. 覆盖概览
+## §5 全局 AC 注册表
 
-- FR 覆盖：8 / 8
-- BR 覆盖：10 / 10
-- NFR 覆盖：8 / 8
-- 检查用例：8 / 8
-- 任务覆盖：6 / 6
-- 已知缺口：无
+> contracts 模块以接口契约为中心，AC 与 FR 一体化定义于 SPEC.md 和 ACCEPTANCE.md，本注册表提供交叉引用索引。
 
-## 6. 维护规则
+| AC 覆盖 | 关联 FR/BR | 验证 TC | 状态 |
+| ------- | ---------- | ------- | ---- |
+| FR-001~008 全部 | FR-001~008 | TC-001~008 | Done |
+| BR-001~010 全部 | BR-001~010 | TC-001~008 | Done |
+| NFR-001~008 全部 | NFR-001~008 | TC-007 | Done |
+
+## §6 覆盖率仪表盘
+
+| 维度 | 总数 | Done | 覆盖率 |
+| ---- | ---- | ---- | ------ |
+| FR (功能需求) | 8 | 8 | 100% |
+| BR (业务规则) | 10 | 10 | 100% |
+
+
+| NFR (非功能需求) | 8 | 8 | 100% |
+| TC (测试用例) | 8 | 8 | 100% |
+| **合计** | **34** | **34** | **100%** |
+
+> 说明：contracts 为纯接口契约模块，AC 粒度与 FR 同构。Task 总数 = TASK-CONTRACTS-000~005 共 6 项，全部关闭。
+
+## §7 变更历史
+
+| 日期 | 变更内容 |
+| ---- | -------- |
+| 2026-06-29 | Goal 管线对齐：章节重编号为标准 §1-§7 结构；§6 覆盖概览转为标准化 Done/覆盖率表格；新增 §5 AC 注册表索引；新增 §7 变更历史 |
+| 2026-06-22 | Docs Baseline Synced：FR/BR/NFR 全链路关闭，覆盖概览 100% |
+
+## 维护规则
 
 - 新增、删除或重命名公开符号时，先更新 `SPEC.md`，再更新本矩阵与 `ACCEPTANCE.md`。
 - 任何旧术语回流都先视为文档回归，再决定是否需要代码侧修正。
