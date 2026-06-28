@@ -137,7 +137,7 @@
 
 | 里程碑                | 时间      | 验收标准                                            | Code-Done    |
 | --------------------- | --------- | --------------------------------------------------- | ------------ |
-| M1: CI + 可观测性就绪 | Week 1 末 | F-1 PASS + I-2~I-5 PASS + PRG-001/004 PASS          | 29/48 (60%)  |
+| M1: CI + 可观测性就绪 | Week 1 末 | F-1 PASS + I-2~I-5 PASS + PRG-001/004 PASS          | 28/48 (58%)  |
 | M2: E-1 + E-2 闭合    | Week 2 末 | 12 FR Partial→Done + J-3/J-4 PASS + drills evidence | 35/48 (73%)  |
 | M3: 全 FR 闭合        | Week 3 末 | 48/48 Done + H-1/H-2 PASS + PRG-005/006 PASS        | 48/48 (100%) |
 | M4: v0.2.0 Release    | Week 4 末 | PRG 7/7 PASS + release tag + post-release verify    | 48/48 (100%) |

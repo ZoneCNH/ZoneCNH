@@ -84,7 +84,7 @@ release_closeable 判定公式：
 release_closeable = Code-Done FR / Total FR ≥ 90% AND Drifted FR = 0 AND Pending FR = 0 AND PRG-001~007 全 PASS AND 远程 CI PASS AND release tag 已发布 AND HA/DR 部署文档存在
 ```
 
-当前状态：`release_closeable: NO`（23/48 Done ≈ 47.9% < 90%，25 Partial，PRG-001~007 均 Open）。
+当前状态：`release_closeable: NO`（23/48 Done ≈ 47.9% < 90%，25 Partial，PRG-001~006 Open，PRG-007 PASS）。
 
 | PRG | Gate | State | Blocking evidence |
 | --- | --- | --- | --- |
