@@ -2,13 +2,15 @@
 
 > 模块级追溯矩阵。治理规范见 [docs/governance/TRACEABILITY.md](../../docs/governance/TRACEABILITY.md)。本矩阵记录 PR #17 merged + v1.0.3 remote tag evidence；GitHub Release v1.0.3 仍需独立发布证据，不得由 tag 推导。
 
-Last-Updated: 2026-06-23
+Last-Updated: 2026-06-29
 Source: `goal.md` 1.0 发布基线 + `SPEC.md` Approved v1.2.0 + `/home/natsx` PR #17 merge `29503212` + remote tag `v1.0.3`
 
-## Forward Coverage
+---
 
-| Requirement | Description | Acceptance Criteria | Test Case | Task | Status |
-| ----------- | ----------- | ------------------- | --------- | ---- | ------ |
+## §1 功能需求追溯（FR）
+
+| Requirement | Description | Acceptance Criteria | TC ID(s) | Task | Status |
+| ----------- | ----------- | ------------------- | -------- | ---- | ------ |
 | FR-001 | Publish（Core NATS） | 发布成功、连接错误、空 subject 错误均有测试 | TC-001 | TASK-NATSX-001 | ✅ |
 | FR-002 | Subscribe（Core NATS） | subscribe/handler/unsubscribe/drain 均有测试 | TC-001 | TASK-NATSX-001 | ✅ |
 | FR-003 | Request（Core NATS） | responder、timeout、ctx cancel 均有测试 | TC-002 | TASK-NATSX-002 | ✅ |
@@ -19,10 +21,12 @@ Source: `goal.md` 1.0 发布基线 + `SPEC.md` Approved v1.2.0 + `/home/natsx` P
 | FR-008 | Health | ready/live/message 与连接状态映射有测试 | TC-005 | TASK-NATSX-005 | ✅ |
 | FR-009 | JetStream IngestPublisher Adapter | IngestAck{Durable}/JETSTREAM_PUBLISH_FAILED retryable/duplicate 幂等 | TC-010 | TASK-NATSX-010 | ✅ PR #17 merged; GitHub Release pending |
 | FR-010 | JetStream IngestConsumer Adapter | Fetch+ManualAck/重投递/DLQ/poison message 不吞没 payload | TC-015 | TASK-NATSX-010 | ✅ PR #17 merged; GitHub Release pending |
-| NFR-006 | SubjectBuilder | `domain.resource.action.v{version}` 构造和解析有测试 | TC-006 | TASK-NATSX-006 | ✅ Build/parse/validation tests |
-| NFR-007 | NatsMessageEnvelope | traceId/messageId/schemaVersion/header 双向映射有测试 | TC-007 | TASK-NATSX-007 | ✅ Header metadata round-trip and embedded propagation tests |
-| NFR-008 | Config contract | `foundationx.nats.*` 配置、默认值和旧别名兼容有测试 | TC-008 | TASK-NATSX-008 | ✅ Defaults/sanitize/validation plus canonical `FOUNDATIONX_NATS_*` over legacy `NATS_*` fallback covered |
-| NFR-009 | Observability contract | `foundationx_nats_*` 指标、错误脱敏和连接事件 guardrail 有测试 | TC-009 | TASK-NATSX-009 | ✅ Canonical `foundationx_nats_*` metrics and secret-safe error/live evidence covered |
+
+---
+
+
+| Requirement | Description | Acceptance Criteria | TC ID(s) | Task | Status |
+| ----------- | ----------- | ------------------- | -------- | ---- | ------ |
 | BR-001 | Core NATS at-most-once | 不承诺持久化，低延迟发布订阅场景有说明和测试 | TC-001 | TASK-NATSX-001 | ✅ |
 | BR-002 | JetStream at-least-once | ack/nack/redelivery 语义有测试 | TC-003 | TASK-NATSX-003 | ✅ |
 | BR-003 | Context boundary | 所有网络操作接受 context 并尊重取消/超时 | TC-002 | TASK-NATSX-002 | ✅ |
@@ -32,28 +36,26 @@ Source: `goal.md` 1.0 发布基线 + `SPEC.md` Approved v1.2.0 + `/home/natsx` P
 | BR-007 | JetStream 启动时创建 | stream/consumer 在启动时创建，运行时创建失败返回预期错误 | TC-003 | TASK-NATSX-004 | ✅ |
 | BR-008 | 错误不含消息内容 | 错误/日志不包含 payload 内容，防止敏感数据泄露 | TC-011 | TASK-NATSX-011 | ✅ |
 | BR-009 | Subscription 资源释放 | Close/Drain 时正确释放资源，无泄漏 | TC-001 | TASK-NATSX-001 | ✅ |
+
+---
+
+## §3 非功能需求追溯（NFR）
+
+| Requirement | Description | Acceptance Criteria | TC ID(s) | Task | Status |
+| ----------- | ----------- | ------------------- | -------- | ---- | ------ |
 | NFR-001 | Security redaction | credentials/token/连接串敏感片段脱敏 | TC-011 | TASK-NATSX-011 | ✅ Config/env sanitize and live-test output without secret values covered |
 | NFR-002 | TLS/auth | TLS 与认证配置可表达且不泄漏凭据 | TC-011 | TASK-NATSX-011 | ✅ Config expression/sanitize, canonical auth env vars, and local auth live test with redacted credentials covered; production TLS closure packet remains external release blocker `BLK-002` |
 | NFR-003 | Performance budget | publish/request/JetStream 延迟预算有 benchmark | TC-012 | TASK-NATSX-012 | ✅ Publish/request/JetStream benchmarks plus embedded request/publish/fetch SLO assertions and handler latency metric covered |
 | NFR-004 | Layer boundary | 不依赖 kafkax，不替代 RPC/治理框架 | TC-013 | TASK-NATSX-013 | ✅ Dependency boundary clean |
 | NFR-005 | Release evidence | SPEC、goal、traceability、matrix evidence 一致 | TC-014 | TASK-NATSX-014 | 🟡 Documentation and executable evidence reconciled; GitHub Release v1.0.3 pending |
+| NFR-006 | SubjectBuilder | `domain.resource.action.v{version}` 构造和解析有测试 | TC-006 | TASK-NATSX-006 | ✅ Build/parse/validation tests |
+| NFR-007 | NatsMessageEnvelope | traceId/messageId/schemaVersion/header 双向映射有测试 | TC-007 | TASK-NATSX-007 | ✅ Header metadata round-trip and embedded propagation tests |
+| NFR-008 | Config contract | `foundationx.nats.*` 配置、默认值和旧别名兼容有测试 | TC-008 | TASK-NATSX-008 | ✅ Defaults/sanitize/validation plus canonical `FOUNDATIONX_NATS_*` over legacy `NATS_*` fallback covered |
+| NFR-009 | Observability contract | `foundationx_nats_*` 指标、错误脱敏和连接事件 guardrail 有测试 | TC-009 | TASK-NATSX-009 | ✅ Canonical `foundationx_nats_*` metrics and secret-safe error/live evidence covered |
 
-## Acceptance Criteria Linkage
+---
 
-| Acceptance Criterion | Requirement | Test Case | Current Evidence |
-| -------------------- | ----------- | --------- | ---------------- |
-| AC-001 | FR-001 | TC-001 | Embedded broker publish plus invalid-precondition coverage |
-| AC-002 | FR-002 | TC-001 | Embedded broker subscribe/queue/unsubscribe, subscription Drain, and client close evidence |
-| AC-003 | FR-003 | TC-002 | Embedded responder, no-responder, timeout, and cancel coverage |
-| AC-004 | FR-004 | TC-003 | Embedded JetStream publish/pull plus missing-stream publish coverage |
-| AC-005 | FR-005 | TC-003 | Pull, ack, nack redelivery, and max-deliveries advisory coverage |
-| AC-006 | FR-006 | TC-003 | Embedded AddStream create/idempotency/conflict covered |
-| AC-007 | FR-007 | TC-003 | Embedded AddConsumer create/idempotency/conflict covered |
-| AC-008 | FR-008 | TC-005 | Healthy, disconnected, nil, canceled, closed, reconnect, and degraded health paths covered |
-| AC-009 | FR-009 | TC-010 | ✅ PR #17 merged — IngestPublisher runtime adapter 已实现；GitHub Release v1.0.3 待补 |
-| AC-010 | FR-010 | TC-015 | ✅ PR #17 merged — IngestConsumer runtime adapter 已实现；GitHub Release v1.0.3 待补 |
-
-## Reverse Coverage
+## §4 TC→FR 反向追溯
 
 | Test Case | Covers | Current Evidence |
 | --------- | ------ | ---------------- |
@@ -74,6 +76,25 @@ Source: `goal.md` 1.0 发布基线 + `SPEC.md` Approved v1.2.0 + `/home/natsx` P
 | TC-013 | NFR-004 | `/home/natsx$ GOWORK=off go list -deps ./pkg/natsx ./examples/...` plus forbidden-domain filter returned `dependency boundary clean` |
 | TC-014 | NFR-005 | `/home/natsx` PR #17 merge `29503212`, remote tag `v1.0.3`; GitHub Release `v1.0.3` pending; formal four-source arbiter still pending |
 
+---
+
+## §5 全局 AC 注册表
+
+| Acceptance Criterion | Requirement | Test Case | Current Evidence |
+| -------------------- | ----------- | --------- | ---------------- |
+| AC-001 | FR-001 | TC-001 | Embedded broker publish plus invalid-precondition coverage |
+| AC-002 | FR-002 | TC-001 | Embedded broker subscribe/queue/unsubscribe, subscription Drain, and client close evidence |
+| AC-003 | FR-003 | TC-002 | Embedded responder, no-responder, timeout, and cancel coverage |
+| AC-004 | FR-004 | TC-003 | Embedded JetStream publish/pull plus missing-stream publish coverage |
+| AC-005 | FR-005 | TC-003 | Pull, ack, nack redelivery, and max-deliveries advisory coverage |
+| AC-006 | FR-006 | TC-003 | Embedded AddStream create/idempotency/conflict covered |
+| AC-007 | FR-007 | TC-003 | Embedded AddConsumer create/idempotency/conflict covered |
+| AC-008 | FR-008 | TC-005 | Healthy, disconnected, nil, canceled, closed, reconnect, and degraded health paths covered |
+| AC-009 | FR-009 | TC-010 | ✅ PR #17 merged — IngestPublisher runtime adapter 已实现；GitHub Release v1.0.3 待补 |
+| AC-010 | FR-010 | TC-015 | ✅ PR #17 merged — IngestConsumer runtime adapter 已实现；GitHub Release v1.0.3 待补 |
+
+---
+
 ## Task Coverage
 
 | Task | Requirement Coverage | Current Evidence |
@@ -92,6 +113,33 @@ Source: `goal.md` 1.0 发布基线 + `SPEC.md` Approved v1.2.0 + `/home/natsx` P
 | TASK-NATSX-012 | NFR-003 | Complete repair-slice SLO assertions for embedded request, JetStream publish/fetch, and handler latency; production benchmark gate still separate |
 | TASK-NATSX-013 | NFR-004 | Dependency boundary check passed for forbidden ZoneCNH messaging/storage modules |
 | TASK-NATSX-014 | NFR-005 | Release evidence + CI gate: `README.md` quickstart/API overview, `CHANGELOG.md` v1.0.0, CI gate (build/test/vet/lint/secret scan), coverage >=80%, benchmark regression guard; PR #17 merge and remote tag v1.0.3 observed; GitHub Release v1.0.3 pending |
+
+---
+
+## §6 覆盖率仪表盘
+
+| 维度 | 总数 | Done | 覆盖率 |
+| ------ | ------ | --- | ------ |
+| FR | 10 | 10 | 100% |
+| BR | 9 | 9 | 100% |
+
+
+| NFR | 9 | 8 | 88.9% |
+| AC | 10 | 10 | 100% |
+| TC | 15 | 15 | 100% |
+
+> 说明：NFR-005 标记为 🟡（Documentation and executable evidence reconciled; GitHub Release v1.0.3 pending），未计入 Done。FR-009/FR-010 的 Status 列标记 ✅（PR #17 merged），计入 Done。覆盖率 = Done / 总数。
+
+---
+
+## §7 变更历史
+
+| 日期 | 变更内容 | 作者 |
+| ---------- | -------- | ---- |
+| 2026-06-29 | Goal 管线对齐：Forward Coverage 拆分为 §1 FR/§2 BR/§3 NFR 独立表，统一 TC ID(s) 列名，Task 列置于 TC ID(s) 与 Status 之间；§4 TC→FR 反向追溯与 §5 全局 AC 注册表章节重编号；新增 §6 覆盖率仪表盘；新增 §7 变更历史 | ZoneCNH |
+| 2026-06-23 | 初始版本：PR #17 merge + v1.0.3 remote tag evidence；Forward Coverage 含 FR/BR/NFR 混排表、AC 关联表、Reverse Coverage、Task Coverage、Documentation Evidence Inventory、Matrix Score Evidence | ZoneCNH |
+
+---
 
 ## Documentation Evidence Inventory
 

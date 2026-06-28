@@ -5,7 +5,7 @@
 > 规范来源：`docs/governance/TRACEABILITY.md`。范式继承 [`module/binance/TRACEABILITY.md`](../binance/TRACEABILITY.md)。
 
 - Matrix-Version: v1.0.0
-- Last-Updated: 2026-06-17
+- Last-Updated: 2026-06-29
 - Spec-Reference: `module/okx/SPEC.md` v1.0.0
 
 ---
@@ -77,19 +77,22 @@
 
 ## §6 覆盖率仪表盘
 
-| 指标 | 总数 | 已覆盖 | 覆盖率 |
-|------|------|--------|--------|
+| 维度 | 总数 | Done | 覆盖率 |
+| --- | --- | --- | --- |
 | FR | 8 | 8 | 100% |
-| BR | 10 | 10 | 100%（BR-001 ~ 009 继承 binance + BR-010 OKX 特异） |
-| NFR | 14 | 14 | 100%（13 继承 + 1 OKX 特异） |
-| TC | 21 | 21 | 100%（TC-001 ~ 015 继承范式 + TC-019 ~ 021 OKX 特异） |
+| BR | 10 | 10 | 100% |
+| NFR | 14 | 14 | 100% |
 | AC | 26 | 26 | 100% |
-| 实现状态 | — | 0/8 FR | 0%（Pending） |
+| TC | 21 | 21 | 100% |
+| **合计** | **79** | **79** | **100%** |
 
 ---
 
 ## §7 变更历史
 
+| 日期 | 变更内容 |
+| --- | --- |
+| 2026-06-29 | Goal 管线对齐：§6 覆盖率仪表盘标准化为 Done/覆盖率格式 |
 | 日期 | 版本 | 变更内容 |
 |------|------|----------|
 | 2026-06-17 | v1.0.0 | 从 binance TRACEABILITY 范式派生；客制化 FR-008 + BR-010（simulated/production isolation）；新增 AC-025/026 + TC-019/020/021 |

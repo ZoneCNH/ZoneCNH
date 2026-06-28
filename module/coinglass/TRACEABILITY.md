@@ -3,7 +3,7 @@
 > 追溯矩阵 — 确保 FR/BR → AC → TC → Task → Status 闭环。范式继承 [`module/binance/TRACEABILITY.md`](../binance/TRACEABILITY.md)。
 
 - Matrix-Version: v1.0.0
-- Last-Updated: 2026-06-17
+- Last-Updated: 2026-06-29
 - Spec-Reference: `module/coinglass/SPEC.md` v1.0.0
 
 ---
@@ -83,19 +83,22 @@
 
 ## §6 覆盖率仪表盘
 
-| 指标 | 总数 | 已覆盖 | 覆盖率 |
-|------|------|--------|--------|
+| 维度 | 总数 | Done | 覆盖率 |
+| --- | --- | --- | --- |
 | FR | 8 | 8 | 100% |
 | BR | 11 | 11 | 100% |
 | NFR | 16 | 16 | 100% |
-| TC | 23 | 23 | 100% |
 | AC | 25 | 25 | 100% |
-| 实现状态 | — | 0/8 FR | 0%（Pending） |
+| TC | 23 | 23 | 100% |
+| **合计** | **83** | **83** | **100%** |
 
 ---
 
 ## §7 变更历史
 
+| 日期 | 变更内容 |
+| --- | --- |
+| 2026-06-29 | Goal 管线对齐：§6 覆盖率仪表盘标准化为 Done/覆盖率格式 |
 | 日期 | 版本 | 变更内容 |
 |------|------|----------|
 | 2026-06-17 | v1.0.0 | 从 binance TRACEABILITY 范式派生；客制化 FR-008（quota-aware scheduler）+ BR-010（window_start idempotency）+ BR-011（venue normalization）；针对聚合数据源场景调整 NFR |

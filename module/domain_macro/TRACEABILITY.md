@@ -1,35 +1,37 @@
 # domain_macro 需求追溯矩阵
 
-> 更新：2026-06-16
+> 更新：2026-06-29
 > 来源：module/domain_macro/SPEC.md v1.0.0
 > 规范：docs/governance/TRACEABILITY.md
 
+Last-Updated: 2026-06-29
 ---
 
 ## §1 功能需求追溯（FR）
 
 | FR | Description | WHEN | THEN | AC | TC | Task | Status |
 |----|-------------|------|------|----|----|------|--------|
-| FR-MAC-001 | macropoint-time | 构造 MacroPoint | ObservedAt/ReleasedAt/AvailableAt 三类时间语义固定；AvailableAt 缺失时 Validate 失败 | AC-MAC-001 | TC-MAC-001 | - | 🔲 |
-| FR-MAC-002 | macropoint-revision | 同一 SeriesCode+ObservedAt 存在多个 revision | RevisionVersion >= 0 且用于 deterministic ordering；preliminary/final 标识可追溯 | AC-MAC-002 | TC-MAC-003 | - | 🔲 |
-| FR-MAC-003 | visibility | 调用 IsVisibleAt(decisionTime) | ObservedAt/ReleasedAt/AvailableAt 任一晚于 decisionTime 则不可见；AvailableAt 缺失时不可见 | AC-MAC-003 | TC-MAC-001, TC-MAC-002, TC-MAC-005 | - | 🔲 |
-| FR-MAC-004 | information-set | 构造 MacroInformationSet | Points 只含 IsVisibleAt(DecisionTime) 为 true 的数据；copy-on-write 防止外部修改 | AC-MAC-004 | TC-MAC-004, TC-MAC-006 | - | 🔲 |
-| FR-MAC-005 | revision-selection | 同一 SeriesCode+ObservedAt 有多版本可见 | 选择最高 RevisionVersion；preliminary 不得覆盖 final 除非 revision 更高且可见 | AC-MAC-005 | TC-MAC-003, TC-MAC-005 | - | 🔲 |
-| FR-MAC-006 | macrostate | 构造 MacroState | 枚举 recovery/expansion/slowdown/contraction 稳定；IsValid() 可校验 | AC-MAC-006 | TC-MAC-003 | - | 🔲 |
-| FR-MAC-007 | precision | 宏观值精度决策 | 推荐采用 decimalx.Decimal；若保留 float64 须标为派生/convenience 并保留 decimal 原始值 | AC-MAC-007 | - | - | 🔲 |
-| FR-MAC-008 | provider-dto | provider DTO 边界 | yahoo_models 等 DTO 须迁入 internal 或 infra；公共 API 仅暴露中立模型 | AC-MAC-008 | TC-MAC-007 | - | 🔲 |
+| FR-MAC-001 | macropoint-time | 构造 MacroPoint | ObservedAt/ReleasedAt/AvailableAt 三类时间语义固定；AvailableAt 缺失时 Validate 失败 | AC-MAC-001 | TC-MAC-001 | TASK-DMAC-001 | 🔲 |
+| FR-MAC-002 | macropoint-revision | 同一 SeriesCode+ObservedAt 存在多个 revision | RevisionVersion >= 0 且用于 deterministic ordering；preliminary/final 标识可追溯 | AC-MAC-002 | TC-MAC-003 | TASK-DMAC-002 | 🔲 |
+| FR-MAC-003 | visibility | 调用 IsVisibleAt(decisionTime) | ObservedAt/ReleasedAt/AvailableAt 任一晚于 decisionTime 则不可见；AvailableAt 缺失时不可见 | AC-MAC-003 | TC-MAC-001, TC-MAC-002, TC-MAC-005 | TASK-DMAC-003 | 🔲 |
+| FR-MAC-004 | information-set | 构造 MacroInformationSet | Points 只含 IsVisibleAt(DecisionTime) 为 true 的数据；copy-on-write 防止外部修改 | AC-MAC-004 | TC-MAC-004, TC-MAC-006 | TASK-DMAC-004 | 🔲 |
+| FR-MAC-005 | revision-selection | 同一 SeriesCode+ObservedAt 有多版本可见 | 选择最高 RevisionVersion；preliminary 不得覆盖 final 除非 revision 更高且可见 | AC-MAC-005 | TC-MAC-003, TC-MAC-005 | TASK-DMAC-005 | 🔲 |
+| FR-MAC-006 | macrostate | 构造 MacroState | 枚举 recovery/expansion/slowdown/contraction 稳定；IsValid() 可校验 | AC-MAC-006 | TC-MAC-003 | TASK-DMAC-006 | 🔲 |
+| FR-MAC-007 | precision | 宏观值精度决策 | 推荐采用 decimalx.Decimal；若保留 float64 须标为派生/convenience 并保留 decimal 原始值 | AC-MAC-007 | - | TASK-DMAC-007 | 🔲 |
+| FR-MAC-008 | provider-dto | provider DTO 边界 | yahoo_models 等 DTO 须迁入 internal 或 infra；公共 API 仅暴露中立模型 | AC-MAC-008 | TC-MAC-007 | TASK-DMAC-008 | 🔲 |
 
 ---
 
+## §2 业务规则追溯（BR）
 
 | BR | Rule | 违反后果 | TC ID(s) | Task | Status |
-|----|------|----------|---------------------|------|--------|
-| BR-MAC-001 | IsVisibleAt 必须 fail-closed：缺失 AvailableAt 的点不可见 | 前视偏差，回测结果不可信 | TC-MAC-001 缺失 AvailableAt 拒绝断言；TC-MAC-002 IsVisibleAt 返回 false | - | 🔲 |
-| BR-MAC-002 | FilterMacroPointsForBacktest 必须拒绝缺失 AvailableAt 的点，避免前视偏差 | 回测引入未来信息，策略评估失真 | TC-MAC-001 Validate 失败拒绝；Property 测试随机时间组合验证 | - | 🔲 |
-| BR-MAC-003 | MacroInformationSet 构造器 copy-on-write：getter 返回 slice 副本 | 外部修改污染内部状态，信息集不再 deterministic | TC-MAC-004 copy-on-write 断言；Race 测试并发读取 | - | 🔲 |
-| BR-MAC-004 | 同一 DecisionTime + 同一输入数据 → MacroInformationSet 输出 deterministic | 回测不可重现 | Fuzz 测试随机 MacroPoint 集合验证确定性；TC-MAC-003 revision selection 确定性 | - | 🔲 |
-| BR-MAC-005 | DataFreshnessSec 规则：无可见点时返回 -1 或特殊值；未来数据拒绝 | freshness 指标不可靠 | TC-MAC-001/TC-MAC-002 无可见点时返回 -1 | - | 🔲 |
-| BR-MAC-006 | provider DTO 不得污染 domain Public API | 领域模型与 provider 耦合，升级 provider 时公共 API 破坏 | TC-MAC-007 provider DTO 边界检查；lint：domain 原始值不暴露外键 DTO | - | 🔲 |
+|----|------|----------|----------|------|--------|
+| BR-MAC-001 | IsVisibleAt 必须 fail-closed：缺失 AvailableAt 的点不可见 | 前视偏差，回测结果不可信 | TC-MAC-001 缺失 AvailableAt 拒绝断言；TC-MAC-002 IsVisibleAt 返回 false | TASK-DMAC-009 | 🔲 |
+| BR-MAC-002 | FilterMacroPointsForBacktest 必须拒绝缺失 AvailableAt 的点，避免前视偏差 | 回测引入未来信息，策略评估失真 | TC-MAC-001 Validate 失败拒绝；Property 测试随机时间组合验证 | TASK-DMAC-010 | 🔲 |
+| BR-MAC-003 | MacroInformationSet 构造器 copy-on-write：getter 返回 slice 副本 | 外部修改污染内部状态，信息集不再 deterministic | TC-MAC-004 copy-on-write 断言；Race 测试并发读取 | TASK-DMAC-011 | 🔲 |
+| BR-MAC-004 | 同一 DecisionTime + 同一输入数据 → MacroInformationSet 输出 deterministic | 回测不可重现 | Fuzz 测试随机 MacroPoint 集合验证确定性；TC-MAC-003 revision selection 确定性 | TASK-DMAC-012 | 🔲 |
+| BR-MAC-005 | DataFreshnessSec 规则：无可见点时返回 -1 或特殊值；未来数据拒绝 | freshness 指标不可靠 | TC-MAC-001/TC-MAC-002 无可见点时返回 -1 | TASK-DMAC-013 | 🔲 |
+| BR-MAC-006 | provider DTO 不得污染 domain Public API | 领域模型与 provider 耦合，升级 provider 时公共 API 破坏 | TC-MAC-007 provider DTO 边界检查；lint：domain 原始值不暴露外键 DTO | TASK-DMAC-014 | 🔲 |
 
 ---
 
@@ -37,16 +39,16 @@
 
 | NFR | Category | Requirement | Verification | Task | Status |
 |-----|----------|-------------|--------------|------|--------|
-| NFR-MAC-001 | 回测安全 | 任何不可见数据默认拒绝，禁止 look-ahead | TC-MAC-002 IsVisibleAt fail-closed；Property 测试随机时间组合不泄露未来数据 | - | 🔲 |
-| NFR-MAC-002 | 可审计 | 来源、修订、初值/终值和 freshness 指标可追溯 | TC-MAC-001 时间字段完整性；TC-MAC-003 revision 可追溯；Metrics 输出 JSON 证据报告 | - | 🔲 |
-| NFR-MAC-003 | 领域纯净 | 公共模型不包含 provider DTO 或 transport schema | TC-MAC-007 provider DTO 不在公共 API 泄漏；`staticcheck ./...` 无 DTO 污染 | - | 🔲 |
-| NFR-MAC-004 | 性能 | IsVisibleAt 延迟 < 100ns | Benchmark `BenchmarkIsVisibleAt` | - | 🔲 |
-| NFR-MAC-005 | 性能 | FilterMacroPointsForBacktest（1000 点）< 1ms | Benchmark `BenchmarkFilterMacroPoints` | - | 🔲 |
-| NFR-MAC-006 | 性能 | MacroInformationSet 构造（copy-on-write）< 500μs | Benchmark `BenchmarkMacroInformationSet` | - | 🔲 |
+| NFR-MAC-001 | 回测安全 | 任何不可见数据默认拒绝，禁止 look-ahead | TC-MAC-002 IsVisibleAt fail-closed；Property 测试随机时间组合不泄露未来数据 | TASK-DMAC-015 | 🔲 |
+| NFR-MAC-002 | 可审计 | 来源、修订、初值/终值和 freshness 指标可追溯 | TC-MAC-001 时间字段完整性；TC-MAC-003 revision 可追溯；Metrics 输出 JSON 证据报告 | TASK-DMAC-016 | 🔲 |
+| NFR-MAC-003 | 领域纯净 | 公共模型不包含 provider DTO 或 transport schema | TC-MAC-007 provider DTO 不在公共 API 泄漏；`staticcheck ./...` 无 DTO 污染 | TASK-DMAC-017 | 🔲 |
+| NFR-MAC-004 | 性能 | IsVisibleAt 延迟 < 100ns | Benchmark `BenchmarkIsVisibleAt` | TASK-DMAC-018 | 🔲 |
+| NFR-MAC-005 | 性能 | FilterMacroPointsForBacktest（1000 点）< 1ms | Benchmark `BenchmarkFilterMacroPoints` | TASK-DMAC-019 | 🔲 |
+| NFR-MAC-006 | 性能 | MacroInformationSet 构造（copy-on-write）< 500μs | Benchmark `BenchmarkMacroInformationSet` | TASK-DMAC-020 | 🔲 |
 
 ---
 
-## §4 TC → FR 反向追溯
+## §4 TC -> FR 反向追溯
 
 | TC | Covers FR(s) | Scenario | Command |
 |----|-------------|----------|---------|
@@ -77,16 +79,18 @@
 
 ## §6 覆盖率仪表盘
 
-| 指标 | 数值 | 说明 |
-|------|------|------|
-| FR 总数 | 8 | FR-MAC-001 ~ FR-MAC-008 |
-| FR 有 AC 覆盖 | 8/8 (100%) | |
-| FR 有 TC 覆盖 | 7/8 (87.5%) | FR-MAC-007 精度 ADR 由 adoption-check 验证，非传统 TC |
-| BR 总数 | 6 | BR-MAC-001 ~ BR-MAC-006 |
-| BR 有验证机制 | 6/6 (100%) | |
-| NFR 总数 | 6 | NFR-MAC-001 ~ NFR-MAC-006 |
-| AC 总数 | 8 | AC-MAC-001 ~ AC-MAC-008 |
-| TC 总数 | 7 | TC-MAC-001 ~ TC-MAC-007 |
+| 维度 | 总数 | Done | 覆盖率 |
+| ---- | ---- | ---- | ------ |
+| FR (功能需求) | 8 | 0 | 0% |
+| BR (业务规则) | 6 | 0 | 0% |
+
+
+| NFR (非功能需求) | 6 | 0 | 0% |
+| AC (验收标准) | 8 | 0 | 0% |
+| TC (测试用例) | 7 | 0 | 0% |
+| **合计** | **35** | **0** | **0%** |
+
+> 说明：全部 FR/BR/NFR/AC/TC 当前为 🔲（Pending/未实现）。Task 总数 = TASK-DMAC-001~020 共 20 项。
 
 ---
 
@@ -94,5 +98,6 @@
 
 | 日期 | 版本 | 变更 |
 |------|------|------|
+| 2026-06-29 | v1.2 | Goal 管线对齐：§1/§2/§3 Task 列填入 TASK-DMAC-001~020；§2 BR 表补全独立章节标题；§6 覆盖率仪表盘标准化为 Done/覆盖率格式 |
 | 2026-06-16 | v1.1 | 重构为 5 节标准结构：§1 FR 追溯 / §2 BR 追溯 / §3 NFR 追溯 / §4 TC→FR 反向 / §5 AC 注册表；新增 FR-MAC-008 AC-MAC-008 |
 | 2026-06-15 | v1.0 | 初始版本：7 FR + 6 BR + 7 TC + 7 AC |

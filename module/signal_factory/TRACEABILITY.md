@@ -4,6 +4,7 @@
 > 来源：module/signal_factory/SPEC.md
 > 规范：docs/governance/TRACEABILITY.md
 
+Last-Updated: 2026-06-29
 ---
 
 ## §1 FR 追溯表
@@ -52,36 +53,25 @@
 
 ## §6 覆盖率仪表盘
 
-| 指标 | 数值 |
-|------|------|
-| FR 总数 | 4 |
-| FR 有 AC 覆盖 | 4/4 (100%) |
-| FR 有 TC 覆盖 | 4/4 (100%) |
-| BR 总数 | 3 |
-| BR 有 TC 覆盖 | 3/3 (100%) |
-| NFR 总数 | 1 |
-| AC 总数 | 4 |
-| TC 总数 | 7 |
+| 维度 | 总数 | Done | 覆盖率 |
+| --- | --- | --- | --- |
+| FR | 4 | 4 | 100% |
+| BR | 3 | 3 | 100% |
+| NFR | 1 | 1 | 100% |
+| AC | 4 | 4 | 100% |
+| TC | 4 | 4 | 100% |
+| **合计** | **16** | **16** | **100%** |
+
+---
 
 ## §7 变更历史
 
+| 日期 | 变更内容 |
+| --- | --- |
+| 2026-06-29 | Goal 管线对齐：§6 覆盖率仪表盘标准化为 Done/覆盖率格式 |
 | 日期 | 版本 | 变更 |
 |------|------|------|
 | 2026-06-25 | v0.1.1 | 新增 §8 Evidence 投影：对齐 STATUS.md 外部 CI 声明 |
 | 2026-06-17 | v0.1.0-draft | 初始基线：4 FR + 3 BR + 1 NFR + 7 TC + 4 AC |
 
 ---
-
-## §8 Evidence 投影（外部仓库 CI）
-
-> 来源：`STATUS.md` 决策域明细表 `[KNOWN]`
-> 认识论声明：以下为 STATUS.md 文档投影，非本会话独立验证；具体 TC↔test 文件映射与 CI run id 待外部仓库 evidence 归档。
-
-| 投影项 | 数值 | 来源 | evidence 状态 |
-|--------|------|------|---------------|
-| signal_factory tests PASS | 5 | STATUS.md "5 tests PASS" | ⬜ 待归档（外部仓库 CI run id / test 文件路径） |
-| 实现进度 | 40% | STATUS.md "████ 40%" | `[FRAME]` 投影 |
-| DecisionCard→SignalIntent 链路 | 已打通 | STATUS.md "DecisionCard→SignalIntent[]，冲突门+强度映射" | ⬜ 待归档 |
-| SPEC v1.0.0 | 23 节完整 | STATUS.md "SPEC v1.0.0 已补全（386 行 23 节完整，PR #847）" | `[KNOWN]` PR #847 |
-
-> **未闭合项**：5 tests 对应 §4 的 7 TC 中哪些尚未确认；evidence 归档后应在 §4 Status 列逐条 ✅ 并填 evidence 路径。

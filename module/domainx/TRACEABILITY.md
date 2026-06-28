@@ -2,7 +2,7 @@
 
 > 模块级追溯矩阵。治理规范见 [docs/governance/TRACEABILITY.md](../../docs/governance/TRACEABILITY.md)。
 
-Last-Updated: 2026-06-14
+Last-Updated: 2026-06-29
 Source: `module/domainx/SPEC.md`
 
 ## §1 功能需求追溯（FR）
@@ -18,6 +18,8 @@ Source: `module/domainx/SPEC.md`
 | FR-007 | 序列化兼容 — snake_case、decimal 字符串与 RFC3339 时间 | AC-007 | TC-003 | TASK-DOMAINX-005 | Done |
 | FR-008 | 不可变性 — 无公开 setter、copy-on-write 与并发读安全 | AC-008 | TC-008 | TASK-DOMAINX-005 | Done |
 
+---
+
 
 | Requirement | Description | 违反后果 | TC ID(s) | Task | Status |
 | --- | --- | --- | --- | --- | --- |
@@ -31,6 +33,8 @@ Source: `module/domainx/SPEC.md`
 | BR-008 | JSON tag 统一使用 snake_case | CI Gate: TC-003 JSON round-trip 测试失败 | TC-003 | TASK-DOMAINX-005 | Done |
 | BR-009 | 错误消息格式：`domainx: <type>: <detail>` | CI Gate 错误格式检查失败 | go test ./... | TASK-DOMAINX-006 | Done |
 | BR-010 | Portfolio.totalEquity = sum(balances) + sum(positions.marketValue) | 返回 ErrPortfolioBalanceMismatch | TC-007 | TASK-DOMAINX-005 | Done |
+
+---
 
 ## §3 非功能需求追溯（NFR）
 
@@ -47,7 +51,9 @@ Source: `module/domainx/SPEC.md`
 | NFR-009 | Secret 扫描通过 | 零命中 | gitleaks detect --no-git | TASK-DOMAINX-006 | Done |
 | NFR-010 | 公共 API 与 contracts 对齐 | 快照无漂移 | API snapshot / contracts check | TASK-DOMAINX-006 | Done |
 
-## §4 TC → FR 反向追溯
+---
+
+## §4 TC -> FR 反向追溯
 
 | Test Case | 覆盖需求 | 测试类型 | 描述 |
 | --- | --- | --- | --- |
@@ -59,6 +65,8 @@ Source: `module/domainx/SPEC.md`
 | TC-006 | FR-005, BR-006 | 单元 | ExecutionReport 状态与数量一致性 |
 | TC-007 | FR-006, BR-010 | 单元 | Portfolio totalEquity 计算与余额一致性 |
 | TC-008 | FR-008, BR-007 | 单元 | 值对象不可变性与无公开 setter |
+
+---
 
 ## §5 全局 AC 注册表
 
@@ -76,19 +84,28 @@ Source: `module/domainx/SPEC.md`
 | AC-010 | BR-003 | TC-002: 非法流转返回 ErrInvalidTransition | Done |
 | AC-011 | BR-010 | TC-007: Portfolio 余额不一致返回错误 | Done |
 
+---
+
 ## §6 覆盖率仪表盘
 
-| 类别 | 总数 | 已覆盖 | 覆盖率 | 状态 |
-| --- | --- | --- | --- | --- |
-| FR | 8 | 8 | 100% | ✅ |
-| BR | 10 | 10 | 100% | ✅ |
-| NFR | 10 | 10 | 100% | ✅ |
-| TC | 8 | 8 | 100% | ✅ |
-| AC | 11 | 11 | 100% | ✅ |
-| Task | 6 | 6 | — | 6 Done |
+| 维度 | 总数 | Done | 覆盖率 |
+| ---- | ---- | ---- | ------ |
+| FR (功能需求) | 8 | 8 | 100% |
+| BR (业务规则) | 10 | 10 | 100% |
+
+
+| NFR (非功能需求) | 10 | 10 | 100% |
+| AC (验收标准) | 11 | 11 | 100% |
+| TC (测试用例) | 8 | 8 | 100% |
+| **合计** | **47** | **47** | **100%** |
+
+> 说明：全部 FR/BR/NFR/AC/TC 均已 Done。Task 总数 = TASK-DOMAINX-001~006 共 6 项。
+
+---
 
 ## §7 变更历史
 
 | 日期 | 版本 | 变更 |
 | --- | --- | --- |
+| 2026-06-29 | v1.2 | Goal 管线对齐：§2 BR 表补全独立章节标题；§6 覆盖率仪表盘标准化为 Done/覆盖率格式；新增 2026-06-29 条目 |
 | 2026-06-14 | v1.1 | 对齐当前 SPEC：8 FR + 10 BR + 10 NFR + 8 TC + 11 AC；纳入 traceability 门禁 |

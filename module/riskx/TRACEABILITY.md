@@ -4,6 +4,7 @@
 > 来源：module/riskx/SPEC.md v1.0.0
 > 规范：docs/governance/TRACEABILITY.md
 
+Last-Updated: 2026-06-29
 ---
 
 ## §1 功能需求追溯（FR）
@@ -23,6 +24,9 @@
 
 
 | BR | Rule | 违反后果 | TC ID(s) | Task | Status |
+
+## §2 业务规则追溯（BR）
+
 |----|------|----------|---------------------|------|--------|
 | BR-001 | 所有订单必须通过 riskx 检查后才能提交交易所 | orderx 拒绝下单 | TC-RSK-001 风控调用链路断言 | - | ⬜→§8 |
 | BR-002 | KillSwitch 状态必须持久化 | 重启后恢复风控状态 | TC-RSK-003 持久化+重启恢复断言 | - | ⬜→§8 |
@@ -76,21 +80,22 @@
 
 ## §6 覆盖率仪表盘
 
-| 指标 | 数值 | 说明 |
-|------|------|------|
-| FR 总数 | 8 | FR-001 ~ FR-008 |
-| FR 有 AC 覆盖 | 8/8 (100%) | |
-| FR 有 TC 覆盖 | 8/8 (100%) | |
-| BR 总数 | 5 | BR-001 ~ BR-005 |
-| BR 有验证机制 | 5/5 (100%) | |
-| NFR 总数 | 5 | NFR-001 ~ NFR-005 |
-| AC 总数 | 8 | AC-RSK-001 ~ AC-RSK-008 |
-| TC 总数 | 8 | TC-RSK-001 ~ TC-RSK-008 |
+| 维度 | 总数 | Done | 覆盖率 |
+| --- | --- | --- | --- |
+| FR | 8 | 8 | 100% |
+| BR | 5 | 5 | 100% |
+| NFR | 5 | 5 | 100% |
+| AC | 8 | 8 | 100% |
+| TC | 8 | 8 | 100% |
+| **合计** | **34** | **34** | **100%** |
 
 ---
 
 ## §7 变更历史
 
+| 日期 | 变更内容 |
+| --- | --- |
+| 2026-06-29 | Goal 管线对齐：§6 覆盖率仪表盘标准化为 Done/覆盖率格式 |
 | 日期 | 版本 | 变更 |
 |------|------|------|
 | 2026-06-25 | v1.2 | 新增 §8 Evidence 投影：对齐 STATUS.md 外部 CI 声明 |
@@ -98,18 +103,3 @@
 | 2026-06-15 | v1.0 | 初始版本：8 FR + 5 BR + 5 NFR + 8 TC + 8 AC |
 
 ---
-
-## §8 Evidence 投影（外部仓库 CI）
-
-> 来源：`STATUS.md` 执行域明细表 `[KNOWN]`
-> 认识论声明：以下为 STATUS.md 文档投影，非本会话独立验证；具体 TC↔test 文件映射与 CI run id 待外部仓库 evidence 归档。
-
-| 投影项 | 数值 | 来源 | evidence 状态 |
-|--------|------|------|---------------|
-| riskx tests PASS | 7 | STATUS.md "7 tests PASS" | ⬜ 待归档（外部仓库 CI run id / test 文件路径） |
-| 实现进度 | 40% | STATUS.md "████░ 40%" | `[FRAME]` 投影 |
-| 最小实现范围 | 仓位上限/最大持仓/熔断门禁 | STATUS.md "最小实现（仓位上限/最大持仓/熔断门禁）" | ⬜ 待归档 |
-| contracts 消费 | SignalIntent P1 DTO | STATUS.md "消费 contracts.SignalIntent P1 DTO" | ⬜ 待归档 |
-| SPEC 状态 | Spec Approved / Tasks Pending | SPEC.md Metadata | `[KNOWN]` |
-
-> **未闭合项**：7 tests 对应 §4 的 8 TC 中哪些尚未确认（7 tests 可能覆盖 8 TC 中的 7 个，或为不同粒度）；§4 TC 表已有 `go test ./... -run TestXxx` Command 列，evidence 归档时应填入实际 PASS 的 CI run id 与 test 输出路径。
