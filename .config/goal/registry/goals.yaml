@@ -38,29 +38,193 @@ goals:
     updated_at: 2026-06-09
 
   - goal_id: GOAL-KERNEL-20260609-001
-    document_version: "2026-06-09"
-    title: "kernel v1.0 — Foundation L0 应用运行时骨架"
-    status: Active
+    document_version: "2026-06-29"
+    title: "kernel v1.1.0 — Foundation L0 应用运行时骨架"
+    status: Achieved
     owner: zone
     priority: P0
     north_star: "提供 xlib 所有模块共享的最小稳定原语，统一模块生命周期管理（注册、启动、停止、健康检查），stdlib-only 零外部依赖"
-    pipeline_state: TASKS_READY
-    current_phase: TASKS
+    pipeline_state: DONE
+    current_phase: RETROSPECTIVE
     phase_status: DONE
-    workflow_step: TASKS_READY
+    workflow_step: RETROSPECTIVE_EXECUTION
     created_at: "2026-06-09"
-    updated_at: "2026-06-09"
+    updated_at: "2026-06-29"
     related_specs:
       - module/kernel/SPEC.md
       - module/kernel/goal.md
       - module/kernel/DESIGN.md
+      - module/kernel/TRACEABILITY.md
+      - module/kernel/ACCEPTANCE.md
     success_criteria:
-      - 5 个 FR 全部实现
-      - 8 个 AC 全部通过
-      - 18 个 TC 全部通过
+      - 12 个子包全部实现（v1.1.0 新增 2 个）
+      - 覆盖率 100%（14 核心库包）
       - stdlib-only gate 通过
-      - 覆盖率 >= 90%
-      - Public API 冻结
+      - Factory 证据链已闭合（23 边全部 Verified）
+      - 四源评分 98+（claude=100/rules=100）
+    release_evidence:
+      latest_tag: v1.1.0
+      spec_version: v2.1.0
+      ci_pass: true
+      coverage: "100.0%"
+
+  - goal_id: GOAL-CONFIGX-001
+    document_version: "2026-06-29"
+    title: "configx v1.1.0 — Foundation 统一配置管理中心"
+    status: Achieved
+    owner: zone
+    priority: P0
+    north_star: "提供统一、可校验、可追踪、可热更新的配置管理能力，统一多源配置加载、强类型绑定、校验、脱敏和热更新"
+    pipeline_state: DONE
+    current_phase: RETROSPECTIVE
+    phase_status: DONE
+    workflow_step: RETROSPECTIVE_EXECUTION
+    created_at: "2026-06-09"
+    updated_at: "2026-06-29"
+    related_specs:
+      - module/configx/SPEC.md
+      - module/configx/goal.md
+      - module/configx/DESIGN.md
+      - module/configx/TRACEABILITY.md
+      - module/configx/ACCEPTANCE.md
+    success_criteria:
+      - 18 FR 全部实现
+      - 5 项推迟能力全部交付（ArgsSource/RemoteSource/Bind/Snapshot+Watch+Rollback/DocGen）
+      - 覆盖率 100%
+      - 多源加载（File/Env/Args）完整
+      - 校验引擎（required/range/enum/format）完整
+    release_evidence:
+      latest_tag: v1.1.0
+      spec_version: v1.2.0
+      ci_pass: true
+      coverage: "100.0%"
+
+  - goal_id: GOAL-OBSERVEX-001
+    document_version: "2026-06-29"
+    title: "observex v1.0.0 — Foundation 统一可观测运行时"
+    status: Achieved
+    owner: zone
+    priority: P0
+    north_star: "为 xlib 和业务系统提供统一可观测能力，Logger/Meter/Tracer/Exporter/Health 五类抽象，不绑定单一观测平台"
+    pipeline_state: DONE
+    current_phase: RETROSPECTIVE
+    phase_status: DONE
+    workflow_step: RETROSPECTIVE_EXECUTION
+    created_at: "2026-06-09"
+    updated_at: "2026-06-29"
+    related_specs:
+      - module/observex/SPEC.md
+      - module/observex/goal.md
+      - module/observex/DESIGN.md
+      - module/observex/TRACEABILITY.md
+      - module/observex/ACCEPTANCE.md
+    success_criteria:
+      - Logger/Meter/Tracer/Exporter/Health 五类抽象就绪
+      - Noop 实现保证无后端时可用
+      - 上下文传播 + 跨线程绑定
+      - 标准字段定义（traceId/spanId/requestId/tenantId/module/operation/errorCode/durationMs）
+      - 覆盖率 100%
+    release_evidence:
+      spec_version: v1.1.0
+      ci_pass: true
+      coverage: "100.0%"
+      notes: "AuditPublisher/DiagnosticEventPublisher 推迟 v1.1"
+
+  - goal_id: GOAL-TESTKITX-001
+    document_version: "2026-06-29"
+    title: "testkitx v1.0.0 — Foundation 测试期证据工具库"
+    status: Achieved
+    owner: zone
+    priority: P0
+    north_star: "为 xlib 模块提供统一测试工具（Fake/Fixture/Golden/Contract/Boundary/LeakCheck），窄范围 L0 测试期证据，禁止进入生产依赖图"
+    pipeline_state: DONE
+    current_phase: RETROSPECTIVE
+    phase_status: DONE
+    workflow_step: RETROSPECTIVE_EXECUTION
+    created_at: "2026-06-09"
+    updated_at: "2026-06-29"
+    related_specs:
+      - module/testkitx/SPEC.md
+      - module/testkitx/goal.md
+      - module/testkitx/DESIGN.md
+      - module/testkitx/TRACEABILITY.md
+      - module/testkitx/ACCEPTANCE.md
+    success_criteria:
+      - FakeConfig/Logger/Meter/Tracer/Clock/Breaker 全部就绪
+      - Fixture Loader + Golden Helper 可用
+      - Contract Test Harness 可用
+      - Boundary Scanner（no-production-import）就绪
+      - Goroutine Leak Checker 可用
+      - 覆盖率 100%
+    release_evidence:
+      spec_version: v1.1.0
+      ci_pass: true
+      coverage: "100.0%"
+      notes: "范围收窄为 L0 测试期证据；集成测试环境/故障注入/证据发布已迁移至 xlib_harness + xlib_evidence"
+
+  - goal_id: GOAL-RESILIENCX-001
+    document_version: "2026-06-29"
+    title: "resiliencx v1.0.2 — Foundation 弹性治理策略库"
+    status: Achieved
+    owner: zone
+    priority: P0
+    north_star: "提供统一弹性治理能力（timeout/retry/circuit/bulkhead/ratelimit/fallback），六大策略独立子包，装饰器模式组合，stdlib-only"
+    pipeline_state: DONE
+    current_phase: RETROSPECTIVE
+    phase_status: DONE
+    workflow_step: RETROSPECTIVE_EXECUTION
+    created_at: "2026-06-09"
+    updated_at: "2026-06-29"
+    related_specs:
+      - module/resiliencx/SPEC.md
+      - module/resiliencx/goal.md
+      - module/resiliencx/DESIGN.md
+      - module/resiliencx/TRACEABILITY.md
+      - module/resiliencx/ACCEPTANCE.md
+    success_criteria:
+      - timeout.Do / retry.Do / circuit.New / bulkhead.New / ratelimit.New / fallback.Do 全部实现
+      - Compose + InstrumentStrategy 可用
+      - stdlib-only（go mod graph 零第三方包）
+      - release-check / release-final-check 全部通过
+      - 覆盖率 100%
+    release_evidence:
+      latest_tag: v1.0.2
+      spec_version: v1.1.0
+      ci_pass: true
+      coverage: "100.0%"
+      github_release_check: "27777166525"
+
+  - goal_id: GOAL-SCHEDULEX-001
+    document_version: "2026-06-29"
+    title: "schedulex v1.0.0 — Foundation 统一任务调度运行时"
+    status: Achieved
+    owner: zone
+    priority: P0
+    north_star: "提供统一任务调度运行时，cron/interval/delay 三种触发 + overlap/misfire 策略 + 可选分布式锁 + 可注入时钟，at-least-once 执行语义"
+    pipeline_state: DONE
+    current_phase: RETROSPECTIVE
+    phase_status: DONE
+    workflow_step: RETROSPECTIVE_EXECUTION
+    created_at: "2026-06-09"
+    updated_at: "2026-06-29"
+    related_specs:
+      - module/schedulex/SPEC.md
+      - module/schedulex/goal.md
+      - module/schedulex/DESIGN.md
+      - module/schedulex/TRACEABILITY.md
+      - module/schedulex/ACCEPTANCE.md
+    success_criteria:
+      - Scheduler + Job + Trigger + JobHandler 抽象就绪
+      - cron/interval/delay 三种触发方式全部实现
+      - OverlapPolicy（Skip/QueueOne/Allow）就绪
+      - MisfirePolicy（Skip/RunOnce）就绪
+      - 可选分布式锁（Locker interface）就绪
+      - EventSink + Clock 注入就绪
+      - 覆盖率 100%
+    release_evidence:
+      spec_version: v1.1.0
+      ci_pass: true
+      coverage: "100.0%"
 
   - goal_id: GOAL-XLIB-STD-001
     document_version: "2026-06-29"

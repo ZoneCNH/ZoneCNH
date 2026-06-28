@@ -455,3 +455,280 @@ pipeline:
     blockers: []
     updated_at: "2026-06-29T00:00:00Z"
     notes: "首次注册 Goal 管线；代码已发布 v1.0.0，CI PASS"
+
+  # --- xlib 基座六模块管线状态对齐 (2026-06-29) ---
+  # kernel: 代码已发布 v1.1.0，12 子包 100% 覆盖率，全 G0-G11 PASS。
+  - goal_id: GOAL-KERNEL-001
+    pipeline_state: DONE
+    previous_pipeline_state: N/A
+    current_phase: RETROSPECTIVE
+    phase_status: DONE
+    workflow_step: RETROSPECTIVE_EXECUTION
+    state_model: four_axis
+    state_axes:
+      pipeline_state: docs/goal/03-pipeline.md#20-状态轴边界
+      current_phase: docs/goal/03-pipeline.md#20-状态轴边界
+      phase_status: docs/goal/03-pipeline.md#20-状态轴边界
+      workflow_step: docs/goal/03-pipeline.md#20-状态轴边界
+    artifacts_ready:
+      - goal
+      - spec
+      - design
+      - plan
+      - tasks
+      - prompt
+      - traceability
+      - acceptance
+      - matrix
+      - code
+      - test
+      - review
+      - release
+      - retrospective
+    gates_passed:
+      - GK-0
+      - GK-1
+      - GK-2
+      - GK-3
+      - GK-4
+      - GK-5
+      - GK-6
+      - GK-7
+      - GK-8
+      - GK-9
+      - GK-10
+      - GK-11
+    gates_pending: []
+    blockers: []
+    updated_at: "2026-06-29T00:00:00Z"
+    notes: "首次注册 Goal 管线；代码已发布 v1.1.0，12 子包 100% 覆盖率，Factory 证据链已闭合"
+
+  # configx: 代码已发布 v1.1.0，完整覆盖 18 FR，全 G0-G11 PASS。
+  - goal_id: GOAL-CONFIGX-001
+    pipeline_state: DONE
+    previous_pipeline_state: N/A
+    current_phase: RETROSPECTIVE
+    phase_status: DONE
+    workflow_step: RETROSPECTIVE_EXECUTION
+    state_model: four_axis
+    state_axes:
+      pipeline_state: docs/goal/03-pipeline.md#20-状态轴边界
+      current_phase: docs/goal/03-pipeline.md#20-状态轴边界
+      phase_status: docs/goal/03-pipeline.md#20-状态轴边界
+      workflow_step: docs/goal/03-pipeline.md#20-状态轴边界
+    artifacts_ready:
+      - goal
+      - spec
+      - design
+      - plan
+      - tasks
+      - prompt
+      - traceability
+      - acceptance
+      - matrix
+      - code
+      - test
+      - review
+      - release
+      - retrospective
+    gates_passed:
+      - GC-0
+      - GC-1
+      - GC-2
+      - GC-3
+      - GC-4
+      - GC-5
+      - GC-6
+      - GC-7
+      - GC-8
+      - GC-9
+      - GC-10
+      - GC-11
+    gates_pending: []
+    blockers: []
+    updated_at: "2026-06-29T00:00:00Z"
+    notes: "首次注册 Goal 管线；代码已发布 v1.1.0，5 项推迟能力全部交付，100% 覆盖率"
+
+  # observex: 代码已发布，Logger/Meter/Tracer/Exporter/Health 五类抽象已就绪。
+  - goal_id: GOAL-OBSERVEX-001
+    pipeline_state: DONE
+    previous_pipeline_state: N/A
+    current_phase: RETROSPECTIVE
+    phase_status: DONE
+    workflow_step: RETROSPECTIVE_EXECUTION
+    state_model: four_axis
+    state_axes:
+      pipeline_state: docs/goal/03-pipeline.md#20-状态轴边界
+      current_phase: docs/goal/03-pipeline.md#20-状态轴边界
+      phase_status: docs/goal/03-pipeline.md#20-状态轴边界
+      workflow_step: docs/goal/03-pipeline.md#20-状态轴边界
+    artifacts_ready:
+      - goal
+      - spec
+      - design
+      - plan
+      - tasks
+      - prompt
+      - traceability
+      - acceptance
+      - matrix
+      - code
+      - test
+      - review
+      - release
+      - retrospective
+    gates_passed:
+      - GO-0
+      - GO-1
+      - GO-2
+      - GO-3
+      - GO-4
+      - GO-5
+      - GO-6
+      - GO-7
+      - GO-8
+      - GO-9
+      - GO-10
+      - GO-11
+    gates_pending: []
+    blockers: []
+    updated_at: "2026-06-29T00:00:00Z"
+    notes: "首次注册 Goal 管线；五类可观测抽象 + Noop 实现已就绪，AuditPublisher/DiagnosticEventPublisher 推迟 v1.1"
+
+  # testkitx: 代码已发布（窄范围 L0 测试期证据），Fake + Fixture + Golden + Contract + Boundary + LeakCheck。
+  - goal_id: GOAL-TESTKITX-001
+    pipeline_state: DONE
+    previous_pipeline_state: N/A
+    current_phase: RETROSPECTIVE
+    phase_status: DONE
+    workflow_step: RETROSPECTIVE_EXECUTION
+    state_model: four_axis
+    state_axes:
+      pipeline_state: docs/goal/03-pipeline.md#20-状态轴边界
+      current_phase: docs/goal/03-pipeline.md#20-状态轴边界
+      phase_status: docs/goal/03-pipeline.md#20-状态轴边界
+      workflow_step: docs/goal/03-pipeline.md#20-状态轴边界
+    artifacts_ready:
+      - goal
+      - spec
+      - design
+      - plan
+      - tasks
+      - prompt
+      - traceability
+      - acceptance
+      - matrix
+      - code
+      - test
+      - review
+      - release
+      - retrospective
+    gates_passed:
+      - GT-0
+      - GT-1
+      - GT-2
+      - GT-3
+      - GT-4
+      - GT-5
+      - GT-6
+      - GT-7
+      - GT-8
+      - GT-9
+      - GT-10
+      - GT-11
+    gates_pending: []
+    blockers: []
+    updated_at: "2026-06-29T00:00:00Z"
+    notes: "首次注册 Goal 管线；范围收窄为 L0 测试期证据，集成测试环境/故障注入/证据发布已迁移至 xlib_harness + xlib_evidence"
+
+  # resiliencx: 代码已发布 v1.0.2，六大弹性策略独立子包，stdlib-only。
+  - goal_id: GOAL-RESILIENCX-001
+    pipeline_state: DONE
+    previous_pipeline_state: N/A
+    current_phase: RETROSPECTIVE
+    phase_status: DONE
+    workflow_step: RETROSPECTIVE_EXECUTION
+    state_model: four_axis
+    state_axes:
+      pipeline_state: docs/goal/03-pipeline.md#20-状态轴边界
+      current_phase: docs/goal/03-pipeline.md#20-状态轴边界
+      phase_status: docs/goal/03-pipeline.md#20-状态轴边界
+      workflow_step: docs/goal/03-pipeline.md#20-状态轴边界
+    artifacts_ready:
+      - goal
+      - spec
+      - design
+      - plan
+      - tasks
+      - prompt
+      - traceability
+      - acceptance
+      - matrix
+      - code
+      - test
+      - review
+      - release
+      - retrospective
+    gates_passed:
+      - GR-0
+      - GR-1
+      - GR-2
+      - GR-3
+      - GR-4
+      - GR-5
+      - GR-6
+      - GR-7
+      - GR-8
+      - GR-9
+      - GR-10
+      - GR-11
+    gates_pending: []
+    blockers: []
+    updated_at: "2026-06-29T00:00:00Z"
+    notes: "首次注册 Goal 管线；代码已发布 v1.0.2，release-check/release-final-check 通过，stdlib-only 零第三方依赖"
+
+  # schedulex: 代码已发布 v1.0.0，cron/interval/delay 三种触发 + overlap/misfire + 可选分布式锁。
+  - goal_id: GOAL-SCHEDULEX-001
+    pipeline_state: DONE
+    previous_pipeline_state: N/A
+    current_phase: RETROSPECTIVE
+    phase_status: DONE
+    workflow_step: RETROSPECTIVE_EXECUTION
+    state_model: four_axis
+    state_axes:
+      pipeline_state: docs/goal/03-pipeline.md#20-状态轴边界
+      current_phase: docs/goal/03-pipeline.md#20-状态轴边界
+      phase_status: docs/goal/03-pipeline.md#20-状态轴边界
+      workflow_step: docs/goal/03-pipeline.md#20-状态轴边界
+    artifacts_ready:
+      - goal
+      - spec
+      - design
+      - plan
+      - tasks
+      - prompt
+      - traceability
+      - acceptance
+      - matrix
+      - code
+      - test
+      - review
+      - release
+      - retrospective
+    gates_passed:
+      - GS-0
+      - GS-1
+      - GS-2
+      - GS-3
+      - GS-4
+      - GS-5
+      - GS-6
+      - GS-7
+      - GS-8
+      - GS-9
+      - GS-10
+      - GS-11
+    gates_pending: []
+    blockers: []
+    updated_at: "2026-06-29T00:00:00Z"
+    notes: "首次注册 Goal 管线；代码已发布 v1.0.0，at-least-once 执行语义，可注入时钟"
