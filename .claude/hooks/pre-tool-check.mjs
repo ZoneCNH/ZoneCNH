@@ -205,7 +205,7 @@ if (tool === "Bash" || tool === "PowerShell") {
   }
 }
 
-// 危险命令拦截（tweak/design 模式下放行）
+// 危险命令拦截（tweak/design 模式下放行，含 .worktree/ 安全路径例外）
 if (!isTweak && !isDesign) {
   const DANGEROUS_COMMANDS = [
     { pattern: /rm -rf/, label: "rm -rf", alt: "使用 trash <file> 或 git rm <file>" },
@@ -214,11 +214,21 @@ if (!isTweak && !isDesign) {
   if (tool === "Bash" || tool === "PowerShell") {
     const matched = DANGEROUS_COMMANDS.find((d) => d.pattern.test(args.command || ""));
     if (matched) {
-      process.stdout.write(JSON.stringify({
-        block: true,
-        reason: `⚠️ 安全拦截：${matched.label} 被禁用\n   → 替代方案：${matched.alt}\n   → 如需强制执行，请在终端手动输入命令\n   → 当前模式=${harnessState.mode}，切换为 tweak 模式可放行`,
-      }));
-      process.exit(0);
+      // 安全路径例外：允许清理临时工作区和部署目录
+      const cmd = args.command || "";
+      const isSafeRm = matched.label === "rm -rf" && (
+        /\.worktree\/deploy\b/.test(cmd) ||
+        /\.worktree\/workspaces\b/.test(cmd) ||
+        /\.worktree\/omx-team\b/.test(cmd) ||
+        /\/tmp\//.test(cmd)
+      );
+      if (!isSafeRm) {
+        process.stdout.write(JSON.stringify({
+          block: true,
+          reason: `⚠️ 安全拦截：${matched.label} 被禁用\n   → 替代方案：${matched.alt}\n   → 如需强制执行，请在终端手动输入命令\n   → 当前模式=${harnessState.mode}，切换为 tweak 模式可放行\n   → 安全路径例外：.worktree/deploy/ .worktree/workspaces/ /tmp/`,
+        }));
+        process.exit(0);
+      }
     }
   }
 }
