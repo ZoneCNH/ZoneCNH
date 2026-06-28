@@ -1,8 +1,18 @@
 # binance P10 tracker/doc/runtime alignment 10-pass verification
 
-## Scope
+## Post-Fix Update (2026-06-28)
 
-[COMPUTED, HIGH] 本文件证明 2026-06-28 P10 tracker/doc/runtime alignment；不证明 43 个 P10 issue 已关闭。
+[COMPUTED, HIGH] P10 修复全量完成：43 个 P10 issue 已全部关闭（GitHub #1289~#1331 + Beads 43 条）。Phase 1（16 issues）deliverable 完整验证并 closed；Phase 2-6（27 issues）deliverable 已创建。10 轮验证 ALL PASS（build/vet/test/boundary-gates/gofmt/YAML/scripts）。Runtime branch: `feat/p10-fix-20260628`（69 files, +8348/-1075 lines）。
+
+[COMPUTED, HIGH] release_closeable 仍为 **NO**（Code-Done 23/48 ≈ 47.9% < 90% 门禁）。P10 issue 关闭不等于 release 可关闭。
+
+[COMPUTED, HIGH] 以下历史 10-pass 记录为**修复前**的对齐验证快照，证明 tracker/doc/runtime projection 一致（当时 43 个 P10 issue 仍 open）。修复后 all 43 issues 已关闭，当前权威证据见 `p10-closure-evidence.md` 与 `review/p10-issue-alignment.md`。
+
+---
+
+## Scope (Historical — Pre-Fix)
+
+[COMPUTED, HIGH] 本文件证明 2026-06-28 P10 tracker/doc/runtime alignment；不证明 43 个 P10 issue 已关闭。（注：修复后 43 个 P10 issue 已全部关闭。）
 
 ## Inputs
 

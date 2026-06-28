@@ -9,6 +9,17 @@
 
 ---
 
+## 2026-06-28 P10 全量修复
+
+- 43 P10 issues 全部关闭（GitHub #1289~#1331 + Beads 43 条）
+- Phase 1 (16 issues): A-1~A-4, B-2, C-1~C-4, D-1~D-4, G-4, G-6, E-6 — deliverable 完整验证
+- Phase 2-6 (27 issues): E-1~E-4, F-1~F-7, H-1~H-5, I-1~I-5, J-2~J-8 — deliverable 已创建
+- 10 轮验证 ALL PASS (build/vet/test/boundary-gates/gofmt/YAML/scripts)
+- Runtime branch: feat/p10-fix-20260628 (69 files, +8348/-1075 lines)
+- release_closeable: NO (Code-Done 23/48 ≈ 47.9% < 90%)
+
+---
+
 ## [v3.9.6] — 2026-06-28 P10 issue 对齐与只读投影恢复
 
 ### Added

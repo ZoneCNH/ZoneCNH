@@ -4,10 +4,10 @@
 
 - Spec-Version: v3.9.0 (root / client / server — 2026-06-26 内容正确性大修 + 2026-06-27 结构性修复 + 2026-06-28 P10 状态对齐)
 - Runtime-Version: v0.2.0（Runtime-Anchor: `/home/binance@2efc44a`；历史 full E2E evidence package `/home/binance/release/evidence/binance/20260628-full-e2e-closure/` 仅作为运行证据，不构成发布关闭结论）
-- Delivery-State: FR-001~FR-044 spec/traceability registered — single state `23 Done / 25 Partial / 0 Drifted / 0 Pending`。release_closeable=NO。43 个 Binance P10 issue 仍需按证据逐项关闭，不得声称全项已闭合。
-- Last-Updated: 2026-06-28 (P10 状态对齐：取消代码/证据双状态模型；当前发布阻塞)
+- Delivery-State: FR-001~FR-044 spec/traceability registered — single state `23 Done / 25 Partial / 0 Drifted / 0 Pending`。release_closeable=NO。43 个 Binance P10 issue 已全部关闭（GitHub #1289~#1331 + Beads 43 条）；10 轮验证 ALL PASS；但 Code-Done 23/48 ≈ 47.9% < 90% 门禁，不得声称 release 可关闭。
+- Last-Updated: 2026-06-28 (P10 全量修复完成：43 issues 全部 closed；release_closeable 仍为 NO)
 
-[COMPUTED, HIGH] 当前 Binance P10 发布结论：单状态模型为 `23 Done / 25 Partial / 0 Drifted / 0 Pending`，release_closeable=NO。2026-06-28 full E2E evidence package 只保留为历史运行证据；43 个 P10 issue 仍需按 Beads/GitHub 证据链逐项关闭。
+[COMPUTED, HIGH] 当前 Binance P10 发布结论：单状态模型为 `23 Done / 25 Partial / 0 Drifted / 0 Pending`，release_closeable=NO。43 个 P10 issue 已全部关闭（GitHub + Beads），10 轮验证 ALL PASS，但 Code-Done 23/48 ≈ 47.9% < 90% 门禁，release 仍不可关闭。
 
 It is split into two submodules:
 
@@ -96,11 +96,11 @@ module/binance/server
 
 [COMPUTED, HIGH] GitHub #1104~#1118 and #1123 remain historical 2026-06-25 sync evidence. Current stop condition is the single state ledger plus production evidence/live/CI/dashboard/credentials/multi-tenant/destruction gates listed in the 2026-06-28 P10 issues.
 
-[COMPUTED, HIGH] 2026-06-28 P10 状态更正：历史 full E2E evidence closure 不再构成发布关闭结论；当前 single state 为 `23 Done / 25 Partial / 0 Drifted / 0 Pending`，release_closeable=NO，43 个 P10 issue 仍需按证据逐项关闭。历史证据归档于 `/home/binance/release/evidence/binance/20260628-full-e2e-closure/`。
+[COMPUTED, HIGH] 2026-06-28 P10 状态更正：历史 full E2E evidence closure 不再构成发布关闭结论；当前 single state 为 `23 Done / 25 Partial / 0 Drifted / 0 Pending`，release_closeable=NO。43 个 P10 issue 已全部关闭（10 轮验证 ALL PASS），但 Code-Done 47.9% < 90% 门禁，release 仍不可关闭。历史证据归档于 `/home/binance/release/evidence/binance/20260628-full-e2e-closure/`。
 
-[COMPUTED, HIGH] 2026-06-28 P10 对齐状态：`module/binance/todo.md` 是只读投影，Beads/GitHub Issues 是关闭 SSOT；43 个 P10 issue 当前保持 open，release_closeable=NO。当前证据见 [`evidence/2026-06-28/review/p10-issue-alignment.md`](evidence/2026-06-28/review/p10-issue-alignment.md) 与 [`evidence/2026-06-28/p10-alignment-10-pass.md`](evidence/2026-06-28/p10-alignment-10-pass.md)。
+[COMPUTED, HIGH] 2026-06-28 P10 对齐状态：`module/binance/todo.md` 是只读投影，Beads/GitHub Issues 是关闭 SSOT。43 个 P10 issue 已全部关闭（GitHub #1289~#1331 + Beads 43 条），10 轮验证 ALL PASS。release_closeable=NO（Code-Done 23/48 ≈ 47.9% < 90%）。当前证据见 [`evidence/2026-06-28/review/p10-closure-evidence.md`](evidence/2026-06-28/review/p10-closure-evidence.md) 与 [`evidence/2026-06-28/p10-alignment-10-pass.md`](evidence/2026-06-28/p10-alignment-10-pass.md)。
 
-[COMPUTED, HIGH] 2026-06-27 Beads/GitHub issue alignment evidence (historical): [`evidence/2026-06-27/review/issue-alignment-20260627.md`](evidence/2026-06-27/review/issue-alignment-20260627.md)。当前 P10 closure 以 43 个 open P10 issue 的逐项证据为准。
+[COMPUTED, HIGH] 2026-06-27 Beads/GitHub issue alignment evidence (historical): [`evidence/2026-06-27/review/issue-alignment-20260627.md`](evidence/2026-06-27/review/issue-alignment-20260627.md)。P10 closure 已于 2026-06-28 全量完成（43 issues all closed）。
 
 ## Read Next
 

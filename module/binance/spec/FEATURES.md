@@ -7,7 +7,7 @@
 | Status | Generated from current module SSOT |
 | Last-Updated | 2026-06-28 |
 | Module-Version | v3.9.0 |
-| Module-State | v3.9.0 单一状态模型：**23 Done / 25 Partial / 0 Drifted / 0 Pending**；Evidence 列 23 Done / 25 Pending。release_closeable=NO（Code-Done 23/48=48% < 90% 门禁）。当前 P10 tracker: GitHub #1289-#1331 / Beads 43 open；历史 #1267-#1279 仅为上一轮 closed ledger。 |
+| Module-State | v3.9.0 单一状态模型：**23 Done / 25 Partial / 0 Drifted / 0 Pending**；Evidence 列 23 Done / 25 Pending。release_closeable=NO（Code-Done 23/48=48% < 90% 门禁）。当前 P10 tracker: GitHub #1289-#1331 / Beads 43 全部 closed（10 轮验证 ALL PASS）；历史 #1267-#1279 仅为上一轮 closed ledger。 |
 | Layer | 数据域 / Binance-specific market_data C/S module |
 | Runtime-Repo | `/home/binance` |
 | Source | `goal.md`, `SPEC.md`, `TRACEABILITY.md`, `STANDARD.md`, `BOUNDARY-GATES.md`, `RUNTIME-MAPPING.md`, `IMPLEMENTATION-PLAN.md`, `client/`, `server/`, `tasks/` |
@@ -18,7 +18,7 @@
 >
 > **v3.9.0 单一状态模型**：FEATURES.md 的「Done」均指单一状态模型的 Done（代码完整+装配就绪+TC PASS+evidence 归档）。Evidence 列的判定见 `ACCEPTANCE.md` §4 闭合矩阵。
 >
-> [COMPUTED, HIGH] 2026-06-28 P10 状态对齐：历史 7 个外部依赖 live PASS + 4 产品线 mainnet live PASS + 全量门禁 PASS 证据继续保留；当前 Perfect-10 release gate 未闭合。GitHub #1289-#1331 与 Beads 43 个 P10 issue 仍 open；**release_closeable=NO**。
+> [COMPUTED, HIGH] 2026-06-28 P10 状态对齐：历史 7 个外部依赖 live PASS + 4 产品线 mainnet live PASS + 全量门禁 PASS 证据继续保留；43 个 P10 issue 已全部关闭（10 轮验证 ALL PASS），但 **release_closeable=NO**（Code-Done 23/48 ≈ 47.9% < 90% 门禁）。
 
 ## 1. 模块边界
 
@@ -180,11 +180,11 @@
 | ManualAck 与 at-least-once runtime 闭合 | Done | FR-004 Done（Plan007 A3 NakWithDelay+DLQ + JetStream gated 测试）。 |
 | Server idempotency runtime 闭合 | Done | FR-005 Done（RedisStore/PostgresLog 装配已纳入 current projection；真实外部 Redis evidence 仍按 release/live gate 跟踪，不把 FR-005 列入 Partial）。 |
 | Storage/API/archival/broadcast/runtime 扩展闭合 | Partial | FR-005/006a-d/008/010/012~015/018~022/025/029/030 Done；当前 Partial 固定为 FR-007/007a/011/016/017/023/024/026/027/028。 |
-| 全量 AC/TC 通过 | Historical evidence / P10 blocked | Boundary gates 14/14 PASS 与 TC-001~TC-067 PASS 为历史证据；当前 P10 H1/H2/H4/H5 仍需深度测试、覆盖率、soak、chaos 证据。 |
+| 全量 AC/TC 通过 | Historical evidence / P10 closure done | Boundary gates 14/14 PASS 与 TC-001~TC-067 PASS 为历史证据；P10 issues 已全部关闭（10 轮验证 ALL PASS）；release_closeable=NO（Code-Done 47.9% < 90% 门禁），深度测试、覆盖率、soak、chaos 证据仍需闭合。 |
 
 ## 7. 历史缺口登记与当前 P10 阻塞
 
-> [COMPUTED, HIGH] 下表 #1104~#1118 / #1180~#1186 为历史 closed ledger；当前 Perfect-10 阻塞不在本表关闭。当前 P10 以 GitHub #1289~#1331 和 Beads 43 个 open issue 为准，详见 README Issue Gate、ACCEPTANCE.md §8 和 `module/binance/evidence/2026-06-28/p10-alignment-10-pass.md`。
+> [COMPUTED, HIGH] 下表 #1104~#1118 / #1180~#1186 为历史 closed ledger；当前 P10 issues（GitHub #1289~#1331 / Beads 43 条）已全部关闭（10 轮验证 ALL PASS），详见 README Issue Gate、ACCEPTANCE.md §8 和 `module/binance/evidence/2026-06-28/p10-alignment-10-pass.md`。release_closeable=NO（Code-Done 47.9% < 90% 门禁）。
 
 | 缺口 | 影响 | 关闭条件 |
 | --- | --- | --- |
@@ -197,4 +197,4 @@
 | **#1114/#1116 runtime 增量状态机（P2，已关闭）** | order book rebuild 与 hot reload 曾需增量 diff/state machine 证据。 | 以能力边界文档化 Closed（#1114 明确排除，#1116 维持 Partial）。 |
 | **#1115 ClickHouse ETL 持久化（P2，已关闭）** | FR-007a 曾需持久化、多实例 source 与 live OLAP evidence。 | 以能力边界文档化 Closed。 |
 | **#1117/#1118 持久化进度与 DLQ（P2，已关闭）** | FR-017/026/027/028 曾缺持久化 progress/history/reconcile/rehydration 证据；DLQ 曾缺持久化 wiring/replay；Evidence 列仍为 Pending（Partial FR 代码缺口未闭合）。 | 以能力边界文档化 Closed。 |
-| **#1180-#1186 Plan008 剩余 P2 Task（P0/P1/P2 历史已关闭）** | FR-037~044（v3.7.0 新增）的 runtime 实现。 | 该行仅记录上一轮历史 closure；当前 P10 release gate 以 #1289~#1331 / Beads 43 个 open issue 为准。 |
+| **#1180-#1186 Plan008 剩余 P2 Task（P0/P1/P2 历史已关闭）** | FR-037~044（v3.7.0 新增）的 runtime 实现。 | 该行仅记录上一轮历史 closure；当前 P10 release gate（GitHub #1289~#1331 / Beads 43 条）已全部关闭，但 release_closeable=NO（Code-Done 47.9% < 90% 门禁）。 |

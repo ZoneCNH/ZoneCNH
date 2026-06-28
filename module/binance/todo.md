@@ -32,7 +32,7 @@
 | A-3/B-1 | #1294  | ZoneCNH-z31g | local-runtime + boundary              | Smoke-only /ingest gate in assembly.go, boundary-gates.sh §16 (15 gates)                                 | ✅ YES    |
 | A-4/B-3 | #1303  | ZoneCNH-5cv5 | local-doc + local-runtime             | Subject `.v1` versioning verified, drift check PASS                                                      | ✅ YES    |
 | B-2     | #1295  | ZoneCNH-886q | local-doc                             | client/SPEC §14 fixed to monorepo `internal/client/` layout                                              | ✅ YES    |
-| C-1/G-3 | #1299  | ZoneCNH-o6ge | local-doc                             | SPEC 225 lines, parameter tables in design/                                                                 | ✅ YES    |
+| C-1/G-3 | #1299  | ZoneCNH-o6ge | local-doc                             | SPEC 225 lines, parameter tables in design/                                                              | ✅ YES    |
 | C-2/G-2 | #1297  | ZoneCNH-k2ml | local-doc                             | 4 retired files physically deleted                                                                       | ✅ YES    |
 | C-3     | #1289  | ZoneCNH-87x7 | local-doc                             | SPEC.md 225 lines (< 1000 target)                                                                        | ✅ YES    |
 | C-4     | #1298  | ZoneCNH-l7um | local-doc                             | AC/TC namespace clean, no coordination notes                                                             | ✅ YES    |
