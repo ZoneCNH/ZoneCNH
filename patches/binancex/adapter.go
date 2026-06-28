@@ -10,6 +10,7 @@ package binancex
 
 import (
 	"context"
+	"strings"
 	"time"
 
 	domainmarket "github.com/ZoneCNH/runtime-patches/domain-market"
@@ -91,6 +92,9 @@ func (c FeedConfig) Validate() error {
 	if c.Endpoint == "" {
 		return &FeedConfigError{Field: "Endpoint", Message: "is required"}
 	}
+	if !strings.HasPrefix(c.Endpoint, "wss://") {
+		return &FeedConfigError{Field: "Endpoint", Message: "must use wss:// (TLS required)"}
+	}
 	if c.ReadTimeout <= 0 {
 		return &FeedConfigError{Field: "ReadTimeout", Message: "must be positive"}
 	}
@@ -99,6 +103,12 @@ func (c FeedConfig) Validate() error {
 	}
 	if c.EventBufferSize <= 0 {
 		return &FeedConfigError{Field: "EventBufferSize", Message: "must be positive"}
+	}
+	if c.EventBufferSize > 8192 {
+		return &FeedConfigError{Field: "EventBufferSize", Message: "must not exceed 8192"}
+	}
+	if c.MaxReconnectAttempts > 100 {
+		return &FeedConfigError{Field: "MaxReconnectAttempts", Message: "must not exceed 100"}
 	}
 	return nil
 }

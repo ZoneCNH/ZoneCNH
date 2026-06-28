@@ -53,6 +53,8 @@ type ServerConfig struct {
 	MaxStreams int
 	// DrainTimeout is max wait for in-flight requests during drain.
 	DrainTimeout time.Duration
+	// MaxPayloadSize is the maximum allowed payload size in bytes. 0 means no limit.
+	MaxPayloadSize int
 }
 
 // DefaultServerConfig returns safe defaults.
@@ -63,6 +65,7 @@ func DefaultServerConfig() ServerConfig {
 		IdempotencyTTL:  24 * time.Hour,
 		MaxStreams:      10,
 		DrainTimeout:    30 * time.Second,
+		MaxPayloadSize:  1 << 20, // 1 MiB
 	}
 }
 
@@ -91,12 +94,14 @@ type RequestValidator interface {
 type DefaultValidator struct {
 	staleThreshold  time.Duration
 	futureTolerance time.Duration
+	maxPayloadSize  int
 }
 
 func NewDefaultValidator(cfg ServerConfig) *DefaultValidator {
 	return &DefaultValidator{
 		staleThreshold:  cfg.StaleThreshold,
 		futureTolerance: cfg.FutureTolerance,
+		maxPayloadSize:  cfg.MaxPayloadSize,
 	}
 }
 
@@ -126,6 +131,9 @@ func (v *DefaultValidator) Validate(ctx context.Context, req IngestRequest) erro
 	}
 	if len(req.Payload) == 0 {
 		return NewRejectError(RejectContractViolation, "payload is required")
+	}
+	if v.maxPayloadSize > 0 && len(req.Payload) > v.maxPayloadSize {
+		return NewRejectError(RejectContractViolation, "payload exceeds max size")
 	}
 
 	// Stale gate
