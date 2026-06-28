@@ -916,11 +916,6 @@ stats:
     metrics_validation_check: 1
     evidence_graph_dag: 1
     rsi_seven_invariants: 1
-    auto_id_generation: 1
-    deploy_package: 1
-    agent_cross_review: 1
-    rsi_split: 1
-    doc_cleanup: 1
     module_snapshot_allowlist: 1
     release_snapshot_reconciliation: 1
     agent_projection_sync: 1
@@ -942,11 +937,6 @@ stats:
     bug_regression: 1
     evidence_bundle: 2
     matrix_dag: 1
-    auto_id_generation: 1
-    deploy_package: 1
-    agent_cross_review: 1
-    rsi_split: 1
-    doc_cleanup: 1
     module_snapshot_allowlist: 1
     release_snapshot_reconciliation: 1
     agent_projection_sync: 1
