@@ -10,17 +10,17 @@
 
 ## §1 FR 追溯表
 
-| FR ID | 功能需求 | AC | TC ID(s) | 实现状态 |
+| FR ID | 功能需求 | AC | TC ID(s) | Task | 实现状态 |
 |-------|----------|-----|----------|----------|
-| FR-001 | Product-Line Support：Perp + Spot | AC-001, AC-002 | TC-001, TC-002 | Pending |
-| FR-002 | Instrument Identity：跨 venue 不碰撞 | AC-003, AC-004 | TC-003, TC-004 | Pending |
-| FR-003 | gRPC Ingestion（继承 binance） | AC-005~AC-007 | TC-005 | Pending |
-| FR-004 | At-Least-Once Delivery（继承） | AC-008~AC-010 | TC-006 | Pending |
-| FR-005 | Idempotent Acceptance（含 onchain 维度） | AC-011~AC-013 | TC-007, TC-019 | Pending |
-| FR-006 | Admin Surface（含 wallet-health / chain-status 端点） | AC-014~AC-017 | TC-008, TC-009 | Pending |
-| FR-007 | Boundary Enforcement（继承 + 钱包安全 gate） | AC-018~AC-020 | TC-010~TC-012 | Pending |
-| FR-008 | Onchain Origin Metadata（DEX 特异） | AC-021, AC-022 | TC-019, TC-020 | Pending |
-| FR-009 | Wallet Signature Management（DEX 特异） | AC-023, AC-024 | TC-022, TC-023 | Pending |
+| FR-001 | Product-Line Support：Perp + Spot | AC-001, AC-002 | TC-001, TC-002 | - | Pending |
+| FR-002 | Instrument Identity：跨 venue 不碰撞 | AC-003, AC-004 | TC-003, TC-004 | - | Pending |
+| FR-003 | gRPC Ingestion（继承 binance） | AC-005~AC-007 | TC-005 | - | Pending |
+| FR-004 | At-Least-Once Delivery（继承） | AC-008~AC-010 | TC-006 | - | Pending |
+| FR-005 | Idempotent Acceptance（含 onchain 维度） | AC-011~AC-013 | TC-007, TC-019 | - | Pending |
+| FR-006 | Admin Surface（含 wallet-health / chain-status 端点） | AC-014~AC-017 | TC-008, TC-009 | - | Pending |
+| FR-007 | Boundary Enforcement（继承 + 钱包安全 gate） | AC-018~AC-020 | TC-010~TC-012 | - | Pending |
+| FR-008 | Onchain Origin Metadata（DEX 特异） | AC-021, AC-022 | TC-019, TC-020 | - | Pending |
+| FR-009 | Wallet Signature Management（DEX 特异） | AC-023, AC-024 | TC-022, TC-023 | - | Pending |
 
 ---
 

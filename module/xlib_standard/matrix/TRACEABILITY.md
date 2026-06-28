@@ -1,12 +1,7 @@
 # xlib_standard 快照追溯矩阵
 
-<!-- SCORER-NOTE: This matrix intentionally uses a 5-column snapshot-index format 
-     (FR | 主题 | 证据锚点 | 证据类型 | Status) rather than the standard 6-column 
-     traceability format with no TC ID column (snapshot anchors reference source files, not executable test cases). xlib_standard is a standard-reference/template module, 
-     not an executable module. The "archived-snapshot" status on all rows reflects 
-     this design decision. Do NOT treat column format deviation as a redline. -->
-
-> 归档说明：本矩阵是非可执行快照索引，用于保留上游标准锚点与证据类型；当前实现范围不由本文件扩展。
+> Last-Updated: 2026-06-29
+> 归档说明：本矩阵是非可执行快照索引，保留上游标准锚点与证据类型。xlib_standard 为标准参考/模板模块，非可执行模块，所有行标记为 archived-snapshot。
 
 | FR | 主题 | 证据锚点 | 证据类型 | AC | TC | 状态 |
 |----|------|----------|----------|----|----|------|

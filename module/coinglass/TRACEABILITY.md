@@ -10,16 +10,16 @@
 
 ## §1 FR 追溯表
 
-| FR ID | 功能需求 | AC | TC ID(s) | 实现状态 |
+| FR ID | 功能需求 | AC | TC ID(s) | Task | 实现状态 |
 |-------|----------|-----|----------|----------|
-| FR-001 | Channel Subscription：4 channel 启用 | AC-001 ~ AC-004 | TC-001 ~ TC-004 | Pending |
-| FR-002 | Instrument & Venue Identity | AC-005 ~ AC-007 | TC-020, TC-021 | Pending |
-| FR-003 | gRPC Ingestion（继承 binance） | AC-008 ~ AC-010 | TC-005 | Pending |
-| FR-004 | At-Least-Once Delivery（继承） | AC-011 ~ AC-013 | TC-006 | Pending |
-| FR-005 | Idempotent Acceptance（含 window_start 维度） | AC-014 ~ AC-016 | TC-007, TC-019 | Pending |
-| FR-006 | Admin Surface（含 quota-status / poll-schedule 端点） | AC-017 ~ AC-020 | TC-008, TC-009 | Pending |
-| FR-007 | Boundary Enforcement（继承） | AC-021 ~ AC-023 | TC-010 ~ TC-012 | Pending |
-| FR-008 | Polling Schedule（quota-aware）| AC-024, AC-025 | TC-022 | Pending |
+| FR-001 | Channel Subscription：4 channel 启用 | AC-001 ~ AC-004 | TC-001 ~ TC-004 | - | Pending |
+| FR-002 | Instrument & Venue Identity | AC-005 ~ AC-007 | TC-020, TC-021 | - | Pending |
+| FR-003 | gRPC Ingestion（继承 binance） | AC-008 ~ AC-010 | TC-005 | - | Pending |
+| FR-004 | At-Least-Once Delivery（继承） | AC-011 ~ AC-013 | TC-006 | - | Pending |
+| FR-005 | Idempotent Acceptance（含 window_start 维度） | AC-014 ~ AC-016 | TC-007, TC-019 | - | Pending |
+| FR-006 | Admin Surface（含 quota-status / poll-schedule 端点） | AC-017 ~ AC-020 | TC-008, TC-009 | - | Pending |
+| FR-007 | Boundary Enforcement（继承） | AC-021 ~ AC-023 | TC-010 ~ TC-012 | - | Pending |
+| FR-008 | Polling Schedule（quota-aware）| AC-024, AC-025 | TC-022 | - | Pending |
 
 ---
 

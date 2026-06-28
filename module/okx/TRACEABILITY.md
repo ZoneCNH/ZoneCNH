@@ -12,16 +12,16 @@
 
 ## §1 FR 追溯表
 
-| FR ID | 功能需求 | AC | TC ID(s) | 实现状态 |
+| FR ID | 功能需求 | AC | TC ID(s) | Task | 实现状态 |
 |-------|----------|-----|----------|----------|
-| FR-001 | Product-Line Support：5 条产品线（Spot/Margin/USDⓈ-M/Coin-M/Options） | AC-001~AC-005 | TC-001 ~ TC-005 | Pending |
-| FR-002 | Instrument Identity：5 product line canonical identity 不碰撞 | AC-006~AC-008 | TC-019, TC-002 ~ TC-006 | Pending |
-| FR-003 | gRPC Ingestion（继承 binance FR-003） | AC-009~AC-011 | TC-007 | Pending |
-| FR-004 | At-Least-Once Delivery（继承 binance FR-004） | AC-012~AC-014 | TC-008 | Pending |
-| FR-005 | Idempotent Acceptance（继承 binance FR-005） | AC-015~AC-017 | TC-009, TC-010 | Pending |
-| FR-006 | Admin Surface（继承 binance FR-006） | AC-018~AC-021 | TC-011, TC-012 | Pending |
-| FR-007 | Boundary Enforcement（继承 binance FR-007） | AC-022~AC-024 | TC-013 ~ TC-015 | Pending |
-| FR-008 | Simulated Endpoint Isolation（OKX 特异） | AC-025, AC-026 | TC-020, TC-021 | Pending |
+| FR-001 | Product-Line Support：5 条产品线（Spot/Margin/USDⓈ-M/Coin-M/Options） | AC-001~AC-005 | TC-001 ~ TC-005 | - | Pending |
+| FR-002 | Instrument Identity：5 product line canonical identity 不碰撞 | AC-006~AC-008 | TC-019, TC-002 ~ TC-006 | - | Pending |
+| FR-003 | gRPC Ingestion（继承 binance FR-003） | AC-009~AC-011 | TC-007 | - | Pending |
+| FR-004 | At-Least-Once Delivery（继承 binance FR-004） | AC-012~AC-014 | TC-008 | - | Pending |
+| FR-005 | Idempotent Acceptance（继承 binance FR-005） | AC-015~AC-017 | TC-009, TC-010 | - | Pending |
+| FR-006 | Admin Surface（继承 binance FR-006） | AC-018~AC-021 | TC-011, TC-012 | - | Pending |
+| FR-007 | Boundary Enforcement（继承 binance FR-007） | AC-022~AC-024 | TC-013 ~ TC-015 | - | Pending |
+| FR-008 | Simulated Endpoint Isolation（OKX 特异） | AC-025, AC-026 | TC-020, TC-021 | - | Pending |
 
 ---
 

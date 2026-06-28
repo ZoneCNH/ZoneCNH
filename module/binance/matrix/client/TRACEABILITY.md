@@ -5,7 +5,7 @@
 > **SC 编号说明**：本文件的 SC-001~SC-015 为子模块本地场景 ID（Scenario），不与 root TRACEABILITY 的 canonical TC-001~TC-083 冲突。正式 TC 编号以 `module/binance/matrix/TRACEABILITY.md` §4 为准。
 
 - Module-Version: v3.9.0（FR/BR 编号统一为 root canonical；与 root SPEC v3.9.0 一致）
-- Last-Updated: 2026-06-28（P10 状态对齐：SC 本地投影 Done；全局 single state 为 23 Done / 25 Partial / 0 Drifted / 0 Pending，release_closeable=NO）
+- Last-Updated: 2026-06-29（P10 状态对齐：SC 本地投影 Done；全局 single state 为 23 Done / 25 Partial / 0 Drifted / 0 Pending，release_closeable=NO）
 - Spec-Reference: `module/binance/spec/client/SPEC.md` v3.9.0
 
 ---
