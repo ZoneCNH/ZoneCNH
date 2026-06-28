@@ -1,6 +1,6 @@
 # xlibgate 需求追溯矩阵
 
-> 更新：2026-06-29（Matrix v1.6 — Trust Alignment 实现已验证：FR-012~FR-019 → ✅ 已实现并通过测试；BR-010 → ✅ 已实现；NFR-011~NFR-018 → ⚠️ 待 benchmark；对齐 xlibgate v1.1.0 发布）
+> 更新：2026-06-29（Matrix v1.6 — Trust Alignment 实现已验证：FR-012~FR-019 → ✅ 已实现并通过测试；BR-010 → ✅ 已实现；NFR-011~NFR-018 → ✅ benchmark 全部达标；对齐 xlibgate v1.1.0 发布）
 > 来源：module/xlibgate/SPEC.md v1.2.0
 > 规范：docs/governance/TRACEABILITY.md
 
@@ -81,7 +81,7 @@
 > NFR-001~006：核心逻辑已实现但 benchmark 未正式运行，status 标记 ⚠️（待验证）
 > NFR-007：internal/check 80.0%，核心包达标
 > NFR-008：gitleaks 集成已完成（BR-005）
-> NFR-011~018：trust 子命令组待实现，benchmark 目标来自 SPEC §17
+> NFR-011~018：trust 子命令组已实现，benchmark 全部达标（见 xlibgate PR #46）
 
 ---
 
