@@ -4,6 +4,7 @@
 .omc/state/*
 !.omc/state/outer-metrics/
 .omx/
+.claude/hooks/.omc/
 .config/*
 .config/cache/
 !.config/goal/
