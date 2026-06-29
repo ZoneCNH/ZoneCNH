@@ -2,9 +2,9 @@
 
 - Spec-Version: v3.9.6
 - Module: binance
-- Last-Updated: 2026-06-28
+- Last-Updated: 2026-06-29
 - Runtime-Repo: `/home/binance`
-- Runtime-Version: v0.2.0
+- Runtime-Version: v0.8.0
 - State-Model: single-state only
 - Current-State: 48 Done / 0 Partial / 0 Drifted / 0 Pending
 - release_closeable: YES
