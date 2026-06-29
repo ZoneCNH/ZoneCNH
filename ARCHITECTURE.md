@@ -203,7 +203,7 @@ FoundationX 中运行模块分为两种架构类型：
 - 通过 `bootstrap.Build(ctx, Spec{Module, Stores=None})` 组装
 - 实现 `contracts.MarketDataProvider` 或 `MacroDataProvider` 接口
 - 使用 `domain_market` / `domain_macro` / `domain_exchange` 共享类型
-- **规格参考实现**：binance（spec v3.9.6 ✅；Runtime-Anchor `/home/binance@8f0e960`；single state `48 Done / 0 Partial`（100%）；release_closeable=YES 🎉；v0.7.0 tag 已发布；47/47 tasks Done；deep-review 25/37 fixed）
+- **规格参考实现**：binance（spec v3.9.6 ✅；Runtime-Anchor `/home/binance@b2d9d83`；single state `48 Done / 0 Partial`（100%）；release_closeable=YES 🎉；v0.8.0 tag 已发布；47/47 tasks Done；deep-review 37/37 fixed；coverage 100.0%）
 
 ### 独立进程（非 C/S）
 
@@ -444,7 +444,7 @@ Foundation 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中在 
 | L2.5                  | [domain_macro](https://github.com/ZoneCNH/domain_macro)         | v1.0.0 | ✅ 已有   | Spec→Code 完成 | 宏观数据域模型（MacroPoint/MacroState）；v1.0.0 GitHub Release 已发布；7 FR Done；factory grade；live/soak N/A（纯值对象库）           |
 | **数据域 · 行情**     |                                                                 |        |           |          |                                                                                           |
 | 数据域                | [market_data](https://github.com/ZoneCNH/market_data)           | v1.1.0 | ✅ 已发布 | ████ 85% | **dispatch 独立进程（域入口）**：Receiver（DownstreamDispatchPort，18 测试）+ DualWriteSink（TD+Kafka 双写，6 测试）；v1.1.0 released                    |
-| 数据域                | [binance](https://github.com/ZoneCNH/binance)                   | v0.7.0 ✅ / v3.9.6 (spec) | ✅ 已发布 | ████ 100% | **C/S Module 规格参考实现**：48/48 Done (100%)；release_closeable=YES 🎉；v0.7.0 tag 已发布；15/15 gates；21/21 tests；controlplane 100%（72 tests）；deep-review 25/37 fixed |
+| 数据域                | [binance](https://github.com/ZoneCNH/binance)                   | v0.8.0 ✅ / v3.9.6 (spec) | ✅ 已发布 | ████ 100% | **C/S Module 规格参考实现**：48/48 Done (100%)；release_closeable=YES 🎉；v0.8.0 tag 已发布；15/15 gates；21/21 tests；controlplane 100%（72 tests）；deep-review 37/37 fixed；coverage 100.0%（21/23 包 100%） |
 | 数据域                | [okx](https://github.com/ZoneCNH/okx)                           | -      | ✅ 已有   | ███░ 80% | **C/S Module**：OKX CEX 行情采集；待升级 bootstrap 接入 + client/server 拆分                                                                               |
 | 数据域                | [bybit](https://github.com/ZoneCNH/bybit)                       | -      | ✅ 已有   | ███░ 80% | **C/S Module**：Bybit CEX 行情采集；待升级                                                                             |
 | 数据域                | [bitget](https://github.com/ZoneCNH/bitget)                     | -      | ✅ 已有   | ███░ 80% | **C/S Module**：Bitget CEX 行情采集；待升级                                                                            |

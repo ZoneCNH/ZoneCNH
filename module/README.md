@@ -185,7 +185,7 @@ Foundation 目录内的执行域共享值对象规格，用于订单、成交、
 
 | 模块 | 架构类型 | 规格 | 核心职责 |
 | --- | --- | --- | --- |
-| binance | C/S | [SPEC.md](./binance/SPEC.md) | 币安行情采集（spot/um_perp/cm_perp/options） |
+| binance | C/S | [SPEC.md](./binance/SPEC.md) | 币安行情采集（spot/um_perp/cm_perp/options）；coverage 100.0%（21/23 包 100%） |
 | okx | C/S | [SPEC.md](./okx/SPEC.md) | OKX 行情采集 |
 | hyperliquid | C/S | [SPEC.md](./hyperliquid/SPEC.md) | Hyperliquid 行情采集 |
 | coinglass | C/S | [SPEC.md](./coinglass/SPEC.md) | Coinglass 衍生品数据采集 |
@@ -395,7 +395,7 @@ FoundationX 运行模块分为两种架构类型。详见 [`ARCHITECTURE.md`](..
 
 **宏观模块规格**：[`fred`](./fred/README.md) — FRED 独立 C/S 服务，覆盖共享基座、`domain_macro` 领域共享层、完整持久化和 dev 配置来源。
 
-**参考实现**：[binance](https://github.com/ZoneCNH/binance)（spec v3.9.6；Runtime-Version `v0.2.0`；2026-06-28：Runtime-Anchor `/home/binance@2efc44a`；single state `48 Done / 0 Partial`（100%）；release_closeable=YES 🎉；v0.2.0 tag 已发布；47/47 tasks Done）
+**参考实现**：[binance](https://github.com/ZoneCNH/binance)（spec v3.9.6；Runtime-Version `v0.8.0`；2026-06-29：Runtime-Anchor `/home/binance@b2d9d83`；single state `48 Done / 0 Partial`（100%）；coverage 100.0%；release_closeable=YES 🎉；v0.8.0 tag 已发布；47/47 tasks Done）
 
 ### 独立进程（非 C/S）
 
