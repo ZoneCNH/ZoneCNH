@@ -486,9 +486,9 @@ binance:
   spec_ref: module/binance/spec/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml  # forbidden_deps 黑名单成员
   maturity_ref: .foundationx/status/index.json#binance
-  spec_version: v3.9.0
+  spec_version: v3.9.6
   release:
-    latest_tag: v3.8.0
+    latest_tag: v0.8.0
     cadence: on-demand
 
 okx:
