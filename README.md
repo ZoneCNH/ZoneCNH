@@ -126,7 +126,7 @@ L2.5: domainx / decimalx / domain_market / domain_macro / domain_exchange (5/5 �
 
 **交易所 SDK / C/S Module：**
 
-- [binance](https://github.com/ZoneCNH/binance) — 币安 Binance Market Data C/S Module (Spot/USDⓈ-M/COIN-M/Options)；spec v3.9.6 ✅；Runtime `v0.8.0` released；single state `48 Done / 0 Partial`（100%）；release_closeable=YES 🎉；47/47 tasks Done；deep-review 37/37 fixed；coverage ~73.7%；`report/binance/deep-review-20260629.md`。 `公开`
+- [binance](https://github.com/ZoneCNH/binance) — 币安 Binance Market Data C/S Module (Spot/USDⓈ-M/COIN-M/Options)；spec v3.9.6 ✅；Runtime `v0.8.0` released；single state `48 Done / 0 Partial`（100%）；release_closeable=YES 🎉；47/47 tasks Done；deep-review 37/37 fixed；coverage 100.0%（22/23 packages 100%, 2 kernel-level dead-code funcs remain）；`report/binance/deep-review-20260629.md`。 `公开`
 - [okx](https://github.com/ZoneCNH/okx) — OKX `公开`
 - [bybit](https://github.com/ZoneCNH/bybit) — Bybit `公开`
 - [bitget](https://github.com/ZoneCNH/bitget) — Bitget `公开`

@@ -5,7 +5,7 @@
 | 模块 | `binance` |
 | 层级 | 数据域 · 行情（C/S Module 参考实现） |
 | 仓库 | <https://github.com/ZoneCNH/binance> |
-| 当前版本 | v0.7.0 |
+| 当前版本 | v0.8.0 |
 | Spec 版本 | v3.9.6 |
 | 状态 | Released — 48/48 FR Done, release_closeable=YES |
 
@@ -26,6 +26,6 @@ C/S Module — `internal/client`（数据源采集）+ `internal/server`（数�
 
 - 构建: `go build ./...` PASS
 - 测试: 21/21 packages PASS
-- 覆盖率: 73.7%（较 59.6% 提升）
+- 覆盖率: 100.0%（22/23 包 100%，2 个内核级死代码保留）
 - 安全: 1 CRITICAL + 10 HIGH 全部修复（deep-review 2026-06-29）
 - CI: 15 道边界门禁
