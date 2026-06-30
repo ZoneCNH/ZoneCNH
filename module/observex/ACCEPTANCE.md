@@ -1,7 +1,7 @@
 # observex 完整验收清单
 
 - Status: Generated from current module SSOT
-- Last-Updated: 2026-06-21
+- Last-Updated: 2026-06-30
 - Module-Version: v0.3.6
 - Module-State: 已发布
 - Layer: L0 观测

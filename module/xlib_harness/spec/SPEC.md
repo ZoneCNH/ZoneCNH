@@ -2,7 +2,7 @@
 
 Status: Approved
 - Spec-Version: v1.3.0
-- Last-Updated: 2026-06-20
+- Last-Updated: 2026-06-30
 - Layer: 基座 · 模块生成器与门禁执行器
 - Version: v0.1.6
 - Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `xlibgate`

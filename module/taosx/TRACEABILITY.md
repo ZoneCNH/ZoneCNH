@@ -1,6 +1,6 @@
 # taosx 追溯矩阵
 
-Last-Updated: 2026-06-29
+Last-Updated: 2026-06-30
 Source: `module/taosx/SPEC.md` v1.0.5
 
 本矩阵追踪 taosx v1.0.5 规格中所有功能需求、行为约束、非功能需求与测试用例/验收标准之间的完整追溯链路。

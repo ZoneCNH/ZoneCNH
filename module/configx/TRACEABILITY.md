@@ -4,7 +4,7 @@
 > 来源：module/configx/SPEC.md v1.1.0
 > 规范：docs/governance/TRACEABILITY.md
 
-Last-Updated: 2026-06-29
+Last-Updated: 2026-06-30
 
 ---
 

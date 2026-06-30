@@ -2,7 +2,7 @@
 
 > 模块级追溯矩阵。治理规范见 [docs/governance/TRACEABILITY.md](../../docs/governance/TRACEABILITY.md)。
 
-Last-Updated: 2026-06-29
+Last-Updated: 2026-06-30
 Source: [SPEC.md](./SPEC.md), [goal.md](./goal.md), `/home/postgresx`
 
 ---

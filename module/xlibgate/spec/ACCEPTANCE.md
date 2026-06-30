@@ -1,7 +1,7 @@
 # xlibgate 完整验收清单
 
 - Status: Generated from current module SSOT
-- Last-Updated: 2026-06-21
+- Last-Updated: 2026-06-30
 - Module-Version: v1.0.1
 - Module-State: 本地发布门禁通过（远端发布待授权）
 - Layer: L1 门禁

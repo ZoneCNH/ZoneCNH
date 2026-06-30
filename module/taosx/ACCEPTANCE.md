@@ -1,7 +1,7 @@
 # taosx 完整验收清单
 
 - Status: Generated from current module SSOT
-- Last-Updated: 2026-06-21
+- Last-Updated: 2026-06-30
 - Module-Version: v1.0.5
 - Module-State: 本地发布候选
 - Layer: L2 基础设施适配器

@@ -1,6 +1,6 @@
 # natsx Matrix Score Evidence
 
-Last-Updated: 2026-06-13
+Last-Updated: 2026-06-30
 Status: Repair-slice evidence complete; formal release approval remains not Approved until arbiter and production gates run.
 
 ## Score Snapshot

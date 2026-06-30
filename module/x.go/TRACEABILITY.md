@@ -2,7 +2,7 @@
 
 > 模块级追溯矩阵。治理规范见 [docs/governance/TRACEABILITY.md](../../docs/governance/TRACEABILITY.md)。
 
-Last-Updated: 2026-06-29
+Last-Updated: 2026-06-30
 Source: [SPEC.md](./SPEC.md) v0.1.0-draft
 Status: Draft — x.go 是治理/工具 CLI，非业务模块
 

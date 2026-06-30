@@ -4,7 +4,7 @@
 
 - Status: Archived
 - Owner: `module/binance/server`
-- Last-Updated: 2026-06-17
+- Last-Updated: 2026-06-30
 - Dependencies: `module/contracts/SPEC.md` §8.4, `module/market_data/SPEC.md` v1.0.0 §4
 
 ## Objective

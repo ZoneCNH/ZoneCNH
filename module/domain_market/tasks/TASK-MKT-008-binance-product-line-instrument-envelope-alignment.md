@@ -2,7 +2,7 @@
 
 - Status: Approved
 - Owner: `module/domain_market`
-- Last-Updated: 2026-06-17
+- Last-Updated: 2026-06-30
 - Blocks: `module/binance` runtime implementation
 
 ## Objective

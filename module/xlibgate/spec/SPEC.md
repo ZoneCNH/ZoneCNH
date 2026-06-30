@@ -2,7 +2,7 @@
 
 - Status: Approved
 - Spec-Version: v1.2.0
-- Last-Updated: 2026-06-14
+- Last-Updated: 2026-06-30
 - Layer: 基座 · CI 门禁
 - Version: v1.0.0
 - Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `xlib_standard`

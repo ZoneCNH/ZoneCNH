@@ -2,7 +2,7 @@
 
 - Status: Draft
 - Spec-Version: v0.1.0-draft
-- Last-Updated: 2026-06-26
+- Last-Updated: 2026-06-30
 - Layer: 横切 · 治理/工具 CLI
 - Version: v0.1.0-draft
 - Repository: [github.com/ZoneCNH/x.go](https://github.com/ZoneCNH/x.go)
