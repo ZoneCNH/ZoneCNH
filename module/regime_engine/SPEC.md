@@ -4,7 +4,7 @@
 
 - Status: Draft
 - Spec-Version: v0.1.0-draft
-- Last-Updated: 2026-06-25
+- Last-Updated: 2026-06-30
 - Owner: ZoneCNH
 - Layer: 分析域 · M×S 联合决策
 - Version: v0.1.0-draft

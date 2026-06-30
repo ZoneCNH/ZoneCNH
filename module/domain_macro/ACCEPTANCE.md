@@ -1,7 +1,7 @@
 # domain_macro 完整验收清单
 
 - Status: Generated（与 [SPEC.md](./SPEC.md) 同步抽取，未经 pipeline-arbiter 校验）
-- Last-Updated: 2026-06-18
+- Last-Updated: 2026-06-30
 - Source: [SPEC.md](./SPEC.md) · [TRACEABILITY.md](./TRACEABILITY.md) · [FEATURES.md](./FEATURES.md)
 - Scale: 8 AC · 0 TC
 

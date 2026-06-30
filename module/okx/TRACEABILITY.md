@@ -5,7 +5,7 @@
 > 规范来源：`docs/governance/TRACEABILITY.md`。范式继承 [`module/binance/TRACEABILITY.md`](../binance/TRACEABILITY.md)。
 
 - Matrix-Version: v1.0.0
-- Last-Updated: 2026-06-29
+- Last-Updated: 2026-06-30
 - Spec-Reference: `module/okx/SPEC.md` v1.0.0
 
 ---

@@ -2,7 +2,7 @@
 
 - Status: Docs Baseline Approved / Runtime Pending
 - Spec-Version: v1.0.0
-- Last-Updated: 2026-06-17
+- Last-Updated: 2026-06-30
 - Layer: 分析域 · 因子计算引擎
 - Version: v1.0.0-spec
 - Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/market_data`, `module/domain_market`, `module/feature_store`

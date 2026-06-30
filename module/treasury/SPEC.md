@@ -2,7 +2,7 @@
 
 - Status: Draft
 - Spec-Version: v0.1.0-draft
-- Last-Updated: 2026-06-26
+- Last-Updated: 2026-06-30
 - Layer: 数据域 · 宏观（C/S 采集器）
 - Version: v0.1.0-draft
 - Repository: [github.com/ZoneCNH/treasury](https://github.com/ZoneCNH/treasury)

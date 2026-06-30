@@ -2,7 +2,7 @@
 
 - Status: Draft
 - Spec-Version: v0.1.0-draft
-- Last-Updated: 2026-06-17
+- Last-Updated: 2026-06-30
 - Layer: 分析域 · 因子评估
 - Version: v0.1.0-draft
 - Related: `CONSTITUTION.md`, `../factor_engine/`, `../domain_market/`

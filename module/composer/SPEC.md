@@ -2,7 +2,7 @@
 
 - Status: Draft
 - Spec-Version: v0.1.0-draft
-- Last-Updated: 2026-06-26
+- Last-Updated: 2026-06-30
 - Layer: 入口 · 组合根
 - Version: v0.2.0
 - Repository: [github.com/ZoneCNH/composer](https://github.com/ZoneCNH/composer)

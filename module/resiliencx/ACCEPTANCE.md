@@ -1,7 +1,7 @@
 # resiliencx 完整验收清单
 
 - Status: Synced from v1.0.2 runtime release evidence
-- Last-Updated: 2026-06-19
+- Last-Updated: 2026-06-30
 - Module-Version: v1.0.2（已发布运行时代码基线）
 - Spec-Version: v1.0.2
 - Module-State: 已发布

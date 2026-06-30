@@ -2,7 +2,7 @@
 
 - Status: Draft
 - Spec-Version: v0.1.0-draft
-- Last-Updated: 2026-06-17
+- Last-Updated: 2026-06-30
 - Layer: 数据域 · 另类数据
 - Version: v0.1.0-draft
 - Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/contracts`, `module/domain_market`

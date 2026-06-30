@@ -2,7 +2,7 @@
 
 - Status: Docs Baseline Approved
 - Spec-Version: v1.0.0
-- Last-Updated: 2026-06-21
+- Last-Updated: 2026-06-30
 - Layer: 分析域 · 宏观体制 (M 引擎)
 - Version: v1.0.0-spec
 - Related: `CONSTITUTION.md`, `module/macro_regime/TRACEABILITY.md`

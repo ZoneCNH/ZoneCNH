@@ -2,7 +2,7 @@
 
 > 模块级追溯矩阵。治理规范见 [docs/governance/TRACEABILITY.md](../../docs/governance/TRACEABILITY.md)。
 
-Last-Updated: 2026-06-29
+Last-Updated: 2026-06-30
 Source: SPEC.md v1.0.2（runtime-release-synced）
 Runtime-Repo: `/home/resiliencx` @ tag v1.0.2
 Release-Evidence: tag v1.0.2 -> 1aaa0dc；GitHub Release Check 27777166525 passed；release-check / release-final-check 通过，score=10.00

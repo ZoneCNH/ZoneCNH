@@ -2,7 +2,7 @@
 
 - Status: Approved
 - Goal-Version: v1.1.1
-- Last-Updated: 2026-06-14
+- Last-Updated: 2026-06-30
 - Owner: ZoneCNH
 - Layer: 基座 · 传输契约
 - Repository: https://github.com/ZoneCNH/transportx

@@ -1,6 +1,6 @@
 # ossx 追溯矩阵
 
-- Last-Updated: 2026-06-29
+- Last-Updated: 2026-06-30
 - Source: [module/ossx/SPEC.md](./SPEC.md) v1.2.1
 - Scope: FR/BR -> AC -> TC -> Task -> Evidence -> Status closure for v1.2.1 local production candidate
 

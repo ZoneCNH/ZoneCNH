@@ -1,7 +1,7 @@
 # domain_macro 完整实现功能清单
 
 - Status: Generated（与 [SPEC.md](./SPEC.md) 同步抽取，未经 pipeline-arbiter 校验）
-- Last-Updated: 2026-06-18
+- Last-Updated: 2026-06-30
 - Source: [SPEC.md](./SPEC.md) · [TRACEABILITY.md](./TRACEABILITY.md) · [goal.md](./goal.md)
 - Scale: 8 FR · 6 BR · 0 NFR
 

@@ -3,7 +3,7 @@
 - Spec-Version: v0.1.0
 - Runtime-Version: v0.1.0-patch
 - Status: Draft（从 patches/cmd/main.go 反向提取）
-- Last-Updated: 2026-06-29
+- Last-Updated: 2026-06-30
 - Source: `patches/cmd/main.go`
 
 ## 1. 摘要
