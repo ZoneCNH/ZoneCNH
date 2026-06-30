@@ -7,17 +7,17 @@
 | Module | `module/binance/server` |
 | Status | Approved |
 | Spec-Version | v3.9.0 |
-| Last-Updated | 2026-06-26 (v3.9.0: §11 config 修正 — durable consumer 增加 instance_id 说明（多实例防冲突）；ack_wait 注释说明与 idempotency 协同。§17 性能预算扩展 — 内存预算)
+| Last-Updated | 2026-06-30 (Phase 2-3 文档修复：Runtime-Version v0.8.0 对齐，Last-Updated 同步) |
 | Last-Updated | 2026-06-26 (v2.2.0→v3.8.0: 结构性修复 — 废除本地 FR/BR 编号，全部改为引用根 SPEC canonical FR/BR；§7 重构为根 FR 的 server 实现视图；删除内嵌 FR-025~028 改为根引用；SC→TC 测试编号统一) |
 | Owner | ZoneCNH |
 | Layer | 数据域 · 行情接入层 |
 | Role | Binance 行情数据的处理 + 存储服务端（natsx 消费 + redisx + postgresx + taosx + clickhousex + kafkax + ossx + Gin REST API） |
 | Port Interface | natsx JetStream subscription filter `binance.market.>`；实际消息 subject `binance.market.*.*.v1`；Gin REST HTTP `:8080` (提供给 market_data) |
 | Language | Go |
-| Runtime-Version | v0.2.0 |
+| Runtime-Version | v0.8.0 |
 | Repository | [github.com/ZoneCNH/binance](https://github.com/ZoneCNH/binance)（server/ 子目录） |
 | Go Module Path | `github.com/ZoneCNH/binance`（monorepo，server 端通过 `cmd/binance-server` + `internal/server` 提供） |
-| Related | [CONSTITUTION.md](../../../CONSTITUTION.md), [ARCHITECTURE.md](../../../ARCHITECTURE.md), [module/binance/SPEC.md](../SPEC.md), [module/domain_market](../../domain_market/), [module/natsx](../../natsx/), [module/redisx](../../redisx/), [module/taosx](../../taosx/), [module/clickhousex](../../clickhousex/), [module/kafkax](../../kafkax/), [module/ossx](../../ossx/), [module/postgresx](../../postgresx/) |
+| Related | [CONSTITUTION.md](../../../CONSTITUTION.md), [ARCHITECTURE.md](../../../ARCHITECTURE.md), [module/binance/spec/SPEC.md](../SPEC.md), [module/domain_market](../../domain_market/), [module/natsx](../../natsx/), [module/redisx](../../redisx/), [module/taosx](../../taosx/), [module/clickhousex](../../clickhousex/), [module/kafkax](../../kafkax/), [module/ossx](../../ossx/), [module/postgresx](../../postgresx/) |
 
 ---
 

@@ -269,7 +269,7 @@ Server SPEC §7 FR-005 注释说 "FR-005a/5b/5c/5d 映射根 FR-006a/6b/6c/6d"�
 | 位置                        | spec_version |
 | --------------------------- | ------------ |
 | `module/registry.yaml:486`  | `v3.6.0`     |
-| `module/binance/SPEC.md` L6 | `v3.7.1`     |
+| `module/binance/spec/SPEC.md` L6 | `v3.7.1`     |
 
 注册表落后 2 个 MINOR bump（v3.6.0 → v3.7.0 → v3.7.1）。
 

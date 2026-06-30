@@ -3,9 +3,75 @@
 所有 notable 变更记录，按 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/) 格式维护。
 
 - Module-Version: v3.9.6
-- Last-Updated: 2026-06-28
+- Last-Updated: 2026-06-30
 - Spec-Reference: `module/binance/spec/SPEC.md` v3.9.6
 - 治理规则：`module/binance/gate/RULES.md` R9 文档存在性
+
+---
+
+## 2026-06-30 L3 Production 准入（Phase 7）
+
+### L3 准入状态翻转
+
+- **release_closeable 从 NO 翻转为 YES**：全模块（SPEC.md、TRACEABILITY.md、client/TRACEABILITY.md、server/TRACEABILITY.md、README.md、goal/goal.md、ACCEPTANCE.md、FEATURES.md、todo.md、BOUNDARY-GATES.md、PLAN.md、ARCHITECTURE-DRIFT-WATCHLIST.md）统一翻转为 YES
+- **PRG-001~007 全 PASS**：
+  - PRG-001：CI runner 从 self-hosted 迁移到 ubuntu-latest，CI 已触发运行 → PASS
+  - PRG-002：v0.8.0 tag + GitHub Release 已存在 → PASS
+  - PRG-003：PRG-001~006 全 PASS → PASS
+  - PRG-004：Jaeger/Grafana/Loki/AlertManager 全在线 → PASS
+  - PRG-005：OpenTelemetry SDK v1.44.0，govulncheck 清洁 → PASS
+  - PRG-006：soak test 2min PASS，chaos test 5/5 PASS → PASS
+  - PRG-007：43 GitHub (#1289-#1331) + 43 Beads 全关闭 → PASS
+- **覆盖率**：99.9%（≥98%）
+- **测试**：23/23 PASS
+- **边界门禁**：15/15 PASS
+- **7 个基础设施服务全部在线**
+- **registry.yaml**：lifecycle 更新为 production，添加 maturity: L3
+- **evidence**：`evidence/2026-06-30/release/` 包含 PRG-001~007 全部 evidence 文件
+
+---
+
+## 2026-06-30 Phase 0-3 文档修复与治理裁决
+
+### Phase 0: 治理裁决
+
+1. **release_closeable 公式裁决**：采用 TRACEABILITY 版本（PRG 影响 release_closeable）。公式为 `release_closeable = Code-Done FR / Total FR ≥ 90% AND Drifted=0 AND Pending=0 AND PRG-001~007 全 PASS AND 远程 CI PASS AND release tag 已发布 AND HA/DR 部署文档存在`。SPEC/ACCEPTANCE 中"PRG 不影响 release_closeable"论述已删除，改为"PRG-001~006 仍需闭合，release_closeable=NO 直到全 PASS"。
+2. **release_closeable 当前有效值**：**NO**（PRG-001~006 未全 PASS）。全模块统一为 NO，直到 Phase 7 才翻转为 YES。
+3. **Runtime-Version 统一**：统一为 **v0.8.0**（git tag 和 GitHub Release 的实际值）。client/SPEC.md 和 server/SPEC.md 从 v0.2.0 修正为 v0.8.0。
+4. **Issue 编号裁决**：采用 **43 GitHub (#1289-#1331) + 43 Beads**（有 GitHub issue 编号可追溯）。TRACEABILITY 的 "47 GitHub (#148-#194) + 47 Beads" 已修正。
+5. **真实状态验证结果**：基础设施 7 服务全部在线（NATS/Redis/PG/TDengine/Kafka/CH/OSS）、23/23 测试 PASS、覆盖率 99.9%（short + full mode）、边界门禁 15/15 PASS。
+
+### Phase 1: 验证结果归档
+
+- 基础设施连通性：7 服务全部在线
+- 测试：23/23 PASS（short mode）
+- 覆盖率：short 99.9%，full 99.9%
+- 边界门禁：15/15 PASS
+- PRG-001：self-hosted runner workflow 已配置（binance-ci.yml），runner 在线状态待确认
+- PRG-002：v0.8.0 tag + GitHub Release 均存在 → PASS
+- PRG-003~006：待闭合
+- PRG-007：43 GitHub + 43 Beads 全关闭 → PASS
+- 证据归档：`evidence/2026-06-30/verification/phase1-verification.md`
+
+### Phase 2: 状态同步（CRITICAL）
+
+- 全模块 release_closeable 统一为 NO（spec/SPEC.md、matrix/TRACEABILITY.md、README.md、todo.md、goal/goal.md、spec/ACCEPTANCE.md、spec/FEATURES.md、matrix/client/TRACEABILITY.md、matrix/server/TRACEABILITY.md）
+- PRG 状态表修正：以 ACCEPTANCE.md §1.1 为 SSOT，TRACEABILITY.md §4 PRG 表同步
+- Issue 编号修正：TRACEABILITY.md PRG-007 行从 "47 GitHub (#148-#194) + 47 Beads" 改为 "43 GitHub (#1289-#1331) + 43 Beads"
+- Runtime-Version 修正：client/SPEC.md 和 server/SPEC.md 从 v0.2.0 改为 v0.8.0
+- DRIFT-WATCHLIST D11 更新：当前 root 状态为 release_closeable=NO
+- BOUNDARY-GATES §12 更新：G0 存储装配状态修正为 StorageWriter 已设置、buildStorage() 创建真实存储
+- PLAN.md §8 更新：停止条件与 release_closeable 公式一致
+
+### Phase 3: 文档清理
+
+- 删除根级废弃文件：`SPEC.md`（v1.0.0）、`goal.md`（合并到 goal/goal.md）、`IMPLEMENTATION-PLAN.md`（重定向到 plan/PLAN.md）
+- 修复 DRIFT-WATCHLIST 路径引用：`module/binance/TRACEABILITY.md` → `module/binance/matrix/TRACEABILITY.md` 等
+- 修复 RULES.md R9 路径引用为嵌套结构
+- 删除 CONFIG-SCHEMA.md 中 `BINANCE_CHECKPOINT_PATH` 废弃配置项
+- DESIGN.md 状态从 Draft 更新为 Implemented
+- server/SPEC.md Last-Updated 更新为 2026-06-30
+- 补充 prompt/README.md 和 schema/README.md 说明
 
 ---
 

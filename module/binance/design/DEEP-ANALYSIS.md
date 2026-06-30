@@ -14,7 +14,7 @@
 
 | 原始章节 | 迁移目标 | 状态 |
 |---------|---------|:---:|
-| §0 分布式架构约束 | `module/binance/SPEC.md` §4.1 Runtime Distributed Architecture Constraints | ✅ 已迁移 |
+| §0 分布式架构约束 | `module/binance/spec/SPEC.md` §4.1 Runtime Distributed Architecture Constraints | ✅ 已迁移 |
 | §1-§2 架构评估与目标设计 + 附录A | [`DEEP-ANALYSIS-ARCHIVE-architecture.md`](./DEEP-ANALYSIS-ARCHIVE-architecture.md) | 📦 归档 |
 | §3 六模块集成详案 | [`DEEP-ANALYSIS-ARCHIVE-integration.md`](./DEEP-ANALYSIS-ARCHIVE-integration.md) | 📦 归档 |
 | §4-§11 API/数据流/配置/部署/路线图/风险 + 附录B | [`DEEP-ANALYSIS-ARCHIVE-operations.md`](./DEEP-ANALYSIS-ARCHIVE-operations.md) | 📦 归档 |
@@ -24,12 +24,12 @@
 
 ## 活跃文档入口
 
-- **规格（权威 SSOT）**：`module/binance/SPEC.md` v3.5.0
-- **追溯矩阵**：`module/binance/TRACEABILITY.md` v3.5.0
-- **分布式约束**：`module/binance/SPEC.md` §4.1
-- **Runtime 映射**：`module/binance/RUNTIME-MAPPING.md`
-- **边界门禁**：`module/binance/BOUNDARY-GATES.md`
-- **治理规则**：`module/binance/RULES.md`
+- **规格（权威 SSOT）**：`module/binance/spec/SPEC.md` v3.9.6
+- **追溯矩阵**：`module/binance/matrix/TRACEABILITY.md` v3.9.6
+- **分布式约束**：`module/binance/spec/SPEC.md` §4.1
+- **Runtime 映射**：`module/binance/design/RUNTIME-MAPPING.md`
+- **边界门禁**：`module/binance/gate/BOUNDARY-GATES.md`
+- **治理规则**：`module/binance/gate/RULES.md`
 - **数据生命周期**：`module/binance/spec/SPEC.md` §7 FR-012~FR-030（原 `DATA-LIFECYCLE.md` 已物理删除）
 - **迁移记录**：`docs/migrations/binance-v2-upgrade.md`、`docs/migrations/remove-binance-market.md`
 - **治理归档报告**：`report/binance/INDEX.md`

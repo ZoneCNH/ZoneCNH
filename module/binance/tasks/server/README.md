@@ -8,4 +8,4 @@
 | `TASK-BINANCE-SERVER-004-ingest-ack.md` | 删除（无替代） | gRPC ACK → natsx ManualAck |
 | `TASK-BINANCE-SERVER-005-downstream-dispatch.md` | `TASK-BINANCE-SERVER-012/013/014/015/016` | DownstreamDispatchPort → 7 infra adapters + Gin |
 
-参考决策：`module/binance/SPEC.md` Appendix A ADR + `module/binance/CHANGELOG.md` v2.0.0 条目。
+参考决策：`module/binance/spec/SPEC.md` Appendix A ADR + `module/binance/CHANGELOG.md` v2.0.0 条目。

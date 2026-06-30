@@ -27,7 +27,6 @@ This file owns detailed parameter tables so the root SPEC remains compact. Runti
 | `BINANCE_WS_BASE_URL` | yes | Binance public WS URL | public market stream only |
 | `BINANCE_RECONNECT_MIN_BACKOFF` | no | `1s` | reconnect lower bound |
 | `BINANCE_RECONNECT_MAX_BACKOFF` | no | `30s` | reconnect upper bound |
-| `BINANCE_CHECKPOINT_PATH` | no | runtime default | local recovery checkpoint |
 
 ## Server
 

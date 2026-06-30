@@ -7,4 +7,4 @@
 | `TASK-BINANCE-CLIENT-008-grpc-sender.md` | `TASK-BINANCE-CLIENT-014-natsx-publisher.md` | gRPC bidi stream → natsx JetStream Publish |
 | `TASK-BINANCE-CLIENT-009-spool-checkpoint.md` | 删除（无替代） | SQLite spool + checkpoint → JetStream durable consumer |
 
-参考决策：`module/binance/SPEC.md` Appendix A ADR + `module/binance/CHANGELOG.md` v2.0.0 条目。
+参考决策：`module/binance/spec/SPEC.md` Appendix A ADR + `module/binance/CHANGELOG.md` v2.0.0 条目。

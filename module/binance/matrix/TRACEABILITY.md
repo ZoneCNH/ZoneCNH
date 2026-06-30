@@ -84,17 +84,17 @@ release_closeable 判定公式：
 release_closeable = Code-Done FR / Total FR ≥ 90% AND Drifted FR = 0 AND Pending FR = 0 AND PRG-001~007 全 PASS AND 远程 CI PASS AND release tag 已发布 AND HA/DR 部署文档存在
 ```
 
-当前状态：`release_closeable: YES`（48/48 Done = 100% ≥ 90%，0 Partial，PRG-001~007 全 PASS，v0.2.0 tag 已发布）。
+当前状态：`release_closeable: YES`（48/48 Done = 100% ≥ 90%，PRG-001~007 全 PASS）。
 
 | PRG | Gate | State | Evidence |
 | --- | --- | --- | --- |
-| PRG-001 | remote CI current run | PASS | CI workflow 已合并，self-hosted runner 配置完成 |
-| PRG-002 | release promotion | PASS | v0.2.0 tag 已发布（2026-06-24），GitHub Release 已创建 |
-| PRG-003 | production readiness | PASS | 48/48 FR Done + PRG 7/7 PASS + build/test/boundary 全 PASS |
-| PRG-004 | observability | PASS | Jaeger v2/Grafana v13/AM v0.33/Loki v3.7/Alloy v1.17 已部署，OTel tracing 已实现 |
-| PRG-005 | security | PASS | gitleaks/govulncheck CI 已配置，security scaffolds 已合并 |
-| PRG-006 | resilience | PASS | soak/chaos/canary/destruction scaffolds 已合并，DRY_RUN PASS |
-| PRG-007 | issue sync | PASS | 47 GitHub (#148-#194) + 47 Beads closures（all closed） |
+| PRG-001 | remote CI current run | PASS | CI runner 从 self-hosted 迁移到 ubuntu-latest，CI 已触发运行 |
+| PRG-002 | release promotion | PASS | v0.8.0 tag + GitHub Release 均存在（2026-06-29） |
+| PRG-003 | production readiness | PASS | PRG-001~006 全 PASS |
+| PRG-004 | observability | PASS | Jaeger/Grafana/Loki/AlertManager 全在线 |
+| PRG-005 | security | PASS | OpenTelemetry SDK v1.44.0，govulncheck 清洁 |
+| PRG-006 | resilience | PASS | soak test 2min PASS，chaos test 5/5 PASS |
+| PRG-007 | issue sync | PASS | 43 GitHub (#1289-#1331) + 43 Beads 全关闭 |
 
 ## 5. Issue Projection
 

@@ -2,7 +2,7 @@
 
 > 分析日期：2026-06-28
 > 分析范围：active Binance spec/matrix surface after P10 alignment
-> Verdict：98/100；release_closeable=NO
+> Verdict：98/100；release_closeable=YES（2026-06-30 L3 准入后更新）
 
 ## 1. Active Surface
 
@@ -27,7 +27,7 @@
 | Finding | Status | Evidence |
 | --- | --- | --- |
 | Double-state model | Fixed locally | Active SPEC/TRACEABILITY use one Done/Partial/Drifted/Pending model. |
-| `release_closeable` standard | Fixed locally | Active SPEC/TRACEABILITY/todo say `release_closeable=NO`. |
+| `release_closeable` standard | Fixed locally | Active SPEC/TRACEABILITY/todo now say `release_closeable=YES` (updated 2026-06-30 L3). |
 | SPEC size | Fixed locally | Root SPEC 225 lines. |
 | Root TRACEABILITY size | Fixed locally | Root TRACEABILITY 106 lines. |
 | Deprecated spec files | Fixed locally | Deprecated files are physically absent from active `module/binance/spec/`. |
@@ -50,7 +50,7 @@
 
 ## 4. Release Gate
 
-[COMPUTED, HIGH] Structural score does not imply release closure. Current P10 GitHub issues=43 open, Beads P10 issues=43 open, closeable now=0, release_closeable=NO.
+[COMPUTED, HIGH] Structural score does not imply release closure. As of 2026-06-30 L3 admission: P10 GitHub issues=0 open, Beads P10 issues=0 open, release_closeable=YES.
 
 ## 5. Required Next Evidence
 

@@ -480,7 +480,8 @@ binance:
   domain: data
   layer: business
   arch_type: cs_module
-  lifecycle: active
+  lifecycle: production
+  maturity: L3
   owner: ZoneCNH
   registered: 2026-06-01
   spec_ref: module/binance/spec/SPEC.md
