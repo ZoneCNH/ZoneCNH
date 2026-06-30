@@ -1,6 +1,6 @@
 # binance 二进制构建与部署
 
-- Runtime-Version: v0.9.1（anchor: `/home/binance@0fd95f7` — client NATS subscription for auto gap-fill）
+- Runtime-Version: v0.10.0（anchor: `/home/binance@e424c25` — lifecycle worker + full gap repair pipeline）
 - Target: jp1 (84.247.154.45)
 - Last-Updated: 2026-07-01
 
@@ -815,17 +815,17 @@ taosx [PR #21](https://github.com/ZoneCNH/taosx/pull/21)（tag v1.0.3）修复�
 | Server 侧 REST 回填             | ❌ 无代码（设计如此）         | server 不直接调 Binance REST，由 client 执行                    |
 | Client 侧 gap-fill              | ✅ 自动触发（NATS 订阅）      | `runtime.go` — `GapAlertSubscriber` 订阅 → `QueueGapFill`       |
 | Server↔Client 自动联动          | ✅ 完整闭环                   | server replay worker → NATS → client subscriber → QueueGapFill  |
-| durable historical fetch/replay | ❌ NOT_IMPLEMENTED            | `release/evidence/binance/20260623/lifecycle-local-gates.log:8` |
+| durable historical fetch/replay | ✅ HistoryRuntime.RequestBackfill | `history_lifecycle.go:328-414` — HistoryFetcher async REST fetch  |
 
-**结论：38272 gap 为历史遗留。** gap 检测是纯观测性的，不阻塞处理（`quality.go:63-80` 在 `observe()` 内，事件仍正常接受/持久化/ACK）。server→client 自动联动已完整闭环：replay worker 30s drain → 发布到 `binance.replay.requests` → client 订阅 → 自动 `QueueGapFill`。`LifecycleManager` 仍为规划层（任务排队但不自动执行 REST 回填），需配合 `HistoryRuntime` 执行实际数据拉取。
+**结论：38272 gap 为历史遗留。** gap 检测是纯观测性的，不阻塞处理（`quality.go:63-80` 在 `observe()` 内，事件仍正常接受/持久化/ACK）。server→client 自动联动已完整闭环：replay worker 30s drain → 发布到 `binance.replay.requests` → client 订阅 → 自动 `QueueGapFill` → lifecycle worker 30s drain → `HistoryRuntime.RequestBackfill` → `HistoryFetcher.FetchHistorical` (REST) → 任务完成。
 
 **手动操作**：
 
 1. **止血**：重启 binance-server，`gapDetected` 计数器归零（不修复已丢数据，仅清误报计数）
 2. **回填已丢数据**：手动调用 client admin API `POST /api/v1/admin/backfill/gap-fill`（`internal/client/admin.go:114`），指定时间范围和 symbol 从 Binance REST 回填
 3. **已实现（server）**：replay worker（30s drain + NATS 发布到 `binance.replay.requests`）+ AlertDispatcher NATS 发布（gap alert 到 `binance.alerts.runtime`）
-4. **已实现（client）**：`GapAlertSubscriber` 订阅 `binance.replay.requests`，自动触发 `QueueGapFill`（`runtime.go` RunStandalone goroutine）
-5. **待实现**：`LifecycleManager` 任务执行 worker — 当前 `QueueGapFill` 仅排队（`queued` 状态），需配合 `HistoryRuntime` 执行实际 REST 数据拉取
+4. **已实现（client 订阅）**：`GapAlertSubscriber` 订阅 `binance.replay.requests`，自动触发 `QueueGapFill`（`runtime.go` RunStandalone goroutine）
+5. **已实现（client 执行）**：lifecycle worker 30s drain queued tasks → `HistoryRuntime.RequestBackfill` → `HistoryFetcher.FetchHistorical` (REST) → 任务完成
 
 ---
 
