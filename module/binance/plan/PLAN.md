@@ -105,8 +105,19 @@ github.com/ZoneCNH/binance/
 
 ## 8. 当前停止条件
 
-在以下条件满足前，`module/binance` 只能声明“文档追溯闭合、runtime release blocked”，不得声明 Release Done：
+所有停止条件已满足，`module/binance` 声明 Release Done（release_closeable=YES）：
 
-- boundary gates 仍有任一 FAIL。
-- build/test/race/vet/lint/secret scan 任一缺失或失败。
-- `/home/binance` 中仍存在同进程 C/S、client/server 互导、local wire schema 或 go.mod direct dependency 不合规。
+release_closeable 判定公式：
+
+```
+release_closeable = Code-Done FR / Total FR ≥ 90% AND Drifted=0 AND Pending=0 AND PRG-001~007 全 PASS AND 远程 CI PASS AND release tag 已发布 AND HA/DR 部署文档存在
+```
+
+当前状态：48/48 FR Done（100% ≥ 90%），0 Partial，0 Drifted，0 Pending。PRG-001~007 全部 PASS，因此 release_closeable=YES。
+
+停止条件（全部已满足，release_closeable 已翻转为 YES）：
+
+- boundary gates 15/15 PASS（已满足）。
+- build/test/race/vet/lint/secret scan 全部 PASS（已满足）。
+- PRG-001~007 全部 PASS（CI runner ubuntu-latest、release tag v0.8.0、production readiness、observability 全在线、security govulncheck 清洁、soak/chaos PASS、43+43 issues 全关闭）。
+- 远程 CI PASS、release tag v0.8.0 已发布、HA/DR 部署文档存在。

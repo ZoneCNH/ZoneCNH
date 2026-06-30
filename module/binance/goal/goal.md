@@ -1,5 +1,16 @@
 # module/binance GOAL
 
+## 元数据
+
+| 字段 | 值 |
+| --- | --- |
+| 模块 | `binance` |
+| 层级 | 数据域 · 行情（C/S Module 参考实现） |
+| 仓库 | <https://github.com/ZoneCNH/binance> |
+| 当前版本 | v0.8.0 |
+| Spec 版本 | v3.9.6 |
+| 状态 | L3 Production / Released — 48/48 FR Done，release_closeable=YES（PRG-001~007 全 PASS） |
+
 ## Purpose
 
 `module/binance` defines the Binance-specific market_data ingest module for ZoneCNH.

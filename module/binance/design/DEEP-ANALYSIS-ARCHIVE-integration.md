@@ -1,6 +1,6 @@
 > [ARCHIVED 2026-06-22] 本文档是 DEEP-ANALYSIS.md 的拆分产物。原 §3：六模块集成详案（natsx / redisx / postgresx / taosx / kafkax / ossx），保留作历史参考。
 >
-> 活跃版本见 `module/binance/SPEC.md` 与 `module/binance/RUNTIME-MAPPING.md`。
+> 活跃版本见 `module/binance/spec/SPEC.md` 与 `module/binance/design/RUNTIME-MAPPING.md`。
 
 # module/binance 深度架构分析 — 集成篇
 

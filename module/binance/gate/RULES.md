@@ -186,28 +186,27 @@ bash scripts/check-binance-docs.sh   # 含 R6 全量版本统一校验
 
 | 文件 | 用途 |
 |---|---|
-| `SPEC.md` | 23 节模块规格 |
-| `TRACEABILITY.md` | FR/BR/NFR/TC/AC 追溯矩阵 |
-| `ACCEPTANCE.md` | 验收清单 |
-| `FEATURES.md` | 功能特性总览 |
-| `IMPLEMENTATION-PLAN.md` | 实现计划 |
-| `RUNTIME-MAPPING.md` | runtime 仓映射 |
-| `BOUNDARY-GATES.md` | CI gate 定义 |
-| `NAMING.md` | 命名 SSOT |
-| `RULES.md` | 治理规则（本文） |
-| `ARCHITECTURE-DRIFT-WATCHLIST.md` | 漂移监控点 |
+| `spec/SPEC.md` | 23 节模块规格 |
+| `matrix/TRACEABILITY.md` | FR/BR/NFR/TC/AC 追溯矩阵 |
+| `spec/ACCEPTANCE.md` | 验收清单 |
+| `spec/FEATURES.md` | 功能特性总览 |
+| `plan/PLAN.md` | 实现计划 |
+| `design/CONFIG-SCHEMA.md` | 配置 schema |
+| `gate/BOUNDARY-GATES.md` | CI gate 定义 |
+| `spec/NAMING.md` | 命名 SSOT |
+| `gate/RULES.md` | 治理规则（本文） |
+| `design/ARCHITECTURE-DRIFT-WATCHLIST.md` | 漂移监控点 |
 | `CHANGELOG.md` | 模块变更历史 |
-| `client/SPEC.md` + `client/TRACEABILITY.md` | 客户端子规格 |
-| `server/SPEC.md` + `server/TRACEABILITY.md` | 服务端子规格 |
-| `{client,server}/tasks/archive/README.md` | 归档映射 |
-| `STANDARD.md` | 模块标准入口（runtime control + evidence 薄层索引） |
+| `spec/client/SPEC.md` + `matrix/client/TRACEABILITY.md` | 客户端子规格 |
+| `spec/server/SPEC.md` + `matrix/server/TRACEABILITY.md` | 服务端子规格 |
+| `gate/STANDARD.md` | 模块标准入口（runtime control + evidence 薄层索引） |
 | `scripts/check-binance-docs.sh` | binance 文档漂移 CI gate（仓库脚本） |
 
 **检测**：
 ```bash
-for f in SPEC.md TRACEABILITY.md ACCEPTANCE.md FEATURES.md IMPLEMENTATION-PLAN.md \
-         RUNTIME-MAPPING.md BOUNDARY-GATES.md NAMING.md RULES.md \
-         ARCHITECTURE-DRIFT-WATCHLIST.md CHANGELOG.md; do
+for f in spec/SPEC.md matrix/TRACEABILITY.md spec/ACCEPTANCE.md spec/FEATURES.md \
+         plan/PLAN.md design/CONFIG-SCHEMA.md gate/BOUNDARY-GATES.md spec/NAMING.md gate/RULES.md \
+         design/ARCHITECTURE-DRIFT-WATCHLIST.md CHANGELOG.md; do
   [ -f "module/binance/$f" ] && echo "✓ $f" || echo "✗ $f MISSING"
 done
 test -x scripts/check-binance-docs.sh

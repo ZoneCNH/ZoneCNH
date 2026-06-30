@@ -10,13 +10,13 @@ Create all root-level documentation files that form the entry point for the bina
 
 ## Deliverables
 
-- `module/binance/goal.md`
+- `module/binance/goal/goal.md`
 - `module/binance/README.md`
-- `module/binance/SPEC.md`
-- `module/binance/TRACEABILITY.md`
-- `module/binance/BOUNDARY-GATES.md`
-- `module/binance/RUNTIME-MAPPING.md`
-- `module/binance/IMPLEMENTATION-PLAN.md`
+- `module/binance/spec/SPEC.md`
+- `module/binance/matrix/TRACEABILITY.md`
+- `module/binance/gate/BOUNDARY-GATES.md`
+- `module/binance/design/RUNTIME-MAPPING.md`
+- `module/binance/plan/PLAN.md`
 
 ## Acceptance Criteria
 

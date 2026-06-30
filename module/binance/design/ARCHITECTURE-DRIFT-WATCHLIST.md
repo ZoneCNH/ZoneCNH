@@ -43,7 +43,7 @@ grep -rnE "options/depth" module/binance/ --include="*.md"
 **检测命令**：
 ```bash
 # 根矩阵 Implemented 数量
-IMP=$(grep -cE "\| \*\*Implemented\*\*" module/binance/TRACEABILITY.md)
+IMP=$(grep -cE "\| \*\*Implemented\*\*" module/binance/matrix/TRACEABILITY.md)
 echo "矩阵声称 Implemented: $IMP"
 echo "警告：这些状态需经 runtime CI gate 核验"
 ```
@@ -73,7 +73,7 @@ bash scripts/check-binance-docs.sh   # 含 R6 全量版本统一 + 异名字段�
 **违反规则**：R3
 **检测命令**：
 ```bash
-LAST_BUMP=$(git log --oneline -10 -- module/binance/SPEC.md | head -1)
+LAST_BUMP=$(git log --oneline -10 -- module/binance/spec/SPEC.md | head -1)
 echo "最近 SPEC.md 变更: $LAST_BUMP"
 echo "此位置需人工确认 bump 级别是否正确"
 ```
@@ -100,11 +100,11 @@ grep -lE "^\> \[ARCHIVED" module/binance/ --include="*.md" -r | grep -v "DEEP-AN
 **检测命令**：
 ```bash
 echo "=== client/TRACEABILITY 引用 ==="
-grep -oP "v[0-9.]+" module/binance/client/TRACEABILITY.md | head -1
+grep -oP "v[0-9.]+" module/binance/matrix/client/TRACEABILITY.md | head -1
 echo "=== server/TRACEABILITY 引用 ==="
-grep -oP "v[0-9.]+" module/binance/server/TRACEABILITY.md | head -1
+grep -oP "v[0-9.]+" module/binance/matrix/server/TRACEABILITY.md | head -1
 echo "=== root SPEC ==="
-grep -oP "Spec-Version: \Kv[0-9.]+" module/binance/SPEC.md
+grep -oP "Spec-Version: \Kv[0-9.]+" module/binance/spec/SPEC.md
 ```
 
 ---
@@ -149,7 +149,7 @@ rg "2\s*\*\s*interval|2\s*\*\s*expected" /home/binance/internal/ -l --include='*
 ## D11. 状态模型回归（禁止代码/证据双状态）
 
 **风险级别**：HIGH
-**历史**：v3.8.0 及之前 FEATURES.md/ACCEPTANCE.md/TRACEABILITY.md 三份文档对同一 FR 的「Done」状态定义互相矛盾，导致无法从单一文档判断真实完成状态。v3.9.0 曾引入代码完成/证据完成分层；P10 D-1 已撤销该结论，当前只能使用单一 Done/Partial/Drifted/Pending 状态。当前 root 状态为 23 Done / 25 Partial / 0 Drifted / 0 Pending，release_closeable=NO。
+**历史**：v3.8.0 及之前 FEATURES.md/ACCEPTANCE.md/TRACEABILITY.md 三份文档对同一 FR 的「Done」状态定义互相矛盾，导致无法从单一文档判断真实完成状态。v3.9.0 曾引入代码完成/证据完成分层；P10 D-1 已撤销该结论，当前只能使用单一 Done/Partial/Drifted/Pending 状态。当前 root 状态为 48 Done / 0 Partial / 0 Drifted / 0 Pending，release_closeable=YES（PRG-001~007 全 PASS）。
 **违反规则**：R4
 **检测命令**：
 ```bash

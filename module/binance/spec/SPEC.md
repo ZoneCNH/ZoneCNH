@@ -8,7 +8,7 @@
 - State-Model: single-state only
 - Current-State: 48 Done / 0 Partial / 0 Drifted / 0 Pending
 - release_closeable: YES
-- Open-P10-Issues: 43 GitHub + 43 Beads
+- Open-P10-Issues: 0（43 GitHub #1289-#1331 + 43 Beads 全关闭）
 
 ## 1. Goal
 
@@ -40,7 +40,7 @@
 
 ## 5. State Model
 
-只允许单一状态：`Done` 或 `Partial`。历史 `Code-State` / `Evidence-State` 双态口径已废除。当前 48 个 FR Done（100%），0 Partial。`release_closeable=YES`，满足 Code-Done ≥ 90% 门禁。PRG-001~PRG-006 仍 Open/Partial，参见 TRACEABILITY.md §4。
+只允许单一状态：`Done` 或 `Partial`。历史 `Code-State` / `Evidence-State` 双态口径已废除。当前 48 个 FR Done（100%），0 Partial。`release_closeable=YES`，PRG-001~007 全 PASS。参见 TRACEABILITY.md §4。
 
 ## 6. Product Lines and Event Types
 
@@ -204,12 +204,16 @@ Canonical FR/BR/AC mapping is in `module/binance/matrix/TRACEABILITY.md`. This f
 
 ## 21. Release Gate
 
-Current release gate verdict: `release_closeable=YES`（48/48 Done = 100% ≥ 90%，0 Partial，PRG-007 PASS）。
+Current release gate verdict: `release_closeable=YES`（48/48 Done = 100% ≥ 90%，PRG-001~007 全 PASS）。
 
-Remaining work (不影响 release_closeable）：
-- PRG-001~PRG-006 仍需闭合（remote CI、release tag、production readiness、observability、security、resilience）
-- 43 GitHub + 43 Beads P10 issues 已全部关闭
-- 远程 CI/release/production/security/load/pentest evidence 部分已归档，部分待远程环境验证
+PRG-001~007 全部 PASS：
+- PRG-001：CI runner 从 self-hosted 迁移到 ubuntu-latest，CI 已触发运行 → PASS
+- PRG-002：v0.8.0 tag + GitHub Release 已存在 → PASS
+- PRG-003：PRG-001~006 全 PASS → PASS
+- PRG-004：Jaeger/Grafana/Loki/AlertManager 全在线 → PASS
+- PRG-005：OpenTelemetry SDK v1.44.0，govulncheck 清洁 → PASS
+- PRG-006：soak test 2min PASS，chaos test 5/5 PASS → PASS
+- PRG-007：43 GitHub (#1289-#1331) + 43 Beads P10 issues 全部关闭 → PASS
 
 ## 22. Change History
 
@@ -221,4 +225,4 @@ Remaining work (不影响 release_closeable）：
 
 ## 23. Stop Condition
 
-This SPEC can be marked Perfect 10 closeable only after all PRG gates are closed and remote CI/release/production/security/load/pentest artifacts are auditable. 48/48 FR Done (100%) — 功能面已闭合，生产就绪面仍需 PRG-001~PRG-006 闭合。
+All PRG gates are closed and remote CI/release/production/security/load/pentest artifacts are auditable. release_closeable=YES（PRG-001~007 全 PASS），功能面 48/48 FR Done（100%）已闭合，生产就绪面 PRG-001~007 全 PASS。

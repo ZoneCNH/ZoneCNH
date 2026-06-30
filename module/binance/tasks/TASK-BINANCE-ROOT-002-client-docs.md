@@ -10,10 +10,9 @@ The client is responsible for connecting to Binance exchange endpoints, parsing 
 
 ## Deliverables
 
-- `module/binance/client/README.md`
-- `module/binance/client/SPEC.md`
-- `module/binance/client/TRACEABILITY.md`
-- `module/binance/client/IMPLEMENTATION-PLAN.md`
+- `module/binance/spec/client/SPEC.md`
+- `module/binance/matrix/client/TRACEABILITY.md`
+- `module/binance/spec/client/IMPLEMENTATION-PLAN.md`
 - client task specs covering:
   - Product-line catalog
   - Instrument parser
