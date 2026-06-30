@@ -1,6 +1,6 @@
 # binance 二进制构建与部署
 
-- Runtime-Version: v0.8.0（anchor: `/home/binance@5f65211` — perf fix: worker pool + skip-kafka + TDengine pool）
+- Runtime-Version: v0.9.0（anchor: `/home/binance@0e8af74` — replay worker + alert NATS publishing + kafkax v1.1.2）
 - Target: jp1 (84.247.154.45)
 - Last-Updated: 2026-07-01
 
@@ -157,7 +157,7 @@ binance 模块本身是**纯 Go 二进制**，不内嵌任何中间件。以下 
 
 **OTel 端点**：binance 使用 **HTTP 协议** (`127.0.0.1:4318`)，不是 gRPC (`:4317`)。
 
-> ⚠️ **Kafka 当前已跳过**：`FOUNDATIONX_BINANCE_SKIP_KAFKA=1`（broker 不可达），dispatcher=nil，事件只写 TDengine 不进 Kafka 下游广播。详见 [§13.4](#134-kafka-producer-超时--skip-kafka)。
+> ⚠️ **Kafka 当前已跳过**：`FOUNDATIONX_BINANCE_SKIP_KAFKA=1`（broker 不可达），dispatcher=nil，事件只写 TDengine 不进 Kafka 下游广播。kafkax v1.1.2 已修复 producer 互斥锁串行化、HealthCheck broker 拨号、幂等配置等缺陷，broker 修复后可安全移除 skip。详见 [§13.4](#134-kafka-producer-超时--skip-kafka)。
 
 ### 最小可用集合
 
@@ -570,7 +570,7 @@ ssh claude@84.247.154.45 "chmod 600 /opt/binance/secrets/prod.env"
 | `FOUNDATIONX_KAFKAX_SASL_MECHANISM`           | SASL 机制（`PLAIN`，注：代码硬编码 PLAIN，此变量未被读取）               |
 | `FOUNDATIONX_KAFKAX_SASL_USERNAME`            | SASL 用户名                                                              |
 | `FOUNDATIONX_KAFKAX_SASL_PASSWORD`            | SASL 密码                                                                |
-| `FOUNDATIONX_BINANCE_SKIP_KAFKA`              | **`1`=跳过 Kafka dispatch**（当前生产值 `1`，broker 不可达时的临时绕过） |
+| `FOUNDATIONX_BINANCE_SKIP_KAFKA`              | **`1`=跳过 Kafka dispatch**（当前生产值 `1`，broker 不可达时的临时绕过；kafkax v1.1.2 已修复根因缺陷，broker 修复后应移除） |
 | `FOUNDATIONX_BINANCE_CONSUMER_WORKERS`        | NATS 消费 worker 数（默认 `16`）                                         |
 | `FOUNDATIONX_BINANCE_STALE_THRESHOLD_SECONDS` | stale 拒绝阈值（默认 `30`）                                              |
 | **ClickHouse**                                |                                                                          |
@@ -778,19 +778,21 @@ taosx [PR #21](https://github.com/ZoneCNH/taosx/pull/21)（tag v1.0.3）修复�
 **skip-kafka 是临时绕过，非真正修复**。skip 后 dispatcher=nil，事件只写 TDengine，不进入 Kafka 下游广播。重新启用条件：
 
 1. jp1 上启动 Kafka broker（`127.0.0.1:9092`，SASL PLAINTEXT/PLAIN）
-2. 移除 `FOUNDATIONX_BINANCE_SKIP_KAFKA=1` 环境变量
-3. commit 5f65211 的防御性修改（3s timeout、单次尝试、`StrictDispatchHandoff=false`）会保护系统在 broker 间歇性故障时不雪崩
+2. 移除 `FOUNDATIONX_BINANCE_SKIP_KAFKA=1` 环境变量（位于 `/opt/binance/secrets/prod.env`）
+3. kafkax v1.1.2 的防御性修改（producer 互斥锁拆分、3s timeout、单次尝试、`StrictDispatchHandoff=false`、HealthCheck broker 拨号、幂等配置强制 RequiredAcks=All）会保护系统在 broker 间歇性故障时不雪崩
 
-**未修复的代码缺陷**（重新启用前建议修复）：
+**已修复的代码缺陷**（kafkax v1.1.2 + binance PR #359/#361）：
 
-| 缺陷                                      | 位置                                              | 影响                    |
-| ----------------------------------------- | ------------------------------------------------- | ----------------------- |
-| producer 全局互斥锁串行化 `WriteMessages` | `kafkax/pkg/kafkax/kafkago/producer.go:66-70`     | 高吞吐下仍成瓶颈        |
-| `Idempotent: true` 被声明但完全忽略       | `dispatcher.go:112` + `kafkago/producer.go:19-38` | 误导性配置              |
-| HealthCheck 不真正连接 broker             | `kafkax/pkg/kafkax/health.go:130-138`             | broker 挂了仍报 healthy |
-| `SASL_MECHANISM` 环境变量未被代码读取     | `pkg/binancecfg/config.go:122-126`                | 无害但冗余              |
+| 缺陷                                      | 修复版本         | 修复内容                                                      |
+| ----------------------------------------- | ---------------- | ------------------------------------------------------------- |
+| producer 全局互斥锁串行化 `WriteMessages` | kafkax v1.1.2    | 拆分锁，`WriteMessages` 不持锁，仅 `p.last` 访问受互斥锁保护  |
+| `Idempotent: true` 被声明但完全忽略       | kafkax v1.1.2    | Idempotent 配置强制 `RequiredAcks=All`（kafka-go Writer 限制）|
+| HealthCheck 不真正连接 broker             | kafkax v1.1.2    | HealthCheck 拨号 broker TCP，空 broker 保持兼容              |
+| `SASL_MECHANISM` 环境变量未被代码读取     | kafkax v1.1.2 + binance #359 | Config 增加 `Mechanism` 字段，driver 读取并透传          |
+| AlertDispatcher NATS publisher 为 nil     | binance #361     | `lazyNATSPublisher` 延迟绑定 NATS client，alerts 发布到 NATS |
+| ReplayBridge 仅存储 job 无 worker         | binance #361     | 30s replay worker：Drain → 发布到 `binance.replay.requests` → MarkDone |
 
-### 13.5 gap_detected=38272 — gap repair 机制未接线
+### 13.5 gap_detected=38272 — gap repair 机制
 
 **症状**：`/admin/streams` 报告 `gap_detected=38272`（历史 gap，来自之前 purge/restart）。
 
@@ -800,28 +802,29 @@ taosx [PR #21](https://github.com/ZoneCNH/taosx/pull/21)（tag v1.0.3）修复�
 - purge/restart 后 `lastEventTime` / `lastSequence` map（`quality.go:18-19`）清空，重建 baseline 时业务序列号（trade_id 等）天然不连续，每条不连续触发 `gapDetected++`
 - **这不是 NATS JetStream 消费者层面的 sequence gap**——NATS durable consumer（`consumer.go:20-29`，durable=`binance-server`，AckExplicit，AckWait=30s，MaxDeliver=5）本身不丢数据
 
-**gap repair 机制现状**：
+**gap repair 机制现状**（binance #361 后更新）：
 
-| 层面                            | 状态                      | 证据                                                            |
-| ------------------------------- | ------------------------- | --------------------------------------------------------------- |
-| gap 检测                        | ✅ 完整                   | `quality.go:50-218`（sequence + event-time 双检测）             |
-| gap 计数/metrics                | ✅ 完整                   | `quality.go:70`, `metrics.go:221-224`, `admin.go:255`           |
-| AlertDispatcher                 | ⚠️ 接口存在，**生产 nil** | `alert_dispatcher.go:43-46`，`assemble.go` 未设                 |
-| ReplayBridge                    | ⚠️ 接口存在，**生产 nil** | `replay_bridge.go:25-27`，`assemble.go` 未设                    |
-| Replay job worker               | ❌ 无                     | `InMemoryReplayBridge` 仅存储 job，无 worker                    |
-| NATS 缺失消息请求               | ❌ 无代码                 | 无 `GetMsg`/`GetLastMsg` 调用                                   |
-| Server 侧 REST 回填             | ❌ 无代码                 | —                                                               |
-| Client 侧 gap-fill              | ⚠️ 有但手动触发           | `internal/client/lifecycle.go:218-256`，需调 admin API          |
-| Server↔Client 自动联动          | ❌ 无连接                 | server gap_detected 不触发 client gap-fill                      |
-| durable historical fetch/replay | ❌ NOT_IMPLEMENTED        | `release/evidence/binance/20260623/lifecycle-local-gates.log:8` |
+| 层面                            | 状态                          | 证据                                                            |
+| ------------------------------- | ----------------------------- | --------------------------------------------------------------- |
+| gap 检测                        | ✅ 完整                       | `quality.go:50-218`（sequence + event-time 双检测）             |
+| gap 计数/metrics                | ✅ 完整                       | `quality.go:70`, `metrics.go:221-224`, `admin.go:255`           |
+| AlertDispatcher                 | ✅ 已接线（NATS publisher）   | `assemble.go` — `lazyNATSPublisher` 延迟绑定 NATS client        |
+| ReplayBridge                    | ✅ 已接线                     | `assemble.go` — `InMemoryReplayBridge` 实例化并注入             |
+| Replay job worker               | ✅ 30s drain + NATS 发布      | `assemble.go` Run goroutine — Drain(64) → publish → MarkDone    |
+| NATS 缺失消息请求               | ✅ 发布到 `binance.replay.requests` | replay worker 将 ReplayJob 作为 natsx Envelope 发布       |
+| Server 侧 REST 回填             | ❌ 无代码（设计如此）         | server 不直接调 Binance REST，由 client 执行                    |
+| Client 侧 gap-fill              | ⚠️ 有但需手动触发             | `internal/client/lifecycle.go:218-256`，需调 admin API          |
+| Server↔Client 自动联动          | ⚠️ NATS 发布已就绪，client 订阅待实现 | server 发布 gap alert + replay request 到 NATS，client 尚未订阅 |
+| durable historical fetch/replay | ❌ NOT_IMPLEMENTED            | `release/evidence/binance/20260623/lifecycle-local-gates.log:8` |
 
-**结论：38272 gap 无法自动修复。** gap 检测是纯观测性的，不阻塞处理（`quality.go:63-80` 在 `observe()` 内，事件仍正常接受/持久化/ACK）。
+**结论：38272 gap 为历史遗留，不可自动修复。** gap 检测是纯观测性的，不阻塞处理（`quality.go:63-80` 在 `observe()` 内，事件仍正常接受/持久化/ACK）。replay worker 已实现 job drain + NATS 发布，但 client 侧自动订阅 `binance.replay.requests` 触发 `QueueGapFill` 尚未实现。
 
 **手动操作**：
 
 1. **止血**：重启 binance-server，`gapDetected` 计数器归零（不修复已丢数据，仅清误报计数）
 2. **回填已丢数据**：手动调用 client admin API `POST /api/v1/admin/backfill/gap-fill`（`internal/client/admin.go:114`），指定时间范围和 symbol 从 Binance REST 回填
-3. **长期**：在 `assemble.go` 接线 `AlertDispatcher` + `ReplayBridge`，实现 replay worker + server→client gap 自动联动
+3. **已实现**：replay worker（30s drain + NATS 发布到 `binance.replay.requests`）+ AlertDispatcher NATS 发布（gap alert 到 `binance.alerts.runtime`）
+4. **待实现**：client 侧订阅 `binance.replay.requests` / `binance.alerts.runtime`，自动触发 `QueueGapFill`
 
 ---
 
