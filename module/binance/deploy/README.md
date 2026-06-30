@@ -1,7 +1,7 @@
 # module/binance 部署文档
 
 - Spec-Version: v3.9.6
-- Runtime-Version: v0.8.0（anchor: `/home/binance@b2d9d83`）
+- Runtime-Version: v0.8.0（anchor: `/home/binance@871d3b8`）
 - Target: jp1 (84.247.154.45)
 - Last-Updated: 2026-06-30
 
@@ -9,52 +9,50 @@
 
 | 文档 | 用途 |
 |------|------|
-| [`DEPLOY.md`](DEPLOY.md) | 二进制构建、Docker 打包、部署流程、回滚、运维操作（单文件全流程） |
+| [`DEPLOY.md`](DEPLOY.md) | 二进制构建、部署流程、systemd 管理、回滚、运维操作（单文件全流程） |
 
 ## 部署架构速览
 
 ```text
-┌─ GitHub Actions CI/CD ─────────────────────────────────────┐
-│  sre/storage-light (CI)          sre/deploy (CD)            │
-│  build → test → lint → boundary  release → publish → smoke │
-│  → evidence → gate                                          │
+┌─ 开发机 (交叉编译) ─────────────────────────────────────────┐
+│  make build-linux-amd64                                     │
+│  → bin/binance-server-linux-amd64  (46M)                    │
+│  → bin/binance-client-linux-amd64  (17M)                    │
 └──────────────────────────┬──────────────────────────────────┘
-                           │ ghcr.io/zonecnh/binance:{tag}
+                           │ scp
                            ▼
 ┌─ jp1 (84.247.154.45) ──────────────────────────────────────┐
 │  /opt/binance/                                              │
-│  ├─ current/          ← docker-compose.yml symlink          │
-│  ├─ releases/{tag}/   ← 版本化部署目录                      │
-│  ├─ backups/          ← 回滚备份                            │
-│  └─ secrets/prod.env  ← 敏感凭据（gitignored）              │
+│  ├─ bin/               ← 二进制文件                          │
+│  │   ├─ binance-server                                     │
+│  │   └─ binance-client                                     │
+│  ├─ secrets/prod.env   ← 敏感凭据（chmod 600）              │
+│  └─ logs/              ← 日志文件                            │
 │                                                             │
 │  systemd:                                                    │
-│  ├─ binance-server.service  (Gin :8080, memory 4G)          │
-│  └─ binance-client.service  (memory 512M, after=server)     │
+│  ├─ binance-server.service  (GIN :8090, admin 127.0.0.1:8081, MemoryMax 4G)  │
+│  └─ binance-client.service  (admin 127.0.0.1:8082, MemoryMax 512M, after=server) │
 │                                                             │
-│  外部 infra（镜像外，host network 直连）:                    │
+│  外部 infra（host network 直连 127.0.0.1）:                  │
 │  ┌──────────┬──────────┬───────────┬──────────┬──────────┐ │
 │  │ NATS     │ Redis    │ PostgreSQL│ TDengine │ Kafka    │ │
 │  │ :4222    │ :6379    │ :5432     │ :6030    │ :9092    │ │
-│  ├──────────┼──────────┴───────────┴──────────┴──────────┤ │
-│  │ClickHouse│ OSS (Aliyun)                                │ │
-│  │ :9000    │ oss-cn-hangzhou.aliyuncs.com                │ │
-│  └──────────┴─────────────────────────────────────────────┘ │
+│  ├──────────┼──────────┼───────────┼──────────┼──────────┤ │
+│  │ClickHouse│ CH-Keeper│ Jaeger    │ Grafana  │ OTel     │ │
+│  │ :9000    │ :9181    │ :16686    │ :3000    │ :4318    │ │
+│  └──────────┴──────────┴───────────┴──────────┴──────────┘ │
 └─────────────────────────────────────────────────────────────┘
 ```
 
 ## 关键制品归属
 
-| 制品 | 位置（运行时仓） | 说明 |
-|------|-----------------|------|
-| Dockerfile（合并构建） | `/home/binance/Dockerfile` | 多阶段构建，distroless 运行时 |
-| Dockerfile.client | `/home/binance/Dockerfile.client` | client 独立镜像 |
-| Dockerfile.server | `/home/binance/Dockerfile.server` | server 独立镜像 |
-| docker-compose | `/home/binance/deploy/docker-compose.prod.yml` | 生产编排 |
-| systemd units | `/home/binance/deploy/binance-{client,server}.service` | 进程管理 |
-| deploy.sh | `/home/binance/deploy/deploy.sh` | 一键部署脚本 |
-| health-check.sh | `/home/binance/deploy/health-check.sh` | 部署后验证 |
+| 制品 | 位置 | 说明 |
+|------|------|------|
+| Makefile | `/home/binance/Makefile` | 含 `build-linux-amd64` / `build-linux-arm64` 交叉编译目标 |
+| systemd units | `/etc/systemd/system/binance-{server,client}.service` | jp1 上 systemd 进程管理 |
 | secrets 模板 | `/home/binance/deploy/prod.env.example` | 凭据注入模板 |
+| Dockerfile（可选） | `/home/binance/Dockerfile` | 多阶段构建，distroless 运行时（可选方案） |
+| docker-compose（可选） | `/home/binance/deploy/docker-compose.prod.yml` | Docker 编排（可选方案） |
 | alertmanager | `/home/binance/deploy/alertmanager/config.yml` | 告警路由 |
 | CI/CD 模板 | [`../ci-workflow.yaml`](../ci-workflow.yaml) | GitHub Actions 工作流 |
 | 数据销毁 | `/home/binance/scripts/destruction-drill.sh` | 数据不可逆销毁演练 |
