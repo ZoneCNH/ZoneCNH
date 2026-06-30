@@ -12,6 +12,7 @@
 ## 审查目标
 
 对 `module/binance` 模块执行端到端深度审查，覆盖 11 个治理维度 + 管线 8 阶段，产出：
+
 1. **评分矩阵**（11 维度 × 满分 100，含加权综合分）
 2. **红线清单**（违反硬约束的 CRITICAL 问题）
 3. **修复优先级排序**（P0 阻塞发布 / P1 影响治理 / P2 优化建议）
@@ -53,6 +54,7 @@ find module/binance/ -type f -name "*.md" | sort | wc -l
 ### 0.3 历史审查报告加载
 
 如果 `report/binance/` 下存在历史审查报告，必须阅读并标注：
+
 - 上次审查的 CRITICAL 问题是否已修复
 - 上次评分是否上升/下降
 - 新发现的增量问题
@@ -67,39 +69,41 @@ find module/binance/ -type f -name "*.md" | sort | wc -l
 
 逐节核验下列 23 节是否存在、内容是否非空：
 
-| 节号 | 节名 | 检查要点 |
-|------|------|---------|
-| §1 | Goal | 模块目标是否明确、可测量 |
-| §2 | Authority | 权威来源声明是否完整（CONSTITUTION/SPEC/Matrix/Evidence） |
-| §3 | Scope | 边界是否清楚（包含什么、不包含什么） |
-| §4 | Runtime Boundary | Client/Server/Wire/Config 四子系统职责与禁止项 |
-| §5 | State Model | 状态模型定义是否单一且无歧义 |
-| §6 | Product Lines and Event Types | 产品线 × event_type 矩阵是否完整 |
-| §7 | Functional Requirements | FR 表：ID / Scope / Requirement / State / Closure evidence |
-| §8 | Business Rules | BR 表：ID / Rule / Verification |
-| §9 | Non-Functional Requirements | NFR 表含性能/SLA/安全/合规 |
-| §10 | Data Model | DTO/Wire/Envelope 定义是否完整 |
-| §11 | API Specification | REST/gRPC/NATS subject 定义 |
-| §12 | Configuration | 配置项/环境变量/schema |
-| §13 | Error Model | 错误码/错误分类/恢复策略 |
-| §14 | Observability | metrics/logs/traces 三件套定义 |
-| §15 | Security | 认证/授权/加密/凭证管理 |
-| §16 | Deployment | 部署拓扑/HA/DR/资源需求 |
-| §17 | Testing Strategy | 测试分层/覆盖率目标/关键测试场景 |
-| §18 | Migration | 架构迁移路径/向后兼容策略 |
-| §19 | Dependencies | 外部依赖清单/版本约束 |
-| §20 | Appendix A-E | 附录内容完整性 |
-| §21 | Changelog | 版本变更记录 |
-| §22 | Release DoD | Definition of Done 清单 |
-| §23 | References | 交叉引用文档列表 |
+| 节号 | 节名                          | 检查要点                                                   |
+| ---- | ----------------------------- | ---------------------------------------------------------- |
+| §1   | Goal                          | 模块目标是否明确、可测量                                   |
+| §2   | Authority                     | 权威来源声明是否完整（CONSTITUTION/SPEC/Matrix/Evidence）  |
+| §3   | Scope                         | 边界是否清楚（包含什么、不包含什么）                       |
+| §4   | Runtime Boundary              | Client/Server/Wire/Config 四子系统职责与禁止项             |
+| §5   | State Model                   | 状态模型定义是否单一且无歧义                               |
+| §6   | Product Lines and Event Types | 产品线 × event_type 矩阵是否完整                           |
+| §7   | Functional Requirements       | FR 表：ID / Scope / Requirement / State / Closure evidence |
+| §8   | Business Rules                | BR 表：ID / Rule / Verification                            |
+| §9   | Non-Functional Requirements   | NFR 表含性能/SLA/安全/合规                                 |
+| §10  | Data Model                    | DTO/Wire/Envelope 定义是否完整                             |
+| §11  | API Specification             | REST/gRPC/NATS subject 定义                                |
+| §12  | Configuration                 | 配置项/环境变量/schema                                     |
+| §13  | Error Model                   | 错误码/错误分类/恢复策略                                   |
+| §14  | Observability                 | metrics/logs/traces 三件套定义                             |
+| §15  | Security                      | 认证/授权/加密/凭证管理                                    |
+| §16  | Deployment                    | 部署拓扑/HA/DR/资源需求                                    |
+| §17  | Testing Strategy              | 测试分层/覆盖率目标/关键测试场景                           |
+| §18  | Migration                     | 架构迁移路径/向后兼容策略                                  |
+| §19  | Dependencies                  | 外部依赖清单/版本约束                                      |
+| §20  | Appendix A-E                  | 附录内容完整性                                             |
+| §21  | Changelog                     | 版本变更记录                                               |
+| §22  | Release DoD                   | Definition of Done 清单                                    |
+| §23  | References                    | 交叉引用文档列表                                           |
 
 **产出**：
+
 - 23 节完整性表（✅/⚠️/❌）
 - 每节的详细问题描述（如有）
 
 ### 1.2 子模块 SPEC 检查
 
 检查 `module/binance/spec/client/SPEC.md` 和 `module/binance/spec/server/SPEC.md`：
+
 - 版本号是否与 root SPEC 一致
 - FR 编号是否与 root SPEC 对齐
 - 是否有独立声明的状态与 root SPEC 矛盾
@@ -124,6 +128,7 @@ grep -oP 'Spec-Version:\s*v[\d.]+' module/binance/spec/server/SPEC.md
 ### 1.4 NAMING.md 合规
 
 检查 `module/binance/spec/NAMING.md`：
+
 - product_line 命名是否统一使用 `spot` / `um_perp` / `cm_perp` / `options`
 - 是否残留旧命名 (`usdm_futures` / `coinm_futures` / `futures_usdt` / `futures_coin`)
 
@@ -152,15 +157,15 @@ wc -l module/binance/matrix/TRACEABILITY.md
 
 核验以下 7 节全部存在且内容非空：
 
-| 节号 | 内容 | 检查要点 |
-|------|------|---------|
-| §1 | Rule | 矩阵规则声明 |
-| §2 | FR Matrix | FR → BR → AC → TC/Evidence → State 映射 |
-| §3 | Acceptance Criteria | AC 编号 + Requirement + State |
-| §4 | Production Readiness Gates | PRG-001~007 定义与状态 |
-| §5 | TC→FR Reverse Trace | 测试用例 → FR 反向追溯 |
-| §6 | Coverage Dashboard | FR/BR/NFR/AC/TC 总数/Done/覆盖率（自动统计） |
-| §7 | Change History | 变更记录 |
+| 节号 | 内容                       | 检查要点                                     |
+| ---- | -------------------------- | -------------------------------------------- |
+| §1   | Rule                       | 矩阵规则声明                                 |
+| §2   | FR Matrix                  | FR → BR → AC → TC/Evidence → State 映射      |
+| §3   | Acceptance Criteria        | AC 编号 + Requirement + State                |
+| §4   | Production Readiness Gates | PRG-001~007 定义与状态                       |
+| §5   | TC→FR Reverse Trace        | 测试用例 → FR 反向追溯                       |
+| §6   | Coverage Dashboard         | FR/BR/NFR/AC/TC 总数/Done/覆盖率（自动统计） |
+| §7   | Change History             | 变更记录                                     |
 
 ### 2.2 追溯链闭合验证（R1 跨表走查）
 
@@ -222,6 +227,7 @@ print(f'Total FR: {done+partial+drifted+pending}')
 ### 3.2 ADR 审查
 
 检查 `module/binance/design/ADR-*.md`：
+
 - ADR-002 (wire boundary): wire 层的 contract 是否严格执行
 - ADR-003 (order book rebuild exclusion): 决策是否在 runtime 中生效
 - ADR-004 (FR-024 vs FR-036 architecture): 设计决策是否有代码锚点
@@ -349,37 +355,37 @@ bash -n scripts/boundary-gates.sh && ./scripts/boundary-gates.sh
 
 按 `matrix/TRACEABILITY.md §4`（权威来源），逐项核验 PRG-001~007：
 
-| Gate | 检查内容 | 验证命令 |
-|------|---------|---------|
-| PRG-001 | CI runner 为 ubuntu-latest（非 self-hosted） | 检查 CI workflow 文件 |
-| PRG-002 | Release tag + GitHub Release 存在 | `cd /home/binance && git tag -l 'v*'` `gh release view v0.8.0` |
-| PRG-003 | PRG 7/7 全 PASS | 逐项确认 PRG-001~007 |
-| PRG-004 | Observability 全在线 | 确认 Jaeger/Grafana/Loki/AlertManager 可访问 |
-| PRG-005 | Security 扫描清洁 | gitleaks + govulncheck PASS |
-| PRG-006 | soak/chaos/canary 测试 PASS | 检查 evidence/ 目录下的 soak/chaos 证据 |
-| PRG-007 | GitHub + Beads issue 全关闭 | 检查 #1289-#1331 是否全部 closed |
+| Gate    | 检查内容                                     | 验证命令                                                       |
+| ------- | -------------------------------------------- | -------------------------------------------------------------- |
+| PRG-001 | CI runner 为 ubuntu-latest（非 self-hosted） | 检查 CI workflow 文件                                          |
+| PRG-002 | Release tag + GitHub Release 存在            | `cd /home/binance && git tag -l 'v*'` `gh release view v0.8.0` |
+| PRG-003 | PRG 7/7 全 PASS                              | 逐项确认 PRG-001~007                                           |
+| PRG-004 | Observability 全在线                         | 确认 Jaeger/Grafana/Loki/AlertManager 可访问                   |
+| PRG-005 | Security 扫描清洁                            | gitleaks + govulncheck PASS                                    |
+| PRG-006 | soak/chaos/canary 测试 PASS                  | 检查 evidence/ 目录下的 soak/chaos 证据                        |
+| PRG-007 | GitHub + Beads issue 全关闭                  | 检查 #1289-#1331 是否全部 closed                               |
 
 ### 7.2 多源交叉验证 release_closeable
 
 在以下至少 5 处检查 `release_closeable` 状态：
 
-| 位置 | 预期状态 |
-|------|---------|
-| `spec/SPEC.md` header | release_closeable: YES |
-| `matrix/TRACEABILITY.md` header | release_closeable: YES |
-| `README.md` Delivery-State | release_closeable=YES |
-| `ACCEPTANCE.md` Module-State | release_closeable=YES |
-| `todo.md` | release_closeable=YES |
-| `goal/goal.md` 状态 | L3 Production / Released |
+| 位置                            | 预期状态                 |
+| ------------------------------- | ------------------------ |
+| `spec/SPEC.md` header           | release_closeable: YES   |
+| `matrix/TRACEABILITY.md` header | release_closeable: YES   |
+| `README.md` Delivery-State      | release_closeable=YES    |
+| `ACCEPTANCE.md` Module-State    | release_closeable=YES    |
+| `todo.md`                       | release_closeable=YES    |
+| `goal/goal.md` 状态             | L3 Production / Released |
 
 如果任意两处不一致 → CRITICAL（状态分裂）
 
 ### 7.3 治理等级判定
 
-| 等级 | 条件 |
-|------|------|
-| L1 Prototype | goal + SPEC 骨架 + 边界声明 + 命名 |
-| L2 Active | L1 + matrix + boundary gates + plan/tasks + runtime 编译与本地测试 |
+| 等级          | 条件                                                                           |
+| ------------- | ------------------------------------------------------------------------------ |
+| L1 Prototype  | goal + SPEC 骨架 + 边界声明 + 命名                                             |
+| L2 Active     | L1 + matrix + boundary gates + plan/tasks + runtime 编译与本地测试             |
 | L3 Production | L2 + PRG 全 PASS + live_integration ≥ 15 + 外部 E2E/soak/release/rollback 证据 |
 
 ---
@@ -388,20 +394,20 @@ bash -n scripts/boundary-gates.sh && ./scripts/boundary-gates.sh
 
 ### 8.1 核心文档版本一致性
 
-| 文档 | Spec-Version / Module-Version | last-updated |
-|------|------------------------------|-------------|
-| `spec/SPEC.md` | | |
-| `spec/ACCEPTANCE.md` | | |
-| `spec/FEATURES.md` | | |
-| `matrix/TRACEABILITY.md` | | |
-| `spec/client/SPEC.md` | | |
-| `spec/server/SPEC.md` | | |
-| `matrix/client/TRACEABILITY.md` | | |
-| `matrix/server/TRACEABILITY.md` | | |
-| `README.md` | | |
-| `goal/goal.md` | | |
-| `gate/BOUNDARY-GATES.md` | | |
-| `design/DESIGN.md` | | |
+| 文档                            | Spec-Version / Module-Version | last-updated |
+| ------------------------------- | ----------------------------- | ------------ |
+| `spec/SPEC.md`                  |                               |              |
+| `spec/ACCEPTANCE.md`            |                               |              |
+| `spec/FEATURES.md`              |                               |              |
+| `matrix/TRACEABILITY.md`        |                               |              |
+| `spec/client/SPEC.md`           |                               |              |
+| `spec/server/SPEC.md`           |                               |              |
+| `matrix/client/TRACEABILITY.md` |                               |              |
+| `matrix/server/TRACEABILITY.md` |                               |              |
+| `README.md`                     |                               |              |
+| `goal/goal.md`                  |                               |              |
+| `gate/BOUNDARY-GATES.md`        |                               |              |
+| `design/DESIGN.md`              |                               |              |
 
 ### 8.2 跨文档 FR 总数一致性
 
@@ -420,6 +426,7 @@ grep -oPh 'github\.com/ZoneCNH/[a-zA-Z0-9_.-]+' module/binance/ --include="*.md"
 ### 8.4 文档同步检查表
 
 交叉验证 README.md / ARCHITECTURE.md / STATUS.md 中 binance 模块的：
+
 - 组件数量
 - 版本号
 - 状态描述
@@ -436,6 +443,7 @@ find module/binance/evidence/ -type f | sort
 ```
 
 按日期目录检查：
+
 - `2026-06-26/`: release / retrospective / review / test
 - `2026-06-27/`: review / test (3 workers)
 - `2026-06-28/`: review / release / p10-alignment
@@ -443,15 +451,15 @@ find module/binance/evidence/ -type f | sort
 
 ### 9.2 每条 PRG 的 Evidence 闭环
 
-| PRG | Evidence 文件 | 证据充分性 |
-|-----|--------------|-----------|
-| PRG-001 | `evidence/2026-06-30/release/prg-001-ci-runner.md` | |
-| PRG-002 | `evidence/2026-06-30/release/prg-002-release-tag.md` | |
-| PRG-003 | `evidence/2026-06-30/release/prg-003-production-readiness.md` | |
-| PRG-004 | `evidence/2026-06-30/release/prg-004-observability.md` | |
-| PRG-005 | `evidence/2026-06-30/release/prg-005-security.md` | |
-| PRG-006 | `evidence/2026-06-30/release/prg-006-resilience.md` | |
-| PRG-007 | `evidence/2026-06-30/release/prg-007-issue-sync.md` | |
+| PRG     | Evidence 文件                                                 | 证据充分性 |
+| ------- | ------------------------------------------------------------- | ---------- |
+| PRG-001 | `evidence/2026-06-30/release/prg-001-ci-runner.md`            |            |
+| PRG-002 | `evidence/2026-06-30/release/prg-002-release-tag.md`          |            |
+| PRG-003 | `evidence/2026-06-30/release/prg-003-production-readiness.md` |            |
+| PRG-004 | `evidence/2026-06-30/release/prg-004-observability.md`        |            |
+| PRG-005 | `evidence/2026-06-30/release/prg-005-security.md`             |            |
+| PRG-006 | `evidence/2026-06-30/release/prg-006-resilience.md`           |            |
+| PRG-007 | `evidence/2026-06-30/release/prg-007-issue-sync.md`           |            |
 
 ---
 
@@ -460,6 +468,7 @@ find module/binance/evidence/ -type f | sort
 ### 10.1 CONSTITUTION.md 对齐
 
 按 CONSTITUTION.md §0-§20 逐条核验：
+
 - §0 分支纪律：当前 branch 是否从 main HEAD 创建
 - §4 规格标准：23 节结构完整
 - §10 变更管理：版本号递增合规
@@ -470,20 +479,20 @@ find module/binance/evidence/ -type f | sort
 
 按 FoundationX Pipeline（Goal→Spec→Plan→Matrix→Tasks→Prompt→Code→Evidence）逐阶段评分：
 
-| 阶段 | 产物 | 状态 | 得分 |
-|------|------|------|------|
-| S0-Goal | `goal/goal.md` | | |
-| S1-Spec | `spec/SPEC.md` 23 节 | | |
-| S2-Matrix | `matrix/TRACEABILITY.md` §1-§7 | | |
-| S3-Design | `design/DESIGN.md` | | |
-| S4-Tasks | `tasks/*.md` | | |
-| S5-Plan | `plan/PLAN.md` | | |
-| S6-Prompt | `prompt/*.md` | | |
-| S7-Code | Runtime 代码 | | |
-| S8-Test | 测试覆盖率 | | |
-| S9-Review | Evidence 归档 | | |
-| S10-Release | PRG 全 PASS | | |
-| S11-Retrospective | `evidence/*/retrospective/` | | |
+| 阶段              | 产物                           | 状态 | 得分 |
+| ----------------- | ------------------------------ | ---- | ---- |
+| S0-Goal           | `goal/goal.md`                 |      |      |
+| S1-Spec           | `spec/SPEC.md` 23 节           |      |      |
+| S2-Matrix         | `matrix/TRACEABILITY.md` §1-§7 |      |      |
+| S3-Design         | `design/DESIGN.md`             |      |      |
+| S4-Tasks          | `tasks/*.md`                   |      |      |
+| S5-Plan           | `plan/PLAN.md`                 |      |      |
+| S6-Prompt         | `prompt/*.md`                  |      |      |
+| S7-Code           | Runtime 代码                   |      |      |
+| S8-Test           | 测试覆盖率                     |      |      |
+| S9-Review         | Evidence 归档                  |      |      |
+| S10-Release       | PRG 全 PASS                    |      |      |
+| S11-Retrospective | `evidence/*/retrospective/`    |      |      |
 
 composite = min(S0...S11)，门禁为 98 分。
 
@@ -495,20 +504,20 @@ composite = min(S0...S11)，门禁为 98 分。
 
 对下列 11 个维度按 0-100 评分，输出得分 + 等级 + 扣分原因：
 
-| 维度 | 满分 | 扣分项 | 得分 |
-|------|------|--------|------|
-| A. Spec 结构完整性 | 100 | | |
-| B. 追溯矩阵闭合 | 100 | | |
-| C. Design 架构质量 | 100 | | |
-| D. Runtime 代码质量 | 100 | | |
-| E. Client/Server 边界 | 100 | | |
-| F. 测试与验证 | 100 | | |
-| G. CI/CD 管线 | 100 | | |
-| H. 安全与合规 | 100 | | |
-| I. 可观测性 | 100 | | |
-| J. 生产就绪 (L3) | 100 | | |
-| K. 文档一致性 | 100 | | |
-| **加权综合** | 100 | | |
+| 维度                  | 满分 | 扣分项 | 得分 |
+| --------------------- | ---- | ------ | ---- |
+| A. Spec 结构完整性    | 100  |        |      |
+| B. 追溯矩阵闭合       | 100  |        |      |
+| C. Design 架构质量    | 100  |        |      |
+| D. Runtime 代码质量   | 100  |        |      |
+| E. Client/Server 边界 | 100  |        |      |
+| F. 测试与验证         | 100  |        |      |
+| G. CI/CD 管线         | 100  |        |      |
+| H. 安全与合规         | 100  |        |      |
+| I. 可观测性           | 100  |        |      |
+| J. 生产就绪 (L3)      | 100  |        |      |
+| K. 文档一致性         | 100  |        |      |
+| **加权综合**          | 100  |        |      |
 
 ### 11.2 评分纪律
 
@@ -523,16 +532,17 @@ composite = min(S0...S11)，门禁为 98 分。
 
 ### 12.1 按严重度分类
 
-| 严重度 | 数量 | 描述 |
-|--------|------|------|
-| 🔴 CRITICAL | | 阻碍发布或安全漏洞 |
-| 🟠 HIGH | | 影响治理可信度 |
-| 🟡 MEDIUM | | 建议修复 |
-| 🟢 LOW | | 优化建议 |
+| 严重度      | 数量 | 描述               |
+| ----------- | ---- | ------------------ |
+| 🔴 CRITICAL |      | 阻碍发布或安全漏洞 |
+| 🟠 HIGH     |      | 影响治理可信度     |
+| 🟡 MEDIUM   |      | 建议修复           |
+| 🟢 LOW      |      | 优化建议           |
 
 ### 12.2 CRITICAL 问题详情
 
 对每个 CRITICAL 问题，记录：
+
 - 位置（文件 + 行号）
 - 严重性评估
 - 影响范围
@@ -541,13 +551,13 @@ composite = min(S0...S11)，门禁为 98 分。
 
 ### 12.3 对比上轮审查
 
-| 指标 | 上轮 | 本轮 | Δ |
-|------|------|------|---|
-| 综合得分 | | | |
-| CRITICAL 数量 | | | |
-| PRG 通过数 | | | |
-| release_closeable | | | |
-| 治理等级 | | | |
+| 指标              | 上轮 | 本轮 | Δ   |
+| ----------------- | ---- | ---- | --- |
+| 综合得分          |      |      |     |
+| CRITICAL 数量     |      |      |     |
+| PRG 通过数        |      |      |     |
+| release_closeable |      |      |     |
+| 治理等级          |      |      |     |
 
 ---
 
@@ -562,11 +572,12 @@ composite = min(S0...S11)，门禁为 98 分。
 ### 13.2 阻塞清单
 
 | 阻塞项 | 严重度 | 预计修复时间 | 阻塞什么 |
-|--------|--------|-------------|---------|
+| ------ | ------ | ------------ | -------- |
 
 ### 13.3 修复路线图
 
 建议按 Phase 组织修复：
+
 - Phase 1: 文档一致性（状态分裂修复）
 - Phase 2: 追溯矩阵闭合
 - Phase 3: PRG 门禁闭合
@@ -591,26 +602,42 @@ report/binance/REVIEW-{YYYYMMDD}.md
 > 审查日期 / 审查范围 / 审查方法 / 基线信息
 
 ## 执行摘要
+
 ## 基线确认
+
 ## 1. Spec Hub 审查
+
 ## 2. 追溯矩阵审查
+
 ## 3. 架构与设计审查
+
 ## 4. 实现计划与任务审查
+
 ## 5. Prompt 审查
+
 ## 6. 代码质量审查（Runtime）
+
 ## 7. 发布就绪审查
+
 ## 8. 文档一致性审查
+
 ## 9. 证据体系审查
+
 ## 10. 治理合规审查
+
 ## 11. 评分
+
 ## 12. 问题汇总
+
 ## 13. 发布建议
+
 ## 附录: 对比上轮审查
 ```
 
 ### 证据要求
 
 所有判定必须附带：
+
 - 证据标签: `[KNOWN]` / `[COMPUTED]` / `[INFERRED]` / `[COMMON]` / `[FRAME]` / `[GUESS]`
 - 置信度: `HIGH` / `MED` / `LOW` / `VERY LOW` / `UNKNOWN`
 - `[FRAME]` 和 `[GUESS]` 置信度上限为 `LOW`
@@ -627,21 +654,22 @@ report/binance/REVIEW-{YYYYMMDD}.md
 
 本 Prompt 设计为可由 AI agent 或其他审查者按顺序执行。预期执行时间：
 
-| 阶段 | 预计时间 |
-|------|---------|
-| Part 0-1 (Spec Hub) | ~30 min |
-| Part 2 (Traceability) | ~45 min |
-| Part 3-5 (Design/Plan/Prompt) | ~30 min |
-| Part 6 (Code Quality) | ~60 min |
-| Part 7-8 (Release/Docs) | ~45 min |
-| Part 9-13 (Evidence/Governance/Scoring) | ~60 min |
-| **总计** | **~4.5 hours** |
+| 阶段                                    | 预计时间       |
+| --------------------------------------- | -------------- |
+| Part 0-1 (Spec Hub)                     | ~30 min        |
+| Part 2 (Traceability)                   | ~45 min        |
+| Part 3-5 (Design/Plan/Prompt)           | ~30 min        |
+| Part 6 (Code Quality)                   | ~60 min        |
+| Part 7-8 (Release/Docs)                 | ~45 min        |
+| Part 9-13 (Evidence/Governance/Scoring) | ~60 min        |
+| **总计**                                | **~4.5 hours** |
 
 如果 Runtime 仓不可访问，Part 6 和部分 Part 7 标记为 `[FRAME, LOW] Runtime not accessible`。
 
 ---
 
 **审查原则**：
+
 1. 消除信息差：验证前确认基线，禁止凭记忆假设
 2. 发现问题即修复：发现系统性问题直接标注，不先分类再等指令
 3. 跨表走查：不限于单表，遍历 TRACEABILITY.md §1-§5

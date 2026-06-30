@@ -1,11 +1,11 @@
 # Binance Traceability Matrix
 
-- Matrix-Version: v3.9.6
-- Last-Updated: 2026-06-29
+- [KNOWN] Matrix-Version: v3.9.6
+- [KNOWN] Last-Updated: 2026-06-29
 - Source-SPEC: `module/binance/spec/SPEC.md` v3.9.6
 - State-Model: single-state only
-- Current-State: 48 Done / 0 Partial / 0 Drifted / 0 Pending
-- release_closeable: YES
+- [KNOWN] Current-State: 48 Done / 0 Partial / 0 Drifted / 0 Pending
+- [KNOWN] release_closeable: YES
 
 ## 1. Rule
 
@@ -17,7 +17,7 @@ This matrix is the compact FR/BR/AC/TC projection. It intentionally does not dup
 | --- | --- | --- | --- | --- |
 | FR-001 | BR-001 | AC-001 | client ingestion tests/e2e history | Done |
 | FR-002 | BR-001 | AC-001 | bar ingestion tests/e2e history | Done |
-| FR-003 | BR-003 | AC-002, AC-003 | subject drift check | Done |
+| FR-003 | BR-003 | AC-002, AC-003 | subject drift check 22/22 PASS + .v1 fix `4f740e5` | Done |
 | FR-004 | BR-002 | AC-001 | server consumer boundary | Done |
 | FR-005 | BR-001 | AC-001 | ClickHouse persistence tests/history | Done |
 | FR-006a | BR-002 | AC-001 | client CLI/config example | Done |

@@ -62,6 +62,8 @@ Binance Exchange (WS/REST)
 | ADR | Decision | Status |
 |-----|----------|--------|
 | ADR-002 | Wire boundary: natsx subject + domain_market envelope JSON; no local proto/gRPC ingest schema | Accepted |
+| ADR-003 | Order book rebuild exclusion | Accepted |
+| ADR-004 | FR-024 vs FR-036 architecture decision | Accepted |
 
 ## 6. Risks
 

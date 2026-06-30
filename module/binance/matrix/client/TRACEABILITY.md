@@ -4,7 +4,7 @@
 > 数据来源：`module/binance/spec/client/SPEC.md` v3.9.0（FR/BR 使用 root canonical 编号）。
 > **SC 编号说明**：本文件的 SC-001~SC-015 为子模块本地场景 ID（Scenario），不与 root TRACEABILITY 的 canonical TC-001~TC-083 冲突。正式 TC 编号以 `module/binance/matrix/TRACEABILITY.md` §4 为准。
 
-- Module-Version: v3.9.0（FR/BR 编号统一为 root canonical；与 root SPEC v3.9.0 一致）
+- Module-Version: v3.9.6（FR/BR 编号统一为 root canonical；与 root SPEC v3.9.6 一致）
 - Last-Updated: 2026-06-30（L3 Production 准入：全局 single state 为 48 Done / 0 Partial / 0 Drifted / 0 Pending，release_closeable=YES）
 - Spec-Reference: `module/binance/spec/client/SPEC.md` v3.9.0
 

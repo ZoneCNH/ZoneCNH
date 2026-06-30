@@ -1,6 +1,6 @@
 # module/binance ARCHITECTURE-DRIFT-WATCHLIST.md — 漂移监控点
 
-- Module-Version: v3.9.0
+- Module-Version: v3.9.6
 - Last-Updated: 2026-06-26
 - 用途：列举 `module/binance/` 最易漂移的位置（违反 NAMING/RULES 的高发区），供 PR review / GC agent 逐项检查
 

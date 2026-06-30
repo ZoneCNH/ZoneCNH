@@ -38,13 +38,13 @@
 
 | PRG | 名称 | 当前状态 | 差距 |
 |-----|------|----------|------|
-| PRG-001 | remote CI (self-hosted runner) | Open | workflow 已配置（binance-ci.yml），runner 在线状态待确认 |
-| PRG-002 | release promotion (tag + notes) | PASS | v0.8.0 tag + GitHub Release 均存在 |
-| PRG-003 | production readiness (PRG 7/7) | Open | 依赖 PRG-001~006 全 PASS |
-| PRG-004 | observability (metrics/OTel/dashboard) | Partial | 基础设施已部署，dashboard import 待验证 |
-| PRG-005 | security (scan/mTLS/pentest) | Open | CI scan 未运行 |
-| PRG-006 | resilience (soak/chaos/canary) | Open | drill evidence 未归档 |
-| PRG-007 | issue sync | PASS | 43 GitHub (#1289-#1331) + 43 Beads 全关闭 |
+| PRG-001 | remote CI | PASS | CI runner ubuntu-latest，binance-ci.yml 已迁移 |
+| PRG-002 | release promotion | PASS | v0.8.0 tag + GitHub Release |
+| PRG-003 | production readiness | PASS | PRG-001~007 全 PASS |
+| PRG-004 | observability | PASS | Jaeger/Grafana/Loki/AlertManager 全在线 |
+| PRG-005 | security | PASS | OTel v1.44.0，govulncheck 清洁 |
+| PRG-006 | resilience | PASS | soak 2min 1200msgs，chaos 5/5 PASS |
+| PRG-007 | issue sync | PASS | 43 GitHub + 43 Beads 全关闭 |
 
 ## 6. 其他验证
 

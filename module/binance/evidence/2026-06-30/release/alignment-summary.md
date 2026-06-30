@@ -1,9 +1,10 @@
 # binance 模块修复对齐总结
 
-## 日期：2026-06-30
+## 日期：2026-06-30（含审查复核更新）
 
 ## 执行计划
 基于 `plans/binance/FIX-EXECUTION-PLAN-20260630.md`，完成 Phase 0-7 全部修复。
+2026-06-30 审查复核（`report/binance/REVIEW-20260630.md`）确认修复效果并补充修复 4 项遗留问题。
 
 ## Pull Requests
 
@@ -12,25 +13,53 @@
 | ZoneCNH (Spec Hub) | [#1463](https://github.com/ZoneCNH/ZoneCNH/pull/1463) | `fix/binance-l3-production-admission` | OPEN |
 | binance (Runtime) | [#357](https://github.com/ZoneCNH/binance/pull/357) | `fix/lint-and-ci-runner` | OPEN |
 
-## PRG 状态
-| PRG | 状态 | 证据 |
-|-----|------|------|
-| PRG-001 | PASS | CI runner 迁移到 ubuntu-latest，golangci-lint-action v7，CI 已触发 |
-| PRG-002 | PASS | v0.8.0 tag + GitHub Release（2026-06-29） |
-| PRG-003 | PASS | PRG-001~006 全 PASS |
-| PRG-004 | PASS | Jaeger/Grafana/Loki/AlertManager 全在线 |
-| PRG-005 | PASS | otel SDK v1.37.0→v1.44.0，govulncheck 清洁（GO-2026-4985/4394 修复） |
-| PRG-006 | PASS | soak 2min 1200msgs PASS, chaos 5/5 PASS（NATS/Redis/Taos/Kafka/Process） |
-| PRG-007 | PASS | 43 GitHub (#1289-#1331) + 43 Beads 全关闭 |
+## PRG 状态（2026-06-30 复核确认）
 
-## 验证结果
+| PRG | 状态 | 证据 | 复核验证 |
+|-----|------|------|----------|
+| PRG-001 | PASS | CI runner 迁移到 ubuntu-latest，golangci-lint-action v7，CI 已触发 | ✅ `binance-ci.yml` runs-on: ubuntu-latest 确认 |
+| PRG-002 | PASS | v0.8.0 tag + GitHub Release（2026-06-29） | ✅ `gh release view v0.8.0` 确认 |
+| PRG-003 | PASS | PRG-001~006 全 PASS | ✅ evidence 文件已更新（原 stale "Open" → "PASS"） |
+| PRG-004 | PASS | Jaeger/Grafana/Loki/AlertManager 全在线 | ✅ curl HTTP 200 × 4 服务确认 |
+| PRG-005 | PASS | otel SDK v1.37.0→v1.44.0，govulncheck 清洁 | ✅ govulncheck "No vulnerabilities" + go.mod v1.44.0 确认 |
+| PRG-006 | PASS | soak 2min 1200msgs PASS, chaos 5/5 PASS | ✅ live 执行确认（soak 1200 msgs/heap +0.3%/goroutine 0；chaos 5/5 NATS/Redis/Taos/Kafka/Process） |
+| PRG-007 | PASS | 43 GitHub (#1289-#1331) + 43 Beads 全关闭 | —（基于 prg-007 evidence） |
+
+## 审查复核修复（2026-06-30 PM）
+
+基于 `report/binance/REVIEW-20260630.md` 审查发现，修复 4 项遗留问题：
+
+| # | 问题 | 修复 | 文件 |
+|---|------|------|------|
+| M2 | SPEC §16 "remain Partial" 与 §5 "0 Partial" 矛盾 | 更新为 "operational... PRG-004 PASS" | `spec/SPEC.md` |
+| M3 | PRG-003 evidence 标 "Open"（stale） | 更新为 "PASS"，汇总表全 PASS | `evidence/2026-06-30/release/prg-003-production-readiness.md` |
+| M4 | PRG-005 evidence 标 "Partial"（stale） | 更新为 "PASS"，CVE 修复确认 | `evidence/2026-06-30/release/prg-005-security.md` |
+| M5 | `.env` 权限 770 (group-readable) | `chmod 600` | `/home/binance/.env` |
+
+## 验证结果（2026-06-30 复核实测）
+
 - 测试：23/23 PASS（short mode）
-- 覆盖率：99.9%（short + full mode）
+- Race 测试：23/23 PASS（0 race）
+- 覆盖率：99.9%
 - 边界门禁：15/15 PASS
 - golangci-lint：0 issues
 - govulncheck：No vulnerabilities found
-- 基础设施：7 服务全在线（NATS/Redis/PG/TDengine/Kafka/CH/OSS + AlertManager）
-- release_closeable：YES
+- gitleaks：6 findings（全部来自 gitignored 文件 .env/.beads）
+- 基础设施：10 服务全在线（NATS/Redis/PG/TDengine/Kafka/CH/OSS + Jaeger/Grafana/Loki/AlertManager）
+- soak test：2min 1200 messages PASS（heap +0.3%, goroutine delta 0）
+- chaos test：5/5 PASS（NATS/Redis/TDengine/Kafka/Process 断连恢复）
+- release_closeable：YES（8 处全对齐）
+
+## 审查评分对比
+
+| 指标 | 上轮 (06-30 AM) | 本轮 (06-30 PM) | Δ |
+|------|----------------|----------------|---|
+| 综合得分 | 76 | 91 | +15 |
+| CRITICAL | 3 | 0 | -3 |
+| HIGH | 7 | 0 | -7 |
+| MEDIUM | 7 | 2 | -5 |
+| PRG 已验证 PASS | 1/7 | 7/7 | +6 |
+| 治理等级 | L2 Active | L3 Production | 升级 |
 
 ## 5 轮重复验证
 
@@ -59,6 +88,10 @@
 - 9 evidence 文件新增（7 PRG + 1 verification + 1 alignment-summary）
 - module/registry.yaml: lifecycle→production, maturity→L3
 - commit: `09781300`
+
+### 审查复核修复（本次）
+- 3 文件修改（SPEC.md §16, prg-003 evidence, prg-005 evidence）
+- +34/-53 lines
 
 ### Runtime (/home/binance/) — PR #357
 - 11 文件修改（Dockerfile×2, docker-compose, go.mod/sum, wire/doc.go, soak/chaos test×4, .gitignore）
@@ -103,3 +136,9 @@
 - goal/goal.md: L2 Active→L3 Production / Released
 - registry.yaml: lifecycle→production, maturity→L3
 - BOUNDARY-GATES §12: Release Not Done→Done
+
+### 审查复核（2026-06-30 PM）
+- SPEC §16: "remain Partial"→"operational... PRG-004 PASS"
+- prg-003 evidence: "Open"→"PASS"（汇总表全 PASS）
+- prg-005 evidence: "Partial"→"PASS"（CVE 修复确认）
+- .env 权限: 770→600
