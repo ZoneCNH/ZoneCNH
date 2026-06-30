@@ -1,7 +1,7 @@
 # xlib_evidence 完整实现清单
 
 - Status: Generated from current module SSOT
-- Last-Updated: 2026-06-20
+- Last-Updated: 2026-06-30
 - Module-Version: v0.2.4
 - Module-State: v0.2.4 已发布；runtime 本地 100.0% 覆盖率、并发 Store 防护、仓库身份契约、CI/CD workflow 已部署，GitHub Release v0.2.4 与 release evidence assets 已闭合
 - Layer: L1 证据

@@ -2,7 +2,7 @@
 
 - Status: Approved
 - Owner: `module/market_data`
-- Last-Updated: 2026-06-17
+- Last-Updated: 2026-06-30
 
 ## Objective
 

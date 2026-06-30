@@ -1,6 +1,6 @@
 # xlib_standard 快照追溯矩阵
 
-> Last-Updated: 2026-06-29
+> Last-Updated: 2026-06-30
 > 归档说明：本矩阵是非可执行快照索引，保留上游标准锚点与证据类型。xlib_standard 为标准参考/模板模块，非可执行模块，所有行标记为 archived-snapshot。
 
 | FR | 主题 | 证据锚点 | 证据类型 | AC | TC | 状态 |

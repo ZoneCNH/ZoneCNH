@@ -4,7 +4,7 @@
 > 来源：module/observex/SPEC.md v1.0.1
 > 规范：docs/governance/TRACEABILITY.md
 
-Last-Updated: 2026-06-29
+Last-Updated: 2026-06-30
 
 ---
 

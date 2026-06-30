@@ -16,7 +16,7 @@
 
 - Status: Draft
 - Spec-Version: v1.0.0
-- Last-Updated: 2026-06-21
+- Last-Updated: 2026-06-30
 - Owner: ZoneCNH
 - Layer: 分析域 · {细分定位}（或 数据域 · dispatch 聚合）
 - Version: v0.1.0

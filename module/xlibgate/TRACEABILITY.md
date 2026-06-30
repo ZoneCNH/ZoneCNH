@@ -3,7 +3,7 @@
 > 模块级追溯矩阵。治理规范见 [docs/governance/TRACEABILITY.md](../../docs/governance/TRACEABILITY.md)。
 > 权威完整版见 [matrix/TRACEABILITY.md](./matrix/TRACEABILITY.md)（v1.6，2026-06-29）。
 
-Last-Updated: 2026-06-29
+Last-Updated: 2026-06-30
 Source: module/xlibgate/SPEC.md v1.2.0
 Runtime: /home/xlibgate
 

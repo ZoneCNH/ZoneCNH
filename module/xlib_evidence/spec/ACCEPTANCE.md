@@ -1,7 +1,7 @@
 # xlib_evidence 完整验收清单
 
 - Status: Generated from current module SSOT
-- Last-Updated: 2026-06-20
+- Last-Updated: 2026-06-30
 - Module-Version: v0.2.4
 - Module-State: v0.2.4 已发布；runtime 本地 100.0% atomic coverage、race、vet、build、benchmark、Trust Alignment 与 GitHub Release evidence contract 已通过；CI/CD workflows 已部署，GitHub Release v0.2.4 与 release evidence assets 已发布归档
 - Layer: L1 证据

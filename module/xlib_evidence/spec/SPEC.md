@@ -2,7 +2,7 @@
 
 Status: Approved
 - Spec-Version: v1.2.1
-- Last-Updated: 2026-06-20
+- Last-Updated: 2026-06-30
 - Layer: 基座 · CI 证据运行时
 - Version: v0.2.4
 - Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `github.com/ZoneCNH/xlib_evidence`, `github.com/ZoneCNH/xlib_standard`（标准/治理参考，不承载运行时代码）

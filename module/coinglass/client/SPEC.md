@@ -2,7 +2,7 @@
 
 - Status: Draft
 - Spec-Version: v1.0.0
-- Last-Updated: 2026-06-17
+- Last-Updated: 2026-06-30
 - Owner: ZoneCNH
 - Layer: 数据域 · Coinglass 聚合数据接入
 - Module-Version: v0.1.0-spec

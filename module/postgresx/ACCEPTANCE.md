@@ -1,7 +1,7 @@
 # postgresx 完整验收清单
 
 - Status: Generated from current module SSOT
-- Last-Updated: 2026-06-18
+- Last-Updated: 2026-06-30
 - Module-Version: v1.0.0
 - Module-State: 已发布
 - Layer: L2 基础设施适配器
