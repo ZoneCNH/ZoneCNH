@@ -1,7 +1,7 @@
 # contracts 功能清单
 
 - Status: Docs Baseline Synced / Feature Inventory Closed
-- Last-Updated: 2026-06-22
+- Last-Updated: 2026-06-30
 - Layer: 基座 · 跨域接口契约
 - Source-of-Truth: `/home/contracts/pkg/contracts`
 - Related: `SPEC.md`, `TRACEABILITY.md`, `ACCEPTANCE.md`, `README.md`, `goal.md`, `IMPLEMENTATION-PLAN.md`, `tasks/`

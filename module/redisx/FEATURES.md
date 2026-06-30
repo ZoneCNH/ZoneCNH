@@ -1,7 +1,7 @@
 # redisx 完整实现清单
 
 - Status: Generated from current module SSOT
-- Last-Updated: 2026-06-19
+- Last-Updated: 2026-06-30
 - Module-Version: v1.3.0
 - Module-State: Tag Exists / Release Pending
 - Layer: L2 基础设施适配器

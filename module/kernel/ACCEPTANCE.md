@@ -1,7 +1,7 @@
 # kernel 完整验收清单
 
 - Status: Generated from current module SSOT
-- Last-Updated: 2026-06-18
+- Last-Updated: 2026-06-30
 - Module-Version: v1.1.0
 - Module-State: 已发布 v1.1.0（代码侧 + 发布门禁全绿）；Factory 已闭合（2026-06-18）— Goal Matrix 23 边 Verified + 四源 arbiter gate=pass + coverage 100% + BLK-011 resolved
 - Layer: L0 基座核心

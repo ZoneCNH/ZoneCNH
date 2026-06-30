@@ -2,7 +2,7 @@
 
 - Status: Draft
 - Spec-Version: v0.2.0
-- Last-Updated: 2026-06-18
+- Last-Updated: 2026-06-30
 - Layer: L1 Assembly（基座进程组装层）
 - Version: v0.1.0-runtime / v0.1.7-spec
 - Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `kernel`, `configx`, `observex`, `resiliencx`

@@ -1,7 +1,7 @@
 # clickhousex 完整实现清单
 
 - Status: Updated from runtime release evidence
-- Last-Updated: 2026-06-21
+- Last-Updated: 2026-06-30
 - Module-Version: v1.0.10
 - Module-State: full client API 已发布；v1.0.10 production release gate（unit/race/vet/build/lint/coverage/live 集成/60s soak/benchmark/CI 配置）已在本地 release evidence 与版本元数据闭合；非 factory/L2-T4
 - Layer: L2 基础设施适配器

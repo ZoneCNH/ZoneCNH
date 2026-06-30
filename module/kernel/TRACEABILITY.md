@@ -5,7 +5,7 @@
 > 规范：docs/governance/TRACEABILITY.md
 > 当前口径：本矩阵的 ✅ 表示 Spec/Task 追溯与本地实现候选闭合；Factory 证据链已闭合（2026-06-18）— Goal Matrix 23 边 Verified（evidence_id=kernel-acceptance-20260618）、四源 arbiter 6 阶段 gate=pass（claude=100/rules=100；codex/copilot forced_missing_source，与 configx 同构）、`make coverage-threshold` 通过（14 核心库包 100.0%）、BLK-011 resolved，kernel 已移出 factory_blocking_modules。
 
-Last-Updated: 2026-06-29
+Last-Updated: 2026-06-30
 
 ---
 
