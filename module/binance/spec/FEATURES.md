@@ -157,7 +157,7 @@
 | --- | --- | --- |
 | `goal.md` | 业务目标与模块意图 | 作为实现清单的目标来源。 |
 | `SPEC.md` | v2.0.0 功能与边界规格 | 作为 FR/BR/NFR 语义来源。 |
-| `TRACEABILITY.md` | 根级 FR/AC/TC/Task 追溯 | 作为当前状态与验收编号来源；v3.9.0 当前口径对齐 Runtime-Anchor `/home/binance@2efc44a`，23 Done / 25 Partial / 0 Drifted / 0 Pending；Evidence 列 23 Done / 25 Pending。 |
+| `TRACEABILITY.md` | 根级 FR/AC/TC/Task 追溯 | 作为当前状态与验收编号来源；v3.9.6 当前口径，48 Done / 0 Partial / 0 Drifted / 0 Pending；Evidence 列 48 Done / 0 Pending。 |
 | `client/TRACEABILITY.md` | Client 子域追溯 | 作为 client active/pending 实现面来源。 |
 | `server/TRACEABILITY.md` | Server 子域追溯 | 作为 server active/pending 实现面来源。 |
 | `BOUNDARY-GATES.md` | 边界漂移防线 | 作为 FR-009 与 BR-001~BR-009 的文档和本地 runtime 证据入口。 |
@@ -170,7 +170,7 @@
 | 检查项 | 状态 | 依据 |
 | --- | --- | --- |
 | v2.0.0 根规格存在 | Done | `SPEC.md` v3.9.0。 |
-| 根级 traceability 存在 | Done | `TRACEABILITY.md` v3.9.0；当前口径对齐 Runtime-Anchor `/home/binance@2efc44a`，23 Done / 25 Partial / 0 Drifted / 0 Pending；Evidence 列 23 Done / 25 Pending。 |
+| 根级 traceability 存在 | Done | `TRACEABILITY.md` v3.9.6；48 Done / 0 Partial / 0 Drifted / 0 Pending；Evidence 列 48 Done / 0 Pending。 |
 | Client/Server 子域 traceability 存在 | Done | `client/TRACEABILITY.md`, `server/TRACEABILITY.md`。 |
 | C/S 独立进程边界已定义 | Done | `README.md`, `SPEC.md`, `BOUNDARY-GATES.md`。 |
 | Boundary gate 文档已形成 | Done | `BOUNDARY-GATES.md` v2.2.4；本地证据 `/home/binance/release/evidence/binance/20260623/`；13 gates PASS；证据提交 `71e2a6e8`（2026-06-23 round 2）。 |
