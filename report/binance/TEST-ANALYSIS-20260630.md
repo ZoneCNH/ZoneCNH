@@ -391,6 +391,10 @@ infra: dev（`127.0.0.1`，`sre/secrets/env/dev.md`）或 prod（远端，`sre/s
 
 **已修复**：NATS 和 ClickHouse 于 2026-06-30 在 prod 环境启动（`systemctl enable + start`），凭据已在 `sre/secrets/env/prod.md` 中登记。binance 核心传输层现已可用，测试策略（Layer 4-6）可执行。
 
+**生产部署验证**（2026-06-30 15:19 CST）：binance 已部署到 prod（`84.247.154.45`），通过 systemd 二进制直部署。部署过程中发现并修复 6 个代码级 bug（tag 顺序随机、partial depth 解析缺失、参数化查询不兼容、Stats provider 未 wiring、Fields map 顺序随机、admin 端口冲突）。修复后 Market API `/latest` 和 `/range` 返回真实行情数据，Stats API 返回 ingest 计数，TDengine tag 值正确。详见 `module/binance/evidence/2026-06-30/release/alignment-summary.md` §生产部署修复。
+
+**对评分影响的修正**：上述部署修复证明了 WS→client→NATS→server→TDengine→query 全管线**连通性**正确（基础 E2E 路径可用），但**不构成 soak/chaos 验证**——soak 要求 30 分钟以上持续负载下的内存/连接稳定性，chaos 要求真实故障注入（kill 进程、stop 服务）后的数据完整性。PRG-006 的 "PASS" 判定仍不成立；系统在持续负载和故障下的行为仍未验证。纠正后的 PRG-006 状态为 **Partial**（连通性 PASS，系统行为验证缺失）。
+
 ---
 
 [RULES I BROKE]：无。所有声明均基于测试源码实测（[COMPUTED]）或 SPEC 条款引用（[KNOWN]），置信度显式标注。未编造测试结果或覆盖率数据。PRG-006 修正建议基于源码审计证据，非主观臆断。基础设施配置来源：`sre/secrets/env/dev.md`（dev）和 `sre/secrets/env/prod.md`（prod）。NATS/ClickHouse prod 服务已于 2026-06-30 启动（SSH 实测确认 active + enabled，[COMPUTED, HIGH]）。
