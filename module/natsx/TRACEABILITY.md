@@ -2,8 +2,8 @@
 
 > 模块级追溯矩阵。治理规范见 [docs/governance/TRACEABILITY.md](../../docs/governance/TRACEABILITY.md)。本矩阵记录 PR #17 merged + v1.0.3 remote tag evidence；GitHub Release v1.0.3 仍需独立发布证据，不得由 tag 推导。
 
-Last-Updated: 2026-06-29
-Source: `goal.md` 1.0 发布基线 + `SPEC.md` Approved v1.2.0 + `/home/natsx` PR #17 merge `29503212` + remote tag `v1.0.3`
+Last-Updated: 2026-06-30
+Source: `goal.md` v1.2.0 + `SPEC.md` Approved v1.2.0 + `/home/natsx` PR #17 merge `29503212` + remote tag `v1.0.3`
 
 ---
 
