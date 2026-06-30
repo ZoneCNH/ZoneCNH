@@ -9,7 +9,7 @@
 | 目标版本 | v1.1.0 |
 | 状态 | v1.1.0 SPEC Approved (canonical types aligned with cross-module contracts) |
 | 计划来源 | `/home/zone/Downloads/0615/ZoneCNH-v1.0.0-goal-execution-plans/domain_market-v1.0.0-goal-execution-plan.md` |
-| 最后更新 | 2026-06-17 |
+| 最后更新 | 2026-06-30 |
 
 ## 目标
 
@@ -21,7 +21,7 @@
 - 不承载策略、因子、回测、执行或风险逻辑。
 - 不在领域模型中泄漏 provider 原始响应、transport DTO、ORM tag 或存储细节。
 
-## v1.0.0 成功标准
+## v1.1.0 成功标准
 
 - 公开价格、数量、成交额、费率、未平仓等金融字段使用 `decimalx.Decimal` 或明确值对象，禁止 public `float64`。
 - Market data quality gate 必须 fail-closed，脏数据、时间非法数据不得进入下游。

@@ -111,7 +111,7 @@
 
 | AC ID | FR/BR Ref | Criterion |
 |-------|-----------|----------|
-| AC-MKT-001 | FR-MKT-001 | TC-MKT-001 | `go vet` + `staticcheck` | |
+| AC-MKT-001 | FR-MKT-001, BR-MKT-001 | `Public API 不含 float64` | TC-MKT-001 | `go vet` + `staticcheck` |
 | AC-MKT-002 | FR-MKT-002 | TC-MKT-002 | `go test -run TestTick` | |
 | AC-MKT-004 | FR-MKT-006 | TC-MKT-004 | `go test -run TestInstrument` | |
 | AC-MKT-005 | FR-MKT-007 | TC-MKT-005 | `go test -run "TestFunding\|TestOI\|TestLSR"` | |
