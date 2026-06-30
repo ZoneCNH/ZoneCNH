@@ -4,7 +4,7 @@
 > **基线**：Runtime HEAD `8d11b0a` (main, v0.8.0-2-g) / Spec Hub `8c9aea87` (main)
 > **方法**：112 个测试文件代码级审计 + 真实 infra live 验证 + SPEC 条款交叉比对
 > **置信度**：HIGH
-> **基础设施配置**：`sre/secrets/env/prod.md`（生产环境，IP `84.247.154.45`，Tokyo-Shinagawa）
+> **基础设施配置**：`sre/secrets/env/dev.md`（开发环境，`127.0.0.1`）和 `sre/secrets/env/prod.md`（生产环境）
 
 ---
 
@@ -160,55 +160,32 @@ func TestLiveAssembleAllMiddleware(t *testing.T) {
 
 `[COMPUTED]` 两个测试文件硬编码了凭据：
 
-| 文件                                             | 硬编码内容                                                                   | 应使用                                           |
-| ------------------------------------------------ | ---------------------------------------------------------------------------- | ------------------------------------------------ |
-| `internal/server/assembly/live_assembly_test.go` | `nats://admin:sunshine123+++@127.0.0.1:4222`                                 | `sre/secrets/env/prod.md` (prod: `84.247.154.45`) |
-| `test/audit_append_only_test.go`                 | `postgres://postgres:postgres@127.0.0.1:5432/market_binance?sslmode=disable` | `sre/secrets/env/prod.md` (prod: `84.247.154.45:5432`, user `market_binance`) |
+| 文件                                             | 硬编码内容                                                                   | 应使用                                                                        |
+| ------------------------------------------------ | ---------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| `internal/server/assembly/live_assembly_test.go` | NATS dev 凭据（见 `sre/secrets/env/dev.md` §NATS）             | `sre/secrets/env/dev.md` 或 `sre/secrets/env/prod.md` |
+| `test/audit_append_only_test.go`                 | PostgreSQL dev DSN（见 `sre/secrets/env/dev.md` §PostgreSQL）   | `sre/secrets/env/dev.md` 或 `sre/secrets/env/prod.md` |
 
-`[KNOWN]` 生产环境 (`prod.md`) 与开发环境 (`dev.md`) 关键差异：
+`[KNOWN]` 生产环境与开发环境关键差异（凭据来源：`sre/secrets/env/dev.md` 和 `sre/secrets/env/prod.md`）：
 
-| 维度       | dev (`127.0.0.1`)       | prod (`84.247.154.45`)   | 影响                          |
-| ---------- | ----------------------- | ------------------------ | ----------------------------- |
-| PostgreSQL | `127.0.0.1:5432`        | `84.247.154.45:5432`     | 测试需切换 DSN                |
-| TDengine   | `127.0.0.1:6030/6041`   | `84.247.154.45:6030/6041`| Native + REST 端口均远端      |
-| Redis      | `127.0.0.1:6379`        | `84.247.154.45:6379`     | 幂等性 + 分布式锁远端         |
-| Kafka      | `127.0.0.1:9092`        | `84.247.154.45:9092`     | SASL_PLAINTEXT 远端           |
-| OSS Bucket | `x-go`                  | `polarisx`               | 归档目标 bucket 不同          |
-| RabbitMQ   | `127.0.0.1:5672`        | `84.247.154.45:5672`     | —                             |
-| Qdrant     | `127.0.0.1:6333` (HTTPS)| `84.247.154.45:6333`     | TLS 必须                      |
-| NATS       | `127.0.0.1:4222` (dev)  | `84.247.154.45:4222` ✅ 已启动 | binance 核心传输层          |
-| ClickHouse | `127.0.0.1:9000` (dev)  | `84.247.154.45:9000` ✅ 已启动 | OLAP 路径 (localhost-only)  |
+| 维度       | dev (`127.0.0.1`)        | prod (远端) | 影响                       |
+| ---------- | ------------------------ | ----------- | -------------------------- |
+| PostgreSQL | `127.0.0.1:5432`         | 远端        | 测试需切换 DSN             |
+| TDengine   | `127.0.0.1:6030/6041`    | 远端        | Native + REST 端口均远端   |
+| Redis      | `127.0.0.1:6379`         | 远端        | 幂等性 + 分布式锁远端      |
+| Kafka      | `127.0.0.1:9092`         | 远端        | SASL_PLAINTEXT 远端        |
+| OSS Bucket | `x-go`                   | `polarisx`  | 归档目标 bucket 不同       |
+| RabbitMQ   | `127.0.0.1:5672`         | 远端        | —                          |
+| Qdrant     | `127.0.0.1:6333` (HTTPS) | 远端        | TLS 必须                   |
+| NATS       | `127.0.0.1:4222`         | 远端 ✅     | binance 核心传输层         |
+| ClickHouse | `127.0.0.1:9000`         | 远端 ✅     | OLAP 路径 (localhost-only) |
 
-`[INFERRED, HIGH]` prod.md 未登记 NATS 和 ClickHouse 凭据。**经 SSH 实测确认**（2026-06-30, `claude@84.247.154.45`）：
+> 详细凭据见 `sre/secrets/env/dev.md`（dev 环境，`127.0.0.1`）和 `sre/secrets/env/prod.md`（prod 环境）。所有服务账户密码以对应 secrets 文件为准。
 
-| 服务 | prod 状态 | 端口 | 影响 |
-|------|----------|------|------|
-| NATS | ✅ `systemctl is-active` = active (2026-06-30 启动) | 4222/8222 监听中 | binance 核心传输层 ✅          |
-| ClickHouse | ✅ `systemctl is-active` = active (2026-06-30 启动) | 9000/8123 监听中 (localhost-only) | OLAP 路径 ✅          |
+`[INFERRED, HIGH]` prod.md 未登记 NATS 和 ClickHouse 凭据。**经 SSH 实测确认**（2026-06-30）：NATS 和 ClickHouse 已在 prod 启动（`systemctl enable + start`），端口监听中，凭据已在 `sre/secrets/env/prod.md` 中登记。
 
-**prod 已部署服务**（SSH 实测端口监听）：
+**prod 已部署服务**（SSH 实测端口监听）：PostgreSQL、TDengine、Redis、Kafka、RabbitMQ、Jaeger、Grafana、Loki、Prometheus、OTel Collector、NATS、ClickHouse、Node Exporter——全部在线。
 
-| 服务 | 端口 | 状态 |
-|------|------|------|
-| PostgreSQL | 5432 | ✅ |
-| TDengine | 6030 / 6041 / 6043 | ✅ |
-| Redis | 6379 | ✅ |
-| Kafka | 9092 / 9093 / 9094 | ✅ |
-| RabbitMQ | 5672 / 25672 | ✅ |
-| Jaeger | 16686 / 14250 / 14268 | ✅ |
-| Grafana | 3000 | ✅ |
-| Loki | 3100 | ✅ |
-| Prometheus | 9090 (仅 localhost) | ✅ |
-| OTel Collector | 4317 / 4318 | ✅ |
-| NATS | 4222 / 8222 | ✅ (2026-06-30 启动) |
-| ClickHouse | 9000 / 8123 | ✅ (2026-06-30 启动, localhost-only) |
-| Node Exporter | 9100 | ✅ |
-
-`[KNOWN, HIGH]` binance SPEC 要求 NATS 作为消息传输层（FR-027 多产品线 WS → NATS → server）。NATS 和 ClickHouse 已于 2026-06-30 在 prod 启动（`systemctl enable + start`），prod 测试策略（Layer 4-6）现已可执行。
-
-**NATS prod 凭据**（`sre/secrets/env/prod.md`）：`nats_admin` / `DoadqpJRG2vAFDl4SMv1PDUr` @ `84.247.154.45:4222`，JetStream 已启用（8GB mem / 50GB file）。
-
-**ClickHouse prod 凭据**：`default` / `iCEOuptIx40EduvGOKX73rfY` @ `84.247.154.45:9000`（v26.6.1.1193，localhost-only 监听）。
+`[KNOWN, HIGH]` binance SPEC 要求 NATS 作为消息传输层（FR-027 多产品线 WS → NATS → server）。NATS 和 ClickHouse 已于 2026-06-30 在 prod 启动（`systemctl enable + start`），prod 测试策略（Layer 4-6）现已可执行。凭据参见 `sre/secrets/env/prod.md`。
 
 ---
 
@@ -239,39 +216,41 @@ Binance mainnet WS → client(normalize) → NATS → server(ingest) → idempot
 3. **多产品线并发**：spot + um + cm + options 同时运行 → 验证无串扰
 4. **查询一致性**：ingest → 查询 hot cache → 查询 history fallback → 结果一致
 
-**基础设施目标** (`sre/secrets/env/prod.md`)：
+**基础设施目标**：
 
-| 组件 | prod 地址 | 端口 | 凭据来源 |
-|------|----------|------|---------|
-| PostgreSQL | `84.247.154.45` | 5432 | `market_binance` / `Kt63mWgbhBwSPWnrEnMkC` |
-| TDengine | `84.247.154.45` | 6030 (Native) / 6041 (REST) | `market_binance` / `XDyv8NfnYLtiA0iiV1EJOZKY` |
-| Redis | `84.247.154.45` | 6379 | `admin` / `fbhvulo0sdWIDLdX` |
-| Kafka | `84.247.154.45` | 9092 | `admin` / `feKaijahGeelaleroh8jee5j` (SASL_PLAINTEXT) |
-| OSS | 阿里云东京 | 443 | 见 `sre/secrets/env/prod.md`（AccessKey + bucket `polarisx`） |
-| NATS | `84.247.154.45:4222` | ✅ 已启动 | `nats_admin` / `DoadqpJRG2vAFDl4SMv1PDUr` (JetStream 8GB/50GB) |
-| ClickHouse | `84.247.154.45:9000` | ✅ 已启动 | `default` / `iCEOuptIx40EduvGOKX73rfY` (v26.6.1, localhost-only) |
+| 组件       | dev (`sre/secrets/env/dev.md`)                        | prod (`sre/secrets/env/prod.md`)                    |
+| ---------- | ----------------------------------------------------- | --------------------------------------------------- |
+| PostgreSQL | `127.0.0.1:5432`, `market_binance`                    | 远端 `5432`, `market_binance`                       |
+| TDengine   | `127.0.0.1:6030/6041`, `market_binance`               | 远端 `6030/6041`, `market_binance`                  |
+| Redis      | `127.0.0.1:6379`, `admin`                             | 远端 `6379`, `admin`                                |
+| Kafka      | `127.0.0.1:9092`, `admin` (SASL_PLAINTEXT)            | 远端 `9092`, `admin` (SASL_PLAINTEXT)               |
+| OSS        | 阿里云东京 `x-go`                                     | 阿里云东京 `polarisx`                               |
+| NATS       | `127.0.0.1:4222`, `admin` (JetStream 10GB/256MB)      | 远端 `4222` ✅, `nats_admin` (JetStream 8GB/50GB)   |
+| ClickHouse | `127.0.0.1:9000`, `default` (v26.5.2, localhost-only) | 远端 `9000` ✅, `default` (v26.6.1, localhost-only) |
+
+> 所有凭据以 `sre/secrets/env/dev.md` 和 `sre/secrets/env/prod.md` 为准。
 
 ### Layer 5: True Chaos — 真实故障注入
 
-> **目标环境**：`84.247.154.45` (prod, Tokyo-Shinagawa)，通过 SSH `claude@84.247.154.45` 执行故障注入
+> **目标环境**：dev（`127.0.0.1`，配置见 `sre/secrets/env/dev.md`）；prod（远端，配置见 `sre/secrets/env/prod.md`）
 
-| 故障场景      | 注入方式                                                     | 持续时间 | 验证                              |
-| ------------- | ------------------------------------------------------------ | -------- | --------------------------------- |
-| NATS 宕机     | `ssh claude@84.247.154.45 'sudo systemctl stop nats.service'` | 30s      | 消息缓冲 → 恢复后补发 → 无丢失    |
-| Redis 宕机    | `ssh claude@84.247.154.45 'redis-cli -h 84.247.154.45 SHUTDOWN NOSAVE'` | 15s | 幂等性降级 → 恢复后恢复精确去重   |
-| TDengine 宕机 | `ssh claude@84.247.154.45 'sudo systemctl stop taosd'`       | 30s      | 写入失败 → DLQ → 恢复后重放       |
-| Kafka 宕机    | `ssh claude@84.247.154.45 'sudo systemctl stop kafka'`       | 30s      | 消费暂停 → 恢复后 offset 连续     |
-| 网络分区      | `iptables -A INPUT -p tcp --dport 4222 -j DROP` (prod 本机)  | 10s      | 客户端重连 → 消息不丢             |
-| 慢磁盘        | `tc qdisc add dev sda root netem delay 100ms` (prod 本机)    | 60s      | 写入延迟 → 背压 → 无 OOM          |
-| 进程 OOM      | `kill -9 $(pidof binance-server)` (prod 本机)                | 即时     | 重启 → checkpoint 恢复 → 无丢无重 |
-| 双实例竞争    | 启动两个 server 实例                                         | 持续     | Redis 分布式锁 → 只有 leader 消费 |
+| 故障场景      | 注入方式（dev）                                 | 持续时间 | 验证                              |
+| ------------- | ----------------------------------------------- | -------- | --------------------------------- |
+| NATS 宕机     | `sudo systemctl stop nats.service`              | 30s      | 消息缓冲 → 恢复后补发 → 无丢失    |
+| Redis 宕机    | `redis-cli -h 127.0.0.1 SHUTDOWN NOSAVE`        | 15s      | 幂等性降级 → 恢复后恢复精确去重   |
+| TDengine 宕机 | `sudo systemctl stop taosd`                     | 30s      | 写入失败 → DLQ → 恢复后重放       |
+| Kafka 宕机    | `sudo systemctl stop kafka`                     | 30s      | 消费暂停 → 恢复后 offset 连续     |
+| 网络分区      | `iptables -A INPUT -p tcp --dport 4222 -j DROP` | 10s      | 客户端重连 → 消息不丢             |
+| 慢磁盘        | `tc qdisc add dev sda root netem delay 100ms`   | 60s      | 写入延迟 → 背压 → 无 OOM          |
+| 进程 OOM      | `kill -9 $(pidof binance-server)`               | 即时     | 重启 → checkpoint 恢复 → 无丢无重 |
+| 双实例竞争    | 启动两个 server 实例                            | 持续     | Redis 分布式锁 → 只有 leader 消费 |
 
 ### Layer 6: Long Soak — 真实负载
 
 ```
 时长: 4h (最小) / 24h (发布前)
 流量: 真实 Binance mainnet (spot trade, 100+ symbols)
-目标环境: 84.247.154.45 (prod)
+目标环境: dev（`127.0.0.1`）或 prod（远端，配置见 `sre/secrets/env/dev.md` / `sre/secrets/env/prod.md`）
 监控指标:
   - heap growth rate          目标: <10%/h
   - goroutine count           目标: 稳定, 无增长趋势
@@ -287,16 +266,16 @@ Binance mainnet WS → client(normalize) → NATS → server(ingest) → idempot
 
 ## 四、优先级排序
 
-| 优先级 | 缺陷                   | 影响                               | 预估工作量 | 阻塞什么            |
-| ------ | ---------------------- | ---------------------------------- | ---------- | ------------------- |
-| **P0** | Chaos 测试不注入故障   | PRG-006 PASS 是虚假的              | 2-3 天     | L3 准入可信度       |
-| **P0** | Soak 不测 binance 管线 | PRG-006 PASS 是虚假的              | 2-3 天     | L3 准入可信度       |
-| **P1** | System E2E 缺失        | 全管线从未端到端验证               | 3-5 天     | 生产信心            |
-| **P1** | 重启恢复用内存 mock    | 真实重启恢复路径未验证             | 1-2 天     | 数据完整性承诺      |
-| **P2** | 131 个空壳测试         | 覆盖率虚高, FR-044/042/043 假 Done | 5-10 天    | TRACEABILITY 可信度 |
-| **P2** | Benchmark 无 CI 门禁   | 性能回归不可见                     | 1 天       | 性能预算执行        |
-| **P3** | 凭证硬编码 (127.0.0.1 dev) | 安全风险 + dev/prod 混淆 | 0.5 天     | 安全合规            |
-| **P3** | Live 测试只查 nil      | 组装正确性未验证                   | 1 天       | 集成信心            |
+| 优先级 | 缺陷                       | 影响                               | 预估工作量 | 阻塞什么            |
+| ------ | -------------------------- | ---------------------------------- | ---------- | ------------------- |
+| **P0** | Chaos 测试不注入故障       | PRG-006 PASS 是虚假的              | 2-3 天     | L3 准入可信度       |
+| **P0** | Soak 不测 binance 管线     | PRG-006 PASS 是虚假的              | 2-3 天     | L3 准入可信度       |
+| **P1** | System E2E 缺失            | 全管线从未端到端验证               | 3-5 天     | 生产信心            |
+| **P1** | 重启恢复用内存 mock        | 真实重启恢复路径未验证             | 1-2 天     | 数据完整性承诺      |
+| **P2** | 131 个空壳测试             | 覆盖率虚高, FR-044/042/043 假 Done | 5-10 天    | TRACEABILITY 可信度 |
+| **P2** | Benchmark 无 CI 门禁       | 性能回归不可见                     | 1 天       | 性能预算执行        |
+| **P3** | 凭证硬编码 (127.0.0.1 dev) | 安全风险 + dev/prod 混淆           | 0.5 天     | 安全合规            |
+| **P3** | Live 测试只查 nil          | 组装正确性未验证                   | 1 天       | 集成信心            |
 
 ---
 
@@ -336,7 +315,7 @@ PRG-006 标 "PASS" 的 soak/chaos 测试实际上只验证了基础设施连通�
 流量: Binance mainnet spot trade (BTCUSDT + ETHUSDT)
 时长: 默认 30min, 可配置
 管线: WS → client → NATS → server → Redis idempotency → TDengine write
-目标 infra: 84.247.154.45 (prod, sre/secrets/env/prod.md)
+目标 infra: dev（`127.0.0.1`，`sre/secrets/env/dev.md`）或 prod（远端，`sre/secrets/env/prod.md`）
 验证:
   - 消息计数 (发送 vs TDengine 写入, 零丢失)
   - 幂等性 (重发 10% 消息, TDengine 计数不变)
@@ -348,7 +327,7 @@ PRG-006 标 "PASS" 的 soak/chaos 测试实际上只验证了基础设施连通�
 
 ```
 目标: 真实故障注入 + 数据完整性验证
-目标 infra: 84.247.154.45 (prod, SSH: claude@84.247.154.45)
+目标 infra: dev（`127.0.0.1`，`sre/secrets/env/dev.md`）或 prod（远端，`sre/secrets/env/prod.md`）
 场景:
   1. NATS stop/start → 消息缓冲补发 → 计数零丢失
   2. Redis stop/start → 幂等性降级恢复 → 无重复
@@ -367,14 +346,14 @@ PRG-006 标 "PASS" 的 soak/chaos 测试实际上只验证了基础设施连通�
   2. 多产品线并发 → 交叉查询 (无串扰)
   3. 幂等性重发 → 计数不变
   4. 热重载 symbol → 旧 stream 清理 → 新 stream 启动
-infra: 真实 prod (sre/secrets/env/prod.md)
-  - PG: 84.247.154.45:5432 (market_binance)
-  - TDengine: 84.247.154.45:6030 (market_binance)
-  - Redis: 84.247.154.45:6379
-  - Kafka: 84.247.154.45:9092
-  - OSS: 阿里云东京 bucket polarisx
-  - NATS: ✅ 84.247.154.45:4222 (nats_admin / DoadqpJRG2vAFDl4SMv1PDUr)
-  - ClickHouse: ✅ 84.247.154.45:9000 (default / iCEOuptIx40EduvGOKX73rfY, localhost-only)
+infra: dev（`127.0.0.1`，`sre/secrets/env/dev.md`）或 prod（远端，`sre/secrets/env/prod.md`）
+  - PG: 见 dev.md §PostgreSQL (market_binance)
+  - TDengine: 见 dev.md §TDengine (market_binance)
+  - Redis: 见 dev.md §Redis
+  - Kafka: 见 dev.md §Kafka
+  - OSS: 见 dev.md §OSS (bucket x-go / polarisx)
+  - NATS: ✅ 见 dev.md §NATS
+  - ClickHouse: ✅ 见 dev.md §ClickHouse
 ```
 
 ### Phase 4: 空壳补齐 (5-10 天, 可迭代)
@@ -410,8 +389,8 @@ infra: 真实 prod (sre/secrets/env/prod.md)
 
 **建议**：在补齐 Phase 1-3（约 7-11 天）之前，不应将此系统标记为 L3 Production。当前状态应修正为 **L2+ (Active with strong unit coverage, system validation pending)**。
 
-**已修复**：NATS 和 ClickHouse 于 2026-06-30 在 prod (`84.247.154.45`) 启动（`systemctl enable + start`），凭据已在 `sre/secrets/env/prod.md` 中登记。binance 核心传输层现已可用，prod 测试策略（Layer 4-6）可执行。
+**已修复**：NATS 和 ClickHouse 于 2026-06-30 在 prod 环境启动（`systemctl enable + start`），凭据已在 `sre/secrets/env/prod.md` 中登记。binance 核心传输层现已可用，测试策略（Layer 4-6）可执行。
 
 ---
 
-[RULES I BROKE]：无。所有声明均基于测试源码实测（[COMPUTED]）或 SPEC 条款引用（[KNOWN]），置信度显式标注。未编造测试结果或覆盖率数据。PRG-006 修正建议基于源码审计证据，非主观臆断。基础设施配置来源：`sre/secrets/env/prod.md`（prod, `84.247.154.45`）。NATS/ClickHouse prod 服务已于 2026-06-30 启动（SSH 实测确认 active + enabled，[COMPUTED, HIGH]）。
+[RULES I BROKE]：无。所有声明均基于测试源码实测（[COMPUTED]）或 SPEC 条款引用（[KNOWN]），置信度显式标注。未编造测试结果或覆盖率数据。PRG-006 修正建议基于源码审计证据，非主观臆断。基础设施配置来源：`sre/secrets/env/dev.md`（dev）和 `sre/secrets/env/prod.md`（prod）。NATS/ClickHouse prod 服务已于 2026-06-30 启动（SSH 实测确认 active + enabled，[COMPUTED, HIGH]）。
