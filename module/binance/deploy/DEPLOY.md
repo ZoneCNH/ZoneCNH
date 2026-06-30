@@ -1,8 +1,8 @@
 # binance 二进制构建与部署
 
-- Runtime-Version: v0.8.0（anchor: `/home/binance@871d3b8`）
+- Runtime-Version: v0.8.0（anchor: `/home/binance@5f65211` — perf fix: worker pool + skip-kafka + TDengine pool）
 - Target: jp1 (84.247.154.45)
-- Last-Updated: 2026-06-30
+- Last-Updated: 2026-07-01
 
 ## 目录
 
@@ -26,9 +26,9 @@
 
 binance 模块编译为 **两个独立二进制文件**：
 
-| 二进制 | 入口 | 角色 | 体积 |
-|--------|------|------|------|
-| `binance-client` | `cmd/binance-client/` | 连接 Binance WS/REST，解析→映射→NATS 发布 | ~17M |
+| 二进制           | 入口                  | 角色                                       | 体积 |
+| ---------------- | --------------------- | ------------------------------------------ | ---- |
+| `binance-client` | `cmd/binance-client/` | 连接 Binance WS/REST，解析→映射→NATS 发布  | ~17M |
 | `binance-server` | `cmd/binance-server/` | NATS 消费→校验去重→存储→Gin API→Kafka 广播 | ~46M |
 
 ### 编译参数
@@ -81,12 +81,12 @@ CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
 
 ### 2.3 选择二进制部署而非 Docker 的原因
 
-| 因素 | 说明 |
-|------|------|
-| Docker build 超时 | jp1 资源有限，多阶段构建超时 |
+| 因素                | 说明                                                              |
+| ------------------- | ----------------------------------------------------------------- |
+| Docker build 超时   | jp1 资源有限，多阶段构建超时                                      |
 | distroless 无 shell | `gcr.io/distroless/static-debian12` 不含 curl/shell，健康检查困难 |
-| 调试不便 | 二进制直部署可直接 `strace`、`ltrace`、`gdb` |
-| 启动速度 | 无容器启动开销，systemd 直接管理 |
+| 调试不便            | 二进制直部署可直接 `strace`、`ltrace`、`gdb`                      |
+| 启动速度            | 无容器启动开销，systemd 直接管理                                  |
 
 ---
 
@@ -115,9 +115,9 @@ ENTRYPOINT ["/usr/local/bin/binance-server"]
 
 ### 3.2 独立镜像（可选）
 
-| Dockerfile | 基础镜像 | 特点 |
-|------------|---------|------|
-| `Dockerfile.client` | `alpine:3.20` | 轻量 client，含 ca-certificates |
+| Dockerfile          | 基础镜像      | 特点                                    |
+| ------------------- | ------------- | --------------------------------------- |
+| `Dockerfile.client` | `alpine:3.20` | 轻量 client，含 ca-certificates         |
 | `Dockerfile.server` | `alpine:3.20` | 含 curl（健康检查），暴露 :8090 / :8081 |
 
 ### 3.3 镜像构建与推送
@@ -139,23 +139,25 @@ docker push ghcr.io/zonecnh/binance:v0.8.0
 
 binance 模块本身是**纯 Go 二进制**，不内嵌任何中间件。以下 infra 为**外部独立服务**，部署前须确保可用：
 
-| 服务 | 端口 | 用途 | 客户端 |
-|------|------|------|--------|
-| **NATS JetStream** | `:4222` / `:8222` | 异步消息总线（pub/sub） | client（发布）+ server（消费） |
-| **Redis** | `:6379` | 幂等性（SetNX）+ 热缓存 | server |
-| **PostgreSQL** | `:5432` | 元数据 + 审计日志 | server |
-| **TDengine** | `:6030` / `:6041` | 时序数据存储（WebSocket） | server |
-| **Kafka** | `:9092` | 下游数据广播（SASL_PLAINTEXT） | server |
-| **ClickHouse** | `:9000` / `:8123` | OLAP 分析（localhost only） | server |
-| **ClickHouse Keeper** | `:9181` | CH Raft 共识（ReplicatedMergeTree） | CH 内部 |
-| **Aliyun OSS** | `oss-cn-hangzhou.aliyuncs.com` | 冷存储归档 | server |
-| **Jaeger** | `:16686` | 分布式追踪 UI | 可选 |
-| **Grafana** | `:3000` | 监控面板 | 可选 |
-| **OpenTelemetry** | `:4317` (gRPC) / `:4318` (HTTP) | 遥测收集 | 可选 |
+| 服务                  | 端口                            | 用途                                | 客户端                         |
+| --------------------- | ------------------------------- | ----------------------------------- | ------------------------------ |
+| **NATS JetStream**    | `:4222` / `:8222`               | 异步消息总线（pub/sub）             | client（发布）+ server（消费） |
+| **Redis**             | `:6379`                         | 幂等性（SetNX）+ 热缓存             | server                         |
+| **PostgreSQL**        | `:5432`                         | 元数据 + 审计日志                   | server                         |
+| **TDengine**          | `:6030` / `:6041`               | 时序数据存储（WebSocket）           | server                         |
+| **Kafka**             | `:9092`                         | 下游数据广播（SASL_PLAINTEXT）      | server                         |
+| **ClickHouse**        | `:9000` / `:8123`               | OLAP 分析（localhost only）         | server                         |
+| **ClickHouse Keeper** | `:9181`                         | CH Raft 共识（ReplicatedMergeTree） | CH 内部                        |
+| **Aliyun OSS**        | `oss-cn-hangzhou.aliyuncs.com`  | 冷存储归档                          | server                         |
+| **Jaeger**            | `:16686`                        | 分布式追踪 UI                       | 可选                           |
+| **Grafana**           | `:3000`                         | 监控面板                            | 可选                           |
+| **OpenTelemetry**     | `:4317` (gRPC) / `:4318` (HTTP) | 遥测收集                            | 可选                           |
 
 **网络拓扑**：所有服务通过 host network 直连 `127.0.0.1`，无 Docker 网络隔离层。
 
 **OTel 端点**：binance 使用 **HTTP 协议** (`127.0.0.1:4318`)，不是 gRPC (`:4317`)。
+
+> ⚠️ **Kafka 当前已跳过**：`FOUNDATIONX_BINANCE_SKIP_KAFKA=1`（broker 不可达），dispatcher=nil，事件只写 TDengine 不进 Kafka 下游广播。详见 [§13.4](#134-kafka-producer-超时--skip-kafka)。
 
 ### 最小可用集合
 
@@ -173,18 +175,18 @@ NATS :4222  +  Redis :6379  +  PostgreSQL :5432
 
 实际部署中遇到的 10 项基础设施层面问题及解决方案：
 
-| # | 问题 | 原因 | 解决方案 |
-|---|------|------|----------|
-| I1 | 端口 8080 被占用 | jp1 上 code-server 已监听 `:8080` | `FOUNDATIONX_BINANCE_GIN_ADDR=:8090`，`ADMIN_ADDR=127.0.0.1:8081` |
-| I2 | ClickHouse `market_binance` 库不存在 | 首次部署未建库 | `CREATE DATABASE market_binance` |
-| I3 | ClickHouse 缺 `{shard}` macro | ReplicatedMergeTree 引用 `{shard}` / `{replica}` | `/etc/clickhouse-server/config.d/macros.xml` 定义 macro |
-| I4 | ClickHouse ReplicatedMergeTree 无法创建 | 缺 ZooKeeper/Keeper 协调 | 启用 `clickhouse-keeper` (`:9181`) + `zookeeper.xml` 配置 |
-| I5 | Redis 密码与 prod.md 不符 | prod.md 记录的密码过时 | 修正 prod.md 为实际密码 `dai1ooShaigh0thahReeg5Eu` |
-| I6 | Redis 无 `admin` 用户 | prod.md 假设有 admin 用户 | 使用 `FOUNDATIONX_REDISX_USERNAME=default` |
-| I7 | NATS 认证失败 | URL 内未嵌凭据 | `nats://nats_admin:...@127.0.0.1:4222` |
-| I8 | Admin 端口非环回需 TLS | Gin admin bind 非 127.0.0.1 触发 TLS 要求 | `ADMIN_ADDR=127.0.0.1:8081`（server）/ `127.0.0.1:8082`（client） |
-| I9 | Client 发布 `.v1` 后缀不匹配 stream subject | NATS stream subject 与 publish subject 不一致 | NATS subject mapping 配置 |
-| I10 | OTel 端口 gRPC/HTTP 不匹配 | binance 用 HTTP 协议，默认配 gRPC 端口 | `FOUNDATIONX_OTEL_ENDPOINT=127.0.0.1:4318` |
+| #   | 问题                                        | 原因                                             | 解决方案                                                          |
+| --- | ------------------------------------------- | ------------------------------------------------ | ----------------------------------------------------------------- |
+| I1  | 端口 8080 被占用                            | jp1 上 code-server 已监听 `:8080`                | `FOUNDATIONX_BINANCE_GIN_ADDR=:8090`，`ADMIN_ADDR=127.0.0.1:8081` |
+| I2  | ClickHouse `market_binance` 库不存在        | 首次部署未建库                                   | `CREATE DATABASE market_binance`                                  |
+| I3  | ClickHouse 缺 `{shard}` macro               | ReplicatedMergeTree 引用 `{shard}` / `{replica}` | `/etc/clickhouse-server/config.d/macros.xml` 定义 macro           |
+| I4  | ClickHouse ReplicatedMergeTree 无法创建     | 缺 ZooKeeper/Keeper 协调                         | 启用 `clickhouse-keeper` (`:9181`) + `zookeeper.xml` 配置         |
+| I5  | Redis 密码与 prod.md 不符                   | prod.md 记录的密码过时                           | 修正 prod.md 为实际密码 `dai1ooShaigh0thahReeg5Eu`                |
+| I6  | Redis 无 `admin` 用户                       | prod.md 假设有 admin 用户                        | 使用 `FOUNDATIONX_REDISX_USERNAME=default`                        |
+| I7  | NATS 认证失败                               | URL 内未嵌凭据                                   | `nats://nats_admin:...@127.0.0.1:4222`                            |
+| I8  | Admin 端口非环回需 TLS                      | Gin admin bind 非 127.0.0.1 触发 TLS 要求        | `ADMIN_ADDR=127.0.0.1:8081`（server）/ `127.0.0.1:8082`（client） |
+| I9  | Client 发布 `.v1` 后缀不匹配 stream subject | NATS stream subject 与 publish subject 不一致    | NATS subject mapping 配置                                         |
+| I10 | OTel 端口 gRPC/HTTP 不匹配                  | binance 用 HTTP 协议，默认配 gRPC 端口           | `FOUNDATIONX_OTEL_ENDPOINT=127.0.0.1:4318`                        |
 
 ### 5.1 ClickHouse macros.xml
 
@@ -371,13 +373,13 @@ WantedBy=multi-user.target
 
 ### 7.3 关键设计决策
 
-| 决策 | 原因 |
-|------|------|
-| `User=claude` 非 root | 最小权限原则 |
-| `EnvironmentFile` + `Environment=` 共存 | `ADMIN_ADDR` 各 unit 不同，不能放 `prod.env`（否则 EnvironmentFile 覆盖 Environment） |
-| `After=nats.service redis-server.service ...` | 确保依赖 infra 先启动 |
-| `StandardOutput=append:...` | 日志持久化到文件，不依赖 journald |
-| `LimitNOFILE=65536` | Binance WS 连接数高，需提高 fd 上限 |
+| 决策                                          | 原因                                                                                  |
+| --------------------------------------------- | ------------------------------------------------------------------------------------- |
+| `User=claude` 非 root                         | 最小权限原则                                                                          |
+| `EnvironmentFile` + `Environment=` 共存       | `ADMIN_ADDR` 各 unit 不同，不能放 `prod.env`（否则 EnvironmentFile 覆盖 Environment） |
+| `After=nats.service redis-server.service ...` | 确保依赖 infra 先启动                                                                 |
+| `StandardOutput=append:...`                   | 日志持久化到文件，不依赖 journald                                                     |
+| `LimitNOFILE=65536`                           | Binance WS 连接数高，需提高 fd 上限                                                   |
 
 ### 7.4 启动依赖链
 
@@ -417,15 +419,15 @@ systemctl show binance-server -p MemoryCurrent,CPUUsageNSec
 
 ### 8.1 端点
 
-| 服务 | 端点 | 用途 | 预期 |
-|------|------|------|------|
-| server | `GET http://127.0.0.1:8090/healthz` | 存活检查（liveness） | HTTP 200 |
-| server | `GET http://127.0.0.1:8090/metrics` | Prometheus 指标 | HTTP 200 |
-| server | `GET http://127.0.0.1:8090/readyz` | 就绪检查（readiness） | HTTP 200 |
-| server | `GET http://127.0.0.1:8081/admin/stats` | 服务统计 | JSON `{"accepted":N,"ingested":N}` |
-| server | `GET http://127.0.0.1:8090/latest?symbol=BTCUSDT` | 最新行情 | JSON 含 bid/ask/qty |
-| server | `GET http://127.0.0.1:8090/range?symbol=BTCUSDT&from=...&to=...` | 历史数据 | JSON 数组 |
-| client | `GET http://127.0.0.1:8082/admin/stats` | Client 统计 | JSON |
+| 服务   | 端点                                                             | 用途                  | 预期                               |
+| ------ | ---------------------------------------------------------------- | --------------------- | ---------------------------------- |
+| server | `GET http://127.0.0.1:8090/healthz`                              | 存活检查（liveness）  | HTTP 200                           |
+| server | `GET http://127.0.0.1:8090/metrics`                              | Prometheus 指标       | HTTP 200                           |
+| server | `GET http://127.0.0.1:8090/readyz`                               | 就绪检查（readiness） | HTTP 200                           |
+| server | `GET http://127.0.0.1:8081/admin/stats`                          | 服务统计              | JSON `{"accepted":N,"ingested":N}` |
+| server | `GET http://127.0.0.1:8090/latest?symbol=BTCUSDT`                | 最新行情              | JSON 含 bid/ask/qty                |
+| server | `GET http://127.0.0.1:8090/range?symbol=BTCUSDT&from=...&to=...` | 历史数据              | JSON 数组                          |
+| client | `GET http://127.0.0.1:8082/admin/stats`                          | Client 统计           | JSON                               |
 
 ### 8.2 部署后验证
 
@@ -457,11 +459,11 @@ df -h /opt
 ```yaml
 # /home/binance/deploy/alertmanager/config.yml
 route:
-  group_by: ['alertname']
+  group_by: ["alertname"]
   group_wait: 10s
   group_interval: 10s
   repeat_interval: 1h
-  receiver: 'default'    # → webhook → :9093
+  receiver: "default" # → webhook → :9093
 ```
 
 ---
@@ -531,60 +533,64 @@ ssh claude@84.247.154.45 "chmod 600 /opt/binance/secrets/prod.env"
 
 ### 10.2 必需凭据
 
-| 环境变量 | 用途 |
-|----------|------|
-| **binance 运行时** | |
-| `FOUNDATIONX_BINANCE_MODE` | 运行模式（prod） |
-| `FOUNDATIONX_BINANCE_GIN_ADDR` | Gin API 监听地址（`:8090`） |
-| `FOUNDATIONX_BINANCE_REST_BASE_URL` | Binance REST 端点 |
-| `FOUNDATIONX_BINANCE_UM_PERP_REST_BASE_URL` | U 本位合约 REST 端点 |
-| `FOUNDATIONX_BINANCE_CM_PERP_REST_BASE_URL` | 币本位合约 REST 端点 |
-| `FOUNDATIONX_BINANCE_OPTIONS_REST_BASE_URL` | 期权 REST 端点 |
-| `FOUNDATIONX_BINANCE_ADMIN_TOKEN` | Admin API 令牌 |
-| **PostgreSQL** | |
-| `FOUNDATIONX_POSTGRESX_HOST` | 主机（`127.0.0.1`） |
-| `FOUNDATIONX_POSTGRESX_PORT` | 端口（`5432`） |
-| `FOUNDATIONX_POSTGRESX_DATABASE` | 库名（`market_binance`） |
-| `FOUNDATIONX_POSTGRESX_USER` | 用户名 |
-| `FOUNDATIONX_POSTGRESX_PASSWORD` | 密码 |
-| `FOUNDATIONX_POSTGRESX_SSLMODE` | SSL 模式（`disable`） |
-| **TDengine** | |
-| `FOUNDATIONX_TAOSX_HOST` | 主机（`127.0.0.1`） |
-| `FOUNDATIONX_TAOSX_ENDPOINT` | WebSocket 端点（`127.0.0.1:6041`） |
-| `FOUNDATIONX_TAOSX_PORT` | 端口（`6030`） |
-| `FOUNDATIONX_TAOSX_DATABASE` | 库名（`market_binance`） |
-| `FOUNDATIONX_TAOSX_USER` | 用户名 |
-| `FOUNDATIONX_TAOSX_PASSWORD` | 密码 |
-| **Redis** | |
-| `FOUNDATIONX_REDISX_ADDR` | 地址（`127.0.0.1:6379`） |
-| `FOUNDATIONX_REDISX_USERNAME` | 用户名（`default`） |
-| `FOUNDATIONX_REDISX_PASSWORD` | 密码 |
-| **NATS** | |
-| `FOUNDATIONX_NATS_URL` | NATS URL（含凭据 `nats://user:pass@127.0.0.1:4222`） |
-| `FOUNDATIONX_NATS_USERNAME` | 用户名 |
-| `FOUNDATIONX_NATS_PASSWORD` | 密码 |
-| **Kafka** | |
-| `FOUNDATIONX_KAFKAX_BROKERS` | Broker 地址（`84.247.154.45:9092`） |
-| `FOUNDATIONX_KAFKAX_SASL_MECHANISM` | SASL 机制（`PLAIN`） |
-| `FOUNDATIONX_KAFKAX_SASL_USERNAME` | SASL 用户名 |
-| `FOUNDATIONX_KAFKAX_SASL_PASSWORD` | SASL 密码 |
-| **ClickHouse** | |
-| `FOUNDATIONX_CLICKHOUSEX_HOST` | 主机（`127.0.0.1`） |
-| `FOUNDATIONX_CLICKHOUSEX_PORT` | 端口（`9000`） |
-| `FOUNDATIONX_CLICKHOUSEX_DATABASE` | 库名（`market_binance`） |
-| `FOUNDATIONX_CLICKHOUSEX_USER` | 用户名 |
-| `FOUNDATIONX_CLICKHOUSEX_PASSWORD` | 密码 |
-| **Aliyun OSS** | |
-| `FOUNDATIONX_OSSX_ACCESS_KEY_ID` | OSS AK |
-| `FOUNDATIONX_OSSX_ACCESS_KEY_SECRET` | OSS SK |
-| `FOUNDATIONX_OSSX_BUCKET` | 桶名 |
-| `FOUNDATIONX_OSSX_ENDPOINT` | 端点 |
-| **OpenTelemetry** | |
-| `FOUNDATIONX_OTEL_ENDPOINT` | OTel HTTP 端点（`127.0.0.1:4318`） |
+| 环境变量                                      | 用途                                                                     |
+| --------------------------------------------- | ------------------------------------------------------------------------ |
+| **binance 运行时**                            |                                                                          |
+| `FOUNDATIONX_BINANCE_MODE`                    | 运行模式（prod）                                                         |
+| `FOUNDATIONX_BINANCE_GIN_ADDR`                | Gin API 监听地址（`:8090`）                                              |
+| `FOUNDATIONX_BINANCE_REST_BASE_URL`           | Binance REST 端点                                                        |
+| `FOUNDATIONX_BINANCE_UM_PERP_REST_BASE_URL`   | U 本位合约 REST 端点                                                     |
+| `FOUNDATIONX_BINANCE_CM_PERP_REST_BASE_URL`   | 币本位合约 REST 端点                                                     |
+| `FOUNDATIONX_BINANCE_OPTIONS_REST_BASE_URL`   | 期权 REST 端点                                                           |
+| `FOUNDATIONX_BINANCE_ADMIN_TOKEN`             | Admin API 令牌                                                           |
+| **PostgreSQL**                                |                                                                          |
+| `FOUNDATIONX_POSTGRESX_HOST`                  | 主机（`127.0.0.1`）                                                      |
+| `FOUNDATIONX_POSTGRESX_PORT`                  | 端口（`5432`）                                                           |
+| `FOUNDATIONX_POSTGRESX_DATABASE`              | 库名（`market_binance`）                                                 |
+| `FOUNDATIONX_POSTGRESX_USER`                  | 用户名                                                                   |
+| `FOUNDATIONX_POSTGRESX_PASSWORD`              | 密码                                                                     |
+| `FOUNDATIONX_POSTGRESX_SSLMODE`               | SSL 模式（`disable`）                                                    |
+| **TDengine**                                  |                                                                          |
+| `FOUNDATIONX_TAOSX_HOST`                      | 主机（`127.0.0.1`）                                                      |
+| `FOUNDATIONX_TAOSX_ENDPOINT`                  | WebSocket 端点（`127.0.0.1:6041`）                                       |
+| `FOUNDATIONX_TAOSX_PORT`                      | 端口（`6030`）                                                           |
+| `FOUNDATIONX_TAOSX_DATABASE`                  | 库名（`market_binance`）                                                 |
+| `FOUNDATIONX_TAOSX_USER`                      | 用户名                                                                   |
+| `FOUNDATIONX_TAOSX_PASSWORD`                  | 密码                                                                     |
+| **Redis**                                     |                                                                          |
+| `FOUNDATIONX_REDISX_ADDR`                     | 地址（`127.0.0.1:6379`）                                                 |
+| `FOUNDATIONX_REDISX_USERNAME`                 | 用户名（`default`）                                                      |
+| `FOUNDATIONX_REDISX_PASSWORD`                 | 密码                                                                     |
+| **NATS**                                      |                                                                          |
+| `FOUNDATIONX_NATS_URL`                        | NATS URL（含凭据 `nats://user:pass@127.0.0.1:4222`）                     |
+| `FOUNDATIONX_NATS_USERNAME`                   | 用户名                                                                   |
+| `FOUNDATIONX_NATS_PASSWORD`                   | 密码                                                                     |
+| **Kafka**                                     |                                                                          |
+| `FOUNDATIONX_KAFKAX_BROKERS`                  | Broker 地址（`127.0.0.1:9092`）                                          |
+| `FOUNDATIONX_KAFKAX_SASL_MECHANISM`           | SASL 机制（`PLAIN`，注：代码硬编码 PLAIN，此变量未被读取）               |
+| `FOUNDATIONX_KAFKAX_SASL_USERNAME`            | SASL 用户名                                                              |
+| `FOUNDATIONX_KAFKAX_SASL_PASSWORD`            | SASL 密码                                                                |
+| `FOUNDATIONX_BINANCE_SKIP_KAFKA`              | **`1`=跳过 Kafka dispatch**（当前生产值 `1`，broker 不可达时的临时绕过） |
+| `FOUNDATIONX_BINANCE_CONSUMER_WORKERS`        | NATS 消费 worker 数（默认 `16`）                                         |
+| `FOUNDATIONX_BINANCE_STALE_THRESHOLD_SECONDS` | stale 拒绝阈值（默认 `30`）                                              |
+| **ClickHouse**                                |                                                                          |
+| `FOUNDATIONX_CLICKHOUSEX_HOST`                | 主机（`127.0.0.1`）                                                      |
+| `FOUNDATIONX_CLICKHOUSEX_PORT`                | 端口（`9000`）                                                           |
+| `FOUNDATIONX_CLICKHOUSEX_DATABASE`            | 库名（`market_binance`）                                                 |
+| `FOUNDATIONX_CLICKHOUSEX_USER`                | 用户名                                                                   |
+| `FOUNDATIONX_CLICKHOUSEX_PASSWORD`            | 密码                                                                     |
+| **Aliyun OSS**                                |                                                                          |
+| `FOUNDATIONX_OSSX_ACCESS_KEY_ID`              | OSS AK                                                                   |
+| `FOUNDATIONX_OSSX_ACCESS_KEY_SECRET`          | OSS SK                                                                   |
+| `FOUNDATIONX_OSSX_BUCKET`                     | 桶名                                                                     |
+| `FOUNDATIONX_OSSX_ENDPOINT`                   | 端点                                                                     |
+| **OpenTelemetry**                             |                                                                          |
+| `FOUNDATIONX_OTEL_ENDPOINT`                   | OTel HTTP 端点（`127.0.0.1:4318`）                                       |
 
 ### 10.3 ADMIN_ADDR 特殊处理
 
 `FOUNDATIONX_BINANCE_ADMIN_ADDR` **不放在 `prod.env` 中**，因为：
+
 - server 和 client 使用不同端口（8081 / 8082）
 - systemd 的 `EnvironmentFile=` 会覆盖 `Environment=`
 
@@ -617,6 +623,7 @@ CANARY_TAG=v0.9.0 bash /home/binance/scripts/deploy-canary.sh
 ```
 
 流程：
+
 1. **Preflight** — 确认当前实例 `/healthz` 正常，rollback 资源可用
 2. **启动 canary** — K8s: `kubectl set image` 灰度 30%；非 K8s: 手动启动新实例
 3. **等待窗口** — 默认 300s（`CANARY_WINDOW_SECONDS`）
@@ -625,11 +632,13 @@ CANARY_TAG=v0.9.0 bash /home/binance/scripts/deploy-canary.sh
 
 Canary gate 检查项（`deploy-canary-gate.sh`）：
 
-| 检查项 | 方法 | 阈值 |
-|--------|------|------|
-| `/readyz` | `curl GET /readyz` | HTTP 200 |
-| error-rate | `binance_ingest_requests_total{verdict="rejected"} / total` | < 1.0% |
-| consumer-lag | `binance_kafka_consumer_lag_messages` | < 10000 条 |
+| 检查项       | 方法                                                        | 阈值       |
+| ------------ | ----------------------------------------------------------- | ---------- |
+| `/readyz`    | `curl GET /readyz`                                          | HTTP 200   |
+| error-rate   | `binance_ingest_requests_total{verdict="rejected"} / total` | < 1.0%     |
+| consumer-lag | `binance_kafka_consumer_lag_messages`                       | < 10000 条 |
+
+> ⚠️ Kafka 跳过时（`FOUNDATIONX_BINANCE_SKIP_KAFKA=1`）`consumer-lag` 指标不存在，canary gate 需跳过此项或标记为 N/A。
 
 ### 11.2 数据销毁演练
 
@@ -674,10 +683,10 @@ sudo journalctl -u binance-client -S "2026-06-30 12:00:00"
 
 ### 11.6 资源限制
 
-| 服务 | MemoryHigh | MemoryMax | CPUQuota | LimitNOFILE |
-|------|-----------|-----------|----------|-------------|
-| binance-server | 3G | 4G | 200% | 65536 |
-| binance-client | 384M | 512M | — | 65536 |
+| 服务           | MemoryHigh | MemoryMax | CPUQuota | LimitNOFILE |
+| -------------- | ---------- | --------- | -------- | ----------- |
+| binance-server | 3G         | 4G        | 200%     | 65536       |
+| binance-client | 384M       | 512M      | —        | 65536       |
 
 ```bash
 # 实时资源用量
@@ -691,11 +700,11 @@ systemctl show binance-client -p MemoryCurrent,CPUUsageNSec
 
 ### 12.1 机器池
 
-| 阶段 | 池 | 触发 |
-|------|-----|------|
-| CI（preflight / build / test / lint / boundary / integration / secret-scan） | `sre/storage-light` | PR / push |
-| CD（release-preflight / publish / smoke） | `sre/deploy` | tag `v*` |
-| Rollback Drill | `sre/deploy` | `workflow_dispatch` |
+| 阶段                                                                         | 池                  | 触发                |
+| ---------------------------------------------------------------------------- | ------------------- | ------------------- |
+| CI（preflight / build / test / lint / boundary / integration / secret-scan） | `sre/storage-light` | PR / push           |
+| CD（release-preflight / publish / smoke）                                    | `sre/deploy`        | tag `v*`            |
+| Rollback Drill                                                               | `sre/deploy`        | `workflow_dispatch` |
 
 ### 12.2 管线阶段
 
@@ -727,18 +736,92 @@ tag v* (在 evidence 通过后):
 
 以下 6 个代码级 Bug 在首次生产部署中发现并修复（PR [#358](https://github.com/ZoneCNH/binance/pull/358)）：
 
-| # | 症状 | 根因 | 修复 |
-|---|------|------|------|
-| D1 | TDengine tag 值错位 | `renderPointInsert` 用 Go map 迭代 Tags 顺序非确定 | 新增 `orderedTagKeys()` 按超表 schema 列顺序输出 TAGS |
-| D2 | partial depth 事件全零 | `tickPayload` 缺 `bids`/`asks`/`lastUpdateId` 字段（`@depth20@100ms` 用 `bids`/`asks` 而非 `b`/`a`） | 添加字段 + `tickPoint` 回退逻辑 |
-| D3 | Market API `BNC_BACKEND_DOWN` | `QueryRange` 用 `?` 参数化查询（taosWS 不支持）+ `.UTC()` 时区与 TDengine 本地时区不匹配 | 字符串插值 + `.Local()` 时区转换 |
-| D4 | Stats API `BNC_SERVICE_NOT_CONFIGURED` | `assemble.go` 未 wiring `Stats` provider | 新增 `ingestStatsProvider` adapter + `SnapshotStats()` 导出 |
-| D5 | Client admin 端口冲突 | systemd `EnvironmentFile=` 覆盖 `Environment=` | 从 `prod.env` 移除 `ADMIN_ADDR`，各 unit 独立 `Environment=` |
-| D6 | Fields map 顺序随机 | 同 D1 根因 | field key 排序输出 |
+| #   | 症状                                   | 根因                                                                                                 | 修复                                                         |
+| --- | -------------------------------------- | ---------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
+| D1  | TDengine tag 值错位                    | `renderPointInsert` 用 Go map 迭代 Tags 顺序非确定                                                   | 新增 `orderedTagKeys()` 按超表 schema 列顺序输出 TAGS        |
+| D2  | partial depth 事件全零                 | `tickPayload` 缺 `bids`/`asks`/`lastUpdateId` 字段（`@depth20@100ms` 用 `bids`/`asks` 而非 `b`/`a`） | 添加字段 + `tickPoint` 回退逻辑                              |
+| D3  | Market API `BNC_BACKEND_DOWN`          | `QueryRange` 用 `?` 参数化查询（taosWS 不支持）+ `.UTC()` 时区与 TDengine 本地时区不匹配             | 字符串插值 + `.Local()` 时区转换                             |
+| D4  | Stats API `BNC_SERVICE_NOT_CONFIGURED` | `assemble.go` 未 wiring `Stats` provider                                                             | 新增 `ingestStatsProvider` adapter + `SnapshotStats()` 导出  |
+| D5  | Client admin 端口冲突                  | systemd `EnvironmentFile=` 覆盖 `Environment=`                                                       | 从 `prod.env` 移除 `ADMIN_ADDR`，各 unit 独立 `Environment=` |
+| D6  | Fields map 顺序随机                    | 同 D1 根因                                                                                           | field key 排序输出                                           |
 
 ### 13.3 taosx 库修复
 
 taosx [PR #21](https://github.com/ZoneCNH/taosx/pull/21)（tag v1.0.3）修复了 `renderPointInsert` 中 tag/field 顺序非确定性问题。binance go.mod 引用 `taosx v1.0.3`。
+
+### 13.4 Kafka producer 超时 → skip-kafka（commit 5f65211）
+
+**症状**：生产环境 Kafka producer 超时，吞吐降至 1.6 events/s，NATS 积压 205,861 条，freshness 301,505ms。
+
+**根因链**（代码证据见 `/home/binance` + `/home/kafkax`）：
+
+| 层       | 根因                                                                                     | 位置                                                      |
+| -------- | ---------------------------------------------------------------------------------------- | --------------------------------------------------------- |
+| 直接原因 | jp1 上 `127.0.0.1:9092` Kafka broker 未运行/不可达                                       | commit message: "broken Kafka broker"                     |
+| 放大 1   | `segmentio/kafka-go` `Writer.WriteMessages` **同步阻塞**，等待 `RequiredAcks=All ISR`    | `kafkax/pkg/kafkax/kafkago/producer.go:68`                |
+| 放大 2   | kafkax producer **全局互斥锁**串行化所有并发 Send（即使 16 worker 也只能一次发一条）     | `kafkax/pkg/kafkax/kafkago/producer.go:66-70`             |
+| 放大 3   | `StrictDispatchHandoff=true`（修复前）将 Kafka dispatch 放在关键路径上，必须成功才能 ACK | `internal/server/assembly/dispatcher.go:99`（父 commit）  |
+| 放大 4   | `Timeout=10s × MaxAttempts=3` + dispatch retry `[100ms,200ms,400ms]` = 单条最坏 **90s+** | `dispatcher.go:106,114` + `server.go:98-100`（父 commit） |
+| 雪崩     | `AckWait=30s` < 90s 处理时间 → NATS 重新投递 → 积压雪崩                                  | `internal/server/consumer/consumer.go:24`                 |
+
+**修复**（commit `5f65211`，6 项措施，吞吐 1.6/s → 915/s，572x）：
+
+| 措施                        | 修改                                                                             | 位置                                           |
+| --------------------------- | -------------------------------------------------------------------------------- | ---------------------------------------------- |
+| skip-kafka                  | `FOUNDATIONX_BINANCE_SKIP_KAFKA=1` → dispatcher=nil，跳过 Kafka fanout           | `internal/server/assembly/dispatcher.go:49-52` |
+| Kafka retry 收紧            | `MaxAttempts=1, Backoff=0, Timeout 10s→3s`（Kafka 启用但不健康时不再雪崩）       | `dispatcher.go:72-73,106`                      |
+| dispatch retry 收紧         | `[100ms,200ms,400ms]` → `[0]`（单次尝试）                                        | `internal/server/server.go:98-100`             |
+| StrictDispatchHandoff=false | Kafka 失败只记日志不阻塞 TDengine 写入                                           | `dispatcher.go:99`                             |
+| Consumer worker pool        | 单 goroutine → 16 goroutines（`FOUNDATIONX_BINANCE_CONSUMER_WORKERS`）           | `internal/server/consumer/consumer.go`         |
+| TDengine 连接池             | `MaxOpenConns 4→25, MaxIdleConns 2→10`，`WriteBatch` 改 `ExecContext` 消除 2 RTT | `internal/server/storage/`                     |
+
+**skip-kafka 是临时绕过，非真正修复**。skip 后 dispatcher=nil，事件只写 TDengine，不进入 Kafka 下游广播。重新启用条件：
+
+1. jp1 上启动 Kafka broker（`127.0.0.1:9092`，SASL PLAINTEXT/PLAIN）
+2. 移除 `FOUNDATIONX_BINANCE_SKIP_KAFKA=1` 环境变量
+3. commit 5f65211 的防御性修改（3s timeout、单次尝试、`StrictDispatchHandoff=false`）会保护系统在 broker 间歇性故障时不雪崩
+
+**未修复的代码缺陷**（重新启用前建议修复）：
+
+| 缺陷                                      | 位置                                              | 影响                    |
+| ----------------------------------------- | ------------------------------------------------- | ----------------------- |
+| producer 全局互斥锁串行化 `WriteMessages` | `kafkax/pkg/kafkax/kafkago/producer.go:66-70`     | 高吞吐下仍成瓶颈        |
+| `Idempotent: true` 被声明但完全忽略       | `dispatcher.go:112` + `kafkago/producer.go:19-38` | 误导性配置              |
+| HealthCheck 不真正连接 broker             | `kafkax/pkg/kafkax/health.go:130-138`             | broker 挂了仍报 healthy |
+| `SASL_MECHANISM` 环境变量未被代码读取     | `pkg/binancecfg/config.go:122-126`                | 无害但冗余              |
+
+### 13.5 gap_detected=38272 — gap repair 机制未接线
+
+**症状**：`/admin/streams` 报告 `gap_detected=38272`（历史 gap，来自之前 purge/restart）。
+
+**根因**：
+
+- `gap_detected` 是 `qualityTracker` 中的**纯内存计数器**（`internal/server/quality.go:20,70`），进程重启归零
+- purge/restart 后 `lastEventTime` / `lastSequence` map（`quality.go:18-19`）清空，重建 baseline 时业务序列号（trade_id 等）天然不连续，每条不连续触发 `gapDetected++`
+- **这不是 NATS JetStream 消费者层面的 sequence gap**——NATS durable consumer（`consumer.go:20-29`，durable=`binance-server`，AckExplicit，AckWait=30s，MaxDeliver=5）本身不丢数据
+
+**gap repair 机制现状**：
+
+| 层面                            | 状态                      | 证据                                                            |
+| ------------------------------- | ------------------------- | --------------------------------------------------------------- |
+| gap 检测                        | ✅ 完整                   | `quality.go:50-218`（sequence + event-time 双检测）             |
+| gap 计数/metrics                | ✅ 完整                   | `quality.go:70`, `metrics.go:221-224`, `admin.go:255`           |
+| AlertDispatcher                 | ⚠️ 接口存在，**生产 nil** | `alert_dispatcher.go:43-46`，`assemble.go` 未设                 |
+| ReplayBridge                    | ⚠️ 接口存在，**生产 nil** | `replay_bridge.go:25-27`，`assemble.go` 未设                    |
+| Replay job worker               | ❌ 无                     | `InMemoryReplayBridge` 仅存储 job，无 worker                    |
+| NATS 缺失消息请求               | ❌ 无代码                 | 无 `GetMsg`/`GetLastMsg` 调用                                   |
+| Server 侧 REST 回填             | ❌ 无代码                 | —                                                               |
+| Client 侧 gap-fill              | ⚠️ 有但手动触发           | `internal/client/lifecycle.go:218-256`，需调 admin API          |
+| Server↔Client 自动联动          | ❌ 无连接                 | server gap_detected 不触发 client gap-fill                      |
+| durable historical fetch/replay | ❌ NOT_IMPLEMENTED        | `release/evidence/binance/20260623/lifecycle-local-gates.log:8` |
+
+**结论：38272 gap 无法自动修复。** gap 检测是纯观测性的，不阻塞处理（`quality.go:63-80` 在 `observe()` 内，事件仍正常接受/持久化/ACK）。
+
+**手动操作**：
+
+1. **止血**：重启 binance-server，`gapDetected` 计数器归零（不修复已丢数据，仅清误报计数）
+2. **回填已丢数据**：手动调用 client admin API `POST /api/v1/admin/backfill/gap-fill`（`internal/client/admin.go:114`），指定时间范围和 symbol 从 Binance REST 回填
+3. **长期**：在 `assemble.go` 接线 `AlertDispatcher` + `ReplayBridge`，实现 replay worker + server→client gap 自动联动
 
 ---
 
