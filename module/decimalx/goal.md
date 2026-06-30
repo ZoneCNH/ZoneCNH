@@ -5,7 +5,7 @@
 | 模块 | `decimalx` |
 | 层级 | L2.5 领域共享 |
 | 仓库 | <https://github.com/ZoneCNH/decimalx> |
-| 当前版本 | v0.2.0 |
+| 当前版本 | v1.0.0 |
 | 目标版本 | v1.0.0 |
 | 状态 | v1.0.0 执行计划已落地，待仓库实现 |
 | 计划来源 | `/home/zone/Downloads/0615/ZoneCNH-v1.0.0-goal-execution-plans/decimalx-v1.0.0-goal-execution-plan.md` |

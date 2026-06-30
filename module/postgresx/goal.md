@@ -3,7 +3,7 @@
 | 字段 | 内容 |
 | ---- | ---- |
 | 模块名 | `postgresx` |
-| 发布目标 | v1.0.0 |
+| 发布目标 | v1.1.0 |
 | 当前实现基线 | v1.0.0 release |
 | 所属层级 | 基座 · PostgreSQL 存储扩展 |
 | 稳定目标 | Public API、metrics contract、版本矩阵与 release evidence 已冻结 |

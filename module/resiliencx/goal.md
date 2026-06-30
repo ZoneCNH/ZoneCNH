@@ -1,9 +1,9 @@
-# resiliencx 发布版本 1.0.2 Goal 定位与实现标准
+# resiliencx 发布版本 1.1 Goal 定位与实现标准
 
 | 字段         | 内容                                           |
 | ------------ | ---------------------------------------------- |
 | 模块名       | `resiliencx`                                   |
-| 发布版本     | 1.0.2                                          |
+| 发布版本     | 1.1.0                                          |
 | 所属层级     | L1 基础能力（弹性治理；与 SPEC §3 / FOUNDATION-DEPS.yaml 一致） |
 | 稳定级别     | Public API Stable；SPI Stable；Internal 可演进 |
 | 文档状态     | 已发布，与 SPEC.md v1.0.2 / runtime tag v1.0.2 对齐 |

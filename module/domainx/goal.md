@@ -3,7 +3,7 @@
 | 字段 | 内容 |
 |------|------|
 | 模块名 | `domainx` |
-| 发布版本 | 1.0.1 |
+| 发布版本 | 1.0.0 |
 | 所属层级 | L2.5 领域共享层 / 执行域值对象 |
 | 稳定级别 | Public API Stable；SPI N/A（纯值对象，无接口）；Internal 可演进 |
 | 文档状态 | v1.0.1 已发布（SPEC + TRACEABILITY §1-§7，覆盖率 100%，所有 FR/BR/NFR/AC Done） |
