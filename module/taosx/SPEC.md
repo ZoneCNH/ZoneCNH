@@ -2,7 +2,7 @@
 
 - Status: Approved
 - Spec-Version: v1.2.0
-- Last-Updated: 2026-06-26
+- Last-Updated: 2026-06-30
 - Layer: L2 存储适配器
 - Version: v1.0.5
 - Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `kernel`

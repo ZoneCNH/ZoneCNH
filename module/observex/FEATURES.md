@@ -1,9 +1,9 @@
 # observex 完整实现清单
 
 - Status: Generated from current module SSOT
-- Last-Updated: 2026-06-21
-- Module-Version: v0.3.6
-- Module-State: 已发布
+- Last-Updated: 2026-06-30
+- Module-Version: v1.1.0
+- Module-State: Tag Exists / Release Pending
 - Layer: L0 观测
 - Runtime-Repo: /home/observex
 - Source: goal.md, SPEC.md, DESIGN.md, TRACEABILITY.md, IMPLEMENTATION-PLAN.md, tasks/, prompt/
