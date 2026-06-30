@@ -209,4 +209,4 @@ echo -n "password" | openssl passwd -stdin -apr1 | sudo tee -a /etc/nginx/.htpas
 ### 9.2 当前问题
 
 - **Kafka 下游广播中断**：`FOUNDATIONX_BINANCE_SKIP_KAFKA=1`（broker 不可达），事件只写 TDengine 不进 Kafka。依赖 Kafka 下游的消费方收不到数据。kafkax v1.1.2 已修复 producer 互斥锁串行化、HealthCheck broker 拨号、幂等配置等根因缺陷，broker 修复后可安全移除 skip。详见 [DEPLOY.md §13.4](./DEPLOY.md#134-kafka-producer-超时--skip-kafka)。
-- **gap_detected=38272 历史遗留**：replay worker 已实现（30s drain + NATS 发布到 `binance.replay.requests`），AlertDispatcher 已接线 NATS publisher（gap alert 发布到 `binance.alerts.runtime`）。client 侧自动订阅触发 `QueueGapFill` 待实现。纯观测性，不阻塞处理。详见 [DEPLOY.md §13.5](./DEPLOY.md#135-gap_detected38272--gap-repair-机制)。
+- **gap_detected=38272 历史遗留**：server→client gap 自动联动已完整闭环（replay worker 30s drain → NATS → client subscriber → `QueueGapFill`）。`LifecycleManager` 任务执行 worker 待实现（当前仅排队，需配合 `HistoryRuntime` 执行 REST 拉取）。纯观测性，不阻塞处理。详见 [DEPLOY.md §13.5](./DEPLOY.md#135-gap_detected38272--gap-repair-机制)。

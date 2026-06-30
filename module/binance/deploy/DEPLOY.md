@@ -1,6 +1,6 @@
 # binance 二进制构建与部署
 
-- Runtime-Version: v0.9.0（anchor: `/home/binance@0e8af74` — replay worker + alert NATS publishing + kafkax v1.1.2）
+- Runtime-Version: v0.9.1（anchor: `/home/binance@0fd95f7` — client NATS subscription for auto gap-fill）
 - Target: jp1 (84.247.154.45)
 - Last-Updated: 2026-07-01
 
@@ -802,7 +802,7 @@ taosx [PR #21](https://github.com/ZoneCNH/taosx/pull/21)（tag v1.0.3）修复�
 - purge/restart 后 `lastEventTime` / `lastSequence` map（`quality.go:18-19`）清空，重建 baseline 时业务序列号（trade_id 等）天然不连续，每条不连续触发 `gapDetected++`
 - **这不是 NATS JetStream 消费者层面的 sequence gap**——NATS durable consumer（`consumer.go:20-29`，durable=`binance-server`，AckExplicit，AckWait=30s，MaxDeliver=5）本身不丢数据
 
-**gap repair 机制现状**（binance #361 后更新）：
+**gap repair 机制现状**（binance #361/#362 后更新）：
 
 | 层面                            | 状态                          | 证据                                                            |
 | ------------------------------- | ----------------------------- | --------------------------------------------------------------- |
@@ -813,18 +813,19 @@ taosx [PR #21](https://github.com/ZoneCNH/taosx/pull/21)（tag v1.0.3）修复�
 | Replay job worker               | ✅ 30s drain + NATS 发布      | `assemble.go` Run goroutine — Drain(64) → publish → MarkDone    |
 | NATS 缺失消息请求               | ✅ 发布到 `binance.replay.requests` | replay worker 将 ReplayJob 作为 natsx Envelope 发布       |
 | Server 侧 REST 回填             | ❌ 无代码（设计如此）         | server 不直接调 Binance REST，由 client 执行                    |
-| Client 侧 gap-fill              | ⚠️ 有但需手动触发             | `internal/client/lifecycle.go:218-256`，需调 admin API          |
-| Server↔Client 自动联动          | ⚠️ NATS 发布已就绪，client 订阅待实现 | server 发布 gap alert + replay request 到 NATS，client 尚未订阅 |
+| Client 侧 gap-fill              | ✅ 自动触发（NATS 订阅）      | `runtime.go` — `GapAlertSubscriber` 订阅 → `QueueGapFill`       |
+| Server↔Client 自动联动          | ✅ 完整闭环                   | server replay worker → NATS → client subscriber → QueueGapFill  |
 | durable historical fetch/replay | ❌ NOT_IMPLEMENTED            | `release/evidence/binance/20260623/lifecycle-local-gates.log:8` |
 
-**结论：38272 gap 为历史遗留，不可自动修复。** gap 检测是纯观测性的，不阻塞处理（`quality.go:63-80` 在 `observe()` 内，事件仍正常接受/持久化/ACK）。replay worker 已实现 job drain + NATS 发布，但 client 侧自动订阅 `binance.replay.requests` 触发 `QueueGapFill` 尚未实现。
+**结论：38272 gap 为历史遗留。** gap 检测是纯观测性的，不阻塞处理（`quality.go:63-80` 在 `observe()` 内，事件仍正常接受/持久化/ACK）。server→client 自动联动已完整闭环：replay worker 30s drain → 发布到 `binance.replay.requests` → client 订阅 → 自动 `QueueGapFill`。`LifecycleManager` 仍为规划层（任务排队但不自动执行 REST 回填），需配合 `HistoryRuntime` 执行实际数据拉取。
 
 **手动操作**：
 
 1. **止血**：重启 binance-server，`gapDetected` 计数器归零（不修复已丢数据，仅清误报计数）
 2. **回填已丢数据**：手动调用 client admin API `POST /api/v1/admin/backfill/gap-fill`（`internal/client/admin.go:114`），指定时间范围和 symbol 从 Binance REST 回填
-3. **已实现**：replay worker（30s drain + NATS 发布到 `binance.replay.requests`）+ AlertDispatcher NATS 发布（gap alert 到 `binance.alerts.runtime`）
-4. **待实现**：client 侧订阅 `binance.replay.requests` / `binance.alerts.runtime`，自动触发 `QueueGapFill`
+3. **已实现（server）**：replay worker（30s drain + NATS 发布到 `binance.replay.requests`）+ AlertDispatcher NATS 发布（gap alert 到 `binance.alerts.runtime`）
+4. **已实现（client）**：`GapAlertSubscriber` 订阅 `binance.replay.requests`，自动触发 `QueueGapFill`（`runtime.go` RunStandalone goroutine）
+5. **待实现**：`LifecycleManager` 任务执行 worker — 当前 `QueueGapFill` 仅排队（`queued` 状态），需配合 `HistoryRuntime` 执行实际 REST 数据拉取
 
 ---
 
