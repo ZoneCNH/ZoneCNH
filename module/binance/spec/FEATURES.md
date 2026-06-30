@@ -43,7 +43,7 @@
 | --- | --- | --- | --- | --- |
 | FR-001 | Product-Line Support | Done | 四产品线 connector 实现齐全（`connectors/{spot,um_perp,cm_perp,options}.go` + 共享 `NewProductLineConnector`）；runtime 仅装配 spot，um/cm/options 需 testnet 凭据验证（G7）。 | 合约/期权 testnet 凭据 + 产品线差异测试。 |
 | FR-002 | Instrument Identity | Done | Plan007 A4 (`f9c2c01`) 跨产品线碰撞断言 `TestNewInstrumentKey_CrossProductLine_NoCollision`；InstrumentKey 含 exchange/product_line/symbol 维度。 | 合约/期权 normalize 分发层差异测试（identity 层已闭合）。 |
-| FR-003 | natsx Communication | Done | publisher (`publisher.go:56`) + consumer (`consumer.go:141`) 双侧装配；subject `binance.market.{pl}.{et}.v1`；JetStream PubAck testnet live 验证。 | 无（testnet live 已验证）。 |
+| FR-003 | natsx Communication | Done | publisher+consumer 双侧装配；subject `binance.market.{pl}.{et}.v1`（.v1 fix `4f740e5`）；drift-check 22/22 PASS。 | 无。 |
 | FR-004 | At-Least-Once Delivery | Done | Plan007 A3 (`1ec9d26`) NakWithDelay(5s) + MaxDeliver=5 + deadletter 包；本地 NATS JetStream gated 测试验证 PubAck/duplicate/Nak/MaxDeliver 语义。 | deadletter 为 in-memory（非持久化 DLQ），生产持久化 DLQ 可作后续增强。 |
 | FR-005 | Idempotent Acceptance | Done | `idempotency/redis_store.go` SetNX 72h TTL；G0 闭合后 `storageFromEnv` 装配 RedisStore（+PostgresLog durable）替换 MemoryIdempotencyStore。 | 真实 Redis 端到端验证（PENDING-LIVE-RUN）。 |
 | FR-006a | taosx Time-Series Storage | Done | `storage/taos_writer.go` WriteBatch；G0 闭合后 `storageFromEnv` 装配 TaosWriter 注入 `ServerConfig.StorageWriter`，`persist()` 不再静默跳过。 | 真实 TDengine 端到端落盘验证（PENDING-LIVE-RUN）。 |
@@ -176,7 +176,7 @@
 | Boundary gate 文档已形成 | Done | `BOUNDARY-GATES.md` v2.2.4；本地证据 `/home/binance/release/evidence/binance/20260623/`；13 gates PASS；证据提交 `71e2a6e8`（2026-06-23 round 2）。 |
 | Product line 全覆盖实现 | Done | FR-001 Done（四线 mainnet live PASS 已归档）。 |
 | Instrument identity 全覆盖实现 | Done | FR-002 Done（跨产品线碰撞断言已加）。 |
-| natsx publish/consume runtime 闭合 | Done | FR-003 Done（publisher+consumer 双侧装配 + testnet live 验证）。 |
+| natsx publish/consume runtime 闭合 | Done | FR-003 Done（publisher+consumer 双侧装配 + .v1 fix `4f740e5`；drift-check 22/22 PASS）。 |
 | ManualAck 与 at-least-once runtime 闭合 | Done | FR-004 Done（NakWithDelay+DLQ + JetStream gated 测试）。 |
 | Server idempotency runtime 闭合 | Done | FR-005 Done（RedisStore SetNX 72h TTL）。 |
 | Storage/API/archival/broadcast/runtime 扩展闭合 | Done | 全部 48 FR Done（100%）。 |

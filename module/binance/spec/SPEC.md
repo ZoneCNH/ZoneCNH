@@ -56,7 +56,7 @@
 | --- | --- | --- | --- | --- |
 | FR-001 | client | ingest public tick/trade-like stream and normalize envelope | Done | local runtime + E2E history |
 | FR-002 | client | ingest kline/bar stream and normalize envelope | Done | local runtime + E2E history |
-| FR-003 | contract | publish to NATS subject `binance.market.{product_line}.{event_type}.v1` | Done | runtime subject drift check |
+| FR-003 | contract | publish to NATS subject `binance.market.{product_line}.{event_type}.v1` | Done | drift-check 22/22 PASS + publisher `.v1` fix (`4f740e5`) |
 | FR-004 | server | consume JetStream independently from client process | Done | local runtime + boundary docs |
 | FR-005 | server | persist ticks to ClickHouse schema | Done | local runtime evidence |
 | FR-006a | client | provide client CLI/config loading | Done | runtime config examples |
@@ -141,7 +141,7 @@ Configuration parameters are owned by `module/binance/design/CONFIG-SCHEMA.md` a
 
 | Route family | Role | State |
 | --- | --- | --- |
-| `GET /api/v1/market/ticks/:symbol` | query tick facts | Partial |
+| `GET /api/v1/market/ticks/:symbol` | query tick facts | Done |
 | `GET /api/v1/market/bars/:symbol` | query bars | Done |
 | `GET /api/v1/market/depth/:symbol` | query depth | Done |
 | `GET /api/v1/market/funding-rate/:symbol` | query funding rate | Done |
