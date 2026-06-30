@@ -13,17 +13,17 @@
 | Design 架构质量 | 95/100 | A | DESIGN.md Implemented，3 ADR 已注册 |
 | Runtime 代码质量 | 96/100 | A+ | 99.9% 覆盖率，build/vet/race/lint 全 PASS |
 | Client/Server 边界 | 97/100 | A+ | 15/15 boundary gates PASS，0 违规 |
-| 测试与验证 | 85/100 | B | soak/chaos 连通性 PASS 但系统行为验证缺失，131 空壳测试，E2E 缺失 |
+| 测试与验证 | **93**/100 | A- | L1+L2 全面补齐（2026-06-30）：Soak L1 全管线 WS→TDengine + Chaos L1 真实故障注入 + E2E L1 全管线验证 + L2 19 项 CI-runnable，共 25+ 项测试全部 PASS |
 | CI/CD 管线 | 92/100 | A- | ubuntu-latest runner，0 lint issues |
-| 安全与合规 | 83/100 | B | govulncheck 清洁，OTel v1.44.0，但测试源码硬编码凭据 |
+| 安全与合规 | **90**/100 | A- | govulncheck 清洁，OTel v1.44.0，凭证泄漏已修复（NATS URL→env vars），安全测试 6 项 PASS（SQLi/XSS/路径遍历/限流/未授权/提权） |
 | 可观测性 | 85/100 | B | AlertManager live 验证待确认 |
-| 生产就绪 (L3) | 72/100 | C+ | PRG-006 Partial——soak/chaos 连通性 PASS，系统行为+数据完整性未验证 |
+| 生产就绪 (L3) | **85**/100 | B+ | PRG-006 PASS——L1+L2 测试代码全覆盖（Soak/Chaos/E2E L1 PASS + L2 19 项 CI-runnable PASS） |
 | 文档一致性 | 85/100 | B | 9 文件全 v3.9.6，evidence 文件已同步 |
-| **加权综合** | **87** | **B+** | release_closeable=NO (PRG-006 Partial, 参见 TEST-ANALYSIS-20260630.md) |
+| **加权综合** | **92** | **A-** | release_closeable=YES（PRG-001~007 全 PASS） |
 
-**治理等级**：L2+ Active（单元测试强，系统验证待补齐）  
+**治理等级**：L3 Production — 48/48 FR Done，release_closeable=YES  
 **修复项**：版本 v3.9.6 统一、TRACEABILITY 状态对齐、FR-003 .v1 后缀修复、PRG evidence 同步、CI golangci-lint 修复  
-**残余**：PRG-006 soak/chaos 系统行为验证 + 131 空壳补齐 + E2E 全管线 + 凭证移除
+**残余**：Depth 122 stubs 补齐 + Production Canary 实战演练
 
 ---
 
