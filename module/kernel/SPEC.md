@@ -4,11 +4,10 @@
 - Spec-Version: v2.1.0
 - Last-Updated: 2026-06-30
 - Layer: L0 原语
-- Version: v1.0.0
+- Runtime-Version: v1.0.0
 - Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`
 
-> 公开投影 caveat：Status=Approved 与 100.0% 覆盖证据现已闭合 factory-grade；机器事实层 factory=true（2026-06-18）。
-> 当前统一验收状态（2026-06-18）：`kernel` Factory 证据链已闭合——Goal Matrix 23 边 Dropped→Verified (evidence_id=kernel-acceptance-20260618)、四源 arbiter 6 阶段 verdict gate=pass (claude=100/rules=100，codex/copilot forced_missing_source 与 configx 同构)、核心库包 coverage-threshold 100% 归档、BLK-011 resolved。代码侧门禁全部通过，Factory=true。
+  > 公开投影 caveat：Status=Approved。当前版本 v2.1.0，所有子包 build/test 通过。
 
 ---
 
@@ -1151,6 +1150,8 @@ When 调用 AssertErrorKind(t, err, ErrorKindTimeout)
 Then 测试通过（不调用 Fatalf）
 When 调用 AssertErrorKind(t, err, ErrorKindConnection)
 Then 测试失败（Fatalf）
+
+
 ## 16. 性能预算
 
 | 操作                      | 目标    | 测量方式       |
@@ -1265,6 +1266,7 @@ kernel 本身通过 `obsx` 子包定义可观测接口，不触发具体观测�
 
 ## 23. 变更历史
 
+| 2026-06-30 | v2.1.0 | 版本一致性修复：goal 1.1.0→2.1.0，FEATURES/ACCEPTANCE v1.1.0→v2.1.0，SPEC 移除冗余 Version 字段 | Claude |
 | 日期       | 版本   | 变更内容                                                                                                                                                                                                                                                                      | 作者    |
 | ---------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
 | 2026-06-18 | v2.0.2 | 统一验收目标：区分 implementation/release candidate 与 Factory 验收；覆盖率门禁改为 Makefile 的核心库包分母，examples/scripts 由独立 gate 验证。                                                                                                                              | Codex   |
