@@ -22,7 +22,7 @@
 | PRG-003 | PASS | PRG-001~006 全 PASS | ✅ evidence 文件已更新（原 stale "Open" → "PASS"） |
 | PRG-004 | PASS | Jaeger/Grafana/Loki/AlertManager 全在线 | ✅ curl HTTP 200 × 4 服务确认 |
 | PRG-005 | PASS | otel SDK v1.37.0→v1.44.0，govulncheck 清洁 | ✅ govulncheck "No vulnerabilities" + go.mod v1.44.0 确认 |
-| PRG-006 | PASS | soak 2min 1200msgs PASS, chaos 5/5 PASS | ✅ live 执行确认（soak 1200 msgs/heap +0.3%/goroutine 0；chaos 5/5 NATS/Redis/Taos/Kafka/Process） |
+| PRG-006 | **Partial** | soak 2min PASS（NATS 连通性）+ chaos 5/5 PASS（连通性）；系统行为验证缺失——soak 不测 binance 管线，chaos 不注入真实故障 | ⚠️ 见 `report/binance/TEST-ANALYSIS-20260630.md` §缺陷1-2：soak 仅为 NATS pub/sub 传输测试，chaos 为连通性测试（connect→disconnect→reconnect），非真实故障注入 |
 | PRG-007 | PASS | 43 GitHub (#1289-#1331) + 43 Beads 全关闭 | —（基于 prg-007 evidence） |
 
 ## 审查复核修复（2026-06-30 PM）
@@ -46,20 +46,20 @@
 - govulncheck：No vulnerabilities found
 - gitleaks：6 findings（全部来自 gitignored 文件 .env/.beads）
 - 基础设施：10 服务全在线（NATS/Redis/PG/TDengine/Kafka/CH/OSS + Jaeger/Grafana/Loki/AlertManager）
-- soak test：2min 1200 messages PASS（heap +0.3%, goroutine delta 0）
-- chaos test：5/5 PASS（NATS/Redis/TDengine/Kafka/Process 断连恢复）
-- release_closeable：YES（8 处全对齐）
+- soak test：2min 1200 messages PASS（NATS 连通性，非 binance 管线 soak）⚠️
+- chaos test：5/5 PASS（连通性测试 connect→disconnect→reconnect，非真实故障注入）⚠️
+- release_closeable：**NO**（PRG-006 Partial，系统行为+数据完整性验证缺失。详见 `report/binance/TEST-ANALYSIS-20260630.md` §二缺陷1-7）
 
 ## 审查评分对比
 
-| 指标 | 上轮 (06-30 AM) | 本轮 (06-30 PM) | Δ |
-|------|----------------|----------------|---|
-| 综合得分 | 76 | 91 | +15 |
-| CRITICAL | 3 | 0 | -3 |
-| HIGH | 7 | 0 | -7 |
-| MEDIUM | 7 | 2 | -5 |
-| PRG 已验证 PASS | 1/7 | 7/7 | +6 |
-| 治理等级 | L2 Active | L3 Production | 升级 |
+| 指标 | 上轮 (06-30 AM) | 本轮 (06-30 PM 审查复核) | TEST-ANALYSIS 修正 |
+|------|----------------|--------------------------|---------------------|
+| 综合得分 | 76 | 91（审查复核）| **87**（TRACEABILITY/SCORECARD 修正后；TEST-ANALYSIS 发现 7 缺陷影响评分） |
+| CRITICAL | 3 | 0 | 0 |
+| HIGH | 7 | 0 | 0 |
+| MEDIUM | 7 | 2 | 2 |
+| PRG 已验证 PASS | 1/7 | 7/7 → **6/7** | PRG-006 修正为 Partial |
+| 治理等级 | L2 Active | ~~L3 Production~~ → **L2+ Active** | TEST-ANALYSIS 确认 soak/chaos 虚假，系统验证待补齐 |
 
 ## 5 轮重复验证
 
@@ -131,14 +131,60 @@
 - PRG-006: soak/chaos 测试从 t.Skip() 重写为真实基础设施连接
 - 21 个 golangci-lint issues 修复（errcheck/gofmt/gosec/staticcheck）
 
-### Phase 7: L3 准入
-- release_closeable 全模块翻转为 YES
-- goal/goal.md: L2 Active→L3 Production / Released
-- registry.yaml: lifecycle→production, maturity→L3
-- BOUNDARY-GATES §12: Release Not Done→Done
+### Phase 7: L3 准入（已撤回——TEST-ANALYSIS 揭示系统验证虚假）
+- release_closeable 全模块翻转为 YES → **回退为 NO**（commit `956f69db`：PRG-006 Partial）
+- goal/goal.md: L2 Active→L3 Production / Released → **回退 L2+ Active**
+- registry.yaml: lifecycle→production, maturity→L3 → **保留 L2+**（单元测试强，系统验证待补齐）
+- BOUNDARY-GATES §12: Release Not Done→Done → **保留 Done**（BOUNDARY-GATES 为 CI 门禁，不与 L3 准入等价）
+
+> **回退原因**（2026-06-30）：`report/binance/TEST-ANALYSIS-20260630.md` 对 112 个测试文件进行代码级审计，发现 PRG-006 依赖的 soak/chaos 测试不验证 binance 系统行为——soak 仅为 NATS pub/sub 传输测试，chaos 为连通性测试（connect→disconnect→reconnect），非真实故障注入。PRG-006 标 "PASS" 的依据（soak 2min + chaos 5/5）实际只验证了基础设施连通性。详见该报告 §二缺陷1-7。
 
 ### 审查复核（2026-06-30 PM）
 - SPEC §16: "remain Partial"→"operational... PRG-004 PASS"
 - prg-003 evidence: "Open"→"PASS"（汇总表全 PASS）
 - prg-005 evidence: "Partial"→"PASS"（CVE 修复确认）
 - .env 权限: 770→600
+
+## 生产部署修复（2026-06-30 PM）
+
+基于 `REVIEW-20260630.md` Go 决议后的生产部署，发现并修复 6 个代码级 bug + 1 个运维配置问题。涉及 3 个仓库（binance runtime、taosx library、prod systemd 配置）。
+
+### 部署修复明细
+
+| # | 问题 | 根因 | 修复 | 文件 | 仓库 |
+|---|------|------|------|------|------|
+| D1 | TDengine tag 值错位 (symbol="binance", product_line="BTCUSDT") | `renderPointInsert` 用 Go map 迭代 Tags，顺序非确定 | 新增 `orderedTagKeys()` 按超表 schema 列顺序输出 TAGS | `websocket_driver.go` | taosx |
+| D2 | BTCUSDT depth 事件全零 (bid/ask/update_id=0) | `tickPayload` 缺 `bids`/`asks`/`lastUpdateId` 字段，partial depth 流 (`@depth20@100ms`) 用 `bids`/`asks` 而非 `b`/`a` | 添加 partial depth 字段 + `tickPoint` 回退逻辑 | `taos_writer.go` | binance |
+| D3 | Market API `BNC_BACKEND_DOWN` | `QueryRange` 用 `?` 参数化查询，taosWS 驱动不支持；时间戳 `.UTC()` 与 TDengine 本地时区不匹配 | 改为字符串插值 + `escapeTaos()` + `.Local()` 时区转换 | `history_reader.go` | binance |
+| D4 | Stats API `BNC_SERVICE_NOT_CONFIGURED` | `assemble.go` 从未 wiring `Stats` provider 到 `APIConfig` | 新增 `ingestStatsProvider` adapter + `SnapshotStats()` 导出 + assemble wiring | `assemble.go`, `ingest.go` | binance |
+| D5 | Client admin 端口冲突 (8081 而非 8082) | systemd `EnvironmentFile=` 覆盖 `Environment=` | 从 `prod.env` 移除 `ADMIN_ADDR`，各 unit 独立设置 | `prod.env`, `binance-server.service`, `binance-client.service` | prod |
+| D6 | Fields map 顺序随机 | 同 D1，`renderPointInsert` Fields 也用 map 迭代 | 对 field keys 排序输出 | `websocket_driver.go` | taosx |
+
+### 生产验证结果（2026-06-30 15:19 CST）
+
+| 端点 | 修复前 | 修复后 |
+|------|--------|--------|
+| `GET /api/v1/market/spot/BTCUSDT/latest` | `BNC_BACKEND_DOWN` | `{"bid_price":"59491.99","ask_price":"59492.00","symbol":"BTCUSDT",...}` ✅ |
+| `GET /api/v1/market/spot/ETHUSDT/latest` | `BNC_BACKEND_DOWN` | `{"bid_price":"1591.29","ask_price":"1591.30","symbol":"ETHUSDT",...}` ✅ |
+| `GET /api/v1/market/spot/BTCUSDT/ticks/range` | `[]` (空) | 3 条真实行情数据 ✅ |
+| `GET /api/v1/stats` | `BNC_SERVICE_NOT_CONFIGURED` | `{"accepted":80,"ingested":12922,"rejected":12843}` ✅ |
+| TDengine tag 正确性 | `symbol="binance"` (错位) | `symbol="BTCUSDT", product_line="spot", source="binance"` ✅ |
+| Client admin 端口 | 8081 (冲突) | 8082 ✅ |
+
+### 修改文件清单
+
+**taosx** (`/home/taosx/`):
+- `pkg/taosx/websocket_driver.go` — `orderedTagKeys()` + field key 排序 + `sort` import
+- `pkg/taosx/batch.go` — `Point.Stable` 字段（前序修复）
+
+**binance runtime** (`/home/binance/`):
+- `internal/server/storage/taos_writer.go` — `tickPayload` partial depth 支持 + `tickPoint` 回退
+- `internal/server/assembly/history_reader.go` — 字符串插值 + `.Local()` 时区 + `escapeTaos()`
+- `internal/server/assembly/assemble.go` — `ingestStatsProvider` adapter + Stats wiring + `encoding/json` import
+- `internal/server/ingest.go` — `SnapshotStats()` 导出方法
+- `go.mod` — `replace github.com/ZoneCNH/taosx=/home/taosx`（本地开发，需提交前移除）
+
+**prod 配置**:
+- `/opt/binance/secrets/prod.env` — 移除 `FOUNDATIONX_BINANCE_ADMIN_ADDR`
+- `/etc/systemd/system/binance-server.service` — `Environment=FOUNDATIONX_BINANCE_ADMIN_ADDR=127.0.0.1:8081`
+- `/etc/systemd/system/binance-client.service` — `Environment=FOUNDATIONX_BINANCE_ADMIN_ADDR=127.0.0.1:8082`
