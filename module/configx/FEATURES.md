@@ -1,8 +1,8 @@
 # configx 完整实现清单
 
 - Status: Generated from current module SSOT
-- Last-Updated: 2026-06-18
-- Module-Version: v1.1.0（运行时 version.go = v1.1.0、CHANGELOG 最新 = v1.1.0、git tag = v1.1.0、GitHub Release 已发布）
+- Last-Updated: 2026-06-30
+- Module-Version: v1.2.0（运行时 version.go = v1.1.0、CHANGELOG 最新 = v1.1.0、git tag = v1.1.0、GitHub Release 已发布）
 - Module-State: v1.0 路线 5 项 MUST 已全部交付（ArgsSource / RemoteSource SPI / Bind / ConfigSnapshot+ChangeEvent+Watch+Rollback / DocGen），详见 ACCEPTANCE.md 版本基线说明
 - Layer: L1 基础能力
 - Runtime-Repo: /home/configx

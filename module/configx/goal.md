@@ -1,18 +1,18 @@
-# configx 发布版本 1.0 Goal 定位与实现标准
+# configx 发布版本 1.2 Goal 定位与实现标准
 
-> ✅ **交付状态戳（2026-06-18 v1.1.0 发布更新）**：本 goal.md 描述 configx 1.0 的**完整目标基线**。运行时仓库 `/home/configx` 已通过 **v1.1.0** GitHub Release 完整交付 §2 中的全部 MUST 能力，包括此前推迟的 5 项：
+> ✅ **交付状态戳（2026-06-18 v1.2.0 发布更新）**：本 goal.md 描述 configx 1.0 的**完整目标基线**。运行时仓库 `/home/configx` 已通过 **v1.2.0** GitHub Release 完整交付 §2 中的全部 MUST 能力，包括此前推迟的 5 项：
 > - ✅ ArgsSource（命令行参数源）— `pkg/configx/source_args.go`
 > - ✅ RemoteSource SPI（远程配置源扩展点）— `pkg/configx/remote.go`
 > - ✅ `Bind(result, prefix, target)` 按 prefix 切片绑定 API — `pkg/configx/bind.go`
 > - ✅ ConfigSnapshot / ConfigChangeEvent / Watch 热更新与回滚 — `pkg/configx/snapshot.go` + `watch.go`
 > - ✅ 配置文档自动生成 — `pkg/configx/docgen.go` + `cmd/configdoc/`
 >
-> 版本对齐：`pkg/configx/version.go` = `v1.1.0`、CHANGELOG 顶部 = `v1.1.0`、git tag = `v1.1.0`、GitHub Release 已发布。已交付能力清单见 ACCEPTANCE.md §4 与 TRACEABILITY.md。
+> 版本对齐：`pkg/configx/version.go` = `v1.2.0`、CHANGELOG 顶部 = `v1.2.0`、git tag = `v1.2.0`、GitHub Release 已发布。已交付能力清单见 ACCEPTANCE.md §4 与 TRACEABILITY.md。
 
 | 字段         | 内容                                           |
 | ------------ | ---------------------------------------------- |
 | 模块名       | `configx`                                      |
-| 发布版本     | 1.0.0（goal 基线；运行时已交付显式加载子集，version.go=v0.1.3） |
+| 发布版本     | 1.2.0（goal 基线；运行时已交付显式加载子集，version.go=v0.1.3） |
 | 所属层级     | L1 运行时横切能力 / 配置管理                   |
 | 稳定级别     | Public API Stable；SPI Stable；Internal 可演进 |
 | 文档状态     | 1.0 目标基线（显式加载子集已交付，对应 git tag v1.0.0；完整 MUST 见文首状态戳，推迟 v1.1） |

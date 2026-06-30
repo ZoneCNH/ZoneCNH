@@ -2,7 +2,7 @@
 
 - Status: Approved
 - Spec-Version: v1.1.0
-- Last-Updated: 2026-06-17
+- Last-Updated: 2026-06-30
 - Layer: L2.5 领域共享
 - Version: v1.1.0
 - Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `kernel`, `decimalx`

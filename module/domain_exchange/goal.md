@@ -5,7 +5,7 @@
 | 模块 | `domain_exchange` |
 | 层级 | L2.5 领域共享 |
 | 仓库 | <https://github.com/ZoneCNH/domain_exchange> |
-| 当前版本 | v0.1.0 |
+| 当前版本 | v1.0.0 |
 | 目标版本 | v1.0.0 |
 | 状态 | v1.0.0 执行计划已落地，任务已拆分 |
 | 计划来源 | `/home/zone/Downloads/0615/ZoneCNH-v1.0.0-goal-execution-plans/domain_exchange-v1.0.0-goal-execution-plan.md` |
