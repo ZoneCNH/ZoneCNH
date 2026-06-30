@@ -2,15 +2,14 @@
 
 ## 日期：2026-06-30
 
-## 执行计划
-基于 `plans/binance/FIX-EXECUTION-PLAN-20260630.md`，完成 Phase 0-7 全部修复。
+基于 `report/binance/REVIEW-PROMPT-20260630.md`（13-Part 完整审查），完成全部修复后产出。
 
 ## Pull Requests
 
 | 仓库 | PR | 分支 | 状态 |
 |------|-----|------|------|
-| ZoneCNH (Spec Hub) | [#1463](https://github.com/ZoneCNH/ZoneCNH/pull/1463) | `fix/binance-l3-production-admission` | OPEN |
-| binance (Runtime) | [#357](https://github.com/ZoneCNH/binance/pull/357) | `fix/lint-and-ci-runner` | OPEN |
+| ZoneCNH (Spec Hub) | [#1465](https://github.com/ZoneCNH/ZoneCNH/pull/1465) | `docs/binance-deep-review-20260630` | OPEN
+| binance (Runtime) | [#357](https://github.com/ZoneCNH/binance/pull/357) | `main` | MERGED
 
 ## PRG 状态
 | PRG | 状态 | 证据 |
@@ -53,12 +52,12 @@
 
 ## 修改文件统计
 
-### Spec Hub (module/binance/) — PR #1463
-- 30 文件修改（spec/matrix/gate/design/plan/goal/todo/CHANGELOG/README）
-- 3 文件删除（根级 SPEC.md, goal.md, IMPLEMENTATION-PLAN.md）
-- 9 evidence 文件新增（7 PRG + 1 verification + 1 alignment-summary）
+### Spec Hub (module/binance/) — PR #1465
+- 10 文件修改（spec/matrix/gate/design/plan/goal/todo/CHANGELOG/README）
+- 0 文件删除
+- 9 evidence 文件已存在（7 PRG + 1 verification + 1 alignment-summary）
 - module/registry.yaml: lifecycle→production, maturity→L3
-- commit: `09781300`
+- commits: 6533ac06, 750fbb7d, 2fa8fd22, 930f537a, 861ae7e4, 1f5dcd13
 
 ### Runtime (/home/binance/) — PR #357
 - 11 文件修改（Dockerfile×2, docker-compose, go.mod/sum, wire/doc.go, soak/chaos test×4, .gitignore）
