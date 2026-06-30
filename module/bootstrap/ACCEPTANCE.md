@@ -1,7 +1,7 @@
 # bootstrap 完整验收清单
 
 - Status: Generated from current module SSOT
-- Last-Updated: 2026-06-18
+- Last-Updated: 2026-06-30
 - Module-Version: v0.1.0
 - Module-State: 已发布
 - Layer: L1 启动装配

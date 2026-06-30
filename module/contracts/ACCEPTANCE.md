@@ -1,7 +1,7 @@
 # contracts 验收清单
 
 - Status: Docs Baseline Synced / Acceptance Closed
-- Last-Updated: 2026-06-22
+- Last-Updated: 2026-06-30
 - Layer: 基座 · 跨域接口契约
 - Source-of-Truth: `/home/contracts/pkg/contracts`
 - Related: `SPEC.md`, `README.md`, `goal.md`, `TRACEABILITY.md`, `FEATURES.md`, `IMPLEMENTATION-PLAN.md`, `tasks/`

@@ -1,7 +1,7 @@
 # contracts 追溯矩阵
 
 - Status: Docs Baseline Synced / Coverage Closed
-- Last-Updated: 2026-06-29
+- Last-Updated: 2026-06-30
 - Layer: 基座 · 跨域接口契约
 - Source-of-Truth: `/home/contracts/pkg/contracts`
 - Related: `SPEC.md`, `README.md`, `goal.md`, `ACCEPTANCE.md`, `FEATURES.md`, `IMPLEMENTATION-PLAN.md`, `tasks/`
