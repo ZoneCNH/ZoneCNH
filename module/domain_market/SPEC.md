@@ -24,7 +24,7 @@
 | Excludes | transport adapter、provider DTO、数据库 tag、策略/因子/回测逻辑、订单生命周期语义 |
 | Boundary with domainx | `domainx` 拥有 OrderType、OrderSide、OrderState；`domain_market` 仅表达市场事件与行情侧方向语义 |
 
-## 3. 功能需求
+## 3. 功能需求（摘要）
 
 | ID | 需求 |
 | --- | --- |
