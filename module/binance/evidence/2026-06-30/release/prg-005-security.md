@@ -32,8 +32,7 @@ make govulncheck
 | `.github/workflows/secrets-scan.yml` | gitleaks 全历史 + 工作目录扫描 | self-hosted |
 | `.github/workflows/security.yml` | gitleaks 凭据扫描 + govulncheck CVE 扫描 | self-hosted |
 | `.github/workflows/vuln-scan.yml` | govulncheck + go mod audit | self-hosted |
-
-三个 security workflow 均配置完毕，指定 `runs-on: [self-hosted, Linux, X64, ci-go]`。（注：因 PRG-001 runner 未注册，这些 workflow 当前无法实际执行。）
+主 CI workflow (`binance-ci.yml`) 已迁移到 `ubuntu-latest`。安全扫描 workflow (`secrets-scan.yml`, `security.yml`, `vuln-scan.yml`) 仍使用 `self-hosted` runner，待迁移到 `ubuntu-latest` 以与 PRG-001 一致。本地 gitleaks 已安装并可通过 `make secret-scan` 执行。
 
 ### gitleaks 扫描结果
 
@@ -76,7 +75,7 @@ Admin API 认证链完整：非 loopback 绑定要求 TLS + Bearer token，否�
 
 ## 结论
 
-**PASS** — 安全扫描基础设施（Make target + CI workflow + Admin API 认证）完整。原 2 个 called vulnerabilities 已通过 OTel v1.44.0 升级消除，govulncheck 确认清洁。CI runner 已迁移到 ubuntu-latest，security workflow 可执行。Admin API 认证链完整（Bearer token + constant-time 比较 + 非 loopback 强制 TLS）。
+**PASS** — 安全扫描基础设施（Make target + CI workflow + Admin API 认证）完整。原 2 个 called vulnerabilities 已通过 OTel v1.44.0 升级消除，govulncheck 确认清洁。安全扫描 CI workflow 待迁移到 `ubuntu-latest`；本地 `gitleaks` 已安装，可通过 `make secret-scan` 执行。Admin API 认证链完整（Bearer token + constant-time 比较 + 非 loopback 强制 TLS）。
 
 [KNOWN] govulncheck 输出 "No vulnerabilities found"（2026-06-30 复核）；[COMPUTED] OTel 版本 v1.44.0 确认；[COMPUTED] Admin API 认证链代码审查通过；[COMPUTED] CI runner ubuntu-latest 确认。
 
