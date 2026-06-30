@@ -107,6 +107,7 @@ module/binance/server
 - `spec/SPEC.md`
 - `goal/goal.md`
 - `design/DESIGN.md`
+- `deploy/README.md`
 - `gate/BOUNDARY-GATES.md`
 - `matrix/TRACEABILITY.md`
 - `evidence/2026-06-26/`

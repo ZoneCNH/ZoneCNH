@@ -9,6 +9,47 @@
 
 ---
 
+## 2026-06-30 部署文档
+
+### Added — module/binance/deploy/
+
+- 新建 `deploy/README.md`：部署架构速览、制品归属表、关键链接
+- 新建 `deploy/DEPLOY.md`（10 章，15KB）：二进制构建、Docker 打包、部署流程、systemd 管理、健康检查、回滚、凭据管理、Canary 灰度部署、数据销毁演练、CI/CD 管线
+- `README.md` Read Next 增加 `deploy/README.md` 引用
+
+部署文档覆盖全部运行时制品：`Dockerfile`、`docker-compose.prod.yml`、`deploy.sh`、`systemd units`、`health-check.sh`、`alertmanager`、`deploy-canary.sh`、`destruction-drill.sh`、`readiness-audit.sh`、`ci-workflow.yaml`
+
+---
+## 2026-06-30 生产部署修复
+
+### 生产部署验证
+
+binance v0.8.0 部署到 prod（`84.247.154.45`），通过 systemd 二进制直部署。部署过程中发现并修复 6 个代码级 bug，涉及 binance runtime 和 taosx 库。
+
+### Fixed（部署 bug）
+
+- **D1 TDengine tag 值错位**：`renderPointInsert` 用 Go map 迭代 Tags 导致顺序非确定，tag 值映射到错误列。修复：新增 `orderedTagKeys()` 按超表 schema 列顺序输出。文件：`taosx/websocket_driver.go`
+- **D2 partial depth 事件全零**：`tickPayload` 缺 `bids`/`asks`/`lastUpdateId` 字段，`@depth20@100ms` 流用 `bids`/`asks` 而非 `b`/`a`。修复：添加 partial depth 字段 + `tickPoint` 回退逻辑。文件：`taos_writer.go`
+- **D3 Market API BNC_BACKEND_DOWN**：`QueryRange` 用 `?` 参数化查询（taosWS 不支持）+ 时间戳 `.UTC()` 与 TDengine 本地时区不匹配。修复：字符串插值 + `.Local()` 时区转换。文件：`history_reader.go`
+- **D4 Stats API BNC_SERVICE_NOT_CONFIGURED**：`assemble.go` 从未 wiring `Stats` provider。修复：新增 `ingestStatsProvider` adapter + `SnapshotStats()` 导出。文件：`assemble.go`, `ingest.go`
+- **D5 Client admin 端口冲突**：systemd `EnvironmentFile=` 覆盖 `Environment=`。修复：从 `prod.env` 移除 `ADMIN_ADDR`，各 unit 独立设置。文件：`prod.env`, `binance-server.service`, `binance-client.service`
+- **D6 Fields map 顺序随机**：同 D1 根因，Fields 也用 map 迭代。修复：field key 排序输出。文件：`taosx/websocket_driver.go`
+
+### Verified（生产端到端验证）
+
+- Market API `/latest`：BTCUSDT + ETHUSDT 返回真实行情数据（bid/ask/qty 非零）
+- Market API `/range`：返回多条历史 tick 数据，tag 正确 (`symbol=BTCUSDT, product_line=spot, source=binance`)
+- Stats API：返回 ingest 计数 (`accepted=80, ingested=12922`)
+- Client admin 端口：8082（不再与 server 8081 冲突）
+- TDengine：596+ rows，child tables `tick_btcusdt`/`tick_ethusdt`，tag 值正确
+
+### Evidence
+
+- 详细修复记录：`evidence/2026-06-30/release/alignment-summary.md` §生产部署修复
+- 测试分析更新：`report/binance/TEST-ANALYSIS-20260630.md` §生产部署验证
+
+---
+
 ## 2026-06-30 L3 Production 准入（Phase 7）
 
 ### L3 准入状态翻转
