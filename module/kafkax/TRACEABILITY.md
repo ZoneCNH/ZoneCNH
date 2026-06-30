@@ -2,8 +2,8 @@
 
 > 模块级追溯矩阵。治理规范见 [docs/governance/TRACEABILITY.md](../../docs/governance/TRACEABILITY.md)。
 
-Last-Updated: 2026-06-29
-Source: module/kafkax/SPEC.md (v1.1.1)
+Last-Updated: 2026-06-30
+Source: module/kafkax/SPEC.md (v1.2.0)
 
 ## §1 功能需求追溯 (FR)
 
