@@ -1,7 +1,7 @@
 # ossx 生产级验收清单
 
 - Status: Local Production Candidate（本地生产候选；完整生产放行待外部证据）
-- Last-Updated: 2026-06-19
+- Last-Updated: 2026-06-30
 - Source: [SPEC.md](./SPEC.md) v1.2.1 · [TRACEABILITY.md](./TRACEABILITY.md) · [FEATURES.md](./FEATURES.md)
 - Code Source: `/home/ossx` branch `ossx`
 - Public Module: `github.com/ZoneCNH/ossx/pkg/ossx`

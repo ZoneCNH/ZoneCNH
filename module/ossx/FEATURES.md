@@ -1,7 +1,7 @@
 # ossx 功能实现状态
 
 - Status: Local Production Candidate（本地生产候选）
-- Last-Updated: 2026-06-19
+- Last-Updated: 2026-06-30
 - Source: [SPEC.md](./SPEC.md) v1.2.1 · [TRACEABILITY.md](./TRACEABILITY.md) · [ACCEPTANCE.md](./ACCEPTANCE.md)
 - Implementation: `/home/ossx` branch `ossx`
 - Module-Identity: Aliyun OSS 专用 adapter（单 provider；非通用对象存储抽象；不承诺 S3-compatible SPI）

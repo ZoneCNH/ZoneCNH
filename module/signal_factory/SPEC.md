@@ -2,7 +2,7 @@
 
 - Status: Approved
 - Spec-Version: v1.0.0
-- Last-Updated: 2026-06-22
+- Last-Updated: 2026-06-30
 - Layer: 决策域 · 信号生成
 - Version: v0.1.0-draft
 - Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/contracts`, `module/regime_engine`, `module/factor_eval`, `module/feature_store`, `module/riskx`, `module/orderx`, `module/backtestx`

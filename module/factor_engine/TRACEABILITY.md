@@ -4,7 +4,7 @@
 > 来源：module/factor_engine/SPEC.md
 > 规范：docs/governance/TRACEABILITY.md
 
-Last-Updated: 2026-06-29
+Last-Updated: 2026-06-30
 ---
 
 ## §1 FR 追溯表

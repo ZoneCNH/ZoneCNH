@@ -2,7 +2,7 @@
 
 - Status: Draft
 - Spec-Version: v0.1.0-draft
-- Last-Updated: 2026-06-26
+- Last-Updated: 2026-06-30
 - Layer: 数据域 · 另类数据（独立进程聚合层）
 - Version: v0.1.0-draft
 - Repository: [github.com/ZoneCNH/alternative_data](https://github.com/ZoneCNH/alternative_data)

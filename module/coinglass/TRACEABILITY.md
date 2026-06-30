@@ -3,7 +3,7 @@
 > 追溯矩阵 — 确保 FR/BR → AC → TC → Task → Status 闭环。范式继承 [`module/binance/TRACEABILITY.md`](../binance/TRACEABILITY.md)。
 
 - Matrix-Version: v1.0.0
-- Last-Updated: 2026-06-29
+- Last-Updated: 2026-06-30
 - Spec-Reference: `module/coinglass/SPEC.md` v1.0.0
 
 ---

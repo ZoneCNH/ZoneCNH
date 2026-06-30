@@ -4,7 +4,7 @@
 
 - Status: Draft
 - Spec-Version: v1.0.0
-- Last-Updated: 2026-06-17
+- Last-Updated: 2026-06-30
 - Owner: ZoneCNH
 - Layer: 数据域 · 行情
 - Module-Version: v1.0.0-spec

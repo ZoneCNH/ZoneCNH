@@ -5,7 +5,7 @@
 > 规范：docs/governance/TRACEABILITY.md
 > 状态约定：⏳ = 已定义待实现（S8 Code 阶段验证）；✅ = 已实现并通过验证
 
-Last-Updated: 2026-06-29
+Last-Updated: 2026-06-30
 ---
 
 ## §1 功能需求追溯（FR）

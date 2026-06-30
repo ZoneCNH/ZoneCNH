@@ -1,7 +1,7 @@
 # schedulex v1.0.0 功能实现清单
 
 - Status: Accepted
-- Last-Updated: 2026-06-18
+- Last-Updated: 2026-06-30
 - Module-Version: v1.0.0
 - Module-State: 本地发布验收通过
 - Layer: L1 调度基座

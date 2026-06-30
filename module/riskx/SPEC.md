@@ -2,7 +2,7 @@
 
 - Status: Spec Approved / Tasks Pending
 - Spec-Version: v1.0.0
-- Last-Updated: 2026-06-14
+- Last-Updated: 2026-06-30
 - Layer: 执行域 · 风控引擎
 - Version: v0.1.0-draft
 - Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `orderx`, `strategyx`

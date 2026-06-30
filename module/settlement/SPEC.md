@@ -2,7 +2,7 @@
 
 - Status: Docs Baseline Approved
 - Spec-Version: v1.0.0
-- Last-Updated: 2026-06-21
+- Last-Updated: 2026-06-30
 - Layer: 执行域 · 结算对账
 - Version: v1.0.0-spec
 - Related: `CONSTITUTION.md`, `module/settlement/TRACEABILITY.md`

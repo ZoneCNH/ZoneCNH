@@ -2,7 +2,7 @@
 
 - Status: Draft
 - Spec-Version: v1.0.0
-- Last-Updated: 2026-06-22
+- Last-Updated: 2026-06-30
 - Layer: 数据域 · 宏观
 - Module-Type: 独立 C/S Module
 - Runtime-Service: `fred`

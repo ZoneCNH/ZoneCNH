@@ -2,7 +2,7 @@
 
 - Status: Approved (contract-corrected)
 - Spec-Version: v1.1.0
-- Last-Updated: 2026-06-19
+- Last-Updated: 2026-06-30
 - Layer: L1 基础能力（与 `module/FOUNDATION-DEPS.yaml` 登记一致；ACCEPTANCE/FEATURES/goal 同步对齐为 L1）
 - Version: v1.0.2
 - Runtime-Version: v1.0.2（运行时代码仓库 `/home/resiliencx` tag `v1.0.2`，commit `1aaa0dc`）

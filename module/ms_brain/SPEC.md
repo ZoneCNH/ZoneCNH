@@ -2,7 +2,7 @@
 
 - Status: Draft
 - Spec-Version: v0.1.0-draft
-- Last-Updated: 2026-06-17
+- Last-Updated: 2026-06-30
 - Layer: 分析域 · M×S 架构分析
 - Version: v0.1.0-draft
 - Related: `module/market_regime`, `module/macro_regime`, `module/regime_engine`

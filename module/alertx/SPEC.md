@@ -2,7 +2,7 @@
 
 - Status: Approved
 - Spec-Version: v1.0.0
-- Last-Updated: 2026-06-26
+- Last-Updated: 2026-06-30
 - Owner: ZoneCNH
 - Layer: 横切 · 业务层消费者（见 ADR-001 D1）
 - Version: v1.0.0

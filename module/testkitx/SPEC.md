@@ -2,7 +2,7 @@
 
 - Status: Approved
 - Spec-Version: v1.1.0
-- Last-Updated: 2026-06-18
+- Last-Updated: 2026-06-30
 - Layer: 基座 · 测试期证据
 - Version: v1.0.0
 - Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `kernel`

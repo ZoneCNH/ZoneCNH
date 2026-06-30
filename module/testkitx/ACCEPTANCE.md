@@ -1,7 +1,7 @@
 # testkitx 完整验收清单
 
 - Status: Generated from current module SSOT
-- Last-Updated: 2026-06-21
+- Last-Updated: 2026-06-30
 - Module-Version: v1.0.0
 - Module-State: Release Candidate — 运行时验收通过（2026-06-18）；factory=false（四源评分未达 98，见 SPEC caveat）
 - Layer: L0 测试工具
