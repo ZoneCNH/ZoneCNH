@@ -22,3 +22,8 @@
 | PRG-005 | PASS | OpenTelemetry SDK v1.44.0，govulncheck 清洁 |
 | PRG-006 | PASS | soak test 2min PASS，chaos test 5/5 PASS |
 | PRG-007 | PASS | 43 GitHub + 43 Beads 全关闭 |
+
+> ⚠️ **2026-06-30 测试体系深度分析**：`report/binance/TEST-ANALYSIS-20260630.md` 对 112 个测试文件代码级审计发现：
+> - PRG-006 依赖的 soak 测试只验证 NATS 传输（非 binance 管线），chaos 测试不注入真实故障
+> - FR-042 (soak)、FR-043 (chaos)、FR-044 (security) 的 131 个测试为 `t.Skip()` 空壳
+> - 建议在补齐 Phase 1-3 前不应标记为 L3 Production。详见报告。
