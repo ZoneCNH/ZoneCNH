@@ -5,7 +5,7 @@
 | 字段 | 值 |
 | --- | --- |
 | Status | Generated from current module SSOT |
-| Last-Updated | 2026-06-28 |
+| Last-Updated | 2026-06-30 |
 | Module-Version | v3.9.6 |
 | Module-State | v3.9.6 单一状态模型：**48 Done / 0 Partial / 0 Drifted / 0 Pending**。release_closeable=YES（PRG-001~007 全 PASS）。P10 issues: GitHub #1289-#1331 / Beads 43 全部 closed（10 轮验证 ALL PASS）。 |
 | Layer | 数据域 / Binance-specific market_data C/S module |
