@@ -13,17 +13,17 @@
 | Design 架构质量 | 95/100 | A | DESIGN.md Implemented，3 ADR 已注册 |
 | Runtime 代码质量 | 96/100 | A+ | 99.9% 覆盖率，build/vet/race/lint 全 PASS |
 | Client/Server 边界 | 97/100 | A+ | 15/15 boundary gates PASS，0 违规 |
-| 测试与验证 | 93/100 | A- | 23/23 packages PASS，0 race |
+| 测试与验证 | 85/100 | B | soak/chaos 连通性 PASS 但系统行为验证缺失，131 空壳测试，E2E 缺失 |
 | CI/CD 管线 | 92/100 | A- | ubuntu-latest runner，0 lint issues |
-| 安全与合规 | 88/100 | B+ | govulncheck 清洁，OTel v1.44.0 |
+| 安全与合规 | 83/100 | B | govulncheck 清洁，OTel v1.44.0，但测试源码硬编码凭据 |
 | 可观测性 | 85/100 | B | AlertManager live 验证待确认 |
-| 生产就绪 (L3) | 78/100 | C+ | PRG-004/006 需真实 infra 验证 |
+| 生产就绪 (L3) | 72/100 | C+ | PRG-006 Partial——soak/chaos 连通性 PASS，系统行为+数据完整性未验证 |
 | 文档一致性 | 85/100 | B | 9 文件全 v3.9.6，evidence 文件已同步 |
-| **加权综合** | **91** | **A-** | release_closeable=YES (6/6 源一致) |
+| **加权综合** | **87** | **B+** | release_closeable=NO (PRG-006 Partial, 参见 TEST-ANALYSIS-20260630.md) |
 
-**治理等级**：L2 Active → L3 Production candidate  
+**治理等级**：L2+ Active（单元测试强，系统验证待补齐）  
 **修复项**：版本 v3.9.6 统一、TRACEABILITY 状态对齐、FR-003 .v1 后缀修复、PRG evidence 同步、CI golangci-lint 修复  
-**残余**：PRG-004/006 live infra 验证
+**残余**：PRG-006 soak/chaos 系统行为验证 + 131 空壳补齐 + E2E 全管线 + 凭证移除
 
 ---
 

@@ -4,8 +4,8 @@
 - [KNOWN] Last-Updated: 2026-06-29
 - Source-SPEC: `module/binance/spec/SPEC.md` v3.9.6
 - State-Model: single-state only
-- [KNOWN] Current-State: 48 Done / 0 Partial / 0 Drifted / 0 Pending
-- [KNOWN] release_closeable: YES
+- [KNOWN] Current-State: 45 Done / 3 Partial / 0 Drifted / 0 Pending
+- [KNOWN] release_closeable: NO
 
 ## 1. Rule
 
@@ -60,9 +60,9 @@ This matrix is the compact FR/BR/AC/TC projection. It intentionally does not dup
 | FR-039 | BR-005 | AC-007 | HA/DR doc/evidence needed | Done |
 | FR-040 | BR-005 | AC-007 | canary exercise evidence needed | Done |
 | FR-041 | BR-005 | AC-007 | capacity evidence needed | Done |
-| FR-042 | BR-005 | AC-007 | soak evidence needed | Done |
-| FR-043 | BR-005 | AC-007 | chaos evidence needed | Done |
-| FR-044 | BR-005 | AC-007 | security hardening evidence needed | Done |
+| FR-042 | BR-005 | AC-007 | soak evidence needed | Partial |
+| FR-043 | BR-005 | AC-007 | chaos evidence needed | Partial |
+| FR-044 | BR-005 | AC-007 | security hardening evidence needed | Partial |
 
 ## 3. Acceptance Criteria
 
@@ -84,7 +84,7 @@ release_closeable 判定公式：
 release_closeable = Code-Done FR / Total FR ≥ 90% AND Drifted FR = 0 AND Pending FR = 0 AND PRG-001~007 全 PASS AND 远程 CI PASS AND release tag 已发布 AND HA/DR 部署文档存在
 ```
 
-当前状态：`release_closeable: YES`（48/48 Done = 100% ≥ 90%，PRG-001~007 全 PASS）。
+当前状态：`release_closeable: NO`（48 FR: 45 Done + 3 Partial = 93.75% ≥ 90%，但 PRG-006 为 Partial——soak/chaos 测试已通过连通性验证，但未验证 binance 系统在故障下的数据完整性）。
 
 | PRG | Gate | State | Evidence |
 | --- | --- | --- | --- |
@@ -93,7 +93,7 @@ release_closeable = Code-Done FR / Total FR ≥ 90% AND Drifted FR = 0 AND Pendi
 | PRG-003 | production readiness | PASS | PRG-001~006 全 PASS |
 | PRG-004 | observability | PASS | Jaeger/Grafana/Loki/AlertManager 全在线 |
 | PRG-005 | security | PASS | OpenTelemetry SDK v1.44.0，govulncheck 清洁 |
-| PRG-006 | resilience | PASS | soak test 2min PASS，chaos test 5/5 PASS |
+| PRG-006 | resilience | Partial | soak 2min PASS（连通性）+ chaos 5/5 PASS（连通性）；系统行为验证缺失——soak 不测 binance 管线，chaos 不注入真实故障（参考 report/binance/TEST-ANALYSIS-20260630.md） |
 | PRG-007 | issue sync | PASS | 43 GitHub (#1289-#1331) + 43 Beads 全关闭 |
 
 ## 5. Issue Projection
@@ -105,10 +105,10 @@ Beads and GitHub issues are the current P10 tracking SSOT. The retired local pro
 | Metric | Value |
 | --- | --- |
 | FR total | 48 |
-| Done | 48 |
-| Partial | 0 |
+| Done | 45 |
+| Partial | 3 |
 | Drifted | 0 |
 | Pending | 0 |
 | GitHub P10 open | 0 |
 | Beads P10 open | 0 |
-| release_closeable | YES |
+| release_closeable | NO |
