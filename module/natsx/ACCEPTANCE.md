@@ -1,9 +1,9 @@
 # natsx 完整验收清单
 
 - Status: Generated from current module SSOT
-- Last-Updated: 2026-06-18
-- Module-Version: v1.0.3
-- Module-State: 已发布
+- Last-Updated: 2026-06-30
+- Module-Version: v1.2.0
+- Module-State: Tag Exists / GitHub Release Pending
 - Layer: L2 基础设施适配器
 - Runtime-Repo: /home/natsx
 - Source: goal.md, SPEC.md, TRACEABILITY.md, IMPLEMENTATION-PLAN.md, tasks/

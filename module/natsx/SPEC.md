@@ -2,9 +2,8 @@
 
 Status: Approved
 - Spec-Version: v1.2.0
-- Last-Updated: 2026-06-23
+- Last-Updated: 2026-06-30
 - Layer: 基座 · 存储扩展
-- Version: v1.0.0
 - Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `kernel`
 
 > 公开投影 caveat：Status=Approved 表示本目录目标契约已批准；GitHub Release v1.0.3 仍以仓库 release 证据为准；四源评分通过前机器事实层保持 factory=false。

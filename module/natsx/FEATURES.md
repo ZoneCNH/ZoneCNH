@@ -1,8 +1,8 @@
 # natsx 完整实现清单
 
 - Status: Generated from current module SSOT
-- Last-Updated: 2026-06-23
-- Module-Version: v1.0.3 remote tag / Spec v1.2.0
+- Last-Updated: 2026-06-30
+- Module-Version: v1.2.0
 - Module-State: Tag Exists / GitHub Release Pending
 - Layer: L2 基础设施适配器
 - Runtime-Repo: /home/natsx
