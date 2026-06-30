@@ -184,7 +184,7 @@ wc -l module/binance/spec/SPEC.md module/binance/matrix/TRACEABILITY.md
 
 ## 16. Observability
 
-Metrics, logs, tracing, dashboards and alerts remain Partial until current scrape/dashboard/alert validation evidence is attached to the corresponding P10 issues.
+Metrics, logs, tracing, dashboards and alerts are operational: Jaeger (16686), Grafana (3000), Loki (3100), AlertManager (9093) all verified online (2026-06-30). PRG-004 PASS.
 
 ## 17. Security
 
