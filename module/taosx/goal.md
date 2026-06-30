@@ -4,7 +4,7 @@
 
 | 字段 | 值 |
 | --- | --- |
-| Target | v1.0.5 |
+| Target | v1.2.0 |
 | Layer | L2 存储适配器 |
 | Source of truth | `/home/taosx/pkg/taosx` |
 | Last-Updated | 2026-06-21 |

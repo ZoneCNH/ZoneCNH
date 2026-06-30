@@ -4,7 +4,7 @@
 
 | 字段 | 值 |
 | --- | --- |
-| Target | v0.1.0 |
+| Target | v1.0.0 |
 | Layer | 分析域 · 数据流管线引擎 |
 | Status | Docs Baseline Published |
 | Last-Updated | 2026-06-17 |

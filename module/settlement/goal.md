@@ -4,7 +4,7 @@
 
 | 字段 | 值 |
 | --- | --- |
-| Target | v0.1.0-draft |
+| Target | v1.0.0 |
 | Layer | 执行域 · 结算对账 |
 | Status | Draft |
 | Last-Updated | 2026-06-17 |

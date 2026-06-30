@@ -4,7 +4,7 @@
 
 | 字段 | 值 |
 | --- | --- |
-| Target | v0.1.0-draft |
+| Target | v1.0.0 |
 | Layer | 决策域 · 风控引擎 |
 | Status | Review |
 | Last-Updated | 2026-06-16 |

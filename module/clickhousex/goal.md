@@ -3,7 +3,7 @@
 | 字段         | 内容                                           |
 | ------------ | ---------------------------------------------- |
 | 模块名       | `clickhousex`                                  |
-| 发布版本     | 1.0.1                                          |
+| 发布版本     | 1.1.0                                          |
 | 所属层级     | 存储扩展层 / ClickHouse OLAP 分析存储          |
 | 稳定级别     | Public API Stable；SPI Stable；Internal 可演进 |
 | 文档状态     | v1.0.1 规格基线（完整 SPEC + TRACEABILITY §1-§7 + 7 Tasks，覆盖率 100%） |

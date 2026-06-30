@@ -5,7 +5,7 @@
 | 模块 | `composer` |
 | 层级 | 入口 · 组合根（Composition Root） |
 | 仓库 | <https://github.com/ZoneCNH/composer> |
-| 当前版本 | v0.2.0 |
+| 当前版本 | v0.1.0 |
 | 目标版本 | v0.2.0 |
 | 状态 | Draft — 占位规格，完整 23 节 SPEC 待进入 Spec-Code 管线时补齐 |
 | 最后更新 | 2026-06-29 |
