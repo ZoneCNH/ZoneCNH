@@ -1,8 +1,8 @@
 # binance 实施计划
 
-- Module-Version: v3.9.0
-- Last-Updated: 2026-06-26
-- Status: execution plan; release blocked until runtime gates pass
+- Module-Version: v3.9.6
+- Last-Updated: 2026-06-30
+- Status: execution plan complete; release_closeable=YES
 - Runtime-Repo: `/home/binance`
 
 ## 1. 目标
@@ -17,10 +17,10 @@
 | G0-1a | NATS JetStream deployment boundary is explicit: external service; client/server only configure `nats.url` and `FOUNDATIONX_NATS_*` | PASS |
 | G0-2 | `domain_market` canonical source ready | PASS |
 | G0-3 | server storage ownership includes `redisx/taosx/postgresx/clickhousex/ossx/kafkax/Gin` | PASS |
-| G0-4 | `/home/binance/scripts/boundary-gates.sh` 对齐 `BOUNDARY-GATES.md` 10 gates | PENDING until runtime PASS |
-| G0-5 | `go.mod` direct deps: `natsx/redisx/kafkax/postgresx/taosx/clickhousex/ossx/gin` | PENDING until runtime PASS |
+| G0-4 | `/home/binance/scripts/boundary-gates.sh` 对齐 `BOUNDARY-GATES.md` 10 gates | PASS |
+| G0-5 | `go.mod` direct deps: `natsx/redisx/kafkax/postgresx/taosx/clickhousex/ossx/gin` | PASS |
 | G0-6 | tasks cover `SERVER-017` and `FR-011` | PASS |
-| G0-7 | release claim blocked until runtime evidence exists | PENDING |
+| G0-7 | release claim blocked until runtime evidence exists | PASS |
 
 ## 3. 推荐 PR 顺序
 

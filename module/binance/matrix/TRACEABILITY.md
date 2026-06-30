@@ -1,11 +1,11 @@
 # Binance Traceability Matrix
 
-- Matrix-Version: v3.9.6
-- Last-Updated: 2026-06-29
+- [KNOWN] Matrix-Version: v3.9.6
+- [KNOWN] Last-Updated: 2026-06-29
 - Source-SPEC: `module/binance/spec/SPEC.md` v3.9.6
 - State-Model: single-state only
-- Current-State: 48 Done / 0 Partial / 0 Drifted / 0 Pending
-- release_closeable: YES
+- [KNOWN] Current-State: 48 Done / 0 Partial / 0 Drifted / 0 Pending
+- [KNOWN] release_closeable: YES
 
 ## 1. Rule
 

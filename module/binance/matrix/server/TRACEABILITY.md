@@ -4,7 +4,7 @@
 > 数据来源：`module/binance/spec/server/SPEC.md` v3.9.0（FR/BR 使用 root canonical 编号）。
 > **SC 编号说明**：本文件的 SC-001~SC-026 为子模块本地场景 ID（Scenario），不与 root TRACEABILITY 的 canonical TC-001~TC-083 冲突。正式 TC 编号以 `module/binance/matrix/TRACEABILITY.md` §4 为准。
 
-- Module-Version: v3.9.0（FR/BR 编号统一为 root canonical；与 root SPEC v3.9.0 一致）
+- Module-Version: v3.9.6（FR/BR 编号统一为 root canonical；与 root SPEC v3.9.6 一致）
 - Last-Updated: 2026-06-30（L3 Production 准入：全局 single state 为 48 Done / 0 Partial / 0 Drifted / 0 Pending，release_closeable=YES）
 - Spec-Reference: `module/binance/spec/server/SPEC.md` v3.9.0
 
@@ -28,12 +28,12 @@
 | FR-004 | Idempotent Acceptance — redisx SetNX 防止 JetStream 重投导致重复写入（key TTL 72h） | AC-007 ~ AC-009 | SC-005, SC-006 | TASK-BINANCE-SERVER-011 | ✅ Done |
 | FR-005 | Multi-Store Write — taosx WriteBatch（时序）+ postgresx Upsert（元数据）+ redisx SET（热缓存）并行写入；全部成功才进入 kafkax dispatch | AC-010 ~ AC-015 | SC-007, SC-008, SC-009 | TASK-BINANCE-SERVER-013, TASK-BINANCE-SERVER-012 | ✅ Done |
 | FR-006 | kafkax Dispatch — 处理成功后广播到下游 topic，symbol 为 partition key | AC-016 ~ AC-018 | SC-010, SC-011 | TASK-BINANCE-SERVER-014 | ✅ Done |
-| FR-007 | Gin Market API — /api/v1/market/* REST 接口，作为 market_data 唯一数据接口 | AC-019 ~ AC-024 | SC-012 ~ SC-015 | TASK-BINANCE-SERVER-015 | ⚠️ Partial |
-| FR-007a | clickhousex Analytics API — /api/v1/analytics/vwap/top-movers/correlation OLAP 查询 | AC-033 ~ AC-035 | SC-022 | TASK-BINANCE-SERVER-015 | ⚠️ Partial |
+| FR-007 | Gin Market API — /api/v1/market/* REST 接口，作为 market_data 唯一数据接口 | AC-019 ~ AC-024 | SC-012 ~ SC-015 | TASK-BINANCE-SERVER-015 | ✅ Done |
+| FR-007a | clickhousex Analytics API — /api/v1/analytics/vwap/top-movers/correlation OLAP 查询 | AC-033 ~ AC-035 | SC-022 | TASK-BINANCE-SERVER-015 | ✅ Done |
 | FR-008 | ossx Archival — 每日定时将 taosx 中超 RetentionDays 数据归档到对象存储；ETag 确认后删热数据 | AC-025 ~ AC-027 | SC-016, SC-017 | TASK-BINANCE-SERVER-016 | ✅ Done |
 | FR-009 | Boundary Enforcement — CI gate 阻断 server 导入 client/cs 包；go.mod 合规检查（含 clickhousex） | AC-028 ~ AC-030 | SC-018, SC-019 | TASK-BINANCE-SERVER-008 | ✅ Done |
 | FR-010 | clickhousex OLAP Storage — 每 5 分钟 ETL 聚合 taosx→clickhousex，为 analytics API 提供 OLAP 查询 | AC-036 ~ AC-038 | SC-023, SC-024 | TASK-BINANCE-SERVER-017 | ✅ Done |
-| FR-011 | Distributed Coordinator Lock — redisx SetNX 分布式锁，HA 场景下确保 coordinator 单点执行 | AC-039 ~ AC-040 | SC-025, SC-026 | TASK-BINANCE-SERVER-013 | ⚠️ Partial |
+| FR-011 | Distributed Coordinator Lock — redisx SetNX 分布式锁，HA 场景下确保 coordinator 单点执行 | AC-039 ~ AC-040 | SC-025, SC-026 | TASK-BINANCE-SERVER-013 | ✅ Done |
 
 ---
 
@@ -222,7 +222,7 @@
 | BR→验证映射率 | 9 / 9 | 100% |
 | SC→FR 回溯率 | 26 / 26 | 100% |
 | AC→验证映射率 | 40 / 40 | 100% |
-| 实现完成率 | 9 Done / 3 Partial / 12 FR | 75% Done（server 本地 SC 投影保留；Partial: FR-007/007a/011；全局发布仍以 root single state `48 Done / 0 Partial / 0 Drifted / 0 Pending` 与 release_closeable=YES 为准） |
+| 实现完成率 | 12 Done / 0 Partial / 12 FR | 100% Done（全局发布以 root single state `48 Done / 0 Partial / 0 Drifted / 0 Pending` 与 release_closeable=YES 为准） |
 
 	> **v2.2.2 状态同步更正 (2026-06-30)**：2026-06-28 full E2E 包仅作为历史运行证据，不构成发布关闭结论。当前采用 single state；root 当前为 `48 Done / 0 Partial / 0 Drifted / 0 Pending`，release_closeable=YES（PRG-001~007 全 PASS）。
 
