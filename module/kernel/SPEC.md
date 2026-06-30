@@ -4,7 +4,7 @@
 - Spec-Version: v2.1.0
 - Last-Updated: 2026-06-30
 - Layer: L0 原语
-- Version: v1.0.0
+- Runtime-Version: v1.0.0
 - Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`
 
 > 公开投影 caveat：Status=Approved 与 100.0% 覆盖证据现已闭合 factory-grade；机器事实层 factory=true（2026-06-18）。
