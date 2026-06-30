@@ -169,7 +169,7 @@
 
 | 检查项 | 状态 | 依据 |
 | --- | --- | --- |
-| v2.0.0 根规格存在 | Done | `SPEC.md` v3.9.0。 |
+| v2.0.0 根规格存在 | Done | `SPEC.md` v3.9.6。 |
 | 根级 traceability 存在 | Done | `TRACEABILITY.md` v3.9.6；48 Done / 0 Partial / 0 Drifted / 0 Pending；Evidence 列 48 Done / 0 Pending。 |
 | Client/Server 子域 traceability 存在 | Done | `client/TRACEABILITY.md`, `server/TRACEABILITY.md`。 |
 | C/S 独立进程边界已定义 | Done | `README.md`, `SPEC.md`, `BOUNDARY-GATES.md`。 |
