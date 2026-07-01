@@ -50,7 +50,7 @@ HTTP health + Docker Compose + RegimeCoordinator
 
 ---
 
-## Open Questions
+## Appendix A: Open Questions
 
 - [ ] composer 与 bootstrap 的职责边界（bootstrap=进程组装、composer=编排）是否完全清晰？
 - [ ] 25 进程清单与依赖拓扑的完整登记？

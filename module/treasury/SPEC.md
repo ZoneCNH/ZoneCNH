@@ -65,7 +65,7 @@ treasury/
 
 ---
 
-## Open Questions
+## Appendix A: Open Questions
 
 - [ ] treasury 与 fred 的职责边界是否完全清晰（fred=FRED 宏观经济、treasury=国债财政）？
 - [ ] 是否复用 fred 的 C/S 模板，还是独立实现？

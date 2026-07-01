@@ -49,7 +49,7 @@ alternative_data 与 market_data / macro_data 并列，构成数据域三大聚�
 
 ---
 
-## Open Questions
+## Appendix A: Open Questions
 
 - [ ] alternative_data 与 pe_data 的边界（pe_data 是子模块还是独立采集器）？
 - [ ] 链上数据源清单（Glassnode/Etherscan/Chainlink 等）的优先级？
