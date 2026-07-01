@@ -1,7 +1,8 @@
 # macro_data 规格
 
-- Status: Docs Baseline
+- Status: Approved (Docs Baseline)
 - Spec-Version: v0.1.0
+- Last-Updated: 2026-07-02
 - Last-Created: 2026-06-17
 - Layer: 数据域 · 宏观摄取与分发
 - Version: v0.1.0-spec
