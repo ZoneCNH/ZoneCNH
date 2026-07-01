@@ -48,9 +48,9 @@ check_drift() {
     FAIL=1
   fi
 
-  # 4. Status 行后的额外 disclaimer 段落（metadata 和 --- 之间）
+  # 4. Status 行后的额外 disclaimer 段落（metadata 段内，限定到下一个 metadata 行、空行或 ---）
   local extra_disclaimer
-  extra_disclaimer=$(sed -n '/^- Status:/,/^---/p' "$spec_file" | grep -P '历史|非当前|只作为|superseded' || true)
+  extra_disclaimer=$(awk '/^- Status:/{flag=1;print;next} flag&&/^- /{print;next} flag&&/^---$/{print;next} {flag=0}' "$spec_file" | grep -P '历史|非当前|只作为|superseded' || true)
   if [[ -n "$extra_disclaimer" ]]; then
     issues+=("❌ metadata-section disclaimer: ${extra_disclaimer:0:80}")
     FAIL=1
