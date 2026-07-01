@@ -3,7 +3,7 @@
 ## 1. Metadata
 
 - Status: Draft
-- Spec-Version: v0.1.0-draft
+- Spec-Version: v0.1.0
 - Last-Updated: 2026-06-30
 - Owner: ZoneCNH
 - Layer: 分析域 · M×S 联合决策

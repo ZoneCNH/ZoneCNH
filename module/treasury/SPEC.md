@@ -1,7 +1,7 @@
 # treasury 规格
 
 - Status: Draft
-- Spec-Version: v0.1.0-draft
+- Spec-Version: v0.1.0
 - Last-Updated: 2026-06-30
 - Layer: 数据域 · 宏观（C/S 采集器）
 - Version: v0.1.0-draft

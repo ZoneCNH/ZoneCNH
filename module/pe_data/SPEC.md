@@ -1,7 +1,7 @@
 # pe_data 规格
 
 - Status: Draft
-- Spec-Version: v0.1.0-draft
+- Spec-Version: v0.1.0
 - Last-Updated: 2026-06-30
 - Layer: 数据域 · 另类数据
 - Version: v0.1.0-draft
