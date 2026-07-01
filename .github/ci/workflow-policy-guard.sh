@@ -9,7 +9,11 @@ import re
 import sys
 
 WORKFLOW_DIR = Path(".github/workflows")
-EXPECTED_RUNNER = ["self-hosted", "Linux", "X64", "homepage"]
+# Self-hosted runner decommissioned 2026-06-18; ubuntu-latest is now the accepted runner.
+ACCEPTED_RUNNERS = [
+    ["ubuntu-latest"],
+    ["self-hosted", "Linux", "X64", "homepage"],
+]
 EXPECTED_REUSABLE_PREFIX = "./.github/workflows/"
 EXPECTED_DEPLOY_CONTRACT = "ZoneCNH/sre/.github/workflows/deploy-contract.yml@main"
 DEPLOY_HINT = re.compile(r"\b(deploy|deployment)\b|部署", re.IGNORECASE)
@@ -91,11 +95,11 @@ for path in workflow_files:
 
         labels, line_no, next_cursor = parsed
         runs_on_count += 1
-        if labels != EXPECTED_RUNNER:
-            expected = f"[{', '.join(EXPECTED_RUNNER)}]"
+        if labels not in ACCEPTED_RUNNERS:
+            accepted_str = " or ".join(f"[{', '.join(r)}]" for r in ACCEPTED_RUNNERS)
             actual = f"[{', '.join(labels)}]" if labels else "<empty>"
             failures.append(
-                f"{path}:{line_no}: runs-on must be {expected}; found {actual}"
+                f"{path}:{line_no}: runs-on must be one of {accepted_str}; found {actual}"
             )
         cursor = next_cursor
 
@@ -126,9 +130,9 @@ if failures:
         print(f"  - {failure}")
     sys.exit(1)
 
-expected = f"[{', '.join(EXPECTED_RUNNER)}]"
+expected = " or ".join(f"[{', '.join(r)}]" for r in ACCEPTED_RUNNERS)
 print(
-    f"Workflow Policy Guard passed: {runs_on_count} runs-on entries use {expected}; "
+    f"Workflow Policy Guard passed: {runs_on_count} runs-on entries use accepted runners ({expected}); "
     f"{reusable_count} reusable workflow jobs use repo-local or approved deploy-contract targets; "
     f"deployment workflows declare {SRE_TARGET} when applicable."
 )
