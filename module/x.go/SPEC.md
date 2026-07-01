@@ -1,7 +1,7 @@
 # x.go 规格
 
 - Status: Draft
-- Spec-Version: v0.1.0-draft
+- Spec-Version: v0.1.0
 - Last-Updated: 2026-06-30
 - Layer: 横切 · 治理/工具 CLI
 - Version: v0.1.0-draft
