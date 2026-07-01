@@ -7,7 +7,7 @@
 #   3. AC 非空：每个 FR 行的 Acceptance Criteria 列不为 "-"
 #   4. TC 非空：每个 FR/BR 行的 Test Case 列不为 "-"
 #   5. Status 有效：Status 列只能是约定枚举值
-#   6. TC 引用：TRACEABILITY.md 中的 TC-### / TC-XXX-### 必须存在于
+#   6. TC 引用：TRACEABILITY.md 中的 TC-### / TC-XXX-###（含 snake_case 前缀，如 TC-FACTOR_ENGINE-001）必须存在于
 #      对应 SPEC.md 或 TRACEABILITY.md 的 TC 反向索引；
 #      没有当前 SPEC.md 的快照型模块跳过此引用存在性检查
 #   7. 交叉验证：TRACEABILITY.md 中的 FR 数量与对应 FR 参考文件一致
@@ -104,9 +104,10 @@ check_module() {
   fi
 
   # 从当前模块的 FR 参考文件提取 FR 数量。
+  # 使用 `\K` 左侧上下文重置：仅匹配前置非字母/连字符的 FR-NNN（排除 NFR-/BR-/TC-/AC- 等子串误命中）。
   local spec_fr_count=0
   if [[ -f "$fr_reference_file" ]]; then
-    spec_fr_count=$( { grep -oP "FR-\d+" "$fr_reference_file" || true; } | sort -u | wc -l )
+    spec_fr_count=$( { grep -oP "(^|[^A-Z-])\KFR-[0-9]+" "$fr_reference_file" || true; } | sort -u | wc -l )
   fi
 
   # 从模块矩阵提取 Requirement 首列为 FR-### 的行数。
@@ -171,7 +172,7 @@ check_module() {
   fi
 
   # 检查 TC token 格式。允许 CI Gate/-race/import check 等非 TC 说明，
-  # 但凡出现 TC-*，必须是 TC-### 或 TC-XXX-###。
+  # 但凡出现 TC-*，必须是 TC-### 或 TC-XXX-###（含 snake_case 前缀如 TC-FACTOR_ENGINE-001）。
   local invalid_tc_tokens
   invalid_tc_tokens=$(awk -F'|' '
     function trim(s) { gsub(/^[ \t]+|[ \t]+$/, "", s); return s }
@@ -183,7 +184,7 @@ check_module() {
       gsub(/[；：、]/, " ", tc)
       while (match(tc, /TC-[^, \t|]+/)) {
         token=substr(tc, RSTART, RLENGTH)
-        if (token !~ /^TC-([A-Z][A-Z][A-Z][A-Z]*-)?[0-9][0-9][0-9]$/) print token
+        if (token !~ /^TC-([A-Z][A-Z_]*-)?[0-9][0-9][0-9]$/) print token
         tc=substr(tc, RSTART + RLENGTH)
       }
     }
@@ -208,7 +209,7 @@ check_module() {
         tc=$5
         if (req !~ /^(FR|BR)-[0-9]+$/) next
         gsub(/[；：、]/, " ", tc)
-        while (match(tc, /TC-([A-Z][A-Z][A-Z][A-Z]*-)?[0-9][0-9][0-9]/)) {
+        while (match(tc, /TC-([A-Z][A-Z_]*-)?[0-9][0-9][0-9]/)) {
           print substr(tc, RSTART, RLENGTH)
           tc=substr(tc, RSTART + RLENGTH)
         }

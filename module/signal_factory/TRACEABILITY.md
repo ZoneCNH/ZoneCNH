@@ -15,6 +15,10 @@ Last-Updated: 2026-06-30
 | FR-002 | 信号组合 | AC-SIGNAL_FACTORY-002 | TC-SIGNAL_FACTORY-002 | - | ⬜→§8 |
 | FR-003 | Regime Gate | AC-SIGNAL_FACTORY-003 | TC-SIGNAL_FACTORY-003 | - | ⬜→§8 |
 | FR-004 | Signal DTO | AC-SIGNAL_FACTORY-004 | TC-SIGNAL_FACTORY-004 | - | ⬜→§8 |
+| FR-005 | 置信度计算 — 低置信度强制 FLAT | AC-SIGNAL_FACTORY-005 | TC-SIGNAL_FACTORY-006 | - | ⬜→§8 |
+| FR-006 | 信号过期 — expires_at 时间戳生成 | AC-SIGNAL_FACTORY-006 | TC-SIGNAL_FACTORY-007 | - | ⬜→§8 |
+| FR-007 | 信号追溯 — FactorAttribution 完整性 | AC-SIGNAL_FACTORY-007 | TC-SIGNAL_FACTORY-008 | - | ⬜→§8 |
+| FR-008 | Module Identity — module 标识校验 | AC-SIGNAL_FACTORY-008 | TC-SIGNAL_FACTORY-009 | - | ⬜→§8 |
 
 ## §2 BR 追溯表
 
@@ -39,8 +43,10 @@ Last-Updated: 2026-06-30
 | TC-SIGNAL_FACTORY-003 | FR-003 | 单元测试 | ⬜→§8 |
 | TC-SIGNAL_FACTORY-004 | FR-004 | 单元测试 | ⬜→§8 |
 | TC-SIGNAL_FACTORY-005 | BR-001 | 单元测试 | ⬜→§8 |
-| TC-SIGNAL_FACTORY-006 | BR-002 | 单元测试 | ⬜→§8 |
-| TC-SIGNAL_FACTORY-007 | BR-003 | 单元测试 | ⬜→§8 |
+| TC-SIGNAL_FACTORY-006 | FR-005, BR-002 | 单元测试 | ⬜→§8 |
+| TC-SIGNAL_FACTORY-007 | FR-006, BR-003 | 单元测试 | ⬜→§8 |
+| TC-SIGNAL_FACTORY-008 | FR-007 | 单元测试 | ⬜→§8 |
+| TC-SIGNAL_FACTORY-009 | FR-008 | 单元测试 | ⬜→§8 |
 
 ## §5 AC 注册表
 

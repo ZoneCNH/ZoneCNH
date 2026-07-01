@@ -48,12 +48,18 @@
 
 | TC ID | 覆盖 FR(s) | 覆盖 BR(s) | 测试类型 |
 |-------|------------|------------|----------|
-| TC-001 ~ TC-004 | FR-001 | — | 集成（4 channel polling） |
+| TC-001 | FR-001 | — | 集成（4 channel polling） |
+| TC-002 | FR-001 | — | 集成（4 channel polling） |
+| TC-003 | FR-001 | — | 集成（4 channel polling） |
+| TC-004 | FR-001 | — | 集成（4 channel polling） |
 | TC-005 | FR-003 | BR-007 | 契约测试 |
 | TC-006 | FR-004 | BR-004, BR-008 | 集成 |
 | TC-007 | FR-005 | BR-008 | 集成 |
-| TC-008, TC-009 | FR-006 | BR-009 | 单元 + 集成 |
-| TC-010 ~ TC-012 | FR-007 | BR-001 ~ BR-003 | CI gate |
+| TC-008 | FR-006 | BR-009 | 单元 + 集成 |
+| TC-009 | FR-006 | BR-009 | 单元 + 集成 |
+| TC-010 | FR-007 | BR-001 | CI gate |
+| TC-011 | FR-007 | BR-002 | CI gate |
+| TC-012 | FR-007 | BR-003 | CI gate |
 | TC-019 | FR-005 | BR-010 | 单元（window_start idempotency） |
 | TC-020 | FR-002 | BR-011 | 单元（venue normalization） |
 | TC-021 | FR-002 | BR-011 | 集成（unmapped venue） |

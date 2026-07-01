@@ -47,13 +47,24 @@
 
 | TC ID | 覆盖 FR(s) | 覆盖 BR(s) | 测试类型 |
 |-------|------------|------------|----------|
-| TC-001 ~ TC-005 | FR-001 | — | 集成（5 product line connector） |
-| TC-006 ~ TC-008 | FR-002 | BR-005 | 单元（identity dimensions） |
-| TC-009, TC-010 | FR-005 | BR-008 | 集成（idempotency） |
-| TC-011, TC-012 | FR-006 | BR-009 | 单元（admin） |
-| TC-013 ~ TC-015 | FR-007 | BR-001 ~ BR-003 | CI gate |
+| TC-001 | FR-001 | — | 集成（5 product line connector） |
+| TC-002 | FR-001, FR-002 | BR-005 | 单元（identity dimensions） |
+| TC-003 | FR-001 | — | 集成（5 product line connector） |
+| TC-004 | FR-001 | — | 集成（5 product line connector） |
+| TC-005 | FR-001 | — | 集成（5 product line connector） |
+| TC-006 | FR-002 | BR-005 | 单元（identity dimensions） |
+| TC-007 | FR-003 | BR-007 | 契约测试 |
+| TC-008 | FR-004 | BR-004, BR-008 | 集成 |
+| TC-009 | FR-005 | BR-008 | 集成（idempotency） |
+| TC-010 | FR-005 | BR-008 | 集成（idempotency） |
+| TC-011 | FR-006 | BR-009 | 单元（admin） |
+| TC-012 | FR-006 | BR-009 | 单元（admin） |
+| TC-013 | FR-007 | BR-001 | CI gate |
+| TC-014 | FR-007 | BR-002 | CI gate |
+| TC-015 | FR-007 | BR-003 | CI gate |
 | TC-019 | FR-002 | BR-005 | 单元（Spot/Margin 同 symbol） |
-| TC-020, TC-021 | FR-008 | BR-010 | 集成（environment isolation） |
+| TC-020 | FR-008 | BR-010 | 集成（environment isolation） |
+| TC-021 | FR-008 | BR-010 | 集成（environment isolation） |
 
 ---
 

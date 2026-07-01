@@ -19,6 +19,7 @@ Source: `module/taosx/SPEC.md` v1.0.5
 | FR-008 | Health 调用 Driver.Health 映射为 HealthStatus，默认驱动 degraded | AC-TAO-008 | TC-014, TC-015 | TASK-TAOSX-008 | `go test ./pkg/taosx -run TestHealth` | ✅ |
 | FR-009 | Close 幂等，接受 context，关闭后操作返回 closed 错误 | AC-TAO-009 | TC-016, TC-017 | TASK-TAOSX-009 | `go test ./pkg/taosx -run TestClose` | ✅ |
 | FR-010 | Metrics 端口可选，默认 no-op，注入后记录 `taosx_client_*` 指标 | AC-TAO-010 | TC-018, TC-019 | TASK-TAOSX-010 | `go test ./pkg/taosx -run TestMetrics` | ✅ |
+| FR-011 | DeleteRange 时间范围删除 — 合法 table+before 委托驱动返回 ExecResult；非法 table 或零值 before 拒绝；驱动错误透传 | AC-TAO-011 | TC-020, TC-021 | TASK-TAOSX-011 | `go test ./pkg/taosx -run TestDeleteRange` | ✅ |
 
 ## §2 BR 行为约束追溯
 
@@ -67,6 +68,8 @@ Source: `module/taosx/SPEC.md` v1.0.5
 | TC-017 | FR-009 | `go test ./pkg/taosx -run TestCloseRejectsOps` |
 | TC-018 | FR-010 | `go test ./pkg/taosx -run TestMetricsNoop` |
 | TC-019 | FR-010 | `go test ./pkg/taosx -run TestMetricsRecord` |
+| TC-020 | FR-011 | `go test ./pkg/taosx -run TestDeleteRangeValidate` |
+| TC-021 | FR-011 | `go test ./pkg/taosx -run TestDeleteRangeDelegate` |
 
 ## §5 AC 验收标准注册表
 
