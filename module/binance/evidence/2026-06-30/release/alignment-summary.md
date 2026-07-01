@@ -46,20 +46,25 @@
 - govulncheck：No vulnerabilities found
 - gitleaks：6 findings（全部来自 gitignored 文件 .env/.beads）
 - 基础设施：10 服务全在线（NATS/Redis/PG/TDengine/Kafka/CH/OSS + Jaeger/Grafana/Loki/AlertManager）
-- soak test：2min 1200 messages PASS（NATS 连通性，非 binance 管线 soak）⚠️
-- chaos test：5/5 PASS（连通性测试 connect→disconnect→reconnect，非真实故障注入）⚠️
-- release_closeable：**NO**（PRG-006 Partial，系统行为+数据完整性验证缺失。详见 `report/binance/TEST-ANALYSIS-20260630.md` §二缺陷1-7）
+- soak test：`TestSoak_ServerStability` PASS（L2 IngestServer heap/goroutine/吞吐/幂等性验证，CI-runnable）；L1 全管线 soak 待 `BINANCE_SOAK_LIVE=1`
+- chaos test：9/9 PASS — L1 连通性 5 项 + L2 故障注入 4 项（StorageFailure/DispatchFailure/IdempotencyUnavailable/ConcurrentFailureInterleaving）
+- security test：6/6 PASS — SQLi/XSS/路径遍历/限流/未授权/提权，handler 级安全验证（CI-runnable）
+- depth test：15/15 PASS — 3 FRs × 5 维度（FR-025/026/027）真实实现；122 stubs 已文档化优先级路线图
+- restart recovery：4/4 PASS — 共享 store + 独立 store（证明问题）+ 持久化 store（证明解决）+ 协调恢复
+- E2E test：6/6 PASS — 全管线 + 重复去重 + 冲突拒绝 + 多产品线 + 高容量去重
+- benchmark regression：0 regressions（26 项 baseline）
+- release_closeable：**NO**（PRG-006 Partial——L2 测试已补齐 19 项 CI-runnable 测试，L1 系统行为+数据完整性验证待 `BINANCE_{SOAK,CHAOS}_LIVE=1`）
 
 ## 审查评分对比
 
-| 指标 | 上轮 (06-30 AM) | 本轮 (06-30 PM 审查复核) | TEST-ANALYSIS 修正 |
-|------|----------------|--------------------------|---------------------|
-| 综合得分 | 76 | 91（审查复核）| **87**（TRACEABILITY/SCORECARD 修正后；TEST-ANALYSIS 发现 7 缺陷影响评分） |
+| 指标 | 上轮 (06-30 AM) | 本轮 (06-30 PM 审查复核) | L2 补齐修正 (06-30 EOD) |
+|------|----------------|--------------------------|--------------------------|
+| 综合得分 | 76 | 91（审查复核）| **90**（L2 测试全面补齐：soak+chaos+security+depth+restart+E2E+benchmark CI） |
 | CRITICAL | 3 | 0 | 0 |
 | HIGH | 7 | 0 | 0 |
 | MEDIUM | 7 | 2 | 2 |
-| PRG 已验证 PASS | 1/7 | 7/7 → **6/7** | PRG-006 修正为 Partial |
-| 治理等级 | L2 Active | ~~L3 Production~~ → **L2+ Active** | TEST-ANALYSIS 确认 soak/chaos 虚假，系统验证待补齐 |
+| PRG 已验证 PASS | 1/7 | 7/7 → 6/7 | 6/7（PRG-006 L2 补齐，L1 待 infra） |
+| 治理等级 | L2 Active | ~~L3 Production~~ → L2+ Active | **L2+ Active**（测试体系从 97 stubs→19 项 CI-runnable 真实测试） |
 
 ## 5 轮重复验证
 

@@ -16,7 +16,9 @@ Provide a unified web-based visualization platform for all ZoneCNH data modules.
 | --- | --- |
 | 最高治理 | `CONSTITUTION.md` |
 | 模块规格 | 本文件 |
+| 交互协议 | `INTERACTION-PROTOCOL.md` — 前后端通信规范 |
 | 源码 | <https://github.com/ZoneCNH/frontend> |
+| 线上 | <https://www.wecode7.com> |
 
 ## 3. Scope
 
