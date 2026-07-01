@@ -79,6 +79,17 @@
 | contracts     | [goal.md](./contracts/goal.md)     |
 | transportx    | [goal.md](./transportx/goal.md)    |
 | domainx       | [goal.md](./domainx/goal.md)       |
+| frontend      | [goal.md](./frontend/goal/goal.md)  |
+
+---
+
+## 展示层（1 个）
+
+ZoneCNH 统一可视化平台 — 单页应用，提供监控仪表盘、行情浏览、健康状态、告警管理和 Admin 控制台。
+
+| 模块 | 规格 | 核心职责 |
+| --- | --- | --- |
+| frontend | [SPEC.md](./frontend/spec/SPEC.md) · [goal.md](./frontend/goal/goal.md) · [FEATURES.md](./frontend/spec/FEATURES.md) | ZoneCNH 统一前端平台 — React 19 + TypeScript + Vite + Tailwind CSS 4 + Recharts；多模块路由架构；binance 模块 5 页面 39 功能全部 Done；<https://github.com/ZoneCNH/frontend> |
 
 ---
 
