@@ -42,7 +42,7 @@ Implement tasks in numeric order unless the Aliyun adapter task (TASK-OSSX-005) 
 | 外部依赖不可用（Aliyun OSS） | MEDIUM | 健康检查 + 降级策略；测试用 fake adapter | 回退到上一稳定版本 |
 | 配置兼容性回归 | LOW | canonical + legacy 测试覆盖 | 回退配置变更 |
 
-> 注：本计划是早期实现切片记录。当前 `/home/ossx` 已具备 v1.2.1 本地生产候选实现；完整生产放行仍以后续 release/live/downstream/soak 证据为准。
+> 注：本计划是早期实现切片记录。当前 `/home/workspace/ossx` 已具备 v1.2.1 本地生产候选实现；完整生产放行仍以后续 release/live/downstream/soak 证据为准。
 
 ## Phased Rollout
 

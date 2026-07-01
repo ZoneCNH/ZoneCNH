@@ -8,7 +8,7 @@
 | 当前版本 | v1.1.0 |
 | 目标版本 | v1.1.0 |
 | 状态 | v1.1.0 SPEC Approved (canonical types aligned with cross-module contracts) |
-| 计划来源 | `/home/zone/Downloads/0615/ZoneCNH-v1.0.0-goal-execution-plans/domain_market-v1.0.0-goal-execution-plan.md` |
+| 计划来源 | `/home/workspace/zone/Downloads/0615/ZoneCNH-v1.0.0-goal-execution-plans/domain_market-v1.0.0-goal-execution-plan.md` |
 | 最后更新 | 2026-06-30 |
 
 ## 目标

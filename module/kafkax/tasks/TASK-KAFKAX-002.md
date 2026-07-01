@@ -24,12 +24,12 @@ Does NOT implement Kafka broker deployment, topic auto-creation, or Kafka Connec
 
 ## Files
 
-- `/home/kafkax/pkg/kafkax/consumer.go` — Consumer / Handler 接口
-- `/home/kafkax/pkg/kafkax/kafkago/consumer.go:21` — `newConsumer`（消费组 + StartOffset 配置）
-- `/home/kafkax/pkg/kafkax/kafkago/consumer.go:44` — `Run(ctx, handler)` 消费循环
-- `/home/kafkax/pkg/kafkax/kafkago/consumer.go:65` — `Poll(ctx)` 阻塞拉取
-- `/home/kafkax/pkg/kafkax/kafkago/consumer.go:119,126,137` — Pause/Resume/Close ctx 取消处理
-- `/home/kafkax/pkg/kafkax/config.go:114-116` — `GroupID` / `StartOffset` 配置
+- `/home/workspace/kafkax/pkg/kafkax/consumer.go` — Consumer / Handler 接口
+- `/home/workspace/kafkax/pkg/kafkax/kafkago/consumer.go:21` — `newConsumer`（消费组 + StartOffset 配置）
+- `/home/workspace/kafkax/pkg/kafkax/kafkago/consumer.go:44` — `Run(ctx, handler)` 消费循环
+- `/home/workspace/kafkax/pkg/kafkax/kafkago/consumer.go:65` — `Poll(ctx)` 阻塞拉取
+- `/home/workspace/kafkax/pkg/kafkax/kafkago/consumer.go:119,126,137` — Pause/Resume/Close ctx 取消处理
+- `/home/workspace/kafkax/pkg/kafkax/config.go:114-116` — `GroupID` / `StartOffset` 配置
 
 ## Acceptance
 

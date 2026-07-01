@@ -129,7 +129,7 @@
 
 ### 10.1 ~~[高] transportx module name bug~~ ✅ 已修复
 
-`/home/transportx/go.mod` 现已声明 `module github.com/ZoneCNH/transportx`。
+`/home/workspace/transportx/go.mod` 现已声明 `module github.com/ZoneCNH/transportx`。
 
 ### 10.2 ~~[高] domain_* module path 下划线 vs 连字符分叉~~ ✅ 已修复
 
@@ -137,7 +137,7 @@ domain_market/macro/exchange 的 main go.mod 统一为 `github.com/ZoneCNH/domai
 
 ### 10.3 ~~[中] domainx 主目录无 go.mod~~ ✅ 已修复
 
-`/home/domainx/go.mod` 已存在，`module github.com/ZoneCNH/domainx`。
+`/home/workspace/domainx/go.mod` 已存在，`module github.com/ZoneCNH/domainx`。
 
 ### 10.4 ~~[中] binance client assembly 越界~~ ✅ 已修复
 

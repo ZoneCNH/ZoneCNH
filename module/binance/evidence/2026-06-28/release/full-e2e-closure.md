@@ -6,9 +6,9 @@
 
 ## 证据来源
 
-- **Runtime 仓库**：`/home/binance@2efc44a`
-- **证据归档**：`/home/binance/release/evidence/binance/20260628-full-e2e-closure/`
-- **配置来源**：`/home/ZoneCNH/sre/secrets/env/dev.md`（通过 `/home/binance/.env` 加载）
+- **Runtime 仓库**：`/home/workspace/binance@2efc44a`
+- **证据归档**：`/home/workspace/binance/release/evidence/binance/20260628-full-e2e-closure/`
+- **配置来源**：`/home/workspace/ZoneCNH/sre/secrets/env/dev.md`（通过 `/home/workspace/binance/.env` 加载）
 
 ## 7 个外部依赖 E2E 结果
 

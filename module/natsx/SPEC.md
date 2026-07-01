@@ -12,7 +12,7 @@ Status: Approved
 
 ## 1. 摘要
 
-Scope note: 本规格描述 `/home/ZoneCNH/module/natsx` 的 1.0 目标，不单独批准或覆盖 `/home/natsx` 仓库的发布身份。
+Scope note: 本规格描述 `/home/workspace/ZoneCNH/module/natsx` 的 1.0 目标，不单独批准或覆盖 `/home/workspace/natsx` 仓库的发布身份。
 
 `natsx` 封装 NATS 客户端，提供统一的发布/订阅（Core NATS）、请求/响应、JetStream（持久化消息、消费者组）和可观测集成。NATS 用于模块间的低延迟内部通信，JetStream 提供持久化保证。与 kernel 生命周期集成，保证连接随应用启停。
 
@@ -226,7 +226,7 @@ THEN 返回 `error`（poison message），调用方决定 nack 或 DLQ，适配�
 
 公开 API 命名以 `goal.md` 的 1.0 逻辑接口基线为准：`NatsPubSubClient`、`NatsRequestClient`、`JetStreamClientX`、`NatsMessageEnvelope` 和 `SubjectBuilder`。实现可以保留内部适配器，但 Public API 不再暴露泛化的 `Client`/`JetStream` 命名作为 1.0 稳定契约。
 
-Implementation repair note (2026-06-13): `/home/natsx/pkg/natsx` exposes the concrete repair APIs (`Client`, `Envelope`, `SubjectBuilder`, `JetStreamClient`) and contract-adjacent concrete types used by the repair slice. The historical interface names in this SPEC remain target-contract names; they are not claimed as exported API shims. Final interface factories remain governed by this contract.
+Implementation repair note (2026-06-13): `/home/workspace/natsx/pkg/natsx` exposes the concrete repair APIs (`Client`, `Envelope`, `SubjectBuilder`, `JetStreamClient`) and contract-adjacent concrete types used by the repair slice. The historical interface names in this SPEC remain target-contract names; they are not claimed as exported API shims. Final interface factories remain governed by this contract.
 
 ```go
 type NatsPubSubClient interface {
@@ -578,7 +578,7 @@ Executable repair evidence (2026-06-13): embedded CI assertions now enforce gene
 | log | `natsx.reconnected` | info，重连成功 |
 | log | `natsx.handler.panic` | error，handler panic 详情 |
 
-Executable repair evidence (2026-06-13): `/home/natsx` commit `20f801f` records canonical `foundationx_nats_*` metrics for client lifecycle, health, Core NATS publish/request/subscribe outcomes, JetStream outcomes, reconnects, and disconnects. Legacy `natsx_*` metric names are not part of the 1.0 contract. Secret-safety tests assert config/env validation errors and live-test evidence do not print payloads, credentials, tokens, or credential-bearing endpoints.
+Executable repair evidence (2026-06-13): `/home/workspace/natsx` commit `20f801f` records canonical `foundationx_nats_*` metrics for client lifecycle, health, Core NATS publish/request/subscribe outcomes, JetStream outcomes, reconnects, and disconnects. Legacy `natsx_*` metric names are not part of the 1.0 contract. Secret-safety tests assert config/env validation errors and live-test evidence do not print payloads, credentials, tokens, or credential-bearing endpoints.
 
 ---
 

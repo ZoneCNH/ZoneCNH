@@ -2,8 +2,8 @@
 
 - Date: 2026-06-27
 - Scope: Beads issues + GitHub issues for binance governance/runtime alignment
-- Runtime anchor: `/home/binance@0602e78428633a368b0afcd1c578c07ed7144752`
-- Governance repo: `/home/ZoneCNH`
+- Runtime anchor: `/home/workspace/binance@0602e78428633a368b0afcd1c578c07ed7144752`
+- Governance repo: `/home/workspace/ZoneCNH`
 
 > `[COMPUTED, HIGH]` This file is superseded for current #1268-#1279 tracker status by `ISSUE-BLOCKERS-1268-1279.md`. The rows below are preserved as blocker evidence; current #1268-#1279 tracker state is GitHub `OPEN` and Beads `ZoneCNH-xzcr*` in_progress as Evidence-Done blocker ownership. Linked Evidence-Done rows remain pending.
 > GitHub #1267 / Beads `ZoneCNH-8lb` is the current open long-term tracker; historical GitHub #1093 is closed as milestone relocation. M1-M4 evidence remains pending in `docs/governance/CORE-LOOP-MILESTONES.md`. Beads `ZoneCNH-az71` is intentionally retained as `in_progress` because git operations are blocked.
@@ -61,15 +61,15 @@
 
 ## §6 Continuation Audit
 
-`[COMPUTED, HIGH]` At `2026-06-27 17:23:58 +0800`, `/home/binance/scripts/readiness-audit.sh` returned `readiness-audit PASS`.
+`[COMPUTED, HIGH]` At `2026-06-27 17:23:58 +0800`, `/home/workspace/binance/scripts/readiness-audit.sh` returned `readiness-audit PASS`.
 
-`[COMPUTED, HIGH]` Runtime release evidence was collected under `/home/binance/release/evidence/binance/20260627-agent-audit-2/`.
+`[COMPUTED, HIGH]` Runtime release evidence was collected under `/home/workspace/binance/release/evidence/binance/20260627-agent-audit-2/`.
 
-`[COMPUTED, HIGH]` `/home/binance/release/evidence/binance/20260627-agent-audit-2/status.txt` reports PASS for HEAD capture, Go version capture, gofmt, boundary gates, `go build ./...`, `go test ./... -count=1`, targeted runtime tests, `go test ./... -race -count=1`, `go vet ./...`, `golangci-lint run`, smoke self-test, retired HTTP ingest guard, local/external ledger writes, `git diff --check`, and pre/post git status capture.
+`[COMPUTED, HIGH]` `/home/workspace/binance/release/evidence/binance/20260627-agent-audit-2/status.txt` reports PASS for HEAD capture, Go version capture, gofmt, boundary gates, `go build ./...`, `go test ./... -count=1`, targeted runtime tests, `go test ./... -race -count=1`, `go vet ./...`, `golangci-lint run`, smoke self-test, retired HTTP ingest guard, local/external ledger writes, `git diff --check`, and pre/post git status capture.
 
-`[COMPUTED, HIGH]` `/home/binance/release/evidence/binance/20260627-agent-audit-2/external-gates.log` still reports `live_binance_websocket=NOT_CAPTURED`, `natsx_jetstream_puback_manualack=CORE_ENVELOPE_ADAPTER_PRESENT_JETSTREAM_ACK_NOT_CAPTURED`, `external_durable_storage_fanout_query=PACKAGE_BOUNDARY_PRESENT_EXTERNAL_IO_NOT_CAPTURED`, `remote_github_actions=NOT_CAPTURED`, `release_tag=NOT_CAPTURED`, and `release_closeable=NO`.
+`[COMPUTED, HIGH]` `/home/workspace/binance/release/evidence/binance/20260627-agent-audit-2/external-gates.log` still reports `live_binance_websocket=NOT_CAPTURED`, `natsx_jetstream_puback_manualack=CORE_ENVELOPE_ADAPTER_PRESENT_JETSTREAM_ACK_NOT_CAPTURED`, `external_durable_storage_fanout_query=PACKAGE_BOUNDARY_PRESENT_EXTERNAL_IO_NOT_CAPTURED`, `remote_github_actions=NOT_CAPTURED`, `release_tag=NOT_CAPTURED`, and `release_closeable=NO`.
 
-`[COMPUTED, HIGH]` `/home/binance/release/evidence/binance/20260627-agent-audit-2/lifecycle-local-gates.log` reports local lifecycle PASS items including `backfill_progress_restart_file_store=PASS_LOCAL`, `history_state_postgres_store=PASS_LOCAL_FAKE_DB`, `dlq_admin_replay_endpoint=PASS_LOCAL`, `dlq_file_writer_persistence=PASS_LOCAL`, and `dlq_file_backed_replay=PASS_LOCAL`; `durable_historical_fetch_replay=PARTIAL_LOCAL_FILE_AND_FAKE_POSTGRES_ONLY` and `live_historical_exchange_capture=NOT_CAPTURED` remain blockers.
+`[COMPUTED, HIGH]` `/home/workspace/binance/release/evidence/binance/20260627-agent-audit-2/lifecycle-local-gates.log` reports local lifecycle PASS items including `backfill_progress_restart_file_store=PASS_LOCAL`, `history_state_postgres_store=PASS_LOCAL_FAKE_DB`, `dlq_admin_replay_endpoint=PASS_LOCAL`, `dlq_file_writer_persistence=PASS_LOCAL`, and `dlq_file_backed_replay=PASS_LOCAL`; `durable_historical_fetch_replay=PARTIAL_LOCAL_FILE_AND_FAKE_POSTGRES_ONLY` and `live_historical_exchange_capture=NOT_CAPTURED` remain blockers.
 
 `[COMPUTED, HIGH]` This continuation audit strengthens the local readiness evidence but does not make #1267-#1279 Evidence-Done, because their acceptance still depends on live, production, external CI, release, rollback, destructive, credentialed, or archived direct-test evidence.
 
@@ -98,9 +98,9 @@
 
 `[COMPUTED, HIGH]` `sre/secrets/env/dev.md` was rechecked as the only clean-env external E2E configuration source. Concrete keys were found for `FOUNDATIONX_KAFKAX_*`, `FOUNDATIONX_POSTGRESX_*`, `FOUNDATIONX_REDISX_*`, and `FOUNDATIONX_TAOSX_*`; `FOUNDATIONX_TAOSX_ENDPOINT` was derived from host/port. Concrete `FOUNDATIONX_CLICKHOUSEX_*`, `FOUNDATIONX_NATSX_*`, and `FOUNDATIONX_OSSX_*` rows were not present. No secret value, endpoint, token, password, or credential was copied into this repository.
 
-`[COMPUTED, HIGH]` The latest dev.md-only evidence package is `/home/binance/release/evidence/binance/20260627-external-e2e-devmd-only/`. `status.tsv` reports kafkax live PASS; storage-live FAIL with postgresx/redisx PASS, taosx `status=degraded` + `unexpected EOF`, and clickhousex default/auth failure from missing dev config; ossx SKIP from missing dev config; NATSX local JetStream integration PASS only, not remote NATSX dev.md E2E. `external-gates.log` still records `release_closeable=NO`.
+`[COMPUTED, HIGH]` The latest dev.md-only evidence package is `/home/workspace/binance/release/evidence/binance/20260627-external-e2e-devmd-only/`. `status.tsv` reports kafkax live PASS; storage-live FAIL with postgresx/redisx PASS, taosx `status=degraded` + `unexpected EOF`, and clickhousex default/auth failure from missing dev config; ossx SKIP from missing dev config; NATSX local JetStream integration PASS only, not remote NATSX dev.md E2E. `external-gates.log` still records `release_closeable=NO`.
 
-`[COMPUTED, HIGH]` `/home/binance/release/evidence/binance/20260627-agent-audit-2/issue-repeat-check-10x.log` records 10/10 local PASS across `git diff --check`, `go test ./internal/server/deadletter -run TestReadFile -count=1`, targeted admin DLQ replay tests, and targeted history state tests.
+`[COMPUTED, HIGH]` `/home/workspace/binance/release/evidence/binance/20260627-agent-audit-2/issue-repeat-check-10x.log` records 10/10 local PASS across `git diff --check`, `go test ./internal/server/deadletter -run TestReadFile -count=1`, targeted admin DLQ replay tests, and targeted history state tests.
 
 | GitHub | Agent-team follow-up comment |
 | --- | --- |

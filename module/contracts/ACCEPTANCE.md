@@ -3,7 +3,7 @@
 - Status: Docs Baseline Synced / Acceptance Closed
 - Last-Updated: 2026-06-30
 - Layer: 基座 · 跨域接口契约
-- Source-of-Truth: `/home/contracts/pkg/contracts`
+- Source-of-Truth: `/home/workspace/contracts/pkg/contracts`
 - Related: `SPEC.md`, `README.md`, `goal.md`, `TRACEABILITY.md`, `FEATURES.md`, `IMPLEMENTATION-PLAN.md`, `tasks/`
 
 > 本文档只记录当前 runtime truth 的验收口径与退出条件；旧的分层命名、旧版本标记、重大改名故事、旧交易所接入叙事不再保留。
@@ -12,13 +12,13 @@
 
 | 类别 | 命令 | 通过标准 |
 | --- | --- | --- |
-| 术语回归扫描 | `cd /home/ZoneCNH && rg -n -e '旧术语' -e '旧命名' -e '旧分层' -e '历史叙事' -e '双向流' -e '兼容层' module/contracts` | 无命中 |
-| 文档补丁检查 | `cd /home/ZoneCNH && git diff --check -- module/contracts` | 无尾随空格或补丁格式问题 |
-| 运行时测试 | `cd /home/contracts && go test ./...` | 全部通过 |
-| 竞态检查 | `cd /home/contracts && go test ./... -race -count=1` | 无 race，测试稳定 |
-| 静态检查 | `cd /home/contracts && go vet ./...` | 零告警 |
-| 覆盖率证据 | `cd /home/contracts && go test ./... -coverprofile=coverage.out` | 生成覆盖率并满足模块门槛 |
-| 依赖边界 | `cd /home/contracts && go list -deps ./...` | 依赖不越过 FOUNDATION-DEPS.yaml 边界 |
+| 术语回归扫描 | `cd /home/workspace/ZoneCNH && rg -n -e '旧术语' -e '旧命名' -e '旧分层' -e '历史叙事' -e '双向流' -e '兼容层' module/contracts` | 无命中 |
+| 文档补丁检查 | `cd /home/workspace/ZoneCNH && git diff --check -- module/contracts` | 无尾随空格或补丁格式问题 |
+| 运行时测试 | `cd /home/workspace/contracts && go test ./...` | 全部通过 |
+| 竞态检查 | `cd /home/workspace/contracts && go test ./... -race -count=1` | 无 race，测试稳定 |
+| 静态检查 | `cd /home/workspace/contracts && go vet ./...` | 零告警 |
+| 覆盖率证据 | `cd /home/workspace/contracts && go test ./... -coverprofile=coverage.out` | 生成覆盖率并满足模块门槛 |
+| 依赖边界 | `cd /home/workspace/contracts && go list -deps ./...` | 依赖不越过 FOUNDATION-DEPS.yaml 边界 |
 
 ## 2. FR 验收登记
 
@@ -65,7 +65,7 @@
 
 - `module/contracts` 旧术语扫描无命中。
 - `git diff --check` 无格式问题。
-- `/home/contracts` 的 `go test ./...`、`go test ./... -race -count=1`、`go vet ./...` 已完成并归档证据。
+- `/home/workspace/contracts` 的 `go test ./...`、`go test ./... -race -count=1`、`go vet ./...` 已完成并归档证据。
 - `README.md`、`goal.md`、`TRACEABILITY.md`、`FEATURES.md`、`IMPLEMENTATION-PLAN.md` 与 `SPEC.md` 同源。
 - `RejectUnsupportedChannel` 仍为导出常量，并进入 `AllRejectCodes()`。
 - 公开符号的新增、删除或重命名必须先更新 `SPEC.md` 再更新本文档。

@@ -10,7 +10,7 @@
 
 FR-017（Gap Detection and Replay）的 depth 缺口检测策略在 v3.9.0 spec 中定义为「updateId 序列跳跃 → 触发 depth snapshot refresh（重新拉取 `GET /api/v3/depth` 全量快照），而非生成 gap replay job」。
 
-当前 runtime（`/home/binance@2efc44a`）的 depth 处理为快照级落库（`stream_control.go` depth 处理为快照级），不维护本地 order book 状态机，不做增量 diff 重放。
+当前 runtime（`/home/workspace/binance@2efc44a`）的 depth 处理为快照级落库（`stream_control.go` depth 处理为快照级），不维护本地 order book 状态机，不做增量 diff 重放。
 
 Issue #1114 通过"明确排除（当前版本）"关闭 — order book rebuild 状态机非 v0.2.0 范围。但需 ADR 记录决策理由和未来路径。
 

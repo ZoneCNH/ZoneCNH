@@ -22,32 +22,32 @@
 
 | 用户名            | 本地目录                | go.mod module 声明                    | 备注                                                    |
 | ----------------- | ----------------------- | ------------------------------------- | ------------------------------------------------------- |
-| `xlib_standard`   | `/home/xlib-standard`   | `github.com/ZoneCNH/xlib_standard`    | 零 ZoneCNH require                                      |
-| `xlib_harness`    | `/home/xlib-harness`    | `github.com/ZoneCNH/xlib_harness`     | 零 ZoneCNH require                                      |
-| `xlib_evidence`   | `/home/xlib-evidence`   | `github.com/ZoneCNH/xlib_evidence`    | 零 ZoneCNH require                                      |
-| `xlibgate`        | `/home/xlibgate`        | `github.com/ZoneCNH/xlibgate`         | 零 ZoneCNH require                                      |
-| `kernel`          | `/home/kernel`          | `github.com/ZoneCNH/kernel`           | 零 ZoneCNH require                                      |
-| `configx`         | `/home/configx`         | `github.com/ZoneCNH/configx`          | 零 ZoneCNH require                                      |
-| `observex`        | `/home/observex`        | `github.com/ZoneCNH/observex`         | 零 ZoneCNH require                                      |
-| `testkitx`        | `/home/testkitx`        | `github.com/ZoneCNH/testkitx`         | 零 ZoneCNH require                                      |
-| `resiliencx`      | `/home/resiliencx`      | `github.com/ZoneCNH/resiliencx`       | 零 ZoneCNH require                                      |
-| `schedulex`       | `/home/schedulex`       | `github.com/ZoneCNH/schedulex`        | 零 ZoneCNH require                                      |
-| `bootstrap`       | `/home/bootstrap`       | `github.com/ZoneCNH/bootstrap`        | require 全部基座 + 全部 infra                           |
-| `redisx`          | `/home/redisx`          | `github.com/ZoneCNH/redisx`           | 零 ZoneCNH require                                      |
-| `kafkax`          | `/home/kafkax`          | `github.com/ZoneCNH/kafkax`           | require observex                                        |
-| `natsx`           | `/home/natsx`           | `github.com/ZoneCNH/natsx`            | 零 ZoneCNH require                                      |
-| `postgresx`       | `/home/postgresx`       | `github.com/ZoneCNH/postgresx`        | 零 ZoneCNH require                                      |
-| `taosx`           | `/home/taosx`           | `github.com/ZoneCNH/taosx`            | 零 ZoneCNH require                                      |
-| `ossx`            | `/home/ossx`            | `github.com/ZoneCNH/ossx`             | require resiliencx                                      |
-| `clickhousex`     | `/home/clickhousex`     | `github.com/ZoneCNH/clickhousex`      | require observex                                        |
-| `contracts`       | `/home/contracts`       | `github.com/ZoneCNH/contracts`        | 零 ZoneCNH require                                      |
-| `transportx`      | `/home/transportx`      | ⚠️ `github.com/ZoneCNH/xlib_standard` | **module name bug**，见 §7.1                            |
-| `decimalx`        | `/home/decimalx`        | `github.com/ZoneCNH/decimalx`         | 零 ZoneCNH require（根锚点）                            |
-| `domainx`         | `/home/domainx`         | `github.com/ZoneCNH/domainx`          | **主目录无 go.mod**，仅 worktree/v100 有                |
-| `domain_market`   | `/home/domain-market`   | `github.com/ZoneCNH/domain_market`    | require decimalx                                        |
-| `domain_macro`    | `/home/domain-macro`    | `github.com/ZoneCNH/domain_macro`     | require decimalx                                        |
-| `domain_exchange` | `/home/domain-exchange` | `github.com/ZoneCNH/domain_exchange`  | require decimalx + domain_market (+domainx in worktree) |
-| `binance`         | `/home/binance`         | `github.com/ZoneCNH/binance`          | require 13 个 ZoneCNH 模块                              |
+| `xlib_standard`   | `/home/workspace/xlib-standard`   | `github.com/ZoneCNH/xlib_standard`    | 零 ZoneCNH require                                      |
+| `xlib_harness`    | `/home/workspace/xlib-harness`    | `github.com/ZoneCNH/xlib_harness`     | 零 ZoneCNH require                                      |
+| `xlib_evidence`   | `/home/workspace/xlib-evidence`   | `github.com/ZoneCNH/xlib_evidence`    | 零 ZoneCNH require                                      |
+| `xlibgate`        | `/home/workspace/xlibgate`        | `github.com/ZoneCNH/xlibgate`         | 零 ZoneCNH require                                      |
+| `kernel`          | `/home/workspace/kernel`          | `github.com/ZoneCNH/kernel`           | 零 ZoneCNH require                                      |
+| `configx`         | `/home/workspace/configx`         | `github.com/ZoneCNH/configx`          | 零 ZoneCNH require                                      |
+| `observex`        | `/home/workspace/observex`        | `github.com/ZoneCNH/observex`         | 零 ZoneCNH require                                      |
+| `testkitx`        | `/home/workspace/testkitx`        | `github.com/ZoneCNH/testkitx`         | 零 ZoneCNH require                                      |
+| `resiliencx`      | `/home/workspace/resiliencx`      | `github.com/ZoneCNH/resiliencx`       | 零 ZoneCNH require                                      |
+| `schedulex`       | `/home/workspace/schedulex`       | `github.com/ZoneCNH/schedulex`        | 零 ZoneCNH require                                      |
+| `bootstrap`       | `/home/workspace/bootstrap`       | `github.com/ZoneCNH/bootstrap`        | require 全部基座 + 全部 infra                           |
+| `redisx`          | `/home/workspace/redisx`          | `github.com/ZoneCNH/redisx`           | 零 ZoneCNH require                                      |
+| `kafkax`          | `/home/workspace/kafkax`          | `github.com/ZoneCNH/kafkax`           | require observex                                        |
+| `natsx`           | `/home/workspace/natsx`           | `github.com/ZoneCNH/natsx`            | 零 ZoneCNH require                                      |
+| `postgresx`       | `/home/workspace/postgresx`       | `github.com/ZoneCNH/postgresx`        | 零 ZoneCNH require                                      |
+| `taosx`           | `/home/workspace/taosx`           | `github.com/ZoneCNH/taosx`            | 零 ZoneCNH require                                      |
+| `ossx`            | `/home/workspace/ossx`            | `github.com/ZoneCNH/ossx`             | require resiliencx                                      |
+| `clickhousex`     | `/home/workspace/clickhousex`     | `github.com/ZoneCNH/clickhousex`      | require observex                                        |
+| `contracts`       | `/home/workspace/contracts`       | `github.com/ZoneCNH/contracts`        | 零 ZoneCNH require                                      |
+| `transportx`      | `/home/workspace/transportx`      | ⚠️ `github.com/ZoneCNH/xlib_standard` | **module name bug**，见 §7.1                            |
+| `decimalx`        | `/home/workspace/decimalx`        | `github.com/ZoneCNH/decimalx`         | 零 ZoneCNH require（根锚点）                            |
+| `domainx`         | `/home/workspace/domainx`         | `github.com/ZoneCNH/domainx`          | **主目录无 go.mod**，仅 worktree/v100 有                |
+| `domain_market`   | `/home/workspace/domain-market`   | `github.com/ZoneCNH/domain_market`    | require decimalx                                        |
+| `domain_macro`    | `/home/workspace/domain-macro`    | `github.com/ZoneCNH/domain_macro`     | require decimalx                                        |
+| `domain_exchange` | `/home/workspace/domain-exchange` | `github.com/ZoneCNH/domain_exchange`  | require decimalx + domain_market (+domainx in worktree) |
+| `binance`         | `/home/workspace/binance`         | `github.com/ZoneCNH/binance`          | require 13 个 ZoneCNH 模块                              |
 
 ## 2. 模块边界定义（代码证据版）
 
@@ -322,7 +322,7 @@ flowchart TB
 
 ### 7.1 [高] transportx module name bug（潜伏定时炸弹）
 
-[COMPUTED, HIGH] `/home/transportx/go.mod:1` 声明 `module github.com/ZoneCNH/xlib_standard`，但：
+[COMPUTED, HIGH] `/home/workspace/transportx/go.mod:1` 声明 `module github.com/ZoneCNH/xlib_standard`，但：
 
 - git remote = `git@github.com:ZoneCNH/transportx`
 - README 标题与内容全篇是 transportx（"transportx 是统一应用通信层"）
@@ -332,7 +332,7 @@ flowchart TB
 
 **未来影响**：一旦任何模块写 `import "github.com/ZoneCNH/transportx/..."`，go 工具链将无法解析（go.mod 声明名不匹配），导致 `unknown import path` 编译错误。这是 binance 解耦后想用 transportx envelope 时的定时炸弹。
 
-**修复**：把 `/home/transportx/go.mod` module 行改为 `module github.com/ZoneCNH/transportx`，并全仓替换 internal import path。
+**修复**：把 `/home/workspace/transportx/go.mod` module 行改为 `module github.com/ZoneCNH/transportx`，并全仓替换 internal import path。
 
 ### 7.2 [高] domain\_\* module path 下划线 vs 连字符分叉
 
@@ -350,7 +350,7 @@ flowchart TB
 
 ### 7.3 [中] domainx 主目录无 go.mod
 
-[COMPUTED, HIGH] `/home/domainx/` 主目录只有 README + .git + .worktree，**无 go.mod**。实际代码与 go.mod 只在 `/home/domainx/.worktree/workspaces/v100/`。需确认这是有意的工作流还是迁移未完成；若 domainx 要作为 domain_exchange 的依赖（worktree 已 require），main 必须有可用 go.mod。
+[COMPUTED, HIGH] `/home/workspace/domainx/` 主目录只有 README + .git + .worktree，**无 go.mod**。实际代码与 go.mod 只在 `/home/workspace/domainx/.worktree/workspaces/v100/`。需确认这是有意的工作流还是迁移未完成；若 domainx 要作为 domain_exchange 的依赖（worktree 已 require），main 必须有可用 go.mod。
 
 ### 7.4 [中] binance `internal/client/runtime.go` assembly 越界
 
@@ -360,7 +360,7 @@ flowchart TB
 
 ### 7.5 [中] `binancecfg` 已实现但未接入 active `cmd/*`
 
-[COMPUTED, HIGH] `pkg/binancecfg/config.go` 已经通过 `configx.NewAllEnvSource` 聚合 `FOUNDATIONX_BINANCE_` 与 7 个 infra 前缀；`pkg/binancecfg/config_test.go` 覆盖了 `Load`。但 [COMPUTED, HIGH] `rg binancecfg.Load /home/binance` 仅命中定义与测试，active `cmd/binance-client/main.go`、`cmd/binance-server/main.go` 仍直接读取 `XGO_BINANCE_*` 与 `MODE`。
+[COMPUTED, HIGH] `pkg/binancecfg/config.go` 已经通过 `configx.NewAllEnvSource` 聚合 `FOUNDATIONX_BINANCE_` 与 7 个 infra 前缀；`pkg/binancecfg/config_test.go` 覆盖了 `Load`。但 [COMPUTED, HIGH] `rg binancecfg.Load /home/workspace/binance` 仅命中定义与测试，active `cmd/binance-client/main.go`、`cmd/binance-server/main.go` 仍直接读取 `XGO_BINANCE_*` 与 `MODE`。
 
 **影响**：配置机制与 typed DTO 已经具备，但配置与生命周期解耦还停在"核心层合规、入口层过渡"状态；证据、redaction、provenance 无法覆盖全部运行入口。
 

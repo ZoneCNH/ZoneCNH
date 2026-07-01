@@ -130,7 +130,7 @@ fleet-status 生成 `.foundationx/status/index.json`，含 20 模块各自身份
 - [x] BR-001~009 行为约束（✅）
 - [ ] NFR-011~018 trust benchmark 证据（登记 ❌）
 - [x] NFR-007~008/010 覆盖率/无密钥/无运行时依赖（✅）
-- [ ] /home/xlibgate 最新 CI/release evidence 归档（缺口登记）
+- [ ] /home/workspace/xlibgate 最新 CI/release evidence 归档（缺口登记）
 
 ## 30. Roadmap
 - v1.0.0/v1.0.1 初始 check 子命令 + 结构评分修复（2026-06-07~12）

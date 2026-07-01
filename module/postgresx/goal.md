@@ -29,7 +29,7 @@
 
 ## 3. 当前实现证据
 
-`/home/postgresx` 当前实现已经包含：
+`/home/workspace/postgresx` 当前实现已经包含：
 
 - `pkg/postgresx/client.go`：`Client`、`New`、`Open`、`Ping`、`Close`、`Stats`、`Exec`、`Query`、`QueryRow`。
 - `pkg/postgresx/config.go` 和 `dsn.go`：显式配置、默认值、DSN 和脱敏 DSN。
@@ -39,7 +39,7 @@
 - `pkg/postgresx/errors.go`：context、no rows、认证、约束、序列化、连接类错误映射。
 - `pkg/postgresx/options.go` 和 `metrics.go`：logger、metrics、clock 可插拔适配点。
 
-v1.0.0 发布收束已验证 `/home/postgresx`：
+v1.0.0 发布收束已验证 `/home/workspace/postgresx`：
 
 - `GOWORK=off VERSION=v1.0.0 make release-evidence-check` 通过。
 - `GOWORK=off VERSION=v1.0.0 make release-final-check` 通过。
@@ -100,7 +100,7 @@ v1.0.0 发布收束已验证 `/home/postgresx`：
 
 ## 8. 验收标准
 
-- `/home/postgresx` 中 `GOWORK=off VERSION=v1.0.0 make release-evidence-check`、`make release-final-check` 和强制 integration 的 `make release-preflight` 通过。
+- `/home/workspace/postgresx` 中 `GOWORK=off VERSION=v1.0.0 make release-evidence-check`、`make release-final-check` 和强制 integration 的 `make release-preflight` 通过。
 - 迁移、事务、健康检查、错误映射、Config 和 metrics hook 均有测试或 release evidence。
 - `module/postgresx/TRACEABILITY.md` 覆盖全部 FR/BR，并映射到任务文档。
 - `module/postgresx/SPEC.md` 不再包含旧 DSN option、无参构造器、旧健康检查入口或旧环境变量配置。

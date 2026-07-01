@@ -5,21 +5,21 @@
 - Module-Version: v1.0.10
 - Module-State: full client API 已发布；v1.0.10 production release gate（unit/race/vet/build/lint/coverage/live 集成/60s soak/benchmark/CI 配置）已在本地 release evidence 与版本元数据闭合；非 factory/L2-T4
 - Layer: L2 基础设施适配器
-- Runtime-Repo: /home/clickhousex
-- Source: goal.md, SPEC.md, TRACEABILITY.md, IMPLEMENTATION-PLAN.md, tasks/, /home/clickhousex/release/evidence/v1.0.10.md
+- Runtime-Repo: /home/workspace/clickhousex
+- Source: goal.md, SPEC.md, TRACEABILITY.md, IMPLEMENTATION-PLAN.md, tasks/, /home/workspace/clickhousex/release/evidence/v1.0.10.md
 
-> 本清单用于约束 clickhousex 的完整实现范围。条目来自本目录已有 Spec、Traceability、Plan、Task 等文档，并以运行时代码仓库 `/home/clickhousex` 的 `v1.0.10` release evidence 与版本元数据对齐当前状态。v1.0.10 为生产门禁强化发布，客户端 API 与 FR/BR/NFR 覆盖范围与 v1.0.7 一致；远端 push、GitHub Release 与 v1.0.10 Actions 需后续触发，本清单不将其作为已完成证据。
+> 本清单用于约束 clickhousex 的完整实现范围。条目来自本目录已有 Spec、Traceability、Plan、Task 等文档，并以运行时代码仓库 `/home/workspace/clickhousex` 的 `v1.0.10` release evidence 与版本元数据对齐当前状态。v1.0.10 为生产门禁强化发布，客户端 API 与 FR/BR/NFR 覆盖范围与 v1.0.7 一致；远端 push、GitHub Release 与 v1.0.10 Actions 需后续触发，本清单不将其作为已完成证据。
 
 ## 0. v1.0.10 验证结论
 
-- `/home/clickhousex` 的 `factory-grade-clickhousex` 分支完成 `v1.0.10` 生产门禁强化（commit `9356c77`）；版本元数据、release manifest 与 release evidence 已对齐到 `v1.0.10`。
+- `/home/workspace/clickhousex` 的 `factory-grade-clickhousex` 分支完成 `v1.0.10` 生产门禁强化（commit `9356c77`）；版本元数据、release manifest 与 release evidence 已对齐到 `v1.0.10`。
 - 本轮未执行远端 push 或 GitHub Release 创建；公开 release URL、v1.0.10 远端 Actions run 与 PR 编号不作为本次证据。
 - 版本元数据已对齐：`VERSION`、`.repo-contract.yaml`、`pkg/clickhousex/version.go`、`CHANGELOG.md` 与 `release/manifest/latest.json` 均登记 `v1.0.10`。
 - 本地 release gate 已通过：`make release-check`（含 `go build ./...`、unit test、race、100.0% coverage、vet、contract/chaos/adoption/benchmark/release-check gates）、`make lint` 与 `git diff --check`。
 - CI/CD 已配置：`.github/workflows/ci.yml` 覆盖 `make test-coverage` 与 `make release-check`，`.github/workflows/factory-grade.yml` 覆盖 `make release-check`；`Makefile` 保留 `factory-check` 作为 factory/L2-T4 gate。
 - 公开 release evidence 保持密钥脱敏；使用 dev 配置时仅通过本地 shell 投影注入变量，文档不记录敏感值。
 - 依赖边界已复验：`GOWORK=off go list -deps ./... | rg '(^|/)configx($|/)'` 无匹配。
-- 真实 ClickHouse 集成测试已通过：使用 `sre/secrets/env/dev.md` 的本地 shell 投影 `/home/ZoneCNH/sre/secrets/env/clickhousex.env` 注入运行时变量，执行 `CLICKHOUSEX_RUN_INTEGRATION=1 GOWORK=off go test -count=1 -run TestClickHouseLiveIntegration -v ./pkg/clickhousex`，覆盖 `New`、`Ping`、`HealthCheck`、`Exec`、`InsertBatch`、`Query`、`Rows.ColumnTypes`、`Rows.Scan` 与 cleanup。
+- 真实 ClickHouse 集成测试已通过：使用 `sre/secrets/env/dev.md` 的本地 shell 投影 `/home/workspace/ZoneCNH/sre/secrets/env/clickhousex.env` 注入运行时变量，执行 `CLICKHOUSEX_RUN_INTEGRATION=1 GOWORK=off go test -count=1 -run TestClickHouseLiveIntegration -v ./pkg/clickhousex`，覆盖 `New`、`Ping`、`HealthCheck`、`Exec`、`InsertBatch`、`Query`、`Rows.ColumnTypes`、`Rows.Scan` 与 cleanup。
 - 真实 ClickHouse live soak 已通过：执行 `CLICKHOUSEX_RUN_INTEGRATION=1 CLICKHOUSEX_RUN_SOAK=1 CLICKHOUSEX_SOAK_DURATION=60s CLICKHOUSEX_SOAK_INTERVAL=100ms GOWORK=off go test -count=1 -run TestClickHouseLiveSoak -v ./pkg/clickhousex`，结果 `duration=1m0s`、`iterations=329`、`interval=100ms`。
 - Benchmark 已通过：`make release-check` benchmark 阶段通过，基准结果包括 `BenchmarkClientExec` 约 `4156 ns/op`、`BenchmarkClientQueryRowsScan` 约 `5632 ns/op`、`BenchmarkClientInsertBatch` 约 `6155 ns/op`、`BenchmarkClientHealthCheck` 约 `1538 ns/op`。
 - 对外客户端能力已发布：`New`、`Close`、`CloseContext`、`Ping`、`Health`、`HealthCheck`、`Exec`、`Query`、`Rows`、`Rows.ColumnTypes`、`InsertBatch`、retry、metrics、tracing、logger 与错误映射。
@@ -31,7 +31,7 @@
 | --- | --- |
 | 模块职责 | ClickHouse 连接、批写、查询、迁移、TTL 与健康检查适配 |
 | 文档目录 | module/clickhousex |
-| 运行时代码目录 | /home/clickhousex |
+| 运行时代码目录 | /home/workspace/clickhousex |
 | Go 基线 | 1.23 |
 | 允许依赖 | kernel |
 | 禁止依赖 | 禁止越过 FOUNDATION-DEPS.yaml 登记边界依赖上层业务域或未授权基座模块；禁止直接依赖 configx |
@@ -114,6 +114,6 @@
 - [x] 发布质量 NFR（coverage/build/race/vet/lint/dependency/CI 配置/release evidence）均有可复验证据覆盖。
 - [x] 所有任务文档均能追溯到 FR、BR/NFR、AC 或 TC。
 - [x] 依赖边界符合 FOUNDATION-DEPS.yaml，不引入未授权运行时依赖，也不直接依赖 `configx`。
-- [x] 运行时代码仓库 /home/clickhousex 的 lint、typecheck、test、race、coverage、CI/CD 配置与本地 release evidence 已归档。
+- [x] 运行时代码仓库 /home/workspace/clickhousex 的 lint、typecheck、test、race、coverage、CI/CD 配置与本地 release evidence 已归档。
 - [x] 发布说明、版本元数据与本目录登记状态一致；v1.0.10 release evidence 已闭合。
 - [ ] 生产时长多小时 soak、外部消费方 rollout 与 factory 证据仍待补齐；`make factory-check` 当前预期不通过（actual L2-T3, expected L2-T4）。

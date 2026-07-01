@@ -5,7 +5,7 @@
 - Module-Version: v0.1.0
 - Module-State: 已发布
 - Layer: L1 启动装配
-- Runtime-Repo: /home/bootstrap
+- Runtime-Repo: /home/workspace/bootstrap
 - Source: SPEC.md, TRACEABILITY.md, goal.md
 
 > 本清单用于验收 bootstrap 是否达到可发布、可追溯、可复验状态。除非条目明确记录为已通过，默认需要在运行时代码仓库重新执行验证并补充证据。
@@ -14,13 +14,13 @@
 
 | 类别 | 命令 | 通过标准 |
 | --- | --- | --- |
-| 文档存在性 | cd /home/ZoneCNH && test -f module/bootstrap/FEATURES.md && test -f module/bootstrap/ACCEPTANCE.md && test -f module/bootstrap/TRACEABILITY.md && test -f module/bootstrap/goal.md | FEATURES.md、ACCEPTANCE.md、TRACEABILITY.md 与 goal.md 均存在 |
-| 文档格式 | cd /home/ZoneCNH && git diff --check -- module/bootstrap | 无尾随空格或补丁格式错误 |
-| 运行时测试 | cd /home/bootstrap && go test ./... | 所有包测试通过 |
-| 竞态检查 | cd /home/bootstrap && go test ./... -race -count=1 | 无 data race，测试稳定通过 |
-| 静态检查 | cd /home/bootstrap && go vet ./... | 无 vet 问题 |
-| 覆盖率证据 | cd /home/bootstrap && go test ./... -coverprofile=coverage.out | 覆盖率文件生成并满足模块 Spec 门槛 |
-| 依赖边界 | cd /home/bootstrap && go list -deps ./... | 依赖不越过 FOUNDATION-DEPS.yaml 登记边界 |
+| 文档存在性 | cd /home/workspace/ZoneCNH && test -f module/bootstrap/FEATURES.md && test -f module/bootstrap/ACCEPTANCE.md && test -f module/bootstrap/TRACEABILITY.md && test -f module/bootstrap/goal.md | FEATURES.md、ACCEPTANCE.md、TRACEABILITY.md 与 goal.md 均存在 |
+| 文档格式 | cd /home/workspace/ZoneCNH && git diff --check -- module/bootstrap | 无尾随空格或补丁格式错误 |
+| 运行时测试 | cd /home/workspace/bootstrap && go test ./... | 所有包测试通过 |
+| 竞态检查 | cd /home/workspace/bootstrap && go test ./... -race -count=1 | 无 data race，测试稳定通过 |
+| 静态检查 | cd /home/workspace/bootstrap && go vet ./... | 无 vet 问题 |
+| 覆盖率证据 | cd /home/workspace/bootstrap && go test ./... -coverprofile=coverage.out | 覆盖率文件生成并满足模块 Spec 门槛 |
+| 依赖边界 | cd /home/workspace/bootstrap && go list -deps ./... | 依赖不越过 FOUNDATION-DEPS.yaml 登记边界 |
 
 ## 2. AC 验收登记
 
@@ -77,7 +77,7 @@
 
 - [ ] FEATURES.md 的 FR、BR/NFR、任务清单与 SPEC/TRACEABILITY 当前登记一致。
 - [ ] ACCEPTANCE.md 的 AC、TC 与运行时代码测试名、证据文件或 CI 记录一致。
-- [ ] 运行时代码仓库 /home/bootstrap 通过 go test、go test -race、go vet 与覆盖率门槛。
+- [ ] 运行时代码仓库 /home/workspace/bootstrap 通过 go test、go test -race、go vet 与覆盖率门槛。
 - [ ] 所有外部服务依赖有本地可重复的测试替身或明确 live-gate 证据。
 - [ ] 安全检查确认没有凭证、私有端点、账户 ID 或实盘配置进入公开文档与代码。
 - [ ] 版本号、发布标签、CHANGELOG 或 release note 与本目录状态一致。
@@ -86,4 +86,4 @@
 
 - 当前文档只记录验收口径，不替代运行时代码仓库的最新 CI 结果。
 - 若上表存在 Pending、Draft、Blocked、Open 或未登记状态，发布前必须补充证据或在模块追溯矩阵中登记豁免理由。
-- TRACEABILITY.md 和 goal.md 已补齐为追溯输入；运行时代码证据仍需在 /home/bootstrap 复验。
+- TRACEABILITY.md 和 goal.md 已补齐为追溯输入；运行时代码证据仍需在 /home/workspace/bootstrap 复验。

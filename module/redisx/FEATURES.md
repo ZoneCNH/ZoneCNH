@@ -5,10 +5,10 @@
 - Module-Version: v1.3.0
 - Module-State: Tag Exists / Release Pending
 - Layer: L2 基础设施适配器
-- Runtime-Repo: /home/redisx
+- Runtime-Repo: /home/workspace/redisx
 - Source: goal.md, SPEC.md, TRACEABILITY.md, IMPLEMENTATION-PLAN.md, tasks/
 
-> 本清单用于约束 redisx 的完整实现范围。条目来自本目录已有 Spec、Traceability、Plan、Task 等文档；截至 2026-06-19，运行时代码仓库 `/home/redisx` 已完成 v1.1.0 发布对齐。发布分支 `redisx-v1.1.0-20260619` 提交 `aa44602837f8592259629ce9506f46a9ed287773` 通过版本、release manifest、全量 Go 测试与 release-preflight；PR #19 已合入 main（merge commit `ef09126c071463d1d58f4227a03fa61010ce81ac`）。真实 Redis 集成测试已使用 `/home/ZoneCNH/sre/secrets/env/dev.md` 的 Redis 配置完成，证据只记录 `REDISX_REDIS_*` 键名、不记录具体配置值。Docker Contract、Integration、L2 Gates、Security 与 Release workflow 均在 v1.1.0 发布链路通过；v1.1.0 已由 Release workflow run `27802471873` 发布为正式 GitHub Release。
+> 本清单用于约束 redisx 的完整实现范围。条目来自本目录已有 Spec、Traceability、Plan、Task 等文档；截至 2026-06-19，运行时代码仓库 `/home/workspace/redisx` 已完成 v1.1.0 发布对齐。发布分支 `redisx-v1.1.0-20260619` 提交 `aa44602837f8592259629ce9506f46a9ed287773` 通过版本、release manifest、全量 Go 测试与 release-preflight；PR #19 已合入 main（merge commit `ef09126c071463d1d58f4227a03fa61010ce81ac`）。真实 Redis 集成测试已使用 `/home/workspace/ZoneCNH/sre/secrets/env/dev.md` 的 Redis 配置完成，证据只记录 `REDISX_REDIS_*` 键名、不记录具体配置值。Docker Contract、Integration、L2 Gates、Security 与 Release workflow 均在 v1.1.0 发布链路通过；v1.1.0 已由 Release workflow run `27802471873` 发布为正式 GitHub Release。
 
 ## 1. 模块边界清单
 
@@ -16,7 +16,7 @@
 | --- | --- |
 | 模块职责 | Redis 连接、命令、缓存、锁、stream 与健康检查适配 |
 | 文档目录 | module/redisx |
-| 运行时代码目录 | /home/redisx |
+| 运行时代码目录 | /home/workspace/redisx |
 | Go 基线 | 1.23 |
 | 允许依赖 | kernel |
 | 禁止依赖 | 禁止越过 FOUNDATION-DEPS.yaml 登记边界依赖上层业务域或未授权基座模块 |
@@ -87,12 +87,12 @@
 
 | 证据面 | 运行仓库证据 |
 | --- | --- |
-| 版本与发布 | `/home/redisx` 的 `pkg/redisx/version.go`、`cmd/goalcli/governance.go`、`release/manifest/template.json`、`docs/release.md`、`docs/api.md` 与 `CHANGELOG.md` 均对齐 v1.1.0；PR #19 已合入 main（merge commit `ef09126c071463d1d58f4227a03fa61010ce81ac`），tag `v1.1.0` 与正式 GitHub Release 已发布：`https://github.com/ZoneCNH/redisx/releases/tag/v1.1.0` |
+| 版本与发布 | `/home/workspace/redisx` 的 `pkg/redisx/version.go`、`cmd/goalcli/governance.go`、`release/manifest/template.json`、`docs/release.md`、`docs/api.md` 与 `CHANGELOG.md` 均对齐 v1.1.0；PR #19 已合入 main（merge commit `ef09126c071463d1d58f4227a03fa61010ce81ac`），tag `v1.1.0` 与正式 GitHub Release 已发布：`https://github.com/ZoneCNH/redisx/releases/tag/v1.1.0` |
 | 质量门禁 | v1.1.0 发布分支通过 `GOWORK=off go test ./cmd/goalcli ./internal/tools/releasemanifest ./pkg/redisx`、`GOWORK=off make release-check`、真实 Redis 集成测试与 `git diff --check`；main 合入后通过 `XLIB_CONTEXT=release_verify GOWORK=off make release-final-check` 与 `XLIB_CONTEXT=release_verify GOWORK=off make release-preflight VERSION=v1.1.0` |
 | 100% 覆盖率门禁 | `make release-check` 与 `release-preflight` 均输出 `coverage 100.0% >= 100.0%`，Redis 运行时/API 可发布面覆盖率基线继续有效 |
 | 治理门禁 | v1.1.0 发布分支通过版本 CLI 与 release manifest 测试；release evidence hash 包括 `b55b97ac8c7dd6419f3496917b782612df120ff931ea17bd09c939a983a9bcb4`、`76d9d0db51d7663c4861bade9834c0b7aaf3033dc59bf98fc63d7fa19d8c2b37`、`15ae063bcec56bb86052eaaeb3bab6b0b08ab3e02635e104b532546543b7f4e1` |
 | L2/契约门禁 | v1.1.0 PR #19 的 CI、Integration、Security、Docker Contract、L2 Gates 与 release workflow 均通过 |
-| 集成与 Docker | 已使用 `/home/ZoneCNH/sre/secrets/env/dev.md` 的 Redis 配置通过真实 Redis 集成测试，证据 `.agent/evidence/l2/integration-report.json` 仅记录 `REDISX_REDIS_*` 键名；PR #19 的 Integration 与 Docker Contract checks 均为 success |
+| 集成与 Docker | 已使用 `/home/workspace/ZoneCNH/sre/secrets/env/dev.md` 的 Redis 配置通过真实 Redis 集成测试，证据 `.agent/evidence/l2/integration-report.json` 仅记录 `REDISX_REDIS_*` 键名；PR #19 的 Integration 与 Docker Contract checks 均为 success |
 | 安全与 CI/CD | PR #19 的 Security check 为 success；Release workflow run `27802471873` 已完成发布和验证，Release published_at 为 `2026-06-19T02:58:58Z` |
 
 ## 7. 实现完成判定
@@ -101,6 +101,6 @@
 - [x] 所有 BR/NFR 条目均有测试、静态检查或人工可审计证据覆盖。
 - [x] 所有任务文档均能追溯到 FR、BR/NFR、AC 或 TC。
 - [x] 依赖边界符合 FOUNDATION-DEPS.yaml，不引入未授权运行时依赖。
-- [x] 运行时代码仓库 /home/redisx 的 lint、typecheck、test、race、coverage 验证证据已归档。
+- [x] 运行时代码仓库 /home/workspace/redisx 的 lint、typecheck、test、race、coverage 验证证据已归档。
 - [x] 发布说明与版本文件已对齐 v1.1.0。
 - [x] v1.1.0 发布标签已由 Release workflow run `27802471873` 创建并验证。

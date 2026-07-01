@@ -5,7 +5,7 @@
 - Module-Version: v1.2.0（运行时 version.go = v1.1.0、CHANGELOG 最新 = v1.1.0、git tag = v1.1.0、GitHub Release 已发布）
 - Module-State: v1.0 路线 5 项 MUST 已全部交付（ArgsSource / RemoteSource SPI / Bind / ConfigSnapshot+ChangeEvent+Watch+Rollback / DocGen），详见 ACCEPTANCE.md 版本基线说明
 - Layer: L1 基础能力
-- Runtime-Repo: /home/configx
+- Runtime-Repo: /home/workspace/configx
 - Source: goal.md, SPEC.md, DESIGN.md, TRACEABILITY.md, IMPLEMENTATION-PLAN.md, tasks/
 
 > 本清单用于约束 configx 的完整实现范围。条目来自本目录已有 Spec、Traceability、Plan、Task 等文档；若运行时代码状态与本文不一致，以相应模块仓库的最新验证证据补充更新本文。
@@ -16,7 +16,7 @@
 | --- | --- |
 | 模块职责 | 配置加载、覆盖、校验、安全红线（热更新/快照属 v1.1 路线，见 goal.md） |
 | 文档目录 | module/configx |
-| 运行时代码目录 | /home/configx |
+| 运行时代码目录 | /home/workspace/configx |
 | Go 基线 | 1.23 |
 | 允许依赖 | stdlib + `gopkg.in/yaml.v3` + `github.com/pelletier/go-toml/v2`（实测 go.mod；不依赖 kernel，见 NFR-005） |
 | 禁止依赖 | 禁止越过 FOUNDATION-DEPS.yaml 登记边界依赖 kernel、observex、resiliencx、schedulex、testkitx 或上层业务域 |
@@ -96,5 +96,5 @@
 - [x] 所有 BR/NFR 条目均有测试、静态检查或人工可审计证据覆盖。（2026-06-18 BR-001~011、NFR-001~006 全部 ✅，TRACEABILITY.md §2/§3 实测）
 - [x] 所有任务文档均能追溯到 FR、BR/NFR、AC 或 TC。（2026-06-18 §4 任务交付清单已挂接 FR/BR/TC，TASK-CONFIGX-007 显式标记推迟 v1.1）
 - [x] 依赖边界符合 FOUNDATION-DEPS.yaml，不引入未授权运行时依赖。（2026-06-18 `go list -deps` 无 kernel；`scripts/check_boundary.sh` PASS）
-- [x] 运行时代码仓库 /home/configx 的 lint、typecheck、test、race、coverage 验证证据已归档。（2026-06-18 go test ./... -race -count=1 PASS；vet 0 告警；coverage total 94.0% / pkg/configx 98.5%）
+- [x] 运行时代码仓库 /home/workspace/configx 的 lint、typecheck、test、race、coverage 验证证据已归档。（2026-06-18 go test ./... -race -count=1 PASS；vet 0 告警；coverage total 94.0% / pkg/configx 98.5%）
 - [x] 发布说明、版本标签与本目录登记状态一致。（2026-06-18 release/manifest/latest.json checks 全 passed；STATUS.md / README.md / ARCHITECTURE.md 已对齐 v1.1.0 (tag) / v1.1.0 (runtime)）

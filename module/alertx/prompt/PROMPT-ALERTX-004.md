@@ -40,7 +40,7 @@
 ## 验证
 
 ```bash
-cd /home/alertx && GOWORK=off go test ./... -run 'TestSeverity|TestLifecycle|TestAlertStore' -race -v
+cd /home/workspace/alertx && GOWORK=off go test ./... -run 'TestSeverity|TestLifecycle|TestAlertStore' -race -v
 ```
 
 ## 关键测试

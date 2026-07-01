@@ -1,7 +1,7 @@
 # module/binance 深度结构分析报告
 
 > 分析日期：2026-06-28
-> 分析范围：`module/binance/` 全量文档 + `/home/binance` runtime 代码（HEAD `2efc44a`）
+> 分析范围：`module/binance/` 全量文档 + `/home/workspace/binance` runtime 代码（HEAD `2efc44a`）
 > 分析目标：结构性问题诊断 + client/server 边界规范 + 生产级可发布差距
 > Spec-Version：v3.9.0 · Runtime-Version：v0.2.0
 
@@ -201,7 +201,7 @@ SPEC client §14 和 server §14 定义的目录结构（`client/` 下有 `go.mo
 
 **现状**：
 
-- 所有证据为本地运行（`/home/binance/release/evidence/binance/20260628-full-e2e-closure/`）
+- 所有证据为本地运行（`/home/workspace/binance/release/evidence/binance/20260628-full-e2e-closure/`）
 - 无 GitHub Actions 远程 CI run 证据
 - 无 GitHub Release tag（runtime-version v0.2.0 但未发布）
 - FR-023（Release Evidence Bundle）为 Code-Partial，CI/live evidence 缺失
@@ -435,7 +435,7 @@ Client/Server 边界是本模块最强项，评分 **9.0/10**。建议强化的 
 
 ---
 
-> [COMPUTED, HIGH] 本报告基于 `module/binance/` 全量文档（README/SPEC/client-SPEC/server-SPEC/TRACEABILITY/BOUNDARY-GATES/CHANGELOG/todo/goal/design/）与 runtime 仓库 `/home/binance` HEAD `2efc44a` 代码实态交叉分析。评分依据为各维度文档与代码的交叉验证，非单一来源声明。
+> [COMPUTED, HIGH] 本报告基于 `module/binance/` 全量文档（README/SPEC/client-SPEC/server-SPEC/TRACEABILITY/BOUNDARY-GATES/CHANGELOG/todo/goal/design/）与 runtime 仓库 `/home/workspace/binance` HEAD `2efc44a` 代码实态交叉分析。评分依据为各维度文档与代码的交叉验证，非单一来源声明。
 >
 > [KNOWN] SPEC 曾声称旧 release-closeable YES 基于 Evidence-State 44/44 Done，但本报告判定该标准过于宽松——Code-State 48% Done 的模块不应声明可发布。
 >

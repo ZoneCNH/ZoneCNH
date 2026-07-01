@@ -5,7 +5,7 @@
 - Module-Version: v0.1.0
 - Module-State: 已发布
 - Layer: L1 启动装配
-- Runtime-Repo: /home/bootstrap
+- Runtime-Repo: /home/workspace/bootstrap
 - Source: SPEC.md, TRACEABILITY.md, goal.md
 
 > 本清单用于约束 bootstrap 的完整实现范围。条目来自本目录已有 Spec、Traceability、Plan、Task 等文档；若运行时代码状态与本文不一致，以相应模块仓库的最新验证证据补充更新本文。
@@ -16,7 +16,7 @@
 | --- | --- |
 | 模块职责 | 以 Options/Builder/Artifact 方式装配进程入口与基础设施客户端 |
 | 文档目录 | module/bootstrap |
-| 运行时代码目录 | /home/bootstrap |
+| 运行时代码目录 | /home/workspace/bootstrap |
 | Go 基线 | 1.23 |
 | 允许依赖 | kernel, configx, observex, resiliencx, taosx, postgresx, redisx, kafkax, natsx, ossx, clickhousex |
 | 禁止依赖 | 禁止越过 FOUNDATION-DEPS.yaml 登记边界依赖上层业务域或未授权基座模块 |
@@ -77,5 +77,5 @@
 - [ ] 所有 BR/NFR 条目均有测试、静态检查或人工可审计证据覆盖。
 - [ ] 所有任务文档均能追溯到 FR、BR/NFR、AC 或 TC。
 - [ ] 依赖边界符合 FOUNDATION-DEPS.yaml，不引入未授权运行时依赖。
-- [ ] 运行时代码仓库 /home/bootstrap 的 lint、typecheck、test、race、coverage 验证证据已归档。
+- [ ] 运行时代码仓库 /home/workspace/bootstrap 的 lint、typecheck、test、race、coverage 验证证据已归档。
 - [ ] 发布说明、版本标签与本目录登记状态一致。

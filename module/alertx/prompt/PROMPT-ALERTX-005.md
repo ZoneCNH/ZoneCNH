@@ -35,7 +35,7 @@
 ## 验证
 
 ```bash
-cd /home/alertx && GOWORK=off go test ./internal/channel/... -run TestWebhook -v
+cd /home/workspace/alertx && GOWORK=off go test ./internal/channel/... -run TestWebhook -v
 GOWORK=off go test ./pkg/alertx/... -run TestNotifier -v
 ```
 

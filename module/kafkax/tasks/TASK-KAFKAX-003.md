@@ -24,10 +24,10 @@ Does NOT implement Kafka broker deployment, topic auto-creation, or Kafka Connec
 
 ## Files
 
-- `/home/kafkax/pkg/kafkax/kafkago/consumer.go:84` — `Commit(ctx, offsets...)` 手动提交
-- `/home/kafkax/pkg/kafkax/kafkago/consumer.go:132` — `Close(ctx)` 资源释放 + ctx 检查
-- `/home/kafkax/pkg/kafkax/kafkago/consumer.go:29` — `CommitInterval: 0` 禁用自动提交（BR-002/009）
-- `/home/kafkax/pkg/kafkax/consumer.go:14` — `Handler` 接口（Run 模式 Poll→Handle→Commit）
+- `/home/workspace/kafkax/pkg/kafkax/kafkago/consumer.go:84` — `Commit(ctx, offsets...)` 手动提交
+- `/home/workspace/kafkax/pkg/kafkax/kafkago/consumer.go:132` — `Close(ctx)` 资源释放 + ctx 检查
+- `/home/workspace/kafkax/pkg/kafkax/kafkago/consumer.go:29` — `CommitInterval: 0` 禁用自动提交（BR-002/009）
+- `/home/workspace/kafkax/pkg/kafkax/consumer.go:14` — `Handler` 接口（Run 模式 Poll→Handle→Commit）
 
 ## Acceptance
 

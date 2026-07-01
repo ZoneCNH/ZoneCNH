@@ -14,13 +14,13 @@
 | --- | ---: | --- |
 | SPEC 单文件结构 | 84/100 | `[COMPUTED][HIGH]` 目标、边界、FR/BR/AC/TC、持久化、配置和安全约束较完整，但仍有 4 个开放问题未关闭。 |
 | `module/fred/` 结构健康 | 68/100 | `[COMPUTED][HIGH]` 文档骨架完整，但追溯矩阵、验收命令和实施证据尚未闭环。 |
-| 发布验收就绪 | 42/100 | `[COMPUTED][HIGH]` 所有 AC/TC 仍为 `Pending`，不能证明 `/home/fred` 已满足目标状态。 |
+| 发布验收就绪 | 42/100 | `[COMPUTED][HIGH]` 所有 AC/TC 仍为 `Pending`，不能证明 `/home/workspace/fred` 已满足目标状态。 |
 
 结构健康分项账本：
 
 | 维度 | 分数 | 扣分原因 |
 | --- | ---: | --- |
-| 需求与边界完整度 | 18/20 | `[COMPUTED][HIGH]` FR/BR/AC/TC 和七类持久化介质已定义；扣分来自 `/home/fred` 旧 `Stores=None` 迁移仍未完成。 |
+| 需求与边界完整度 | 18/20 | `[COMPUTED][HIGH]` FR/BR/AC/TC 和七类持久化介质已定义；扣分来自 `/home/workspace/fred` 旧 `Stores=None` 迁移仍未完成。 |
 | 领域共享层与 C/S 边界 | 14/20 | `[COMPUTED][HIGH]` 已要求共享基座组件和 `domain_macro`，但 `domain_macro` 具体包路径与字段仍是开放项。 |
 | 追溯一致性 | 9/20 | `[COMPUTED][HIGH]` `TRACEABILITY.md` 的 BR 编号语义与 `SPEC.md` 发生漂移，且 TC-007/TC-008 未进入验证命令表。 |
 | 验收可执行性 | 13/20 | `[COMPUTED][HIGH]` `ACCEPTANCE.md` 有 AC/TC/DoD，但所有条目仍是 `Pending`，缺少真实运行证据。 |
@@ -57,11 +57,11 @@
 
 1. 在 `TRACEABILITY.md` 增加 TC-007、TC-008 的命令槽位。
 2. 将每个 AC 映射到至少一个 TC，避免 `TC-006` 作为过宽的兜底测试。
-3. 将命令从占位描述升级为 `/home/fred` 可运行命令或明确标记为暂不可运行及原因。
+3. 将命令从占位描述升级为 `/home/workspace/fred` 可运行命令或明确标记为暂不可运行及原因。
 
 ### P0-3. 目标状态与运行时状态证据断层
 
-[COMPUTED][HIGH] `SPEC.md` 明确说明当前 `/home/fred` 仍有旧 `Stores=None` 边界，`FEATURES.md` 与 `ACCEPTANCE.md` 也标记运行时证据未完成。证据：`SPEC.md:14`、`FEATURES.md:82-87`、`ACCEPTANCE.md:18-19`、`ACCEPTANCE.md:40-60`。
+[COMPUTED][HIGH] `SPEC.md` 明确说明当前 `/home/workspace/fred` 仍有旧 `Stores=None` 边界，`FEATURES.md` 与 `ACCEPTANCE.md` 也标记运行时证据未完成。证据：`SPEC.md:14`、`FEATURES.md:82-87`、`ACCEPTANCE.md:18-19`、`ACCEPTANCE.md:40-60`。
 
 影响：
 
@@ -71,7 +71,7 @@
 修复要求：
 
 1. 保持文档中 Target / Current / Evidence 三类状态分离。
-2. 等 `/home/fred` 真实迁移后，再将 `Planned`/`Pending` 改为 `Verified`。
+2. 等 `/home/workspace/fred` 真实迁移后，再将 `Planned`/`Pending` 改为 `Verified`。
 3. 在 `ACCEPTANCE.md` 补入测试命令、执行时间、退出码和关键输出摘要。
 
 ## 3. P1 优化项
@@ -99,7 +99,7 @@
 1. `[COMPUTED][HIGH]` 先修 `TRACEABILITY.md` 的 BR 编号漂移和 TC-007/TC-008 缺口，因为这是评分门禁的结构性红线。
 2. `[INFERRED][HIGH]` 再补 `domain_macro` 合约和配置键映射，降低实现阶段返工。
 3. `[INFERRED][HIGH]` 然后把 `ACCEPTANCE.md` 的 `Pending` 项改造成可运行验证命令和证据槽。
-4. `[INFERRED][MED]` 最后再进入 `/home/fred` 实现侧验收，避免在规格追溯不一致时写代码。
+4. `[INFERRED][MED]` 最后再进入 `/home/workspace/fred` 实现侧验收，避免在规格追溯不一致时写代码。
 
 ## 5. Gate 判断
 
@@ -113,6 +113,6 @@
 
 ## 6. 结论
 
-[INFERRED][HIGH] `module/fred/` 不是“缺规格”，而是“规格骨架完整但结构闭环不足”。当前最值得补的是追溯一致性和验收可执行性，而不是继续扩展新功能描述。若先修 P0 三项，结构健康分预计可从 68/100 提升到 80/100 左右；若再补 `domain_macro` 合约、配置键映射和真实 `/home/fred` 验收证据，发布验收就绪分才有机会超过 80/100。
+[INFERRED][HIGH] `module/fred/` 不是“缺规格”，而是“规格骨架完整但结构闭环不足”。当前最值得补的是追溯一致性和验收可执行性，而不是继续扩展新功能描述。若先修 P0 三项，结构健康分预计可从 68/100 提升到 80/100 左右；若再补 `domain_macro` 合约、配置键映射和真实 `/home/workspace/fred` 验收证据，发布验收就绪分才有机会超过 80/100。
 
 [RULES I BROKE]：无

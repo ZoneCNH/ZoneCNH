@@ -420,7 +420,7 @@ postgresx/
 
 ## 19. CI 门禁
 
-当前实现仓库 `/home/postgresx` 已作为 v1.0.0 release 验证：
+当前实现仓库 `/home/workspace/postgresx` 已作为 v1.0.0 release 验证：
 
 - `GOWORK=off VERSION=v1.0.0 make release-evidence-check`：通过。
 - `GOWORK=off VERSION=v1.0.0 make release-final-check`：通过。
@@ -437,18 +437,18 @@ postgresx/
 - `git diff --check` 必须通过。
 
 ## 20. 升级兼容性
-- `/home/postgresx` 以 `v1.0.0` tag、GitHub release 和提交 `310a249e` 为当前发布基线。
+- `/home/workspace/postgresx` 以 `v1.0.0` tag、GitHub release 和提交 `310a249e` 为当前发布基线。
 - 下游模块只允许依赖已实现的 `pkg/postgresx` 入口：显式 `Config`、连接池生命周期、SQL 执行、事务、迁移、健康检查、错误映射和可观测 hook。
 - 未来 v1.x 破坏性变更必须同步 SPEC、TRACEABILITY、Task、contracts 和 release evidence，不重新打开已关闭的 v1.0 阻断项。
 - `x.go` 或业务模块接入前必须新增对应追溯证据，不能把潜在消费者计入完成度。
 
-- 本仓库不承载数据库 schema 迁移文件；运行期迁移由 `/home/postgresx/pkg/postgresx/migration.go` 的 `MigrationRunner` 负责。
+- 本仓库不承载数据库 schema 迁移文件；运行期迁移由 `/home/workspace/postgresx/pkg/postgresx/migration.go` 的 `MigrationRunner` 负责。
 - 调用方必须显式传入迁移集合和 `Config`，`postgresx` 不读取环境变量、配置文件或 Secret 文件。
-- 已应用迁移表、重复版本阻断、迁移顺序和失败回滚行为以 `/home/postgresx` 当前测试为准。
+- 已应用迁移表、重复版本阻断、迁移顺序和失败回滚行为以 `/home/workspace/postgresx` 当前测试为准。
 - 文档迁移只涉及 SPEC、TRACEABILITY、Goal、Task 与状态表同步，不迁移应用数据。
 
 - 当前实现基线记录为 `go 1.25.0`、`github.com/jackc/pgx/v5 v5.9.2`、。
-- v1.x Public API 已冻结；任何破坏性变更都必须同步 SPEC、TRACEABILITY、Task 和 `/home/postgresx` contract 文档。
+- v1.x Public API 已冻结；任何破坏性变更都必须同步 SPEC、TRACEABILITY、Task 和 `/home/workspace/postgresx` contract 文档。
 - 基座边界保持不变：`postgresx` 可以依赖 `pgx`，不得依赖业务域、入口仓库或数据域仓库。
 - Release evidence 必须支持 `GOWORK=off`，避免本地 workspace 掩盖模块依赖问题。
 
@@ -456,7 +456,7 @@ postgresx/
 
 - SPEC 保持 23 节结构，`Spec-Version` 使用 semver，且不包含模糊状态词。
 - `TRACEABILITY.md` 覆盖 FR-001..FR-007、BR-001..BR-012、TC-001..TC-008，并映射 TASK-PG-001..TASK-PG-003。
-- `/home/postgresx` 中 `GOWORK=off VERSION=v1.0.0 make release-evidence-check`、`make release-final-check` 与强制 integration 的 `make release-preflight` 通过。
+- `/home/workspace/postgresx` 中 `GOWORK=off VERSION=v1.0.0 make release-evidence-check`、`make release-final-check` 与强制 integration 的 `make release-preflight` 通过。
 - 本仓库 `git diff --check`、状态一致性检查、postgresx 规格 lint 和 postgresx traceability 检查通过。
 - TASK-PG-003 已关闭，v1.0.0 发布声明必须继续以 tag、release evidence、contract check 和真实 PostgreSQL integration 为依据。
 
@@ -488,7 +488,7 @@ postgresx/
 
 | 维度 | 修复前 | 当前发布基线 | 主要依据 |
 | ---- | ------ | ------------ | -------- |
-| 代码实现证据 | 82/100 | 100/100 | `/home/postgresx` 已通过 release-evidence-check、release-final-check 与强制真实 PostgreSQL integration 的 release-preflight |
+| 代码实现证据 | 82/100 | 100/100 | `/home/workspace/postgresx` 已通过 release-evidence-check、release-final-check 与强制真实 PostgreSQL integration 的 release-preflight |
 | 模块文档一致性 | 41/100 | 100/100 | SPEC、TRACEABILITY、goal、TASK-PG-003、Public API、metrics contract 与版本矩阵已对齐 |
 | v1.0 可冻结度 | 48/100 | 100/100 | v1.0.0 tag/GitHub release 已发布，Public API、metrics contract 与 release evidence 已冻结 |
 | 综合评分 | 61/100 | 100/100 | v1.0.0 发布范围闭合；下游实际接入和生产 soak 作为发布后成熟度证据继续跟踪 |

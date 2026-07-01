@@ -1,7 +1,7 @@
 # contracts
 
 `pkg/contracts` 的文档索引，记录当前运行时导出的契约面、兼容投影与边界约束。
-当前真相以 `/home/contracts/pkg/contracts` 为准；本文档只描述现状，不保留 Topic/stable-period 叙事。
+当前真相以 `/home/workspace/contracts/pkg/contracts` 为准；本文档只描述现状，不保留 Topic/stable-period 叙事。
 
 ## 当前导出面
 

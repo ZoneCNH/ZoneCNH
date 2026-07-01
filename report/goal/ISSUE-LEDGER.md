@@ -63,7 +63,7 @@
 | ----------------- | -------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------ |
 | `GDR-FIXTURE-01`  | P2       | fixed  | `docs/goal/tools/self-test.sh` 已执行正向基线和三类负向 fixture：非法 Matrix edge、旧状态 drift、缺失 DoD Evidence，负例均以非零退出被拒绝 |
 | `GDR-REPORT-01`   | P3       | fixed  | `report/goal/` 明确保持分析/计划/关闭证据目录，不纳入 Goal runtime gate；该边界已在报告入口与验证报告中记录                           |
-| `GDR-WORKTREE-01` | P3       | fixed  | worker-1 目标 worktree clean；父级 `/home/ZoneCNH/.worktree/todo.md` 保持 ignored/local，并作为本地执行快照更新，不进入 Git 跟踪面         |
+| `GDR-WORKTREE-01` | P3       | fixed  | worker-1 目标 worktree clean；父级 `/home/workspace/ZoneCNH/.worktree/todo.md` 保持 ignored/local，并作为本地执行快照更新，不进入 Git 跟踪面         |
 
 ## 本轮验证命令
 
@@ -78,7 +78,7 @@ bash docs/goal/tools/gate-check.sh .
 ./docs/goal/tools/self-test.sh
 git check-ignore -v .config/goal/schema/rules.yaml
 git check-ignore -v .config/goal/runtime/cache.json
-git -C /home/ZoneCNH check-ignore -v .worktree/todo.md
-git -C /home/ZoneCNH status --ignored --short .worktree/todo.md
+git -C /home/workspace/ZoneCNH check-ignore -v .worktree/todo.md
+git -C /home/workspace/ZoneCNH status --ignored --short .worktree/todo.md
 rg -n "GOAL_DRAFTING|SPEC_REVIEWING|PROMPTING|CODING|TESTING|PAUSED|CANCELLED|P-XXX|docs/goals|docs/module" docs/goal .config/goal
 ```

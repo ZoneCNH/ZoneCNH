@@ -438,7 +438,7 @@ type DepthData struct {
 
 ```go
 // go.mod:113
-replace github.com/ZoneCNH/natsx => /home/natsx
+replace github.com/ZoneCNH/natsx => /home/workspace/natsx
 ```
 
 - 原因: `natsx` 的 `pkg/natsx/ingest/` 子包仅存在于本地开发副本，尚未发布到上游
@@ -447,7 +447,7 @@ replace github.com/ZoneCNH/natsx => /home/natsx
 **验证** [COMPUTED]
 
 ```
-/home/natsx/pkg/natsx/ingest/  → 存在（ingest.go + ingest_test.go）
+/home/workspace/natsx/pkg/natsx/ingest/  → 存在（ingest.go + ingest_test.go）
 ```
 
 **方案：go.work 替代 replace**
@@ -458,7 +458,7 @@ go 1.24
 
 use (
     .
-    ./home/natsx
+    ./home/workspace/natsx
 )
 ```
 

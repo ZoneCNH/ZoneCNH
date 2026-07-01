@@ -37,7 +37,7 @@
 ## 验证
 
 ```bash
-cd /home/alertx && GOWORK=off go test ./internal/subscribe/... -run TestNormalizer -race -v
+cd /home/workspace/alertx && GOWORK=off go test ./internal/subscribe/... -run TestNormalizer -race -v
 ```
 
 ## 关键测试

@@ -3,7 +3,7 @@
 
 import re, os
 
-REPO = "/home/ZoneCNH"
+REPO = "/home/workspace/ZoneCNH"
 SRC = f"{REPO}/.worktree/binance.md"
 DEST = f"{REPO}/module/binance"
 

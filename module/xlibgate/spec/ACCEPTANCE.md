@@ -5,7 +5,7 @@
 - Module-Version: v1.0.1
 - Module-State: 本地发布门禁通过（远端发布待授权）
 - Layer: L1 门禁
-- Runtime-Repo: /home/xlibgate
+- Runtime-Repo: /home/workspace/xlibgate
 - Source: goal.md, SPEC.md, DESIGN.md, TRACEABILITY.md, IMPLEMENTATION-PLAN.md, tasks/
 
 > 本清单用于验收 xlibgate 是否达到可发布、可追溯、可复验状态。除非条目明确记录为已通过，默认需要在运行时代码仓库重新执行验证并补充证据。
@@ -14,21 +14,21 @@
 
 | 类别 | 命令 | 通过标准 |
 | --- | --- | --- |
-| 文档存在性 | cd /home/ZoneCNH && test -f module/xlibgate/FEATURES.md && test -f module/xlibgate/ACCEPTANCE.md | FEATURES.md 与 ACCEPTANCE.md 均存在 |
-| 文档格式 | cd /home/ZoneCNH && git diff --check -- module/xlibgate | 无尾随空格或补丁格式错误 |
-| 运行时测试 | cd /home/xlibgate && GOWORK=off go test ./... | 所有包测试通过 |
-| 目标覆盖率证据 | cd /home/xlibgate && GOWORK=off go test ./... -covermode=atomic -coverprofile=/tmp/xlibgate_all_continue4.out | 全仓 statement coverage >= 80% |
-| 依赖边界 | cd /home/xlibgate && GOWORK=off make boundary | 依赖不越过 FOUNDATION-DEPS.yaml 登记边界 |
-| 文档一致性 | cd /home/xlibgate && GOWORK=off make docs-check | 发布文档、CI 片段与命令口径一致 |
-| 集成验证 | cd /home/xlibgate && GOWORK=off make integration | kernel/configx/redisx 集成验证通过 |
-| 本地发布门禁 | cd /home/xlibgate && XLIB_CONTEXT=release_verify GOWORK=off make release-check | 发布检查通过并生成 release evidence |
-| 最终本地门禁 | cd /home/xlibgate && XLIB_CONTEXT=release_verify GOWORK=off make release-final-check | 本地最终发布门禁通过 |
+| 文档存在性 | cd /home/workspace/ZoneCNH && test -f module/xlibgate/FEATURES.md && test -f module/xlibgate/ACCEPTANCE.md | FEATURES.md 与 ACCEPTANCE.md 均存在 |
+| 文档格式 | cd /home/workspace/ZoneCNH && git diff --check -- module/xlibgate | 无尾随空格或补丁格式错误 |
+| 运行时测试 | cd /home/workspace/xlibgate && GOWORK=off go test ./... | 所有包测试通过 |
+| 目标覆盖率证据 | cd /home/workspace/xlibgate && GOWORK=off go test ./... -covermode=atomic -coverprofile=/tmp/xlibgate_all_continue4.out | 全仓 statement coverage >= 80% |
+| 依赖边界 | cd /home/workspace/xlibgate && GOWORK=off make boundary | 依赖不越过 FOUNDATION-DEPS.yaml 登记边界 |
+| 文档一致性 | cd /home/workspace/xlibgate && GOWORK=off make docs-check | 发布文档、CI 片段与命令口径一致 |
+| 集成验证 | cd /home/workspace/xlibgate && GOWORK=off make integration | kernel/configx/redisx 集成验证通过 |
+| 本地发布门禁 | cd /home/workspace/xlibgate && XLIB_CONTEXT=release_verify GOWORK=off make release-check | 发布检查通过并生成 release evidence |
+| 最终本地门禁 | cd /home/workspace/xlibgate && XLIB_CONTEXT=release_verify GOWORK=off make release-final-check | 本地最终发布门禁通过 |
 
 ## 1.1 v1.0.1 验收证据（2026-06-21）
 
 | 项目 | 证据 |
 | --- | --- |
-| 运行时代码提交 | `/home/xlibgate` 分支 `ci/sre-cicd-pools-20260618`，提交 `e76725b` |
+| 运行时代码提交 | `/home/workspace/xlibgate` 分支 `ci/sre-cicd-pools-20260618`，提交 `e76725b` |
 | 全仓测试 | `GOWORK=off go test ./... -covermode=atomic -coverprofile=/tmp/xlibgate_all_continue4.out` 通过 |
 | 覆盖率 | 全仓 statement coverage `86.1%`；其中 `cmd/goalcli` package coverage `85.2%`，满足当前 `>= 80%` 本地门槛但未达到 `100%` |
 | 边界检查 | `GOWORK=off make boundary` 通过 |
@@ -157,14 +157,14 @@
 
 - [x] FEATURES.md 的 FR、BR/NFR、任务清单与 SPEC/TRACEABILITY 当前登记一致。
 - [x] ACCEPTANCE.md 的 AC、TC 与运行时代码测试名、证据文件或 CI 记录一致。
-- [x] 运行时代码仓库 /home/xlibgate 通过全仓测试、覆盖率、release-check 与 release-final-check 本地门槛；全仓 statement coverage 为 86.1%，不是 100%。
+- [x] 运行时代码仓库 /home/workspace/xlibgate 通过全仓测试、覆盖率、release-check 与 release-final-check 本地门槛；全仓 statement coverage 为 86.1%，不是 100%。
 - [x] 所有外部服务依赖有本地可重复的测试替身或明确 live-gate 证据。
 - [x] 安全检查确认没有凭证、私有端点、账户 ID 或实盘配置进入公开文档与代码。
 - [ ] 版本号、CHANGELOG、release note 与本目录本地状态一致；远端 tag、GitHub Release 与远端 CI 待显式授权后闭合。
 
 ## 6. 当前缺口登记
 
-- 当前文档已记录 `/home/xlibgate` v1.0.1 本地发布证据，但不替代远端 CI、远端 tag 或 GitHub Release 结果。
+- 当前文档已记录 `/home/workspace/xlibgate` v1.0.1 本地发布证据，但不替代远端 CI、远端 tag 或 GitHub Release 结果。
 - 当前覆盖率证据为全仓 statement coverage `86.1%`，满足现行 `>= 80%` 门槛但未满足用户期望的 `100%`。
 - `git push`、`v1.0.1` tag、GitHub Release 与远端 CI 尚未执行，等待显式授权。
 - `release-preflight VERSION=v1.0.1` 尚未执行；该脚本要求位于 `main`、工作区干净且 `HEAD == origin/main`，需在授权合并/推送路径中闭合。

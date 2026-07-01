@@ -5,7 +5,7 @@
 - Module-Version: v0.3.6
 - Module-State: 已发布
 - Layer: L0 观测
-- Runtime-Repo: /home/observex
+- Runtime-Repo: /home/workspace/observex
 - Source: goal.md, SPEC.md, DESIGN.md, TRACEABILITY.md, IMPLEMENTATION-PLAN.md, tasks/, prompt/
 
 > 本清单用于验收 observex 是否达到可发布、可追溯、可复验状态。除非条目明确记录为已通过，默认需要在运行时代码仓库重新执行验证并补充证据。
@@ -14,13 +14,13 @@
 
 | 类别 | 命令 | 通过标准 |
 | --- | --- | --- |
-| 文档存在性 | cd /home/ZoneCNH && test -f module/observex/FEATURES.md && test -f module/observex/ACCEPTANCE.md | FEATURES.md 与 ACCEPTANCE.md 均存在 |
-| 文档格式 | cd /home/ZoneCNH && git diff --check -- module/observex | 无尾随空格或补丁格式错误 |
-| 运行时测试 | cd /home/observex && go test ./... | 所有包测试通过 |
-| 竞态检查 | cd /home/observex && go test ./... -race -count=1 | 无 data race，测试稳定通过 |
-| 静态检查 | cd /home/observex && go vet ./... | 无 vet 问题 |
-| 覆盖率证据 | cd /home/observex && go test ./... -coverprofile=coverage.out | 覆盖率文件生成并满足模块 Spec 门槛 |
-| 依赖边界 | cd /home/observex && go list -deps ./... | 依赖不越过 FOUNDATION-DEPS.yaml 登记边界 |
+| 文档存在性 | cd /home/workspace/ZoneCNH && test -f module/observex/FEATURES.md && test -f module/observex/ACCEPTANCE.md | FEATURES.md 与 ACCEPTANCE.md 均存在 |
+| 文档格式 | cd /home/workspace/ZoneCNH && git diff --check -- module/observex | 无尾随空格或补丁格式错误 |
+| 运行时测试 | cd /home/workspace/observex && go test ./... | 所有包测试通过 |
+| 竞态检查 | cd /home/workspace/observex && go test ./... -race -count=1 | 无 data race，测试稳定通过 |
+| 静态检查 | cd /home/workspace/observex && go vet ./... | 无 vet 问题 |
+| 覆盖率证据 | cd /home/workspace/observex && go test ./... -coverprofile=coverage.out | 覆盖率文件生成并满足模块 Spec 门槛 |
+| 依赖边界 | cd /home/workspace/observex && go list -deps ./... | 依赖不越过 FOUNDATION-DEPS.yaml 登记边界 |
 
 ## 2. AC 验收登记
 
@@ -96,7 +96,7 @@
 
 - [ ] FEATURES.md 的 FR、BR/NFR、任务清单与 SPEC/TRACEABILITY 当前登记一致。
 - [ ] ACCEPTANCE.md 的 AC、TC 与运行时代码测试名、证据文件或 CI 记录一致。
-- [ ] 运行时代码仓库 /home/observex 通过 go test、go test -race、go vet 与覆盖率门槛。
+- [ ] 运行时代码仓库 /home/workspace/observex 通过 go test、go test -race、go vet 与覆盖率门槛。
 - [ ] 所有外部服务依赖有本地可重复的测试替身或明确 live-gate 证据。
 - [ ] 安全检查确认没有凭证、私有端点、账户 ID 或实盘配置进入公开文档与代码。
 - [ ] 版本号、发布标签、CHANGELOG 或 release note 与本目录状态一致。
@@ -109,7 +109,7 @@
 
 ### 6.1 2026-06-21 v0.3.6 验收证据归档
 
-- 运行时测试：`cd /home/observex && go test ./... -race -count=1` → `EXIT_RACE=0`，全包通过（含 `internal/tools/releasemanifest`）。
+- 运行时测试：`cd /home/workspace/observex && go test ./... -race -count=1` → `EXIT_RACE=0`，全包通过（含 `internal/tools/releasemanifest`）。
 - 静态检查：`go vet ./...` 零警告；`golangci-lint run ./...` → `0 issues`（修复 `coverage_boost_test.go` 5 处 SA1012，NFR-008 转绿）。
 - 覆盖率：`go test -coverprofile` → 97.9%（NFR-005 门槛 80%）。
 - 依赖边界：`go list -deps ./...` 仅依赖 Go 标准库，无 Prometheus / OTel / Zap 直接依赖（BR-008 / NFR-010）。

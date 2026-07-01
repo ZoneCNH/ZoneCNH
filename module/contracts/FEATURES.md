@@ -3,7 +3,7 @@
 - Status: Docs Baseline Synced / Feature Inventory Closed
 - Last-Updated: 2026-06-30
 - Layer: 基座 · 跨域接口契约
-- Source-of-Truth: `/home/contracts/pkg/contracts`
+- Source-of-Truth: `/home/workspace/contracts/pkg/contracts`
 - Related: `SPEC.md`, `TRACEABILITY.md`, `ACCEPTANCE.md`, `README.md`, `goal.md`, `IMPLEMENTATION-PLAN.md`, `tasks/`
 
 > 本清单只记录当前公开导出面与边界约束，不保留旧 API 名称、旧分层命名、旧版本标记、重大改名故事或旧交易所接入叙事。
@@ -26,7 +26,7 @@
 | 项目 | 约束 |
 | --- | --- |
 | 模块职责 | 跨域契约、错误元数据、兼容投影与验收文档 |
-| 运行时代码目录 | `/home/contracts` |
+| 运行时代码目录 | `/home/workspace/contracts` |
 | 文档目录 | `module/contracts` |
 | Go 基线 | 1.23 |
 | 允许依赖 | stdlib 与 `module/FOUNDATION-DEPS.yaml` 允许的共享层 |

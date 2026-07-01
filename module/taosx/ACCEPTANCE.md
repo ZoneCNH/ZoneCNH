@@ -5,7 +5,7 @@
 - Module-Version: v1.0.5
 - Module-State: 本地发布候选
 - Layer: L2 基础设施适配器
-- Runtime-Repo: /home/taosx/.worktree/workspaces/taosx-20260619
+- Runtime-Repo: /home/workspace/taosx/.worktree/workspaces/taosx-20260619
 - Source: goal.md, SPEC.md, TRACEABILITY.md, IMPLEMENTATION-PLAN.md, tasks/
 
 > 本清单用于验收 taosx 是否达到可发布、可追溯、可复验状态。除非条目明确记录为已通过，默认需要在运行时代码仓库重新执行验证并补充证据。
@@ -14,15 +14,15 @@
 
 | 类别 | 命令 | 通过标准 |
 | --- | --- | --- |
-| 文档存在性 | cd /home/ZoneCNH/.worktree/workspaces/taosx-20260619 && test -f module/taosx/FEATURES.md && test -f module/taosx/ACCEPTANCE.md | FEATURES.md 与 ACCEPTANCE.md 均存在 |
-| 文档格式 | cd /home/ZoneCNH/.worktree/workspaces/taosx-20260619 && git diff --check -- README.md ARCHITECTURE.md module/README.md module/taosx | 无尾随空格或补丁格式错误 |
-| 发布门禁 | cd /home/taosx/.worktree/workspaces/taosx-20260619 && GOWORK=off make release-check | release 本地门禁通过，manifest 生成并可验证 |
-| 覆盖率证据 | cd /home/taosx/.worktree/workspaces/taosx-20260619 && GOWORK=off make taosx-coverage-check | `pkg/taosx` 覆盖率 total 等于 `100.0%` |
-| 模板集成 | cd /home/taosx/.worktree/workspaces/taosx-20260619 && GOWORK=off make integration | kernel/configx/redisx 渲染下游通过，score=10 |
-| TDengine opt-in guard | cd /home/taosx/.worktree/workspaces/taosx-20260619 && GOWORK=off go test -tags=integration ./pkg/taosx -run TestTDengineWebSocketIntegration -count=1 -v | 未设置 `TAOSX_INTEGRATION=1` 时 pass 且 skip，不连接外部 TDengine |
-| TDengine live gate | cd /home/taosx/.worktree/workspaces/taosx-20260619 && TAOSX_INTEGRATION=1 GOWORK=off go test -tags=integration ./pkg/taosx -run TestTDengineWebSocketIntegration -count=1 -v | 2026-06-19 使用 `sre/secrets/env/dev.md` 的 `market_binance` dev 配置时 pass；`TestTDengineWebSocketIntegration` PASS，package result `ok github.com/ZoneCNH/taosx/pkg/taosx 0.020s`；输出不记录 endpoint、用户名、密码或完整 DSN |
-| 渲染回归 | cd /home/taosx/.worktree/workspaces/taosx-20260619 && bash -n scripts/render_template.sh scripts/check_rendered_template.sh scripts/run_integration.sh && GOWORK=off go test ./scripts -run TestRenderTemplateRewritesSourceModuleIdentity -count=1 | 脚本语法与嵌套渲染回归通过 |
-| 源码格式 | cd /home/taosx/.worktree/workspaces/taosx-20260619 && git diff --check | 无尾随空格或补丁格式错误 |
+| 文档存在性 | cd /home/workspace/ZoneCNH/.worktree/workspaces/taosx-20260619 && test -f module/taosx/FEATURES.md && test -f module/taosx/ACCEPTANCE.md | FEATURES.md 与 ACCEPTANCE.md 均存在 |
+| 文档格式 | cd /home/workspace/ZoneCNH/.worktree/workspaces/taosx-20260619 && git diff --check -- README.md ARCHITECTURE.md module/README.md module/taosx | 无尾随空格或补丁格式错误 |
+| 发布门禁 | cd /home/workspace/taosx/.worktree/workspaces/taosx-20260619 && GOWORK=off make release-check | release 本地门禁通过，manifest 生成并可验证 |
+| 覆盖率证据 | cd /home/workspace/taosx/.worktree/workspaces/taosx-20260619 && GOWORK=off make taosx-coverage-check | `pkg/taosx` 覆盖率 total 等于 `100.0%` |
+| 模板集成 | cd /home/workspace/taosx/.worktree/workspaces/taosx-20260619 && GOWORK=off make integration | kernel/configx/redisx 渲染下游通过，score=10 |
+| TDengine opt-in guard | cd /home/workspace/taosx/.worktree/workspaces/taosx-20260619 && GOWORK=off go test -tags=integration ./pkg/taosx -run TestTDengineWebSocketIntegration -count=1 -v | 未设置 `TAOSX_INTEGRATION=1` 时 pass 且 skip，不连接外部 TDengine |
+| TDengine live gate | cd /home/workspace/taosx/.worktree/workspaces/taosx-20260619 && TAOSX_INTEGRATION=1 GOWORK=off go test -tags=integration ./pkg/taosx -run TestTDengineWebSocketIntegration -count=1 -v | 2026-06-19 使用 `sre/secrets/env/dev.md` 的 `market_binance` dev 配置时 pass；`TestTDengineWebSocketIntegration` PASS，package result `ok github.com/ZoneCNH/taosx/pkg/taosx 0.020s`；输出不记录 endpoint、用户名、密码或完整 DSN |
+| 渲染回归 | cd /home/workspace/taosx/.worktree/workspaces/taosx-20260619 && bash -n scripts/render_template.sh scripts/check_rendered_template.sh scripts/run_integration.sh && GOWORK=off go test ./scripts -run TestRenderTemplateRewritesSourceModuleIdentity -count=1 | 脚本语法与嵌套渲染回归通过 |
+| 源码格式 | cd /home/workspace/taosx/.worktree/workspaces/taosx-20260619 && git diff --check | 无尾随空格或补丁格式错误 |
 
 ## 2. AC 验收登记
 
@@ -96,7 +96,7 @@
 
 - [x] FEATURES.md 的 FR、BR/NFR、任务清单与 SPEC/TRACEABILITY 当前登记一致。
 - [x] ACCEPTANCE.md 的 AC、TC 与运行时代码测试名、证据文件或 CI 记录一致。
-- [x] 运行时代码仓库 /home/taosx 通过 go test、go test -race、go vet 与覆盖率门槛。
+- [x] 运行时代码仓库 /home/workspace/taosx 通过 go test、go test -race、go vet 与覆盖率门槛。
 - [x] 所有外部服务依赖有本地可重复的测试替身或明确 live-gate 证据。
 - [x] 安全检查确认没有凭证、私有端点、账户 ID 或实盘配置进入公开文档与代码。
 - [x] 版本号、发布标签、CHANGELOG 或 release note 与本目录状态一致。

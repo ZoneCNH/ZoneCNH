@@ -34,7 +34,7 @@ estimated_effort: "1h"
 priority: P1
 status: pending
 non_scope:
-  - "不修改 /home/contracts/pkg/contracts 源码。"
+  - "不修改 /home/workspace/contracts/pkg/contracts 源码。"
   - "不添加新的规格章节或任务编号。"
   - "不恢复旧术语。"
 ```

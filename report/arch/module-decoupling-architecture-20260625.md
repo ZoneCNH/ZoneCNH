@@ -90,13 +90,13 @@ rg '^"github.com/ZoneCNH/(redisx|kafkax|natsx|postgresx|taosx|ossx|clickhousex)"
 【binance core 纯度】internal/ 无 infra 客户端构造
 
 rg "(natsx|redisx|kafkax|postgresx|taosx|ossx|clickhousex)\.New(" \
-   --type go /home/binance/internal/
+   --type go /home/workspace/binance/internal/
 → 命中均为测试文件（_test.go）或工具函数（NewEnvelope/NewKey/NewStatement），
    零 concrete client 构造（如 natsx.New）
 
 【os.Getenv 边界】internal/ 无生产环境读取
 
-rg "os\.Getenv" --type go /home/binance/internal/
+rg "os\.Getenv" --type go /home/workspace/binance/internal/
 → 仅命中 _test.go 中的集成测试跳过逻辑（BINANCE_NATSX_INTEGRATION），
    生产代码零 os.Getenv
 ```
@@ -191,9 +191,9 @@ bootstrap → 全部 CORE + INFRA (唯一聚合点)
 
 | #   | 问题                              | 严重度 | 状态              | 证据                                                                                                                   |
 | --- | --------------------------------- | ------ | ----------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| 1   | transportx go.mod module name bug | HIGH   | ✅ **已自动修复** | `/home/transportx/go.mod:1` 现为 `module github.com/ZoneCNH/transportx`                                                |
+| 1   | transportx go.mod module name bug | HIGH   | ✅ **已自动修复** | `/home/workspace/transportx/go.mod:1` 现为 `module github.com/ZoneCNH/transportx`                                                |
 | 2   | domain\_\* module path 分叉       | HIGH   | ✅ **已自动修复** | domain*market/main/macro/exchange 主 go.mod 均为 `github.com/ZoneCNH/domain*\*`（下划线）                              |
-| 3   | domainx 主目录无 go.mod           | MED    | ✅ **已自动修复** | `/home/domainx/go.mod` 已存在，`module github.com/ZoneCNH/domainx`                                                     |
+| 3   | domainx 主目录无 go.mod           | MED    | ✅ **已自动修复** | `/home/workspace/domainx/go.mod` 已存在，`module github.com/ZoneCNH/domainx`                                                     |
 | 4   | binance runtime.go assembly 越界  | MED    | ✅ **已修复**     | 移除 `runtime.go` 的 `buildStandaloneIngestEndpoint` 和 `natsx` import；`RunStandalone` 强制要求 `IngestEndpoint` 注入 |
 | 5   | binancecfg 已实现未接入 cmd/\*    | MED    | ⚠️ **部分修复**   | `cmd/binance-client/main.go` 已改为 `binancecfg.Load(ctx)`；`cmd/binance-server/main.go` 仍直接读 `os.Getenv`          |
 | 6   | binance wire 未迁移 contracts     | MED    | ⬜ 待执行         | ADR-002 过渡态，`internal/wire/` 仍存在 3 文件                                                                         |

@@ -364,7 +364,7 @@ v1.0.5 不改变 v1.0.0 的公共构造入口和核心接口语义。新增字�
 
 ### 发布证据
 
-v1.0.5 本地发布候选证据必须包含单元测试、契约测试、示例测试、race 检查、覆盖率报告、边界检查、依赖差异检查、`GOWORK=off make release-check`、`GOWORK=off make taosx-coverage-check` 100.0% 结果、`GOWORK=off make integration`、integration tag 默认 skip 证据、`git diff --check` 输出和无凭据泄漏检查；当前源码证据锚定 `/home/taosx/.worktree/workspaces/taosx-20260619` branch `taosx` @ `d46af01`，release evidence hash `c78f9de861cf83434140fc0e0e051e91af71736ec2d22f0ce1c0cf74c9a87f61`。dev live TDengine opt-in 运行证据已在 2026-06-19 补齐；对外发布、GitHub Release 或 factory-grade 声明还必须补充外部发布/远端 CI/发布制品证据。
+v1.0.5 本地发布候选证据必须包含单元测试、契约测试、示例测试、race 检查、覆盖率报告、边界检查、依赖差异检查、`GOWORK=off make release-check`、`GOWORK=off make taosx-coverage-check` 100.0% 结果、`GOWORK=off make integration`、integration tag 默认 skip 证据、`git diff --check` 输出和无凭据泄漏检查；当前源码证据锚定 `/home/workspace/taosx/.worktree/workspaces/taosx-20260619` branch `taosx` @ `d46af01`，release evidence hash `c78f9de861cf83434140fc0e0e051e91af71736ec2d22f0ce1c0cf74c9a87f61`。dev live TDengine opt-in 运行证据已在 2026-06-19 补齐；对外发布、GitHub Release 或 factory-grade 声明还必须补充外部发布/远端 CI/发布制品证据。
 
 ### 测试矩阵
 

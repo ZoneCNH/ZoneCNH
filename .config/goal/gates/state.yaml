@@ -1071,7 +1071,7 @@ gates:
       evidence: module/xlib_harness/matrix/TRACEABILITY.md
     - check: 运行时代码存在
       status: PASS
-      evidence: /home/xlib_harness@d90b35124701
+      evidence: /home/workspace/xlib-harness@d90b35124701
 
 - gate_id: GH-1
   gate_name: Release Evidence Gate
@@ -1138,7 +1138,7 @@ gates:
       evidence: module/xlib_evidence/matrix/TRACEABILITY.md
     - check: 运行时代码存在
       status: PASS
-      evidence: /home/xlib_evidence
+      evidence: /home/workspace/xlib-evidence
 
 - gate_id: GE-1
   gate_name: Release Evidence Gate
@@ -1211,7 +1211,7 @@ gates:
       evidence: module/xlibgate/TRACEABILITY.md
     - check: 运行时代码存在
       status: PASS
-      evidence: /home/xlibgate@e76725b
+      evidence: /home/workspace/xlibgate@e76725b
 
 - gate_id: GG-1
   gate_name: Release Evidence Gate

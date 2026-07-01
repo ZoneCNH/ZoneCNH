@@ -10,21 +10,21 @@
 ### A-1 (#1293 / ZoneCNH-5k4j) — internal/wire 角色明确化
 
 - **Status**: DONE
-- **Evidence**: `internal/wire/doc.go` 存在于 `/home/binance/internal/wire/doc.go`，包含包级文档说明 wire 是 binance client/server 共享的契约类型层，记录了 ADR-002 过渡态和迁移路径。
-- **Verification**: `cat /home/binance/internal/wire/doc.go` 显示 package doc 包含 transport adapter 角色说明和边界约束。
+- **Evidence**: `internal/wire/doc.go` 存在于 `/home/workspace/binance/internal/wire/doc.go`，包含包级文档说明 wire 是 binance client/server 共享的契约类型层，记录了 ADR-002 过渡态和迁移路径。
+- **Verification**: `cat /home/workspace/binance/internal/wire/doc.go` 显示 package doc 包含 transport adapter 角色说明和边界约束。
 
 ### A-4/B-3 (#1303 / ZoneCNH-5k4k) — Subject 版本化 `.v1`
 
 - **Status**: DONE
 - **Evidence**: runtime publisher 代码使用 `fmt.Sprintf("binance.market.%s.%s.v1", productLine, eventType)` 构造 subject。测试文件验证 `binance.market.spot.trade.v1`。drift check 脚本 A-4 检查全部 PASS。
-- **Verification**: `rg "binance\.market\.%s\.%s\.v1" /home/binance/internal/client/publisher/publisher.go` 命中。`bash /home/binance/scripts/spec-runtime-drift-check.sh` A-4 全 PASS。
+- **Verification**: `rg "binance\.market\.%s\.%s\.v1" /home/workspace/binance/internal/client/publisher/publisher.go` 命中。`bash /home/workspace/binance/scripts/spec-runtime-drift-check.sh` A-4 全 PASS。
 
 ### B-2 (#1295 / ZoneCNH-5k4l) — client/SPEC §14 目录结构修正
 
 - **Status**: DONE（本次修复）
-- **Action**: 将 client/SPEC §14 Runtime 目录树从虚假子目录结构（`app/`、`catalog/`、`connector/`、`normalize/`、`mapper/`、`idempotency/`、`admin/`）修正为与 `/home/binance/internal/client/` 实际 flat layout 一致的文件列表。
+- **Action**: 将 client/SPEC §14 Runtime 目录树从虚假子目录结构（`app/`、`catalog/`、`connector/`、`normalize/`、`mapper/`、`idempotency/`、`admin/`）修正为与 `/home/workspace/binance/internal/client/` 实际 flat layout 一致的文件列表。
 - **Evidence**: `module/binance/spec/client/SPEC.md` §14 现在反映 monorepo flat layout，包含 `runtime.go`、`lifecycle.go`、`catalog.go`、`exchangeinfo.go`、`connector.go`、`connectors/`、`normalize.go`、`mapper.go`、`idempotency.go`、`publisher/`、`admin.go`、`http_ingest_endpoint.go`、`throttle.go`、`resource_governance.go`、`history_*.go`、`testdata/` 等实际文件。
-- **Verification**: `ls /home/binance/internal/client/` 与 SPEC §14 目录树一致。
+- **Verification**: `ls /home/workspace/binance/internal/client/` 与 SPEC §14 目录树一致。
 
 ### C-1/G-3 (#1299 / ZoneCNH-5k4m) — SPEC 参数表迁移至 design/
 
@@ -78,8 +78,8 @@
 ### E-6 (#1331 / ZoneCNH-5k4u) — spec-runtime-drift-check.sh 存在
 
 - **Status**: DONE
-- **Evidence**: `/home/binance/scripts/spec-runtime-drift-check.sh` 存在，181 行，包含 A-1~A-4 drift 检查，全部 PASS。
-- **Verification**: `bash /home/binance/scripts/spec-runtime-drift-check.sh` → "Spec/runtime drift check passed"。
+- **Evidence**: `/home/workspace/binance/scripts/spec-runtime-drift-check.sh` 存在，181 行，包含 A-1~A-4 drift 检查，全部 PASS。
+- **Verification**: `bash /home/workspace/binance/scripts/spec-runtime-drift-check.sh` → "Spec/runtime drift check passed"。
 
 ### G-4 (#1296 / ZoneCNH-5k4v) — BOUNDARY-GATES §20 迁移至模板
 

@@ -2,7 +2,7 @@
 
 > PR-3: 骨架代码 — Makefile、scripts、CI
 > 工作分支: `feat/xlib-v1-build`
-> 工作目录: /home/xlib_standard/.worktree/workspaces/feat/xlib-v1-build
+> 工作目录: /home/workspace/xlib-standard/.worktree/workspaces/feat/xlib-v1-build
 
 ## Current Task
 

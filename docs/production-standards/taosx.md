@@ -40,7 +40,7 @@ module/taosx/
   tasks/              # 任务拆分制品（TASK-TAOSX-001..006）
   contracts/          # 契约测试（驱动合规验证）
   examples/           # 可运行示例
-# runtime repo /home/taosx/.worktree/workspaces/taosx-20260619
+# runtime repo /home/workspace/taosx/.worktree/workspaces/taosx-20260619
 #   pkg/taosx (Config/Client/Driver/Rows/Batch/SchemalessPayload/Metrics)
 ```
 

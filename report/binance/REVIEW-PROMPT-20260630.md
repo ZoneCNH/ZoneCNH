@@ -2,7 +2,7 @@
 
 > **版本**: v1.0.0
 > **生成日期**: 2026-06-30
-> **目标模块**: `module/binance/`（spec hub）+ `/home/binance/`（runtime 仓）
+> **目标模块**: `module/binance/`（spec hub）+ `/home/workspace/binance/`（runtime 仓）
 > **审查基线**: CONSTITUTION.md §0-§20、FoundationX Pipeline (Goal→Spec→Plan→Matrix→Tasks→Prompt→Code→Evidence)
 > **适用场景**: AI agent 深度审查、CI 巡检、发布前门禁、治理审计
 > **输出**: 结构化审查报告 + 评分卡 + 问题清单
@@ -33,7 +33,7 @@ echo "=== Spec Hub ==="
 git log --oneline -5 -- module/binance/
 echo ""
 echo "=== Runtime 仓 ==="
-cd /home/binance && git log --oneline -5 && git describe --tags --always
+cd /home/workspace/binance && git log --oneline -5 && git describe --tags --always
 echo ""
 echo "=== 当前分支 ==="
 git branch --show-current
@@ -236,10 +236,10 @@ print(f'Total FR: {done+partial+drifted+pending}')
 
 按 `module/binance/design/ARCHITECTURE-DRIFT-WATCHLIST.md` 的 11 个监控点 (D1-D11) 逐项执行检测命令，输出 PASS/FAIL。
 
-### 3.4 Runtime 架构审查（如果 /home/binance 可访问）
+### 3.4 Runtime 架构审查（如果 /home/workspace/binance 可访问）
 
 ```bash
-cd /home/binance
+cd /home/workspace/binance
 # 目录结构
 find internal/ -type d | sort
 # Client/Server 边界违规检查
@@ -296,12 +296,12 @@ find module/binance/tasks/ -name "TASK-*.md" | sed 's|/[^/]*$||' | sort | uniq -
 
 ## Part 6: 代码质量审查（Runtime）
 
-> 如果 `/home/binance/` 不可访问，跳过 Part 6，在报告中标注 `[FRAME, LOW] Runtime not accessible`。
+> 如果 `/home/workspace/binance/` 不可访问，跳过 Part 6，在报告中标注 `[FRAME, LOW] Runtime not accessible`。
 
 ### 6.1 构建与编译
 
 ```bash
-cd /home/binance
+cd /home/workspace/binance
 go build ./...
 go vet ./...
 ```
@@ -309,7 +309,7 @@ go vet ./...
 ### 6.2 测试执行
 
 ```bash
-cd /home/binance
+cd /home/workspace/binance
 go test ./... -count=1 -timeout=120s
 go test ./... -race -count=1 -timeout=180s
 ```
@@ -317,7 +317,7 @@ go test ./... -race -count=1 -timeout=180s
 ### 6.3 测试覆盖率
 
 ```bash
-cd /home/binance
+cd /home/workspace/binance
 go test ./... -coverprofile=coverage.out -count=1 -timeout=120s
 go tool cover -func=coverage.out | tail -1
 go tool cover -func=coverage.out | grep -E "(assembly\.go|adapter\.go|total)"
@@ -328,7 +328,7 @@ go tool cover -func=coverage.out | grep -E "(assembly\.go|adapter\.go|total)"
 ### 6.4 安全扫描
 
 ```bash
-cd /home/binance
+cd /home/workspace/binance
 gitleaks detect --no-git 2>&1
 govulncheck ./... 2>&1
 ```
@@ -336,7 +336,7 @@ govulncheck ./... 2>&1
 ### 6.5 边界门禁
 
 ```bash
-cd /home/binance
+cd /home/workspace/binance
 bash -n scripts/boundary-gates.sh && ./scripts/boundary-gates.sh
 ```
 
@@ -358,7 +358,7 @@ bash -n scripts/boundary-gates.sh && ./scripts/boundary-gates.sh
 | Gate    | 检查内容                                     | 验证命令                                                       |
 | ------- | -------------------------------------------- | -------------------------------------------------------------- |
 | PRG-001 | CI runner 为 ubuntu-latest（非 self-hosted） | 检查 CI workflow 文件                                          |
-| PRG-002 | Release tag + GitHub Release 存在            | `cd /home/binance && git tag -l 'v*'` `gh release view v0.8.0` |
+| PRG-002 | Release tag + GitHub Release 存在            | `cd /home/workspace/binance && git tag -l 'v*'` `gh release view v0.8.0` |
 | PRG-003 | PRG 7/7 全 PASS                              | 逐项确认 PRG-001~007                                           |
 | PRG-004 | Observability 全在线                         | 确认 Jaeger/Grafana/Loki/AlertManager 可访问                   |
 | PRG-005 | Security 扫描清洁                            | gitleaks + govulncheck PASS                                    |

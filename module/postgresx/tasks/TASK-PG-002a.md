@@ -36,6 +36,6 @@ TASK-PG-002a:
 
 ## Evidence
 
-- `/home/postgresx/pkg/postgresx/tx.go`
-- `/home/postgresx/pkg/postgresx/health.go`
-- `/home/postgresx/docs/EVIDENCE-20260601.md`
+- `/home/workspace/postgresx/pkg/postgresx/tx.go`
+- `/home/workspace/postgresx/pkg/postgresx/health.go`
+- `/home/workspace/postgresx/docs/EVIDENCE-20260601.md`

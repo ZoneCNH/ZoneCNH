@@ -3,7 +3,7 @@
 - Date: 2026-06-23
 - Owner surface: `module/binance`
 - Status: docs anchor for the v2 migration; runtime closure remains gated by
-  fresh `/home/binance` verification evidence.
+  fresh `/home/workspace/binance` verification evidence.
 - Related issues: #869, #893, #894
 
 ## Purpose
@@ -41,7 +41,7 @@ becoming a second SSOT.
 
 ## Runtime closure checklist
 
-Run from `/home/binance` on the runtime implementation branch:
+Run from `/home/workspace/binance` on the runtime implementation branch:
 
 ```bash
 git status --short --branch

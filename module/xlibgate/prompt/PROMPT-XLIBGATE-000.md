@@ -2,7 +2,7 @@
 
 > 模块: xlibgate
 > 版本: v1.0.0
-> 工作目录: /home/xlibgate
+> 工作目录: /home/workspace/xlibgate
 > Spec: module/xlibgate/spec/SPEC.md v1.2.0
 
 ## 模块定位

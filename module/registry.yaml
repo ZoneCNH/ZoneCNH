@@ -31,7 +31,7 @@ updated: 2026-06-29
 # 字段反映实际 GitHub 仓库和本地克隆路径。
 xlib_standard:
   repo: github.com/ZoneCNH/xlib-standard
-  local_path: /home/xlib-standard
+  local_path: /home/workspace/xlib-standard
   domain: foundation
   layer: standard_source
   arch_type: library
@@ -49,7 +49,7 @@ xlib_standard:
 
 xlib_harness:
   repo: github.com/ZoneCNH/xlib_harness
-  local_path: /home/xlib-harness
+  local_path: /home/workspace/xlib-harness
   domain: foundation
   layer: harness
   arch_type: library
@@ -66,7 +66,7 @@ xlib_harness:
 
 xlib_evidence:
   repo: github.com/ZoneCNH/xlib-evidence
-  local_path: /home/xlib-evidence
+  local_path: /home/workspace/xlib-evidence
   domain: foundation
   layer: evidence
   arch_type: library
@@ -83,7 +83,7 @@ xlib_evidence:
 
 xlibgate:
   repo: github.com/ZoneCNH/xlibgate
-  local_path: /home/xlibgate
+  local_path: /home/workspace/xlibgate
   domain: foundation
   layer: gate
   arch_type: cli
@@ -101,7 +101,7 @@ xlibgate:
 # --- L0 原语（1）---
 kernel:
   repo: github.com/ZoneCNH/kernel
-  local_path: /home/kernel
+  local_path: /home/workspace/kernel
   domain: foundation
   layer: L0
   arch_type: library
@@ -119,7 +119,7 @@ kernel:
 # --- L1 primitives（4）---
 configx:
   repo: github.com/ZoneCNH/configx
-  local_path: /home/configx
+  local_path: /home/workspace/configx
   domain: foundation
   layer: L1
   arch_type: library
@@ -136,7 +136,7 @@ configx:
 
 observex:
   repo: github.com/ZoneCNH/observex
-  local_path: /home/observex
+  local_path: /home/workspace/observex
   domain: foundation
   layer: L1
   arch_type: library
@@ -153,7 +153,7 @@ observex:
 
 resiliencx:
   repo: github.com/ZoneCNH/resiliencx
-  local_path: /home/resiliencx
+  local_path: /home/workspace/resiliencx
   domain: foundation
   layer: L1
   arch_type: library
@@ -170,7 +170,7 @@ resiliencx:
 
 schedulex:
   repo: github.com/ZoneCNH/schedulex
-  local_path: /home/schedulex
+  local_path: /home/workspace/schedulex
   domain: foundation
   layer: L1
   arch_type: library
@@ -188,7 +188,7 @@ schedulex:
 # --- L1 Assembly（1）---
 bootstrap:
   repo: github.com/ZoneCNH/bootstrap
-  local_path: /home/bootstrap
+  local_path: /home/workspace/bootstrap
   domain: foundation
   layer: L1
   arch_type: library
@@ -206,7 +206,7 @@ bootstrap:
 # --- L1 测试（1）---
 testkitx:
   repo: github.com/ZoneCNH/testkitx
-  local_path: /home/testkitx
+  local_path: /home/workspace/testkitx
   domain: foundation
   layer: L1
   arch_type: library
@@ -224,7 +224,7 @@ testkitx:
 # --- 存储扩展（7）---
 redisx:
   repo: github.com/ZoneCNH/redisx
-  local_path: /home/redisx
+  local_path: /home/workspace/redisx
   domain: foundation
   layer: storage
   arch_type: library
@@ -241,7 +241,7 @@ redisx:
 
 kafkax:
   repo: github.com/ZoneCNH/kafkax
-  local_path: /home/kafkax
+  local_path: /home/workspace/kafkax
   domain: foundation
   layer: storage
   arch_type: library
@@ -258,7 +258,7 @@ kafkax:
 
 natsx:
   repo: github.com/ZoneCNH/natsx
-  local_path: /home/natsx
+  local_path: /home/workspace/natsx
   domain: foundation
   layer: storage
   arch_type: library
@@ -275,7 +275,7 @@ natsx:
 
 postgresx:
   repo: github.com/ZoneCNH/postgresx
-  local_path: /home/postgresx
+  local_path: /home/workspace/postgresx
   domain: foundation
   layer: storage
   arch_type: library
@@ -292,7 +292,7 @@ postgresx:
 
 taosx:
   repo: github.com/ZoneCNH/taosx
-  local_path: /home/taosx
+  local_path: /home/workspace/taosx
   domain: foundation
   layer: storage
   arch_type: library
@@ -309,7 +309,7 @@ taosx:
 
 ossx:
   repo: github.com/ZoneCNH/ossx
-  local_path: /home/ossx
+  local_path: /home/workspace/ossx
   domain: foundation
   layer: storage
   arch_type: library
@@ -326,7 +326,7 @@ ossx:
 
 clickhousex:
   repo: github.com/ZoneCNH/clickhousex
-  local_path: /home/clickhousex
+  local_path: /home/workspace/clickhousex
   domain: foundation
   layer: storage
   arch_type: library
@@ -344,7 +344,7 @@ clickhousex:
 # --- 契约与传输（2）---
 contracts:
   repo: github.com/ZoneCNH/contracts
-  local_path: /home/contracts
+  local_path: /home/workspace/contracts
   domain: foundation
   layer: contracts
   arch_type: contract
@@ -361,7 +361,7 @@ contracts:
 
 transportx:
   repo: github.com/ZoneCNH/transportx
-  local_path: /home/transportx
+  local_path: /home/workspace/transportx
   domain: foundation
   layer: contracts
   arch_type: contract
@@ -385,7 +385,7 @@ transportx:
 
 domainx:
   repo: github.com/ZoneCNH/domainx
-  local_path: /home/domainx
+  local_path: /home/workspace/domainx
   domain: l2_5
   layer: l2_5
   arch_type: library
@@ -402,7 +402,7 @@ domainx:
 
 decimalx:
   repo: github.com/ZoneCNH/decimalx
-  local_path: /home/decimalx
+  local_path: /home/workspace/decimalx
   domain: l2_5
   layer: l2_5
   arch_type: library
@@ -419,7 +419,7 @@ decimalx:
 
 domain_market:
   repo: github.com/ZoneCNH/domain_market
-  local_path: /home/domain_market
+  local_path: /home/workspace/domain-market
   domain: l2_5
   layer: l2_5
   arch_type: library
@@ -436,7 +436,7 @@ domain_market:
 
 domain_macro:
   repo: github.com/ZoneCNH/domain_macro
-  local_path: /home/domain_macro
+  local_path: /home/workspace/domain-macro
   domain: l2_5
   layer: l2_5
   arch_type: library
@@ -453,7 +453,7 @@ domain_macro:
 
 domain_exchange:
   repo: github.com/ZoneCNH/domain_exchange
-  local_path: /home/domain_exchange
+  local_path: /home/workspace/domain-exchange
   domain: l2_5
   layer: l2_5
   arch_type: library
@@ -476,7 +476,7 @@ domain_exchange:
 # --- C/S 采集器（4 交易所 + 2 宏观）---
 binance:
   repo: github.com/ZoneCNH/binance
-  local_path: /home/binance
+  local_path: /home/workspace/binance
   domain: data
   layer: business
   arch_type: cs_module
@@ -494,7 +494,7 @@ binance:
 
 okx:
   repo: github.com/ZoneCNH/okx
-  local_path: /home/okx
+  local_path: /home/workspace/okx
   domain: data
   layer: business
   arch_type: cs_module
@@ -508,7 +508,7 @@ okx:
 
 hyperliquid:
   repo: github.com/ZoneCNH/hyperliquid
-  local_path: /home/hyperliquid
+  local_path: /home/workspace/hyperliquid
   domain: data
   layer: business
   arch_type: cs_module
@@ -522,7 +522,7 @@ hyperliquid:
 
 coinglass:
   repo: github.com/ZoneCNH/coinglass
-  local_path: /home/coinglass
+  local_path: /home/workspace/coinglass
   domain: data
   layer: business
   arch_type: cs_module
@@ -536,7 +536,7 @@ coinglass:
 
 fred:
   repo: github.com/ZoneCNH/fred
-  local_path: /home/fred
+  local_path: /home/workspace/fred
   domain: data
   layer: business
   arch_type: cs_module
@@ -550,7 +550,7 @@ fred:
 
 treasury:
   repo: github.com/ZoneCNH/treasury
-  local_path: /home/treasury
+  local_path: /home/workspace/treasury
   domain: data
   layer: business
   arch_type: cs_module
@@ -565,7 +565,7 @@ treasury:
 # --- 独立进程聚合层 ---
 market_data:
   repo: github.com/ZoneCNH/market_data
-  local_path: /home/market_data
+  local_path: /home/workspace/market-data
   domain: data
   layer: business
   arch_type: independent_process
@@ -579,7 +579,7 @@ market_data:
 
 macro_data:
   repo: github.com/ZoneCNH/macro_data
-  local_path: /home/macro_data
+  local_path: /home/workspace/macro_data
   domain: data
   layer: business
   arch_type: independent_process
@@ -593,7 +593,7 @@ macro_data:
 
 pe_data:
   repo: github.com/ZoneCNH/pe_data
-  local_path: /home/pe_data
+  local_path: /home/workspace/pe_data
   domain: data
   layer: business
   arch_type: independent_process
@@ -607,7 +607,7 @@ pe_data:
 
 alternative_data:
   repo: github.com/ZoneCNH/alternative_data
-  local_path: /home/alternative_data
+  local_path: /home/workspace/alternative_data
   domain: data
   layer: business
   arch_type: independent_process
@@ -625,7 +625,7 @@ alternative_data:
 
 factor_engine:
   repo: github.com/ZoneCNH/factor_engine
-  local_path: /home/factor_engine
+  local_path: /home/workspace/factor_engine
   domain: analytics
   layer: business
   arch_type: independent_process
@@ -639,7 +639,7 @@ factor_engine:
 
 feature_store:
   repo: github.com/ZoneCNH/feature_store
-  local_path: /home/feature_store
+  local_path: /home/workspace/feature_store
   domain: analytics
   layer: business
   arch_type: independent_process
@@ -653,7 +653,7 @@ feature_store:
 
 factor_eval:
   repo: github.com/ZoneCNH/factor_eval
-  local_path: /home/factor_eval
+  local_path: /home/workspace/factor_eval
   domain: analytics
   layer: business
   arch_type: independent_process
@@ -667,7 +667,7 @@ factor_eval:
 
 market_regime:
   repo: github.com/ZoneCNH/market_regime
-  local_path: /home/market_regime
+  local_path: /home/workspace/market_regime
   domain: analytics
   layer: business
   arch_type: independent_process
@@ -681,7 +681,7 @@ market_regime:
 
 macro_regime:
   repo: github.com/ZoneCNH/macro_regime
-  local_path: /home/macro_regime
+  local_path: /home/workspace/macro_regime
   domain: analytics
   layer: business
   arch_type: independent_process
@@ -695,7 +695,7 @@ macro_regime:
 
 regime_engine:
   repo: github.com/ZoneCNH/regime_engine
-  local_path: /home/regime_engine
+  local_path: /home/workspace/regime_engine
   domain: analytics
   layer: business
   arch_type: independent_process
@@ -709,7 +709,7 @@ regime_engine:
 
 ms_brain:
   repo: github.com/ZoneCNH/ms_brain
-  local_path: /home/ms_brain
+  local_path: /home/workspace/ms_brain
   domain: analytics
   layer: business
   arch_type: independent_process
@@ -723,7 +723,7 @@ ms_brain:
 
 flowx:
   repo: github.com/ZoneCNH/flowx
-  local_path: /home/flowx
+  local_path: /home/workspace/flowx
   domain: analytics
   layer: business
   arch_type: independent_process
@@ -741,7 +741,7 @@ flowx:
 
 signal_factory:
   repo: github.com/ZoneCNH/signal_factory
-  local_path: /home/signal_factory
+  local_path: /home/workspace/signal_factory
   domain: decision
   layer: business
   arch_type: independent_process
@@ -755,7 +755,7 @@ signal_factory:
 
 backtestx:
   repo: github.com/ZoneCNH/backtestx
-  local_path: /home/backtestx
+  local_path: /home/workspace/backtestx
   domain: decision
   layer: business
   arch_type: independent_process
@@ -769,7 +769,7 @@ backtestx:
 
 optimizer:
   repo: github.com/ZoneCNH/optimizer
-  local_path: /home/optimizer
+  local_path: /home/workspace/optimizer
   domain: decision
   layer: business
   arch_type: independent_process
@@ -783,7 +783,7 @@ optimizer:
 
 strategyx:
   repo: github.com/ZoneCNH/strategyx
-  local_path: /home/strategyx
+  local_path: /home/workspace/strategyx
   domain: decision
   layer: business
   arch_type: independent_process
@@ -797,7 +797,7 @@ strategyx:
 
 maestro:
   repo: github.com/ZoneCNH/maestro
-  local_path: /home/maestro
+  local_path: /home/workspace/maestro
   domain: decision
   layer: business
   arch_type: independent_process
@@ -815,7 +815,7 @@ maestro:
 
 riskx:
   repo: github.com/ZoneCNH/riskx
-  local_path: /home/riskx
+  local_path: /home/workspace/riskx
   domain: execution
   layer: business
   arch_type: independent_process
@@ -830,7 +830,7 @@ riskx:
 
 orderx:
   repo: github.com/ZoneCNH/orderx
-  local_path: /home/orderx
+  local_path: /home/workspace/orderx
   domain: execution
   layer: business
   arch_type: independent_process
@@ -844,7 +844,7 @@ orderx:
 
 positionx:
   repo: github.com/ZoneCNH/positionx
-  local_path: /home/positionx
+  local_path: /home/workspace/positionx
   domain: execution
   layer: business
   arch_type: independent_process
@@ -858,7 +858,7 @@ positionx:
 
 settlement:
   repo: github.com/ZoneCNH/settlement
-  local_path: /home/settlement
+  local_path: /home/workspace/settlement
   domain: execution
   layer: business
   arch_type: independent_process
@@ -876,7 +876,7 @@ settlement:
 
 composer:
   repo: github.com/ZoneCNH/composer
-  local_path: /home/composer
+  local_path: /home/workspace/composer
   domain: entry
   layer: business
   arch_type: independent_process
@@ -895,7 +895,7 @@ composer:
 
 alertx:
   repo: github.com/ZoneCNH/alertx
-  local_path: /home/alertx
+  local_path: /home/workspace/alertx
   domain: crosscut
   layer: business
   arch_type: independent_process
@@ -911,7 +911,7 @@ alertx:
 
 x.go:
   repo: github.com/ZoneCNH/x.go
-  local_path: /home/x.go
+  local_path: /home/workspace/x.go
   domain: crosscut
   layer: business
   arch_type: cli

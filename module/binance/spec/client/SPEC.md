@@ -468,12 +468,12 @@ module/binance/spec/client/
 └── tasks/                   # Client task spec
 ```
 
-### Runtime（`/home/binance` client 端目录）
+### Runtime（`/home/workspace/binance` client 端目录）
 
 > monorepo flat layout — 所有 client 逻辑以包级文件直接放在 `internal/client/` 下，仅 `connectors/`、`publisher/`、`testdata/` 为子目录。
 
 ```text
-/home/binance/
+/home/workspace/binance/
 ├── cmd/
 │   └── binance-client/
 │       └── main.go                 # catalog → connectors → normalize → mapper → publisher 进程入口

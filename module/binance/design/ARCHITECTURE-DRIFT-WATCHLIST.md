@@ -115,7 +115,7 @@ grep -oP "Spec-Version: \Kv[0-9.]+" module/binance/spec/SPEC.md
 **违反规则**：R4
 **检测命令**（需 runtime 仓）：
 ```bash
-cd /home/binance && bash scripts/boundary-gates.sh 2>&1 | grep -E "(PASS|FAIL)"
+cd /home/workspace/binance && bash scripts/boundary-gates.sh 2>&1 | grep -E "(PASS|FAIL)"
 ```
 
 ---
@@ -141,7 +141,7 @@ rg "max_weight_per_second|token_rate.*100" module/binance/spec/SPEC.md && echo "
 **检测命令**：
 ```bash
 # 检测代码中是否使用通用时间间隔 gap 检测
-rg "2\s*\*\s*interval|2\s*\*\s*expected" /home/binance/internal/ -l --include='*.go' && echo "DRIFT D10: 缺口检测使用统一时间间隔法" || echo "OK"
+rg "2\s*\*\s*interval|2\s*\*\s*expected" /home/workspace/binance/internal/ -l --include='*.go' && echo "DRIFT D10: 缺口检测使用统一时间间隔法" || echo "OK"
 ```
 
 ---

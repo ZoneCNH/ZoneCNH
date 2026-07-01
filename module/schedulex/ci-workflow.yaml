@@ -1,6 +1,6 @@
 # CI/CD Workflow 参考模板 - schedulex v1.0.0
 #
-# Runtime authority: /home/schedulex/.github/workflows/*.yml
+# Runtime authority: /home/workspace/schedulex/.github/workflows/*.yml
 # 本文件用于 module/schedulex 文档侧同步，不直接替代运行时仓库 workflow。
 
 name: schedulex-release-gates

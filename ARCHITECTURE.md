@@ -203,7 +203,7 @@ FoundationX 中运行模块分为两种架构类型：
 - 通过 `bootstrap.Build(ctx, Spec{Module, Stores=None})` 组装
 - 实现 `contracts.MarketDataProvider` 或 `MacroDataProvider` 接口
 - 使用 `domain_market` / `domain_macro` / `domain_exchange` 共享类型
-- **规格参考实现**：binance（spec v3.9.6 ✅；Runtime-Anchor `/home/binance@b2d9d83`；single state `48 Done / 0 Partial`（100%）；release_closeable=YES 🎉；v0.8.0 tag 已发布；47/47 tasks Done；deep-review 37/37 fixed；coverage 100.0%）
+- **规格参考实现**：binance（spec v3.9.6 ✅；Runtime-Anchor `/home/workspace/binance@b2d9d83`；single state `48 Done / 0 Partial`（100%）；release_closeable=YES 🎉；v0.8.0 tag 已发布；47/47 tasks Done；deep-review 37/37 fixed；coverage 100.0%）
 
 ### 独立进程（非 C/S）
 
@@ -426,7 +426,7 @@ Foundation 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中在 
 | 基座                  | [xlibgate](https://github.com/ZoneCNH/xlibgate)                 | v1.0.0 | ✅ 已发布 | Spec→Code 完成 | check / l2 / trust 三组门禁；全管线评分 100 |
 | 基座                  | [xlib_standard](https://github.com/ZoneCNH/xlib_standard)       | v1.0.1 | ✅ 已发布 | Spec→Code 完成 | 标准事实源、Go Reference Template；Generator/Harness/Evidence 已拆分；v1.0.1 GitHub Release 与 release-preflight 已通过，不参与运行时 import |
 | 基座                  | [xlib_harness](https://github.com/ZoneCNH/xlib_harness)         | v0.1.1 | ✅ 已发布 | Spec→Code 完成 | 模块生成器与门禁执行器：generate/scaffold、spec-lint、boundary-check、traceability-gate；✅ v0.1.1 发布基线已通过 go test/race/vet/coverage/benchmark/CLI smoke 验收 |
-| 基座                  | [xlib_evidence](https://github.com/ZoneCNH/xlib_evidence)       | v0.2.2 | ✅ 已发布 | Spec→Code 完成 | 证据收集与发布运行时：collect-coverage、generate-manifest、validate-manifest、remote-evidence、report；/home/xlib_evidence 本地 go test/race/vet/coverage 100.0% 通过；✅ GitHub Release v0.2.2 已发布（Latest） |
+| 基座                  | [xlib_evidence](https://github.com/ZoneCNH/xlib_evidence)       | v0.2.2 | ✅ 已发布 | Spec→Code 完成 | 证据收集与发布运行时：collect-coverage、generate-manifest、validate-manifest、remote-evidence、report；/home/workspace/xlib-evidence 本地 go test/race/vet/coverage 100.0% 通过；✅ GitHub Release v0.2.2 已发布（Latest） |
 | 基座                  | [redisx](https://github.com/ZoneCNH/redisx)                     | v1.1.0 | ✅ 已发布 | Spec→Code 完成 | Redis L2 adapter：KV/TTL/Hash/List/Pipeline/Cache-aside/Lock/RateLimit/Pool/Persistence restart recovery；PR #19、release-preflight、GitHub Release v1.1.0 与 dev Redis 集成验证通过 |
 | 基座                  | [kafkax](https://github.com/ZoneCNH/kafkax)                     | v1.1.0 | ✅ 已发布 | Spec→Code 完成 | Kafka L2 adapter — 消息队列、事件流（v1.0.0 已发布，driver-neutral API + kafka-go 生产驱动，真实 broker gates） |
 | 基座                  | [natsx](https://github.com/ZoneCNH/natsx)                       | v1.0.3 (remote tag) / Spec v1.2.0 | 🟡 tag / Release 待补 | Spec→Code 完成 | NATS L2 adapter：Core NATS / JetStream、Drain/reconnect/degraded health、canonical `FOUNDATIONX_NATS_*` 配置和真实 dev auth live gate 已验证；repair-slice 20/20；GitHub Release v1.0.3 待补；PR #17 已合并并实现 FR-009/010 JetStream IngestAdapter runtime 适配器；Spec v1.2.0 新增 FR-009/010 JetStream IngestAdapter 域适配契约（pkg/natsx/ingest，Publisher PubAck→Durable + Consumer durable ManualAck/DLQ，解耦 binance PR-007c/d）；正式四源 98+ arbiter 与生产 TLS gate 待补（BLK-001/BLK-002）；非 factory |
@@ -510,66 +510,66 @@ Foundation 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中在 
 | 域                | 模块                                                                                                      | 本地路径                                    |
 | ----------------- | --------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
 | **基座**          |                                                                                                           |                                             |
-| 基座              | kernel                                                                                                    | `/home/kernel/`                             |
-| 基座              | configx                                                                                                   | `/home/configx/`                            |
-| 基座              | observex                                                                                                  | `/home/observex/`                           |
-| 基座              | testkitx                                                                                                  | `/home/testkitx/`                           |
-| 基座              | resiliencx                                                                                                | `/home/resiliencx/`                         |
-| 基座              | schedulex                                                                                                 | `/home/schedulex/`                          |
-| 基座              | xlibgate                                                                                                  | `/home/xlibgate/`                           |
-| 基座              | xlib_standard                                                                                             | `/home/xlib_standard/`                      |
-| 基座              | redisx                                                                                                    | `/home/redisx/`                             |
-| 基座              | kafkax                                                                                                    | `/home/kafkax/`                             |
-| 基座              | natsx                                                                                                     | `/home/natsx/`                              |
-| 基座              | postgresx                                                                                                 | `/home/postgresx/`                          |
-| 基座              | clickhousex                                                                                               | `/home/clickhousex/`                        |
-| 基座              | taosx                                                                                                     | `/home/taosx/`                              |
-| 基座              | ossx                                                                                                      | `/home/ossx/`                               |
-| 基座              | contracts                                                                                                 | `/home/contracts/`                          |
-| 基座              | transportx                                                                                                | `/home/transportx/`                         |
+| 基座              | kernel                                                                                                    | `/home/workspace/kernel/`                             |
+| 基座              | configx                                                                                                   | `/home/workspace/configx/`                            |
+| 基座              | observex                                                                                                  | `/home/workspace/observex/`                           |
+| 基座              | testkitx                                                                                                  | `/home/workspace/testkitx/`                           |
+| 基座              | resiliencx                                                                                                | `/home/workspace/resiliencx/`                         |
+| 基座              | schedulex                                                                                                 | `/home/workspace/schedulex/`                          |
+| 基座              | xlibgate                                                                                                  | `/home/workspace/xlibgate/`                           |
+| 基座              | xlib_standard                                                                                             | `/home/workspace/xlib-standard/`                      |
+| 基座              | redisx                                                                                                    | `/home/workspace/redisx/`                             |
+| 基座              | kafkax                                                                                                    | `/home/workspace/kafkax/`                             |
+| 基座              | natsx                                                                                                     | `/home/workspace/natsx/`                              |
+| 基座              | postgresx                                                                                                 | `/home/workspace/postgresx/`                          |
+| 基座              | clickhousex                                                                                               | `/home/workspace/clickhousex/`                        |
+| 基座              | taosx                                                                                                     | `/home/workspace/taosx/`                              |
+| 基座              | ossx                                                                                                      | `/home/workspace/ossx/`                               |
+| 基座              | contracts                                                                                                 | `/home/workspace/contracts/`                          |
+| 基座              | transportx                                                                                                | `/home/workspace/transportx/`                         |
 | **L2.5**          |                                                                                                           |                                             |
-| L2.5              | domainx                                                                                                   | `/home/domainx/`                            |
-| L2.5              | decimalx                                                                                                  | `/home/decimalx/`                           |
-| L2.5              | domain_market                                                                                             | `/home/domain_market/`                      |
-| L2.5              | domain_exchange                                                                                           | `/home/domain_exchange/`                    |
-| L2.5              | domain_macro                                                                                              | `/home/domain_macro/`                       |
+| L2.5              | domainx                                                                                                   | `/home/workspace/domainx/`                            |
+| L2.5              | decimalx                                                                                                  | `/home/workspace/decimalx/`                           |
+| L2.5              | domain_market                                                                                             | `/home/workspace/domain-market/`                      |
+| L2.5              | domain_exchange                                                                                           | `/home/workspace/domain-exchange/`                    |
+| L2.5              | domain_macro                                                                                              | `/home/workspace/domain-macro/`                       |
 | **数据域 · 行情** |                                                                                                           |                                             |
-| 数据域            | binance                                                                                                   | `/home/binance/`                            |
-| 数据域            | okx                                                                                                       | `/home/okx/`                                |
-| 数据域            | bybit                                                                                                     | `/home/bybit/`                              |
-| 数据域            | bitget                                                                                                    | `/home/bitget/`                             |
-| 数据域            | coinbase                                                                                                  | `/home/coinbase/`                           |
-| 数据域            | gate                                                                                                      | `/home/gate/`                               |
-| 数据域            | kucoin                                                                                                    | `/home/kucoin/`                             |
-| 数据域            | mexc                                                                                                      | `/home/mexc/`                               |
-| 数据域            | htx                                                                                                       | `/home/htx/`                                |
-| 数据域            | upbit                                                                                                     | `/home/upbit/`                              |
-| 数据域            | hyperliquid                                                                                               | `/home/hyperliquid/`                        |
-| 数据域            | lighter                                                                                                   | `/home/lighter/`                            |
-| 数据域            | coinglass                                                                                                 | `/home/coinglass/`                          |
+| 数据域            | binance                                                                                                   | `/home/workspace/binance/`                            |
+| 数据域            | okx                                                                                                       | `/home/workspace/okx/`                                |
+| 数据域            | bybit                                                                                                     | `/home/workspace/bybit/`                              |
+| 数据域            | bitget                                                                                                    | `/home/workspace/bitget/`                             |
+| 数据域            | coinbase                                                                                                  | `/home/workspace/coinbase/`                           |
+| 数据域            | gate                                                                                                      | `/home/workspace/gate/`                               |
+| 数据域            | kucoin                                                                                                    | `/home/workspace/kucoin/`                             |
+| 数据域            | mexc                                                                                                      | `/home/workspace/mexc/`                               |
+| 数据域            | htx                                                                                                       | `/home/workspace/htx/`                                |
+| 数据域            | upbit                                                                                                     | `/home/workspace/upbit/`                              |
+| 数据域            | hyperliquid                                                                                               | `/home/workspace/hyperliquid/`                        |
+| 数据域            | lighter                                                                                                   | `/home/workspace/lighter/`                            |
+| 数据域            | coinglass                                                                                                 | `/home/workspace/coinglass/`                          |
 | **数据域 · 宏观** |                                                                                                           |                                             |
-| 数据域            | fred                                                                                                      | `/home/fred/`                               |
-| 数据域            | treasury                                                                                                  | `/home/treasury/`                           |
-| 数据域            | bea                                                                                                       | `/home/bea/`                                |
-| 数据域            | ecb                                                                                                       | `/home/ecb/`                                |
-| 数据域            | uk_cb                                                                                                     | `/home/uk_cb/`                              |
-| 数据域            | japan_cb                                                                                                  | `/home/japan_cb/`                           |
-| 数据域            | eastmoney                                                                                                 | `/home/eastmoney/`                          |
-| 数据域            | jin10                                                                                                     | `/home/jin10/`                              |
-| 数据域            | yahoo                                                                                                     | `/home/yahoo/`                              |
-| 数据域            | yield_curve                                                                                               | `/home/yield_curve/`                        |
+| 数据域            | fred                                                                                                      | `/home/workspace/fred/`                               |
+| 数据域            | treasury                                                                                                  | `/home/workspace/treasury/`                           |
+| 数据域            | bea                                                                                                       | `/home/workspace/bea/`                                |
+| 数据域            | ecb                                                                                                       | `/home/workspace/ecb/`                                |
+| 数据域            | uk_cb                                                                                                     | `/home/workspace/uk-cb/`                              |
+| 数据域            | japan_cb                                                                                                  | `/home/workspace/japan-cb/`                           |
+| 数据域            | eastmoney                                                                                                 | `/home/workspace/eastmoney/`                          |
+| 数据域            | jin10                                                                                                     | `/home/workspace/jin10/`                              |
+| 数据域            | yahoo                                                                                                     | `/home/workspace/yahoo/`                              |
+| 数据域            | yield_curve                                                                                               | `/home/workspace/yield-curve/`                        |
 | **分析域**        |                                                                                                           |                                             |
-| 分析域            | flowx                                                                                                     | `/home/flowx/`                              |
+| 分析域            | flowx                                                                                                     | `/home/workspace/flowx/`                              |
 | **决策域**        |                                                                                                           |                                             |
-| 决策域            | backtestx                                                                                                 | `/home/backtestx/`                          |
-| 决策域            | strategyx                                                                                                 | `/home/strategyx/`                          |
-| 决策域            | maestro                                                                                                   | `/home/maestro/`                            |
+| 决策域            | backtestx                                                                                                 | `/home/workspace/backtestx/`                          |
+| 决策域            | strategyx                                                                                                 | `/home/workspace/strategyx/`                          |
+| 决策域            | maestro                                                                                                   | `/home/workspace/maestro/`                            |
 | **执行域**        |                                                                                                           |                                             |
-| 执行域            | riskx                                                                                                     | `/home/riskx/`                              |
-| 执行域            | orderx                                                                                                    | `/home/orderx/`                             |
-| 执行域            | positionx                                                                                                 | `/home/positionx/`                          |
+| 执行域            | riskx                                                                                                     | `/home/workspace/riskx/`                              |
+| 执行域            | orderx                                                                                                    | `/home/workspace/orderx/`                             |
+| 执行域            | positionx                                                                                                 | `/home/workspace/positionx/`                          |
 | **入口**          |                                                                                                           |                                             |
-| 入口              | composer                                                                                                  | `/home/composer/`                           |
+| 入口              | composer                                                                                                  | `/home/workspace/composer/`                           |
 
 > 完整仓库 URL 映射见上方状态总览表。分析域（flowx）、决策域（backtestx/strategyx/maestro）、执行域（riskx/orderx/positionx）模块 SPEC 已发布（v0.1.0-draft）。
 

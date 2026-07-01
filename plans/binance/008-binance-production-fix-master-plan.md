@@ -4,8 +4,8 @@
 
 - Plan-ID: 008
 - 日期：2026-06-25
-- Runtime-Anchor：`/home/binance@f046e16`（含 Plan008 全部 40 Task 代码实现；PR #145 合并）
-- Final-Code-Anchor：`/home/binance` `fix/plan008-production-fixes@564cb67`（PR #145，OPEN，远端检查 CLEAN/全部 SUCCESS）；`/home/kafkax` `fix/plan008-production-fixes@7b2d9ce` / tag `v1.1.1`
+- Runtime-Anchor：`/home/workspace/binance@f046e16`（含 Plan008 全部 40 Task 代码实现；PR #145 合并）
+- Final-Code-Anchor：`/home/workspace/binance` `fix/plan008-production-fixes@564cb67`（PR #145，OPEN，远端检查 CLEAN/全部 SUCCESS）；`/home/workspace/kafkax` `fix/plan008-production-fixes@7b2d9ce` / tag `v1.1.1`
 - Spec-Anchor：`module/binance/SPEC.md` v3.6.0 / `TRACEABILITY.md` v3.6.1
 - Status-Projection（修复前）：`24 Done / 10 Partial / 0 Pending`（FR-001~030）+ `6 Draft`（FR-031~036）
 - 前序 Plan：[Plan 006](006-binance-production-readiness-fix.md)（49 Task，✅ DONE）/ [Plan 007](007-binance-readiness-arch-fix.md)（18 Task，✅ DONE）
@@ -469,5 +469,5 @@ Phase 4（验收与门禁）
 1. **§20 反奉承红旗**：§0.2 对现有规格治理给出"罕见高成熟度"评价。此评价有实证锚点（30 FR/104 AC/13 gate 可复现），来自 R1 原文，但读者应警惕正面评价同样需权威。我已用数字锚定，避免无依据赞美。
 2. **§20 事后分析**：§1 的依赖拓扑图是在知道各缺口后归纳的。它是对现状修复顺序的描述，不能当作"规格框架本身有缺陷"的预测证据。框架质量（规格层）与实现完整度（runtime 层）独立——因果链断裂是 runtime 实现断层，不是规格设计错误。
 3. **§20 FRAME→REALITY**：§0.1 的"1.3/5.0"评分来自 R7 的 `[FRAME]` 评分（5 分制 + 9 维度均等加权），各维度权重均等是简化假设。此分数是相对比较工具，非绝对度量。置信度 MED。
-4. **§20 证据标签**：本 Plan 的缺口判定均来自 7 份报告的 Explore agent file:line 实证（数据源 runtime `/home/binance@3f20be0`），未独立重新核查 runtime 代码。Plan 最终 closeout 锚点为 `/home/binance@f046e16`（PR #145 合并，含 Plan008 全部 40 Task 代码实现）。Task 设计基于报告方案，实现时需复核 runtime 当前状态（因 runtime 可能已演进）。
+4. **§20 证据标签**：本 Plan 的缺口判定均来自 7 份报告的 Explore agent file:line 实证（数据源 runtime `/home/workspace/binance@3f20be0`），未独立重新核查 runtime 代码。Plan 最终 closeout 锚点为 `/home/workspace/binance@f046e16`（PR #145 合并，含 Plan008 全部 40 Task 代码实现）。Task 设计基于报告方案，实现时需复核 runtime 当前状态（因 runtime 可能已演进）。
 5. **报告来源说明**：7 份报告位于未合并分支 `report/binance-data-maturity-20260625`（HEAD `c71b7ff5`），未合入 main。本 Plan 基于其内容编制；报告本身的合并/归档决策不在本 Plan 范围。

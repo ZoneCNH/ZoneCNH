@@ -1,6 +1,6 @@
 # binance 二进制构建与部署
 
-- Runtime-Version: v0.11.0（anchor: `/home/binance@f53303f` — gap repair runtime bug fixes: NATS timeout, kline storage, stale gate exemption, repair re-publish）
+- Runtime-Version: v0.11.0（anchor: `/home/workspace/binance@f53303f` — gap repair runtime bug fixes: NATS timeout, kline storage, stale gate exemption, repair re-publish）
 - Target: jp1 (84.247.154.45)
 - Last-Updated: 2026-07-01
 
@@ -59,7 +59,7 @@ CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
 ### 2.1 使用 Makefile
 
 ```bash
-# 在 /home/binance 目录下
+# 在 /home/workspace/binance 目录下
 make build-linux-amd64
 
 # 产物
@@ -239,7 +239,7 @@ mappings = {
 
 ```bash
 # 1. 交叉编译
-cd /home/binance
+cd /home/workspace/binance
 make build-linux-amd64
 
 # 2. 上传到 jp1
@@ -274,7 +274,7 @@ curl http://127.0.0.1:8082/admin/stats
 
 ```bash
 # 只需重新编译 + scp + restart
-cd /home/binance
+cd /home/workspace/binance
 make build-linux-amd64
 
 scp -i ~/.ssh/id_ed25519 bin/binance-server-linux-amd64 \
@@ -457,7 +457,7 @@ df -h /opt
 ### 8.3 告警规则（alertmanager）
 
 ```yaml
-# /home/binance/deploy/alertmanager/config.yml
+# /home/workspace/binance/deploy/alertmanager/config.yml
 route:
   group_by: ["alertname"]
   group_wait: 10s
@@ -498,7 +498,7 @@ curl http://127.0.0.1:8090/healthz
 在开发机上用 git checkout 到旧 commit 重新编译：
 
 ```bash
-cd /home/binance
+cd /home/workspace/binance
 git checkout {旧 commit SHA}
 make build-linux-amd64
 scp bin/binance-server-linux-amd64 claude@84.247.154.45:/opt/binance/bin/binance-server
@@ -523,7 +523,7 @@ scp bin/binance-client-linux-amd64 claude@84.247.154.45:/opt/binance/bin/binance
 
 ```bash
 # 模板
-/home/binance/deploy/prod.env.example
+/home/workspace/binance/deploy/prod.env.example
 
 # 部署到 jp1
 scp prod.env.example claude@84.247.154.45:/opt/binance/secrets/prod.env
@@ -619,7 +619,7 @@ Environment=FOUNDATIONX_BINANCE_ADMIN_ADDR=127.0.0.1:8082
 
 ```bash
 # 启动 canary 部署（K8s 环境自动灰度 30%，非 K8s 手动确认）
-CANARY_TAG=v0.9.0 bash /home/binance/scripts/deploy-canary.sh
+CANARY_TAG=v0.9.0 bash /home/workspace/binance/scripts/deploy-canary.sh
 ```
 
 流程：
@@ -644,10 +644,10 @@ Canary gate 检查项（`deploy-canary-gate.sh`）：
 
 ```bash
 # DRY RUN（默认）
-DRY_RUN=true RETENTION_DAYS=90 bash /home/binance/scripts/destruction-drill.sh
+DRY_RUN=true RETENTION_DAYS=90 bash /home/workspace/binance/scripts/destruction-drill.sh
 
 # 真实执行
-DRY_RUN=false RETENTION_DAYS=90 bash /home/binance/scripts/destruction-drill.sh
+DRY_RUN=false RETENTION_DAYS=90 bash /home/workspace/binance/scripts/destruction-drill.sh
 ```
 
 流程：选择过期数据 → 不可逆销毁（OSS delete + TDengine DROP + PG DELETE）→ 生成证书 JSON → 归档到 OSS → 写入 audit_log。
@@ -655,7 +655,7 @@ DRY_RUN=false RETENTION_DAYS=90 bash /home/binance/scripts/destruction-drill.sh
 ### 11.3 生产就绪审计
 
 ```bash
-bash /home/binance/scripts/readiness-audit.sh
+bash /home/workspace/binance/scripts/readiness-audit.sh
 ```
 
 检查项：`go.sum` 追踪、二进制不追踪、`.gitignore`、必需文件存在、Go 版本固定、README gate 状态、配置项完整性、runbook 引用链等。共 100+ 断言。
@@ -664,7 +664,7 @@ bash /home/binance/scripts/readiness-audit.sh
 
 ```bash
 # 生成 release evidence package
-bash /home/binance/scripts/runtime-release-evidence.sh
+bash /home/workspace/binance/scripts/runtime-release-evidence.sh
 ```
 
 ### 11.5 日志查看
@@ -753,7 +753,7 @@ taosx [PR #21](https://github.com/ZoneCNH/taosx/pull/21)（tag v1.0.3）修复�
 
 **症状**：生产环境 Kafka producer 超时，吞吐降至 1.6 events/s，NATS 积压 205,861 条，freshness 301,505ms。
 
-**根因链**（代码证据见 `/home/binance` + `/home/kafkax`）：
+**根因链**（代码证据见 `/home/workspace/binance` + `/home/workspace/kafkax`）：
 
 | 层       | 根因                                                                                     | 位置                                                      |
 | -------- | ---------------------------------------------------------------------------------------- | --------------------------------------------------------- |
@@ -858,7 +858,7 @@ taosx [PR #21](https://github.com/ZoneCNH/taosx/pull/21)（tag v1.0.3）修复�
 - 架构设计：[`../design/DESIGN.md`](../design/DESIGN.md)
 - 数据流详解：`../design/DESIGN.md` §3
 - 边界门禁：[`../gate/BOUNDARY-GATES.md`](../gate/BOUNDARY-GATES.md)
-- 部署脚本源码：`/home/binance/deploy/`
+- 部署脚本源码：`/home/workspace/binance/deploy/`
 - CI/CD 模板：[`../ci-workflow.yaml`](../ci-workflow.yaml)
-- 审查报告：`/home/ZoneCNH/report/binance/REVIEW-20260630.md`
-- 对齐总结：`/home/ZoneCNH/module/binance/evidence/2026-06-30/release/alignment-summary.md`
+- 审查报告：`/home/workspace/ZoneCNH/report/binance/REVIEW-20260630.md`
+- 对齐总结：`/home/workspace/ZoneCNH/module/binance/evidence/2026-06-30/release/alignment-summary.md`

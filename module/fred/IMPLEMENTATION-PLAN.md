@@ -2,13 +2,13 @@
 
 ## 目标
 
-把 `/home/fred` 从当前 Go 骨架和旧零存储 adapter 口径，推进到数据域 · 宏观独立 C/S 服务：共享基座组件、`domain_macro` 领域共享层、七类持久化介质、配置从 `sre/secrets/env/dev.md` 映射且不泄密。
+把 `/home/workspace/fred` 从当前 Go 骨架和旧零存储 adapter 口径，推进到数据域 · 宏观独立 C/S 服务：共享基座组件、`domain_macro` 领域共享层、七类持久化介质、配置从 `sre/secrets/env/dev.md` 映射且不泄密。
 
 ## 约束
 
 | ID | 约束 |
 | -- | ---- |
-| C-001 | 不在 `module/fred/` 或 `/home/fred` 提交任何 secret 值。 |
+| C-001 | 不在 `module/fred/` 或 `/home/workspace/fred` 提交任何 secret 值。 |
 | C-002 | 不绕过共享基座组件直接实现配置、存储、消息队列或观测客户端。 |
 | C-003 | `fred` 是独立服务；`macro_data` 是消费者或聚合器，不拥有 FRED provider 内部实现。 |
 | C-004 | 旧 `Stores=None` 规则只能作为历史状态，不能阻止目标规格实现。 |
@@ -19,10 +19,10 @@
 
 | 项 | 内容 |
 | -- | ---- |
-| 输入 | [goal.md](goal.md)、[SPEC.md](SPEC.md)、[TRACEABILITY.md](TRACEABILITY.md)、`/home/fred` 当前代码 |
+| 输入 | [goal.md](goal.md)、[SPEC.md](SPEC.md)、[TRACEABILITY.md](TRACEABILITY.md)、`/home/workspace/fred` 当前代码 |
 | 任务 | 确认 C/S 边界、持久化职责、配置来源、旧零存储差异 |
 | 输出 | 规格冻结、差异清单、实施 task 拆分 |
-| 验证 | `rg "Stores=None|零存储" /home/fred module/fred` 输出被归档为迁移证据 |
+| 验证 | `rg "Stores=None|零存储" /home/workspace/fred module/fred` 输出被归档为迁移证据 |
 
 ## 阶段 1：配置与服务骨架
 
@@ -95,4 +95,4 @@
 
 ## 完成判定
 
-只有当 [TRACEABILITY.md](TRACEABILITY.md) 中所有 FR / BR / AC / TC 从 `Planned` 更新为已验证状态，且 `/home/fred` 的测试、边界脚本和配置 redaction 检查通过，才能声明 `fred` 模块目标完成。
+只有当 [TRACEABILITY.md](TRACEABILITY.md) 中所有 FR / BR / AC / TC 从 `Planned` 更新为已验证状态，且 `/home/workspace/fred` 的测试、边界脚本和配置 redaction 检查通过，才能声明 `fred` 模块目标完成。

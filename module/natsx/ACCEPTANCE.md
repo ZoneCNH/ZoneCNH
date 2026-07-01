@@ -5,7 +5,7 @@
 - Module-Version: v1.2.0
 - Module-State: Tag Exists / GitHub Release Pending
 - Layer: L2 基础设施适配器
-- Runtime-Repo: /home/natsx
+- Runtime-Repo: /home/workspace/natsx
 - Source: goal.md, SPEC.md, TRACEABILITY.md, IMPLEMENTATION-PLAN.md, tasks/
 
 > 本清单用于验收 natsx 是否达到可发布、可追溯、可复验状态。除非条目明确记录为已通过，默认需要在运行时代码仓库重新执行验证并补充证据。
@@ -14,13 +14,13 @@
 
 | 类别 | 命令 | 通过标准 |
 | --- | --- | --- |
-| 文档存在性 | cd /home/ZoneCNH && test -f module/natsx/FEATURES.md && test -f module/natsx/ACCEPTANCE.md | FEATURES.md 与 ACCEPTANCE.md 均存在 |
-| 文档格式 | cd /home/ZoneCNH && git diff --check -- module/natsx | 无尾随空格或补丁格式错误 |
-| 运行时测试 | cd /home/natsx && go test ./... | 所有包测试通过 |
-| 竞态检查 | cd /home/natsx && go test ./... -race -count=1 | 无 data race，测试稳定通过 |
-| 静态检查 | cd /home/natsx && go vet ./... | 无 vet 问题 |
-| 覆盖率证据 | cd /home/natsx && go test ./... -coverprofile=coverage.out | 覆盖率文件生成并满足模块 Spec 门槛 |
-| 依赖边界 | cd /home/natsx && go list -deps ./... | 依赖不越过 FOUNDATION-DEPS.yaml 登记边界 |
+| 文档存在性 | cd /home/workspace/ZoneCNH && test -f module/natsx/FEATURES.md && test -f module/natsx/ACCEPTANCE.md | FEATURES.md 与 ACCEPTANCE.md 均存在 |
+| 文档格式 | cd /home/workspace/ZoneCNH && git diff --check -- module/natsx | 无尾随空格或补丁格式错误 |
+| 运行时测试 | cd /home/workspace/natsx && go test ./... | 所有包测试通过 |
+| 竞态检查 | cd /home/workspace/natsx && go test ./... -race -count=1 | 无 data race，测试稳定通过 |
+| 静态检查 | cd /home/workspace/natsx && go vet ./... | 无 vet 问题 |
+| 覆盖率证据 | cd /home/workspace/natsx && go test ./... -coverprofile=coverage.out | 覆盖率文件生成并满足模块 Spec 门槛 |
+| 依赖边界 | cd /home/workspace/natsx && go list -deps ./... | 依赖不越过 FOUNDATION-DEPS.yaml 登记边界 |
 
 ## 2. AC 验收登记
 
@@ -39,19 +39,19 @@
 
 | ID | 测试项 | 关联要求/验收/任务 | 当前登记状态 | 来源 |
 | --- | --- | --- | --- | --- |
-| TC-001 | FR-001, FR-002, BR-001, BR-004, BR-009 | /home/natsx/pkg/natsx/embedded_nats_test.go::TestEmbeddedNATSCorePublishRequestAndQueue; /home/natsx/pkg/natsx/embedded_nats_test.go::TestEmbeddedNATSCoreTimeoutUnsubscribeDrainAndHealth; /home/natsx/pkg/natsx/regression_test.go::TestCoreOperationsRejectInvalidPreconditions | - | TRACEABILITY.md |
-| TC-002 | FR-003, BR-003 | /home/natsx/pkg/natsx/embedded_nats_test.go::TestEmbeddedNATSCorePublishRequestAndQueue; /home/natsx/pkg/natsx/embedded_nats_test.go::TestEmbeddedNATSRequestNoResponder; /home/natsx/pkg/natsx/embedded_nats_test.go::TestEmbeddedNATSCoreTimeoutUnsubscribeDrainAndHealth | - | TRACEABILITY.md |
-| TC-003 | FR-004, FR-005, FR-006, FR-007, BR-002, BR-007 | /home/natsx/pkg/natsx/embedded_nats_test.go::TestEmbeddedNATSJetStreamPublishAndPull; /home/natsx/pkg/natsx/embedded_nats_test.go::TestEmbeddedNATSJetStreamMaxDeliverAdvisory; covers JetStream publish/pull, missing-stream publish, AddStream/AddConsumer idempotency/conflict, management edge failures, nack redelivery, and max-deliveries advisory behavior | - | TRACEABILITY.md |
-| TC-004 | BR-005 | /home/natsx/pkg/natsx/embedded_nats_test.go::TestEmbeddedNATSReconnectBackoffAndDegradedHealth; reconnect/degraded health, retry/backoff knobs, connection-state metrics, and reconnect/disconnect guardrails covered; production exponential-backoff SLO gate remains external | - | TRACEABILITY.md |
-| TC-005 | FR-008, BR-006 | /home/natsx/pkg/natsx/embedded_nats_test.go::TestEmbeddedNATSCoreTimeoutUnsubscribeDrainAndHealth; /home/natsx/pkg/natsx/embedded_nats_test.go::TestEmbeddedNATSReconnectBackoffAndDegradedHealth; /home/natsx/pkg/natsx/health_test.go::TestHealthCheckDisconnectedRecordsMetrics; /home/natsx/pkg/natsx/regression_test.go::TestHealthCheckNilAndCanceledContext | - | TRACEABILITY.md |
-| TC-006 | NFR-006 | /home/natsx/pkg/natsx/subject_test.go | - | TRACEABILITY.md |
-| TC-007 | NFR-007 | /home/natsx/pkg/natsx/envelope_test.go; embedded request/reply metadata propagation in /home/natsx/pkg/natsx/embedded_nats_test.go | - | TRACEABILITY.md |
-| TC-008 | NFR-008 | /home/natsx/pkg/natsx/config_test.go and /home/natsx/pkg/natsx/env_test.go cover defaults/sanitize/validation plus ConfigFromEnv canonical precedence and legacy fallback | - | TRACEABILITY.md |
-| TC-009 | NFR-009 | /home/natsx/pkg/natsx/regression_test.go::TestMetricNamesUseFoundationNATSPrefix; TestNoopMetricsMethodsAreSafe; /home/natsx/pkg/natsx/health_test.go::TestHealthCheckDisconnectedRecordsMetrics; embedded tests assert canonical foundationx_nats_* metric emission | - | TRACEABILITY.md |
-| TC-011 | NFR-001, NFR-002, BR-008 | /home/natsx/pkg/natsx/config_test.go::TestConfigValidateDefaultsAndSanitize; /home/natsx/pkg/natsx/env_test.go::TestConfigFromEnvRejectsInvalidValuesWithoutSecretLeak; /home/natsx/pkg/natsx/live_integration_test.go; local auth live test passed with FOUNDATIONX_NATS_URL, FOUNDATIONX_NATS_USERNAME, and FOUNDATIONX_NATS_PASSWORD sourced from local NATS config without printing credentials | - | TRACEABILITY.md |
-| TC-012 | NFR-003 | /home/natsx/pkg/natsx/benchmark_test.go::BenchmarkEmbeddedNATSPublish; /home/natsx/pkg/natsx/benchmark_test.go::BenchmarkEmbeddedNATSRequest; /home/natsx/pkg/natsx/benchmark_test.go::BenchmarkEmbeddedNATSJetStreamPublish; /home/natsx/pkg/natsx/embedded_nats_test.go adds request, JetStream publish/fetch SLO assertions and handler latency evidence | - | TRACEABILITY.md |
-| TC-013 | NFR-004 | /home/natsx$ GOWORK=off go list -deps ./pkg/natsx ./examples/... plus forbidden-domain filter returned dependency boundary clean | - | TRACEABILITY.md |
-| TC-014 | NFR-005 | /home/natsx commit 20f801f; this matrix refresh; formal four-source arbiter still pending | - | TRACEABILITY.md |
+| TC-001 | FR-001, FR-002, BR-001, BR-004, BR-009 | /home/workspace/natsx/pkg/natsx/embedded_nats_test.go::TestEmbeddedNATSCorePublishRequestAndQueue; /home/workspace/natsx/pkg/natsx/embedded_nats_test.go::TestEmbeddedNATSCoreTimeoutUnsubscribeDrainAndHealth; /home/workspace/natsx/pkg/natsx/regression_test.go::TestCoreOperationsRejectInvalidPreconditions | - | TRACEABILITY.md |
+| TC-002 | FR-003, BR-003 | /home/workspace/natsx/pkg/natsx/embedded_nats_test.go::TestEmbeddedNATSCorePublishRequestAndQueue; /home/workspace/natsx/pkg/natsx/embedded_nats_test.go::TestEmbeddedNATSRequestNoResponder; /home/workspace/natsx/pkg/natsx/embedded_nats_test.go::TestEmbeddedNATSCoreTimeoutUnsubscribeDrainAndHealth | - | TRACEABILITY.md |
+| TC-003 | FR-004, FR-005, FR-006, FR-007, BR-002, BR-007 | /home/workspace/natsx/pkg/natsx/embedded_nats_test.go::TestEmbeddedNATSJetStreamPublishAndPull; /home/workspace/natsx/pkg/natsx/embedded_nats_test.go::TestEmbeddedNATSJetStreamMaxDeliverAdvisory; covers JetStream publish/pull, missing-stream publish, AddStream/AddConsumer idempotency/conflict, management edge failures, nack redelivery, and max-deliveries advisory behavior | - | TRACEABILITY.md |
+| TC-004 | BR-005 | /home/workspace/natsx/pkg/natsx/embedded_nats_test.go::TestEmbeddedNATSReconnectBackoffAndDegradedHealth; reconnect/degraded health, retry/backoff knobs, connection-state metrics, and reconnect/disconnect guardrails covered; production exponential-backoff SLO gate remains external | - | TRACEABILITY.md |
+| TC-005 | FR-008, BR-006 | /home/workspace/natsx/pkg/natsx/embedded_nats_test.go::TestEmbeddedNATSCoreTimeoutUnsubscribeDrainAndHealth; /home/workspace/natsx/pkg/natsx/embedded_nats_test.go::TestEmbeddedNATSReconnectBackoffAndDegradedHealth; /home/workspace/natsx/pkg/natsx/health_test.go::TestHealthCheckDisconnectedRecordsMetrics; /home/workspace/natsx/pkg/natsx/regression_test.go::TestHealthCheckNilAndCanceledContext | - | TRACEABILITY.md |
+| TC-006 | NFR-006 | /home/workspace/natsx/pkg/natsx/subject_test.go | - | TRACEABILITY.md |
+| TC-007 | NFR-007 | /home/workspace/natsx/pkg/natsx/envelope_test.go; embedded request/reply metadata propagation in /home/workspace/natsx/pkg/natsx/embedded_nats_test.go | - | TRACEABILITY.md |
+| TC-008 | NFR-008 | /home/workspace/natsx/pkg/natsx/config_test.go and /home/workspace/natsx/pkg/natsx/env_test.go cover defaults/sanitize/validation plus ConfigFromEnv canonical precedence and legacy fallback | - | TRACEABILITY.md |
+| TC-009 | NFR-009 | /home/workspace/natsx/pkg/natsx/regression_test.go::TestMetricNamesUseFoundationNATSPrefix; TestNoopMetricsMethodsAreSafe; /home/workspace/natsx/pkg/natsx/health_test.go::TestHealthCheckDisconnectedRecordsMetrics; embedded tests assert canonical foundationx_nats_* metric emission | - | TRACEABILITY.md |
+| TC-011 | NFR-001, NFR-002, BR-008 | /home/workspace/natsx/pkg/natsx/config_test.go::TestConfigValidateDefaultsAndSanitize; /home/workspace/natsx/pkg/natsx/env_test.go::TestConfigFromEnvRejectsInvalidValuesWithoutSecretLeak; /home/workspace/natsx/pkg/natsx/live_integration_test.go; local auth live test passed with FOUNDATIONX_NATS_URL, FOUNDATIONX_NATS_USERNAME, and FOUNDATIONX_NATS_PASSWORD sourced from local NATS config without printing credentials | - | TRACEABILITY.md |
+| TC-012 | NFR-003 | /home/workspace/natsx/pkg/natsx/benchmark_test.go::BenchmarkEmbeddedNATSPublish; /home/workspace/natsx/pkg/natsx/benchmark_test.go::BenchmarkEmbeddedNATSRequest; /home/workspace/natsx/pkg/natsx/benchmark_test.go::BenchmarkEmbeddedNATSJetStreamPublish; /home/workspace/natsx/pkg/natsx/embedded_nats_test.go adds request, JetStream publish/fetch SLO assertions and handler latency evidence | - | TRACEABILITY.md |
+| TC-013 | NFR-004 | /home/workspace/natsx$ GOWORK=off go list -deps ./pkg/natsx ./examples/... plus forbidden-domain filter returned dependency boundary clean | - | TRACEABILITY.md |
+| TC-014 | NFR-005 | /home/workspace/natsx commit 20f801f; this matrix refresh; formal four-source arbiter still pending | - | TRACEABILITY.md |
 
 ## 4. 覆盖闭合验收
 
@@ -88,7 +88,7 @@
 
 - [ ] FEATURES.md 的 FR、BR/NFR、任务清单与 SPEC/TRACEABILITY 当前登记一致。
 - [ ] ACCEPTANCE.md 的 AC、TC 与运行时代码测试名、证据文件或 CI 记录一致。
-- [ ] 运行时代码仓库 /home/natsx 通过 go test、go test -race、go vet 与覆盖率门槛。
+- [ ] 运行时代码仓库 /home/workspace/natsx 通过 go test、go test -race、go vet 与覆盖率门槛。
 - [ ] 所有外部服务依赖有本地可重复的测试替身或明确 live-gate 证据。
 - [ ] 安全检查确认没有凭证、私有端点、账户 ID 或实盘配置进入公开文档与代码。
 - [ ] 版本号、发布标签、CHANGELOG 或 release note 与本目录状态一致，且当前目标发布版本为 `v0.4.7`。
@@ -99,9 +99,9 @@
 - 若上表存在 Pending、Draft、Blocked、Open 或未登记状态，发布前必须补充证据或在模块追溯矩阵中登记豁免理由。
 - SPEC/TRACEABILITY 已登记 AC/TC 主链路；当前主要缺口是四源 98+ 仲裁、生产 benchmark 阈值、BLK-002 生产 TLS 闭环与上层 consumer lifecycle/API 集成证据需要归档。
 
-## 7. v1.0.3 验收实测证据（/home/natsx PR #13 / tag v1.0.3）
+## 7. v1.0.3 验收实测证据（/home/workspace/natsx PR #13 / tag v1.0.3）
 
-> 2026-06-19 在 /home/natsx 分支 `test/natsx-coverage-100-20260619`（commit b5adee9）实测。pkg/natsx 包级覆盖率 90.0%（v1.0.2）→ **97.1%**。
+> 2026-06-19 在 /home/workspace/natsx 分支 `test/natsx-coverage-100-20260619`（commit b5adee9）实测。pkg/natsx 包级覆盖率 90.0%（v1.0.2）→ **97.1%**。
 
 | 命令 | 实测结果 |
 | --- | --- |
@@ -124,9 +124,9 @@
 
 100% 字面覆盖率需写 flaky race 测试（违反本仓"避免 flaky timeout 断言"规则）或删改生产防御代码（改变行为契约），二者均不可取，故以 **97.1% race-clean** 收尾。
 
-## 7. v1.0.2 验收实测证据（/home/natsx commit 20f801f）
+## 7. v1.0.2 验收实测证据（/home/workspace/natsx commit 20f801f）
 
-> 2026-06-19 在 /home/natsx（main @ 20f801f）实测全部 §1 验收命令，结果如下。CI/CD 已路由至 `sre/*` 机器池（CI: sre/storage-light；CD: sre/deploy）。
+> 2026-06-19 在 /home/workspace/natsx（main @ 20f801f）实测全部 §1 验收命令，结果如下。CI/CD 已路由至 `sre/*` 机器池（CI: sre/storage-light；CD: sre/deploy）。
 
 | 命令 | 实测结果 |
 | --- | --- |

@@ -23,7 +23,7 @@
 
 ### 2.1 源码实际类型
 
-[COMPUTED][HIGH] 来源：`/home/domain-macro/pkg/domainmacro/`，`go.mod` 声明 `module github.com/ZoneCNH/domain_macro` v0.1.0。
+[COMPUTED][HIGH] 来源：`/home/workspace/domain-macro/pkg/domainmacro/`，`go.mod` 声明 `module github.com/ZoneCNH/domain_macro` v0.1.0。
 
 | 实际类型 | 文件 | 字段 | SPEC 对应 |
 | --- | --- | --- | --- |

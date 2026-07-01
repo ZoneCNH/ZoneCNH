@@ -4,7 +4,7 @@
 > Source Spec: [SPEC.md](../SPEC.md) v1.1.0
 > Source Goal: [goal.md](../goal.md) v1.0.2 发布基线
 > 生成日期：2026-06-29
-> 状态：已交付（对齐运行时仓库 `/home/resiliencx`，tag v1.0.2，commit `1aaa0dc`）
+> 状态：已交付（对齐运行时仓库 `/home/workspace/resiliencx`，tag v1.0.2，commit `1aaa0dc`）
 
 ## 上下文概要
 
@@ -16,13 +16,13 @@ resiliencx 已交付 v1.0.2（GitHub Release），六大弹性策略（timeout/r
 
 | Task | 能力 | 运行时证据 |
 |------|------|----------|
-| TASK-RESILIENCX-001 | timeout.Do | `/home/resiliencx/pkg/resiliencx/timeout/timeout.go` |
-| TASK-RESILIENCX-002 | retry.Do + Policy | `/home/resiliencx/pkg/resiliencx/retry/retry.go` |
-| TASK-RESILIENCX-003 | CircuitBreaker (三态 + HalfOpen) | `/home/resiliencx/pkg/resiliencx/circuit/circuit.go` |
-| TASK-RESILIENCX-004 | Bulkhead | `/home/resiliencx/pkg/resiliencx/bulkhead/bulkhead.go` |
-| TASK-RESILIENCX-005 | RateLimiter (token bucket) | `/home/resiliencx/pkg/resiliencx/ratelimit/ratelimit.go` |
-| TASK-RESILIENCX-006 | Fallback | `/home/resiliencx/pkg/resiliencx/fallback/fallback.go` |
-| TASK-RESILIENCX-007 | Compose + InstrumentStrategy | `/home/resiliencx/pkg/resiliencx/compose.go` |
+| TASK-RESILIENCX-001 | timeout.Do | `/home/workspace/resiliencx/pkg/resiliencx/timeout/timeout.go` |
+| TASK-RESILIENCX-002 | retry.Do + Policy | `/home/workspace/resiliencx/pkg/resiliencx/retry/retry.go` |
+| TASK-RESILIENCX-003 | CircuitBreaker (三态 + HalfOpen) | `/home/workspace/resiliencx/pkg/resiliencx/circuit/circuit.go` |
+| TASK-RESILIENCX-004 | Bulkhead | `/home/workspace/resiliencx/pkg/resiliencx/bulkhead/bulkhead.go` |
+| TASK-RESILIENCX-005 | RateLimiter (token bucket) | `/home/workspace/resiliencx/pkg/resiliencx/ratelimit/ratelimit.go` |
+| TASK-RESILIENCX-006 | Fallback | `/home/workspace/resiliencx/pkg/resiliencx/fallback/fallback.go` |
+| TASK-RESILIENCX-007 | Compose + InstrumentStrategy | `/home/workspace/resiliencx/pkg/resiliencx/compose.go` |
 
 ## 关键约束
 

@@ -5,7 +5,7 @@
 - Module-Version: v1.2.0
 - Module-State: 本地发布候选
 - Layer: L2 基础设施适配器
-- Runtime-Repo: /home/taosx/.worktree/workspaces/taosx-20260619
+- Runtime-Repo: /home/workspace/taosx/.worktree/workspaces/taosx-20260619
 - Source: goal.md, SPEC.md, TRACEABILITY.md, IMPLEMENTATION-PLAN.md, tasks/
 
 > 本清单用于约束 taosx 的完整实现范围。条目来自本目录已有 Spec、Traceability、Plan、Task 等文档；若运行时代码状态与本文不一致，以相应模块仓库的最新验证证据补充更新本文。
@@ -16,7 +16,7 @@
 | --- | --- |
 | 模块职责 | TDengine 配置、写入、查询、健康检查、指标端口与驱动注入契约适配 |
 | 文档目录 | module/taosx |
-| 运行时代码目录 | /home/taosx/.worktree/workspaces/taosx-20260619 |
+| 运行时代码目录 | /home/workspace/taosx/.worktree/workspaces/taosx-20260619 |
 | Go 基线 | 1.23 |
 | 允许依赖 | kernel |
 | 禁止依赖 | 禁止越过 FOUNDATION-DEPS.yaml 登记边界依赖上层业务域或未授权基座模块 |
@@ -83,12 +83,12 @@
 - [x] 所有 BR/NFR 条目均有测试、静态检查或人工可审计证据覆盖。
 - [x] 所有任务文档均能追溯到 FR、BR/NFR、AC 或 TC。
 - [x] 依赖边界符合 FOUNDATION-DEPS.yaml，不引入未授权运行时依赖。
-- [x] 运行时代码仓库 /home/taosx 的 lint、typecheck、test、race、coverage 验证证据已归档。
+- [x] 运行时代码仓库 /home/workspace/taosx 的 lint、typecheck、test、race、coverage 验证证据已归档。
 - [x] 发布说明、版本标签与本目录登记状态一致。
 
 ## 7. v1.0.5 本地发布候选证据
 
-- Source commit: `/home/taosx/.worktree/workspaces/taosx-20260619` branch `taosx` @ `2bf5aaa`。
+- Source commit: `/home/workspace/taosx/.worktree/workspaces/taosx-20260619` branch `taosx` @ `2bf5aaa`。
 - `GOWORK=off make taosx-coverage-check`: PASS，`pkg/taosx` total `100.0%`。
 - `GOWORK=off make release-check`: PASS，生成并校验 `release/manifest/latest.json`；release evidence hash `c78f9de861cf83434140fc0e0e051e91af71736ec2d22f0ce1c0cf74c9a87f61`。
 - `GOWORK=off make integration`: PASS，kernel/configx/redisx 渲染下游通过。

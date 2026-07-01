@@ -1,10 +1,10 @@
 # Worker C External Runtime Evidence Summary — 2026-06-27
 
 - Scope: GitHub #1273, #1274, #1276 / Beads `ZoneCNH-xzcr.5`, `ZoneCNH-xzcr.6`, `ZoneCNH-xzcr.8`
-- Runtime-Anchor: `/home/binance@0602e78428633a368b0afcd1c578c07ed7144752`
+- Runtime-Anchor: `/home/workspace/binance@0602e78428633a368b0afcd1c578c07ed7144752`
 - Evidence-State: Partial / tracker open; evidence blockers deferred
 
-> `[COMPUTED, MED]` A worker reported redacted live checks for redisx/postgresx/taosx/clickhousex/ossx/kafkax and UM/CM/Options mainnet. The canonical artifacts under `/home/binance/release/evidence/binance/20260627-worker-c/` were not present in the leader workspace, so the report is non-closing evidence until artifacts are attached.
+> `[COMPUTED, MED]` A worker reported redacted live checks for redisx/postgresx/taosx/clickhousex/ossx/kafkax and UM/CM/Options mainnet. The canonical artifacts under `/home/workspace/binance/release/evidence/binance/20260627-worker-c/` were not present in the leader workspace, so the report is non-closing evidence until artifacts are attached.
 >
 > `[COMPUTED, HIGH]` Runtime configuration was used only to determine presence and inventory counts. No secret value, endpoint, token, password, or credential is copied here.
 

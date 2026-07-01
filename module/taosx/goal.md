@@ -6,7 +6,7 @@
 | --- | --- |
 | Target | v1.2.0 |
 | Layer | L2 存储适配器 |
-| Source of truth | `/home/taosx/pkg/taosx` |
+| Source of truth | `/home/workspace/taosx/pkg/taosx` |
 | Last-Updated | 2026-06-21 |
 
 ## 目标
@@ -86,9 +86,9 @@ type Config struct {
 
 ## 验证基线
 
-- `/home/taosx/pkg/taosx/config.go` 与 `contracts/config.schema.json` 锁定 `Config` 字段、默认值和校验。
-- `/home/taosx/pkg/taosx/client.go`、`batch.go`、`schemaless.go`、`health.go` 锁定 client/driver 行为。
-- `/home/taosx/pkg/taosx/*_test.go`、`/home/taosx/contracts/contracts_test.go`、`/home/taosx/examples/*/*_test.go` 提供回归证据。
+- `/home/workspace/taosx/pkg/taosx/config.go` 与 `contracts/config.schema.json` 锁定 `Config` 字段、默认值和校验。
+- `/home/workspace/taosx/pkg/taosx/client.go`、`batch.go`、`schemaless.go`、`health.go` 锁定 client/driver 行为。
+- `/home/workspace/taosx/pkg/taosx/*_test.go`、`/home/workspace/taosx/contracts/contracts_test.go`、`/home/workspace/taosx/examples/*/*_test.go` 提供回归证据。
 - `GOWORK=off make release-check`、`GOWORK=off make taosx-coverage-check` 和 `GOWORK=off make integration` 是 v1.0.5 本地发布候选的完整默认验证；其中 `pkg/taosx` total 必须等于 100.0%。
 - `GOWORK=off go test -tags=integration ./pkg/taosx -run TestTDengineWebSocketIntegration -count=1 -v` 在未设置 `TAOSX_INTEGRATION=1` 时必须 pass 并 skip，不连接外部 TDengine。
 - `TAOSX_INTEGRATION=1 go test -tags=integration ./pkg/taosx -run TestTDengineWebSocketIntegration -count=1` 是对外发布前的 live gate；2026-06-19 已使用 `sre/secrets/env/dev.md` 中 `market_binance` dev 配置通过，证据口径只允许记录脱敏命令、数据库名和 PASS 结果。

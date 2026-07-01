@@ -28,7 +28,7 @@ estimated_effort: "0.5h"
 priority: P0
 status: pending
 non_scope:
-  - "不修改 /home/contracts/pkg/contracts 源码。"
+  - "不修改 /home/workspace/contracts/pkg/contracts 源码。"
   - "不引入新依赖或工具。"
   - "不恢复旧命名或历史叙事。"
 ```

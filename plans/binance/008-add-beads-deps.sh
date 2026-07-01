@@ -3,10 +3,10 @@
 # bd link <current> <dependency>  => dependency blocks current
 set -euo pipefail
 
-JSON="/home/ZoneCNH/plans/binance/008-tasks.json"
-BMAP="/home/ZoneCNH/plans/binance/008-beads-issue-map.tsv"
+JSON="/home/workspace/ZoneCNH/plans/binance/008-tasks.json"
+BMAP="/home/workspace/ZoneCNH/plans/binance/008-beads-issue-map.tsv"
 
-export BEADS_DIR="/home/ZoneCNH/.beads"
+export BEADS_DIR="/home/workspace/ZoneCNH/.beads"
 
 beads_id_for() {
   awk -F'\t' -v tid="$1" '$1==tid{print $2}' "$BMAP"

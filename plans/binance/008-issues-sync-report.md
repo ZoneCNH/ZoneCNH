@@ -7,8 +7,8 @@
 > - SSOT：`plans/binance/008-tasks.json`
 > - **GitHub 仓库：`ZoneCNH/ZoneCNH`**（issues #1132-#1171）
 > - beads workspace：`ZoneCNH`（prefix=ZoneCNH，label `plan008`）
-> - Runtime-Anchor：`/home/binance@f046e16`（含 Plan008 全部 40 Task 代码实现；PR #145 合并）
-> - Final-Code-Anchor：`/home/binance` `fix/plan008-production-fixes@564cb67`（PR #145，OPEN，远端检查 CLEAN/全部 SUCCESS）；`/home/kafkax` `fix/plan008-production-fixes@7b2d9ce` / tag `v1.1.1`
+> - Runtime-Anchor：`/home/workspace/binance@f046e16`（含 Plan008 全部 40 Task 代码实现；PR #145 合并）
+> - Final-Code-Anchor：`/home/workspace/binance` `fix/plan008-production-fixes@564cb67`（PR #145，OPEN，远端检查 CLEAN/全部 SUCCESS）；`/home/workspace/kafkax` `fix/plan008-production-fixes@7b2d9ce` / tag `v1.1.1`
 
 ---
 

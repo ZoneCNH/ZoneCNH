@@ -4,7 +4,7 @@
 > Source Spec: [SPEC.md](../SPEC.md) v1.2.0
 > Source Goal: [goal.md](../goal.md) 1.0 发布基线
 > 生成日期：2026-06-29
-> 状态：已交付（对齐运行时仓库 `/home/configx`，tag v1.1.0）
+> 状态：已交付（对齐运行时仓库 `/home/workspace/configx`，tag v1.1.0）
 
 ## 上下文概要
 
@@ -16,13 +16,13 @@ configx 已交付 v1.1.0（GitHub Release），完整覆盖 SPEC v1.2.0 的所�
 
 | Task | 能力 | 运行时证据 |
 |------|------|----------|
-| TASK-CONFIGX-001 | Reader 接口 + 基础 Config | `/home/configx/pkg/configx/reader.go` |
-| TASK-CONFIGX-003 | 多源加载 (File/Env/Args) | `/home/configx/pkg/configx/source_*.go` |
-| TASK-CONFIGX-004 | 校验引擎 (required/range/enum/format) | `/home/configx/pkg/configx/validate.go` |
-| TASK-CONFIGX-006 | RemoteSource SPI | `/home/configx/pkg/configx/remote.go` |
-| TASK-CONFIGX-007 | Bind API | `/home/configx/pkg/configx/bind.go` |
-| TASK-CONFIGX-008 | ConfigSnapshot + Watch + Rollback | `/home/configx/pkg/configx/snapshot.go` + `watch.go` |
-| TASK-CONFIGX-009 | DocGen | `/home/configx/pkg/configx/docgen.go` + `cmd/configdoc/` |
+| TASK-CONFIGX-001 | Reader 接口 + 基础 Config | `/home/workspace/configx/pkg/configx/reader.go` |
+| TASK-CONFIGX-003 | 多源加载 (File/Env/Args) | `/home/workspace/configx/pkg/configx/source_*.go` |
+| TASK-CONFIGX-004 | 校验引擎 (required/range/enum/format) | `/home/workspace/configx/pkg/configx/validate.go` |
+| TASK-CONFIGX-006 | RemoteSource SPI | `/home/workspace/configx/pkg/configx/remote.go` |
+| TASK-CONFIGX-007 | Bind API | `/home/workspace/configx/pkg/configx/bind.go` |
+| TASK-CONFIGX-008 | ConfigSnapshot + Watch + Rollback | `/home/workspace/configx/pkg/configx/snapshot.go` + `watch.go` |
+| TASK-CONFIGX-009 | DocGen | `/home/workspace/configx/pkg/configx/docgen.go` + `cmd/configdoc/` |
 
 ## 关键约束
 

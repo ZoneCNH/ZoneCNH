@@ -6,7 +6,7 @@
 - Spec-Version: v1.0.2
 - Module-State: 已发布
 - Layer: L1 基础能力（与 SPEC §3 / FOUNDATION-DEPS.yaml 一致）
-- Runtime-Repo: /home/resiliencx @ tag v1.0.2
+- Runtime-Repo: /home/workspace/resiliencx @ tag v1.0.2
 - Release-Evidence: tag v1.0.2 -> 1aaa0dc；GitHub Release Check 27777166525 passed；release-check / release-final-check 通过
 - Source: goal.md, SPEC.md, TRACEABILITY.md, IMPLEMENTATION-PLAN.md, tasks/
 
@@ -16,17 +16,17 @@
 
 | 类别 | 命令 | 通过标准 |
 | --- | --- | --- |
-| 文档存在性 | `cd /home/ZoneCNH && test -f module/resiliencx/FEATURES.md && test -f module/resiliencx/ACCEPTANCE.md` | FEATURES.md 与 ACCEPTANCE.md 均存在 |
-| 文档格式 | `cd /home/ZoneCNH && git diff --check -- module/resiliencx` | 无尾随空格或补丁格式错误 |
-| goalcli 测试 | `cd /home/resiliencx && GOWORK=off go test ./cmd/goalcli` | goalcli 测试通过 |
-| 运行时包测试 | `cd /home/resiliencx && GOWORK=off go test ./pkg/resiliencx/... ./contracts` | runtime packages 与 contracts 测试通过 |
-| 全仓测试 | `cd /home/resiliencx && GOWORK=off go test ./...` | 所有包测试通过 |
-| 静态检查 | `cd /home/resiliencx && GOWORK=off go vet ./...` | 无 vet 问题 |
-| 竞态检查 | `cd /home/resiliencx && GOWORK=off go test ./pkg/resiliencx/... -race -count=1` | 无 data race，测试稳定通过 |
-| Benchmark | `cd /home/resiliencx && GOWORK=off go test ./pkg/resiliencx/... -bench=. -benchmem -run '^$'` | Benchmark 可执行并产出基线 |
-| 文档检查 | `cd /home/resiliencx && GOWORK=off make docs-check` | 文档 gate 通过 |
-| Release Check | `cd /home/resiliencx && GOWORK=off XLIB_CONTEXT=ci_pull_request make release-check` | score=10.00，hash `d2556ba0605e0b4c24a8b3f82a50ef7ede47309282d038ece810905f006c6781` |
-| Final Check | `cd /home/resiliencx && GOWORK=off XLIB_CONTEXT=release_verify make release-final-check` | score=10.00，hash `18ba39ad95d66126679b05d38d4221b6bb1f0e6401849bc5ffc1adbfe83e5a32` |
+| 文档存在性 | `cd /home/workspace/ZoneCNH && test -f module/resiliencx/FEATURES.md && test -f module/resiliencx/ACCEPTANCE.md` | FEATURES.md 与 ACCEPTANCE.md 均存在 |
+| 文档格式 | `cd /home/workspace/ZoneCNH && git diff --check -- module/resiliencx` | 无尾随空格或补丁格式错误 |
+| goalcli 测试 | `cd /home/workspace/resiliencx && GOWORK=off go test ./cmd/goalcli` | goalcli 测试通过 |
+| 运行时包测试 | `cd /home/workspace/resiliencx && GOWORK=off go test ./pkg/resiliencx/... ./contracts` | runtime packages 与 contracts 测试通过 |
+| 全仓测试 | `cd /home/workspace/resiliencx && GOWORK=off go test ./...` | 所有包测试通过 |
+| 静态检查 | `cd /home/workspace/resiliencx && GOWORK=off go vet ./...` | 无 vet 问题 |
+| 竞态检查 | `cd /home/workspace/resiliencx && GOWORK=off go test ./pkg/resiliencx/... -race -count=1` | 无 data race，测试稳定通过 |
+| Benchmark | `cd /home/workspace/resiliencx && GOWORK=off go test ./pkg/resiliencx/... -bench=. -benchmem -run '^$'` | Benchmark 可执行并产出基线 |
+| 文档检查 | `cd /home/workspace/resiliencx && GOWORK=off make docs-check` | 文档 gate 通过 |
+| Release Check | `cd /home/workspace/resiliencx && GOWORK=off XLIB_CONTEXT=ci_pull_request make release-check` | score=10.00，hash `d2556ba0605e0b4c24a8b3f82a50ef7ede47309282d038ece810905f006c6781` |
+| Final Check | `cd /home/workspace/resiliencx && GOWORK=off XLIB_CONTEXT=release_verify make release-final-check` | score=10.00，hash `18ba39ad95d66126679b05d38d4221b6bb1f0e6401849bc5ffc1adbfe83e5a32` |
 
 ## 2. AC 验收登记
 
@@ -79,7 +79,7 @@
 
 - [x] FEATURES.md 的 FR、BR/NFR、任务清单与 SPEC v1.0.2 / TRACEABILITY 当前登记一致。
 - [x] ACCEPTANCE.md 的 AC、TC 与运行时代码测试名、证据文件或 CI 记录一致。
-- [x] 运行时代码仓库 /home/resiliencx 通过 go test、go test -race、go vet、benchmark、docs-check、release-check 与 release-final-check。
+- [x] 运行时代码仓库 /home/workspace/resiliencx 通过 go test、go test -race、go vet、benchmark、docs-check、release-check 与 release-final-check。
 - [x] 所有外部服务依赖有本地可重复的测试替身或明确 live-gate 证据（纯 stdlib，无外部服务依赖）。
 - [x] 安全检查确认没有凭证、私有端点、账户 ID 或实盘配置进入公开文档与代码。
 - [x] 版本号、发布标签、CHANGELOG 或 release note 与本目录状态一致（v1.0.2 已发布）。

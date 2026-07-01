@@ -3,7 +3,7 @@
 - Status: Local Production Candidate（本地生产候选）
 - Last-Updated: 2026-06-30
 - Source: [SPEC.md](./SPEC.md) v1.2.1 · [TRACEABILITY.md](./TRACEABILITY.md) · [ACCEPTANCE.md](./ACCEPTANCE.md)
-- Implementation: `/home/ossx` branch `ossx`
+- Implementation: `/home/workspace/ossx` branch `ossx`
 - Module-Identity: Aliyun OSS 专用 adapter（单 provider；非通用对象存储抽象；不承诺 S3-compatible SPI）
 
 `ossx` 已实现 Aliyun OSS 对象存储核心能力，并通过本地质量门禁与 `dev.md` 驱动的 live integration test。当前状态适合受控集成和预发布验证；完整生产发布仍依赖外部 CI/CD、下游接入、soak 和评分归档证据。

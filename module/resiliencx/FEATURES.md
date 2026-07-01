@@ -6,7 +6,7 @@
 - Spec-Version: v1.0.2
 - Module-State: 已发布
 - Layer: L1 基础能力（与 SPEC §3 / FOUNDATION-DEPS.yaml 一致）
-- Runtime-Repo: /home/resiliencx @ tag v1.0.2
+- Runtime-Repo: /home/workspace/resiliencx @ tag v1.0.2
 - Release-Evidence: tag v1.0.2 -> 1aaa0dc；GitHub Release Check 27777166525 passed；release-check / release-final-check 通过
 - Source: goal.md, SPEC.md, TRACEABILITY.md, IMPLEMENTATION-PLAN.md, tasks/
 
@@ -20,7 +20,7 @@
 | --- | --- |
 | 模块职责 | timeout、retry、circuit、bulkhead、rate、fallback、Compose、InstrumentStrategy 与 recovered panic 等韧性原语 |
 | 文档目录 | module/resiliencx |
-| 运行时代码目录 | /home/resiliencx |
+| 运行时代码目录 | /home/workspace/resiliencx |
 | Go 基线 | 1.23 |
 | 实际依赖 | 纯 stdlib（`go mod graph` 无第三方包；不依赖 kernel/configx/observex） |
 | 允许依赖（SPEC 许可） | kernel（运行时未直接依赖）、configx（由消费者侧注入） |
@@ -87,6 +87,6 @@
 - [x] 所有 BR/NFR 条目均有测试、静态检查或人工可审计证据覆盖。
 - [x] 所有任务文档均能追溯到 FR、BR/NFR、AC 或 TC；TASK-008/009/010 的 v1.0.2 运行时证据已闭合。
 - [x] 依赖边界符合 FOUNDATION-DEPS.yaml，不引入未授权运行时依赖（实测纯 stdlib）。
-- [x] 运行时代码仓库 /home/resiliencx 的 release-check 与 release-final-check 均通过，score=10.00。
+- [x] 运行时代码仓库 /home/workspace/resiliencx 的 release-check 与 release-final-check 均通过，score=10.00。
 - [x] 发布说明、版本标签与本目录登记状态一致（v1.0.2 已发布）。
 - [ ] factory-grade / BLK-007 仍在机器事实层保持 factory=false，不作为 v1.0.2 文档同步阻塞项。

@@ -204,7 +204,7 @@ THEN 测试通过
 
 ### 8.1 Fake 实现
 
-> 注：以下签名对齐运行时 `/home/testkitx/pkg/testkitx/fake/` 的实际导出。实现类型一律命名 `Fake*Impl`（clock 例外，类型名为 `FakeClock`）；构造函数的「带/不带 `Fake` 前缀」与运行时一致。
+> 注：以下签名对齐运行时 `/home/workspace/testkitx/pkg/testkitx/fake/` 的实际导出。实现类型一律命名 `Fake*Impl`（clock 例外，类型名为 `FakeClock`）；构造函数的「带/不带 `Fake` 前缀」与运行时一致。
 
 ```go
 // 构造函数均位于子包 testkitx/fake（运行时为 pkg/testkitx/fake）。

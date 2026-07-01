@@ -34,7 +34,7 @@
 | M2 | SPEC §16 "remain Partial" 与 §5 "0 Partial" 矛盾 | 更新为 "operational... PRG-004 PASS" | `spec/SPEC.md` |
 | M3 | PRG-003 evidence 标 "Open"（stale） | 更新为 "PASS"，汇总表全 PASS | `evidence/2026-06-30/release/prg-003-production-readiness.md` |
 | M4 | PRG-005 evidence 标 "Partial"（stale） | 更新为 "PASS"，CVE 修复确认 | `evidence/2026-06-30/release/prg-005-security.md` |
-| M5 | `.env` 权限 770 (group-readable) | `chmod 600` | `/home/binance/.env` |
+| M5 | `.env` 权限 770 (group-readable) | `chmod 600` | `/home/workspace/binance/.env` |
 
 ## 验证结果（2026-06-30 复核实测）
 
@@ -98,7 +98,7 @@
 - 3 文件修改（SPEC.md §16, prg-003 evidence, prg-005 evidence）
 - +34/-53 lines
 
-### Runtime (/home/binance/) — PR #357
+### Runtime (/home/workspace/binance/) — PR #357
 - 11 文件修改（Dockerfile×2, docker-compose, go.mod/sum, wire/doc.go, soak/chaos test×4, .gitignore）
 - 2 文件删除（ci.yml, ci-pipeline.yml）
 - 2 文件新增（deploy/alertmanager/config.yml, migrations/README.md）
@@ -178,16 +178,16 @@
 
 ### 修改文件清单
 
-**taosx** (`/home/taosx/`):
+**taosx** (`/home/workspace/taosx/`):
 - `pkg/taosx/websocket_driver.go` — `orderedTagKeys()` + field key 排序 + `sort` import
 - `pkg/taosx/batch.go` — `Point.Stable` 字段（前序修复）
 
-**binance runtime** (`/home/binance/`):
+**binance runtime** (`/home/workspace/binance/`):
 - `internal/server/storage/taos_writer.go` — `tickPayload` partial depth 支持 + `tickPoint` 回退
 - `internal/server/assembly/history_reader.go` — 字符串插值 + `.Local()` 时区 + `escapeTaos()`
 - `internal/server/assembly/assemble.go` — `ingestStatsProvider` adapter + Stats wiring + `encoding/json` import
 - `internal/server/ingest.go` — `SnapshotStats()` 导出方法
-- `go.mod` — `replace github.com/ZoneCNH/taosx=/home/taosx`（本地开发，需提交前移除）
+- `go.mod` — `replace github.com/ZoneCNH/taosx=/home/workspace/taosx`（本地开发，需提交前移除）
 
 **prod 配置**:
 - `/opt/binance/secrets/prod.env` — 移除 `FOUNDATIONX_BINANCE_ADMIN_ADDR`

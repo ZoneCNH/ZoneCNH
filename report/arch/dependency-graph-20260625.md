@@ -9,32 +9,32 @@
 
 | 用户名            | 本地目录                | go.mod module 声明                    | 备注                             |
 | ----------------- | ----------------------- | ------------------------------------- | -------------------------------- |
-| `xlib_standard`   | `/home/xlib-standard`   | `github.com/ZoneCNH/xlib_standard`    | 零 ZoneCNH require               |
-| `xlib_harness`    | `/home/xlib-harness`    | `github.com/ZoneCNH/xlib_harness`     | 零 ZoneCNH require               |
-| `xlib_evidence`   | `/home/xlib-evidence`   | `github.com/ZoneCNH/xlib_evidence`    | 零 ZoneCNH require               |
-| `xlibgate`        | `/home/xlibgate`        | `github.com/ZoneCNH/xlibgate`         | 零 ZoneCNH require               |
-| `kernel`          | `/home/kernel`          | `github.com/ZoneCNH/kernel`           | stdlib-only                      |
-| `configx`         | `/home/configx`         | `github.com/ZoneCNH/configx`          | 零 ZoneCNH require               |
-| `observex`        | `/home/observex`        | `github.com/ZoneCNH/observex`         | 零 ZoneCNH require               |
-| `testkitx`        | `/home/testkitx`        | `github.com/ZoneCNH/testkitx`         | test-only                        |
-| `resiliencx`      | `/home/resiliencx`      | `github.com/ZoneCNH/resiliencx`       | 零 ZoneCNH require               |
-| `schedulex`       | `/home/schedulex`       | `github.com/ZoneCNH/schedulex`        | 零 ZoneCNH require               |
-| `bootstrap`       | `/home/bootstrap`       | `github.com/ZoneCNH/bootstrap`        | require 全部基座 + infra         |
-| `redisx`          | `/home/redisx`          | `github.com/ZoneCNH/redisx`           | 零 ZoneCNH require               |
-| `kafkax`          | `/home/kafkax`          | `github.com/ZoneCNH/kafkax`           | require observex                 |
-| `natsx`           | `/home/natsx`           | `github.com/ZoneCNH/natsx`            | 零 ZoneCNH require               |
-| `postgresx`       | `/home/postgresx`       | `github.com/ZoneCNH/postgresx`        | 零 ZoneCNH require               |
-| `taosx`           | `/home/taosx`           | `github.com/ZoneCNH/taosx`            | 零 ZoneCNH require               |
-| `ossx`            | `/home/ossx`            | `github.com/ZoneCNH/ossx`             | require resiliencx               |
-| `clickhousex`     | `/home/clickhousex`     | `github.com/ZoneCNH/clickhousex`      | require observex + resiliencx    |
-| `contracts`       | `/home/contracts`       | `github.com/ZoneCNH/contracts`        | 零 ZoneCNH require               |
-| `transportx`      | `/home/transportx`      | `github.com/ZoneCNH/transportx`       | ✅ **2026-06-25 已修复**         |
-| `decimalx`        | `/home/decimalx`        | `github.com/ZoneCNH/decimalx`         | 根锚点，零 require               |
-| `domainx`         | `/home/domainx`         | `github.com/ZoneCNH/domainx`          | ✅ **2026-06-25 已补 go.mod**    |
-| `domain_market`   | `/home/domain-market`   | `github.com/ZoneCNH/domain_market`    | require decimalx                 |
-| `domain_macro`    | `/home/domain-macro`    | `github.com/ZoneCNH/domain_macro`     | require decimalx                 |
-| `domain_exchange` | `/home/domain-exchange` | `github.com/ZoneCNH/domain_exchange`  | require decimalx + domain_market |
-| `binance`         | `/home/binance`         | `github.com/ZoneCNH/binance`          | require 13 个 ZoneCNH 模块       |
+| `xlib_standard`   | `/home/workspace/xlib-standard`   | `github.com/ZoneCNH/xlib_standard`    | 零 ZoneCNH require               |
+| `xlib_harness`    | `/home/workspace/xlib-harness`    | `github.com/ZoneCNH/xlib_harness`     | 零 ZoneCNH require               |
+| `xlib_evidence`   | `/home/workspace/xlib-evidence`   | `github.com/ZoneCNH/xlib_evidence`    | 零 ZoneCNH require               |
+| `xlibgate`        | `/home/workspace/xlibgate`        | `github.com/ZoneCNH/xlibgate`         | 零 ZoneCNH require               |
+| `kernel`          | `/home/workspace/kernel`          | `github.com/ZoneCNH/kernel`           | stdlib-only                      |
+| `configx`         | `/home/workspace/configx`         | `github.com/ZoneCNH/configx`          | 零 ZoneCNH require               |
+| `observex`        | `/home/workspace/observex`        | `github.com/ZoneCNH/observex`         | 零 ZoneCNH require               |
+| `testkitx`        | `/home/workspace/testkitx`        | `github.com/ZoneCNH/testkitx`         | test-only                        |
+| `resiliencx`      | `/home/workspace/resiliencx`      | `github.com/ZoneCNH/resiliencx`       | 零 ZoneCNH require               |
+| `schedulex`       | `/home/workspace/schedulex`       | `github.com/ZoneCNH/schedulex`        | 零 ZoneCNH require               |
+| `bootstrap`       | `/home/workspace/bootstrap`       | `github.com/ZoneCNH/bootstrap`        | require 全部基座 + infra         |
+| `redisx`          | `/home/workspace/redisx`          | `github.com/ZoneCNH/redisx`           | 零 ZoneCNH require               |
+| `kafkax`          | `/home/workspace/kafkax`          | `github.com/ZoneCNH/kafkax`           | require observex                 |
+| `natsx`           | `/home/workspace/natsx`           | `github.com/ZoneCNH/natsx`            | 零 ZoneCNH require               |
+| `postgresx`       | `/home/workspace/postgresx`       | `github.com/ZoneCNH/postgresx`        | 零 ZoneCNH require               |
+| `taosx`           | `/home/workspace/taosx`           | `github.com/ZoneCNH/taosx`            | 零 ZoneCNH require               |
+| `ossx`            | `/home/workspace/ossx`            | `github.com/ZoneCNH/ossx`             | require resiliencx               |
+| `clickhousex`     | `/home/workspace/clickhousex`     | `github.com/ZoneCNH/clickhousex`      | require observex + resiliencx    |
+| `contracts`       | `/home/workspace/contracts`       | `github.com/ZoneCNH/contracts`        | 零 ZoneCNH require               |
+| `transportx`      | `/home/workspace/transportx`      | `github.com/ZoneCNH/transportx`       | ✅ **2026-06-25 已修复**         |
+| `decimalx`        | `/home/workspace/decimalx`        | `github.com/ZoneCNH/decimalx`         | 根锚点，零 require               |
+| `domainx`         | `/home/workspace/domainx`         | `github.com/ZoneCNH/domainx`          | ✅ **2026-06-25 已补 go.mod**    |
+| `domain_market`   | `/home/workspace/domain-market`   | `github.com/ZoneCNH/domain_market`    | require decimalx                 |
+| `domain_macro`    | `/home/workspace/domain-macro`    | `github.com/ZoneCNH/domain_macro`     | require decimalx                 |
+| `domain_exchange` | `/home/workspace/domain-exchange` | `github.com/ZoneCNH/domain_exchange`  | require decimalx + domain_market |
+| `binance`         | `/home/workspace/binance`         | `github.com/ZoneCNH/binance`          | require 13 个 ZoneCNH 模块       |
 
 ## 2. 依赖规则（不可违反）
 
@@ -269,11 +269,11 @@ flowchart TB
 | G1  | Foundation reverse | 基座/领域/infra 禁止 import binance                  | `rg "ZoneCNH/binance" /home/{kernel,configx,...} --type go`                               | ✅ PASS      |
 | G2  | Domain purity      | domain\_\* 禁止 import binance/provider/infra        | `rg "binance\|redisx\|natsx\|..." /home/{decimalx,domain*} --type go`                     | ✅ PASS      |
 | G3  | Infra isolation    | 7 infra 模块禁止互相 import                          | `for d in redisx kafkax natsx postgresx taosx ossx clickhousex; do ...`                   | ✅ PASS      |
-| G4  | Core purity        | binance core 禁止 import concrete infra constructors | `rg "\.New\(" --type go /home/binance/internal/{client,server}`                           | ✅ PASS      |
-| G5  | Assembly-only      | infra `*.New` 只允许在 `cmd/**`                      | `rg "\.New\(.*x\." --type go /home/binance/cmd`                                           | ✅ PASS      |
-| G6  | No infra wrapper   | 禁止 `internal/infra/{redis,nats,...}`               | `ls /home/binance/internal/infra/ 2>/dev/null`                                            | ✅ PASS      |
+| G4  | Core purity        | binance core 禁止 import concrete infra constructors | `rg "\.New\(" --type go /home/workspace/binance/internal/{client,server}`                           | ✅ PASS      |
+| G5  | Assembly-only      | infra `*.New` 只允许在 `cmd/**`                      | `rg "\.New\(.*x\." --type go /home/workspace/binance/cmd`                                           | ✅ PASS      |
+| G6  | No infra wrapper   | 禁止 `internal/infra/{redis,nats,...}`               | `ls /home/workspace/binance/internal/infra/ 2>/dev/null`                                            | ✅ PASS      |
 | G7  | No DTO leak        | domain\_\*/contracts 禁止 Binance raw field          | `rg "binance_ws\|binance_raw\|BinanceOrder" /home/{decimalx,domain*,contracts} --type go` | ✅ PASS      |
-| G8  | go.mod compliance  | binance go.mod 保留边界依赖                          | `rg "ZoneCNH" /home/binance/go.mod`                                                       | ✅ PASS      |
+| G8  | go.mod compliance  | binance go.mod 保留边界依赖                          | `rg "ZoneCNH" /home/workspace/binance/go.mod`                                                       | ✅ PASS      |
 
 ## 7. 已知工程问题
 

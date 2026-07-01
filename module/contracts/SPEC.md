@@ -6,7 +6,7 @@
 - Owner: ZoneCNH
 - Layer: 基座 · 跨域接口契约
 - Fast-Track: true
-- Source-of-Truth: `/home/contracts/pkg/contracts`
+- Source-of-Truth: `/home/workspace/contracts/pkg/contracts`
 - Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `README.md`, `TRACEABILITY.md`, `ACCEPTANCE.md`, `IMPLEMENTATION-PLAN.md`, `tasks/`
 
 > 本文档只描述当前 runtime 的公开契约面，不承诺具体传输、存储或业务实现。
@@ -206,7 +206,7 @@ contracts 是 ZoneCNH 跨域接口契约模块，定义 `Event`/`Command`/`Query
 
 ### NFR-001: 运行时验证
 
-`/home/contracts` 需要保持可编译、可测试、可复验。
+`/home/workspace/contracts` 需要保持可编译、可测试、可复验。
 
 ### NFR-002: 竞态安全
 
@@ -246,7 +246,7 @@ canonical reject-code 集合保持 10 项，不随文档整理漂移。
 
 ## 6. 验收标准（Acceptance Criteria Registry）
 
-> 验收口径：本 Registry 锚定到 §2 Functional Requirements 与 §3 Behavior Rules，每条 AC 必须能由 `/home/contracts/pkg/contracts/` 的 runtime 符号检查或单元测试直接验证。`Status` 与 §0 Metadata 的 `Status: Docs Baseline Synced / Runtime Truth Verified` 对齐。
+> 验收口径：本 Registry 锚定到 §2 Functional Requirements 与 §3 Behavior Rules，每条 AC 必须能由 `/home/workspace/contracts/pkg/contracts/` 的 runtime 符号检查或单元测试直接验证。`Status` 与 §0 Metadata 的 `Status: Docs Baseline Synced / Runtime Truth Verified` 对齐。
 
 | AC ID      | FR/BR Ref      | Criterion                                                                                                       | Verification                                                                 | Status   |
 | ---------- | -------------- | --------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | -------- |
@@ -262,7 +262,7 @@ canonical reject-code 集合保持 10 项，不随文档整理漂移。
 | AC-CTR-010 | BR-004, BR-005 | runtime 仅依赖 stdlib 与 `module/FOUNDATION-DEPS.yaml` 允许的共享层；DTO 字段保留 JSON tag 且无隐式命名变换    | `go list -m all` 依赖扫描 + DTO JSON marshal/unmarshal round-trip 测试       | Verified |
 | AC-CTR-011 | BR-006, BR-007, NFR-006 | canonical reject-code 集合在版本演进中保持 10 项不漂移；新增/删除需走 BR-010 治理流程                      | snapshot test：固定 `AllRejectCodes()` golden 列表                           | Verified |
 | AC-CTR-012 | BR-010         | 公开 rename/removal 必须先完成兼容层与追溯文档更新，再进入发布决策；任何破坏性变更需有 alias 过渡            | 治理 checklist + PR template；alias 出现率审计                               | Verified |
-| AC-CTR-013 | NFR-001, NFR-002, NFR-003 | `/home/contracts` 通过 `go build ./...` / `go test ./... -race -count=1` / `go vet ./...` / lint 全部 ✅ | CI gate (foundation-release.yml + audit-status)                              | Verified |
+| AC-CTR-013 | NFR-001, NFR-002, NFR-003 | `/home/workspace/contracts` 通过 `go build ./...` / `go test ./... -race -count=1` / `go vet ./...` / lint 全部 ✅ | CI gate (foundation-release.yml + audit-status)                              | Verified |
 | AC-CTR-014 | NFR-007, NFR-008 | 文档不把 gRPC / Kafka / NATS / HTTP 写成契约本体；`stable period` / `v1.0.1` / 旧方法名 / 旧 Topic 叙事不回流 | docs grep 扫描零命中                                                          | Verified |
 
 > Coverage check：14 条 AC 覆盖 8 条 FR + 10 条 BR + 8 条 NFR；FR-001..FR-008 每条至少一个 AC 锚点；BR-001..BR-010 全部映射；NFR-001..NFR-008 通过 AC-CTR-013/014 与 NFR-006 通过 AC-CTR-011 关联。
@@ -271,14 +271,14 @@ canonical reject-code 集合保持 10 项，不随文档整理漂移。
 
 ## 7. 参考
 
-- `/home/contracts/pkg/contracts/contracts.go`
-- `/home/contracts/pkg/contracts/ports.go`
-- `/home/contracts/pkg/contracts/regime_snapshot.go`
-- `/home/contracts/pkg/contracts/regime_card.go`
-- `/home/contracts/pkg/contracts/decision_card.go`
-- `/home/contracts/pkg/contracts/signal_intent.go`
-- `/home/contracts/pkg/contracts/ingestion.go`
-- `/home/contracts/pkg/contracts/projections.go`
+- `/home/workspace/contracts/pkg/contracts/contracts.go`
+- `/home/workspace/contracts/pkg/contracts/ports.go`
+- `/home/workspace/contracts/pkg/contracts/regime_snapshot.go`
+- `/home/workspace/contracts/pkg/contracts/regime_card.go`
+- `/home/workspace/contracts/pkg/contracts/decision_card.go`
+- `/home/workspace/contracts/pkg/contracts/signal_intent.go`
+- `/home/workspace/contracts/pkg/contracts/ingestion.go`
+- `/home/workspace/contracts/pkg/contracts/projections.go`
 
 ---
 
@@ -327,7 +327,7 @@ type Port interface{ ... }
 type DataProvider interface{ ... }
 ```
 
-完整接口定义见 `/home/contracts/pkg/contracts/`。
+完整接口定义见 `/home/workspace/contracts/pkg/contracts/`。
 
 ## 数据模型
 
@@ -344,7 +344,7 @@ DTO 为值类型（不可变），Port 为行为接口（无状态）。具体 s
 ## 目录结构
 
 ```
-/home/contracts/pkg/contracts/
+/home/workspace/contracts/pkg/contracts/
 ├── contracts.go
 ├── ports.go
 ├── regime_snapshot.go
@@ -396,4 +396,4 @@ DTO 为值类型（不可变），Port 为行为接口（无状态）。具体 s
 
 ## 待解决问题
 
-无。当前基线已与 runtime 仓库 `/home/contracts` 对齐。
+无。当前基线已与 runtime 仓库 `/home/workspace/contracts` 对齐。

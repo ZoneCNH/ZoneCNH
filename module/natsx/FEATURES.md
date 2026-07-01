@@ -5,7 +5,7 @@
 - Module-Version: v1.2.0
 - Module-State: Tag Exists / GitHub Release Pending
 - Layer: L2 基础设施适配器
-- Runtime-Repo: /home/natsx
+- Runtime-Repo: /home/workspace/natsx
 - Source: goal.md, SPEC.md, TRACEABILITY.md, IMPLEMENTATION-PLAN.md, tasks/
 
 > 本清单用于约束 natsx 的完整实现范围。条目来自本目录已有 Spec、Traceability、Plan、Task 等文档；若运行时代码状态与本文不一致，以相应模块仓库的最新验证证据补充更新本文。
@@ -18,7 +18,7 @@
 | --- | --- |
 | 模块职责 | NATS core/JetStream、KV、Object、request-reply 与健康检查适配 |
 | 文档目录 | module/natsx |
-| 运行时代码目录 | /home/natsx |
+| 运行时代码目录 | /home/workspace/natsx |
 | Go 基线 | 1.23 |
 | 允许依赖 | kernel |
 | 禁止依赖 | 禁止越过 FOUNDATION-DEPS.yaml 登记边界依赖上层业务域或未授权基座模块 |
@@ -123,5 +123,5 @@
 - [ ] 所有 BR/NFR 条目均有测试、静态检查或人工可审计证据覆盖。
 - [ ] 所有任务文档均能追溯到 FR、BR/NFR、AC 或 TC。
 - [ ] 依赖边界符合 FOUNDATION-DEPS.yaml，不引入未授权运行时依赖。
-- [ ] 运行时代码仓库 /home/natsx 的 lint、typecheck、test、race、coverage 验证证据已归档。
+- [ ] 运行时代码仓库 /home/workspace/natsx 的 lint、typecheck、test、race、coverage 验证证据已归档。
 - [ ] 发布说明、版本标签与本目录登记状态一致；当前已确认 `v1.0.3` 远端 tag，GitHub Release `v1.0.3` 待补。

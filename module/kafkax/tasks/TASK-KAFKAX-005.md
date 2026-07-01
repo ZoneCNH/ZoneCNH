@@ -22,12 +22,12 @@ Does NOT implement Kafka broker deployment, topic auto-creation, or Kafka Connec
 
 ## Files
 
-- `/home/kafkax/pkg/kafkax/config.go:39` — `Config.Validate()`
-- `/home/kafkax/pkg/kafkax/config.go:51` — `SessionTimeout < 0` 校验
-- `/home/kafkax/pkg/kafkax/config.go:114-118` — `ConsumerConfig{GroupID, SessionTimeout, HeartbeatInterval, MaxPollRecords, StartOffset}`
-- `/home/kafkax/pkg/kafkax/kafkago/consumer.go:33-35` — SessionTimeout 透传 ReaderConfig
-- `/home/kafkax/pkg/kafkax/kafkago/consumer.go:36-38` — HeartbeatInterval 透传 ReaderConfig
-- `/home/kafkax/pkg/kafkax/config_test.go` — `TestConfigValidateRejectsNegativeHeartbeatInterval` / `...MaxPollRecords`
+- `/home/workspace/kafkax/pkg/kafkax/config.go:39` — `Config.Validate()`
+- `/home/workspace/kafkax/pkg/kafkax/config.go:51` — `SessionTimeout < 0` 校验
+- `/home/workspace/kafkax/pkg/kafkax/config.go:114-118` — `ConsumerConfig{GroupID, SessionTimeout, HeartbeatInterval, MaxPollRecords, StartOffset}`
+- `/home/workspace/kafkax/pkg/kafkax/kafkago/consumer.go:33-35` — SessionTimeout 透传 ReaderConfig
+- `/home/workspace/kafkax/pkg/kafkax/kafkago/consumer.go:36-38` — HeartbeatInterval 透传 ReaderConfig
+- `/home/workspace/kafkax/pkg/kafkax/config_test.go` — `TestConfigValidateRejectsNegativeHeartbeatInterval` / `...MaxPollRecords`
 
 ## Acceptance
 

@@ -5,7 +5,7 @@
 - Module-Version: v2.1.0
 - Module-State: 已发布（代码侧）；代码侧验收 2026-06-18 全部通过；Factory 已闭合（2026-06-18）— Goal Matrix 23 边 Verified + 四源 arbiter gate=pass + coverage 100% + BLK-011 resolved
 - Layer: L0 基座核心
-- Runtime-Repo: /home/kernel
+- Runtime-Repo: /home/workspace/kernel
 - Source: goal.md, SPEC.md, DESIGN.md, TRACEABILITY.md, IMPLEMENTATION-PLAN.md, tasks/, prompt/
 - Evidence: `.config/goal/evidence/kernel-acceptance-20260618/`（test ✅ / race ✅ / vet ✅ / coverage 100% ✅ / stdlib-only ✅ / secrets ✅）
 
@@ -18,7 +18,7 @@
 | --- | --- |
 | 模块职责 | 错误、生命周期、时间、ID、健康、结果类型等零依赖核心契约 |
 | 文档目录 | module/kernel |
-| 运行时代码目录 | /home/kernel |
+| 运行时代码目录 | /home/workspace/kernel |
 | Go 基线 | 1.23 |
 | 允许依赖 | 无 |
 | 禁止依赖 | 禁止依赖任何本仓库其它模块或非标准库运行时依赖 |
@@ -112,6 +112,6 @@
 - [x] 所有 BR/NFR 条目均有测试、静态检查或人工可审计证据覆盖（go test -race / go vet / check_secrets / stdlib-only gate）。
 - [x] 所有任务文档均能追溯到 FR、BR/NFR、AC 或 TC（TRACEABILITY.md v2.3）。
 - [x] 依赖边界符合 FOUNDATION-DEPS.yaml，不引入未授权运行时依赖（stdlib-only check passed）。
-- [x] 运行时代码仓库 /home/kernel 的 lint、typecheck、test、race、`make coverage-threshold` 验证证据已归档（.config/goal/evidence/kernel-acceptance-20260618/）。
+- [x] 运行时代码仓库 /home/workspace/kernel 的 lint、typecheck、test、race、`make coverage-threshold` 验证证据已归档（.config/goal/evidence/kernel-acceptance-20260618/）。
 - [x] `.config/goal/evidence/kernel-acceptance-20260618/` 已归档代码侧证据；Factory 证据链已闭合（2026-06-18）— Goal Matrix 23 边 Verified、四源 arbiter 6 阶段 gate=pass（BLK-011 resolved）。
 - [x] 发布说明、版本标签与本目录登记状态一致（v1.1.0 — 2026-06-18 GitHub Release）。

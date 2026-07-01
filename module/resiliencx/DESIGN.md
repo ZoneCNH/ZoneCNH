@@ -4,7 +4,7 @@
 > Source Spec: [SPEC.md](./SPEC.md) v1.1.0
 > Source Goal: [goal.md](./goal.md) v1.0.2 发布基线
 > 生成日期：2026-06-29
-> 状态：已发布（对齐运行时仓库 `/home/resiliencx`，tag v1.0.2，commit `1aaa0dc`）
+> 状态：已发布（对齐运行时仓库 `/home/workspace/resiliencx`，tag v1.0.2，commit `1aaa0dc`）
 
 ## 1. 架构概述
 

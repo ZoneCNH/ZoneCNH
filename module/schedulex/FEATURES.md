@@ -5,9 +5,9 @@
 - Module-Version: v1.0.0
 - Module-State: 本地发布验收通过
 - Layer: L1 调度基座
-- Runtime-Repo: /home/schedulex
+- Runtime-Repo: /home/workspace/schedulex
 - Runtime-Branch: ci/sre-cicd-pools-20260618
-- Source: SPEC.md, /home/schedulex README.md, Makefile, release-check evidence
+- Source: SPEC.md, /home/workspace/schedulex README.md, Makefile, release-check evidence
 
 > 本清单记录 `schedulex` v1.0.0 已验收的运行时能力。v1.0 以 `AddJob`、可注入时钟、确定性触发、调度快照、事件 sink 与锁接口为对外契约；旧追溯文档中的 `Cancel`、`Replace`、`Delay` 等扩展项登记为 v1.1 候选，不作为本版本已发布能力。
 
@@ -17,7 +17,7 @@
 | --- | --- |
 | 模块职责 | 单进程确定性调度、任务注册、触发计算、并发/重叠治理、误触发补偿、生命周期关闭与可审计事件 |
 | 文档目录 | `module/schedulex` |
-| 运行时代码目录 | `/home/schedulex` |
+| 运行时代码目录 | `/home/workspace/schedulex` |
 | Go 基线 | Go 1.23 |
 | 运行时依赖 | 标准库 only；生产代码不依赖 `x.go`、L2 或业务域 |
 | CI/CD 约束 | `GOWORK=off`；GitHub hosted `ubuntu-latest` runner；release gate 必须通过 `make release-check VERSION=v1.0.0` |

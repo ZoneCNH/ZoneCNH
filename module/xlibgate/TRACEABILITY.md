@@ -5,7 +5,7 @@
 
 Last-Updated: 2026-06-30
 Source: module/xlibgate/SPEC.md v1.2.0
-Runtime: /home/xlibgate
+Runtime: /home/workspace/xlibgate
 
 ---
 

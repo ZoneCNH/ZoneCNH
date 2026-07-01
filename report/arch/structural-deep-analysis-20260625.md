@@ -54,7 +54,7 @@
   3. 违反 §3.1 "单向下行"：业务模块反向依赖了入口/装配层
 ```
 
-[COMPUTED] 证据：`rg "github.com/ZoneCNH/bootstrap" /home/binance/ --type go -l` → `/home/binance/cmd/binance-server/main.go`。
+[COMPUTED] 证据：`rg "github.com/ZoneCNH/bootstrap" /home/workspace/binance/ --type go -l` → `/home/workspace/binance/cmd/binance-server/main.go`。
 
 ### 2.3 同层互耦：infra 表面干净，但 binance 内部成了"小 infra 聚合层"
 
@@ -256,8 +256,8 @@ import (
 ### 5.2 `replace` 指令用于本地路径
 
 ```text
-binance go.mod:    replace github.com/ZoneCNH/natsx => /home/natsx
-domain-exchange go.mod: replace github.com/ZoneCNH/domain-market => /home/domain-market
+binance go.mod:    replace github.com/ZoneCNH/natsx => /home/workspace/natsx
+domain-exchange go.mod: replace github.com/ZoneCNH/domain-market => /home/workspace/domain-market
 ```
 
 [INFERRED] `replace` 用于本地开发是合理的，但进入主分支/稳定版本则意味着：
@@ -333,7 +333,7 @@ binance go.mod 中：
 2. 如果 bootstrap 提供的 lifecycle 功能是 binance 必需的，应将其抽象为 binance 自己的 `LifecycleManager` interface，由 bootstrap 实现并注入
 3. 从 `binance/go.mod` 中移除 `bootstrap` require
 
-**验证**：`rg "github.com/ZoneCNH/bootstrap" /home/binance/ --type go` → 0 命中。
+**验证**：`rg "github.com/ZoneCNH/bootstrap" /home/workspace/binance/ --type go` → 0 命中。
 
 #### R2: 将 binance/internal/server 拆分为 core + adapter + assembly
 
@@ -347,7 +347,7 @@ binance go.mod 中：
 4. `internal/server` 只持有这些 interface，不 import infra 包
 5. `cmd/binance-server/main.go` 负责：构造 infra client → 构造 adapter → 注入 server
 
-**验证**：`rg "github.com/ZoneCNH/(clickhousex|kafkax|natsx|postgresx|redisx|taosx|ossx)" /home/binance/internal/server/ --type go | grep -v "_test.go" | grep -v "/adapter/"` → 0 命中。
+**验证**：`rg "github.com/ZoneCNH/(clickhousex|kafkax|natsx|postgresx|redisx|taosx|ossx)" /home/workspace/binance/internal/server/ --type go | grep -v "_test.go" | grep -v "/adapter/"` → 0 命中。
 
 ### 8.2 高优先级修复（HIGH）
 
@@ -361,7 +361,7 @@ binance go.mod 中：
 2. 修改 binance 内部引用，从 `internal/wire` 改为 `contracts`
 3. 如果 binance 需要私有扩展，保留 `internal/wire` 但只含 binance 私有类型
 
-**验证**：`rg "github.com/ZoneCNH/contracts" /home/binance/ --type go -l` → 非空；`internal/wire/types.go` 不再定义与 contracts 同构类型。
+**验证**：`rg "github.com/ZoneCNH/contracts" /home/workspace/binance/ --type go -l` → 非空；`internal/wire/types.go` 不再定义与 contracts 同构类型。
 
 #### R4: 收缩 binancecfg 职责
 
@@ -393,7 +393,7 @@ binance go.mod 中：
 2. 将 `MODE` 测试模式纳入 `binancecfg`（如 `Role` 或 `SelfTest` 字段）
 3. 删除所有 `isTruthyEnv`/`smokeModeFromEnv` 中的直接 env 读取
 
-**验证**：`rg "os\.Getenv" /home/binance/cmd/binance-server/main.go` → 0 命中。
+**验证**：`rg "os\.Getenv" /home/workspace/binance/cmd/binance-server/main.go` → 0 命中。
 
 #### R7: 修复 bootstrap 依赖完整性
 

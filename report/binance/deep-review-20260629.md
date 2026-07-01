@@ -2,7 +2,7 @@
 
 > **审查日期**: 2026-06-29
 > **审查分支**: `main` (HEAD: 当前会话最新) | **覆盖率**: 73.7% 单元 / 76.0% 集成（10 次提交从 59.6% 提升）
-> **审查范围**: `/home/binance/` 主 checkout（排除 `.worktree/`）
+> **审查范围**: `/home/workspace/binance/` 主 checkout（排除 `.worktree/`）
 > **代码规模**: 90 源文件 / 84 测试文件 / ~19,410 行非测试 Go 代码
 > **审查方法**: 架构分析 + 安全扫描 + 代码质量 + 测试覆盖 + 构建验证
 
@@ -321,7 +321,7 @@ pkg/
 
 | 严重性 | 位置                 | 描述                                                                                                                                               |
 | ------ | -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| MEDIUM | `go.mod:112`         | `replace github.com/ZoneCNH/natsx => /home/natsx` 本地 replace 使本地构建使用未提交的 natsx 代码，CI 使用 v1.0.4。本地与 CI 验证的代码可能不一致。 |
+| MEDIUM | `go.mod:112`         | `replace github.com/ZoneCNH/natsx => /home/workspace/natsx` 本地 replace 使本地构建使用未提交的 natsx 代码，CI 使用 v1.0.4。本地与 CI 验证的代码可能不一致。 |
 | PASS   | `.github/workflows/` | govulncheck 集成为 release gate，gitleaks 扫描 git 历史 + 工作树                                                                                   |
 
 ---

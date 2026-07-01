@@ -60,7 +60,7 @@
 ## Validation Commands
 
 ```bash
-cd /home/domain_macro
+cd /home/workspace/domain-macro
 go build ./...
 go test ./... -race -count=1
 GOWORK=off make adoption-check

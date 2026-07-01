@@ -16,7 +16,7 @@ Plan006 Task 8.4 要求将 `internal/wire` 契约迁移到 `module/contracts`（
 
 2. **§8 gate 含义更正**: `scripts/boundary-gates.sh` §8 gate（`gate_wire_externality`）实际只检测仓内无 `.proto` 文件，并不验证 wire 的 import 边界。client/server 互不 import 由 §3/§4 gate 保证。ADR 早期版本曾将 §8 描述为"wire 边界验证门禁"，系对 gate 实现的误读，此处订正。
 
-3. **module/contracts 已存在**: `module/contracts`（独立 Go 仓 `github.com/ZoneCNH/contracts`，本地 `/home/contracts`）已创建。`pkg/contracts/ingestion.go` 已定义 canonical `IngestRequest`/`IngestResult`/`IngestAck`/`IngestReject`。`internal/wire/doc.go` 已声明此迁移路径：contracts 使用 `json.RawMessage`（InstrumentKey），wire 使用 `domainmarket.InstrumentKey` 强类型，完整迁移待 contracts InstrumentKey 泛化。
+3. **module/contracts 已存在**: `module/contracts`（独立 Go 仓 `github.com/ZoneCNH/contracts`，本地 `/home/workspace/contracts`）已创建。`pkg/contracts/ingestion.go` 已定义 canonical `IngestRequest`/`IngestResult`/`IngestAck`/`IngestReject`。`internal/wire/doc.go` 已声明此迁移路径：contracts 使用 `json.RawMessage`（InstrumentKey），wire 使用 `domainmarket.InstrumentKey` 强类型，完整迁移待 contracts InstrumentKey 泛化。
 
 4. **AGENTS.md 边界**: ZoneCNH 主仓 AGENTS.md 规定"模块代码的本地工作目录统一为 /home/{module}"。但 contracts 仓是独立 Go 模块仓（非文档仓），且 binance 仓 go.mod 已接入 `domain-market`、`natsx` 两个 ZoneCNH Go 仓作 direct 依赖，"禁止依赖文档仓 Go 代码"的旧理由前提不成立。真正的迁移阻力是 InstrumentKey 强类型差异与 33 处引用的切换成本，而非仓库边界。
 

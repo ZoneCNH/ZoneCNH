@@ -7,7 +7,7 @@
 | 仓库 | <https://github.com/ZoneCNH/domainx> |
 | 目标版本 | v1.0.0 |
 | 状态 | 已有 `goal.md` / `SPEC.md` / `TRACEABILITY.md`，本页补充外部执行计划对齐 |
-| 计划来源 | `/home/zone/Downloads/0615/ZoneCNH-v1.0.0-goal-execution-plans/domainx-v1.0.0-goal-execution-plan.md` |
+| 计划来源 | `/home/workspace/zone/Downloads/0615/ZoneCNH-v1.0.0-goal-execution-plans/domainx-v1.0.0-goal-execution-plan.md` |
 | 最后更新 | 2026-06-15 |
 
 ## v1.0.0 边界

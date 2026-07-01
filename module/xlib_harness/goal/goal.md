@@ -4,7 +4,7 @@
 > Last-Updated: 2026-06-30
 > Module-State: 已发布
 > Release-Version: v0.1.6
-> Implementation-Baseline: `/home/xlib_harness@d90b35124701`
+> Implementation-Baseline: `/home/workspace/xlib-harness@d90b35124701`
 
 ## 背景
 
@@ -52,7 +52,7 @@ Foundation 20 模块需要一个独立的最小合规脚手架与验收门禁，
 
 ## 当前证据
 
-- `/home/xlib_harness@d90b35124701`
+- `/home/workspace/xlib-harness@d90b35124701`
 - 本地 release tag：`v0.1.6`
 - GitHub Actions Release run `27855366871`：PASS
 - GitHub Actions main CI run `27855396013`：PASS

@@ -129,7 +129,7 @@ L2.5 依赖顺序：`decimalx → domainx → domain_market/domain_macro → dom
 | Phase C | 决策域登记（signal_factory/backtestx/optimizer/strategyx/maestro） | 同上 | ✅ 已写入 FOUNDATION-DEPS v1.3.0 |
 | Phase D | 分析域登记（factor_engine/feature_store/...） | 同上 | ✅ 已写入 FOUNDATION-DEPS v1.3.0 |
 | Phase E | 数据域登记（market_data/macro_data/...） | 同上 | ✅ 已写入 FOUNDATION-DEPS v1.3.0 |
-| Phase F | CI 集成（xlibgate 扩展 import graph 检查覆盖业务域） | xlibgate 更新 | ⏳ 待实施（独立仓库 /home/xlibgate） |
+| Phase F | CI 集成（xlibgate 扩展 import graph 检查覆盖业务域） | xlibgate 更新 | ⏳ 待实施（独立仓库 /home/workspace/xlibgate） |
 
 > 2026-06-26 已一次性写入 Phase B-E（全部业务域模块 + allowed/forbidden edges），采用方案 A（schema 先行数据，当前 CI 不消费）。Phase A（L2.5 补登记进 modules 段）与 Phase F（xlibgate 扩展）待后续推进。
 
@@ -145,7 +145,7 @@ L2.5 依赖顺序：`decimalx → domainx → domain_market/domain_macro → dom
 2026-06-26 已实施 Phase B-E 的 schema 写入（`business_domain_modules` / `business_allowed_deps` / `business_forbidden_edges` 三段，FOUNDATION-DEPS.yaml v1.3.0）。**关键约束**：
 - schema 数据当前是"死数据"——xlibgate `FoundationDeps` struct（`boundary.go`）不消费 business_* 段，CI 不校验业务域依赖
 - 未执行 Phase A（L2.5 补登记进 modules 段）——会触发 deps-matrix/evidence 主动 clone 校验，需先确认 decimalx/domain_market/domain_macro/domain_exchange 四仓 go.mod 就绪
-- Phase F（xlibgate 扩展）是真正生效的前提：需扩展 `FoundationDeps` struct 新增 business_* 字段 + `scanImports` 覆盖业务域 import 扫描，在独立仓库 `/home/xlibgate` 实施
+- Phase F（xlibgate 扩展）是真正生效的前提：需扩展 `FoundationDeps` struct 新增 business_* 字段 + `scanImports` 覆盖业务域 import 扫描，在独立仓库 `/home/workspace/xlibgate` 实施
 
 ---
 

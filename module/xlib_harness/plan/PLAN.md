@@ -3,7 +3,7 @@
 > Module: `xlib_harness`
 > Version: v0.1.6
 > Last-Updated: 2026-06-30
-> Implementation-Baseline: `/home/xlib_harness@d90b35124701`
+> Implementation-Baseline: `/home/workspace/xlib-harness@d90b35124701`
 
 ## Delivery Strategy
 
@@ -13,13 +13,13 @@
 
 | Task | Scope | Files | Status |
 | --- | --- | --- | --- |
-| `TASK-XLIBHARNESS-001` | CLI generation path and ten-asset output | `/home/xlib-harness/main.go`, `/home/xlib-harness/internal/harness/harness.go` | Completed |
-| `TASK-XLIBHARNESS-002` | 23-section spec template and spec profile checks | `/home/xlib-harness/internal/harness/harness.go`, compliant fixture | Completed |
-| `TASK-XLIBHARNESS-003` | Runtime dependency boundary checks for `go.mod` and Go imports | `/home/xlib-harness/internal/harness/harness.go`, bad-dependency fixture | Completed |
-| `TASK-XLIBHARNESS-004` | Makefile and CI/CD reference gates | `/home/xlib-harness/Makefile`, `.github/workflows/ci.yml`, `.github/workflows/release.yml` | Completed |
-| `TASK-XLIBHARNESS-005` | Markdown format checks | `/home/xlib-harness/internal/harness/harness.go`, unit tests | Completed |
-| `TASK-XLIBHARNESS-006` | FR/AC/TC trace closure checks | `/home/xlib-harness/internal/harness/harness.go`, broken-trace fixture | Completed |
-| `TASK-XLIBHARNESS-007` | Code-repository feature and acceptance docs plus license-free secret scan | `/home/xlib-harness/FEATURES.md`, `/home/xlib-harness/ACCEPTANCE.md`, `.github/workflows/ci.yml`, `.github/workflows/release.yml` | Completed |
+| `TASK-XLIBHARNESS-001` | CLI generation path and ten-asset output | `/home/workspace/xlib-harness/main.go`, `/home/workspace/xlib-harness/internal/harness/harness.go` | Completed |
+| `TASK-XLIBHARNESS-002` | 23-section spec template and spec profile checks | `/home/workspace/xlib-harness/internal/harness/harness.go`, compliant fixture | Completed |
+| `TASK-XLIBHARNESS-003` | Runtime dependency boundary checks for `go.mod` and Go imports | `/home/workspace/xlib-harness/internal/harness/harness.go`, bad-dependency fixture | Completed |
+| `TASK-XLIBHARNESS-004` | Makefile and CI/CD reference gates | `/home/workspace/xlib-harness/Makefile`, `.github/workflows/ci.yml`, `.github/workflows/release.yml` | Completed |
+| `TASK-XLIBHARNESS-005` | Markdown format checks | `/home/workspace/xlib-harness/internal/harness/harness.go`, unit tests | Completed |
+| `TASK-XLIBHARNESS-006` | FR/AC/TC trace closure checks | `/home/workspace/xlib-harness/internal/harness/harness.go`, broken-trace fixture | Completed |
+| `TASK-XLIBHARNESS-007` | Code-repository feature and acceptance docs plus license-free secret scan | `/home/workspace/xlib-harness/FEATURES.md`, `/home/workspace/xlib-harness/ACCEPTANCE.md`, `.github/workflows/ci.yml`, `.github/workflows/release.yml` | Completed |
 
 ## Boundary Rules
 
@@ -39,7 +39,7 @@ The implementation checks both `go.mod` module references and parsed Go imports.
 Run the following before release or merge:
 
 ```bash
-cd /home/xlib_harness
+cd /home/workspace/xlib-harness
 go build ./...
 go test ./...
 go test ./... -race -count=1
@@ -64,7 +64,7 @@ Required coverage threshold: 100.0%.
 
 ## Current Evidence
 
-- `/home/xlib_harness@d90b35124701`
+- `/home/workspace/xlib-harness@d90b35124701`
 - `make ci`: PASS
 - `go test -bench=. ./...`: PASS
 - coverage total: 100.0%

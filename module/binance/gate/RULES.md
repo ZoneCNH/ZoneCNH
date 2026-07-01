@@ -276,7 +276,7 @@ rg "backfill_weight_budget_per_minute" module/binance/spec/SPEC.md | head -1
 **检测命令**：
 ```bash
 # 检查代码中是否存在通用的时间间隔 gap 检测（禁止）
-rg "2\s*\*\s*(interval|expected)" /home/binance/internal/ --include='*.go' && echo "FAIL: 使用统一时间间隔法" || echo "PASS"
+rg "2\s*\*\s*(interval|expected)" /home/workspace/binance/internal/ --include='*.go' && echo "FAIL: 使用统一时间间隔法" || echo "PASS"
 ```
 **违反时**：低流动性 symbol 产生海量假缺口（trade/tick），depth updateId 跳跃漏检。必须在实现层按 FR-017 v3.9.0 分类型策略。
 **来源**：深度分析 v3.9.0 P0-2。

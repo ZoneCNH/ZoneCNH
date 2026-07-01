@@ -50,7 +50,7 @@
 | 工作区状态 | clean |
 | 当前分支 | detached HEAD |
 | `main` 对 `origin/main` | 同步 |
-| 当前仓库根路径 | `/home/ZoneCNH/.worktree/omx-team/git-3161440a/worker-3` |
+| 当前仓库根路径 | `/home/workspace/ZoneCNH/.worktree/omx-team/git-3161440a/worker-3` |
 
 ### 2.2 远端分支可见面
 
@@ -88,8 +88,8 @@
 脚本识别出的唯一 worktree path violation：
 
 - branch: `docs/binance-deep-analysis-v2-20260622`
-- actual path: `/home/ZoneCNH`
-- expected canonical path: `/home/ZoneCNH/.worktree/omx-team/git-3161440a/worker-3/.worktree/workspaces/docs/binance-deep-analysis-v2-20260622`
+- actual path: `/home/workspace/ZoneCNH`
+- expected canonical path: `/home/workspace/ZoneCNH/.worktree/omx-team/git-3161440a/worker-3/.worktree/workspaces/docs/binance-deep-analysis-v2-20260622`
 - reason: `branch-attached worktree path is not canonical`
 
 ---
