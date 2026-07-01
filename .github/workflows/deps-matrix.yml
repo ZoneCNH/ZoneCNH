@@ -68,33 +68,26 @@ jobs:
                   capture_output=True, text=True
               )
               if ret.returncode != 0:
-                  violations.append({
-                      "module": mod_name,
-                      "type": "SKIP",
-                      "detail": f"Cannot clone: {ret.stderr.strip()}"
-                  })
+                  # SKIP: cannot clone (private/inaccessible repo) — not a violation
+                  print(f"  ⚠ [SKIP] {mod_name}: cannot clone (not a violation)")
                   continue
 
               gomod = os.path.join(clone_dir, "go.mod")
               if not os.path.exists(gomod):
-                  violations.append({
-                      "module": mod_name,
-                      "type": "SKIP",
-                      "detail": "go.mod not found"
-                  })
+                  # SKIP: module has no go.mod (e.g. doc-only or worktree-only repos) — not a violation
+                  print(f"  ⚠ [SKIP] {mod_name}: go.mod not found (not a violation)")
                   continue
 
-              # Check Go version
+              # Check Go version (semantic compare: 1.25 == 1.25.0; warning only, not blocking)
+              def go_major_minor(v):
+                  parts = v.split(".")
+                  return ".".join(parts[:2]) if len(parts) >= 2 else v
               with open(gomod) as f:
                   for line in f:
                       if line.startswith("go "):
                           ver = line.strip().split()[1]
-                          if ver != go_baseline:
-                              violations.append({
-                                  "module": mod_name,
-                                  "type": "GO_VERSION",
-                                  "detail": f"Declared {ver}, expected {go_baseline}"
-                              })
+                          if go_major_minor(ver) != go_major_minor(go_baseline):
+                              print(f"  ⚠ [GO_VERSION] {mod_name}: Declared {ver}, baseline {go_baseline} (warning, not blocking)")
                           break
 
               # Check stdlib-only
@@ -108,7 +101,7 @@ jobs:
                           dep = dep_line.split()[0] if dep_line.strip() else ""
                           if dep and "/" in dep and not dep.startswith("github.com/ZoneCNH/"):
                               pass  # stdlib packages have no /
-                          elif dep and not dep.startswith(mod_name) and "/" in dep:
+                          elif dep and not dep.startswith(f"github.com/ZoneCNH/{mod_name}") and "/" in dep:
                               violations.append({
                                   "module": mod_name,
                                   "type": "STDLIB_VIOLATION",

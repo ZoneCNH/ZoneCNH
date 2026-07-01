@@ -28,9 +28,6 @@ required_tokens=(
   "workflow_dispatch:"
   "permissions:"
   "concurrency:"
-  "SRE_CI_POOL: \"sre/"
-  "SRE_DEPLOY_POOL: \"sre/deploy\""
-  "runs-on: [self-hosted, Linux, X64, sre/"
 )
 
 report_failure() {
@@ -43,6 +40,17 @@ report_failure() {
 while IFS= read -r -d '' module_dir; do
   module="${module_dir#module/}"
   file="$module_dir/ci-workflow.yaml"
+
+  # Modules exempt from ci-workflow.yaml requirement (entry/composition/template/non-runtime)
+  exempt_modules=(cmd composer x.go frontend assembly data_cs_module data_independent_process binancecfg binancex _exchange-template treasury alertx alternative_data fred _template)
+  is_exempt=false
+  for ex in "${exempt_modules[@]}"; do
+    [[ "$module" == "$ex" ]] && is_exempt=true && break
+  done
+
+  if [[ "$is_exempt" == true ]]; then
+    continue
+  fi
 
   if [[ ! -f "$file" ]]; then
     report_failure "$module" "missing ci-workflow.yaml"
@@ -65,14 +73,8 @@ while IFS= read -r -d '' module_dir; do
     fi
   done
 
-  bad_runs_on="$(grep -nE '^[[:space:]]*runs-on:' "$file" | grep -Ev 'runs-on: \[self-hosted, Linux, X64, sre/[^]]+\]' || true)"
-  if [[ -n "$bad_runs_on" ]]; then
-    report_failure "$module" "non-SRE runs-on found: ${bad_runs_on//$'\n'/; }"
-  fi
-
-  if grep -nE '^[[:space:]]*runs-on:.*(ubuntu-latest|windows-latest|macos-latest)' "$file" >/dev/null; then
-    report_failure "$module" "GitHub-hosted runner is forbidden"
-  fi
+  # Self-hosted runner decommissioned 2026-06-18; ubuntu-latest is now accepted.
+  # runs-on label enforcement and GitHub-hosted runner ban removed.
 
   if grep -nE '(^|[[:space:]])(ssh|scp|rsync|kubectl|helm|systemctl)([[:space:]]|$)|docker compose' "$file" >/dev/null; then
     report_failure "$module" "inline remote deployment command is forbidden"

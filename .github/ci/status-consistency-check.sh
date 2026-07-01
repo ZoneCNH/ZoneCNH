@@ -72,9 +72,9 @@ README_L25=$(count_readme_section "L2.5 · 领域共享层")
 README_ANALYSIS=$(count_readme_section "分析域")
 README_DECISION=$(count_readme_section "决策域")
 
-# 从 ARCHITECTURE 架构图提取写死的数量
-ARCH_MD_NUM=$(grep -oP 'market_data \(\K[0-9]+' "$REPO_ROOT/ARCHITECTURE.md" | head -1)
-ARCH_MACRO_NUM=$(grep -oP 'macro_data \(\K[0-9]+' "$REPO_ROOT/ARCHITECTURE.md" | head -1)
+# 从 ARCHITECTURE 架构图提取写死的数量（兼容 "market_data (N)" 和 "market_data 域 (N)" 格式）
+ARCH_MD_NUM=$(grep -oP 'market_data(?:\s+域)?\s+\(\K[0-9]+' "$REPO_ROOT/ARCHITECTURE.md" | head -1)
+ARCH_MACRO_NUM=$(grep -oP 'macro_data(?:\s+域)?\s+\(\K[0-9]+' "$REPO_ROOT/ARCHITECTURE.md" | head -1)
 
 # 从 ARCHITECTURE 状态总览表提取域名级计数
 ARCH_BASE=$(count_arch_domain "基座")

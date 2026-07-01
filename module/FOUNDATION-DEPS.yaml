@@ -160,20 +160,20 @@ allowed_deps:
   resiliencx:    [kernel]                              # 观测通过本地接口或 adapter 接入
   schedulex:     [kernel]                              # 不直接依赖 resiliencx/observex
   testkitx:      [kernel, configx, observex, resiliencx, schedulex]  # 测试所有
-  bootstrap:     [kernel, configx, observex, resiliencx, taosx, postgresx, redisx, kafkax, natsx, ossx, clickhousex]  # L1 Assembly 特例：只做组装，可依赖 L0/L1 primitives 与受控 L2 adapter；禁止 L2.5/业务域/x.go
+  bootstrap:     [kernel, configx, observex, resiliencx, taosx, postgresx, redisx, kafkax, natsx, ossx, clickhousex, foundationx]  # L1 Assembly 特例：只做组装，可依赖 L0/L1 primitives 与受控 L2 adapter；禁止 L2.5/业务域/x.go；foundationx 为间接依赖
   xlib_standard: []                                    # 标准源，无运行时依赖
   xlib_harness:  []                                    # 工具运行器，无 Foundation 运行时依赖
   xlib_evidence: []                                    # evidence runtime，无 Foundation 运行时依赖
   xlibgate:      []                                    # 机器门禁，无运行时依赖
-  redisx:        [kernel]                              # 只依赖 kernel 原语
-  kafkax:        [kernel]                              # 只依赖 kernel 原语
+  redisx:        [kernel, observex]                   # kernel 原语 + observex 观测接口
+  kafkax:        [kernel, observex]                   # kernel 原语 + observex 观测接口
   natsx:         [kernel]                              # 只依赖 kernel 原语
   postgresx:     [kernel]                              # 只依赖 kernel 原语
   taosx:         [kernel]                              # 只依赖 kernel 原语
   ossx:          [kernel]                              # 只依赖 kernel 原语
-  clickhousex:   [kernel]                              # 只依赖 kernel 原语
+  clickhousex:   [kernel, observex]                   # kernel 原语 + observex 观测接口
   contracts:     []                                    # 跨域契约独立，无 Foundation 运行时依赖
-  transportx:    [contracts, configx, observex, resiliencx]  # 传输契约可消费公开契约和横切接口
+  transportx:    [contracts, configx, observex, resiliencx, xlib-standard]  # 传输契约可消费公开契约和横切接口；xlib-standard 为标准源依赖
   domainx:       [kernel]                              # 领域共享原语只依赖 kernel
   alertx:        [observex, contracts]                # 横切告警消费者：单向依赖 observex 导出 + contracts 契约（ADR-001 D1）
 

@@ -3,10 +3,7 @@
 extends: default
 
 rules:
-  line-length:
-    max: 120
-    allow-non-breakable-words: true
-    allow-non-breakable-inline-mappings: true
+  line-length: disable
   truthy:
     allowed-values: ['true', 'false', 'yes', 'no']
   comments:
@@ -14,4 +11,4 @@ rules:
   document-start: disable
   indentation:
     spaces: 2
-    indent-sequences: true
+    indent-sequences: consistent

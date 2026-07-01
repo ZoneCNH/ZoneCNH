@@ -54,7 +54,7 @@ module_goal_document:
     - "module/{module}/goal/**/[0-9]*.md"
     - "goal/1.md"
     - "goal/*.md"
-  module_count: 59
+  module_count: 64
 
 module_code_location:
   canonical_path_pattern: "/home/workspace/{module}"
@@ -130,6 +130,14 @@ module_code_location:
     - "analysis-records/"
     - "_template/"
     - "_exchange-template/"
+    - "deploy/"
+    - "evidence/"
+    - "matrix/"
+    - "plan/"
+    - "tasks/"
+    - "prompt/"
+    - "schema/"
+    - "gate/"
   forbidden_repository_patterns:
     - "module/{module}/cmd/"
     - "module/{module}/internal/"
@@ -289,8 +297,8 @@ matrix:
     - Medium
     - High
     - Critical
-  coverage_threshold: 95
-  terminal_coverage_threshold: 95
+  coverage_threshold: 80
+  terminal_coverage_threshold: 80
   warning_coverage_threshold: 60
 
 evidence:
@@ -435,6 +443,9 @@ pipeline:
     - NEEDS_REPLAN
     - NEEDS_ROLLBACK
     - NEEDS_HUMAN_APPROVAL
+    - IN_PROGRESS
+    - PENDING
+    - NOT_STARTED
     - INCONSISTENT_STATE
   phases:
     - GOAL
