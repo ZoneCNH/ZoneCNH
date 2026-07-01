@@ -2,10 +2,31 @@
 
 所有 notable 变更记录，按 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/) 格式维护。
 
-- Module-Version: v3.9.6
-- Last-Updated: 2026-06-30
+- Module-Version: v3.9.7
+- Last-Updated: 2026-07-01
 - Spec-Reference: `module/binance/spec/SPEC.md` v3.9.6
 - 治理规则：`module/binance/gate/RULES.md` R9 文档存在性
+
+---
+
+## 2026-07-01 gap repair runtime bug 对齐（DEPLOY.md anchor → f53303f）
+
+### Changed — module/binance/deploy/DEPLOY.md
+
+- **Runtime-Version**：v0.10.0 → v0.11.0（anchor `/home/binance@e424c25` → `/home/binance@f53303f`）
+- **§13.5 gap repair 机制现状表**：新增 Repair re-publish、Stale gate 修复豁免、Kline 存储路由三行；更新 AlertDispatcher（+5s timeout）、Client 侧 gap-fill（+无效区间跳过）、Server↔Client 自动联动（+repair 验证）、durable historical fetch/replay（+RepairIngestor）四行
+- **§13.5 结论**：补全 repair re-publish → stale gate 豁免 → TDengine 存储的完整闭环描述
+- **§13.5 手动操作第 5 项**：补全 RepairIngestor.Ingest + repair=verified 元数据 + stale gate 豁免环节
+
+### Added — module/binance/deploy/DEPLOY.md
+
+- **§13.6 gap repair runtime bugs**：新增 PR #364（commit `f53303f`）10 项运行时 bug 修复记录（G1-G10），覆盖 NATS 发布超时、aggTrades REST 400、零时长任务跳过、aggTrades JSON 解析、RepairIngestor 回填再发布、stale gate 豁免、kline 存储路由、REST kline 对象转换、无效 gap-fill 跳过、KafkaConfig gofmt 对齐
+
+### Runtime 变更证据
+
+- binance merge commit：`f53303f`（PR #364，12 文件，+180/-24 行）
+- 前序 commit：`22f2384`（PR #363，lifecycle worker）
+- 旧 anchor `e424c25` 已不在当前 main 历史中（rebase 后等效 commit 为 `22f2384`）
 
 ---
 
