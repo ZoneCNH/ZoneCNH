@@ -112,7 +112,7 @@ Every data-driven component handles: Loading (skeleton), Empty (dashed border + 
 |--------|:------:|:------:|
 | Main JS (gzip) | < 300 KB | 217 KB |
 | CSS (gzip) | < 30 KB | 4.5 KB |
-| Code splitting | ≥ 3 chunks | 8 chunks |
+| Code splitting | ≥ 3 chunks | 12 chunks |
 
 ## 12. Testing
 
