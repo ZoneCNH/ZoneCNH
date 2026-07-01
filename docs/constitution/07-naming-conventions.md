@@ -40,17 +40,17 @@
 
 | 层面 | 规范 | macro_data 示例 |
 | --- | --- | --- |
-| 模块 / 仓库 / 路径 / 公开文档链接 | kebab-case | `macro_data` |
+| 模块 / 仓库 / 路径 / 公开文档链接 | snake_case | `macro_data` |
 | JSON / YAML / 配置 / Goal registry / 接收侧字段 | snake_case | `macro_data`, `series_code`, `available_at` |
 | Go 导出类型 / 接口 / 常量名 | PascalCase | `MacroDataProvider`, `TopicMacroData` |
 | Topic literal / 事件通道值 | dot.case | `macro.data` |
 
 规则：
 
-- `macro_data` 只表示模块、仓库、目录和公开文档链接，不得作为配置键或接收侧字段名。
+- 模块、仓库、目录和公开文档链接统一使用 **snake_case**（与 CLAUDE.md §仓库命名规则（全局强制）一致；禁止 kebab-case、PascalCase、camelCase）。
 - `macro_data` 是宏观数据域在 JSON/YAML/config/registry/receiver 字段中的 canonical token；字段名使用 `series_code`、`observed_at`、`released_at`、`available_at`、`revision_version`、`is_preliminary`、`idempotency_key`、`ordering_key`。
 - Go 类型和导出标识保留 PascalCase；不得为了对齐 snake_case 而重命名 `MacroDataProvider`、`TopicMacroData` 等 Go symbol。
 - Topic 字符串保留 dot.case；`macro.data` 不得替换为 `macro_data`。
-- 禁止在文档、配置和注册表中新增 `macroData`、`macrodata`、`Macrodata` 等漂移写法。
+- 禁止在文档、配置和注册表中新增 `macroData`、`macrodata`、`Macrodata`、`macro-data` 等漂移写法。
 
 ---
