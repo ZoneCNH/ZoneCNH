@@ -49,7 +49,7 @@ release gate 在以下情况必须非零退出：G10 未 PASS、存在未解除�
 
 CI MUST 调用统一 validator 或 `docs/goal/tools/` 中的封装脚本，不得在 workflow YAML 中复制第二套 Gate 规则。允许 workflow 只做调度、缓存、上传 artifact 和组合 job 结果。
 
-Goal CI 的 runner class 是执行环境约束，不是 Gate 判定来源。`.github/workflows/goal-ci.yml` 中所有 Goal job MUST 使用 `[self-hosted, Linux, X64, homepage]`，以保持项目内一致的自托管执行面。`homepage` 是当前仓库已登记的项目 runner 标签；实际 workflow MUST NOT 只使用 `[self-hosted, Linux, X64]`，否则 GitHub Actions 可能调度到未满足本仓库 tool cache / 权限合同的通用 runner，并在首个 step 前失败。自托管 runner MUST 提供可写 workspace、tool cache 和临时目录；workflow MUST 将 `RUNNER_TOOL_CACHE` / `AGENT_TOOLSDIRECTORY` 指向仓库工作区内的可写路径，并在 checkout 前创建目录。
+Goal CI 的 runner class 是执行环境约束，不是 Gate 判定来源。`.github/workflows/goal-ci.yml` 中所有 Goal job MUST 使用 `[self-hosted, Linux, X64, ci-governance]`，以保持项目内一致的自托管执行面。`ci-governance` 是当前仓库在 sre/host 机器池（94.72.124.39）已登记的项目 runner 标签；实际 workflow MUST NOT 只使用 `[self-hosted, Linux, X64]`，否则 GitHub Actions 可能调度到未满足本仓库 tool cache / 权限合同的通用 runner，并在首个 step 前失败。自托管 runner MUST 提供可写 workspace、tool cache 和临时目录；workflow MUST 将 `RUNNER_TOOL_CACHE` / `AGENT_TOOLSDIRECTORY` 指向仓库工作区内的可写路径，并在 checkout 前创建目录。
 
 Python/YAML 工具 MUST 通过 `docs/goal/tools/setup-ci-toolchain.sh` 安装到 workspace-local 隔离路径。首选路径是 job-local virtualenv；如果自托管 runner 缺少 `python3-venv` / `ensurepip`，脚本 MUST fallback 到 workspace-local `pip --target` 目录，并通过 `PYTHONPATH` 与 wrapper binary 暴露给后续 step。workflow MUST NOT 依赖全局 `PyYAML`、全局 `yamllint`、hosted runner tool cache 或 runner 预装包版本；只有缺少 `pip` 这类基础解释器能力时才可标记为 CI 基础设施阻断。
 
