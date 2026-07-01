@@ -12,39 +12,34 @@
 > 本文档只描述当前 runtime 的公开契约面，不承诺具体传输、存储或业务实现。
 > 本模块为纯接口契约模块（无运行时依赖，暴露 DTO/Port marker 等公开类型），适用快速通道。
 
-## 元数据
-
-| 字段 | 值 |
-|------|-----|
-| Status | Approved |
-| Owner | ZoneCNH |
-| Version | v1.2.0 |
-| Updated | 2026-06-27 |
-| Fast-Track | true |
-
-## 摘要
+## 1. 摘要
 
 contracts 是 ZoneCNH 跨域接口契约模块，定义 `Event`/`Command`/`Query` 基础封装、`DTO`/`Port` 标记接口、`ErrorCode` 错误元数据、`RegimeSnapshot`/`RegimeCard`/`DecisionCard` 行情/决策卡片、`SignalIntent` 下单意图，以及 provider port 和 ingestion wire contract。
 
-## 问题与背景
+## 2. 问题与背景
 
 跨域模块（market_data / factor_engine / riskx / orderx 等）需要共享的类型定义和接口契约，但不得产生运行时依赖。contracts 作为纯接口模块提供编译时类型安全。
 
-## 目标
+## 3. 目标
 
 1. 提供跨域共享的公共类型定义
 2. 定义 provider/consumer 接口契约
 3. 保持零运行时依赖（stdlib only）
 4. 编译时类型检查替代运行时耦合
 
-## 非目标
+## 4. 非目标
 
-1. 不包含任何业务逻辑实现
-2. 不定义传输协议或存储格式
-3. 不包含可执行入口（无 main / cmd）
-4. 不依赖任何 FoundationX 模块
+- 不包含任何业务逻辑实现
+- 不定义传输协议或存储格式
+- 不包含可执行入口（无 main / cmd）
+- 不依赖任何 FoundationX 模块
+- 不定义 transport adapter、broker、HTTP client 或 gRPC server
+- 不恢复 Topic 常量层
+- 不恢复旧方法名或旧 DTO 命名族
+- 不把 release history 写成契约本体
+- 不承载业务流程编排或状态机
 
-## 1. 导出面概览
+## 5. 导出面概览
 
 | 类别 | 当前符号 | 说明 |
 | --- | --- | --- |
@@ -60,7 +55,9 @@ contracts 是 ZoneCNH 跨域接口契约模块，定义 `Event`/`Command`/`Query
 | 兼容层 | `RegimeSnapshotEvent`, `RegimeCardEvent`, `DecisionCardEvent`, `MarketRegimePort`, `MacroRegimePort`, `RegimeEnginePort` | 旧名桥接到当前 runtime 符号。 |
 | 告警契约 | `AlertEvent`, `AlertRule`, `Severity`, `AlertStatus`, `AlertSink`, `AlertRuleStore` | alertx 告警引擎的跨域输入面：告警事件、声明式规则、严重等级、端口订阅。来源 `pkg/contracts/alert.go`（待 v1.6.0 tag）。 |
 
-## 2. 功能需求
+## 6. 功能需求
+
+> FR 全集 FR-001..FR-009 详见 `TRACEABILITY.md`。本节以稳定契约格式描述。
 
 ### FR-001: 基础封装
 
@@ -149,7 +146,9 @@ contracts 是 ZoneCNH 跨域接口契约模块，定义 `Event`/`Command`/`Query
 
 > 设计来源：`module/alertx/ADR-001-foundations.md`（双订阅 + YAML DSL + v1.0.0 目标）。`Severity` 常量值是稳定字符串，变更属破坏性变更（须走 BR-010 兼容层流程）。
 
-## 3. 行为约束
+## 7. 行为约束
+
+> BR 全集 BR-001..BR-010 详见 `TRACEABILITY.md`。
 
 ### BR-001: 契约归属
 
@@ -202,7 +201,7 @@ contracts 是 ZoneCNH 跨域接口契约模块，定义 `Event`/`Command`/`Query
 
 公开 rename/removal 视为破坏性变更，必须先完成兼容层与追溯文档更新，再进入发布决策。
 
-## 4. 非功能需求
+## 8. 非功能需求
 
 ### NFR-001: 运行时验证
 
@@ -236,23 +235,15 @@ canonical reject-code 集合保持 10 项，不随文档整理漂移。
 
 `stable period`、`v1.0.1`、旧方法名与旧 Topic 叙事不得回流到当前 docs baseline。
 
-## 5. 非目标
+## 9. 验收标准（Acceptance Criteria Registry）
 
-- 不定义 transport adapter、broker、HTTP client 或 gRPC server
-- 不恢复 Topic 常量层
-- 不恢复旧方法名或旧 DTO 命名族
-- 不把 release history 写成契约本体
-- 不承载业务流程编排或状态机
-
-## 6. 验收标准（Acceptance Criteria Registry）
-
-> 验收口径：本 Registry 锚定到 §2 Functional Requirements 与 §3 Behavior Rules，每条 AC 必须能由 `/home/workspace/contracts/pkg/contracts/` 的 runtime 符号检查或单元测试直接验证。`Status` 与 §0 Metadata 的 `Status: Docs Baseline Synced / Runtime Truth Verified` 对齐。
+> 验收口径：本 Registry 锚定到 §6 功能需求 与 §7 行为约束，每条 AC 必须能由 `/home/workspace/contracts/pkg/contracts/` 的 runtime 符号检查或单元测试直接验证。`Status` 与 §0 Metadata 的 `Status: Docs Baseline Synced / Runtime Truth Verified` 对齐。
 
 | AC ID      | FR/BR Ref      | Criterion                                                                                                       | Verification                                                                 | Status   |
 | ---------- | -------------- | --------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | -------- |
-| AC-CTR-001 | FR-001         | `Event` / `Command` / `Query` 导出且字段结构匹配 §2.FR-001 列表（Event=ID/Type/Source/Version/Data 等）          | `go doc github.com/ZoneCNH/contracts.{Event,Command,Query}` + 字段断言       | Verified |
+| AC-CTR-001 | FR-001         | `Event` / `Command` / `Query` 导出且字段结构匹配 §6.FR-001 列表（Event=ID/Type/Source/Version/Data 等）          | `go doc github.com/ZoneCNH/contracts.{Event,Command,Query}` + 字段断言       | Verified |
 | AC-CTR-002 | FR-002         | `DTO` / `Port` marker interface 暴露 `IsDTO()` / `IsPort()`；`ErrorCode` 暴露 `Code/Domain/Severity/Retryable` | runtime 包 `pkg/contracts/contracts.go` go vet + 单元测试断言                | Verified |
-| AC-CTR-003 | FR-003         | `RegimeSnapshot` / `RegimeCard` / `DecisionCard` 三类业务载体在 runtime 中导出，且字段对齐 §2.FR-003           | `pkg/contracts/regime_snapshot.go` / `regime_card.go` / `decision_card.go` 导出符号检查 | Verified |
+| AC-CTR-003 | FR-003         | `RegimeSnapshot` / `RegimeCard` / `DecisionCard` 三类业务载体在 runtime 中导出，且字段对齐 §6.FR-003           | `pkg/contracts/regime_snapshot.go` / `regime_card.go` / `decision_card.go` 导出符号检查 | Verified |
 | AC-CTR-004 | FR-004         | `SignalIntent` 导出；`SignalFactoryProvider.Generate(card, symbols) ([]SignalIntent, error)` 签名稳定           | `pkg/contracts/signal_intent.go` + `ports.go` 接口签名断言                   | Verified |
 | AC-CTR-005 | FR-005         | 四个 Provider 端口（MarketDataProvider/MacroDataProvider/DecisionCardProvider/SignalFactoryProvider）暴露 `Latest*` 与 `Subscribe*` 方法 | `pkg/contracts/ports.go` go doc + 接口实现断言                               | Verified |
 | AC-CTR-006 | FR-006, BR-006, BR-007 | `MarketDataService.Ingest(IngestRequest) (IngestResult, error)` 为单次请求/响应；`AllRejectCodes()` 返回 10 项 canonical 集合，包含 `RejectUnsupportedChannel` | `pkg/contracts/ingestion.go` + 测试 `len(AllRejectCodes()) == 10` + 集合断言 | Verified |
@@ -265,11 +256,13 @@ canonical reject-code 集合保持 10 项，不随文档整理漂移。
 | AC-CTR-013 | NFR-001, NFR-002, NFR-003 | `/home/workspace/contracts` 通过 `go build ./...` / `go test ./... -race -count=1` / `go vet ./...` / lint 全部 ✅ | CI gate (foundation-release.yml + audit-status)                              | Verified |
 | AC-CTR-014 | NFR-007, NFR-008 | 文档不把 gRPC / Kafka / NATS / HTTP 写成契约本体；`stable period` / `v1.0.1` / 旧方法名 / 旧 Topic 叙事不回流 | docs grep 扫描零命中                                                          | Verified |
 
-> Coverage check：14 条 AC 覆盖 8 条 FR + 10 条 BR + 8 条 NFR；FR-001..FR-008 每条至少一个 AC 锚点；BR-001..BR-010 全部映射；NFR-001..NFR-008 通过 AC-CTR-013/014 与 NFR-006 通过 AC-CTR-011 关联。
+> Coverage check：14 条 AC 覆盖 9 条 FR + 10 条 BR + 8 条 NFR；FR-001..FR-009 每条至少一个 AC 锚点；BR-001..BR-010 全部映射；NFR-001..NFR-008 通过 AC-CTR-013/014 与 NFR-006 通过 AC-CTR-011 关联。
+
+> 基线 AC 摘要（Fast-Track: true）：AC-001 (FR-001 Event/Command/Query 编译通过且字段稳定)、AC-002 (FR-002 DTO/Port marker 通过编译时类型检查)、AC-003 (FR-003 ErrorCode.Code/Domain/Severity/Retryable 字段可访问)、AC-004 (FR-004 RegimeSnapshot 五维评分字段完整)、AC-005 (FR-005 DataProvider/MarketDataProvider 接口可编译)、AC-006 (FR-006 SignalIntent 含 Action/Symbol/Quantity 必填字段)、AC-007 (FR-007 Ingestion wire contract 含 Topic/Key/Version)、AC-008 (FR-008 Alert contract 含 AlertID/Severity/Message)、AC-009 (BR-001 ErrorCode.Retryable 为 true 时调用方可重试)、AC-010 (BR-002 DecisionCard.Action 不允许 INVALID 状态)。完整 AC/TC 追溯矩阵见 `TRACEABILITY.md`。
 
 ---
 
-## 7. 参考
+## 10. 参考
 
 - `/home/workspace/contracts/pkg/contracts/contracts.go`
 - `/home/workspace/contracts/pkg/contracts/ports.go`
@@ -282,7 +275,7 @@ canonical reject-code 集合保持 10 项，不随文档整理漂移。
 
 ---
 
-## 边界情况
+## 11. 边界情况
 
 1. **空输入**：`Decode()` 接收空 `[]byte` 时返回 `ErrInvalidEncoding`，不 panic
 2. **并发读写**：DTO 为值类型不可变，并发安全由调用方保证
@@ -290,36 +283,11 @@ canonical reject-code 集合保持 10 项，不随文档整理漂移。
 4. **超大 payload**：`Event.Payload` 超过 10MB 时，调用方应在传输层分片
 5. **接口演进**：新增 marker interface 方法时，所有实现方必须同步更新（编译时检查）
 
-## 验收标准
-
-| ID | 关联 FR | 描述 |
-|----|--------|------|
-| AC-001 | FR-001 | Event/Command/Query 编译通过且字段稳定 |
-| AC-002 | FR-002 | DTO/Port marker 通过编译时类型检查 |
-| AC-003 | FR-003 | ErrorCode.Code/Domain/Severity/Retryable 字段可访问 |
-| AC-004 | FR-004 | RegimeSnapshot 五维评分字段完整 |
-| AC-005 | FR-005 | DataProvider/MarketDataProvider 接口可编译 |
-| AC-006 | FR-006 | SignalIntent 含 Action/Symbol/Quantity 必填字段 |
-| AC-007 | FR-007 | Ingestion wire contract 含 Topic/Key/Version |
-| AC-008 | FR-008 | Alert contract 含 AlertID/Severity/Message |
-| AC-009 | BR-001 | ErrorCode.Retryable 为 true 时调用方可重试 |
-| AC-010 | BR-002 | DecisionCard.Action 不允许 INVALID 状态 |
-
-> 注：本模块为快速通道（Fast-Track: true），上述 AC 为基线验收标准。完整 AC/TC 追溯矩阵见 `TRACEABILITY.md`。
-
-## 消费者
+## 12. 消费者
 
 所有 FoundationX 业务域模块（market_data / factor_engine / riskx / orderx / signal_factory / strategyx / settlement / maestro / ms_brain / regime_engine 等）。
 
-## 功能需求
-
-FR-001 至 FR-008，详见 `TRACEABILITY.md`。本文 §1-§6 以运行时契约格式描述等价的 WHEN/THEN 行为。
-
-## 行为约束
-
-BR-001 至 BR-010，详见 `TRACEABILITY.md`。
-
-## 接口契约
+## 13. 接口契约
 
 ```go
 type DTO interface{ ... }
@@ -329,19 +297,19 @@ type DataProvider interface{ ... }
 
 完整接口定义见 `/home/workspace/contracts/pkg/contracts/`。
 
-## 数据模型
+## 14. 数据模型
 
 DTO 为值类型（不可变），Port 为行为接口（无状态）。具体 struct 定义见 runtime 仓库。
 
-## 配置模式
+## 15. 配置模式
 
 本模块为纯接口契约，无运行时配置。
 
-## 错误处理
+## 16. 错误处理
 
 `ErrorCode` 提供 `Code`/`Domain`/`Severity`/`Retryable` 字段，调用方按需处理。
 
-## 目录结构
+## 17. 目录结构
 
 ```
 /home/workspace/contracts/pkg/contracts/
@@ -355,38 +323,38 @@ DTO 为值类型（不可变），Port 为行为接口（无状态）。具体 s
 └── projections.go
 ```
 
-## 依赖
+## 18. 依赖
 
 无内部依赖（stdlib only）。
 
-## 测试
+## 19. 测试
 
 - `go test ./... -race -count=1`（runtime 仓）
 - 编译时类型检查：所有接口实现方
 
-## 性能预算
+## 20. 性能预算
 
 本模块为零运行时开销（纯类型定义 + 接口声明）。
 
-## 可观测性
+## 21. 可观测性
 
 不适用（纯接口模块无运行时）。
 
-## 安全
+## 22. 安全
 
 1. DTO 不携带凭证字段
 2. ErrorCode 不泄露内部路径
 3. 接口契约不绑定具体传输协议
 
-## CI 门禁
+## 23. CI 门禁
 
 `go build ./...` + `go vet ./...` + lint（runtime 仓 CI）。
 
-## 升级兼容性
+## Appendix A: 升级兼容性
 
 接口变更遵循语义版本控制：新增方法 = MINOR，删除/修改方法签名 = MAJOR（需 migration guide）。
 
-## 发布 DoD
+## Appendix B: 发布 DoD
 
 - [x] `go build ./...` 通过
 - [x] `go test ./... -race -count=1` 通过
@@ -394,6 +362,6 @@ DTO 为值类型（不可变），Port 为行为接口（无状态）。具体 s
 - [x] TRACEABILITY.md 已更新
 - [x] CHANGELOG.md 已更新
 
-## 待解决问题
+## Appendix C: 待解决问题
 
 无。当前基线已与 runtime 仓库 `/home/workspace/contracts` 对齐。
