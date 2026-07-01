@@ -1,6 +1,6 @@
 {
   "module": "kernel",
-  "last_updated": "2026-06-28T22:56:12Z",
+  "last_updated": "2026-07-01T12:31:58Z",
   "ship_history": [
     {
       "computed_at": "2026-06-10T22:15:29Z",
@@ -27,6 +27,23 @@
         "real_bug_count_90d": null,
         "rework_commit_count": 2,
         "rework_loc_ratio": 0.4324,
+        "test_flakiness_7d": null,
+        "ci_failure_rate_post_merge_7d": null,
+        "production_incident_count": null,
+        "p99_latency_regression_pct": null,
+        "security_advisory_count": null,
+        "developer_override_count": 0,
+        "rollback_occurred": null
+      }
+    },
+    {
+      "computed_at": "2026-07-01T12:31:58Z",
+      "spec_sha": "9d6155a0ba00ef39c2240195858587d0fa9c4289",
+      "outer_metrics": {
+        "real_bug_count_30d": null,
+        "real_bug_count_90d": null,
+        "rework_commit_count": 6,
+        "rework_loc_ratio": 0.4412,
         "test_flakiness_7d": null,
         "ci_failure_rate_post_merge_7d": null,
         "production_incident_count": null,
