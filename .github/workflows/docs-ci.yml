@@ -44,6 +44,8 @@ jobs:
 
       - name: 检查链接有效性（lychee）
         uses: lycheeverse/lychee-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           args: >-
             --verbose
