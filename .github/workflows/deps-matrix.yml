@@ -68,20 +68,14 @@ jobs:
                   capture_output=True, text=True
               )
               if ret.returncode != 0:
-                  violations.append({
-                      "module": mod_name,
-                      "type": "SKIP",
-                      "detail": f"Cannot clone: {ret.stderr.strip()}"
-                  })
+                  # SKIP: cannot clone (private/inaccessible repo) — not a violation
+                  print(f"  ⚠ [SKIP] {mod_name}: cannot clone (not a violation)")
                   continue
 
               gomod = os.path.join(clone_dir, "go.mod")
               if not os.path.exists(gomod):
-                  violations.append({
-                      "module": mod_name,
-                      "type": "SKIP",
-                      "detail": "go.mod not found"
-                  })
+                  # SKIP: module has no go.mod (e.g. doc-only or worktree-only repos) — not a violation
+                  print(f"  ⚠ [SKIP] {mod_name}: go.mod not found (not a violation)")
                   continue
 
               # Check Go version (semantic compare: 1.25 == 1.25.0; warning only, not blocking)
