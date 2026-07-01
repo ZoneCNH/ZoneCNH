@@ -94,7 +94,7 @@ C-LINT-002: PR 必须引用至少一个 Matrix edge
 C-LINT-003: PR 必须包含测试说明
 C-LINT-004: P0/P1 Task 不允许无测试合并
 C-LINT-005: PR 不能包含未关联 Task 的大规模代码改动
-C-LINT-006: 模块代码实现必须位于 /home/{module} 对应仓库
+C-LINT-006: 模块代码实现必须位于 /home/workspace/{module} 对应仓库
 C-LINT-007: 本仓库 module/{module}/ 下不得新增实现源码树或复制出的模块代码；只读分析快照必须在规则 allowlist 内
 ```
 
@@ -152,7 +152,7 @@ C-LINT-007: 本仓库 module/{module}/ 下不得新增实现源码树或复制�
 | C-LINT-003 | semi-automated | lint-goal.sh                   | PR 必须包含测试说明（grep test/测试 + [需人工确认]）                  |
 | C-LINT-004 | semi-automated | lint-goal.sh                   | P0/P1 Task 不允许无测试合并（grep P0/P1 + test + [需人工确认]）       |
 | C-LINT-005 | implemented    | goal-validate.py               | PR 不能包含未关联 Task 的大规模代码改动                               |
-| C-LINT-006 | implemented    | rule-drift-check.py            | 模块代码实现必须位于 /home/{module}                                   |
+| C-LINT-006 | implemented    | rule-drift-check.py            | 模块代码实现必须位于 /home/workspace/{module}                                   |
 | C-LINT-007 | implemented    | rule-drift-check.py            | module/{module}/ 下不得新增实现源码树                                 |
 
 ### 规则覆盖率

@@ -33,5 +33,5 @@ developer_instructions = """
 规则：
 - 这是纯机器门禁，不因叙述质量放宽。
 - 尽量使用 `scripts/arbiter.py` 保持算法一致。
-- 只写 verdict 与 attempts；不得修改 `module/{module}/`、`/home/{module}/`、Rubric 或 agent 定义。
+- 只写 verdict 与 attempts；不得修改 `module/{module}/`、`/home/workspace/{module}/`、Rubric 或 agent 定义。
 """

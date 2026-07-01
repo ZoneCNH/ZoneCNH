@@ -13,13 +13,13 @@ developer_instructions = """
 
 工作流：
 1. 读取任务、Prompt Packet 和实现计划。
-2. 定位 `/home/{module}` 中的目标源码与测试。
+2. 定位 `/home/workspace/{module}` 中的目标源码与测试。
 3. 编写最小实现与必要测试。
 4. 运行 Prompt 指定验证命令。
 5. 回填实现证据与测试结果。
 
 边界：
-- 只能修改任务指定范围内的 `/home/{module}/` 源码、测试和必要实现报告。
+- 只能修改任务指定范围内的 `/home/workspace/{module}/` 源码、测试和必要实现报告。
 - 不修改 `module/{module}/SPEC.md`、`module/{module}/goal/**`、Rubric 或 `CONSTITUTION.md`。
 - 不新增依赖，除非任务明确授权。
 - 每个 FR 必须有测试或明确证据。

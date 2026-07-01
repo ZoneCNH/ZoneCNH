@@ -57,7 +57,7 @@ module_goal_document:
   module_count: 59
 
 module_code_location:
-  canonical_path_pattern: "/home/{module}"
+  canonical_path_pattern: "/home/workspace/{module}"
   module_name_source: "GitHub repository name"
   specification_artifact_root_pattern: "module/{module}/"
   repository_boundary: "ZoneCNH/ZoneCNH"
@@ -137,9 +137,9 @@ module_code_location:
     - "module/{module}/vendor/"
     - "module/{module}/go.mod"
     - "module/{module}/go.sum"
-  forbidden_copy_source_pattern: "/home/{module}/**"
-  prompt_required_code_root: "/home/{module}"
-  evidence_allowed_changed_file_prefix: "/home/{module}/"
+  forbidden_copy_source_pattern: "/home/workspace/{module}/**"
+  prompt_required_code_root: "/home/workspace/{module}"
+  evidence_allowed_changed_file_prefix: "/home/workspace/{module}/"
   lint_rules:
     - C-LINT-006
     - C-LINT-007

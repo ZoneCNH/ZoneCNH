@@ -14,7 +14,7 @@ import {
 } from "./worktree-policy.mjs";
 
 test("describes canonical worktree paths and root checkout exceptions", () => {
-  assert.equal(WORKTREE_PATH_RULE, "/home/{module}/.worktree/workspaces/<branch-name>");
+  assert.equal(WORKTREE_PATH_RULE, "/home/workspace/{module}/.worktree/workspaces/<branch-name>");
   assert.equal(canonicalWorktreePath("/repo", "feature-x"), "/repo/.worktree/workspaces/feature-x");
 
   const parsed = parseWorktreePorcelain([

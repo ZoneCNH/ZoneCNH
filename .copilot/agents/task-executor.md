@@ -56,7 +56,7 @@ go test ./... -race -count=1
 
 ## 可写路径
 
-- `/home/{module}/**`（运行时源码与测试）
+- `/home/workspace/{module}/**`（运行时源码与测试）
 
 ## 禁止写入
 

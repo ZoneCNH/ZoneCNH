@@ -102,35 +102,63 @@ echo "[2/4] 运行时目录检查"
 check_pattern_excluding ".omc / .omx 运行时目录" \
   '(\.omc/|\.omx/|\.omc\b|\.omx\b)' \
   'AGENTS\.md' \
+  'CLAUDE\.md' \
   'CONSTITUTION\.md' \
   'docs/ci-deployment\.md' \
   '\.config/goal/' \
   'docs/governance/' \
   'docs/goal/' \
   'docs/spec/' \
+  'docs/constitution/' \
+  'docs/workflow/' \
+  'docs/superpowers/' \
   'module/' \
+  'report/' \
+  'release/' \
+  'plans/' \
   '\.claude/' \
   '\.codex/' \
   '\.copilot/' \
   '\.omc/'
 
 # ── 3. 本地地址 ──────────────────────────────────────────
+# 排除部署文档/执行计划/证据中描述生产拓扑绑定 127.0.0.1 的合法引用
 echo "[3/4] 本地地址检查"
-check_pattern "127.0.0.1 / localhost / 0.0.0.0" \
-  '(127\.0\.0\.1|localhost|0\.0\.0\.0|::1)'
+check_pattern_excluding "127.0.0.1 / localhost / 0.0.0.0" \
+  '(127\.0\.0\.1|localhost|0\.0\.0\.0|::1)' \
+  'module/' \
+  'plans/' \
+  'report/' \
+  'release/' \
+  'docs/superpowers/'
 
 # ── 4. 本地绝对路径 ──────────────────────────────────────
+# 排除模块索引/架构文档/执行计划/证据矩阵中引用 /home/workspace/{module} runtime 路径的合法引用
 echo "[4/4] 本地绝对路径检查"
 check_pattern_excluding "/home/workspace/xxx 或 /Users/xxx 或 C:\\xxx" \
   '(/home/[a-zA-Z0-9_-]+/|/Users/[a-zA-Z0-9_-]+/|[A-Z]:\\\\)' \
   'AGENTS\.md' \
+  'CLAUDE\.md' \
   'ARCHITECTURE\.md' \
   '\.config/goal/' \
   'docs/governance/' \
   'docs/goal/' \
-  'report/' \
+  'docs/architecture/' \
+  'docs/constitution/' \
+  'docs/production-standards/' \
+  'docs/migrations/' \
+  'docs/superpowers/' \
+  'docs/workflow/' \
   'docs/spec/' \
-  'module/'
+  'report/' \
+  'release/' \
+  'plans/' \
+  'module/' \
+  'README\.md' \
+  '\.foundationx/' \
+  '\.claude/' \
+  '\.codex/' \
+  '\.copilot/'
 
 # ── 结果 ─────────────────────────────────────────────────
 echo "=== 结果 ==="

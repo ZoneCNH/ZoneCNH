@@ -1,7 +1,7 @@
 import { existsSync, readdirSync } from "fs";
 import { relative, resolve } from "path";
 
-export const WORKTREE_PATH_RULE = "/home/{module}/.worktree/workspaces/<branch-name>";
+export const WORKTREE_PATH_RULE = "/home/workspace/{module}/.worktree/workspaces/<branch-name>";
 
 const normalizeBranchName = (branchName) => String(branchName || "").trim().replace(/^refs\/heads\//, "");
 

@@ -8,14 +8,14 @@
 
 ## 项目结构与模块组织
 
-本仓库是 FoundationX 治理体系仓——定义 Goal 驱动交付管线、模块治理规则、Spec→Code 工作流和四源评分体系，同时承载个人架构索引。治理对象覆盖 21 个基座模块仓（见 `.foundationx/status/index.json`）和 59 个 module 规格目录。本仓库不含模块源码；模块实现统一在 `/home/{module}` 对应 GitHub 仓库中完成。根目录应保持精简，并以文档为主：
+本仓库是 FoundationX 治理体系仓——定义 Goal 驱动交付管线、模块治理规则、Spec→Code 工作流和四源评分体系，同时承载个人架构索引。治理对象覆盖 21 个基座模块仓（见 `.foundationx/status/index.json`）和 59 个 module 规格目录。本仓库不含模块源码；模块实现统一在 `/home/workspace/{module}` 对应 GitHub 仓库中完成。根目录应保持精简，并以文档为主：
 
 - `README.md` 展示公开简介、技术栈、分层架构摘要和核心项目链接。
 - `ARCHITECTURE.md` 是向后兼容重定向存根；架构内容已拆分迁移至 `docs/architecture/`（01-overview / 02-domain-layers / 03-boundaries / 04-principles / 05-foundation / 06-dataflow / 07-three-engines / 08-contracts / adr）。
 - `kernel`、`market_data`、`factor_engine`、`x.go` 等模块位于独立 GitHub 仓库；不要把它们的源码树加入本仓库。
-- 模块代码的本地工作目录统一为 `/home/{module}`，其中 `{module}` 与 GitHub 仓库名一致；本仓库只引用这些路径，不复制或收纳模块源码。
+- 模块代码的本地工作目录统一为 `/home/workspace/{module}`，其中 `{module}` 与 GitHub 仓库名一致；本仓库只引用这些路径，不复制或收纳模块源码。
 - `module/registry.yaml` 是模块身份与治理状态的统一注册表 SSOT（单一权威源），覆盖全域模块；与 `module/FOUNDATION-DEPS.yaml`（依赖矩阵 SSOT）和 `.foundationx/status/index.json`（成熟度事实 SSOT）三权分立，引用而非重复。治理规则见 `docs/governance/MODULE-GOVERNANCE.md`。
-- 本仓库的 feature worktree 统一放在 `/home/{module}/.worktree/workspaces/<branch-name>`，其中 `{module}` 是仓库目录名，`<branch-name>` 按 Git 分支名原样落盘（仅去掉 `refs/heads/` 前缀，`feat/...` 会自然形成嵌套目录）；纯文档仓库的仓库根 checkout 只在 feature branch 承载时可视为例外，不算新增 worktree。禁止再把新 worktree 放在仓库根外的零散目录。
+- 本仓库的 feature worktree 统一放在 `/home/workspace/{module}/.worktree/workspaces/<branch-name>`，其中 `{module}` 是仓库目录名，`<branch-name>` 按 Git 分支名原样落盘（仅去掉 `refs/heads/` 前缀，`feat/...` 会自然形成嵌套目录）；纯文档仓库的仓库根 checkout 只在 feature branch 承载时可视为例外，不算新增 worktree。禁止再把新 worktree 放在仓库根外的零散目录。
 
 ## 制品归属（Spec 制品 vs 运行时文档）
 
@@ -259,7 +259,7 @@ module/{module}/
 └── ci-workflow.yaml
 ```
 
-> 管线：goal → spec → design → plan → tasks → prompt → (Code: /home/{module}) → test → review → release → retrospective
+> 管线：goal → spec → design → plan → tasks → prompt → (Code: /home/workspace/{module}) → test → review → release → retrospective
 > 目录表达**当前状态**。历史通过 `git log` / `git tag` 追溯。
 > 版本号唯一源：`spec/SPEC.md` 的 `Spec-Version` 字段。
 > `evidence/` 按日期归档——这是唯一需要时序累积的层。

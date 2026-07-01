@@ -30,6 +30,6 @@
 
 ```bash
 # 以 binance 为模板，逐模块复制并裁剪：
-cp /home/workspace/binance/scripts/boundary-gates.sh /home/{module}/scripts/
+cp /home/workspace/binance/scripts/boundary-gates.sh /home/workspace/{module}/scripts/
 # 编辑 gate 列表，移除不适用项，添加模块专属规则
 ```

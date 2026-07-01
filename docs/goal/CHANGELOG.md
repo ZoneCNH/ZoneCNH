@@ -126,7 +126,7 @@
 
 ## 2026-06-11 — 模块只读分析快照 allowlist 对齐
 
-- 明确 `module/{module}/` 可保存受规则 allowlist 约束的只读分析快照，但仍禁止实现源码树、vendor 源码或从 `/home/{module}` 复制出的模块代码。
+- 明确 `module/{module}/` 可保存受规则 allowlist 约束的只读分析快照，但仍禁止实现源码树、vendor 源码或从 `/home/workspace/{module}` 复制出的模块代码。
 - 将 `ANALYSIS.md`、`FR-DETAIL.md`、`CONFLICT-LEDGER.md`、`COVERAGE-MANIFEST.md`、`REMOTE-EVIDENCE.md`、`REVIEW-VERDICT.md`、`SNAPSHOT-BOUNDARY.md` 和 `analysis/` 投影到 `.config/goal/schema/rules.yaml`。
 - 用于承载 `xlib_standard` 上游标准快照与追溯证据，不放宽 Code 交付边界。
 
@@ -167,7 +167,7 @@
 
 ### 本地代码边界
 
-- 统一模块代码仓库本地路径为 `/home/{module}`，其中 `{module}` 与 GitHub 仓库名一致。
+- 统一模块代码仓库本地路径为 `/home/workspace/{module}`，其中 `{module}` 与 GitHub 仓库名一致。
 - 明确 `module/{module}/` 只保存 Goal、Spec、Traceability、Task、Plan、Prompt、Evidence 等交付制品，不承载实现源码树。
 - 同步 Code 标准、Code DoR/DoD、Code Lint、`module/README.md`、`AGENTS.md`、`CONSTITUTION.md` 和 `ARCHITECTURE.md` 的路径口径。
 - 将本地代码边界投影到 `.config/goal/schema/rules.yaml` 的 `module_code_location`，并接入 `docs/goal/tools/rule-drift-check.py`，校验 `module/{module}/` 不承载源码树。

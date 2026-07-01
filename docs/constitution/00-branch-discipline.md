@@ -29,7 +29,7 @@
 2. **分支/worktree 命名**必须遵循 `{type}/{module}-{description}` 格式（如 `docs/kernel-spec-update`、`feat/kernel-new-api`、`fix/redisx-timeout`），或 `{branch-name}` 格式（如 `feat/v2-foundation-trust-governance-20260615`）
 3. **工作完成后**通过 PR 或 merge 合入 main，随后清理 worktree 和 feature branch
 4. **禁止**在 main worktree 中堆积未提交变更
-5. **ZoneCNH 纯文档仓库新增的 feature worktree** 统一放在 `/home/{module}/.worktree/workspaces/<branch-name>`，其中 `{module}` 是仓库目录名，`<branch-name>` 直接使用 Git 分支名本体（仅去掉 `refs/heads/` 前缀；分支名中的 `/` 会自然展开为嵌套目录）；该模板与 `scripts/worktree-policy.mjs` 的 canonical 规则一致。仓库根 checkout 作为分支工作区时不视为新增 worktree，不受此附加模板约束；不得再使用仓库根外的临时散落路径
+5. **ZoneCNH 纯文档仓库新增的 feature worktree** 统一放在 `/home/workspace/{module}/.worktree/workspaces/<branch-name>`，其中 `{module}` 是仓库目录名，`<branch-name>` 直接使用 Git 分支名本体（仅去掉 `refs/heads/` 前缀；分支名中的 `/` 会自然展开为嵌套目录）；该模板与 `scripts/worktree-policy.mjs` 的 canonical 规则一致。仓库根 checkout 作为分支工作区时不视为新增 worktree，不受此附加模板约束；不得再使用仓库根外的临时散落路径
 6. **worktree 有效性以 Git 注册表为准**：只有出现在 `git worktree list --porcelain` 输出中的路径才是已注册 worktree；`.worktree/` 下的空目录或未注册目录只能视为运行态残留/临时目录，不得作为开发工作区。清理已注册 worktree 必须使用 `git worktree remove <path>`，随后用 `git worktree prune --dry-run --verbose` 验证无残留；禁止用裸 `rm -rf` 删除已注册 worktree
 7. **禁止长期保留嵌套注册 worktree**：除仓库根目录下的 `.worktree/workspaces/` 规范槽位外，已注册 worktree 不应嵌套在另一个非根 worktree 内。短期 detached 运行态 worktree 必须保持可被 `git worktree list --porcelain` 发现，并在任务结束后按注册 worktree 流程清理
 
