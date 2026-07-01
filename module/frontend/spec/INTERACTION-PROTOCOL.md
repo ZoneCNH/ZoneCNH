@@ -1,6 +1,6 @@
 # Frontend-Backend Interaction Protocol
 
-- Spec-Version: v1.0.0
+- Spec-Version: v1.1.0
 - Last-Updated: 2026-07-01
 - Domain: <https://www.wecode7.com>
 - Applies to: all ZoneCNH backend modules
@@ -164,7 +164,40 @@ placeholderData: prev => prev  // 刷新时保留旧数据
 
 ---
 
-## 5. Prometheus /metrics 规范
+## 5. WebSocket 实时推送 (v1.1.0)
+
+### 架构
+
+```
+Browser ←wss://→ nginx (:443) → WS Relay (:8095) → poll → binance-server (:8081)
+```
+
+WS 中继 (`ws-relay/server.cjs`) 作为 REST→WebSocket 桥接层，浏览器优先使用 WebSocket 接收实时推送，断线时自动降级到 HTTP 轮询。
+
+### 端点
+
+| URL | 角色 |
+|-----|------|
+| `wss://www.wecode7.com/ws` | WebSocket 入口 (nginx → :8095) |
+
+### 消息格式
+
+```json
+{"type":"update","ts":"2026-07-01T13:00:00.000Z","metrics":"# HELP ...\n..."}
+```
+
+### 前端集成
+
+```typescript
+// useMetricsWs() — 自动重连，WS 优先，轮询降级
+const { data, isConnected, latency } = useMetricsWs()
+// isConnected=true → WS 推送 (3s), latency 显示延迟
+// isConnected=false → 自动降级到 HTTP 轮询 (5s)
+```
+
+---
+
+## 6. Prometheus /metrics 规范
 
 ### 暴露要求
 
@@ -193,7 +226,7 @@ fetch('/metrics')
 
 ---
 
-## 6. 安全规范
+## 7. 安全规范
 
 ```
 TLS:            HTTPS only, Let's Encrypt certbot (verified 2026-07-01)
@@ -209,7 +242,7 @@ Auth (future):  nginx auth_request + httpOnly JWT cookie
 
 ---
 
-## 7. 部署拓扑
+## 8. 部署拓扑
 
 ```
 www.wecode7.com → 84.247.154.45 (jp1)
@@ -227,7 +260,7 @@ Infra: NATS:4222 Redis:6379 PG:5432 TDengine:6030 Kafka:9092 ClickHouse:9000
 
 ---
 
-## 8. 新模块接入清单
+## 9. 新模块接入清单
 
 | # | 步骤 | 文件 |
 |:-:|------|------|
@@ -241,8 +274,9 @@ Infra: NATS:4222 Redis:6379 PG:5432 TDengine:6030 Kafka:9092 ClickHouse:9000
 
 ---
 
-## 9. 变更历史
+## 10. 变更历史
 
 | Version | Date | Change |
 |---------|------|--------|
+| v1.1.0 | 2026-07-01 | WebSocket real-time push (§5 WS relay architecture) |
 | v1.0.0 | 2026-07-01 | Initial — binance module interaction standard |
