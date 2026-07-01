@@ -1,6 +1,6 @@
 # module/binance todo（只读投影）
 
-> Beads/GitHub Issues 是关闭 SSOT，本文件仅为只读投影。
+> Beads/GitHub Issues 是关闭 SSOT，本文件仅为只读投影 (read-only projection, not an active closure SSOT)。
 
 ## 当前状态
 
