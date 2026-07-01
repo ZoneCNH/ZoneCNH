@@ -38,7 +38,7 @@
 | [contracts](https://github.com/ZoneCNH/contracts)         | v1.5.0 | spec/code/release       | factory-ready   | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | 跨域稳定端口/事件/DTO 契约；✅ P0 DTO 已固化（RegimeSnapshot/RegimeCard/DecisionCard + 3 Provider ports，PR #10）；✅ P1 SignalIntent DTO 升入（PR #12，2026-06-21）；ingestion contract §8.4 已实现 |
 | [transportx](https://github.com/ZoneCNH/transportx)       | v1.3.0 | spec/code/release       | factory-ready   | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | 应用通信底座规格基线；spec-only；✅ GitHub Release v1.1.1-spec 已发布                                                                                                                            |
 
-### 展示层
+#### 展示层
 
 | 组件 | 版本（目标投影）| 阶段投影 | 门禁口径 | 子维度投影 | 说明 |
 | --- | --- | --- | --- | --- | --- |
@@ -308,7 +308,7 @@
 ## 总览仪表盘
 
 ```text
-组件总数: 73    已有: 59    已创建: 14    平均进度: 81%
+组件总数: 74    已有: 60    已创建: 14    平均进度: 81%
 
 进度分布 (domain-sum 口径, 2026-06-22 移除 4 个废弃占位后):
   已验证数字 — 由 python3 scripts/audit-status.py --network 最终确认
@@ -320,7 +320,7 @@
 
 | 域                     | 总数   | 已有   | 已创建 | 平均进度                           | 架构组成                                              |
 | ---------------------- | ------ | ------ | ------ | ---------------------------------- | ----------------------------------------------------- |
-| 基座                   | 20     | 20     | 0      | Spec→Code 投影完成；Foundation 整体非 factory | 20 独立 module                                                    |
+| 基座                   | 21     | 21     | 0      | Spec→Code 投影完成；Foundation 整体非 factory | 21 独立 module                                                    |
 | L2.5 领域共享层        | 5      | 5      | 0      | 100%                               | 5 纯值对象库 (factory grade；live/soak N/A)            |
 | 数据域 · market_data   | 14     | 13     | 1      | 85%                                | binance 生产就绪 ✅；12 C/S Module 待升级 + 1 独立进程 (dispatch)            |
 | 数据域 · macro_data    | 11     | 11     | 0      | 80%                                | 10 C/S Module + 1 独立进程 (dispatch)                                      |
@@ -331,7 +331,7 @@
 | 入口                   | 2      | 2      | 0      | 85%                                | 2 (x.go v0.0.1；composer v0.2.0 ✅ Coordinator+SinkPort) |
 | 横切                   | 2      | 2      | 0      | 100%                               | 2 (observex, alertx)                                  |
 | 独立                   | 1      | 1      | 0      | -                                  | 0                                                     |
-| **合计**               | **73** | **59** | **14** | **81%**                            | **73**                                                |
+| **合计**               | **74** | **60** | **14** | **81%**                            | **74**                                                |
 
 > ⚠️ **历史占位移除说明**（2026-06-22）：4 个历史占位模块（`backtest_engine`/`risk_engine`/`order_engine`/`portfolio_engine`）已从 `module/` 目录物理移除，迁移至对应新名称（backtestx/riskx/orderx/positionx）。多维成熟度表中保留行作为档案，标注"已移除"。当前活跃组件 73 个（原 77，扣除 4 个已移除占位）。
 
