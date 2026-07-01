@@ -1,9 +1,9 @@
 {
   "schema_version": "fleet-status/v1",
-  "generated_at": "2026-06-17T23:45:29Z",
+  "generated_at": "2026-07-02T00:00:00Z",
   "generated_by": "xlibgate fleet-status",
-  "metadata_refreshed_at": "2026-06-29T00:00:00Z",
-  "metadata_refresh_note": "manual metadata refresh 2026-06-29: xlib_harness version corrected from v1.0.0 to v0.1.6 (matching GitHub Release tag); xlib base 4-module Goal pipeline alignment",
+  "metadata_refreshed_at": "2026-07-02T00:00:00Z",
+  "metadata_refresh_note": "manual metadata refresh 2026-07-02: 13-module version aligned to GitHub Release latest (published release, tag-only excluded); 8-module note corrected to reflect BLK-001~011 all resolved (blockers.json confirmed); removed stale 'BLK open / factory=false / release=false' text that contradicted factory=true/release=true fields and trust_hardening empty arrays",
   "source": ".foundationx/status/index.json",
   "total_modules": 21,
   "verified_against": {
@@ -77,7 +77,7 @@
     },
     "kernel": {
       "layer": "L0",
-      "version": "v1.0.0",
+      "version": "v1.1.0",
       "spec": true,
       "impl": true,
       "release": true,
@@ -90,7 +90,7 @@
     },
     "configx": {
       "layer": "L1",
-      "version": "v1.0.0",
+      "version": "v1.1.0",
       "spec": true,
       "impl": true,
       "release": true,
@@ -99,11 +99,11 @@
       "adopt": true,
       "soak": "N/A",
       "factory": true,
-      "note": "配置管理 (显式 source/last-wins/struct decode/secret 脱敏); public latest release v1.0.0; .repo-contract.yaml aligned"
+      "note": "配置管理（显式 source/last-wins/struct decode/secret 脱敏）; GitHub Release v1.1.0 已发布; .repo-contract.yaml aligned"
     },
     "observex": {
       "layer": "L1",
-      "version": "v0.3.1",
+      "version": "v0.3.4",
       "spec": true,
       "impl": true,
       "release": true,
@@ -116,7 +116,7 @@
     },
     "testkitx": {
       "layer": "L1",
-      "version": "v0.4.0",
+      "version": "v1.0.0",
       "spec": true,
       "impl": true,
       "release": true,
@@ -125,11 +125,11 @@
       "adopt": "N/A",
       "soak": "N/A",
       "factory": "N/A",
-      "note": "v0.4.0; test-only 非运行时模块; factory grade 不适用"
+      "note": "v1.0.0; test-only 非运行时模块; factory grade 不适用"
     },
     "resiliencx": {
       "layer": "L1",
-      "version": "v0.4.9",
+      "version": "v1.0.2",
       "spec": true,
       "impl": true,
       "release": true,
@@ -155,7 +155,7 @@
     },
     "redisx": {
       "layer": "L2",
-      "version": "v1.1.0",
+      "version": "v1.1.1",
       "spec": true,
       "impl": true,
       "release": true,
@@ -164,11 +164,11 @@
       "adopt": "N/A",
       "soak": false,
       "factory": true,
-      "note": "Redis L2 adapter; KV/TTL/Hash/List/Pipeline/Cache-aside/Lock/RateLimit/Pool/Persistence; GitHub Release v1.1.0 已发布; release-preflight、PR checks、Docker-backed 与 dev Redis 集成验证通过"
+      "note": "Redis L2 adapter; KV/TTL/Hash/List/Pipeline/Cache-aside/Lock/RateLimit/Pool/Persistence; GitHub Release v1.1.1 已发布; release-preflight、PR checks、Docker-backed 与 dev Redis 集成验证通过"
     },
     "kafkax": {
       "layer": "L2",
-      "version": "v1.0.2",
+      "version": "v1.1.0",
       "spec": true,
       "impl": true,
       "release": true,
@@ -181,7 +181,7 @@
     },
     "natsx": {
       "layer": "L2",
-      "version": "v1.0.2-release / v1.0.3-tag",
+      "version": "v1.0.4",
       "spec": true,
       "impl": true,
       "release": true,
@@ -190,11 +190,11 @@
       "adopt": "N/A",
       "soak": false,
       "factory": true,
-      "note": "GitHub Release v1.0.2 exists (published 2026-06-18); remote tag v1.0.3 remains tag-only and is not counted as release evidence; PR #17 merged; BLK-001/BLK-002 resolved"
+      "note": "NATS L2 adapter; GitHub Release v1.0.4 已发布; PR #17 merged; BLK-001/BLK-002 resolved; factory grade"
     },
     "postgresx": {
       "layer": "L2",
-      "version": "v1.0.0",
+      "version": "v1.1.2",
       "spec": true,
       "impl": true,
       "release": true,
@@ -203,11 +203,11 @@
       "adopt": "N/A",
       "soak": false,
       "factory": true,
-      "note": "BLK-006 open; release remains published but factory=false until coverage/Docker integration evidence closes"
+      "note": "PostgreSQL L2 adapter; BLK-006 resolved（覆盖率/Docker 集成证据闭合）; GitHub Release v1.1.2 已发布; factory grade"
     },
     "taosx": {
       "layer": "L2",
-      "version": "v1.0.1",
+      "version": "v1.0.2",
       "spec": true,
       "impl": true,
       "release": true,
@@ -216,11 +216,11 @@
       "adopt": "N/A",
       "soak": false,
       "factory": true,
-      "note": "BLK-007 open; release remains published but factory=false until SPEC quality gate closes"
+      "note": "TDengine L2 adapter; BLK-007 resolved（SPEC 质量门禁闭合）; GitHub Release v1.0.2 已发布; factory grade"
     },
     "ossx": {
       "layer": "L2",
-      "version": "v1.2.1",
+      "version": "v1.2.0",
       "spec": true,
       "impl": true,
       "release": true,
@@ -229,11 +229,11 @@
       "adopt": "N/A",
       "soak": false,
       "factory": true,
-      "note": "BLK-010 resolved; v1.2.1 merged; pkg/ossx 17 files; 100% coverage; go build+test PASS"
+      "note": "Aliyun OSS L2 adapter; BLK-010 resolved; GitHub Release v1.2.0 已发布（v1.2.1 为 tag-only）; pkg/ossx 17 files; 100% coverage; go build+test PASS; factory grade"
     },
     "clickhousex": {
       "layer": "L2",
-      "version": "v1.0.1",
+      "version": "v1.0.9",
       "spec": true,
       "impl": true,
       "release": true,
@@ -242,11 +242,11 @@
       "adopt": "N/A",
       "soak": false,
       "factory": true,
-      "note": "release=false: public tag v1.0.1 exists, but no public GitHub Release or release/manifest closure packet; BLK-003 open; trust hardening requires factory=false until release evidence and Docker integration close"
+      "note": "ClickHouse L2 adapter; BLK-003 resolved（公开 GitHub Release 已发布）; GitHub Release v1.0.9 已发布; factory grade"
     },
     "contracts": {
       "layer": "contracts",
-      "version": "v1.0.1-spec",
+      "version": "v0.4.7",
       "spec": true,
       "impl": true,
       "release": true,
@@ -255,7 +255,7 @@
       "adopt": true,
       "soak": "N/A",
       "factory": true,
-      "note": "release=false: public tag v1.0.1-spec exists, but source repo remains all_aligned=false and has no public GitHub Release or release/manifest closure packet; factory=false until aligned public release evidence exists"
+      "note": "跨域稳定端口/事件/DTO 契约; BLK-004 resolved（仓库身份重写闭合）; GitHub Release v0.4.7 已发布（v1.5.0 为 tag-only）; factory grade"
     },
     "transportx": {
       "layer": "contracts",
@@ -268,7 +268,7 @@
       "adopt": "N/A",
       "soak": "N/A",
       "factory": true,
-      "note": "release=false: public tag v1.1.1-spec exists, but source repo remains all_aligned=false and has no public GitHub Release or release/manifest closure packet; factory=false until aligned public release evidence exists"
+      "note": "跨 runtime/adapter 传输契约; BLK-005 resolved（仓库身份重写闭合）; GitHub Release v1.1.1-spec 已发布; spec-only; factory grade"
     },
     "bootstrap": {
       "layer": "L1",
