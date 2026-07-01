@@ -283,7 +283,7 @@ spec_ver=$(grep -oP 'Spec-Version:\s*v\d+\.\d+\.\d+' module/{module}/SPEC.md | g
 | 模式 | 示例 | 状态 |
 |---|---|---|
 | `snake_case` | `market_data`、`domain_market`、`xlib_standard` | ✅ 唯一合法格式 |
-| `kebab-case` | `market_data`、`domain_market` | ❌ 禁止 |
+| `kebab-case` | `market-data`、`domain-market` | ❌ 禁止 |
 | `PascalCase` | `MarketData` | ❌ 禁止 |
 | `camelCase` | `marketData` | ❌ 禁止 |
 
