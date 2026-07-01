@@ -43,6 +43,30 @@ tc_grep_pattern() {
   printf '(^|[^A-Z0-9-])%s([^A-Z0-9-]|$)' "$tc"
 }
 
+# 探测 TRACEABILITY.md 中 Status 列的实际位置（1-based awk 字段索引）。
+# 不同模块列结构差异极大（configx 6 列、alertx/ossx 7 列、riskx 8 列），
+# 无法硬编码。识别同时含 `FR`（或 `FR ID`）列与 `Status`/`状态` 列的表头行，
+# 定位 FR 主表，再返回 Status 列号。
+# `当前状态` 列被视为自由文本描述（如 bootstrap），不参与枚举校验。
+# 输出列号（如 7、8、9）；未找到输出空串（跳过 Status 检查）。
+detect_status_column() {
+  local trace_file="$1"
+  awk -F'|' '
+    function trim(s) { gsub(/^[ \t]+|[ \t]+$/, "", s); return s }
+    function strip_fmt(s) { gsub(/[*`]/, "", s); return s }
+    function norm(s) { return strip_fmt(trim(s)) }
+    /^\|/ {
+      has_fr = 0; status_at = 0
+      for (i = 1; i <= NF; i++) {
+        v = norm($i)
+        if (v == "FR" || v == "FR ID" || v == "Requirement ID") has_fr = 1
+        if (v == "Status" || v == "状态") status_at = i
+      }
+      if (has_fr && status_at > 0) { print status_at; exit }
+    }
+  ' "$trace_file"
+}
+
 traceability_defines_tc() {
   local trace_file="$1"
   local tc="$2"
@@ -204,33 +228,40 @@ check_module() {
     fi
   fi
 
-  # 检查 Status 只使用约定枚举值。Status 取最后一个非空表格字段。
-  local invalid_status
-  invalid_status=$(awk -F'|' '
-    function trim(s) { gsub(/^[ \t]+|[ \t]+$/, "", s); return s }
-    function req_id(s) { s=trim(s); gsub(/`/, "", s); return s }
-    /^\|/ {
-      req=req_id($2)
-      if (req !~ /^(FR|BR)-[0-9]+$/) next
-      status=""
-      for (i=NF; i>=1; i--) {
-        field=trim($i)
-        if (field != "") { status=field; break }
+  # 检查 Status 只使用约定枚举值。Status 列位置由 detect_status_column
+  # 动态识别（避免硬编码 $6 误把 Evidence/Verification 列当 Status）。
+  # 无 Status 列的模块（如 contracts）跳过此检查。
+  local status_col
+  status_col=$(detect_status_column "$trace_file")
+
+  local invalid_status=0
+  if [[ -n "$status_col" ]]; then
+    invalid_status=$(awk -F'|' -v col="$status_col" '
+      function trim(s) { gsub(/^[ \t]+|[ \t]+$/, "", s); return s }
+      function req_id(s) { s=trim(s); gsub(/`/, "", s); return s }
+      function normalize(s) {
+        s = trim(s)
+        sub(/^Code-/, "", s)        # Code-Done -> Done
+        sub(/→.*$/, "", s)          # ⬜→§8 -> ⬜
+        sub(/[（(].*$/, "", s)      # ✅(PR#17) -> ✅
+        sub(/[;；].*$/, "", s)      # ✅; merged -> ✅
+        sub(/ v[0-9].*$/, "", s)    # ✅ v1.1.0 -> ✅
+        sub(/ PR #.*$/, "", s)      # ✅ PR #17 ... -> ✅
+        sub(/^[ \t]+|[ \t]+$/, "", s)
+        return s
       }
-      if (status != "Pending" &&
-          status != "In Progress" &&
-          status != "Done" &&
-          status != "Failed" &&
-          status != "Deferred" &&
-          status != "⬜" &&
-          status != "🔲" &&
-          status != "🔵" &&
-          status != "✅" &&
-          status != "❌" &&
-          status != "⏭️") count++
-    }
-    END { print count+0 }
-  ' "$trace_file")
+      /^\|/ {
+        req=req_id($2)
+        if (req !~ /^(FR|BR)-[0-9]+$/) next
+        status = normalize($col)
+        if (status == "" || status == "-") next
+        if (status ~ /^(Done|Partial|Drifted|Pending|Planned|Approved|Review|Draft|Implemented|Deprecated|Skipped|N\/A|In Progress|Failed|Deferred|Complete Locally|Complete-Locally)$/) next
+        if (status ~ /^(⬜|🔲|🔵|✅|❌|⏭️|⏳|🟡|🟢|🟠|🔴)$/) next
+        count++
+      }
+      END { print count+0 }
+    ' "$trace_file")
+  fi
 
   if [[ $invalid_status -gt 0 ]]; then
     echo "  ❌ $module: $invalid_status rows with invalid Status"
