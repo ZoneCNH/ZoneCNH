@@ -10,6 +10,24 @@
 
 ---
 
+> ## ⚠️ 免责声明（2026-07-02 复核追加）
+>
+> **本报告的代码级证据链事后被复核为不可复现，部分核心缺陷描述与实际代码不符。阅读时请把本报告当作"某个未归档工作树的历史快照"，而非 binance 当前测试代码的事实依据。**
+>
+> 复核结论（基于 `git log --all -S` 全 ref pickaxe 搜索 + 代码级实测，置信度 HIGH）：
+>
+> 1. **基线 `8d11b0a` 不可复现**：该 hash 在 binance runtime 仓库的全 ref（含远程）中不存在（`git cat-file -t 8d11b0a` → not a valid object）。报告声称的"基线 Runtime HEAD `8d11b0a`"无法 `git checkout` 还原，违反可复现性。
+> 2. **缺陷 1（Soak）失实**：正文引用的"soak 源码 `TestSoak_NATSPublish`，发布 `[]byte("soak")` → 订阅丢弃"在 binance 全 git 历史中从未出现（`git log --all -S 'TestSoak_NATSPublish'` 与 `-S 'byte("soak")'` 均为空）。实际 soak_test.go 含 3 个测试，包括真实 binance 管线测试（gated by `BINANCE_SOAK_LIVE=1`）。
+> 3. **缺陷 2（Chaos）失实**：实际 chaos_test.go 有 12 个测试，其中 6 个为真实故障注入——调用 `chaosServiceControl("stop","nats.service")`、`systemctl stop redis.service`、`kill -9` 进程——正是本报告声称"缺失"的。报告称"5 个连通性测试、不注入故障"与代码不符。
+> 4. **缺陷 5（Live assembly）失实**：实际 live_assembly_test.go 第 100 行调用 `sendTestIngestRequests(ctx, t, assembly.Server, 5)` 发送 5 条 ingest 请求并验证 ack durable / reject code。报告称"只断言 `server != nil`、没发送 ingest 请求"与代码不符。
+> 5. **数字偏差**：benchmark 实际 72 个（报告称 26）；security 实际 9 个函数 / 3 真实（报告称 6 全 skip）；restart_recovery 实际有 `persistentIdempotencyStore`（模拟 Redis 持久语义）报告未提及。
+>
+> **仍然成立的部分**：§三（七层金字塔策略）、§四（优先级）、§五（评分修正方向）作为工程 roadmap 有价值；PRG-006 降级为 Partial 的**方向性判断**成立——soak/chaos 的真实测试确实 gated 在 `BINANCE_*_LIVE=1` 环境变量后，默认 CI 跑不到，系统行为验证在默认门禁之外。但理由应表述为"默认 CI 不覆盖"，而非"测试是虚假/空壳的"。
+>
+> **建议**：如需对 binance 测试体系做当前事实判断，请基于 HEAD `f53303f` 重新审计，不要沿用本报告正文。
+
+---
+
 ## 一、当前测试现状全景
 
 `[COMPUTED, HIGH]` 基于 129 个测试文件（1756 个测试函数）的代码级审计：

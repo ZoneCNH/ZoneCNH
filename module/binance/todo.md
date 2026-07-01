@@ -20,10 +20,13 @@
 | PRG-003 | PASS | PRG-001~006 全 PASS |
 | PRG-004 | PASS | Jaeger/Grafana/Loki/AlertManager 全在线 |
 | PRG-005 | PASS | OpenTelemetry SDK v1.44.0，govulncheck 清洁 |
-| PRG-006 | PASS | soak test 2min PASS，chaos test 5/5 PASS |
+| PRG-006 | **Partial** | 真实 soak/chaos 测试存在但 gated 在 `BINANCE_*_LIVE=1` env 后，默认 CI 跑不到端到端系统行为 |
 | PRG-007 | PASS | 43 GitHub + 43 Beads 全关闭 |
 
-> ⚠️ **2026-06-30 测试体系深度分析**：`report/binance/TEST-ANALYSIS-20260630.md` 对 112 个测试文件代码级审计发现：
-> - PRG-006 依赖的 soak 测试只验证 NATS 传输（非 binance 管线），chaos 测试不注入真实故障
-> - FR-042 (soak)、FR-043 (chaos)、FR-044 (security) 的 131 个测试为 `t.Skip()` 空壳
-> - 建议在补齐 Phase 1-3 前不应标记为 L3 Production。详见报告。
+> ⚠️ **2026-06-30 测试体系深度分析**（2026-07-02 复核修正）：`report/binance/TEST-ANALYSIS-20260630.md` 触发对测试深度的复核，部分描述已证实与代码不符（详见报告头部免责声明）。复核后准确状况：
+> - soak：3 个测试（1 CI-runnable ServerStability + 2 真实管线 gated by `BINANCE_SOAK_LIVE=1`），非"只测 NATS pub/sub"
+> - chaos：12 个测试（6 真实故障注入含 `systemctl stop` NATS/Redis、`kill -9` + 6 连通性），非"不注入故障"
+> - security：9 个函数（3 真实 + 6 skip），非"6 个全 skip"
+> - depth：76 个 Test 函数 / 125 处 `t.Skip` stubs（按报告路线图承接），depth 文件头注释明确引用本报告作为 roadmap
+> - FR-042 (soak)、FR-043 (chaos)、FR-044 (security) 真实测试存在但 gated，默认 CI 覆盖有限；PRG-006 维持 Partial
+> - 建议在补齐默认 CI 覆盖前不应标记为 L3 Production。详见报告（含免责声明）。

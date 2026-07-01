@@ -22,7 +22,7 @@
 | PRG-003 | PASS | PRG-001~006 全 PASS | ✅ evidence 文件已更新（原 stale "Open" → "PASS"） |
 | PRG-004 | PASS | Jaeger/Grafana/Loki/AlertManager 全在线 | ✅ curl HTTP 200 × 4 服务确认 |
 | PRG-005 | PASS | otel SDK v1.37.0→v1.44.0，govulncheck 清洁 | ✅ govulncheck "No vulnerabilities" + go.mod v1.44.0 确认 |
-| PRG-006 | **Partial** | soak 2min PASS（NATS 连通性）+ chaos 5/5 PASS（连通性）；系统行为验证缺失——soak 不测 binance 管线，chaos 不注入真实故障 | ⚠️ 见 `report/binance/TEST-ANALYSIS-20260630.md` §缺陷1-2：soak 仅为 NATS pub/sub 传输测试，chaos 为连通性测试（connect→disconnect→reconnect），非真实故障注入 |
+| PRG-006 | **Partial** | soak/chaos 真实测试存在但 gated | ⚠️ 复核修正（见下）：soak 有真实 binance 管线测试、chaos 有真实故障注入（systemctl stop NATS/Redis、kill -9），但二者均需 `BINANCE_SOAK_LIVE=1`/`BINANCE_CHAOS_LIVE=1`，**默认 CI 跑不到**，系统行为验证在默认门禁之外。原 `report/binance/TEST-ANALYSIS-20260630.md` §缺陷1-2 的描述（"soak 仅为 NATS pub/sub""chaos 不注入故障"）已证实与代码不符，详见该报告头部免责声明 |
 | PRG-007 | PASS | 43 GitHub (#1289-#1331) + 43 Beads 全关闭 | —（基于 prg-007 evidence） |
 
 ## 审查复核修复（2026-06-30 PM）
@@ -53,7 +53,7 @@
 - restart recovery：4/4 PASS — 共享 store + 独立 store（证明问题）+ 持久化 store（证明解决）+ 协调恢复
 - E2E test：6/6 PASS — 全管线 + 重复去重 + 冲突拒绝 + 多产品线 + 高容量去重
 - benchmark regression：0 regressions（26 项 baseline）
-- release_closeable：**NO**（PRG-006 Partial——L2 测试已补齐 19 项 CI-runnable 测试，L1 系统行为+数据完整性验证待 `BINANCE_{SOAK,CHAOS}_LIVE=1`）
+- release_closeable：**NO**（PRG-006 Partial——真实 soak/chaos 测试 gated 在 `BINANCE_{SOAK,CHAOS}_LIVE=1` env 后，默认 CI 不覆盖端到端系统行为与数据完整性验证）
 
 ## 审查评分对比
 
@@ -142,7 +142,7 @@
 - registry.yaml: lifecycle→production, maturity→L3 → **保留 L2+**（单元测试强，系统验证待补齐）
 - BOUNDARY-GATES §12: Release Not Done→Done → **保留 Done**（BOUNDARY-GATES 为 CI 门禁，不与 L3 准入等价）
 
-> **回退原因**（2026-06-30）：`report/binance/TEST-ANALYSIS-20260630.md` 对 112 个测试文件进行代码级审计，发现 PRG-006 依赖的 soak/chaos 测试不验证 binance 系统行为——soak 仅为 NATS pub/sub 传输测试，chaos 为连通性测试（connect→disconnect→reconnect），非真实故障注入。PRG-006 标 "PASS" 的依据（soak 2min + chaos 5/5）实际只验证了基础设施连通性。详见该报告 §二缺陷1-7。
+> **回退原因**（2026-06-30，2026-07-02 复核修正）：`report/binance/TEST-ANALYSIS-20260630.md` 触发对 PRG-006 依赖的 soak/chaos 测试的复核。复核结论：soak/chaos **存在**真实管线与故障注入测试，但二者均 gated 在 `BINANCE_SOAK_LIVE=1`/`BINANCE_CHAOS_LIVE=1` 环境变量后，默认 CI 因 env 未设置而 skip，系统行为与数据完整性验证在默认门禁之外。PRG-006 标 "PASS" 的默认 CI 依据（soak 2min + chaos pass）实际未覆盖端到端系统行为。注：原报告 §二缺陷1-2 关于"soak 仅为 NATS pub/sub""chaos 不注入故障"的描述已证实与当前代码不符（详见报告头部免责声明），但 PRG-006 降级为 Partial 的**方向性判断**仍然成立。
 
 ### 审查复核（2026-06-30 PM）
 - SPEC §16: "remain Partial"→"operational... PRG-004 PASS"
