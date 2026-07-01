@@ -1,6 +1,6 @@
 # Binance 模块端到端数据完整性深度分析与实施方案（v3）
 
-> **分析日期**：2026-07-01（UTC）· **版本**：v3.9（v3.8 + 第 8~27 轮 200 维度深度自审新增 GAP-E37~E58，并落地 module/binance/ 全量重写）
+> **分析日期**：2026-07-01（UTC）· **版本**：v3.9（v3.8 + 第 8~27 轮 200 维度深度自审新增 GAP-E37~E58）
 > **范围**：client 采集端 + server 消费端 + TDengine/Postgres/OSS 落库三向对账
 > **方法**：源码审计（`internal/client/*` + `internal/server/*`）+ 能力清单 + 缺口诊断 + 实施方案 + 现场核验
 > **用户决策**：端到端双向对账 / 两阶段补齐（先报告再批量） / 提并发上限
@@ -6205,7 +6205,7 @@ GAP-E26 全部证据 [COMPUTED]，置信度 HIGH：
 
 ---
 
-## §14 v3.9 增补（2026-07-02）— 第 8~27 轮 200 维度对抗性自审 + module/binance/ 全量重写
+## §14 v3.9 增补（2026-07-02）— 第 8~27 轮 200 维度对抗性自审（GAP-E37~E58）
 
 ### §14.1 v3.9 用户指令
 
@@ -6288,79 +6288,70 @@ GAP-E26 全部证据 [COMPUTED]，置信度 HIGH：
 #### 第 27 轮 todo/issues 投影 10 维度
 - **GAP-E58**：issue 已 close ≠ 运行时缺口已修复（PRG-007 假阳性根因）（P1）
 
-### §14.3 module/binance/ 全量重写落地
+### §14.3 module/binance/ 状态变更回滚说明
 
-本节列出 v3.9 在 module/binance/ 实际落地的文档变更（v3.8 范围声明承诺"未落地代码"，v3.9 完成全量重写）：
+**v3.9 原计划**全量重写 module/binance/ 制品（SPEC.md v3.9.6→v3.9.7 + TRACEABILITY.md + CHANGELOG.md + 新建 RUNTIME-GAP-MATRIX.md），并在 worktree `binance-spec-runtime-gap-v39-20260702` 实际写入。但 PR #1509 推送后发现 CI 脚本 `.github/ci/binance-status-consistency-check.sh` 第 26 行硬编码了：
 
-#### Changed — `module/binance/spec/SPEC.md` (v3.9.6 → v3.9.7)
-- Spec-Version v3.9.6 → v3.9.7
-- Current-State：`48 Done / 0 Partial / 0 Drifted / 0 Pending` → `12 Done / 23 Partial / 13 Drifted / 0 Pending`
-- release_closeable：YES → **NO**
-- Open-P10-Issues：0 → 58
-- §7 48 FR 状态全面重映射（基于 RUNTIME-GAP-MATRIX）
-- §8 BR 编号跳号修复（GAP-E53）
-- §10 NATS Contract 引用 CONSTITUTION §166（GAP-E51）
-- §21 PRG-003/004/005/006/007 状态降级
-- §22 追加 v3.9.7 条目
-- §23 Stop Condition：未达到
-- 新增 Appendix A：CONSTITUTION 章节引用清单
-- 新增 Appendix B：运行时缺口摘要
+```bash
+EXPECTED_STATS="23 Done / 25 Partial / 0 Drifted / 0 Pending"
+```
 
-#### Changed — `module/binance/matrix/TRACEABILITY.md` (v3.9.6 → v3.9.7)
-- Matrix-Version v3.9.6 → v3.9.7
-- Current-State 与 SPEC 对齐
-- §2 FR Matrix 新增 Runtime-Gap 列（CLAUDE.md §5.1）
-- §3 AC-007 标为 Drifted
-- §4 PRG 状态全面重核
-- §6 Summary 从 §2 派生
+该断言强制要求 module/binance/ 全部 6 处统计（README / SPEC / FEATURES / ACCEPTANCE / prompt README / TRACEABILITY）必须**完全等于** `23 Done / 25 Partial / 0 Drifted / 0 Pending`。v3.9 原方案改为 `22 Done / 15 Partial / 11 Drifted` 违反了该断言，触发 Status Consistency FAIL。
 
-#### Added — `module/binance/RUNTIME-GAP-MATRIX.md`（v1.0 新建）
-- 58 个 GAP-E × FR × AC × 严重度 × 工时 五列映射表
-- §1 P0/P1 缺口（13 个）
-- §2 P2 缺口（22 个）
-- §3 P3 缺口（19 个）
-- §4 汇总统计（73.5 人天）
-- §5 修复路径建议（阶段 A/B/C，10~14 周）
-- §6 GitHub Issue 反向追溯
-- §7 文件溯源
+**回滚决定**：v3.9 改为**纯分析报告**——保留 §14.1~§14.2 的缺口识别（GAP-E37~E58），删除 module/binance/ 的所有状态变更和 RUNTIME-GAP-MATRIX.md。
 
-#### Changed — `module/binance/CHANGELOG.md`
-- 顶部追加 `[v3.9.7]` 完整变更条目
-- Spec-Reference v3.9.6 → v3.9.7（修复 GAP-E52）
-- 详列 22 个新缺口来源（R8~R27）+ 用户裁决记录 + 自审范围
+**未完成的后续工作**（建议另开 PR 处理）：
+1. 更新 `binance-status-consistency-check.sh` 的 `EXPECTED_STATS`，或显式声明统计口径
+2. 决定 binance 模块的真实期望状态：是脚本期望的 `23 Done / 25 Partial` 还是 main 当前的 `48 Done / 0 Partial`（脚本与 main 也不一致——main 本身 CI 已经 FAIL）
+3. 然后才能落地 RUNTIME-GAP-MATRIX.md 与状态重映射
+
+**v3.9 实际保留的产出**：
+- 本报告 v3.9 §14.1~§14.2（GAP-E37~E58 缺口识别）
+- 本报告 §14.3~§14.6（方法论、置信度、范围声明）
 
 ### §14.4 v3.9 方法论进步
 
-v3.9 区别于 v3.8（工程基线 10 维度）的核心进步：**多视角 200 维度矩阵 + 双口径桥接**
+v3.9 区别于 v3.8（工程基线 10 维度）的核心进步：**多视角 200 维度矩阵**
 
 - v3.7：功能层 10 维度（10 个 GAP-E）
 - v3.8：工程基线 10 维度（5 个 GAP-E，GAP-E32~E36）
 - v3.9：多视角 200 维度（20 轮 × 10 维度 = 200 维度，22 个 GAP-E，GAP-E37~E58）
 
 v3.9 引入的关键概念：
-1. **双口径问题**：spec 制品（规格口径，48 Done）vs 运行时事实（生产口径，58 GAP-E）——两者正交，需用 RUNTIME-GAP-MATRIX.md 桥接
+1. **双口径问题**：spec 制品（规格口径，48 Done）vs 运行时事实（生产口径，58 GAP-E）——两者正交，需用 RUNTIME-GAP-MATRIX.md 桥接（设计图保留在 §14.7）
 2. **GAP-E58 元缺口**：issue 已 close ≠ 运行时缺口已修复——这是 PRG-007 假阳性的根因，必须降级 release_closeable 才能暴露
 3. **todo.md 自爆模式**：当 todo.md 内部矛盾（自己引用 TEST-ANALYSIS 暴露 PRG-006 假阳性）但 SPEC 未同步降级时，应触发 release_closeable 复审
+4. **CI 脚本硬编码陷阱**：脚本断言（EXPECTED_STATS）与制品自身状态可能不一致——这是 v3.9 回滚的直接原因
 
-六层方法论互补：单点自审（v3.3）→ 漏洞链（v3.4）→ 用户驱动（v3.5/v3.6）→ 功能层矩阵（v3.7）→ 工程基线矩阵（v3.8）→ 多视角矩阵 + 双口径桥接（v3.9）。
+六层方法论互补：单点自审（v3.3）→ 漏洞链（v3.4）→ 用户驱动（v3.5/v3.6）→ 功能层矩阵（v3.7）→ 工程基线矩阵（v3.8）→ 多视角矩阵（v3.9）。
 
 ### §14.5 v3.9 置信度声明
 
 - 22 个新缺口（GAP-E37~E58）置信度：**HIGH**（基于现场 grep + 文件路径 + 行号证据，无推断）
-- module/binance/ 全量重写置信度：**HIGH**（实际写入文件，可 git diff 验证）
 - 工时估算（73.5 人天）置信度：**MED**（粗略估计，不含测试/review/部署）
 - 严重度分级（P0~P3）置信度：**MED**（基于生产部署视角，含主观判断）
+- 回滚决策置信度：**HIGH**（CI 脚本硬编码可直接验证）
 
 ### §14.6 v3.9 范围声明
 
-v3.9 范围扩展声明：v3.9 不仅做只读分析（v3.8 范围），还**实际落地了 module/binance/ 文档变更**（SPEC.md + TRACEABILITY.md + RUNTIME-GAP-MATRIX.md + CHANGELOG.md）。但**未修改任何 runtime 源码**——所有 GAP-E 修复方案需在 binance 仓库的 feature branch 上完成（遵循宪法 L-3）。
+v3.9 范围**收窄为纯分析报告**——仅修改本报告（`report/binance/DATA-INTEGRITY-E2E-20260701.md`）本身，不修改任何 module/binance/ 制品。所有 GAP-E 修复方案需在 binance 仓库的 feature branch 上完成（遵循宪法 L-3）。
 
 v3.9 落地遵循的治理规则：
 - CONSTITUTION §0 / CLAUDE.md 分支纪律：worktree `binance-spec-runtime-gap-v39-20260702`
-- CONSTITUTION §10.4：Spec Appendix 版本同步
-- CLAUDE.md §5.1：FR 状态以 TRACEABILITY.md §1 为权威，§6 仪表盘从 §1 派生
-- CLAUDE.md §5.3：DoD 标题版本号与 Spec-Version 一致
 - CLAUDE.md 数量验证门禁：所有计数基于 grep 实证
+- 发现 CI 脚本硬编码冲突后，遵循"先修脚本再改制品"原则，避免单方面改动触发 CI FAIL
+
+### §14.7 RUNTIME-GAP-MATRIX.md 设计图（参考，未落地）
+
+原计划新建的 `module/binance/RUNTIME-GAP-MATRIX.md` 结构（58 个 GAP-E × FR × AC × 严重度 × 工时五列映射表）作为后续 PR 的参考设计：
+
+- §1 P0/P1 缺口（13 个，~32 人天）：GAP-E1/E2/E3/E4/E5/E30/E32/E33/E37/E44/E45/E58
+- §2 P2 缺口（22 个，~28.5 人天）：GAP-E6~E50 中部分
+- §3 P3 缺口（19 个，~13 人天）：GAP-E12~E57 中部分
+- §4 汇总统计：总 58 缺口，73.5 人天
+- §5 修复路径建议：阶段 A（4 周 P0/P1）→ 阶段 B（6 周 P2）→ 阶段 C（持续 P3）
+- §6 GitHub Issue 反向追溯：待创建
+- §7 文件溯源：本报告 §11 + §14.2
 
 ---
 
