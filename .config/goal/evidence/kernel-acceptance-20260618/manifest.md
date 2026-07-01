@@ -14,12 +14,12 @@
 | --- | --- | --- | --- |
 | 文档存在性 | `test -f module/kernel/FEATURES.md && test -f module/kernel/ACCEPTANCE.md` | ✅ PASS | 两份文档均存在（116 行 / 127 行） |
 | 文档格式 | `git diff --check -- module/kernel` | ✅ PASS | 无尾随空格 |
-| 运行时测试 | `cd /home/kernel && go test ./...` | ✅ PASS | 27 个包全部通过（含 contracts、contracttest、12 子包、12 examples、internal/testutil） |
-| 竞态检查 | `cd /home/kernel && go test ./... -race -count=1` | ✅ PASS | 27 个包全部通过，无 data race，单包平均 1s |
-| 静态检查 | `cd /home/kernel && go vet ./...` | ✅ PASS | 无 vet 报告 |
-| 覆盖率证据 | `cd /home/kernel && make coverage-threshold` | ✅ PASS | 14 个核心库包 100.0%（contextx/contracttest/errx/healthx/internal/testutil/lifecycx/obsx/retryx/shutdownx/syncx/timex/validx/versionx）；contracts 为 [no statements] |
-| 依赖边界 | `cd /home/kernel && bash scripts/check-stdlib-only.sh` | ✅ PASS | STDLIB-ONLY CHECK PASSED：仅主模块输出 |
-| 凭证扫描 | `cd /home/kernel && bash scripts/check_secrets.sh` | ✅ PASS | secret check passed |
+| 运行时测试 | `cd /home/workspace/kernel && go test ./...` | ✅ PASS | 27 个包全部通过（含 contracts、contracttest、12 子包、12 examples、internal/testutil） |
+| 竞态检查 | `cd /home/workspace/kernel && go test ./... -race -count=1` | ✅ PASS | 27 个包全部通过，无 data race，单包平均 1s |
+| 静态检查 | `cd /home/workspace/kernel && go vet ./...` | ✅ PASS | 无 vet 报告 |
+| 覆盖率证据 | `cd /home/workspace/kernel && make coverage-threshold` | ✅ PASS | 14 个核心库包 100.0%（contextx/contracttest/errx/healthx/internal/testutil/lifecycx/obsx/retryx/shutdownx/syncx/timex/validx/versionx）；contracts 为 [no statements] |
+| 依赖边界 | `cd /home/workspace/kernel && bash scripts/check-stdlib-only.sh` | ✅ PASS | STDLIB-ONLY CHECK PASSED：仅主模块输出 |
+| 凭证扫描 | `cd /home/workspace/kernel && bash scripts/check_secrets.sh` | ✅ PASS | secret check passed |
 
 ## 覆盖率详细数据
 
@@ -44,7 +44,7 @@
 
 ## CI/CD 部署状态
 
-/home/kernel 已部署完整 CI/CD（HEAD `de6ae91 route foundation delivery through SRE runner pools`）：
+/home/workspace/kernel 已部署完整 CI/CD（HEAD `de6ae91 route foundation delivery through SRE runner pools`）：
 
 | Workflow | 触发 | 机器池 | 必经 Job |
 | --- | --- | --- | --- |
@@ -70,4 +70,4 @@
 ## 证据文件清单
 
 - `manifest.md`（本文件）
-- `coverage.out`（make coverage-threshold 输出，从 /home/kernel 复制）
+- `coverage.out`（make coverage-threshold 输出，从 /home/workspace/kernel 复制）

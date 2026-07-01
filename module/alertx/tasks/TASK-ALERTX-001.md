@@ -19,7 +19,7 @@ files:
   - "pkg/alertx/errors.go"
   - "pkg/alertx/options.go"
 acceptance_criteria:
-  - "go.mod module 路径为 github.com/ZoneCNH/alertx，依赖 contracts v1.6.0-alert（本地 replace 指向 /home/contracts）"
+  - "go.mod module 路径为 github.com/ZoneCNH/alertx，依赖 contracts v1.6.0-alert（本地 replace 指向 /home/workspace/contracts）"
   - "version.go Version = v1.0.0"
   - "errors.go 定义 sentinel errors：ErrRuleInvalid/ErrChannelUnknown/ErrSuppressWindowZero/ErrNotifyFailed/ErrRuleLoadFailed/ErrStoreUnavailable"
   - "go build ./... 编译通过"

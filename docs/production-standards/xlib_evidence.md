@@ -39,7 +39,7 @@ module/xlib_evidence/
   IMPLEMENTATION-PLAN.md
   tasks/               # 6 个 task markdown
 
-/home/xlib_evidence/   # 运行时代码（独立 Go module）
+/home/workspace/xlib-evidence/   # 运行时代码（独立 Go module）
   coverage.go / coverage_test.go        # FR-001
   manifest.go / manifest_test.go        # FR-002/003
   remote.go / remote_test.go            # FR-004

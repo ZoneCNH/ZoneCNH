@@ -5,24 +5,24 @@
 - Module-Version: v1.0.0
 - Module-State: Release Candidate — 运行时验收通过（2026-06-18）；factory=false（四源评分未达 98，见 SPEC caveat）
 - Layer: L0 测试工具
-- Runtime-Repo: /home/testkitx
+- Runtime-Repo: /home/workspace/testkitx
 - Source: goal.md, SPEC.md, TRACEABILITY.md, tasks/, prompt/
 
 > 本清单用于验收 testkitx 是否达到可发布、可追溯、可复验状态。除非条目明确记录为已通过，默认需要在运行时代码仓库重新执行验证并补充证据。
 >
-> **运行时验收结论（2026-06-18 归档）**：`/home/testkitx` 全仓 `go build` / `go vet` / `go test -race` 全部 exit=0；总覆盖率 **92.6%**（NFR-002 ≥80% 达标）；FR-007 `Eventually` 补 `eventually_test.go` 后覆盖率 0%→100%（AC-007/TC-007 闭合）；contract/golden/boundary/leak 子套件全绿。下表 AC/TC 全部 **✅ 通过**，证据见各条来源列与运行时 CI（`.github/workflows/ci.yml` testkitx-gates）。
+> **运行时验收结论（2026-06-18 归档）**：`/home/workspace/testkitx` 全仓 `go build` / `go vet` / `go test -race` 全部 exit=0；总覆盖率 **92.6%**（NFR-002 ≥80% 达标）；FR-007 `Eventually` 补 `eventually_test.go` 后覆盖率 0%→100%（AC-007/TC-007 闭合）；contract/golden/boundary/leak 子套件全绿。下表 AC/TC 全部 **✅ 通过**，证据见各条来源列与运行时 CI（`.github/workflows/ci.yml` testkitx-gates）。
 
 ## 1. 验收命令清单
 
 | 类别 | 命令 | 通过标准 |
 | --- | --- | --- |
-| 文档存在性 | cd /home/ZoneCNH && test -f module/testkitx/FEATURES.md && test -f module/testkitx/ACCEPTANCE.md | FEATURES.md 与 ACCEPTANCE.md 均存在 |
-| 文档格式 | cd /home/ZoneCNH && git diff --check -- module/testkitx | 无尾随空格或补丁格式错误 |
-| 运行时测试 | cd /home/testkitx && go test ./... | 所有包测试通过 |
-| 竞态检查 | cd /home/testkitx && go test ./... -race -count=1 | 无 data race，测试稳定通过 |
-| 静态检查 | cd /home/testkitx && go vet ./... | 无 vet 问题 |
-| 覆盖率证据 | cd /home/testkitx && go test ./... -coverprofile=coverage.out | 覆盖率文件生成并满足模块 Spec 门槛 |
-| 依赖边界 | cd /home/testkitx && go list -deps ./... | 依赖不越过 FOUNDATION-DEPS.yaml 登记边界 |
+| 文档存在性 | cd /home/workspace/ZoneCNH && test -f module/testkitx/FEATURES.md && test -f module/testkitx/ACCEPTANCE.md | FEATURES.md 与 ACCEPTANCE.md 均存在 |
+| 文档格式 | cd /home/workspace/ZoneCNH && git diff --check -- module/testkitx | 无尾随空格或补丁格式错误 |
+| 运行时测试 | cd /home/workspace/testkitx && go test ./... | 所有包测试通过 |
+| 竞态检查 | cd /home/workspace/testkitx && go test ./... -race -count=1 | 无 data race，测试稳定通过 |
+| 静态检查 | cd /home/workspace/testkitx && go vet ./... | 无 vet 问题 |
+| 覆盖率证据 | cd /home/workspace/testkitx && go test ./... -coverprofile=coverage.out | 覆盖率文件生成并满足模块 Spec 门槛 |
+| 依赖边界 | cd /home/workspace/testkitx && go list -deps ./... | 依赖不越过 FOUNDATION-DEPS.yaml 登记边界 |
 
 ## 2. AC 验收登记
 
@@ -95,14 +95,14 @@
 
 - [x] FEATURES.md 的 FR、BR/NFR、任务清单与 SPEC/TRACEABILITY 当前登记一致。
 - [x] ACCEPTANCE.md 的 AC、TC 与运行时代码测试名、证据文件或 CI 记录一致。
-- [x] 运行时代码仓库 /home/testkitx 通过 go test、go test -race、go vet 与覆盖率门槛。
+- [x] 运行时代码仓库 /home/workspace/testkitx 通过 go test、go test -race、go vet 与覆盖率门槛。
 - [x] 所有外部服务依赖有本地可重复的测试替身或明确 live-gate 证据。
 - [x] 安全检查确认没有凭证、私有端点、账户 ID 或实盘配置进入公开文档与代码。
 - [x] 版本号、发布标签、CHANGELOG 或 release note 与本目录状态一致。
 
 ## 6. 当前缺口登记
 
-- 运行时验收已闭合（2026-06-18）：`/home/testkitx` build/vet/test/race exit=0，覆盖率 92.6%，FR-007 Eventually 100%，contract/golden/boundary/leak 全绿。
+- 运行时验收已闭合（2026-06-18）：`/home/workspace/testkitx` build/vet/test/race exit=0，覆盖率 92.6%，FR-007 Eventually 100%，contract/golden/boundary/leak 全绿。
 - AC-001~010 / TC-001~010 全部 ✅ 通过（证据：运行时测试 + CI `.github/workflows/ci.yml` testkitx-gates）。
 - TC-007~010 验证机制已对齐运行时实际包路径（pkg/testkitx/eventually、golden、boundarytest、leaktest）。
 - factory=false 为预期状态（四源评分未达 98），非缺口；待四源评分通过后转 factory-grade。

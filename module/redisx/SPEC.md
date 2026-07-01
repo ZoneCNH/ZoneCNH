@@ -7,7 +7,7 @@ Status: Approved
 - Version: v1.1.0
 - Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `kernel`
 
-> 公开投影 caveat：Status=Approved 表示需求追溯已闭合；发布标签仍以 `/home/redisx` 的 clean-main `release-preflight` 为准。
+> 公开投影 caveat：Status=Approved 表示需求追溯已闭合；发布标签仍以 `/home/workspace/redisx` 的 clean-main `release-preflight` 为准。
 
 ---
 

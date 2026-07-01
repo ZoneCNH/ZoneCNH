@@ -2,7 +2,7 @@
 
 > 模块: xlib_harness
 > 版本: v0.1.6
-> 工作目录: /home/xlib-harness
+> 工作目录: /home/workspace/xlib-harness
 > Spec: module/xlib_harness/spec/SPEC.md v1.3.0
 
 ## 模块定位
@@ -22,7 +22,7 @@ xlib_harness 是 Foundation 模块的生成器与门禁执行器。它生成标�
 
 ## 验收证据
 
-- Implementation baseline: /home/xlib-harness@d90b35124701
+- Implementation baseline: /home/workspace/xlib-harness@d90b35124701
 - GitHub Release: v0.1.6 (Release run 27855366871, main CI run 27855396013)
 - make ci: PASS
 - go test ./...: PASS

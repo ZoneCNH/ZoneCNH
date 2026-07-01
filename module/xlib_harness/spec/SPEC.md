@@ -7,7 +7,7 @@ Status: Approved
 - Version: v0.1.6
 - Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `xlibgate`
 
-> 公开投影说明：v0.1.6 已由 `/home/xlib_harness@d90b35124701` 的本地验收、GitHub Actions Release run `27855366871`、main CI run `27855396013` 和 GitHub Release 证据支撑。
+> 公开投影说明：v0.1.6 已由 `/home/workspace/xlib-harness@d90b35124701` 的本地验收、GitHub Actions Release run `27855366871`、main CI run `27855396013` 和 GitHub Release 证据支撑。
 
 ---
 
@@ -185,7 +185,7 @@ module/xlib_harness/
     TASK-XLIBHARNESS-007.md
 ```
 
-Module implementation lives in `/home/xlib_harness`; this root repository only stores governance projection documents.
+Module implementation lives in `/home/workspace/xlib-harness`; this root repository only stores governance projection documents.
 
 ## 14. 依赖
 

@@ -55,7 +55,7 @@
 
 命名规则：每个模块一个 Goal 文档，路径固定为 `module/{module}/goal/goal.md`。
 
-以下 `goal.md` 来自 `/home/zone/Downloads/xlib-v1.0-module-goals-md/xlib-v1.0-module-goals/` 的 1.0 发布基线，用于定义模块发布定位、边界、契约、测试证据和 DoD；`SPEC.md` 仍是模块功能规格 SSOT。
+以下 `goal.md` 来自 `/home/workspace/zone/Downloads/xlib-v1.0-module-goals-md/xlib-v1.0-module-goals/` 的 1.0 发布基线，用于定义模块发布定位、边界、契约、测试证据和 DoD；`SPEC.md` 仍是模块功能规格 SSOT。
 
 | 模块          | 1.0 Goal                           |
 | ------------- | ---------------------------------- |
@@ -406,7 +406,7 @@ FoundationX 运行模块分为两种架构类型。详见 [`ARCHITECTURE.md`](..
 
 **宏观模块规格**：[`fred`](./fred/README.md) — FRED 独立 C/S 服务，覆盖共享基座、`domain_macro` 领域共享层、完整持久化和 dev 配置来源。
 
-**参考实现**：[binance](https://github.com/ZoneCNH/binance)（spec v3.9.6；Runtime-Version `v0.8.0`；2026-06-29：Runtime-Anchor `/home/binance@b2d9d83`；single state `48 Done / 0 Partial`（100%）；coverage 100.0%；release_closeable=YES 🎉；v0.8.0 tag 已发布；47/47 tasks Done）
+**参考实现**：[binance](https://github.com/ZoneCNH/binance)（spec v3.9.6；Runtime-Version `v0.8.0`；2026-06-29：Runtime-Anchor `/home/workspace/binance@b2d9d83`；single state `48 Done / 0 Partial`（100%）；coverage 100.0%；release_closeable=YES 🎉；v0.8.0 tag 已发布；47/47 tasks Done）
 
 ### 独立进程（非 C/S）
 

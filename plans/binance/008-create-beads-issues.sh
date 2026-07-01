@@ -4,16 +4,16 @@
 # Records mapping task_id -> beads_id -> gh_issue to 008-beads-issue-map.tsv
 set -euo pipefail
 
-JSON="/home/ZoneCNH/plans/binance/008-tasks.json"
-GH_MAP="/home/ZoneCNH/plans/binance/008-gh-issue-map.tsv"
-BMAP="/home/ZoneCNH/plans/binance/008-beads-issue-map.tsv"
+JSON="/home/workspace/ZoneCNH/plans/binance/008-tasks.json"
+GH_MAP="/home/workspace/ZoneCNH/plans/binance/008-gh-issue-map.tsv"
+BMAP="/home/workspace/ZoneCNH/plans/binance/008-beads-issue-map.tsv"
 
 echo -e "task_id\tbeads_id\tgh_issue\ttitle" > "$BMAP"
 
 COUNT=$(jq '.tasks | length' "$JSON")
 echo "Creating $COUNT beads issues..."
 
-export BEADS_DIR="/home/ZoneCNH/.beads"
+export BEADS_DIR="/home/workspace/ZoneCNH/.beads"
 
 for i in $(seq 0 $((COUNT - 1))); do
   TASK_ID=$(jq -r ".tasks[$i].id" "$JSON")

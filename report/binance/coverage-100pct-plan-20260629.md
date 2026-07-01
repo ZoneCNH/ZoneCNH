@@ -1,7 +1,7 @@
 # binance 测试覆盖率 100% 达成计划
 
 > **编制日期**: 2026-06-29
-> **目标仓库**: `/home/binance/` (GitHub: `ZoneCNH/binance`)
+> **目标仓库**: `/home/workspace/binance/` (GitHub: `ZoneCNH/binance`)
 > **基线分支**: `main` (HEAD: `b2d9d83`)
 > **基线测量**: `go test ./... -coverprofile -covermode=atomic` → **76.8%** 语句覆盖率
 > **目标**: **100%** 语句覆盖率（`go test ./... -cover` 全包 100%）
@@ -208,7 +208,7 @@ go test ./internal/client/ -coverprofile=c.out && go tool cover -func=c.out | ta
 > **执行总结**：原计划 11.5 人日/12 天（单人串行），实际由 6 agent × 7 轮并行在 ~4 小时内完成。阶段 0-9 的验收标准全部达成，阶段 10 收口后全仓 100.0%。分支统一在 `feat/coverage-100pct-20260629-agent-team` 上完成，未创建多分支。
 
 > **分支纪律**：每阶段从 `main` 创建独立 feature branch → PR 合入 → 下一阶段。禁止 `main` 直接编辑（CONSTITUTION.md §0）。
-> **worktree**: `/home/binance/.worktree/workspaces/<branch-name>`
+> **worktree**: `/home/workspace/binance/.worktree/workspaces/<branch-name>`
 
 ### 阶段 0: 基础设施与基线固化（0.5 天）— ✅ 已隐式完成
 

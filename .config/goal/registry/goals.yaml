@@ -279,7 +279,7 @@ goals:
     release_evidence:
       latest_tag: v0.1.6
       spec_version: v1.3.0
-      implementation_baseline: "/home/xlib_harness@d90b35124701"
+      implementation_baseline: "/home/workspace/xlib-harness@d90b35124701"
       github_release: "https://github.com/ZoneCNH/xlib-harness/releases/tag/v0.1.6"
       ci_pass: true
       coverage: "100.0%"

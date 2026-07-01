@@ -5,7 +5,7 @@
 > 分析日期：2026-06-26
 > 分析范围（修复前）：root SPEC v3.7.1 + client SPEC v2.1.1 + server SPEC v2.2.0 + 三层 TRACEABILITY 矩阵
 > 修复后：全部统一为 v3.8.0 canonical 编号
-> Runtime-Anchor: historical Plan008 anchor; 2026-06-27 evidence projection used `/home/binance@0602e78428633a368b0afcd1c578c07ed7144752`（已被 2026-06-28 `/home/binance@2efc44a` 取代）
+> Runtime-Anchor: historical Plan008 anchor; 2026-06-27 evidence projection used `/home/workspace/binance@0602e78428633a368b0afcd1c578c07ed7144752`（已被 2026-06-28 `/home/workspace/binance@2efc44a` 取代）
 
 ---
 
@@ -56,7 +56,7 @@ server TRACEABILITY 同样：
 **建议修复**：
 
 1. 将 root TRACEABILITY §1 的 24 Done / 10 Partial 投影按 FR 归属拆解到 client TRACEABILITY（8 FR）和 server TRACEABILITY（12 FR）的对应行
-2. 或至少在子矩阵 §6 覆盖率仪表盘增加注释："实现状态以 root TRACEABILITY Runtime-Anchor 为准（当前 `/home/binance@2efc44a`），本子矩阵保留 Pending 标注反映子模块级 TC 测试证据未独立闭合"
+2. 或至少在子矩阵 §6 覆盖率仪表盘增加注释："实现状态以 root TRACEABILITY Runtime-Anchor 为准（当前 `/home/workspace/binance@2efc44a`），本子矩阵保留 Pending 标注反映子模块级 TC 测试证据未独立闭合"
 
 **扣分**：−15
 
@@ -333,7 +333,7 @@ LOW       3  ← prompt 空壳 + registry 滞后 + FR-001 歧义
 `module/binance` 的三层文档体系（root → client + server）是在 v2.0.0 分布式架构重构时建立的。此后：
 
 1. **root 层持续迭代**：17 个 MINOR bump（v3.0.0→v3.7.1），FR 从 10 扩展到 44，AC 从 35 扩展到 130，TC 从 22 扩展到 65
-2. **client/server 子矩阵在 v2.0.0 之后从未刷新过实现状态**：Plan007/Plan008 的 40 个 Task 全部在 runtime 仓 `/home/binance` 完成，证据流向 root 矩阵，但没有向下游注入 client/server 子矩阵
+2. **client/server 子矩阵在 v2.0.0 之后从未刷新过实现状态**：Plan007/Plan008 的 40 个 Task 全部在 runtime 仓 `/home/workspace/binance` 完成，证据流向 root 矩阵，但没有向下游注入 client/server 子矩阵
 3. **三层之间的编号映射全靠散文约定**：没有结构化的 FR/BR/AC/TC 命名空间隔离或跨层映射表
 4. **root SPEC bump 未触发子规格同步机制**：v3.7.0→v3.7.1 引入了 server 侧 FR-037~044，但 server/SPEC.md 的 Last-Updated 和 Runtime-Version 均未更新
 

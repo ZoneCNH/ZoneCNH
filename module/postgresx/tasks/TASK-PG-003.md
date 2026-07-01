@@ -37,11 +37,11 @@ TASK-PG-003:
 
 ## Evidence
 
-- `/home/postgresx/pkg/postgresx/metrics.go`
-- `/home/postgresx/pkg/postgresx/options.go`
-- `/home/postgresx/contracts/metrics.md`
-- `/home/postgresx/docs/VERSION_MATRIX.md`
-- `/home/postgresx/contracts/`
+- `/home/workspace/postgresx/pkg/postgresx/metrics.go`
+- `/home/workspace/postgresx/pkg/postgresx/options.go`
+- `/home/workspace/postgresx/contracts/metrics.md`
+- `/home/workspace/postgresx/docs/VERSION_MATRIX.md`
+- `/home/workspace/postgresx/contracts/`
 - `module/postgresx/SPEC.md`
 - `module/postgresx/TRACEABILITY.md`
 - `GOWORK=off VERSION=v1.0.0 make release-evidence-check`

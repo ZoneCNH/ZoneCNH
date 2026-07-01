@@ -118,7 +118,7 @@
 | **ClickHouse**     | `127.0.0.1`                       | 9000 (Native) / 8123 (HTTP) | `default`                  | *(见 `sre/secrets/env/dev.md`)*  | ✅ SELECT 1         |
 | **Aliyun OSS**     | `oss-ap-northeast-1.aliyuncs.com` | 443 (HTTPS)                 | *(见 `sre/secrets/env/dev.md`)* | *(见 `sre/secrets/env/dev.md`)* | ✅ 403 (需认证操作) |
 
-**runtime `.env` 已配置**（`/home/binance/.env`，50 行，全部 7 服务真实凭据），环境变量前缀：
+**runtime `.env` 已配置**（`/home/workspace/binance/.env`，50 行，全部 7 服务真实凭据），环境变量前缀：
 
 | 服务       | 环境变量前缀               | 关键变量                                                   |
 | ---------- | -------------------------- | ---------------------------------------------------------- |
@@ -192,8 +192,8 @@ rg "release_closeable" module/binance/CHANGELOG.md  # 确认裁决已记录
 
 | 步骤 | 操作                                             | 验证命令                                                                                                | 预期结果                                                       |
 | ---- | ------------------------------------------------ | ------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
-| 1.1  | Runtime 全量测试                                 | `cd /home/binance && go test ./... -count=1 -short`                                                     | 23/23 PASS                                                     |
-| 1.2  | 边界门禁                                         | `cd /home/binance && bash scripts/boundary-gates.sh`                                                    | 15/15 PASS                                                     |
+| 1.1  | Runtime 全量测试                                 | `cd /home/workspace/binance && go test ./... -count=1 -short`                                                     | 23/23 PASS                                                     |
+| 1.2  | 边界门禁                                         | `cd /home/workspace/binance && bash scripts/boundary-gates.sh`                                                    | 15/15 PASS                                                     |
 | 1.3  | Short mode 覆盖率                                | `go test ./... -short -coverprofile=/tmp/cov.out && go tool cover -func=/tmp/cov.out \| tail -1`        | ≥ 99%                                                          |
 | 1.4  | Full mode 覆盖率                                 | `go test ./... -coverprofile=/tmp/cov_full.out && go tool cover -func=/tmp/cov_full.out \| tail -1`     | 当前 77.4%（需提升至 **≥ 98%**）                               |
 | 1.5  | **基础设施连通性验证（全部 7 服务，禁止 mock）** | 逐服务 ping/连接测试                                                                                    | 全部 ✅                                                        |
@@ -203,12 +203,12 @@ rg "release_closeable" module/binance/CHANGELOG.md  # 确认裁决已记录
 | 1.5d | TDengine                                         | `curl -s -u "market_binance:$TD_PASS" http://127.0.0.1:6041/rest/sql -d 'show databases'` | 含 `market_binance`                                            |
 | 1.5f | ClickHouse                                       | `curl -s -u "default:$CH_PASS" 'http://127.0.0.1:8123/?query=SELECT%201'`                         | `1`                                                            |
 | 1.5g | OSS                                              | `curl -s -o /dev/null -w "%{http_code}" https://x-go.oss-ap-northeast-1.aliyuncs.com/`                  | `403`（端点可达）                                              |
-| 1.6  | 确认 `.env` 已加载全部真实凭据                   | `cat /home/binance/.env \| wc -l`                                                                       | 50 行（7 服务全覆盖）                                          |
-| 1.7  | PRG-001 验证：self-hosted runner 是否在线        | `cd /home/binance && gh run list --limit 5`                                                             | 确认 runner 有成功 run                                         |
+| 1.6  | 确认 `.env` 已加载全部真实凭据                   | `cat /home/workspace/binance/.env \| wc -l`                                                                       | 50 行（7 服务全覆盖）                                          |
+| 1.7  | PRG-001 验证：self-hosted runner 是否在线        | `cd /home/workspace/binance && gh run list --limit 5`                                                             | 确认 runner 有成功 run                                         |
 | 1.6  | PRG-002 验证：release tag 状态                   | `git tag -l v0.8.0 && gh release view v0.8.0`                                                           | tag + release 均存在                                           |
 | 1.7  | PRG-003 验证：production readiness               | 检查 PRG-001~007 实际状态                                                                               | 汇总                                                           |
 | 1.8  | PRG-004 验证：observability 基础设施             | 确认 Jaeger/Grafana/AM/Loki/Alloy 部署状态                                                              | Partial（基础设施已部署，dashboard import 待验证）             |
-| 1.9  | PRG-005 验证：security scan                      | `cd /home/binance && make secret && make govulncheck`                                                   | 确认 scan 是否能通过                                           |
+| 1.9  | PRG-005 验证：security scan                      | `cd /home/workspace/binance && make secret && make govulncheck`                                                   | 确认 scan 是否能通过                                           |
 | 1.10 | PRG-006 验证：resilience evidence                | 检查 soak/chaos/canary 测试是否存在且通过                                                               | 当前为 DRY_RUN                                                 |
 | 1.11 | FR-007/007a/011 代码验证                         | 检查 API 路由注册 + 分布式锁实现                                                                        | 代码存在（analytics.go 有 VWAP/TopMovers/Correlation handler） |
 | 1.12 | G0 存储装配验证                                  | 确认 `assembly.Assemble()` 是否创建真实存储实例                                                         | buildStorage() 创建真实 Redis/taos/pg/clickhouse/oss           |
@@ -494,28 +494,28 @@ ls module/binance/goal.md 2>/dev/null && echo "FAIL: root goal.md still exists" 
 
 | 步骤  | 文件                      | 操作                                |
 | ----- | ------------------------- | ----------------------------------- |
-| 4.8.1 | `/home/binance/AGENTS.md` | 合并两段重复的 beads 集成说明为一段 |
+| 4.8.1 | `/home/workspace/binance/AGENTS.md` | 合并两段重复的 beads 集成说明为一段 |
 
 **Phase 4 验证命令**：
 
 ```bash
 # 验证 Dockerfile Go 版本
-rg "golang:" /home/binance/Dockerfile.client /home/binance/Dockerfile.server
+rg "golang:" /home/workspace/binance/Dockerfile.client /home/workspace/binance/Dockerfile.server
 # 期望：均为 1.25-alpine
 
 # 验证 ci.yml 已删除
-ls /home/binance/.github/workflows/ci.yml 2>/dev/null && echo "FAIL" || echo "PASS: deleted"
+ls /home/workspace/binance/.github/workflows/ci.yml 2>/dev/null && echo "FAIL" || echo "PASS: deleted"
 
 # 验证 docker-compose tag
-rg "image:" /home/binance/docker-compose.yml | rg "binance"
+rg "image:" /home/workspace/binance/docker-compose.yml | rg "binance"
 # 期望：v0.8.0
 
 # 验证 contracts 声明
-rg "contracts.*已接入" /home/binance/internal/wire/doc.go
+rg "contracts.*已接入" /home/workspace/binance/internal/wire/doc.go
 # 期望：0 行命中
 
 # 验证覆盖率文件单一
-ls /home/binance/coverage_full.out 2>/dev/null && echo "FAIL" || echo "PASS: deleted"
+ls /home/workspace/binance/coverage_full.out 2>/dev/null && echo "FAIL" || echo "PASS: deleted"
 ```
 
 ---
@@ -545,7 +545,7 @@ ls /home/binance/coverage_full.out 2>/dev/null && echo "FAIL" || echo "PASS: del
 **运行命令**：
 
 ```bash
-cd /home/binance
+cd /home/workspace/binance
 # 加载真实凭据
 set -a && source .env && set +a
 # 运行全部集成测试（真实连接）
@@ -687,14 +687,14 @@ rg "PRG-00[1-7].*\|.*Open\|PRG-00[1-7].*\|.*Partial" module/binance/spec/ACCEPTA
 
 ```bash
 # 验证覆盖率 ≥ 98%（full mode，含真实连接集成测试）
-cd /home/binance
+cd /home/workspace/binance
 set -a && source .env && set +a
 go test ./... -tags=integration -coverprofile=/tmp/cov_full.out -count=1
 go tool cover -func=/tmp/cov_full.out | tail -1
 # 期望：total ≥ 98.0%
 
 # 验证 AggSource 不再是 stub
-rg "stubAggSource" /home/binance/internal/server/assembly/ --type go
+rg "stubAggSource" /home/workspace/binance/internal/server/assembly/ --type go
 # 期望：0 行命中（或仅在测试中）
 ```
 
@@ -764,7 +764,7 @@ rg "module/binance/SPEC\.md[^/]" module/binance/ --exclude='CHANGELOG.md' --excl
 # 期望：0 行
 
 # 5. Runtime 全测试 PASS（含真实连接集成测试）
-cd /home/binance
+cd /home/workspace/binance
 set -a && source .env && set +a
 go test ./... -count=1 -short
 # 期望：23/23 PASS
@@ -774,7 +774,7 @@ go test -tags=integration ./... -count=1 -v
 # 期望：全部 PASS
 
 # 7. 边界门禁全 PASS
-cd /home/binance && bash scripts/boundary-gates.sh
+cd /home/workspace/binance && bash scripts/boundary-gates.sh
 # 期望：15/15 PASS
 
 # 8. 覆盖率 ≥ 98%（full mode，含真实连接集成测试）
@@ -894,11 +894,11 @@ PGPASSWORD="$PG_PASS" psql -h 127.0.0.1 -U market_binance -d market_binance -c "
 
 ### Phase 4 完成后检查
 
-- [x]`rg "golang:1.23" /home/binance/Dockerfile*` — 0 行
-- [x]`ls /home/binance/.github/workflows/ci.yml` — 文件不存在
-- [x]`rg "v0.6.0" /home/binance/docker-compose.yml` — 0 行
-- [x]`rg "contracts.*已接入" /home/binance/internal/wire/doc.go` — 0 行
-- [x]`ls /home/binance/coverage_full.out` — 文件不存在
+- [x]`rg "golang:1.23" /home/workspace/binance/Dockerfile*` — 0 行
+- [x]`ls /home/workspace/binance/.github/workflows/ci.yml` — 文件不存在
+- [x]`rg "v0.6.0" /home/workspace/binance/docker-compose.yml` — 0 行
+- [x]`rg "contracts.*已接入" /home/workspace/binance/internal/wire/doc.go` — 0 行
+- [x]`ls /home/workspace/binance/coverage_full.out` — 文件不存在
 
 ### Phase 5 完成后检查
 
@@ -911,14 +911,14 @@ PGPASSWORD="$PG_PASS" psql -h 127.0.0.1 -U market_binance -d market_binance -c "
 ### Phase 6 完成后检查
 
 - [x]`go test ./... -tags=integration -coverprofile=/tmp/cov_full.out && go tool cover -func=/tmp/cov_full.out | tail -1` — total ≥ 98.0%
-- [x]`rg "stubAggSource" /home/binance/internal/server/assembly/ --type go` — 0 行（或仅测试）
+- [x]`rg "stubAggSource" /home/workspace/binance/internal/server/assembly/ --type go` — 0 行（或仅测试）
 
 ### Phase 7 完成后检查
 
 - [x]`rg "release_closeable" module/binance/ | rg "YES"` — 所有活跃文档命中
-- [x]`cd /home/binance && go test ./... -count=1 -short` — 23/23 PASS
-- [x]`cd /home/binance && go test -tags=integration ./... -count=1` — 全部 PASS（真实连接）
-- [x]`cd /home/binance && bash scripts/boundary-gates.sh` — 15/15 PASS
+- [x]`cd /home/workspace/binance && go test ./... -count=1 -short` — 23/23 PASS
+- [x]`cd /home/workspace/binance && go test -tags=integration ./... -count=1` — 全部 PASS（真实连接）
+- [x]`cd /home/workspace/binance && bash scripts/boundary-gates.sh` — 15/15 PASS
 - [x]`go tool cover -func` — total ≥ **98%**
 - [x]7 个基础设施服务真实连通验证全部 ✅
 - [x]`rg "48 Done\|0 Partial" module/binance/matrix/TRACEABILITY.md` — 命中
@@ -962,7 +962,7 @@ PGPASSWORD="$PG_PASS" psql -h 127.0.0.1 -U market_binance -d market_binance -c "
 | `schema/README.md`                       | 3          | 说明更新                            |
 | `evidence/2026-06-30/`                   | 1, 5, 7    | **新增** 目录 + evidence 文件       |
 
-### Runtime 修改文件（/home/binance/）
+### Runtime 修改文件（/home/workspace/binance/）
 
 | 文件                                                    | Phase | 修改类型                        |
 | ------------------------------------------------------- | ----- | ------------------------------- |

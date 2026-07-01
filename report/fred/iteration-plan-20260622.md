@@ -13,14 +13,14 @@
 
 ## 1. 总结判断
 
-[COMPUTED][HIGH] `fred` 不是“缺规格”，而是“规格骨架完整但结构闭环不足”。`module/fred/` 已有 `goal.md`、`SPEC.md`、`TRACEABILITY.md`、`FEATURES.md`、`ACCEPTANCE.md`、`IMPLEMENTATION-PLAN.md`、`README.md` 七件套，目标架构（独立 C/S、共享基座、`domain_macro`、七类持久化）定义完整；但核心状态仍是 `Draft`/`Planned`/`Pending`，`/home/fred` 运行仓仍是旧 `Stores=None` 骨架。
+[COMPUTED][HIGH] `fred` 不是“缺规格”，而是“规格骨架完整但结构闭环不足”。`module/fred/` 已有 `goal.md`、`SPEC.md`、`TRACEABILITY.md`、`FEATURES.md`、`ACCEPTANCE.md`、`IMPLEMENTATION-PLAN.md`、`README.md` 七件套，目标架构（独立 C/S、共享基座、`domain_macro`、七类持久化）定义完整；但核心状态仍是 `Draft`/`Planned`/`Pending`，`/home/workspace/fred` 运行仓仍是旧 `Stores=None` 骨架。
 
 [INFERRED][HIGH] 当前最高优先级不是扩展新组件，而是闭合三层落差：
 1. **追溯一致性** — `TRACEABILITY.md` 业务规则表 BR 编号与 `SPEC.md` 漂移（仍存在）。
-2. **目标边界迁移** — `/home/fred` 旧零存储门禁与目标七介质边界冲突。
+2. **目标边界迁移** — `/home/workspace/fred` 旧零存储门禁与目标七介质边界冲突。
 3. **验收证据** — 所有 AC/TC 仍 `Pending`，无法证明 runtime 已闭环。
 
-[INFERRED][HIGH] 最短可交付路径：先修文档追溯与契约（P0），再迁移 `/home/fred` 边界门禁与服务骨架，然后用一个最小 FRED series 打通 raw → checkpoint → observation → event → read model → API 查询证据链。
+[INFERRED][HIGH] 最短可交付路径：先修文档追溯与契约（P0），再迁移 `/home/workspace/fred` 边界门禁与服务骨架，然后用一个最小 FRED series 打通 raw → checkpoint → observation → event → read model → API 查询证据链。
 
 ## 2. 证据范围
 
@@ -37,7 +37,7 @@
 | `report/fred/data-issues-resolution-20260622.md` | FRED 官方语义、历史/实时数据方案、同步对象/周期、清洗规则、缺口检测、七介质职责 | [COMPUTED][HIGH] |
 | `report/fred/ms_brain-integration-analysis-20260622.md` | ms_brain 消费画像、初始序列锚点、PIT/no-lookahead、freshness/degrade 契约 | [COMPUTED][HIGH] |
 | `report/fred/structural-score-20260622.md` | SPEC 84/100、结构健康 68/100、发布就绪 42/100；G2/G3 Fail | [COMPUTED][HIGH] |
-| `/home/fred` 运行仓 | `cmd/fred-server/main.go` 仍称“adapter 零存储”，`bootstrap.Build` 用 `Stores: bootstrap.None`，边界脚本 `no-storage-adapter` gate | [COMPUTED][HIGH] |
+| `/home/workspace/fred` 运行仓 | `cmd/fred-server/main.go` 仍称“adapter 零存储”，`bootstrap.Build` 用 `Stores: bootstrap.None`，边界脚本 `no-storage-adapter` gate | [COMPUTED][HIGH] |
 
 ## 3. 现状评分
 
@@ -47,13 +47,13 @@
 | --- | ---: | --- |
 | SPEC 单文件结构 | 84/100 | 目标/边界/FR/BR/AC/TC/持久化/配置/安全较完整，4 个开放问题未关闭 |
 | `module/fred/` 结构健康 | 68/100 | 文档骨架完整，追溯矩阵/验收命令/实施证据未闭环 |
-| 发布验收就绪 | 42/100 | 所有 AC/TC 仍 Pending，不能证明 `/home/fred` 已满足目标状态 |
+| 发布验收就绪 | 42/100 | 所有 AC/TC 仍 Pending，不能证明 `/home/workspace/fred` 已满足目标状态 |
 
 结构健康分项账本（68/100）：
 
 | 维度 | 分数 | 扣分原因 |
 | --- | ---: | --- |
-| 需求与边界完整度 | 18/20 | FR/BR/AC/TC 与七介质已定义；`/home/fred` 旧 `Stores=None` 迁移未完成 |
+| 需求与边界完整度 | 18/20 | FR/BR/AC/TC 与七介质已定义；`/home/workspace/fred` 旧 `Stores=None` 迁移未完成 |
 | 领域共享层与 C/S 边界 | 14/20 | 已要求共享基座与 `domain_macro`，但具体包路径/字段仍是开放项 |
 | 追溯一致性 | 9/20 | `TRACEABILITY.md` BR 编号语义与 `SPEC.md` 漂移 |
 | 验收可执行性 | 13/20 | AC/TC/DoD 存在，但全 Pending，缺真实运行证据 |
@@ -93,7 +93,7 @@
 
 ### P0-2. 目标服务边界与运行仓旧门禁冲突
 
-[COMPUTED][HIGH] `SPEC.md` FR-014 要求边界门禁允许目标存储适配器经共享基座接入；但 `/home/fred/cmd/fred-server/main.go` 仍用 `Stores: bootstrap.None`，`scripts/boundary-gates.sh` 仍是 `no-storage-adapter` gate。
+[COMPUTED][HIGH] `SPEC.md` FR-014 要求边界门禁允许目标存储适配器经共享基座接入；但 `/home/workspace/fred/cmd/fred-server/main.go` 仍用 `Stores: bootstrap.None`，`scripts/boundary-gates.sh` 仍是 `no-storage-adapter` gate。
 
 影响：[INFERRED][HIGH] 若直接实现七类持久化，当前门禁会把正确目标误判为违规；若保留当前门禁，则无法达到目标规格。
 
@@ -131,9 +131,9 @@
 
 ### P2. ms_brain runtime 未落地
 
-[COMPUTED][HIGH] `/home/ms_brain` 当前主要是文档/spec/YAML，`framework/` 下暂无可运行代码（`ms_brain-integration-analysis-20260622.md` 证据）。`OPEN-005`/`GAP-004` 仍开放。
+[COMPUTED][HIGH] `/home/workspace/ms_brain` 当前主要是文档/spec/YAML，`framework/` 下暂无可运行代码（`ms_brain-integration-analysis-20260622.md` 证据）。`OPEN-005`/`GAP-004` 仍开放。
 
-处理：[INFERRED][HIGH] 先在 `/home/fred` 建 `MsBrainContract` fixture（覆盖 `DFII10`、`T10YIE`、`DFF`、`BAMLH0A0HYM2`、`T10Y2Y`、`ICSA`、`FYFSGDA188S`、`FDHBFRBN`）；待 ms_brain runtime 落地后补 E2E。本项不阻塞 fred 自身发布，只阻塞 AC-009 的端到端证据。
+处理：[INFERRED][HIGH] 先在 `/home/workspace/fred` 建 `MsBrainContract` fixture（覆盖 `DFII10`、`T10YIE`、`DFF`、`BAMLH0A0HYM2`、`T10Y2Y`、`ICSA`、`FYFSGDA188S`、`FDHBFRBN`）；待 ms_brain runtime 落地后补 E2E。本项不阻塞 fred 自身发布，只阻塞 AC-009 的端到端证据。
 
 ## 5. 迭代路线（7 阶段）
 
@@ -143,7 +143,7 @@
 | --- | --- | --- | --- | --- |
 | **阶段 1：追溯修正** | 闭合 P0-1、P1-1 | `TRACEABILITY.md` BR 表重写、G-SC BR 引用复核、BR 核对记录 | `rg -n "BR-00[2-7]" module/fred` 人工核对无错位；G2 追溯闭环 Pass | P0 |
 | **阶段 2：配置与契约补齐** | 闭合 P0-3、P1-2、P1-3 | redacted config mapping 表、API/event/schema 最小契约附录、`domain_macro` 绑定表 | 映射表不含 secret 值；每个 FRED DTO 字段有目标 domain 字段、时区、空值、单位规则 | P0/P1 |
-| **阶段 3：边界迁移与服务骨架** | 闭合 P0-2 | `/home/fred` 边界脚本改为目标存储白名单 + 基座强制规则；`cmd/fred-server` 用 `bootstrap`/`configx` 组装；health/version/readiness | `bash scripts/boundary-gates.sh` 通过；配置缺失 fail fast；redaction 测试通过 | P0 |
+| **阶段 3：边界迁移与服务骨架** | 闭合 P0-2 | `/home/workspace/fred` 边界脚本改为目标存储白名单 + 基座强制规则；`cmd/fred-server` 用 `bootstrap`/`configx` 组装；health/version/readiness | `bash scripts/boundary-gates.sh` 通过；配置缺失 fail fast；redaction 测试通过 | P0 |
 | **阶段 4：领域映射与权威写入** | 闭合 P1-3 实施 + raw-first | `internal/domain` FRED DTO→`domain_macro` 转换；OSS raw archive + Postgres checkpoint/idempotency + Taos observation | 单 series backfill 证明 raw、metadata、observation 一致；no-lookahead fixture 通过 | P1 |
 | **阶段 5：事件、控制面与读模型** | durable event + 控制面分离 + 读模型 | Kafka durable event + outbox；NATS control plane；Redis cache/lock/rate bucket；ClickHouse read model | 重复 backfill 不产生重复副作用；NATS 不替代 Kafka；Redis 清空可重建；ClickHouse 可重放 | P1 |
 | **阶段 6：服务 API 与客户端** | 出域契约 | `GetSeries`/`QueryObservations`/`StartBackfill`/`GetJobStatus`/`ScanRevisions`/`ReloadConfig`；`pkg/fredx` 稳定 API；ms_brain integration profile fixture | client contract tests、server handler tests、兼容性 fixture 通过 | P1 |
@@ -186,9 +186,9 @@
 
 | ID | 项 | 目标文件 | 验收 |
 | --- | --- | --- | --- |
-| FRED-BL-009 | 改造 `/home/fred/scripts/boundary-gates.sh` | `/home/fred/scripts/boundary-gates.sh` | 允许共享基座存储 adapter，禁止直连驱动/私有连接池/绕过 configx |
-| FRED-BL-010 | 迁移 `cmd/fred-server/main.go` 入口 | `/home/fred/cmd/fred-server/main.go` | 移除“adapter 零存储”注释，`Stores` 从 None 改为目标装配 |
-| FRED-BL-011 | 配置 redaction 测试 | `/home/fred` tests | 缺失配置 fail fast，日志/错误不泄露值 |
+| FRED-BL-009 | 改造 `/home/workspace/fred/scripts/boundary-gates.sh` | `/home/workspace/fred/scripts/boundary-gates.sh` | 允许共享基座存储 adapter，禁止直连驱动/私有连接池/绕过 configx |
+| FRED-BL-010 | 迁移 `cmd/fred-server/main.go` 入口 | `/home/workspace/fred/cmd/fred-server/main.go` | 移除“adapter 零存储”注释，`Stores` 从 None 改为目标装配 |
+| FRED-BL-011 | 配置 redaction 测试 | `/home/workspace/fred` tests | 缺失配置 fail fast，日志/错误不泄露值 |
 
 ### 阶段 4（P1 领域映射与权威写入）
 
@@ -240,7 +240,7 @@
 | G3 验收可执行 | **Fail** | Pass | AC/TC 从 Pending→Verified，有运行输出和退出码 |
 | G4 实施就绪 | Conditional | Pass | 可进入追溯修复与设计补齐；不宜宣称已可发布 |
 
-[INFERRED][HIGH] 结构健康分预测：修 P0-1（BR 漂移）后 G2 Pass，结构健康分预计从 68→75 左右；再补 P0-3/P1-2/P1-3（config mapping/契约/domain_macro 绑定）后预计 80+；最后补 `/home/fred` 真实验收证据后发布就绪分有机会超 80。
+[INFERRED][HIGH] 结构健康分预测：修 P0-1（BR 漂移）后 G2 Pass，结构健康分预计从 68→75 左右；再补 P0-3/P1-2/P1-3（config mapping/契约/domain_macro 绑定）后预计 80+；最后补 `/home/workspace/fred` 真实验收证据后发布就绪分有机会超 80。
 
 ## 8. 风险
 
@@ -270,7 +270,7 @@
 
 - `TRACEABILITY.md` 与 `SPEC.md` 的 BR 编号和含义完全一致（P0-1 闭合）。
 - 配置 mapping 可审查且不包含 secret 值（P0-3 闭合）。
-- `/home/fred` 不再以旧 `Stores=None` 作为目标边界（P0-2 闭合）。
+- `/home/workspace/fred` 不再以旧 `Stores=None` 作为目标边界（P0-2 闭合）。
 - `domain_macro` 字段映射和 no-lookahead fixture 已落地（P1-3 闭合）。
 - 单 series dev profile 能证明 raw archive、幂等、checkpoint、规范化 observation、durable event、读模型和 API 查询链路。
 - `./scripts/boundary-gates.sh`、`go test ./...`、配置 redaction 测试、no-lookahead 测试均通过。
@@ -278,11 +278,11 @@
 
 ## 11. 未验证限制
 
-[COMPUTED][HIGH] 本报告未运行 `/home/fred` 的集成环境，也未读取 `sre/secrets/env/dev.md` 的密钥值；只使用既有 4 份报告的关键词匹配计数作为配置覆盖线索。
+[COMPUTED][HIGH] 本报告未运行 `/home/workspace/fred` 的集成环境，也未读取 `sre/secrets/env/dev.md` 的密钥值；只使用既有 4 份报告的关键词匹配计数作为配置覆盖线索。
 
 [COMPUTED][HIGH] 本报告未审查 `domain_macro` 的当前源码字段；`domain_macro` 具体包路径和类型名仍以 `module/fred` 未闭合项为准。
 
-[COMPUTED][HIGH] 本报告未修改 `/home/fred` 代码或 `module/fred/` 规格文件；只产出迭代方案文档。P0-1 BR 漂移的修复留待阶段 1 执行。
+[COMPUTED][HIGH] 本报告未修改 `/home/workspace/fred` 代码或 `module/fred/` 规格文件；只产出迭代方案文档。P0-1 BR 漂移的修复留待阶段 1 执行。
 
 [INFERRED][MED] 阶段预测分数（68→75→80+）基于 `structural-score-20260622.md` 账本的线性推断，实际分数以重跑 `spec-structural-score` / `matrix-structural-score` 为准。
 
@@ -290,6 +290,6 @@
 
 [INFERRED][HIGH] fred 需要补充、优化和迭代的内容明确存在，但集中在追溯一致性、目标边界迁移、配置映射、契约细化和验收证据，不是新增更多基础设施组件。
 
-[INFERRED][HIGH] 最短可交付路径：先修文档追溯和契约（阶段 1-2），再改 `/home/fred` 边界门禁与服务骨架（阶段 3），然后用一个最小 FRED series 打通 raw → checkpoint → observation → event → read model → API 查询证据链（阶段 4-6），最后验收发布（阶段 7）。
+[INFERRED][HIGH] 最短可交付路径：先修文档追溯和契约（阶段 1-2），再改 `/home/workspace/fred` 边界门禁与服务骨架（阶段 3），然后用一个最小 FRED series 打通 raw → checkpoint → observation → event → read model → API 查询证据链（阶段 4-6），最后验收发布（阶段 7）。
 
 [RULES I BROKE]：无

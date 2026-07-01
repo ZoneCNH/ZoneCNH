@@ -99,7 +99,7 @@ releases:
 
       发布边界：
       - 仅同步 spec 制品状态（SPEC/ACCEPTANCE/FEATURES/TRACEABILITY/CHANGELOG/registry）。
-      - 未修改生产代码或生产配置；runtime 锚点 /home/binance@2efc44a。
+      - 未修改生产代码或生产配置；runtime 锚点 /home/workspace/binance@2efc44a。
       - registry.yaml latest_tag v3.8.0 未更改（事实字段，待 GitHub Release 验证）。
 
 # 状态枚举：

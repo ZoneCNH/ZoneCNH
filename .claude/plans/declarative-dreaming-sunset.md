@@ -365,7 +365,7 @@ Wave FINAL: 评审
   Scenario: 配置目录自动发现
     Tool: Bash
     Steps:
-      1. cd /home/ZoneCNH && goalctl/goalctl pipeline status
+      1. cd /home/workspace/ZoneCNH && goalctl/goalctl pipeline status
     Expected Result: 自动找到 .config/goal/ 并加载配置
     Evidence: .config/goal/evidence/
   ```
@@ -426,7 +426,7 @@ Wave FINAL: 评审
   Scenario: CLI gate check 输出
     Tool: Bash
     Steps:
-      1. goalctl gate check G5 --root /home/ZoneCNH
+      1. goalctl gate check G5 --root /home/workspace/ZoneCNH
     Expected Result: 显示 G5 PASS，包含 CheckItems 详情
     Evidence: .config/goal/evidence/
   ```
@@ -484,7 +484,7 @@ Wave FINAL: 评审
   Scenario: CLI lint 输出
     Tool: Bash
     Steps:
-      1. goalctl lint G --root /home/ZoneCNH
+      1. goalctl lint G --root /home/workspace/ZoneCNH
     Expected Result: 显示 G-LINT 检查结果
     Evidence: .config/goal/evidence/
   ```
@@ -535,7 +535,7 @@ Wave FINAL: 评审
   Scenario: CLI registry list 输出
     Tool: Bash
     Steps:
-      1. goalctl registry list goals --root /home/ZoneCNH
+      1. goalctl registry list goals --root /home/workspace/ZoneCNH
     Expected Result: 显示 GOAL-20260608-001 的完整信息
     Evidence: .config/goal/evidence/
   ```
@@ -594,7 +594,7 @@ Wave FINAL: 评审
   Scenario: CLI matrix coverage 输出
     Tool: Bash
     Steps:
-      1. goalctl matrix coverage --root /home/ZoneCNH
+      1. goalctl matrix coverage --root /home/workspace/ZoneCNH
     Expected Result: 显示 "Matrix 覆盖率 100.0% (26/26)"
     Evidence: .config/goal/evidence/
   ```
@@ -648,7 +648,7 @@ Wave FINAL: 评审
   Scenario: CLI evidence verify 输出
     Tool: Bash
     Steps:
-      1. goalctl evidence verify EVID-TEST-TASK-GOAL-20260608-001-001-001-001 --root /home/ZoneCNH
+      1. goalctl evidence verify EVID-TEST-TASK-GOAL-20260608-001-001-001-001 --root /home/workspace/ZoneCNH
     Expected Result: 显示 10 个字段检查结果
     Evidence: .config/goal/evidence/
   ```
@@ -697,7 +697,7 @@ Wave FINAL: 评审
   Scenario: CLI dor check 输出
     Tool: Bash
     Steps:
-      1. goalctl dor check GOAL --root /home/ZoneCNH
+      1. goalctl dor check GOAL --root /home/workspace/ZoneCNH
     Expected Result: 显示 Goal DoR 检查结果
     Evidence: .config/goal/evidence/
   ```
@@ -799,7 +799,7 @@ Wave FINAL: 评审
   Scenario: CLI ci preflight 输出
     Tool: Bash
     Steps:
-      1. goalctl ci preflight --root /home/ZoneCNH
+      1. goalctl ci preflight --root /home/workspace/ZoneCNH
     Expected Result: 显示 10 个检查项结果
     Evidence: .config/goal/evidence/
   ```
@@ -846,8 +846,8 @@ Wave FINAL: 评审
   Scenario: Gate 检查输出对比
     Tool: Bash
     Steps:
-      1. goalctl gate check G5 --root /home/ZoneCNH --format json > /tmp/go.json
-      2. bash docs/goal/tools/gate-check.sh /home/ZoneCNH > /tmp/sh.txt 2>&1
+      1. goalctl gate check G5 --root /home/workspace/ZoneCNH --format json > /tmp/go.json
+      2. bash docs/goal/tools/gate-check.sh /home/workspace/ZoneCNH > /tmp/sh.txt 2>&1
       3. diff 检查关键指标一致
     Expected Result: PASS/FAIL/WARN 计数一致
     Evidence: .config/goal/evidence/
@@ -855,7 +855,7 @@ Wave FINAL: 评审
   Scenario: Lint 输出对比
     Tool: Bash
     Steps:
-      1. goalctl lint M --root /home/ZoneCNH --format json > /tmp/go-lint.json
+      1. goalctl lint M --root /home/workspace/ZoneCNH --format json > /tmp/go-lint.json
       2. bash docs/goal/tools/lint-goal.sh docs/goal/ > /tmp/sh-lint.txt 2>&1
       3. diff 检查关键指标一致
     Expected Result: 检查项结果一致

@@ -2,7 +2,7 @@
   "plan_id": "008",
   "plan_title": "binance 生产级修复总 Plan 008",
   "plan_file": "plans/binance/008-binance-production-fix-master-plan.md",
-  "runtime_anchor": "/home/binance@f046e16",
+  "runtime_anchor": "/home/workspace/binance@f046e16",
   "total_tasks": 40,
   "github_repo": "ZoneCNH/binance",
   "beads_workspace": "ZoneCNH",

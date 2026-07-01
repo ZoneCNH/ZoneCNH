@@ -3,7 +3,7 @@
 - Status: Docs Baseline Synced / Coverage Closed
 - Last-Updated: 2026-06-30
 - Layer: 基座 · 跨域接口契约
-- Source-of-Truth: `/home/contracts/pkg/contracts`
+- Source-of-Truth: `/home/workspace/contracts/pkg/contracts`
 - Related: `SPEC.md`, `README.md`, `goal.md`, `ACCEPTANCE.md`, `FEATURES.md`, `IMPLEMENTATION-PLAN.md`, `tasks/`
 
 > 本文档把当前 runtime truth 的公开符号映射到 SPEC 的 FR/BR/NFR、验证任务与文档制品；不再保留旧分层、旧版本标记或改名叙事。
@@ -19,7 +19,7 @@
 | FR-005 | `MarketDataProvider`、`MacroDataProvider`、`DecisionCardProvider` | `ports.go` | `SPEC.md`、`README.md`、`FEATURES.md` | `TASK-CONTRACTS-001` |
 | FR-006 | `MarketDataService.Ingest(...)`、`IngestRequest`、`IngestResult`、`IngestAck`、`IngestReject`、`RejectCode`、`AllRejectCodes()` | `ingestion.go` | `SPEC.md`、`README.md`、`FEATURES.md` | `TASK-CONTRACTS-005` |
 | FR-007 | `RegimeSnapshotEvent`、`RegimeCardEvent`、`DecisionCardEvent`、`MarketRegimePort`、`MacroRegimePort`、`RegimeEnginePort` | `projections.go` | `SPEC.md`、`README.md`、`FEATURES.md` | `TASK-CONTRACTS-003` |
-| FR-008 | 文档基线与 runtime truth 同步 | `/home/contracts/pkg/contracts`、`module/contracts/*` | `SPEC.md`、`README.md`、`goal.md`、`TRACEABILITY.md`、`ACCEPTANCE.md`、`FEATURES.md`、`IMPLEMENTATION-PLAN.md`、`tasks/` | `TASK-CONTRACTS-004` |
+| FR-008 | 文档基线与 runtime truth 同步 | `/home/workspace/contracts/pkg/contracts`、`module/contracts/*` | `SPEC.md`、`README.md`、`goal.md`、`TRACEABILITY.md`、`ACCEPTANCE.md`、`FEATURES.md`、`IMPLEMENTATION-PLAN.md`、`tasks/` | `TASK-CONTRACTS-004` |
 
 ---
 
@@ -55,7 +55,7 @@
 
 | TC | 检查项 | 覆盖需求 | 证据 |
 | --- | --- | --- | --- |
-| TC-001 | 导出面与 runtime truth 一致 | FR-001、FR-002、FR-003、FR-004、FR-005、FR-007 | `README.md`、`/home/contracts/pkg/contracts` |
+| TC-001 | 导出面与 runtime truth 一致 | FR-001、FR-002、FR-003、FR-004、FR-005、FR-007 | `README.md`、`/home/workspace/contracts/pkg/contracts` |
 | TC-002 | Provider 方法名只保留当前版本 | FR-004、FR-005、BR-003 | `ports.go`、`README.md` |
 | TC-003 | Ingest 是单次请求 / 单次结果 | FR-006、BR-006、BR-007、NFR-006 | `ingestion.go`、`README.md` |
 | TC-004 | 兼容别名只作投影，不扩展语义 | FR-007、BR-008、BR-010 | `projections.go`、`README.md` |
@@ -99,4 +99,4 @@
 
 - 新增、删除或重命名公开符号时，先更新 `SPEC.md`，再更新本矩阵与 `ACCEPTANCE.md`。
 - 任何旧术语回流都先视为文档回归，再决定是否需要代码侧修正。
-- 若 runtime truth 发生变化，以 `/home/contracts/pkg/contracts` 的最新导出为准，不以历史 task 文档为准。
+- 若 runtime truth 发生变化，以 `/home/workspace/contracts/pkg/contracts` 的最新导出为准，不以历史 task 文档为准。

@@ -3,10 +3,10 @@
 > 版本：v2.2.5
 > Module-Version: v3.9.6
 > 更新日期：2026-06-30
-> Runtime 仓库：`/home/binance`
-> Runtime 契约：`/home/binance/BOUNDARY-GATES.md`
-> Runtime 脚本：`/home/binance/scripts/boundary-gates.sh`
-> Runtime 证据：`/home/binance/release/evidence/binance/20260623/` + `/home/binance/release/evidence/binance/20260625/`
+> Runtime 仓库：`/home/workspace/binance`
+> Runtime 契约：`/home/workspace/binance/BOUNDARY-GATES.md`
+> Runtime 脚本：`/home/workspace/binance/scripts/boundary-gates.sh`
+> Runtime 证据：`/home/workspace/binance/release/evidence/binance/20260623/` + `/home/workspace/binance/release/evidence/binance/20260625/`
 > Runtime evidence commit：`71e2a6e8bb5591c43e8a2ebfff8c7645bf030786`（2026-06-23 归档证据）；2026-06-25 Plan007 证据见 `release/evidence/binance/20260625/`（runtime HEAD `e02b190`）
 > Verified source commit：`e02b190`（runtime HEAD，2026-06-25，Plan007 A1~A10 + B1~B8 已执行）
 
@@ -24,15 +24,15 @@
 
 | 验证面 | 命令 | 通过条件 |
 | --- | --- | --- |
-| 脚本语法 | `cd /home/binance && bash -n scripts/boundary-gates.sh` | shell 语法通过 |
-| 边界门禁 | `cd /home/binance && ./scripts/boundary-gates.sh` | 13/13 PASS |
-| 证据包 | `cd /home/binance && sed -n '1,160p' release/evidence/binance/20260623/SUMMARY.md` | 记录 evidence commit、verified source commit、测试命令与已知缺口 |
+| 脚本语法 | `cd /home/workspace/binance && bash -n scripts/boundary-gates.sh` | shell 语法通过 |
+| 边界门禁 | `cd /home/workspace/binance && ./scripts/boundary-gates.sh` | 13/13 PASS |
+| 证据包 | `cd /home/workspace/binance && sed -n '1,160p' release/evidence/binance/20260623/SUMMARY.md` | 记录 evidence commit、verified source commit、测试命令与已知缺口 |
 
 ## 2. Gate: No Legacy binance-market
 
 禁止 active runtime 或 docs 投影重新引入旧 `binance-market` 模块、仓库或服务文档引用。历史迁移、变更日志、报告和 `module/binance` 自引用文本不作为 active architecture 回流。
 
-关闭规则：`/home/binance/scripts/boundary-gates.sh` 必须输出 `PASS: No legacy binance-market reference outside docs`.
+关闭规则：`/home/workspace/binance/scripts/boundary-gates.sh` 必须输出 `PASS: No legacy binance-market reference outside docs`.
 
 ## 3. Gate: Client Must Not Import Server Internals
 

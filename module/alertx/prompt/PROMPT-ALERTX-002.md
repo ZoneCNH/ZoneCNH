@@ -38,7 +38,7 @@
 ## 验证
 
 ```bash
-cd /home/alertx && GOWORK=off go test ./internal/config/... -run TestRuleParser -v
+cd /home/workspace/alertx && GOWORK=off go test ./internal/config/... -run TestRuleParser -v
 GOWORK=off go test ./pkg/alertx/... -run 'TestRuleEvaluator|TestRuleReload' -race -v
 ```
 

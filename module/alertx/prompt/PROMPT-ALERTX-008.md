@@ -40,7 +40,7 @@
 ## 验证
 
 ```bash
-cd /home/alertx && GOWORK=off go test -tags integration ./... -run TestAT007 -v -race
+cd /home/workspace/alertx && GOWORK=off go test -tags integration ./... -run TestAT007 -v -race
 GOWORK=off go test -tags soak ./testkit/... -run TestSoak -v  # ≥10min
 make ci  # 完整 CI 链
 make release-final-check VERSION=v1.0.0

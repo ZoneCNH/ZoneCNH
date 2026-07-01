@@ -5,7 +5,7 @@
 - Module-Version: v1.0.0
 - Module-State: Release Candidate — 运行时验收通过（2026-06-18）；factory=false（四源评分未达 98，见 SPEC caveat）
 - Layer: L0 测试工具
-- Runtime-Repo: /home/testkitx
+- Runtime-Repo: /home/workspace/testkitx
 - Source: goal.md, SPEC.md, TRACEABILITY.md, tasks/, prompt/
 
 > 本清单用于约束 testkitx 的完整实现范围。条目来自本目录已有 Spec、Traceability、Plan、Task 等文档；若运行时代码状态与本文不一致，以相应模块仓库的最新验证证据补充更新本文。
@@ -18,7 +18,7 @@
 | --- | --- |
 | 模块职责 | 只供测试使用的断言、时钟、契约、仿真与集成测试工具 |
 | 文档目录 | module/testkitx |
-| 运行时代码目录 | /home/testkitx |
+| 运行时代码目录 | /home/workspace/testkitx |
 | Go 基线 | 1.23 |
 | 允许依赖 | kernel, configx, observex, resiliencx, schedulex |
 | 禁止依赖 | 禁止越过 FOUNDATION-DEPS.yaml 登记边界依赖上层业务域或未授权基座模块 |
@@ -89,5 +89,5 @@
 - [x] 所有 BR/NFR 条目均有测试、静态检查或人工可审计证据覆盖。
 - [x] 所有任务文档均能追溯到 FR、BR/NFR、AC 或 TC。
 - [x] 依赖边界符合 FOUNDATION-DEPS.yaml，不引入未授权运行时依赖。
-- [x] 运行时代码仓库 /home/testkitx 的 lint、typecheck、test、race、coverage 验证证据已归档。
+- [x] 运行时代码仓库 /home/workspace/testkitx 的 lint、typecheck、test、race、coverage 验证证据已归档。
 - [x] 发布说明、版本标签与本目录登记状态一致。

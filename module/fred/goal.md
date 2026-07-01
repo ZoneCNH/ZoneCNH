@@ -10,7 +10,7 @@
 | Status | Draft |
 | Owner | 数据域 |
 | Last-Updated | 2026-06-22 |
-| Source-Code | `/home/fred/` |
+| Source-Code | `/home/workspace/fred/` |
 
 ## 目标陈述
 

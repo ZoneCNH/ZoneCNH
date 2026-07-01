@@ -58,7 +58,7 @@
 
 ### 2.4 本地代码目录
 
-模块代码仓库的本地工作目录统一为 `/home/{module}`，其中 `{module}` 必须与 GitHub 仓库名一致，例如 `/home/kernel`、`/home/x.go`。本仓库 `ZoneCNH/ZoneCNH` 只保存公开架构说明、规格和索引，不得内嵌模块源码树、vendor 源码或从 `/home/{module}` 复制出的实现文件。
+模块代码仓库的本地工作目录统一为 `/home/{module}`，其中 `{module}` 必须与 GitHub 仓库名一致，例如 `/home/workspace/kernel`、`/home/workspace/x.go`。本仓库 `ZoneCNH/ZoneCNH` 只保存公开架构说明、规格和索引，不得内嵌模块源码树、vendor 源码或从 `/home/{module}` 复制出的实现文件。
 
 ### 2.5 模块增殖约束（奥卡姆剃刀）
 

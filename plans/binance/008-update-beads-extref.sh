@@ -2,9 +2,9 @@
 # Update beads 40 issues' external_ref to point to new ZoneCNH/ZoneCNH issue numbers
 set -euo pipefail
 
-export BEADS_DIR="/home/ZoneCNH/.beads"
-BMAP="/home/ZoneCNH/plans/binance/008-beads-issue-map.tsv"
-GH_MAP="/home/ZoneCNH/plans/binance/008-gh-issue-map.tsv"
+export BEADS_DIR="/home/workspace/ZoneCNH/.beads"
+BMAP="/home/workspace/ZoneCNH/plans/binance/008-beads-issue-map.tsv"
+GH_MAP="/home/workspace/ZoneCNH/plans/binance/008-gh-issue-map.tsv"
 
 echo "=== Updating 40 beads external_ref to ZoneCNH/ZoneCNH issues ==="
 UPDATED=0; FAILED=0

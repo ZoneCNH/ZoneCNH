@@ -12,7 +12,7 @@
 > | 证据收集、验证、发布为统一报告 | 归属 `xlib_evidence`（CI/发布期证据） |
 > | FaultInjector 故障注入 | 迁移至 `xlib_harness`（CI/集成阶段） |
 > | TestContext / TestResource / EvidenceReport 抽象 | 由 `xlib_harness` + `xlib_evidence` 承接 |
-> | `contract/` L2 provider 行为契约 | 运行时仓库 `/home/testkitx/contract/` 已实现，定位为 **provider 行为契约套件**，非 SPEC FR-004 的 fake 接口 contract test |
+> | `contract/` L2 provider 行为契约 | 运行时仓库 `/home/workspace/testkitx/contract/` 已实现，定位为 **provider 行为契约套件**，非 SPEC FR-004 的 fake 接口 contract test |
 >
 > **以 SPEC.md 为准**。当本文件与 SPEC.md 冲突时，以 SPEC.md 为准。本文件 §2 MUST 中已被 superseded 的条目不再构成 testkitx 1.0 发布门禁。
 

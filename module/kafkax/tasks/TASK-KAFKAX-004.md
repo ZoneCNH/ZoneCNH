@@ -24,12 +24,12 @@ Does NOT implement Kafka broker deployment, topic auto-creation, or Kafka Connec
 
 ## Files
 
-- `/home/kafkax/pkg/kafkax/health.go:25` — `HealthCheck(ctx) HealthStatus`（幂等、无副作用）
-- `/home/kafkax/pkg/kafkax/health.go:141,153` — health metric/gauge 上报
-- `/home/kafkax/pkg/kafkax/health_golden_test.go` / `health_test.go` — golden + 单测
-- `/home/kafkax/pkg/kafkax/config.go:70` — `Config.Sanitize()` 脱敏（Password/Token → [REDACTED]）
-- `/home/kafkax/internal/sanitize/sanitize.go` + `sanitize_test.go` — 脱敏工具
-- `/home/kafkax/pkg/kafkax/errors.go` — Error{Kind,Op,Message,Cause,Retryable}，Message 不含 payload
+- `/home/workspace/kafkax/pkg/kafkax/health.go:25` — `HealthCheck(ctx) HealthStatus`（幂等、无副作用）
+- `/home/workspace/kafkax/pkg/kafkax/health.go:141,153` — health metric/gauge 上报
+- `/home/workspace/kafkax/pkg/kafkax/health_golden_test.go` / `health_test.go` — golden + 单测
+- `/home/workspace/kafkax/pkg/kafkax/config.go:70` — `Config.Sanitize()` 脱敏（Password/Token → [REDACTED]）
+- `/home/workspace/kafkax/internal/sanitize/sanitize.go` + `sanitize_test.go` — 脱敏工具
+- `/home/workspace/kafkax/pkg/kafkax/errors.go` — Error{Kind,Op,Message,Cause,Retryable}，Message 不含 payload
 
 ## Acceptance
 

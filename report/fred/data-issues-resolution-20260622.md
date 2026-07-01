@@ -1,7 +1,7 @@
 # fred 数据问题解决报告
 
 - [COMPUTED][HIGH] 日期：2026-06-22。
-- [COMPUTED][HIGH] 范围：`module/fred/` 规格文档、`report/fred/` 既有报告、`/home/fred` 当前实现。
+- [COMPUTED][HIGH] 范围：`module/fred/` 规格文档、`report/fred/` 既有报告、`/home/workspace/fred` 当前实现。
 - [COMPUTED][HIGH] 分支：`docs/fred-deep-analysis-20260622`。
 - [COMPUTED][HIGH] 输出目标：回答历史数据、实时/实施数据、同步对象、同步周期、数据清洗、数据处理、数据缺口及解决方案。
 - [COMPUTED][HIGH] 约束：未读取 `sre/secrets/env/dev.md` 中的密钥值，只按规格引用配置来源。
@@ -9,7 +9,7 @@
 ## 1. 总结判断
 
 [COMPUTED][HIGH] `module/fred/SPEC.md` 已经把目标架构定义为独立 C/S 宏观数据服务，并要求共享基座、`domain_macro` 领域共享层、`taos + kafka + postgres + Redis + oss + nats + clickhouse` 七类持久化职责。  
-[COMPUTED][HIGH] `/home/fred` 当前实现仍是旧骨架：启动注释为 `adapter 零存储`，bootstrap 配置使用 `Stores: bootstrap.None`，未发现 `internal/server`、`internal/domain`、`internal/store`、`StartBackfill`、`QueryObservations`、`ScanRevisions`、`available_at`、`vintage_at` 或 `domain_macro` 的 Go 实现。  
+[COMPUTED][HIGH] `/home/workspace/fred` 当前实现仍是旧骨架：启动注释为 `adapter 零存储`，bootstrap 配置使用 `Stores: bootstrap.None`，未发现 `internal/server`、`internal/domain`、`internal/store`、`StartBackfill`、`QueryObservations`、`ScanRevisions`、`available_at`、`vintage_at` 或 `domain_macro` 的 Go 实现。  
 [INFERRED][HIGH] 因此，fred 的核心问题不是再选择更多存储或再扩展 provider，而是先把 FRED 官方数据语义落成可追溯的数据生命周期：原始响应先归档、领域映射显式化、幂等 checkpoint 可恢复、事实可见性使用 `available_at` 防止未来函数、缺口检测可定位并可重放。  
 [INFERRED][MED] 在代码未补齐前，模块只能被视为规格完整但运行态未闭环，不能承诺已具备生产级历史回填、实时同步、缺口修复或下游查询能力。
 
@@ -26,10 +26,10 @@
 
 | 问题 | 当前风险 | 解决方案 |
 | --- | --- | --- |
-| [INFERRED][HIGH] 首次历史回填跨度大，容易中断后重复或漏写 | [COMPUTED][HIGH] 规格要求 job/checkpoint/idempotency，但 `/home/fred` 尚未实现 backfill job 和 checkpoint 存储 | [INFERRED][HIGH] 以 `(series_id, endpoint, params_hash, vintage_date, page_or_window)` 建 checkpoint 和幂等键；每页原始响应先写 OSS，再写 Postgres checkpoint，再进入规范化和时序写入 |
+| [INFERRED][HIGH] 首次历史回填跨度大，容易中断后重复或漏写 | [COMPUTED][HIGH] 规格要求 job/checkpoint/idempotency，但 `/home/workspace/fred` 尚未实现 backfill job 和 checkpoint 存储 | [INFERRED][HIGH] 以 `(series_id, endpoint, params_hash, vintage_date, page_or_window)` 建 checkpoint 和幂等键；每页原始响应先写 OSS，再写 Postgres checkpoint，再进入规范化和时序写入 |
 | [KNOWN][HIGH] FRED 有 real-time/vintage/revision 语义 | [INFERRED][HIGH] 只按 observation date 保存会丢失修订历史，导致回测无法复现当时可见数据 | [INFERRED][HIGH] 用 `series/vintagedates` 枚举 revision anchor，用 `series/observations` 的 `realtime_start/realtime_end`、`vintage_dates`、`output_type=2/3/4` 分别支持全量 vintage、增量修订、初值快照 |
 | [KNOWN][HIGH] release date 不等于 FRED available time | [INFERRED][HIGH] 若用 release date 直接作为可见时间，会引入 no-lookahead 错误 | [INFERRED][HIGH] `released_at` 只表示数据源发布日或发布窗口，`available_at` 表示 fred 实际观察到或保守推导出的可用时间；所有 as-of 查询必须过滤 `available_at <= as_of` |
-| [KNOWN][HIGH] 缺失观测以 `"."` 表示 | [COMPUTED][HIGH] 当前 `/home/fred/pkg/fredx/client.go` 会跳过 `"."`、空值和解析失败值 | [INFERRED][HIGH] 不应静默丢弃缺失观测；应保存原始字符串、nullable numeric、quality flag 和 skip reason，使缺失是可解释事实而不是数据消失 |
+| [KNOWN][HIGH] 缺失观测以 `"."` 表示 | [COMPUTED][HIGH] 当前 `/home/workspace/fred/pkg/fredx/client.go` 会跳过 `"."`、空值和解析失败值 | [INFERRED][HIGH] 不应静默丢弃缺失观测；应保存原始字符串、nullable numeric、quality flag 和 skip reason，使缺失是可解释事实而不是数据消失 |
 | [INFERRED][MED] series 可能停更、改名、口径变化或被替换 | [INFERRED][MED] 只保留最新 registry 会污染历史解释 | [INFERRED][HIGH] Postgres 维护 series catalog 版本、状态、单位、频率、季调、替代关系；历史观测绑定当时 metadata snapshot 或 metadata_version |
 
 ## 4. 实时/实施数据问题与解决方案
@@ -131,7 +131,7 @@ bash scripts/boundary-gates.sh
 
 ## 11. 剩余风险
 
-[COMPUTED][HIGH] 本报告未运行 `/home/fred` 的集成环境，也未读取开发密钥值。  
+[COMPUTED][HIGH] 本报告未运行 `/home/workspace/fred` 的集成环境，也未读取开发密钥值。  
 [COMPUTED][HIGH] 本报告只验证了本地文档、当前源码结构和 FRED 官方 API 文档语义。  
 [INFERRED][MED] 最大实施风险是把 FRED release calendar 误当成可用时间；该风险会直接破坏回测的 no-lookahead 保证。  
 [INFERRED][MED] 第二风险是继续静默丢弃 `"."`、解析失败和异常值；该风险会把 provider 缺失误报为 fred 自身缺口已修复。  
@@ -141,7 +141,7 @@ bash scripts/boundary-gates.sh
 
 - [COMPUTED][HIGH] 本地规格：`module/fred/SPEC.md`、`module/fred/IMPLEMENTATION-PLAN.md`、`module/fred/ACCEPTANCE.md`。
 - [COMPUTED][HIGH] 既有报告：`report/fred/deep-analysis-20260622.md`、`report/fred/structural-score-20260622.md`。
-- [COMPUTED][HIGH] 当前实现：`/home/fred/cmd/fred-server/main.go`、`/home/fred/pkg/fredx/client.go`、`/home/fred/pkg/fredx/normalizer.go`、`/home/fred/pkg/fredx/registry.go`、`/home/fred/scripts/boundary-gates.sh`、`/home/fred/go.mod`。
+- [COMPUTED][HIGH] 当前实现：`/home/workspace/fred/cmd/fred-server/main.go`、`/home/workspace/fred/pkg/fredx/client.go`、`/home/workspace/fred/pkg/fredx/normalizer.go`、`/home/workspace/fred/pkg/fredx/registry.go`、`/home/workspace/fred/scripts/boundary-gates.sh`、`/home/workspace/fred/go.mod`。
 - [KNOWN][HIGH] FRED `series/observations`：<https://fred.stlouisfed.org/docs/api/fred/series_observations.html>。
 - [KNOWN][HIGH] FRED `series/vintagedates`：<https://fred.stlouisfed.org/docs/api/fred/series_vintagedates.html>。
 - [KNOWN][HIGH] FRED `releases/dates`：<https://fred.stlouisfed.org/docs/api/fred/releases_dates.html>。

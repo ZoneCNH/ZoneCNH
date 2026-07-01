@@ -59,5 +59,5 @@ TASK-CONTRACTS-000
 | --- | --- |
 | 术语回归扫描 | 不出现旧分层命名、旧版本标记、旧 API 名称、重大改名故事、旧交易所接入叙事 |
 | 文档补丁检查 | `git diff --check -- module/contracts` 无告警 |
-| 运行时复验 | `/home/contracts` 的 `go test ./...`、`go test ./... -race -count=1`、`go vet ./...` 可复验 |
+| 运行时复验 | `/home/workspace/contracts` 的 `go test ./...`、`go test ./... -race -count=1`、`go vet ./...` 可复验 |
 | 覆盖闭合 | `TRACEABILITY.md` 的 FR / BR / NFR / TC / task 关系闭合 |

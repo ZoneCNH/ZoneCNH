@@ -45,9 +45,9 @@ TASK-PG-001:
 
 ## Evidence
 
-- `/home/postgresx/pkg/postgresx/client.go`
-- `/home/postgresx/pkg/postgresx/config.go`
-- `/home/postgresx/pkg/postgresx/query.go`
-- `/home/postgresx/pkg/postgresx/dsn.go`
-- `/home/postgresx/go.mod`
-- `/home/postgresx/docs/EVIDENCE-20260601.md`
+- `/home/workspace/postgresx/pkg/postgresx/client.go`
+- `/home/workspace/postgresx/pkg/postgresx/config.go`
+- `/home/workspace/postgresx/pkg/postgresx/query.go`
+- `/home/workspace/postgresx/pkg/postgresx/dsn.go`
+- `/home/workspace/postgresx/go.mod`
+- `/home/workspace/postgresx/docs/EVIDENCE-20260601.md`

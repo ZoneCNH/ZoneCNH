@@ -74,7 +74,7 @@ TASK-001 契约骨架
 
 | 风险 | 概率 | 影响 | 缓解 |
 | ---- | ---- | ---- | ---- |
-| contracts v1.6.0 未正式发布，go.mod 依赖本地 replace | 高 | 中 | TASK-001 用 replace 指向 /home/contracts（feat branch），contracts 合并发 tag 后改 require |
+| contracts v1.6.0 未正式发布，go.mod 依赖本地 replace | 高 | 中 | TASK-001 用 replace 指向 /home/workspace/contracts（feat branch），contracts 合并发 tag 后改 require |
 | 规则 DSL 表达力不足（复杂条件无法表达） | 中 | 中 | 首版支持 metric:op:value 三段式 + AND 组合；复杂聚合列为 Future |
 | observex Exporter 接口与 alertx 订阅假设不符 | 中 | 高 | TASK-006 先验证 observex Exporter 签名，不符则调整 normalizer；SPEC §15 已锁 observex v0.3.1+ |
 | Soak 发现内存泄漏 | 低 | 中 | TASK-008 Soak harness 监控，泄漏则修复后重跑 |

@@ -11,7 +11,7 @@
 - Implementation-Plan: [IMPLEMENTATION-PLAN.md](IMPLEMENTATION-PLAN.md)
 - Config-Source: `sre/secrets/env/dev.md`
 
-证据口径：本规格定义目标状态。`/home/fred` 当前实现仍保留旧 `Stores=None` 边界口径，实施阶段必须把该口径迁移为完整持久化服务边界。
+证据口径：本规格定义目标状态。`/home/workspace/fred` 当前实现仍保留旧 `Stores=None` 边界口径，实施阶段必须把该口径迁移为完整持久化服务边界。
 
 ## 1. 摘要
 
@@ -299,9 +299,9 @@
 
 | ID | 问题 | 关闭条件 |
 | -- | ---- | -------- |
-| OPEN-001 | `/home/fred` 旧 `Stores=None` 注释和边界脚本仍需迁移 | 边界门禁改为允许七类目标存储经共享基座接入 |
+| OPEN-001 | `/home/workspace/fred` 旧 `Stores=None` 注释和边界脚本仍需迁移 | 边界门禁改为允许七类目标存储经共享基座接入 |
 | OPEN-002 | `domain_macro` 具体包路径与字段名需以实现仓库为准 | 实施前完成领域共享层 API 对齐 |
 | OPEN-003 | `sre/secrets/env/dev.md` 的键名需映射到 `configx` schema | dev 配置 schema 审查通过且不暴露值 |
 | OPEN-004 | 七类介质的本地集成环境需确认可用性 | integration profile 可启动并跑通单 series 验证 |
-| OPEN-005 | `ms_brain` 当前仍以文档、规格和配置为主，尚无可运行消费者契约测试 | `/home/ms_brain` 提供 runtime fixture 或 contract test 后纳入 `fred` 集成验收 |
+| OPEN-005 | `ms_brain` 当前仍以文档、规格和配置为主，尚无可运行消费者契约测试 | `/home/workspace/ms_brain` 提供 runtime fixture 或 contract test 后纳入 `fred` 集成验收 |
 | OPEN-006 | `domain_macro` 绑定方案待定：SPEC §9 五模型与 `domain-macro` v0.1.0 源码（仅 `MacroPoint`）不一致，方案 A（`domain-macro` 补齐发 v0.2.0）vs 方案 B（SPEC 锚定 `MacroPoint`，fred 实施期补） | 数据域 owner 确认方案，详见 stage2 报告 §2 |

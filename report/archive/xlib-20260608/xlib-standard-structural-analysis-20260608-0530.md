@@ -117,7 +117,7 @@
 
 ## 问题 6：COVERAGE-MANIFEST.md 绝对路径（严重度：MEDIUM）
 
-**现状**：154 个文件清单使用占位符 `<upstream:xlib_standard>/...`，但复算命令仍含 `/home/xlib_standard` 绝对路径（L33-38）。
+**现状**：154 个文件清单使用占位符 `<upstream:xlib_standard>/...`，但复算命令仍含 `/home/workspace/xlib-standard` 绝对路径（L33-38）。
 
 **问题**：其他 reviewer 无法直接复算。README.md 也承认"跨机器复现仍需要 source pack、路径映射或重新生成覆盖清单"。
 

@@ -5,7 +5,7 @@
 - Module-Version: v1.2.0
 - Module-State: Tag Exists / Release Pending
 - Layer: L2 基础设施适配器
-- Runtime-Repo: /home/kafkax
+- Runtime-Repo: /home/workspace/kafkax
 - Source: goal.md, SPEC.md, TRACEABILITY.md, IMPLEMENTATION-PLAN.md, tasks/
 
 > 本清单用于验收 kafkax 是否达到可发布、可追溯、可复验状态。除非条目明确记录为已通过，默认需要在运行时代码仓库重新执行验证并补充证据。
@@ -14,13 +14,13 @@
 
 | 类别 | 命令 | 通过标准 |
 | --- | --- | --- |
-| 文档存在性 | cd /home/ZoneCNH && test -f module/kafkax/FEATURES.md && test -f module/kafkax/ACCEPTANCE.md | FEATURES.md 与 ACCEPTANCE.md 均存在 |
-| 文档格式 | cd /home/ZoneCNH && git diff --check -- module/kafkax | 无尾随空格或补丁格式错误 |
-| 运行时测试 | cd /home/kafkax && go test ./... | 所有包测试通过 |
-| 竞态检查 | cd /home/kafkax && go test ./... -race -count=1 | 无 data race，测试稳定通过 |
-| 静态检查 | cd /home/kafkax && go vet ./... | 无 vet 问题 |
-| 覆盖率证据 | cd /home/kafkax && go test ./... -coverprofile=coverage.out | 覆盖率文件生成并满足模块 Spec 门槛 |
-| 依赖边界 | cd /home/kafkax && go list -deps ./... | 依赖不越过 FOUNDATION-DEPS.yaml 登记边界 |
+| 文档存在性 | cd /home/workspace/ZoneCNH && test -f module/kafkax/FEATURES.md && test -f module/kafkax/ACCEPTANCE.md | FEATURES.md 与 ACCEPTANCE.md 均存在 |
+| 文档格式 | cd /home/workspace/ZoneCNH && git diff --check -- module/kafkax | 无尾随空格或补丁格式错误 |
+| 运行时测试 | cd /home/workspace/kafkax && go test ./... | 所有包测试通过 |
+| 竞态检查 | cd /home/workspace/kafkax && go test ./... -race -count=1 | 无 data race，测试稳定通过 |
+| 静态检查 | cd /home/workspace/kafkax && go vet ./... | 无 vet 问题 |
+| 覆盖率证据 | cd /home/workspace/kafkax && go test ./... -coverprofile=coverage.out | 覆盖率文件生成并满足模块 Spec 门槛 |
+| 依赖边界 | cd /home/workspace/kafkax && go list -deps ./... | 依赖不越过 FOUNDATION-DEPS.yaml 登记边界 |
 
 ## 2. AC 验收登记
 
@@ -85,14 +85,14 @@
 
 - [x] FEATURES.md 的 FR、BR/NFR、任务清单与 SPEC/TRACEABILITY 当前登记一致。
 - [x] ACCEPTANCE.md 的 AC、TC 与运行时代码测试名、证据文件或 CI 记录一致。
-- [x] 运行时代码仓库 /home/kafkax 通过 go test、go test -race、go vet 与覆盖率门槛（pkg/kafkax 94.5%）。
+- [x] 运行时代码仓库 /home/workspace/kafkax 通过 go test、go test -race、go vet 与覆盖率门槛（pkg/kafkax 94.5%）。
 - [x] 所有外部服务依赖有本地可重复的测试替身或明确 live-gate 证据（testkit + integration workflow）。
 - [x] 安全检查确认没有凭证、私有端点、账户 ID 或实盘配置进入公开文档与代码（goalcli secret scan passed）。
 - [x] 版本号、发布标签、CHANGELOG 或 release note 与本目录状态一致（GitHub release v1.1.1）。
 
 ## 6. 当前缺口登记
 
-- v1.1.1 运行时验收已于 2026-06-21 在 /home/kafkax 执行并归档：go build/vet/test/race 全 exit 0、零 data race、golangci-lint 0 issues、go mod tidy clean、secret scan passed、pkg/kafkax 覆盖率 94.5%。
+- v1.1.1 运行时验收已于 2026-06-21 在 /home/workspace/kafkax 执行并归档：go build/vet/test/race 全 exit 0、零 data race、golangci-lint 0 issues、go mod tidy clean、secret scan passed、pkg/kafkax 覆盖率 94.5%。
 - 集成测试（make integration / 真实 broker gates）由 integration workflow 在 SRE 池执行，Kafka 不可达时按 SPEC §19.2 skip，不阻塞发布。
 - 依赖边界：pkg/kafkax 仅依赖 stdlib + segmentio/kafka-go，未越过 FOUNDATION-DEPS.yaml。
 - 发布证据：GitHub release v1.1.1（PR #16, squash a357c9c）。

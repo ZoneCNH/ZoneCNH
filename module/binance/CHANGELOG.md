@@ -157,7 +157,7 @@ binance v0.8.0 部署到 prod（`84.247.154.45`），通过 systemd 二进制直
 
 ### Changed
 - **README.md / module/binance/README.md / prompt/README.md / matrix/TRACEABILITY.md**：当前投影统一为 single state `23 Done / 25 Partial / 0 Drifted / 0 Pending`、GitHub P10 open=43、Beads P10 open=43、`release_closeable=NO`。
-- **Runtime subject drift**：`/home/binance` publisher subject 与测试改为 `binance.market.{product_line}.{event_type}.v1`，并新增 runtime drift check 脚本。
+- **Runtime subject drift**：`/home/workspace/binance` publisher subject 与测试改为 `binance.market.{product_line}.{event_type}.v1`，并新增 runtime drift check 脚本。
 - **过期证据更正**：`perfect10-issue-alignment-20260628.md` 标记为 superseded，不再建议关闭 C-2/G-4/D-4；issue 级证据补齐前 43 个 P10 均保持 open。
 
 ---
@@ -266,8 +266,8 @@ binance v0.8.0 部署到 prod（`84.247.154.45`），通过 systemd 二进制直
 - 当时 #1267-#1279 闭环重复检查通过；当前 P10 issue 状态以 Beads/GitHub open ledger 为准。
 
 ### Evidence
-- 归档目录：`/home/binance/release/evidence/binance/20260628-full-e2e-closure/`
-- Runtime commit：`/home/binance@2efc44a`
+- 归档目录：`/home/workspace/binance/release/evidence/binance/20260628-full-e2e-closure/`
+- Runtime commit：`/home/workspace/binance@2efc44a`
 
 ---
 
@@ -332,11 +332,11 @@ binance v0.8.0 部署到 prod（`84.247.154.45`），通过 systemd 二进制直
 - **MO-2**：根 SPEC §14 目录结构移除 4 个退役文件，移入"已退役文件"小节
 
 ### Changed（状态同步 · 2026-06-27）
-- **FR-013/017/025**：基于 `/home/binance@0602e78428633a368b0afcd1c578c07ed7144752` runtime anchor 复核，解除 active Code-Drifted，保守列为 Code-Partial；direct TC 与 live/evidence 尚未闭合，因此不升格 Code-Done / Evidence-Done
+- **FR-013/017/025**：基于 `/home/workspace/binance@0602e78428633a368b0afcd1c578c07ed7144752` runtime anchor 复核，解除 active Code-Drifted，保守列为 Code-Partial；direct TC 与 live/evidence 尚未闭合，因此不升格 Code-Done / Evidence-Done
 - **FR-037**：同步升格为 Code-Done / Evidence-Pending；依据为 `XGO_BINANCE_FEATURE_ASYNC_COLD_RANGE` default-off、兼容旧 `FOUNDATIONX_` flag、`scripts/deploy-canary-gate.sh` health/readiness/error-rate/consumer-lag/rollback gate、env template、readiness audit 与 deploy runbook anchors；生产 canary/rollback drill evidence 仍 Pending。
 - **P2-8**：新增 binance 状态一致性 CI gate，覆盖 README / FEATURES / ACCEPTANCE / TRACEABILITY / prompt/README.md 的 Code 统计、Drifted FR 清单，以及 TRACEABILITY §1/§6 汇总一致性；新增 Code-Partial 原因、退役文件分区、AC-BNC legacy mapping 指针三类语义守卫。
 - **agent team 再审计同步**：`todo.md` / `FEATURES.md` / `ACCEPTANCE.md` / `TRACEABILITY.md` 将 tracing、quota/isolation、audit、exchangeInfo、backfill state、DLQ、cost/compliance anchors 的旧“未实现或未接线”口径修正为 Code-Partial / Evidence-Pending，并保留 live/CI/dashboard/credentials/multi-tenant/destruction blockers。
-- **P2-6/P2-7 runtime env 接线同步**：同步 `/home/binance` 的 `XGO_BINANCE_HISTORY_STATE_FILE` 与 `XGO_BINANCE_DLQ_FILE` 本地接线；保持 #1117/#1118 为 Code-Partial / Evidence-Pending，剩余 restart/replay direct evidence 与生产归档未闭合。
+- **P2-6/P2-7 runtime env 接线同步**：同步 `/home/workspace/binance` 的 `XGO_BINANCE_HISTORY_STATE_FILE` 与 `XGO_BINANCE_DLQ_FILE` 本地接线；保持 #1117/#1118 为 Code-Partial / Evidence-Pending，剩余 restart/replay direct evidence 与生产归档未闭合。
 - **Beads/GitHub issue 对齐同步**：新增 `evidence/2026-06-27/review/issue-alignment-20260627.md` 与 `evidence/2026-06-27/review/ISSUE-BLOCKERS-1268-1279.md`，记录 Beads `ZoneCNH-xzcr*` 与 GitHub #1268-#1279 的 open blocker + Evidence pending 判定；当前 #1268-#1279 仍为 GitHub `OPEN`，对应 Beads items 为 `in_progress`，且不改变 Production-Ready、Evidence-Done 或 M1-M4 milestone 状态。
 - **Issue blocker 对齐**：新增 GitHub #1268-#1279 / Beads `ZoneCNH-xzcr*` tracker alignment/blocker ledger `evidence/2026-06-27/review/ISSUE-BLOCKERS-1268-1279.md`；同步 README/todo/spec/matrix/acceptance/prompt/report 投影，保持 Evidence-State `1 Done (FR-009) / 43 Pending` 不变。
 
@@ -381,11 +381,11 @@ binance v0.8.0 部署到 prod（`84.247.154.45`），通过 systemd 二进制直
 - `DEEP-ANALYSIS.md` 拆分为 `DEEP-ANALYSIS-ARCHIVE-architecture.md` + `DEEP-ANALYSIS-ARCHIVE-operations.md` + `DEEP-ANALYSIS-ARCHIVE-integration.md` 三个归档文件（GitHub #930）。
 
 ### Changed
-- 记录 `/home/binance` 本地 runtime boundary evidence：SHA `71e2a6e8bb5591c43e8a2ebfff8c7645bf030786`，`scripts/boundary-gates.sh` 10/10 PASS，`go build/test/race/vet`、`golangci-lint`、本地 smoke self-test PASS。
+- 记录 `/home/workspace/binance` 本地 runtime boundary evidence：SHA `71e2a6e8bb5591c43e8a2ebfff8c7645bf030786`，`scripts/boundary-gates.sh` 10/10 PASS，`go build/test/race/vet`、`golangci-lint`、本地 smoke self-test PASS。
 - 记录 runtime PR `ZoneCNH/binance#11`：merge commit `5a57a19aed3be5420135b8e05016da15faf094ed`，source commit `7873b795b13fc4b5a0fc4310300b6f196cca7532`，远端 `Boundary Gates (10 gates)` PASS；独立 `cmd/binance-client` + HTTP `/ingest` client/server 边界已证明。
 - 将 `RUNTIME-MAPPING.md` 标为目标运行时映射而非完成声明，并补充 JetStream PubAck/ManualAck、durable natsx/storage/fanout/query 等未证明项；`cmd/binance-client` 只关闭 HTTP boundary 证据，不关闭 FR-003 publish/consume。
 ### Fixed
-- 2026-06-23 round 2 证据刷新：重新运行 `/home/binance/scripts/boundary-gates.sh` 10/10 PASS；`go build`/`go vet`/`go test` 全部 PASS 于 SHA `71e2a6e8bb5591c43e8a2ebfff8c7645bf030786`；全部 9 个 issue 分支已合并至 origin/main。
+- 2026-06-23 round 2 证据刷新：重新运行 `/home/workspace/binance/scripts/boundary-gates.sh` 10/10 PASS；`go build`/`go vet`/`go test` 全部 PASS 于 SHA `71e2a6e8bb5591c43e8a2ebfff8c7645bf030786`；全部 9 个 issue 分支已合并至 origin/main。
 
 ### Reviewed
 - PR-007a~g 分布式 runtime、远端 CI、release tag、live websocket 与外部依赖集成证据仍未闭合；本节不关闭 `ZoneCNH-n0s` / GitHub #923。
@@ -394,7 +394,7 @@ binance v0.8.0 部署到 prod（`84.247.154.45`），通过 systemd 二进制直
 - **P2-5 BOUNDARY-GATES.md 审查（#930）**：10 道 gate 完整覆盖 BR-001~BR-009 + go.mod 合规，每道 gate 有可执行关闭规则与 runtime 证据引用。无发现结构性缺口。Gate §2 No Legacy binance-market 关闭规则明确，与 RULES R1 豁免清单一致。
 
 ### Deferred
-- **P2-4 commit coverage matrix（#930）**：binance runtime 仓约 50 个 preserve/stash commit 的覆盖率矩阵建立仍为开放任务。当前 `/home/binance` 仓库的 squash merge 策略已将 PR 级历史保留在 main 分支，但其对应 issue/AC 的精细映射尚未建立。建议待 FR-003~FR-030 runtime 实现推进后按需建立。
+- **P2-4 commit coverage matrix（#930）**：binance runtime 仓约 50 个 preserve/stash commit 的覆盖率矩阵建立仍为开放任务。当前 `/home/workspace/binance` 仓库的 squash merge 策略已将 PR 级历史保留在 main 分支，但其对应 issue/AC 的精细映射尚未建立。建议待 FR-003~FR-030 runtime 实现推进后按需建立。
 
 ---
 

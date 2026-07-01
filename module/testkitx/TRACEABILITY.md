@@ -4,7 +4,7 @@
 
 Last-Updated: 2026-06-30
 Source: module/testkitx/SPEC.md v1.1.0
-Runtime-Evidence: /home/testkitx — build/vet/test/race exit=0；总覆盖率 92.6%；Eventually 100%；CI ci.yml（testkitx-gates）已部署
+Runtime-Evidence: /home/workspace/testkitx — build/vet/test/race exit=0；总覆盖率 92.6%；Eventually 100%；CI ci.yml（testkitx-gates）已部署
 
 ---
 

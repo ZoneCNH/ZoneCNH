@@ -27,7 +27,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node /home/ZoneCNH/.claude/hooks/link-check.cjs"
+            "command": "node /home/workspace/ZoneCNH/.claude/hooks/link-check.cjs"
           }
         ],
         "description": "Link-check after markdown edits"
@@ -97,15 +97,15 @@
       {
         "hooks": [
           {
-            "command": "node /home/ZoneCNH/.claude/hooks/session-review.mjs",
+            "command": "node /home/workspace/ZoneCNH/.claude/hooks/session-review.mjs",
             "type": "command"
           },
           {
-            "command": "node /home/ZoneCNH/.claude/hooks/version-guard.mjs",
+            "command": "node /home/workspace/ZoneCNH/.claude/hooks/version-guard.mjs",
             "type": "command"
           },
           {
-            "command": "node /home/ZoneCNH/.claude/hooks/branch-protect.mjs",
+            "command": "node /home/workspace/ZoneCNH/.claude/hooks/branch-protect.mjs",
             "type": "command"
           }
         ],

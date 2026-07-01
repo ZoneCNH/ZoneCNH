@@ -4,7 +4,7 @@
 > Source Spec: [SPEC.md](./SPEC.md) v1.1.0
 > Source Goal: [goal.md](./goal.md) 1.0 发布基线
 > 生成日期：2026-06-29
-> 状态：已发布（对齐运行时仓库 `/home/schedulex`）
+> 状态：已发布（对齐运行时仓库 `/home/workspace/schedulex`）
 
 ## 1. 架构概述
 

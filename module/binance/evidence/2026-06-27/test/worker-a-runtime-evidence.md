@@ -1,9 +1,9 @@
 # Worker A Runtime Evidence - FR-013/017/025/037, ExchangeInfo, Backfill, DLQ
 
 Date: 2026-06-27
-Runtime repo: `/home/binance`
+Runtime repo: `/home/workspace/binance`
 Runtime HEAD: `ae08c0ffdd3a860a7d99c76fbbc045e5167d258b`
-Spec/evidence repo: `/home/ZoneCNH`
+Spec/evidence repo: `/home/workspace/ZoneCNH`
 Spec/evidence HEAD: `df2ce996a5b54e1919ffa8ca49db2a73414df4a9`
 
 ## Scope
@@ -14,7 +14,7 @@ Spec/evidence HEAD: `df2ce996a5b54e1919ffa8ca49db2a73414df4a9`
 
 ## Verification Commands
 
-All commands were run from `/home/binance`.
+All commands were run from `/home/workspace/binance`.
 
 | Area | Command | Result |
 | --- | --- | --- |

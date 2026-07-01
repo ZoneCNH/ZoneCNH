@@ -9,7 +9,7 @@
 
 ## 任务
 
-在 `/home/alertx`（新建仓）建立独立进程骨架，对接 contracts v1.6.0 alert 契约。
+在 `/home/workspace/alertx`（新建仓）建立独立进程骨架，对接 contracts v1.6.0 alert 契约。
 
 ## 关联需求
 
@@ -23,11 +23,11 @@
 ## 依赖
 
 - 上游：无（首个 task）
-- contracts：`/home/contracts/pkg/contracts/alert.go`（feat/contracts-alert-types 分支，AlertEvent/AlertRule/Severity/AlertStatus/AlertSink/AlertRuleStore）
+- contracts：`/home/workspace/contracts/pkg/contracts/alert.go`（feat/contracts-alert-types 分支，AlertEvent/AlertRule/Severity/AlertStatus/AlertSink/AlertRuleStore）
 
 ## 实现要点
 
-1. `go.mod`：`module github.com/ZoneCNH/alertx`，`go 1.23`，require contracts（本地 `replace github.com/ZoneCNH/contracts => /home/contracts`）
+1. `go.mod`：`module github.com/ZoneCNH/alertx`，`go 1.23`，require contracts（本地 `replace github.com/ZoneCNH/contracts => /home/workspace/contracts`）
 2. `pkg/alertx/version.go`：`ModuleName` + `Version = "v1.0.0"`（CI 从此读版本）
 3. `pkg/alertx/errors.go`：sentinel errors（ErrRuleInvalid/ErrChannelUnknown/ErrSuppressWindowZero/ErrNotifyFailed/ErrRuleLoadFailed/ErrStoreUnavailable），消息格式 `"alertx: <op>: <detail>"`（CONSTITUTION §8.2）
 4. `pkg/alertx/options.go`：Engine 配置选项（functional options 模式）
@@ -36,7 +36,7 @@
 ## 验证
 
 ```bash
-cd /home/alertx && GOWORK=off go build ./... && GOWORK=off go vet ./... && gofmt -l pkg/alertx/
+cd /home/workspace/alertx && GOWORK=off go build ./... && GOWORK=off go vet ./... && gofmt -l pkg/alertx/
 ```
 
 ## 编码规范

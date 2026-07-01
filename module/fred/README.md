@@ -18,7 +18,7 @@
 | 所属域 | 数据域 · 宏观 |
 | 模块类型 | 独立 C/S 模块，独立服务 |
 | 代码仓库 | `github.com/ZoneCNH/fred` |
-| 本地代码路径 | `/home/fred/` |
+| 本地代码路径 | `/home/workspace/fred/` |
 | 共享基座 | `bootstrap`、`configx`、`observex`、`resiliencx`、`transportx`、`contracts`、存储适配器 |
 | 领域共享层 | `domain_macro`、`decimalx`、宏观发布日历与 no-lookahead 语义 |
 | 配置来源 | `sre/secrets/env/dev.md`，只引用配置项类别，不复制密钥值 |
@@ -34,7 +34,7 @@
 
 ## `ms_brain` 消费画像
 
-`/home/ms_brain` 是 `fred` 的宏观数据下游消费者之一。当前证据显示它主要是文档、规格和 YAML 配置驱动的 Crypto Macro-State Trading OS 设计面，工程实现尚未启动；因此 `fred` 只补充可验证的数据契约，不承接 `ms_brain` 的策略、仓位或状态机逻辑。
+`/home/workspace/ms_brain` 是 `fred` 的宏观数据下游消费者之一。当前证据显示它主要是文档、规格和 YAML 配置驱动的 Crypto Macro-State Trading OS 设计面，工程实现尚未启动；因此 `fred` 只补充可验证的数据契约，不承接 `ms_brain` 的策略、仓位或状态机逻辑。
 
 | 维度 | `fred` 需要提供 |
 | ---- | --------------- |
@@ -47,4 +47,4 @@
 
 ## 当前迁移提示
 
-`/home/fred` 当前已有 Go 模块、`cmd/fred-server`、`pkg/fredx` 和边界脚本骨架；目标规格要求从旧的“adapter 零存储”口径迁移为独立服务拥有的完整持久化与事件边界。实施时必须同步更新代码边界门禁，避免旧的 `Stores=None` 约束继续阻止目标架构落地。
+`/home/workspace/fred` 当前已有 Go 模块、`cmd/fred-server`、`pkg/fredx` 和边界脚本骨架；目标规格要求从旧的“adapter 零存储”口径迁移为独立服务拥有的完整持久化与事件边界。实施时必须同步更新代码边界门禁，避免旧的 `Stores=None` 约束继续阻止目标架构落地。

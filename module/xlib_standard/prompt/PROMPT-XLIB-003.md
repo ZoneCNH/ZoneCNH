@@ -2,7 +2,7 @@
 
 > PR-4: 核心包 — pkg/templatex、contracts、examples、testkit
 > 工作分支: `feat/xlib-v1-packages`
-> 工作目录: /home/xlib_standard/.worktree/workspaces/feat/xlib-v1-packages
+> 工作目录: /home/workspace/xlib-standard/.worktree/workspaces/feat/xlib-v1-packages
 
 ## Current Task
 

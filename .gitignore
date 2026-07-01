@@ -113,9 +113,12 @@ report/package-lock.json
 .claude/loops/
 .claude/.edit-guard-state.json
 
-# Beads / Dolt files (added by bd init)
+# Beads / Dolt files (added by bd init) — stealth mode, 本地数据不进 git
 .dolt/
 *.db
 .beads-credential-key
-.beads/proxieddb/
+.beads/
 __pycache__/
+
+# Playwright MCP runtime logs/screenshots
+.playwright-mcp/

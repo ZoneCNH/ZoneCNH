@@ -3,7 +3,7 @@
 - Status: Active
 - Last-Updated: 2026-06-30
 - Target-Version: v0.1.x -> v0.2.0
-- Runtime-Repo: /home/bootstrap
+- Runtime-Repo: /home/workspace/bootstrap
 - Layer: L1 Assembly
 - Source: SPEC.md, TRACEABILITY.md
 
@@ -40,4 +40,4 @@ bootstrap 的目标是把服务入口重复胶水收敛为一个可审计、可�
 
 - SPEC 当前仍为 Draft，运行时代码扩展必须受文档批准状态约束。
 - 非 None 存储组合未完成前，不得把 bootstrap 视为聚合进程完整存储装配层。
-- 当前文档只记录目标与追溯闭合，不替代 `/home/bootstrap` 的最新 CI、race、vet、coverage 与 boundary gate 证据。
+- 当前文档只记录目标与追溯闭合，不替代 `/home/workspace/bootstrap` 的最新 CI、race、vet、coverage 与 boundary gate 证据。

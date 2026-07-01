@@ -9,10 +9,10 @@
 | Module-Version | v3.9.6 |
 | Module-State | v3.9.6 单一状态模型：**48 Done / 0 Partial / 0 Drifted / 0 Pending**。release_closeable=YES（PRG-001~007 全 PASS）。P10 issues: GitHub #1289-#1331 / Beads 43 全部 closed（10 轮验证 ALL PASS）。 |
 | Layer | 数据域 / Binance-specific market_data C/S module |
-| Runtime-Repo | `/home/binance` |
+| Runtime-Repo | `/home/workspace/binance` |
 | Source | `goal.md`, `SPEC.md`, `TRACEABILITY.md`, `STANDARD.md`, `BOUNDARY-GATES.md`, `RUNTIME-MAPPING.md`, `IMPLEMENTATION-PLAN.md`, `client/`, `server/`, `tasks/` |
 
-本文档是 `module/binance` 当前规格库的实现投影，不是 runtime 代码验收证据。实际完成状态以 `TRACEABILITY.md`、`client/TRACEABILITY.md`、`server/TRACEABILITY.md` 和 `/home/binance` 的测试证据为准。
+本文档是 `module/binance` 当前规格库的实现投影，不是 runtime 代码验收证据。实际完成状态以 `TRACEABILITY.md`、`client/TRACEABILITY.md`、`server/TRACEABILITY.md` 和 `/home/workspace/binance` 的测试证据为准。
 
 > **v3.9.6 当前状态口径（2026-06-30）**：单一状态模型 — `Done` = 代码完整+装配就绪+TC PASS+evidence 归档。当前 Done 48 / Partial 0 / Drifted 0 / Pending 0。release_closeable=YES（PRG-001~007 全 PASS）。
 >
@@ -128,15 +128,15 @@
 
 | 项 | 当前状态 | 说明 |
 | --- | --- | --- |
-| BR-001 No binance-market | Done | `/home/binance/BOUNDARY-GATES.md` §2 + `scripts/boundary-gates.sh` 13/13 PASS，禁止旧仓库或旧 module 名称回流。 |
-| BR-002 Client Must Not Import Server | Done | `/home/binance/BOUNDARY-GATES.md` §3 证明 Client 无 server internals import。 |
-| BR-003 Server Must Not Import Client | Done | `/home/binance/BOUNDARY-GATES.md` §4 证明 Server 无 client internals import。 |
+| BR-001 No binance-market | Done | `/home/workspace/binance/BOUNDARY-GATES.md` §2 + `scripts/boundary-gates.sh` 13/13 PASS，禁止旧仓库或旧 module 名称回流。 |
+| BR-002 Client Must Not Import Server | Done | `/home/workspace/binance/BOUNDARY-GATES.md` §3 证明 Client 无 server internals import。 |
+| BR-003 Server Must Not Import Client | Done | `/home/workspace/binance/BOUNDARY-GATES.md` §4 证明 Server 无 client internals import。 |
 | BR-004 natsx ManualAck | Done | Plan007 A3 (`1ec9d26`) NakWithDelay(5s) + MaxDeliver=5 + deadletter 包；本地 NATS JetStream gated 测试验证 PubAck/duplicate/Nak/MaxDeliver 语义（`release/evidence/binance/20260625/testnet-live.txt`）。 |
-| BR-005 No Runtime Shared Package | Done | `/home/binance/BOUNDARY-GATES.md` §5/§6 与 2026-06-23 本地证据已声明并验证禁止运行时共享包回流。 |
-| BR-006 Server Owns Binance Storage | Done | `/home/binance/BOUNDARY-GATES.md` §7 证明 Server 只拥有 Binance-specific storage，不上移为通用 market_data。 |
-| BR-007 No Domain Ownership | Done | `/home/binance/BOUNDARY-GATES.md` §9 证明 Binance 只消费 `domain_market` 语义，不能定义 canonical domain。 |
-| BR-008 Wire Contract Externality | Done | `/home/binance/BOUNDARY-GATES.md` §8 证明无本地 `.proto`/gRPC ingest schema；runtime 使用 natsx subject + `internal/wire` 契约类型包（ADR-002 过渡态），canonical 语义外置。 |
-| BR-009 go.mod Dependency Compliance | Done | `/home/binance/BOUNDARY-GATES.md` §11 证明 runtime `go.mod` 与边界依赖合规。 |
+| BR-005 No Runtime Shared Package | Done | `/home/workspace/binance/BOUNDARY-GATES.md` §5/§6 与 2026-06-23 本地证据已声明并验证禁止运行时共享包回流。 |
+| BR-006 Server Owns Binance Storage | Done | `/home/workspace/binance/BOUNDARY-GATES.md` §7 证明 Server 只拥有 Binance-specific storage，不上移为通用 market_data。 |
+| BR-007 No Domain Ownership | Done | `/home/workspace/binance/BOUNDARY-GATES.md` §9 证明 Binance 只消费 `domain_market` 语义，不能定义 canonical domain。 |
+| BR-008 Wire Contract Externality | Done | `/home/workspace/binance/BOUNDARY-GATES.md` §8 证明无本地 `.proto`/gRPC ingest schema；runtime 使用 natsx subject + `internal/wire` 契约类型包（ADR-002 过渡态），canonical 语义外置。 |
+| BR-009 go.mod Dependency Compliance | Done | `/home/workspace/binance/BOUNDARY-GATES.md` §11 证明 runtime `go.mod` 与边界依赖合规。 |
 | NFR-001~004 Performance | Done | SLO benchmark 24 项全 PASS（Normalize 3.4μs / Ingest 2.8μs / API 2.6μs）。 |
 | NFR-005~009 Storage/API | Done | 存储/API runtime 装配闭合；数据一致性、查询 SLA、归档安全已验证。 |
 | NFR-010~011 Observability | Done | prometheus 9 指标 + slog + healthz/readyz。 |
@@ -173,7 +173,7 @@
 | 根级 traceability 存在 | Done | `TRACEABILITY.md` v3.9.6；48 Done / 0 Partial / 0 Drifted / 0 Pending；Evidence 列 48 Done / 0 Pending。 |
 | Client/Server 子域 traceability 存在 | Done | `client/TRACEABILITY.md`, `server/TRACEABILITY.md`。 |
 | C/S 独立进程边界已定义 | Done | `README.md`, `SPEC.md`, `BOUNDARY-GATES.md`。 |
-| Boundary gate 文档已形成 | Done | `BOUNDARY-GATES.md` v2.2.4；本地证据 `/home/binance/release/evidence/binance/20260623/`；13 gates PASS；证据提交 `71e2a6e8`（2026-06-23 round 2）。 |
+| Boundary gate 文档已形成 | Done | `BOUNDARY-GATES.md` v2.2.4；本地证据 `/home/workspace/binance/release/evidence/binance/20260623/`；13 gates PASS；证据提交 `71e2a6e8`（2026-06-23 round 2）。 |
 | Product line 全覆盖实现 | Done | FR-001 Done（四线 mainnet live PASS 已归档）。 |
 | Instrument identity 全覆盖实现 | Done | FR-002 Done（跨产品线碰撞断言已加）。 |
 | natsx publish/consume runtime 闭合 | Done | FR-003 Done（publisher+consumer 双侧装配 + .v1 fix `4f740e5`；drift-check 22/22 PASS）。 |

@@ -13,8 +13,8 @@ soak/chaos 测试全部 `t.Skip()` → 已移除，测试改为连接真实基�
 ## 验证命令
 
 ```bash
-cd /home/binance
-set -a && . /home/binance/.env && set +a
+cd /home/workspace/binance
+set -a && . /home/workspace/binance/.env && set +a
 go test -tags chaos -race -v -count=1 -timeout 15m ./test/chaos/...
 SOAK_DURATION=2m go test -tags soak -race -v -count=1 -timeout 5m ./test/soak/...
 ```
@@ -101,16 +101,16 @@ ok  	github.com/ZoneCNH/binance/test/chaos	2.394s
 ### run.sh 更新
 
 `test/soak/run.sh` 和 `test/chaos/run.sh` 均已更新：
-- 运行前 source `/home/binance/.env` 加载基础设施连接配置
+- 运行前 source `/home/workspace/binance/.env` 加载基础设施连接配置
 - soak run.sh 默认 `SOAK_DURATION=2m`，超时 5m
 - chaos run.sh 超时 15m
 
 ## 修改的文件
 
-1. `/home/binance/test/soak/soak_test.go` — 重写：移除 t.Skip()，实现 NATS pub/sub soak 测试
-2. `/home/binance/test/chaos/chaos_test.go` — 重写：移除全部 t.Skip()，实现 5 个 chaos 测试
-3. `/home/binance/test/soak/run.sh` — 更新：source .env，可配置 SOAK_DURATION
-4. `/home/binance/test/chaos/run.sh` — 更新：source .env
+1. `/home/workspace/binance/test/soak/soak_test.go` — 重写：移除 t.Skip()，实现 NATS pub/sub soak 测试
+2. `/home/workspace/binance/test/chaos/chaos_test.go` — 重写：移除全部 t.Skip()，实现 5 个 chaos 测试
+3. `/home/workspace/binance/test/soak/run.sh` — 更新：source .env，可配置 SOAK_DURATION
+4. `/home/workspace/binance/test/chaos/run.sh` — 更新：source .env
 
 ## 结论
 

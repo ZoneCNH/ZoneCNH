@@ -36,6 +36,6 @@ TASK-PG-002b:
 
 ## Evidence
 
-- `/home/postgresx/pkg/postgresx/migration.go`
-- `/home/postgresx/pkg/postgresx/errors.go`
-- `/home/postgresx/docs/EVIDENCE-20260601.md`
+- `/home/workspace/postgresx/pkg/postgresx/migration.go`
+- `/home/workspace/postgresx/pkg/postgresx/errors.go`
+- `/home/workspace/postgresx/docs/EVIDENCE-20260601.md`

@@ -1,7 +1,7 @@
 # binance 模块深度分析报告
 
 > **分析日期**：2026-06-30
-> **分析对象**：`module/binance/`（spec hub）+ `/home/binance/`（runtime 仓）
+> **分析对象**：`module/binance/`（spec hub）+ `/home/workspace/binance/`（runtime 仓）
 > **分析基准**：CONSTITUTION §0-§20、STRUCTURAL-SCORING 11 阶段维度、数据 C/S 模块治理等级 L1-L3、Go 编码规范 13 维度
 > **证据口径**：runtime HEAD `744e5a7`（main, 2026-06-29）、spec hub v3.9.6、registry.yaml v0.8.0 tag
 

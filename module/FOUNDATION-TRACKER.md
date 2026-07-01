@@ -44,7 +44,7 @@
 
 - [x] 新增 `module/FOUNDATION-DEPS.yaml`（已完成）
 - [x] CI 中增加 `check-deps.sh` 脚本（已完成，deps-matrix.yml）（从 yaml 解析）
-- [x] CI 中增加 kernel stdlib-only 检查（`/home/kernel/scripts/check-stdlib-only.sh`）
+- [x] CI 中增加 kernel stdlib-only 检查（`/home/workspace/kernel/scripts/check-stdlib-only.sh`）
 - [x] CI 中增加 testkitx production import 检查（`pkg/testkitx/boundarytest/`）
 - [x] CI 中增加反向依赖检查（`deps-matrix.yml` + `FOUNDATION-DEPS.yaml` constraints）
 - [x] README 或 AGENTS 中引用此矩阵（已添加到 AGENTS.md 关键文档表）
@@ -268,8 +268,8 @@ PR: #8 (squash merged → main)
 仓库：ZoneCNH/contracts, ZoneCNH/transportx
 ```text
 
-- [x] `/home/contracts/go.mod` 声明 `module github.com/ZoneCNH/xlib-standard`
-- [x] `/home/transportx/go.mod` 声明 `module github.com/ZoneCNH/xlib-standard`
+- [x] `/home/workspace/contracts/go.mod` 声明 `module github.com/ZoneCNH/xlib-standard`
+- [x] `/home/workspace/transportx/go.mod` 声明 `module github.com/ZoneCNH/xlib-standard`
 - [x] 诊断结论：contracts/transportx 共享 xlib_standard module 是有意为之的 monorepo 架构（二者 import `xlib_standard/internal/*` 内部包，Go 编译器禁止外部模块导入 internal 包，独立 go.mod 不可行）
 - [x] ARCHITECTURE.md 待注明三者共享 Go module（非独立模块）
 
@@ -318,7 +318,7 @@ PR: #8 (squash merged → main)
 仓库：ZoneCNH/x.go
 ```text
 
-- [x] 旧文件 `/home/x.go.bak/.env.example`（14 变量，旧格式）与 `configs/.env.example`（22 变量，XGO_ 前缀）零交集
+- [x] 旧文件 `/home/workspace/x.go.bak/.env.example`（14 变量，旧格式）与 `configs/.env.example`（22 变量，XGO_ 前缀）零交集
 - [x] 旧文件已脱敏（5 个凭据已清除）
 - [x] 10+ CI 脚本 / spec 文档引用根路径 `.env.example`，迁移后需同步更新路径
 - [x] 旧变量（FRED_API_KEY/JINSHI_API_KEY/TDENGINE_ROOT_PASS 等）迁移为 XGO_ 前缀后加入 configs 版本

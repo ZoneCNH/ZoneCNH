@@ -5,25 +5,25 @@
 - Module-Version: v1.3.0
 - Module-State: Tag Exists / Release Pending
 - Layer: L2 基础设施适配器
-- Runtime-Repo: /home/redisx
+- Runtime-Repo: /home/workspace/redisx
 - Source: goal.md, SPEC.md, TRACEABILITY.md, IMPLEMENTATION-PLAN.md, tasks/
 
-> 本清单用于验收 redisx 是否达到可发布、可追溯、可复验状态。截至 2026-06-19，`/home/redisx` 已完成 v1.1.0 发布对齐。发布分支 `redisx-v1.1.0-20260619` 提交 `aa44602837f8592259629ce9506f46a9ed287773` 通过版本、release manifest、全量 Go 测试与 release-preflight；PR #19 已合入 main（merge commit `ef09126c071463d1d58f4227a03fa61010ce81ac`）。真实 Redis 集成测试已使用 `/home/ZoneCNH/sre/secrets/env/dev.md` 的 Redis 配置完成，证据只记录 `REDISX_REDIS_*` 键名、不记录具体配置值。Docker Contract、Integration、L2 Gates、Security 与 Release workflow 均在 v1.1.0 发布链路通过；v1.1.0 已由 Release workflow run `27802471873` 发布为正式 GitHub Release。
+> 本清单用于验收 redisx 是否达到可发布、可追溯、可复验状态。截至 2026-06-19，`/home/workspace/redisx` 已完成 v1.1.0 发布对齐。发布分支 `redisx-v1.1.0-20260619` 提交 `aa44602837f8592259629ce9506f46a9ed287773` 通过版本、release manifest、全量 Go 测试与 release-preflight；PR #19 已合入 main（merge commit `ef09126c071463d1d58f4227a03fa61010ce81ac`）。真实 Redis 集成测试已使用 `/home/workspace/ZoneCNH/sre/secrets/env/dev.md` 的 Redis 配置完成，证据只记录 `REDISX_REDIS_*` 键名、不记录具体配置值。Docker Contract、Integration、L2 Gates、Security 与 Release workflow 均在 v1.1.0 发布链路通过；v1.1.0 已由 Release workflow run `27802471873` 发布为正式 GitHub Release。
 
 ## 1. 验收命令清单
 
 | 类别 | 命令 | 通过标准 |
 | --- | --- | --- |
-| 文档存在性 | cd /home/ZoneCNH && test -f module/redisx/FEATURES.md && test -f module/redisx/ACCEPTANCE.md | FEATURES.md 与 ACCEPTANCE.md 均存在 |
-| 文档格式 | cd /home/ZoneCNH && git diff --check -- module/redisx | 无尾随空格或补丁格式错误 |
-| 运行时质量门禁 | cd /home/redisx && GOWORK=off make fmt vet lint test race coverage-check | fmt、vet、lint、go test ./...、race 与覆盖率门禁全部通过 |
-| 覆盖率证据 | cd /home/redisx && GOWORK=off make coverage-check | 8 个 Redis 运行时/API 可发布包均为 100.0%，总覆盖率满足 100.0% |
-| L2 证据 | cd /home/redisx && GOWORK=off make l2-check | `release_ready=true`、`score=100`、`target=L2-T2` |
-| 契约与评分 | cd /home/redisx && GOWORK=off make test-contract && GOWORK=off make contracts && GOWORK=off make score-check | 契约、schema 与评分门禁通过 |
-| 文档门禁 | cd /home/redisx && GOWORK=off make docs-check | 文档检查通过 |
-| 安全扫描 | cd /home/redisx && GOTOOLCHAIN=go1.26.4+auto GOWORK=off XLIB_ENABLE_VULNCHECK=1 XLIB_FORCE_VULNCHECK=1 make security | 强制 govulncheck 与 secret check 通过 |
-| Redis 集成 | cd /home/redisx && 从 /home/ZoneCNH/sre/secrets/env/dev.md 导出 `REDISX_REDIS_ADDR`、`REDISX_REDIS_USERNAME`、`REDISX_REDIS_PASSWORD`、`REDISX_REDIS_DB` 后执行 `GOWORK=off REDISX_INTEGRATION=1 make test-integration` | 真实 Redis 集成测试通过；证据文件不包含具体配置值 |
-| 发布预检 | GitHub Actions: Release workflow run `27802471873`；/home/redisx main release-final-check / release-preflight | main 合入后 `XLIB_CONTEXT=release_verify GOWORK=off make release-final-check` 与 `XLIB_CONTEXT=release_verify GOWORK=off make release-preflight VERSION=v1.1.0` 通过；Release workflow 的发布与验证步骤全部 success。 |
+| 文档存在性 | cd /home/workspace/ZoneCNH && test -f module/redisx/FEATURES.md && test -f module/redisx/ACCEPTANCE.md | FEATURES.md 与 ACCEPTANCE.md 均存在 |
+| 文档格式 | cd /home/workspace/ZoneCNH && git diff --check -- module/redisx | 无尾随空格或补丁格式错误 |
+| 运行时质量门禁 | cd /home/workspace/redisx && GOWORK=off make fmt vet lint test race coverage-check | fmt、vet、lint、go test ./...、race 与覆盖率门禁全部通过 |
+| 覆盖率证据 | cd /home/workspace/redisx && GOWORK=off make coverage-check | 8 个 Redis 运行时/API 可发布包均为 100.0%，总覆盖率满足 100.0% |
+| L2 证据 | cd /home/workspace/redisx && GOWORK=off make l2-check | `release_ready=true`、`score=100`、`target=L2-T2` |
+| 契约与评分 | cd /home/workspace/redisx && GOWORK=off make test-contract && GOWORK=off make contracts && GOWORK=off make score-check | 契约、schema 与评分门禁通过 |
+| 文档门禁 | cd /home/workspace/redisx && GOWORK=off make docs-check | 文档检查通过 |
+| 安全扫描 | cd /home/workspace/redisx && GOTOOLCHAIN=go1.26.4+auto GOWORK=off XLIB_ENABLE_VULNCHECK=1 XLIB_FORCE_VULNCHECK=1 make security | 强制 govulncheck 与 secret check 通过 |
+| Redis 集成 | cd /home/workspace/redisx && 从 /home/workspace/ZoneCNH/sre/secrets/env/dev.md 导出 `REDISX_REDIS_ADDR`、`REDISX_REDIS_USERNAME`、`REDISX_REDIS_PASSWORD`、`REDISX_REDIS_DB` 后执行 `GOWORK=off REDISX_INTEGRATION=1 make test-integration` | 真实 Redis 集成测试通过；证据文件不包含具体配置值 |
+| 发布预检 | GitHub Actions: Release workflow run `27802471873`；/home/workspace/redisx main release-final-check / release-preflight | main 合入后 `XLIB_CONTEXT=release_verify GOWORK=off make release-final-check` 与 `XLIB_CONTEXT=release_verify GOWORK=off make release-preflight VERSION=v1.1.0` 通过；Release workflow 的发布与验证步骤全部 success。 |
 
 ## 2. AC 验收登记
 
@@ -111,7 +111,7 @@
 | 本地质量门禁 | v1.1.0 发布分支通过 `GOWORK=off go test ./cmd/goalcli ./internal/tools/releasemanifest ./pkg/redisx`、`GOWORK=off make release-check`、真实 Redis 集成测试与 `git diff --check`；main 合入后通过 `XLIB_CONTEXT=release_verify GOWORK=off make release-final-check` 与 `XLIB_CONTEXT=release_verify GOWORK=off make release-preflight VERSION=v1.1.0` |
 | 100% 覆盖率门禁 | `make release-check` 与 `release-preflight` 均输出 `coverage 100.0% >= 100.0%`，Redis 运行时/API 可发布面覆盖率基线继续有效 |
 | L2-T2 与契约 | v1.1.0 PR #19 的 CI、Integration、Security、Docker Contract、L2 Gates 与 release workflow 均为 success；main 发布预检通过 `release-final-check` 复验 |
-| 集成验收 | 已使用 `/home/ZoneCNH/sre/secrets/env/dev.md` 的 Redis 配置通过 `GOWORK=off REDISX_INTEGRATION=1 make test-integration`；`.agent/evidence/l2/integration-report.json` 仅记录 `REDISX_REDIS_*` 键名；PR #19 的 Integration check 为 success |
+| 集成验收 | 已使用 `/home/workspace/ZoneCNH/sre/secrets/env/dev.md` 的 Redis 配置通过 `GOWORK=off REDISX_INTEGRATION=1 make test-integration`；`.agent/evidence/l2/integration-report.json` 仅记录 `REDISX_REDIS_*` 键名；PR #19 的 Integration check 为 success |
 | Docker 发布验收 | v1.1.0 PR #19 的 Docker Contract checks 为 success；Release workflow run `27802471873` 已完成验证 |
 | 安全验收 | v1.1.0 PR #19 的 Security check 为 success；公开文档仅保留配置文件路径与 `REDISX_REDIS_*` 键名，不写入具体连接串、用户名、密码或 DB 值 |
 | CI/CD 配置 | `coverage-check`、release-check、release-final-check 与 release-preflight 保持闭合；Release workflow run `27802471873` 已完成 tag 发布和验证 |
@@ -121,7 +121,7 @@
 
 - [x] FEATURES.md 的 FR、BR/NFR、任务清单与 SPEC/TRACEABILITY 当前登记一致。
 - [x] ACCEPTANCE.md 的 AC、TC 与运行时代码测试名、证据文件或 CI 记录一致。
-- [x] 运行时代码仓库 /home/redisx 通过 go test、go test -race、go vet 与覆盖率门槛。
+- [x] 运行时代码仓库 /home/workspace/redisx 通过 go test、go test -race、go vet 与覆盖率门槛。
 - [x] 所有外部服务依赖有本地可重复的测试替身或明确 live-gate 证据。
 - [x] 安全检查确认没有凭证、私有端点、账户 ID 或实盘配置进入公开文档与代码。
 - [x] 版本号、CHANGELOG 与 v1.1.0 working tree 状态一致。
@@ -129,6 +129,6 @@
 
 ## 7. 完成状态登记
 
-- 当前 `/home/redisx` v1.1.0 发布分支质量门禁、Redis 运行时/API 可发布面覆盖率基线、dev Redis 集成测试、PR #19 CI/Integration/Docker Contract/L2 Gates/Security 与 Release workflow 均已通过。
+- 当前 `/home/workspace/redisx` v1.1.0 发布分支质量门禁、Redis 运行时/API 可发布面覆盖率基线、dev Redis 集成测试、PR #19 CI/Integration/Docker Contract/L2 Gates/Security 与 Release workflow 均已通过。
 - PR #19 已合入 main，Release workflow run `27802471873` 已完成 tag 创建、GitHub Release 发布与验证。
 - 已确认 `v1.1.0` 为正式 GitHub Release：`https://github.com/ZoneCNH/redisx/releases/tag/v1.1.0`。

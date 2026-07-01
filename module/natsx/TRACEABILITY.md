@@ -3,7 +3,7 @@
 > 模块级追溯矩阵。治理规范见 [docs/governance/TRACEABILITY.md](../../docs/governance/TRACEABILITY.md)。本矩阵记录 PR #17 merged + v1.0.3 remote tag evidence；GitHub Release v1.0.3 仍需独立发布证据，不得由 tag 推导。
 
 Last-Updated: 2026-06-30
-Source: `goal.md` v1.2.0 + `SPEC.md` Approved v1.2.0 + `/home/natsx` PR #17 merge `29503212` + remote tag `v1.0.3`
+Source: `goal.md` v1.2.0 + `SPEC.md` Approved v1.2.0 + `/home/workspace/natsx` PR #17 merge `29503212` + remote tag `v1.0.3`
 
 ---
 
@@ -60,21 +60,21 @@ Source: `goal.md` v1.2.0 + `SPEC.md` Approved v1.2.0 + `/home/natsx` PR #17 merg
 | Test Case | Covers | Current Evidence |
 | --------- | ------ | ---------------- |
 | *TC-001 至 TC-005 在 SPEC.md §16.2 注册为正式 TC ID；TC-006 至 TC-014 为矩阵内部追溯标签，对应证据如右侧可执行文件路径所示，非 SPEC.md 注册的正式 TC ID。* | | |
-| TC-001 | FR-001, FR-002, BR-001, BR-004, BR-009 | `/home/natsx/pkg/natsx/embedded_nats_test.go::TestEmbeddedNATSCorePublishRequestAndQueue`; `/home/natsx/pkg/natsx/embedded_nats_test.go::TestEmbeddedNATSCoreTimeoutUnsubscribeDrainAndHealth`; `/home/natsx/pkg/natsx/regression_test.go::TestCoreOperationsRejectInvalidPreconditions` |
-| TC-002 | FR-003, BR-003 | `/home/natsx/pkg/natsx/embedded_nats_test.go::TestEmbeddedNATSCorePublishRequestAndQueue`; `/home/natsx/pkg/natsx/embedded_nats_test.go::TestEmbeddedNATSRequestNoResponder`; `/home/natsx/pkg/natsx/embedded_nats_test.go::TestEmbeddedNATSCoreTimeoutUnsubscribeDrainAndHealth` |
-| TC-003 | FR-004, FR-005, FR-006, FR-007, BR-002, BR-007 | `/home/natsx/pkg/natsx/embedded_nats_test.go::TestEmbeddedNATSJetStreamPublishAndPull`; `/home/natsx/pkg/natsx/embedded_nats_test.go::TestEmbeddedNATSJetStreamMaxDeliverAdvisory`; covers JetStream publish/pull, missing-stream publish, AddStream/AddConsumer idempotency/conflict, management edge failures, nack redelivery, and max-deliveries advisory behavior |
-| TC-004 | BR-005 | `/home/natsx/pkg/natsx/embedded_nats_test.go::TestEmbeddedNATSReconnectBackoffAndDegradedHealth`; reconnect/degraded health, retry/backoff knobs, connection-state metrics, and reconnect/disconnect guardrails covered; production exponential-backoff SLO gate remains external |
-| TC-005 | FR-008, BR-006 | `/home/natsx/pkg/natsx/embedded_nats_test.go::TestEmbeddedNATSCoreTimeoutUnsubscribeDrainAndHealth`; `/home/natsx/pkg/natsx/embedded_nats_test.go::TestEmbeddedNATSReconnectBackoffAndDegradedHealth`; `/home/natsx/pkg/natsx/health_test.go::TestHealthCheckDisconnectedRecordsMetrics`; `/home/natsx/pkg/natsx/regression_test.go::TestHealthCheckNilAndCanceledContext` |
-| TC-006 | NFR-006 | `/home/natsx/pkg/natsx/subject_test.go` |
-| TC-007 | NFR-007 | `/home/natsx/pkg/natsx/envelope_test.go`; embedded request/reply metadata propagation in `/home/natsx/pkg/natsx/embedded_nats_test.go` |
-| TC-008 | NFR-008 | `/home/natsx/pkg/natsx/config_test.go` and `/home/natsx/pkg/natsx/env_test.go` cover defaults/sanitize/validation plus `ConfigFromEnv` canonical precedence and legacy fallback |
-| TC-009 | NFR-009 | `/home/natsx/pkg/natsx/regression_test.go::TestMetricNamesUseFoundationNATSPrefix`; `TestNoopMetricsMethodsAreSafe`; `/home/natsx/pkg/natsx/health_test.go::TestHealthCheckDisconnectedRecordsMetrics`; embedded tests assert canonical `foundationx_nats_*` metric emission |
-| TC-010 | FR-009 | ✅ PR #17 merged — `/home/natsx` pkg/natsx/ingest covers IngestPublisher PubAck→Durable Ack, retryable reject, empty IdempotencyKey non-retryable, duplicate idempotency; GitHub Release v1.0.3 pending |
-| TC-015 | FR-010 | ✅ PR #17 merged — `/home/natsx` pkg/natsx/ingest covers Fetch return (req, Ack, err), Ack offset advance, AckWait redelivery, MaxDeliver DLQ, poison message payload preservation; GitHub Release v1.0.3 pending |
-| TC-011 | NFR-001, NFR-002, BR-008 | `/home/natsx/pkg/natsx/config_test.go::TestConfigValidateDefaultsAndSanitize`; `/home/natsx/pkg/natsx/env_test.go::TestConfigFromEnvRejectsInvalidValuesWithoutSecretLeak`; `/home/natsx/pkg/natsx/live_integration_test.go`; local auth live test passed with `FOUNDATIONX_NATS_URL`, `FOUNDATIONX_NATS_USERNAME`, and `FOUNDATIONX_NATS_PASSWORD` sourced from local NATS config without printing credentials |
-| TC-012 | NFR-003 | `/home/natsx/pkg/natsx/benchmark_test.go::BenchmarkEmbeddedNATSPublish`; `/home/natsx/pkg/natsx/benchmark_test.go::BenchmarkEmbeddedNATSRequest`; `/home/natsx/pkg/natsx/benchmark_test.go::BenchmarkEmbeddedNATSJetStreamPublish`; `/home/natsx/pkg/natsx/embedded_nats_test.go` adds request, JetStream publish/fetch SLO assertions and handler latency evidence |
-| TC-013 | NFR-004 | `/home/natsx$ GOWORK=off go list -deps ./pkg/natsx ./examples/...` plus forbidden-domain filter returned `dependency boundary clean` |
-| TC-014 | NFR-005 | `/home/natsx` PR #17 merge `29503212`, remote tag `v1.0.3`; GitHub Release `v1.0.3` pending; formal four-source arbiter still pending |
+| TC-001 | FR-001, FR-002, BR-001, BR-004, BR-009 | `/home/workspace/natsx/pkg/natsx/embedded_nats_test.go::TestEmbeddedNATSCorePublishRequestAndQueue`; `/home/workspace/natsx/pkg/natsx/embedded_nats_test.go::TestEmbeddedNATSCoreTimeoutUnsubscribeDrainAndHealth`; `/home/workspace/natsx/pkg/natsx/regression_test.go::TestCoreOperationsRejectInvalidPreconditions` |
+| TC-002 | FR-003, BR-003 | `/home/workspace/natsx/pkg/natsx/embedded_nats_test.go::TestEmbeddedNATSCorePublishRequestAndQueue`; `/home/workspace/natsx/pkg/natsx/embedded_nats_test.go::TestEmbeddedNATSRequestNoResponder`; `/home/workspace/natsx/pkg/natsx/embedded_nats_test.go::TestEmbeddedNATSCoreTimeoutUnsubscribeDrainAndHealth` |
+| TC-003 | FR-004, FR-005, FR-006, FR-007, BR-002, BR-007 | `/home/workspace/natsx/pkg/natsx/embedded_nats_test.go::TestEmbeddedNATSJetStreamPublishAndPull`; `/home/workspace/natsx/pkg/natsx/embedded_nats_test.go::TestEmbeddedNATSJetStreamMaxDeliverAdvisory`; covers JetStream publish/pull, missing-stream publish, AddStream/AddConsumer idempotency/conflict, management edge failures, nack redelivery, and max-deliveries advisory behavior |
+| TC-004 | BR-005 | `/home/workspace/natsx/pkg/natsx/embedded_nats_test.go::TestEmbeddedNATSReconnectBackoffAndDegradedHealth`; reconnect/degraded health, retry/backoff knobs, connection-state metrics, and reconnect/disconnect guardrails covered; production exponential-backoff SLO gate remains external |
+| TC-005 | FR-008, BR-006 | `/home/workspace/natsx/pkg/natsx/embedded_nats_test.go::TestEmbeddedNATSCoreTimeoutUnsubscribeDrainAndHealth`; `/home/workspace/natsx/pkg/natsx/embedded_nats_test.go::TestEmbeddedNATSReconnectBackoffAndDegradedHealth`; `/home/workspace/natsx/pkg/natsx/health_test.go::TestHealthCheckDisconnectedRecordsMetrics`; `/home/workspace/natsx/pkg/natsx/regression_test.go::TestHealthCheckNilAndCanceledContext` |
+| TC-006 | NFR-006 | `/home/workspace/natsx/pkg/natsx/subject_test.go` |
+| TC-007 | NFR-007 | `/home/workspace/natsx/pkg/natsx/envelope_test.go`; embedded request/reply metadata propagation in `/home/workspace/natsx/pkg/natsx/embedded_nats_test.go` |
+| TC-008 | NFR-008 | `/home/workspace/natsx/pkg/natsx/config_test.go` and `/home/workspace/natsx/pkg/natsx/env_test.go` cover defaults/sanitize/validation plus `ConfigFromEnv` canonical precedence and legacy fallback |
+| TC-009 | NFR-009 | `/home/workspace/natsx/pkg/natsx/regression_test.go::TestMetricNamesUseFoundationNATSPrefix`; `TestNoopMetricsMethodsAreSafe`; `/home/workspace/natsx/pkg/natsx/health_test.go::TestHealthCheckDisconnectedRecordsMetrics`; embedded tests assert canonical `foundationx_nats_*` metric emission |
+| TC-010 | FR-009 | ✅ PR #17 merged — `/home/workspace/natsx` pkg/natsx/ingest covers IngestPublisher PubAck→Durable Ack, retryable reject, empty IdempotencyKey non-retryable, duplicate idempotency; GitHub Release v1.0.3 pending |
+| TC-015 | FR-010 | ✅ PR #17 merged — `/home/workspace/natsx` pkg/natsx/ingest covers Fetch return (req, Ack, err), Ack offset advance, AckWait redelivery, MaxDeliver DLQ, poison message payload preservation; GitHub Release v1.0.3 pending |
+| TC-011 | NFR-001, NFR-002, BR-008 | `/home/workspace/natsx/pkg/natsx/config_test.go::TestConfigValidateDefaultsAndSanitize`; `/home/workspace/natsx/pkg/natsx/env_test.go::TestConfigFromEnvRejectsInvalidValuesWithoutSecretLeak`; `/home/workspace/natsx/pkg/natsx/live_integration_test.go`; local auth live test passed with `FOUNDATIONX_NATS_URL`, `FOUNDATIONX_NATS_USERNAME`, and `FOUNDATIONX_NATS_PASSWORD` sourced from local NATS config without printing credentials |
+| TC-012 | NFR-003 | `/home/workspace/natsx/pkg/natsx/benchmark_test.go::BenchmarkEmbeddedNATSPublish`; `/home/workspace/natsx/pkg/natsx/benchmark_test.go::BenchmarkEmbeddedNATSRequest`; `/home/workspace/natsx/pkg/natsx/benchmark_test.go::BenchmarkEmbeddedNATSJetStreamPublish`; `/home/workspace/natsx/pkg/natsx/embedded_nats_test.go` adds request, JetStream publish/fetch SLO assertions and handler latency evidence |
+| TC-013 | NFR-004 | `/home/workspace/natsx$ GOWORK=off go list -deps ./pkg/natsx ./examples/...` plus forbidden-domain filter returned `dependency boundary clean` |
+| TC-014 | NFR-005 | `/home/workspace/natsx` PR #17 merge `29503212`, remote tag `v1.0.3`; GitHub Release `v1.0.3` pending; formal four-source arbiter still pending |
 
 ---
 
@@ -145,54 +145,54 @@ Source: `goal.md` v1.2.0 + `SPEC.md` Approved v1.2.0 + `/home/natsx` PR #17 merg
 
 | Artifact | Evidence state | Release meaning |
 | --- | --- | --- |
-| `/home/natsx/README.md` | Identifies `github.com/ZoneCNH/natsx/pkg/natsx` as the 1.0 target and legacy `pkg/templatex` as non-release residue. | Documentation identity evidence only. |
-| `/home/natsx/examples/README.md` | Lists runnable `basic`, `config`, `health`, and `jetstream` examples that import `pkg/natsx` and use embedded test brokers. | Example smoke evidence for the repaired subset, not full release approval. |
-| `/home/natsx/examples/basic`, `/home/natsx/examples/config`, `/home/natsx/examples/health`, `/home/natsx/examples/jetstream` | Executable examples now import `pkg/natsx`; tests use embedded brokers or secret-sanitization checks. | Scenario smoke evidence for examples, not complete release evidence. |
-| `/home/natsx/pkg/natsx/embedded_nats_test.go` | Adds embedded broker coverage for core publish/request/queue, unsubscribe, subscription Drain, client-close health, reconnect/degraded health, JetStream publish/pull, missing-stream publish, management idempotency/conflict, edge failures, nack redelivery, and max-deliveries advisory behavior. | Executable behavior evidence for the repaired subset, not full release approval. |
-| `/home/natsx/pkg/natsx/benchmark_test.go` | Adds embedded Core NATS publish, Request, and JetStream publish benchmark coverage. | Complete repair-slice benchmark evidence; production threshold gate remains separate. |
-| `/home/natsx/pkg/natsx/subject_test.go` | Covers subject build/parse/validation and canonical token rejection. | Complete evidence for SubjectBuilder baseline. |
-| `/home/natsx/pkg/natsx/envelope_test.go` | Covers data/header copy and trace/message/schema metadata round-trip. | Complete evidence for envelope baseline. |
-| `/home/natsx/pkg/natsx/config_test.go` | Covers defaults, endpoint validation, canonical/legacy env alias precedence, and secret sanitization. | Complete repair-slice config/security evidence; production TLS endpoint remains external. |
-| `/home/natsx/pkg/natsx/health_test.go`, `/home/natsx/pkg/natsx/regression_test.go`, `/home/natsx/pkg/natsx/env_test.go`, and `/home/natsx/pkg/natsx/live_integration_test.go` | Cover disconnected health, nil/canceled context, invalid preconditions, noop metrics safety, canonical metric names, secret-safe env validation/live evidence, and race-safe recording metrics; embedded broker tests cover healthy, closed-client, reconnect, and degraded health. | Regression evidence for failure paths, metric naming, redaction, and guardrails. |
-| `/home/ZoneCNH/module/natsx/SPEC.md` | Keeps Approved target-contract semantics explicit and separates that from GitHub Release approval. | Target contract, not release approval. |
-| `/home/ZoneCNH/module/natsx/TRACEABILITY.md` | Separates repair-slice complete local evidence from external formal release gates. | Prevents documentation-only release approval claims. |
+| `/home/workspace/natsx/README.md` | Identifies `github.com/ZoneCNH/natsx/pkg/natsx` as the 1.0 target and legacy `pkg/templatex` as non-release residue. | Documentation identity evidence only. |
+| `/home/workspace/natsx/examples/README.md` | Lists runnable `basic`, `config`, `health`, and `jetstream` examples that import `pkg/natsx` and use embedded test brokers. | Example smoke evidence for the repaired subset, not full release approval. |
+| `/home/workspace/natsx/examples/basic`, `/home/workspace/natsx/examples/config`, `/home/workspace/natsx/examples/health`, `/home/workspace/natsx/examples/jetstream` | Executable examples now import `pkg/natsx`; tests use embedded brokers or secret-sanitization checks. | Scenario smoke evidence for examples, not complete release evidence. |
+| `/home/workspace/natsx/pkg/natsx/embedded_nats_test.go` | Adds embedded broker coverage for core publish/request/queue, unsubscribe, subscription Drain, client-close health, reconnect/degraded health, JetStream publish/pull, missing-stream publish, management idempotency/conflict, edge failures, nack redelivery, and max-deliveries advisory behavior. | Executable behavior evidence for the repaired subset, not full release approval. |
+| `/home/workspace/natsx/pkg/natsx/benchmark_test.go` | Adds embedded Core NATS publish, Request, and JetStream publish benchmark coverage. | Complete repair-slice benchmark evidence; production threshold gate remains separate. |
+| `/home/workspace/natsx/pkg/natsx/subject_test.go` | Covers subject build/parse/validation and canonical token rejection. | Complete evidence for SubjectBuilder baseline. |
+| `/home/workspace/natsx/pkg/natsx/envelope_test.go` | Covers data/header copy and trace/message/schema metadata round-trip. | Complete evidence for envelope baseline. |
+| `/home/workspace/natsx/pkg/natsx/config_test.go` | Covers defaults, endpoint validation, canonical/legacy env alias precedence, and secret sanitization. | Complete repair-slice config/security evidence; production TLS endpoint remains external. |
+| `/home/workspace/natsx/pkg/natsx/health_test.go`, `/home/workspace/natsx/pkg/natsx/regression_test.go`, `/home/workspace/natsx/pkg/natsx/env_test.go`, and `/home/workspace/natsx/pkg/natsx/live_integration_test.go` | Cover disconnected health, nil/canceled context, invalid preconditions, noop metrics safety, canonical metric names, secret-safe env validation/live evidence, and race-safe recording metrics; embedded broker tests cover healthy, closed-client, reconnect, and degraded health. | Regression evidence for failure paths, metric naming, redaction, and guardrails. |
+| `/home/workspace/ZoneCNH/module/natsx/SPEC.md` | Keeps Approved target-contract semantics explicit and separates that from GitHub Release approval. | Target contract, not release approval. |
+| `/home/workspace/ZoneCNH/module/natsx/TRACEABILITY.md` | Separates repair-slice complete local evidence from external formal release gates. | Prevents documentation-only release approval claims. |
 
 ## Matrix Score Evidence
 
 - Structural traceability coverage: **26 / 26 rows mapped** to requirements, test-case IDs, and task IDs.
 - Documentation identity coverage: **4 / 4 tracked docs refreshed** for the repair slice (`README.md`, `examples/README.md`, `SPEC.md`, `TRACEABILITY.md`).
-- Executable implementation coverage in `/home/natsx/pkg/natsx` and `/home/natsx/examples`: **14 / 14 task groups complete**, **0 / 14 partial**, **0 / 14 pending** for the repair slice.
-- Module directory coverage in `/home/ZoneCNH/module/natsx`: documentation only; no local Go source or executable tests.
+- Executable implementation coverage in `/home/workspace/natsx/pkg/natsx` and `/home/workspace/natsx/examples`: **14 / 14 task groups complete**, **0 / 14 partial**, **0 / 14 pending** for the repair slice.
+- Module directory coverage in `/home/workspace/ZoneCNH/module/natsx`: documentation only; no local Go source or executable tests.
 - Repair-slice score: **20 / 20** (module self-assessment of repair completeness).
 - Structural matrix score: **100 / 100** (Claude rubric scoring, 2026-06-14, post D1/D2/D3 repair). Formal release approval remains **Not Approved** until GitHub Release evidence, four-source 98+ arbiter, production benchmark thresholds, and production TLS endpoint gates run.
-- Code evidence: `/home/natsx` PR #17 merge `29503212e762c82bc91790c714e167f4f970a49f`; remote tag `v1.0.3` annotated tag `d2c12bed9a61e5411b6aadc103df611f0e4c59ce` peels to `f4db0b76ea7c86515559b04fcaa0853e1d08a02d`; GitHub Release v1.0.3 pending.
+- Code evidence: `/home/workspace/natsx` PR #17 merge `29503212e762c82bc91790c714e167f4f970a49f`; remote tag `v1.0.3` annotated tag `d2c12bed9a61e5411b6aadc103df611f0e4c59ce` peels to `f4db0b76ea7c86515559b04fcaa0853e1d08a02d`; GitHub Release v1.0.3 pending.
 - Verification commands for this refresh:
-  - `/home/natsx$ GOWORK=off go test ./pkg/natsx -run TestEmbeddedNATSJetStreamMaxDeliverAdvisory -count=1 -v`
-  - `/home/natsx$ GOWORK=off go test ./pkg/natsx -count=1`
-  - `/home/natsx$ GOWORK=off go test -race ./pkg/natsx -count=1`
-  - `/home/natsx$ GOWORK=off go test ./pkg/natsx -bench 'BenchmarkEmbeddedNATS(Publish|Request|JetStreamPublish)$' -run '^$' -count=1 -benchtime=100x`
-  - `/home/natsx$ GOWORK=off go test ./examples/... -count=1`
-  - `/home/natsx$ GOWORK=off go test ./... -count=1`
-  - `/home/natsx$ GOWORK=off go list -deps ./pkg/natsx ./examples/...` plus forbidden dependency filter => `dependency boundary clean`
-  - `/home/natsx$ git diff --check`
-  - `/home/ZoneCNH$ git diff --check -- README.md STATUS.md module/natsx`
-  - `/home/ZoneCNH$ rg <stale natsx evidence phrases> README.md STATUS.md module/natsx` => no matches
-  - `/home/natsx$ GOWORK=off go test ./pkg/natsx -count=1`
-  - `/home/natsx$ GOWORK=off go vet ./pkg/natsx`
-  - `/home/natsx$ GOWORK=off go test -race ./pkg/natsx -run TestEmbeddedNATSCorePublishRequestAndQueue -count=1`
-  - `/home/natsx$ GOWORK=off go test ./pkg/natsx -bench 'BenchmarkEmbeddedNATS(Publish|Request|JetStreamPublish)$' -run '^$' -count=1 -benchtime=100x`
-  - `/home/natsx$ GOWORK=off go test ./examples/... -count=1`
-  - `/home/natsx$ GOWORK=off go test ./... -count=1`
-  - `/home/natsx$ NATSX_LIVE_INTEGRATION=1 FOUNDATIONX_NATS_URL=<redacted-dev-url> FOUNDATIONX_NATS_USERNAME=<redacted> FOUNDATIONX_NATS_PASSWORD=<redacted> GOWORK=off go test ./pkg/natsx -run TestLiveNATSIntegration -count=1 -v` => PASS; no credentials printed
-  - `/home/natsx$ git diff --check`
-  - `/home/ZoneCNH/.worktree/workspaces/natsx$ git diff --check`
-  - `/home/ZoneCNH$ gh release view v1.0.3 --repo ZoneCNH/natsx --json tagName,name,publishedAt,targetCommitish` => `release not found`
-  - `/home/ZoneCNH$ git -C /home/natsx ls-remote origin refs/tags/v1.0.3 'refs/tags/v1.0.3^{}' refs/heads/main` => refs for `main`, `refs/tags/v1.0.3`, and peeled `refs/tags/v1.0.3^{}`
-  - `/home/natsx$ GOCACHE=/tmp/omx-readonly-audit-gocache GOWORK=off go test ./pkg/natsx/ingest -count=1` => PASS
+  - `/home/workspace/natsx$ GOWORK=off go test ./pkg/natsx -run TestEmbeddedNATSJetStreamMaxDeliverAdvisory -count=1 -v`
+  - `/home/workspace/natsx$ GOWORK=off go test ./pkg/natsx -count=1`
+  - `/home/workspace/natsx$ GOWORK=off go test -race ./pkg/natsx -count=1`
+  - `/home/workspace/natsx$ GOWORK=off go test ./pkg/natsx -bench 'BenchmarkEmbeddedNATS(Publish|Request|JetStreamPublish)$' -run '^$' -count=1 -benchtime=100x`
+  - `/home/workspace/natsx$ GOWORK=off go test ./examples/... -count=1`
+  - `/home/workspace/natsx$ GOWORK=off go test ./... -count=1`
+  - `/home/workspace/natsx$ GOWORK=off go list -deps ./pkg/natsx ./examples/...` plus forbidden dependency filter => `dependency boundary clean`
+  - `/home/workspace/natsx$ git diff --check`
+  - `/home/workspace/ZoneCNH$ git diff --check -- README.md STATUS.md module/natsx`
+  - `/home/workspace/ZoneCNH$ rg <stale natsx evidence phrases> README.md STATUS.md module/natsx` => no matches
+  - `/home/workspace/natsx$ GOWORK=off go test ./pkg/natsx -count=1`
+  - `/home/workspace/natsx$ GOWORK=off go vet ./pkg/natsx`
+  - `/home/workspace/natsx$ GOWORK=off go test -race ./pkg/natsx -run TestEmbeddedNATSCorePublishRequestAndQueue -count=1`
+  - `/home/workspace/natsx$ GOWORK=off go test ./pkg/natsx -bench 'BenchmarkEmbeddedNATS(Publish|Request|JetStreamPublish)$' -run '^$' -count=1 -benchtime=100x`
+  - `/home/workspace/natsx$ GOWORK=off go test ./examples/... -count=1`
+  - `/home/workspace/natsx$ GOWORK=off go test ./... -count=1`
+  - `/home/workspace/natsx$ NATSX_LIVE_INTEGRATION=1 FOUNDATIONX_NATS_URL=<redacted-dev-url> FOUNDATIONX_NATS_USERNAME=<redacted> FOUNDATIONX_NATS_PASSWORD=<redacted> GOWORK=off go test ./pkg/natsx -run TestLiveNATSIntegration -count=1 -v` => PASS; no credentials printed
+  - `/home/workspace/natsx$ git diff --check`
+  - `/home/workspace/ZoneCNH/.worktree/workspaces/natsx$ git diff --check`
+  - `/home/workspace/ZoneCNH$ gh release view v1.0.3 --repo ZoneCNH/natsx --json tagName,name,publishedAt,targetCommitish` => `release not found`
+  - `/home/workspace/ZoneCNH$ git -C /home/workspace/natsx ls-remote origin refs/tags/v1.0.3 'refs/tags/v1.0.3^{}' refs/heads/main` => refs for `main`, `refs/tags/v1.0.3`, and peeled `refs/tags/v1.0.3^{}`
+  - `/home/workspace/natsx$ GOCACHE=/tmp/omx-readonly-audit-gocache GOWORK=off go test ./pkg/natsx/ingest -count=1` => PASS
 
 ## Known Risks / Blockers
 
-- `/home/ZoneCNH/module/natsx` has no Go source or executable tests; executable evidence lives in `/home/natsx/pkg/natsx`.
-- `/home/natsx` now has embedded NATS core/JetStream lifecycle, delivery, env loading, handler latency, canonical metric, secret-safe live auth, and SLO-smoke coverage, but this repair slice is not full release approval.
+- `/home/workspace/ZoneCNH/module/natsx` has no Go source or executable tests; executable evidence lives in `/home/workspace/natsx/pkg/natsx`.
+- `/home/workspace/natsx` now has embedded NATS core/JetStream lifecycle, delivery, env loading, handler latency, canonical metric, secret-safe live auth, and SLO-smoke coverage, but this repair slice is not full release approval.
 - Examples import `pkg/natsx` and include embedded smoke tests, but they are scenario smoke evidence only; they do not close production SLO or formal release gates.
 - Remaining blockers: formal four-source 98+ arbiter, production benchmark threshold enforcement, production TLS closure packet for `BLK-002`, and higher-level consumer lifecycle/API integration gates.

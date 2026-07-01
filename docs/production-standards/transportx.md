@@ -121,7 +121,7 @@ trace fields：trace id、span id、envelope id、endpoint reference、lifecycle
 Drain bookkeeping O(in-flight work)，每 receipt bounded memory。实现需在 release evidence 报告 benchmark hardware/runtime/adapter。
 
 ## 16. 测试标准
-Conformance suite 25 个 TC（TC-001..TC-025）覆盖 Envelope/Endpoint/Receipt/Lifecycle/Drain/ControlPlane/ServiceIdentity/Authz/Deadline/Idempotency/Backpressure/Retry+DLQ/RedactionOrder/SchemaCompat/QoS/Codec/TopicRegistry/MethodRegistry/ExecutionMode/Outbox-Inbox/AuditPlane/DataClassification/SchemaRegistry。测试命令形如 `go test ./conformance/... -run TestXxx`。当前状态：所有 FR/BR/NFR 为 Pending（/home/transportx 实现未归档），conformance gates 未执行。
+Conformance suite 25 个 TC（TC-001..TC-025）覆盖 Envelope/Endpoint/Receipt/Lifecycle/Drain/ControlPlane/ServiceIdentity/Authz/Deadline/Idempotency/Backpressure/Retry+DLQ/RedactionOrder/SchemaCompat/QoS/Codec/TopicRegistry/MethodRegistry/ExecutionMode/Outbox-Inbox/AuditPlane/DataClassification/SchemaRegistry。测试命令形如 `go test ./conformance/... -run TestXxx`。当前状态：所有 FR/BR/NFR 为 Pending（/home/workspace/transportx 实现未归档），conformance gates 未执行。
 
 ## 17. Chaos
 SPEC 未定义独立 chaos 矩阵，但边界情况表覆盖等效维度：Drain deadline 过期返回 partial result、Pause 期间 retry loop、ForceStop 期间 in-flight publish 标记 abandoned、mirror target 拒绝保留 primary、canary rollback、duplicate ack 幂等、QoS 饱和降级（REALTIME 丢旧/AUDIT spill-to-disk+alert）、mode transition drain 在途工作、outbox relay crash 幂等重发、DLQ poison loop maxAttempts 后 park、SECRET 在 audit path fail-closed。
@@ -136,7 +136,7 @@ SPEC 未定义独立 chaos 矩阵，但边界情况表覆盖等效维度：Drain
 - [x] Spec approved（SPEC v1.2.0）
 - [x] Traceability complete（FR-001..026、BR-001..018、NFR-001..012 已登记）
 - [ ] CI gates configured（TX-GATE-001..012 全通过）— **未归档**
-- [ ] Contract implementation（/home/transportx public package 编译）— **未归档**
+- [ ] Contract implementation（/home/workspace/transportx public package 编译）— **未归档**
 - [ ] Codec/Registry/Conformance 验证 — **Pending**
 - [ ] Security verified（redaction-order/authz-denial/mode-gate/secret-free-audit）— **Pending**
 - [ ] Compatibility verified（v1.2.0 schema registry report）— **Pending**
@@ -200,7 +200,7 @@ Audit Plane 提供 AuditSink（Append）+ ReplaySource（Replay）接口。审�
 - [ ] rollback ready（SchemaRegistry 兼容性、破坏性 major、双版本迁移窗口）— Pending
 - [ ] conformance ready（25 TC + NFR-001..012 验证）— Pending
 - [ ] CI gates（TX-GATE-001..012 全通过）— Pending
-- **`production_import_allowed=false`**：所有 FR/BR/NFR 为 Pending，/home/transportx 实现、conformance gates、CI gates、release evidence 均需归档后方可 factory-grade
+- **`production_import_allowed=false`**：所有 FR/BR/NFR 为 Pending，/home/workspace/transportx 实现、conformance gates、CI gates、release evidence 均需归档后方可 factory-grade
 
 ## 30. Roadmap
 - v1.2.0（Spec approved，runtime pending）：统一传输契约、六通信平面、Envelope/Endpoint/Receipt/ServiceIdentity/QoS/Codec/Registry/ControlPlane/Outbox-Inbox/AuditPlane/DataClassification

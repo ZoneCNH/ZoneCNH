@@ -32,7 +32,7 @@
 ## 验证
 
 ```bash
-cd /home/alertx && GOWORK=off go test ./pkg/alertx/... -run TestDeduper -race -v
+cd /home/workspace/alertx && GOWORK=off go test ./pkg/alertx/... -run TestDeduper -race -v
 ```
 
 ## 关键测试

@@ -4,8 +4,8 @@
 set -euo pipefail
 
 REPO="ZoneCNH/binance"
-JSON="/home/ZoneCNH/plans/binance/008-tasks.json"
-MAP="/home/ZoneCNH/plans/binance/008-gh-issue-map.tsv"
+JSON="/home/workspace/ZoneCNH/plans/binance/008-tasks.json"
+MAP="/home/workspace/ZoneCNH/plans/binance/008-gh-issue-map.tsv"
 START=${1:-0}
 
 COUNT=$(jq '.tasks | length' "$JSON")
@@ -49,7 +49,7 @@ $ACC
 
 本 issue 来自 [Plan 008](https://github.com/ZoneCNH/ZoneCNH/blob/main/plans/binance/008-binance-production-fix-master-plan.md) Task $TASK_ID。
 
-- Runtime-Anchor: \`/home/binance@f046e16\`
+- Runtime-Anchor: \`/home/workspace/binance@f046e16\`
 - Plan 008 覆盖 9 数据缺口 (G1-G9) + 35 标准化 (S1-S35) + 4 规模化 (M1-M4)，共 40 Task。
 
 ## 追溯

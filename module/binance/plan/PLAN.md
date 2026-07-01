@@ -3,7 +3,7 @@
 - Module-Version: v3.9.6
 - Last-Updated: 2026-06-30
 - Status: execution plan complete; release_closeable=YES
-- Runtime-Repo: `/home/binance`
+- Runtime-Repo: `/home/workspace/binance`
 
 ## 1. 目标
 
@@ -17,7 +17,7 @@
 | G0-1a | NATS JetStream deployment boundary is explicit: external service; client/server only configure `nats.url` and `FOUNDATIONX_NATS_*` | PASS |
 | G0-2 | `domain_market` canonical source ready | PASS |
 | G0-3 | server storage ownership includes `redisx/taosx/postgresx/clickhousex/ossx/kafkax/Gin` | PASS |
-| G0-4 | `/home/binance/scripts/boundary-gates.sh` 对齐 `BOUNDARY-GATES.md` 10 gates | PASS |
+| G0-4 | `/home/workspace/binance/scripts/boundary-gates.sh` 对齐 `BOUNDARY-GATES.md` 10 gates | PASS |
 | G0-5 | `go.mod` direct deps: `natsx/redisx/kafkax/postgresx/taosx/clickhousex/ossx/gin` | PASS |
 | G0-6 | tasks cover `SERVER-017` and `FR-011` | PASS |
 | G0-7 | release claim blocked until runtime evidence exists | PASS |
@@ -82,7 +82,7 @@ github.com/ZoneCNH/binance/
 
 ## 6. 实现顺序
 
-1. 修复 `/home/binance/scripts/boundary-gates.sh`，让 10 gates 能真实暴露 runtime 阻断。
+1. 修复 `/home/workspace/binance/scripts/boundary-gates.sh`，让 10 gates 能真实暴露 runtime 阻断。
 2. 固化 runtime 配置边界：client/server 只读取外部 `nats.url` 和 `FOUNDATIONX_NATS_*`，不启动或打包 NATS Server。
 3. 调整 `go.mod` direct deps：`natsx/redisx/kafkax/postgresx/taosx/clickhousex/ossx/gin` 必须为 direct。
 4. 删除或隔离 `internal/cs`、spool、checkpoint、sender 等同进程 C/S 路径。
@@ -95,7 +95,7 @@ github.com/ZoneCNH/binance/
 
 | 条件 | 必须结果 |
 | --- | --- |
-| `/home/binance/scripts/boundary-gates.sh` | 10/10 PASS。 |
+| `/home/workspace/binance/scripts/boundary-gates.sh` | 10/10 PASS。 |
 | `go build ./...` | PASS。 |
 | `go test ./... -race -count=1` | PASS。 |
 | `go vet ./...` | PASS。 |

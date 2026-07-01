@@ -24,12 +24,12 @@ Does NOT implement Kafka broker deployment, topic auto-creation, or Kafka Connec
 
 ## Files
 
-- `/home/kafkax/pkg/kafkax/producer.go` — Producer 接口
-- `/home/kafkax/pkg/kafkax/kafkago/producer.go:40` — `Send(ctx, message, opts...)`
-- `/home/kafkax/pkg/kafkax/kafkago/producer.go:51` — `SendBatch(ctx, messages, opts...)`
-- `/home/kafkax/pkg/kafkax/kafkago/producer.go:24-26` — `RequiredAcks` / `MaxAttempts` 透传
-- `/home/kafkax/pkg/kafkax/config.go:47` — `RequiredAcks < 0` 校验
-- `/home/kafkax/pkg/kafkax/config.go:59` — `Retry.MaxAttempts < 0` 校验
+- `/home/workspace/kafkax/pkg/kafkax/producer.go` — Producer 接口
+- `/home/workspace/kafkax/pkg/kafkax/kafkago/producer.go:40` — `Send(ctx, message, opts...)`
+- `/home/workspace/kafkax/pkg/kafkax/kafkago/producer.go:51` — `SendBatch(ctx, messages, opts...)`
+- `/home/workspace/kafkax/pkg/kafkax/kafkago/producer.go:24-26` — `RequiredAcks` / `MaxAttempts` 透传
+- `/home/workspace/kafkax/pkg/kafkax/config.go:47` — `RequiredAcks < 0` 校验
+- `/home/workspace/kafkax/pkg/kafkax/config.go:59` — `Retry.MaxAttempts < 0` 校验
 
 ## Acceptance
 

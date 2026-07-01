@@ -8,15 +8,15 @@
 - [COMPUTED, HIGH] Phase 1（16 issues: A-1~A-4, B-2, C-1~C-4, D-1~D-4, G-4, G-6, E-6）deliverable 完整验证，evidence 已归档。
 - [COMPUTED, HIGH] Phase 2-6（27 issues: E-1~E-4, F-1~F-7, H-1~H-5, I-1~I-5, J-2~J-8）deliverable 已创建（code/docs/scripts/plans/test-scaffolding），pending live infrastructure validation。
 - [COMPUTED, HIGH] `module/binance/spec/SPEC.md` 为 225 行，`module/binance/matrix/TRACEABILITY.md` 为 114 行。
-- [COMPUTED, HIGH] runtime worktree `feat/p10-fix-20260628` at `/home/binance/.worktree/workspaces/p10-fix`：go build PASS, go vet PASS, go test 19 packages PASS, boundary-gates 15/15 PASS, gofmt clean。
+- [COMPUTED, HIGH] runtime worktree `feat/p10-fix-20260628` at `/home/workspace/binance/.worktree/workspaces/p10-fix`：go build PASS, go vet PASS, go test 19 packages PASS, boundary-gates 15/15 PASS, gofmt clean。
 
 ## Evidence Commands
 
 - [COMPUTED, HIGH] `gh issue list --state open --label p10 --limit 200 --json number` 返回 `[]`（0 open）。
 - [COMPUTED, HIGH] `bd list --status open | grep -c "\[P10-"` 返回 `0`。
 - [COMPUTED, HIGH] `wc -l module/binance/spec/SPEC.md module/binance/matrix/TRACEABILITY.md` 返回 225 / 114。
-- [COMPUTED, HIGH] `cd /home/binance/.worktree/workspaces/p10-fix && go build ./... && go vet ./... && go test ./... -count=1 -short` — ALL PASS。
-- [COMPUTED, HIGH] `bash /home/binance/.worktree/workspaces/p10-fix/scripts/boundary-gates.sh` — 15 passed, 0 failed。
+- [COMPUTED, HIGH] `cd /home/workspace/binance/.worktree/workspaces/p10-fix && go build ./... && go vet ./... && go test ./... -count=1 -short` — ALL PASS。
+- [COMPUTED, HIGH] `bash /home/workspace/binance/.worktree/workspaces/p10-fix/scripts/boundary-gates.sh` — 15 passed, 0 failed。
 - [COMPUTED, HIGH] `gofmt -l cmd/ internal/ pkg/ test/` — 0 files need formatting。
 - [COMPUTED, HIGH] 10 轮验证全部 PASS：build, vet, test, boundary-gates, file existence, code patterns, CI workflows, doc content, issue mapping, cross-repo alignment。
 

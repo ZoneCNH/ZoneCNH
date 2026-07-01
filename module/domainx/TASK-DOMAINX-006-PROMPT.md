@@ -76,7 +76,7 @@
 ## Validation Commands
 
 ```bash
-cd /home/domainx
+cd /home/workspace/domainx
 go mod tidy
 go build ./...
 go test ./... -race -count=1

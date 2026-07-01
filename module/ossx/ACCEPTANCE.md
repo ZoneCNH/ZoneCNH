@@ -3,7 +3,7 @@
 - Status: Local Production Candidate（本地生产候选；完整生产放行待外部证据）
 - Last-Updated: 2026-06-30
 - Source: [SPEC.md](./SPEC.md) v1.2.1 · [TRACEABILITY.md](./TRACEABILITY.md) · [FEATURES.md](./FEATURES.md)
-- Code Source: `/home/ossx` branch `ossx`
+- Code Source: `/home/workspace/ossx` branch `ossx`
 - Public Module: `github.com/ZoneCNH/ossx/pkg/ossx`
 
 本清单记录 `ossx` 是否达到生产级应用的验收状态。当前结论是：代码、接口治理、本地质量门禁和 `dev.md` 驱动的 Aliyun OSS 真实集成测试已经支撑 **本地生产候选**；但完整生产发布仍缺 release-tag CI、Gitleaks/xlibgate、集成 CI 制品、下游接入、生产 soak 和四源 scorer/arbiter 归档证据，因此不得标记为完全生产放行。
@@ -18,14 +18,14 @@
 | 删除语义 | 本地通过 | strict delete 在删除前执行 `HeadObject`，缺失对象返回可观测错误 |
 | 并发生命周期 | 本地通过 | Aliyun adapter 使用原子关闭状态并通过 race 测试 |
 | 本地质量门禁 | 本地通过 | secret scope、coverage、race、vet、build、lint、manifest JSON 均通过 |
-| 真实云集成 | 本地通过 | `/home/ZoneCNH/sre/secrets/env/dev.md` 注入环境变量后运行 integration test；输出不打印密钥或签名 URL |
+| 真实云集成 | 本地通过 | `/home/workspace/ZoneCNH/sre/secrets/env/dev.md` 注入环境变量后运行 integration test；输出不打印密钥或签名 URL |
 | 外部生产证据 | 未完成 | release-tag CI、远端 secret gate、下游接入、soak、四源评分仍需归档 |
 
 ## 2. 本地门禁
 
 | Gate | 命令 / 证据 | 期望 |
 | --- | --- | --- |
-| Secret scope | `./scripts/secret-scope-check.sh` | 仅允许 `/home/ZoneCNH/sre/secrets/env/dev.md` 作为本地凭证来源；禁止提交密钥值 |
+| Secret scope | `./scripts/secret-scope-check.sh` | 仅允许 `/home/workspace/ZoneCNH/sre/secrets/env/dev.md` 作为本地凭证来源；禁止提交密钥值 |
 | Dependency isolation | `GOWORK=off go list -deps ./...` 加 forbidden dependency scan | 不依赖策略、交易、市场数据、因子等业务域 |
 | API governance | `GOWORK=off go test ./pkg/ossx -run 'TestPublicInterfacesStayWithinGovernanceLimit|TestNewBlobStoreRejectsMissingAdapterCapabilities|TestSPISurface' -count=1` | 公共接口和 SPI 维持小面、显式能力边界 |
 | Unit coverage | `GOWORK=off go test ./pkg/ossx -count=1 -covermode=atomic -coverprofile=/tmp/ossx-pkg.cover` | `pkg/ossx` statement coverage = 100.0% |

@@ -20,7 +20,7 @@
 
 ## 2. Hot Reload Contract
 
-[COMPUTED, HIGH] The current local runtime evidence path is `POST /api/v1/admin/symbols/reload` in `/home/binance/internal/client/admin.go`.
+[COMPUTED, HIGH] The current local runtime evidence path is `POST /api/v1/admin/symbols/reload` in `/home/workspace/binance/internal/client/admin.go`.
 
 [FRAME, HIGH] FR-024 must not be marked done until the runtime proves all of the following:
 
@@ -68,7 +68,7 @@
 
 ## 5. Script Responsibility Comparison
 
-[COMPUTED, HIGH] 本仓 `scripts/check-binance-docs.sh` 与 runtime 仓 `/home/binance/scripts/boundary-gates.sh` 是两套互补的 gate，职责不重叠：
+[COMPUTED, HIGH] 本仓 `scripts/check-binance-docs.sh` 与 runtime 仓 `/home/workspace/binance/scripts/boundary-gates.sh` 是两套互补的 gate，职责不重叠：
 
 | 维度 | `scripts/check-binance-docs.sh`（本仓） | `scripts/boundary-gates.sh`（runtime 仓） |
 | --- | --- | --- |

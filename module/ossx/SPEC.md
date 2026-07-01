@@ -4,7 +4,7 @@
 - Spec-Version: v1.3.0
 - Last-Updated: 2026-06-30
 - Layer: 基座 · 对象存储扩展
-- Version: v1.2.1 local-production-candidate（代码位于 `/home/ossx` branch `ossx`；远端 release/tag 待归档）
+- Version: v1.2.1 local-production-candidate（代码位于 `/home/workspace/ossx` branch `ossx`；远端 release/tag 待归档）
 - Module-Identity: Aliyun OSS 专用 adapter（单 provider；非通用对象存储抽象；不承诺多 provider 或 S3-compatible SPI）
 - Public Module: `github.com/ZoneCNH/ossx/pkg/ossx`
 
@@ -118,7 +118,7 @@ Adapter capabilities:
 
 ## 10. Configuration
 
-本地 live integration 使用 `/home/ZoneCNH/sre/secrets/env/dev.md` 作为凭证来源，由命令运行时派生环境变量；文档、测试日志和 release manifest 不得包含具体 secret 值。
+本地 live integration 使用 `/home/workspace/ZoneCNH/sre/secrets/env/dev.md` 作为凭证来源，由命令运行时派生环境变量；文档、测试日志和 release manifest 不得包含具体 secret 值。
 
 ## 11. Errors
 

@@ -16,8 +16,8 @@ module/binance
 
 | Module | Role | Runtime-Repo |
 |--------|------|-------------|
-| binance-client | 连接 Binance，解析交易所原生数据，映射到 domain_market envelope，通过 natsx JetStream 发布 | /home/binance/cmd/binance-client/ |
-| binance-server | 订阅 natsx JetStream，校验与去重，写入存储，提供 Gin REST API，通过 kafkax 广播 | /home/binance/cmd/binance-server/ |
+| binance-client | 连接 Binance，解析交易所原生数据，映射到 domain_market envelope，通过 natsx JetStream 发布 | /home/workspace/binance/cmd/binance-client/ |
+| binance-server | 订阅 natsx JetStream，校验与去重，写入存储，提供 Gin REST API，通过 kafkax 广播 | /home/workspace/binance/cmd/binance-server/ |
 
 ## 2. Interfaces
 

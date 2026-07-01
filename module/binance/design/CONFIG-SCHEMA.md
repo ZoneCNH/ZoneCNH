@@ -2,7 +2,7 @@
 
 - Last-Updated: 2026-06-28
 - Source-SPEC: `module/binance/spec/SPEC.md` v3.9.6 §11
-- Runtime examples: `/home/binance/configs/binance-client.env.example`, `/home/binance/configs/binance-server.env.example`
+- Runtime examples: `/home/workspace/binance/configs/binance-client.env.example`, `/home/workspace/binance/configs/binance-server.env.example`
 
 ## Rule
 
@@ -50,7 +50,7 @@ This file owns detailed parameter tables so the root SPEC remains compact. Runti
 ## Validation
 
 ```bash
-cd /home/binance
+cd /home/workspace/binance
 bash -n scripts/spec-runtime-drift-check.sh
 scripts/spec-runtime-drift-check.sh
 go test ./...

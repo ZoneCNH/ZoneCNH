@@ -153,7 +153,7 @@ Topic 常量全局唯一（BR-006 TC-004 验证）保证消息路由可审计。
 - [~] topic uniqueness ready（FR-004 + 9 Topic 常量定义；TC-004 运行时 Pending）
 - [~] module identity ready（FR-007 README H1 + go.mod module path 约束；TC-008 运行时 Pending）
 - [~] binance ingestion contract ready（FR-008 §8.4 完整 DTO + RejectCode 10 值定义；TC-009 运行时 Pending）
-- [ ] ci gate ready（通用 8 Gate + 专属 4 Gate 定义完成；ACCEPTANCE §6 登记运行时 Pending，/home/contracts 实现待归档）
+- [ ] ci gate ready（通用 8 Gate + 专属 4 Gate 定义完成；ACCEPTANCE §6 登记运行时 Pending，/home/workspace/contracts 实现待归档）
 - [ ] release dod ready（ACCEPTANCE §5 DoD 6 项全部 Pending，运行时证据待归档）
 
 ## 30. Roadmap

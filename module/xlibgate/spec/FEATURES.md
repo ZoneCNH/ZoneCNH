@@ -5,7 +5,7 @@
 - Module-Version: v1.0.1
 - Module-State: 本地发布门禁通过（远端发布待授权）
 - Layer: L1 门禁
-- Runtime-Repo: /home/xlibgate
+- Runtime-Repo: /home/workspace/xlibgate
 - Source: goal.md, SPEC.md, DESIGN.md, TRACEABILITY.md, IMPLEMENTATION-PLAN.md, tasks/
 
 > 本清单用于约束 xlibgate 的完整实现范围。条目来自本目录已有 Spec、Traceability、Plan、Task 等文档；若运行时代码状态与本文不一致，以相应模块仓库的最新验证证据补充更新本文。
@@ -16,7 +16,7 @@
 | --- | --- |
 | 模块职责 | check/l2/trust gate 与规则化评分门禁 |
 | 文档目录 | module/xlibgate |
-| 运行时代码目录 | /home/xlibgate |
+| 运行时代码目录 | /home/workspace/xlibgate |
 | Go 基线 | 1.23 |
 | 允许依赖 | 无 |
 | 禁止依赖 | 禁止越过 FOUNDATION-DEPS.yaml 登记边界依赖上层业务域或未授权基座模块 |
@@ -120,7 +120,7 @@
 
 | 项目 | 证据 |
 | --- | --- |
-| 运行时代码提交 | `/home/xlibgate` 分支 `ci/sre-cicd-pools-20260618`，提交 `e76725b` |
+| 运行时代码提交 | `/home/workspace/xlibgate` 分支 `ci/sre-cicd-pools-20260618`，提交 `e76725b` |
 | 版本同步 | `AGENTS.md`、`README.md`、`docs/release.md`、`docs/standard/release-standard.md`、`CHANGELOG.md`、`.agent/harness/harness.yaml`、`release/manifest/template.json`、`cmd/goalcli/governance.go`、`pkg/templatex/version.go` 均同步到 `v1.0.1` |
 | 核心测试 | `GOWORK=off go test ./... -covermode=atomic -coverprofile=/tmp/xlibgate_all_continue4.out` 通过 |
 | 覆盖率 | 全仓 statement coverage `86.1%`；其中 `cmd/goalcli` package coverage `85.2%`，满足当前 `>= 80%` 本地门槛但未达到 `100%` |
@@ -137,5 +137,5 @@
 - [x] 所有 BR 条目均有测试、静态检查或人工可审计证据覆盖。
 - [x] 所有任务文档均能追溯到 FR、BR/NFR、AC 或 TC。
 - [x] 依赖边界符合 FOUNDATION-DEPS.yaml，不引入未授权运行时依赖。
-- [x] 运行时代码仓库 /home/xlibgate 的 test、boundary、docs-check、integration、release-check、release-final-check 与覆盖率验证证据已归档；全仓 statement coverage 为 86.1%，不是 100%。
+- [x] 运行时代码仓库 /home/workspace/xlibgate 的 test、boundary、docs-check、integration、release-check、release-final-check 与覆盖率验证证据已归档；全仓 statement coverage 为 86.1%，不是 100%。
 - [ ] 发布说明、本地版本与本目录登记状态一致；远端 `v1.0.1` tag、GitHub Release 与远端 CI 待显式授权后执行。

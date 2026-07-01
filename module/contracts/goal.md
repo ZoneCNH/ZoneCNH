@@ -1,7 +1,7 @@
 # contracts 文档同步目标
 
 ## 目标
-把 `module/contracts` 的文档基线收敛到 `/home/contracts/pkg/contracts` 当前导出面，确保规格、追溯、任务和说明都只描述运行时真实存在的类型、端口、reject code 和 wire contract。
+把 `module/contracts` 的文档基线收敛到 `/home/workspace/contracts/pkg/contracts` 当前导出面，确保规格、追溯、任务和说明都只描述运行时真实存在的类型、端口、reject code 和 wire contract。
 
 ## 终态
 

@@ -52,7 +52,7 @@
 | 14  | G-4       | BOUNDARY-GATES §20 迁移      | ZoneCNH-obwk | #1302    |   P1   | ✅ Done |
 | 15  | G-6       | 状态一致性 CI gate           | ZoneCNH-s1k2 | #1303    |   P1   | Pending |
 
-## Phase 2：代码闭合（/home/binance 运行时仓库）
+## Phase 2：代码闭合（/home/workspace/binance 运行时仓库）
 
 | #   | Action ID | 任务                           | Beads        | GH Issue | 优先级 |  状态   |
 | --- | --------- | ------------------------------ | ------------ | -------- | :----: | :-----: |
@@ -62,7 +62,7 @@
 | 19  | E-4       | P2 合规 FR 闭合 (7 FR)         | ZoneCNH-s3hd | #1307    |   P1   | Pending |
 | 20  | E-6       | spec-runtime drift 检测脚本    | ZoneCNH-1l30 | #1308    |   P2   | Pending |
 
-## Phase 3：生产部署（/home/binance 运行时仓库）
+## Phase 3：生产部署（/home/workspace/binance 运行时仓库）
 
 | #   | Action ID | 任务                        | Beads        | GH Issue | 优先级 |  状态   |
 | --- | --------- | --------------------------- | ------------ | -------- | :----: | :-----: |
@@ -74,7 +74,7 @@
 | 26  | F-6       | Canary 部署演练             | ZoneCNH-3ej4 | #1314    |   P1   | Pending |
 | 27  | F-7       | 容量规划                    | ZoneCNH-4nc8 | #1315    |   P1   | Pending |
 
-## Phase 4：测试覆盖（/home/binance 运行时仓库）
+## Phase 4：测试覆盖（/home/workspace/binance 运行时仓库）
 
 | #   | Action ID | 任务                    | Beads        | GH Issue | 优先级 |  状态   |
 | --- | --------- | ----------------------- | ------------ | -------- | :----: | :-----: |
@@ -83,7 +83,7 @@
 | 30  | H-4       | Soak Test (30min)       | ZoneCNH-qhos | #1318    |   P1   | Pending |
 | 31  | H-5       | 混沌测试                | ZoneCNH-4b1b | #1319    |   P1   | Pending |
 
-## Phase 5：可观测性（/home/binance 运行时仓库）
+## Phase 5：可观测性（/home/workspace/binance 运行时仓库）
 
 | #   | Action ID | 任务                    | Beads        | GH Issue | 优先级 |  状态   |
 | --- | --------- | ----------------------- | ------------ | -------- | :----: | :-----: |
@@ -93,7 +93,7 @@
 | 35  | I-4       | AlertManager 告警规则   | ZoneCNH-xgrq | #1323    |   P1   | Pending |
 | 36  | I-5       | 日志聚合配置            | ZoneCNH-og7z | #1324    |   P2   | Pending |
 
-## Phase 6：安全合规（/home/binance 运行时仓库）
+## Phase 6：安全合规（/home/workspace/binance 运行时仓库）
 
 | #   | Action ID | 任务                 | Beads        | GH Issue | 优先级 |  状态   |
 | --- | --------- | -------------------- | ------------ | -------- | :----: | :-----: |

@@ -37,7 +37,7 @@
 ## 验证
 
 ```bash
-cd /home/alertx && GOWORK=off go build ./cmd/alertx && GOWORK=off go test ./... -run TestHealth -v
+cd /home/workspace/alertx && GOWORK=off go build ./cmd/alertx && GOWORK=off go test ./... -run TestHealth -v
 docker build -t alertx:v1.0.0 . # 验证 Dockerfile
 ```
 

@@ -145,20 +145,20 @@
 
 ```bash
 # Foundation reverse dependency
-rg '"github.com/ZoneCNH/binance"' /home/kernel /home/configx /home/observex \
-   /home/resiliencx /home/schedulex /home/redisx /home/kafkax /home/natsx \
-   /home/postgresx /home/taosx /home/ossx /home/clickhousex /home/contracts \
+rg '"github.com/ZoneCNH/binance"' /home/workspace/kernel /home/workspace/configx /home/workspace/observex \
+   /home/workspace/resiliencx /home/workspace/schedulex /home/workspace/redisx /home/workspace/kafkax /home/workspace/natsx \
+   /home/workspace/postgresx /home/workspace/taosx /home/workspace/ossx /home/workspace/clickhousex /home/workspace/contracts \
    --type go | grep -v '_test.go' | grep -v '//' && exit 1 || true
 
 # Domain shared purity
 rg '"github.com/ZoneCNH/binance"|redisx|kafkax|natsx|postgresx|taosx|ossx|clickhousex' \
-   /home/decimalx /home/domainx /home/domain-market /home/domain-macro /home/domain-exchange \
+   /home/workspace/decimalx /home/workspace/domainx /home/workspace/domain-market /home/workspace/domain-macro /home/workspace/domain-exchange \
    --type go | grep -v '_test.go' && exit 1 || true
 
 # No duplicate infra wrapper
-test ! -d /home/binance/internal/infra/redis && \
-test ! -d /home/binance/internal/infra/nats && \
-test ! -d /home/binance/internal/infra/kafka
+test ! -d /home/workspace/binance/internal/infra/redis && \
+test ! -d /home/workspace/binance/internal/infra/nats && \
+test ! -d /home/workspace/binance/internal/infra/kafka
 ```
 
 ### 4.2 模块增殖门禁（§2.5 奥卡姆剃刀）

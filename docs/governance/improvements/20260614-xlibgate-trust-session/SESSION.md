@@ -79,7 +79,7 @@
 
 ## 6. Dead Agent Calls
 
-**发现**: `code-structural-score` agent 对 xlibgate 模块无输出（代码在外部仓库 /home/xlibgate，agent 只在 docs repo 内搜索）。
+**发现**: `code-structural-score` agent 对 xlibgate 模块无输出（代码在外部仓库 /home/workspace/xlibgate，agent 只在 docs repo 内搜索）。
 
 **影响**: 48 tool calls 白费。
 

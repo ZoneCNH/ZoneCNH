@@ -38,7 +38,7 @@ curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:9093/-/healthy
 - **镜像**: `prom/alertmanager:v0.27.0`
 - **容器名**: `alertmanager`
 - **端口映射**: `127.0.0.1:9093:9093`（Kafka controller 占用 192.168.3.161:9093，AlertManager 绑定 127.0.0.1 避免冲突）
-- **配置文件**: `/home/binance/deploy/alertmanager/config.yml`
+- **配置文件**: `/home/workspace/binance/deploy/alertmanager/config.yml`
 - **重启策略**: `unless-stopped`
 - **集群状态**: `ready`
 - **健康检查**: `/-/healthy` 返回 HTTP 200
@@ -70,7 +70,7 @@ inhibit_rules:
 ### Deploy 目录变更
 
 ```
-/home/binance/deploy/
+/home/workspace/binance/deploy/
 ├── README.md
 ├── alertmanager/
 │   └── config.yml          ← 新增
@@ -90,7 +90,7 @@ inhibit_rules:
 
 ## 修改的文件
 
-1. `/home/binance/deploy/alertmanager/config.yml` — 新建 AlertManager 配置
+1. `/home/workspace/binance/deploy/alertmanager/config.yml` — 新建 AlertManager 配置
 2. Docker 容器 `alertmanager` 已启动
 
 ## 结论

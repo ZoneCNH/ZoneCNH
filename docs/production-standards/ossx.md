@@ -40,7 +40,7 @@ module/ossx/
   presign.go / adapter.go / observability.go / health.go
   adapters/aliyun/        # Aliyun OSS provider adapter（SDK 隔离）
   internal/ tasks/ prompt/ evidence/
-# runtime repo /home/ossx branch ossx
+# runtime repo /home/workspace/ossx branch ossx
 #   pkg/ossx (blobstore.go/store.go/multipart.go/presign.go/inmemory.go)
 ```
 

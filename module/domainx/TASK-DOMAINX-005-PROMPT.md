@@ -70,7 +70,7 @@
 ## Validation Commands
 
 ```bash
-cd /home/domainx
+cd /home/workspace/domainx
 go test ./... -race -count=1
 go test -run TestJSON ./...
 ```

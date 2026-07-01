@@ -125,7 +125,7 @@ Source: [SPEC.md](SPEC.md) | Goal: GOAL-FRED-001 | Status: Draft
 
 | ID | 缺口 | 处理 |
 | -- | ---- | ---- |
-| GAP-001 | 当前 `/home/fred` 边界脚本仍体现旧零存储 adapter 口径 | 实施阶段 1 更新为目标服务存储白名单与基座强制规则 |
+| GAP-001 | 当前 `/home/workspace/fred` 边界脚本仍体现旧零存储 adapter 口径 | 实施阶段 1 更新为目标服务存储白名单与基座强制规则 |
 | GAP-002 | `domain_macro` 具体类型名和包路径需在代码实施前确认 | 实施阶段 2 先读取领域共享层并锁定契约 |
 | GAP-003 | dev 配置键名需从 `sre/secrets/env/dev.md` 映射，但不能复制值 | 实施阶段 1 只生成 key mapping 和 redaction 测试 |
 | GAP-004 | `ms_brain` 当前证据以文档、spec、YAML 配置为主，尚不能提供真实下游 runtime 消费证明 | 实施阶段 5 先提供 contract fixture；`ms_brain` runtime 落地后补端到端证据 |

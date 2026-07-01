@@ -5,7 +5,7 @@
 #   1. .env / API key / secret / token / password 硬编码
 #   2. .omc/ .omx/ 运行时目录（.claude/ .codex/ 已公开跟踪，不检查）
 #   3. 127.0.0.1 / localhost / 0.0.0.0 本地地址
-#   4. 本地绝对路径（/home/xxx, /Users/xxx, C:\xxx）
+#   4. 本地绝对路径（/home/workspace/xxx, /Users/xxx, C:\xxx）
 
 set -euo pipefail
 
@@ -121,7 +121,7 @@ check_pattern "127.0.0.1 / localhost / 0.0.0.0" \
 
 # ── 4. 本地绝对路径 ──────────────────────────────────────
 echo "[4/4] 本地绝对路径检查"
-check_pattern_excluding "/home/xxx 或 /Users/xxx 或 C:\\xxx" \
+check_pattern_excluding "/home/workspace/xxx 或 /Users/xxx 或 C:\\xxx" \
   '(/home/[a-zA-Z0-9_-]+/|/Users/[a-zA-Z0-9_-]+/|[A-Z]:\\\\)' \
   'AGENTS\.md' \
   'ARCHITECTURE\.md' \

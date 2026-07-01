@@ -5,7 +5,7 @@
 - Module-Version: v2.1.0
 - Module-State: 已发布 v1.1.0（代码侧 + 发布门禁全绿）；Factory 已闭合（2026-06-18）— Goal Matrix 23 边 Verified + 四源 arbiter gate=pass + coverage 100% + BLK-011 resolved
 - Layer: L0 基座核心
-- Runtime-Repo: /home/kernel
+- Runtime-Repo: /home/workspace/kernel
 - Source: goal.md, SPEC.md, DESIGN.md, TRACEABILITY.md, IMPLEMENTATION-PLAN.md, tasks/, prompt/
 - Evidence: `.config/goal/evidence/kernel-acceptance-20260618/`（test ✅ / race ✅ / vet ✅ / coverage 100% ✅ / stdlib-only ✅ / secrets ✅）
 
@@ -16,15 +16,15 @@
 
 | 类别 | 命令 | 通过标准 |
 | --- | --- | --- |
-| 文档存在性 | cd /home/ZoneCNH && test -f module/kernel/FEATURES.md && test -f module/kernel/ACCEPTANCE.md | FEATURES.md 与 ACCEPTANCE.md 均存在 |
-| 文档格式 | cd /home/ZoneCNH && git diff --check -- module/kernel | 无尾随空格或补丁格式错误 |
-| 运行时测试 | cd /home/kernel && go test ./... | 所有包测试通过 |
-| 竞态检查 | cd /home/kernel && go test ./... -race -count=1 | 无 data race，测试稳定通过 |
-| 静态检查 | cd /home/kernel && go vet ./... | 无 vet 问题 |
-| 覆盖率证据 | cd /home/kernel && make coverage-threshold | 核心库包覆盖率 ≥ 100%，覆盖率分母排除 examples/scripts |
-| 依赖边界 | cd /home/kernel && go list -m all | 仅输出主模块，不出现第三方 module 依赖 |
-| Goal 证据包 | cd /home/ZoneCNH && test -d .config/goal/evidence | kernel 当前验收证据包已登记并可追溯 |
-| 四源仲裁 | cd /home/ZoneCNH && test -d module/kernel/analysis-records | claude/codex/copilot/rules + arbiter 当前 98+ 归档存在 |
+| 文档存在性 | cd /home/workspace/ZoneCNH && test -f module/kernel/FEATURES.md && test -f module/kernel/ACCEPTANCE.md | FEATURES.md 与 ACCEPTANCE.md 均存在 |
+| 文档格式 | cd /home/workspace/ZoneCNH && git diff --check -- module/kernel | 无尾随空格或补丁格式错误 |
+| 运行时测试 | cd /home/workspace/kernel && go test ./... | 所有包测试通过 |
+| 竞态检查 | cd /home/workspace/kernel && go test ./... -race -count=1 | 无 data race，测试稳定通过 |
+| 静态检查 | cd /home/workspace/kernel && go vet ./... | 无 vet 问题 |
+| 覆盖率证据 | cd /home/workspace/kernel && make coverage-threshold | 核心库包覆盖率 ≥ 100%，覆盖率分母排除 examples/scripts |
+| 依赖边界 | cd /home/workspace/kernel && go list -m all | 仅输出主模块，不出现第三方 module 依赖 |
+| Goal 证据包 | cd /home/workspace/ZoneCNH && test -d .config/goal/evidence | kernel 当前验收证据包已登记并可追溯 |
+| 四源仲裁 | cd /home/workspace/ZoneCNH && test -d module/kernel/analysis-records | claude/codex/copilot/rules + arbiter 当前 98+ 归档存在 |
 
 ## 2. AC 验收登记
 
@@ -113,7 +113,7 @@
 
 - [x] FEATURES.md 的 FR、BR/NFR、任务清单与 SPEC/TRACEABILITY 当前登记一致（2026-06-18 同步）。
 - [x] ACCEPTANCE.md 的 AC、TC 与运行时代码测试名、证据文件或 CI 记录一致（evidence: .config/goal/evidence/kernel-acceptance-20260618/）。
-- [x] 运行时代码仓库 /home/kernel 通过 go test、go test -race、go vet 与 `make coverage-threshold` 覆盖率门槛（2026-06-18 验证；14 包 100.0%）。
+- [x] 运行时代码仓库 /home/workspace/kernel 通过 go test、go test -race、go vet 与 `make coverage-threshold` 覆盖率门槛（2026-06-18 验证；14 包 100.0%）。
 - [~] `.config/goal/evidence/kernel-acceptance-20260618/` 已登记代码侧验收证据包；Goal Matrix kernel 边由 .config/goal pipeline 单独执行，仍待闭合。
 - [x] 四源 arbiter 当前归档存在（claude=100 / rules=100；codex/copilot forced_missing_source，与 configx 同构），且 FACT layer 中 kernel 已移出 factory_blocking_modules（BLK-011 resolved，2026-06-18）。
 - [x] 所有外部服务依赖：N/A — kernel 为 stdlib-only L0 原语，无外部服务依赖。

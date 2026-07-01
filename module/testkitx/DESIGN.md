@@ -4,7 +4,7 @@
 > Source Spec: [SPEC.md](./SPEC.md) v1.1.0
 > Source Goal: [goal.md](./goal.md) 1.0 发布基线（范围收窄：L0 测试期证据 / 单进程 `go test` 工具）
 > 生成日期：2026-06-29
-> 状态：已发布（对齐运行时仓库 `/home/testkitx`）
+> 状态：已发布（对齐运行时仓库 `/home/workspace/testkitx`）
 
 ## 1. 架构概述
 

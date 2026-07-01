@@ -4,9 +4,9 @@
 - Scope: GitHub `ZoneCNH/ZoneCNH` #1268-#1279 and Beads `ZoneCNH-xzcr*`
 - Alignment-Type: Evidence-Done blocker ledger / Evidence pending / no Production-Ready claim
 - Tracker-State: GitHub #1268-#1279 `OPEN`; Beads `ZoneCNH-xzcr*` in_progress as Evidence-Done blocker ownership
-- Runtime-Anchor: `/home/binance@0602e78428633a368b0afcd1c578c07ed7144752`
-- Runtime-Evidence-Package: `/home/binance/release/evidence/binance/20260627-agent-audit-2/`
-- Latest-External-E2E-Package: `/home/binance/release/evidence/binance/20260627-external-e2e-devmd-only/`
+- Runtime-Anchor: `/home/workspace/binance@0602e78428633a368b0afcd1c578c07ed7144752`
+- Runtime-Evidence-Package: `/home/workspace/binance/release/evidence/binance/20260627-agent-audit-2/`
+- Latest-External-E2E-Package: `/home/workspace/binance/release/evidence/binance/20260627-external-e2e-devmd-only/`
 - Current Evidence State Kept: Code-State `23 Done / 25 Partial / 0 Drifted / 0 Pending`; Evidence-State `1 Done (FR-009) / 43 Pending`
 
 > `[COMPUTED, HIGH]` GitHub #1268-#1279 and Beads `ZoneCNH-xzcr*` are tracker open / Evidence pending while Evidence-Done proof remains pending. This ledger does not mark Production-Ready, Evidence-Done, or release closeable; external gates still report `release_closeable=NO`.
@@ -25,7 +25,7 @@
 
 `[COMPUTED, HIGH]` `sre/secrets/env/dev.md` was inspected and used only through a redacted clean-env loader. The latest contract diff records concrete kafkax/postgresx/redisx/taosx configuration keys, derives `FOUNDATIONX_TAOSX_ENDPOINT` from host/port, and records missing `FOUNDATIONX_CLICKHOUSEX_*`, `FOUNDATIONX_NATSX_*`, and `FOUNDATIONX_OSSX_*` prefixes. No value, endpoint, token, password, key, or credential was copied.
 
-`[COMPUTED, HIGH]` Local runtime evidence was refreshed under `/home/binance/release/evidence/binance/20260627-agent-audit-2/`. `status.txt` reports PASS for the local evidence script. `issue-repeat-check-10x.log` reports 10/10 PASS for `git diff --check` plus targeted `deadletter`, admin DLQ replay, and history state tests.
+`[COMPUTED, HIGH]` Local runtime evidence was refreshed under `/home/workspace/binance/release/evidence/binance/20260627-agent-audit-2/`. `status.txt` reports PASS for the local evidence script. `issue-repeat-check-10x.log` reports 10/10 PASS for `git diff --check` plus targeted `deadletter`, admin DLQ replay, and history state tests.
 
 `[COMPUTED, HIGH]` #1278 now has refreshed local file-store restart and fake-Postgres state-store evidence, but remains open for real configured Postgres medium, live exchange capture, remote CI, and release tag evidence. #1279 now has a local persistent file replay ledger, buffered JSONL reader, restart regression test, and evidence-script alignment, but remains open for live Kafka/NATS DLQ capture/replay, remote CI, and release tag evidence.
 
@@ -46,7 +46,7 @@
 
 ## 2026-06-27 dev.md-only External E2E Recheck
 
-`[COMPUTED, HIGH]` A follow-up external E2E run was executed from a clean environment using only redacted values parsed from `sre/secrets/env/dev.md`. The evidence package is `/home/binance/release/evidence/binance/20260627-external-e2e-devmd-only/`; `external-gates.log` still records `release_closeable=NO`.
+`[COMPUTED, HIGH]` A follow-up external E2E run was executed from a clean environment using only redacted values parsed from `sre/secrets/env/dev.md`. The evidence package is `/home/workspace/binance/release/evidence/binance/20260627-external-e2e-devmd-only/`; `external-gates.log` still records `release_closeable=NO`.
 
 | Check | Result | Evidence / blocker |
 | ----- | ------ | ------------------ |
@@ -69,7 +69,7 @@
 | #1270 | `ZoneCNH-xzcr.2` | Tracker open / Evidence pending | Local tracing and dispatch tests exist in `../test/worker-b-observability-evidence.md`; OTel export, NATS propagation, and deployed trace evidence remain pending. |
 | #1271 | `ZoneCNH-xzcr.3` | Tracker open / Evidence pending | Local quota and rate-limit tests exist in `../test/worker-b-observability-evidence.md`; Kafka quota, multi-tenant isolation, and ClickHouse timeout evidence remain pending. |
 | #1272 | `ZoneCNH-xzcr.4` | Tracker open / Evidence pending | Local audit-log tests and schema anchors exist in `../test/worker-b-observability-evidence.md`; retention, archive, and deployed permission evidence remain pending. |
-| #1273 | `ZoneCNH-xzcr.5` | Tracker open / Evidence pending | dev.md-only recheck attaches partial external proof: kafkax/postgresx/redisx PASS, taosx FAIL, clickhousex/ossx/natsx lack concrete remote dev config or remain local-only; see `/home/binance/release/evidence/binance/20260627-external-e2e-devmd-only/` and `../test/worker-c-live-evidence-summary.md`. |
+| #1273 | `ZoneCNH-xzcr.5` | Tracker open / Evidence pending | dev.md-only recheck attaches partial external proof: kafkax/postgresx/redisx PASS, taosx FAIL, clickhousex/ossx/natsx lack concrete remote dev config or remain local-only; see `/home/workspace/binance/release/evidence/binance/20260627-external-e2e-devmd-only/` and `../test/worker-c-live-evidence-summary.md`. |
 | #1274 | `ZoneCNH-xzcr.6` | Tracker open / Evidence pending | Mainnet smoke was reported by a worker, but canonical artifacts are missing and UM/CM/Options testnet credential validation is blocked. |
 | #1275 | `ZoneCNH-xzcr.7` | Tracker open / Evidence pending | Local cost metrics and report tests exist in `../test/worker-b-observability-evidence.md`; dashboard, alert, and production-like report evidence remain pending. |
 | #1276 | `ZoneCNH-xzcr.8` | Tracker open / Evidence pending | Data-destruction implementation anchors exist, but destructive drill approval and archive certificate evidence are blocked. |

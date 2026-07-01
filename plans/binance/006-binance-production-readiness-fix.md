@@ -6,8 +6,8 @@
 >
 > **Drift check (run first)**:
 > ```bash
-> cd /home/binance && git log --oneline -1
-> cd /home/ZoneCNH && git log --oneline -1 -- report/binance/production-readiness-gap-analysis-20260624.md
+> cd /home/workspace/binance && git log --oneline -1
+> cd /home/workspace/ZoneCNH && git log --oneline -1 -- report/binance/production-readiness-gap-analysis-20260624.md
 > ```
 > 若 runtime HEAD 已推进到 `4fa920b` 之后，或分析报告已更新，先对照新 commit 再执行。
 
@@ -65,7 +65,7 @@ binance 模块当前**规格端与 runtime 端均未达生产级别**：
 - **2026-06-24 执行状态**: `[COMPUTED, HIGH]` local-fixed；Beads `ZoneCNH-4vo` 已关闭；GitHub `ZoneCNH/ZoneCNH#975` 已评论本地验证并关闭；不代表 Plan006 全量生产就绪。
 - **动作**:
   ```bash
-  cd /home/binance
+  cd /home/workspace/binance
   git rm --cached binance-server
   echo "binance-server" >> .gitignore
   echo "binance-client" >> .gitignore  # 若存在
@@ -82,7 +82,7 @@ binance 模块当前**规格端与 runtime 端均未达生产级别**：
 - **背景**: 报告初稿误判「go.sum 未进版本控制」。复核实测 go.sum **已被 git 跟踪**（`git cat-file -s HEAD:go.sum` = 11677），构建可复现。`.gitignore` 里的 `go.sum` 是**陈旧无效条目**，仅需清理以免误导后续贡献者。
 - **动作**:
   ```bash
-  cd /home/binance
+  cd /home/workspace/binance
   # go.sum 已 tracked，无需 git add；仅删除 .gitignore 陈旧行
   sed -i '/^go.sum$/d' .gitignore
   git add .gitignore
@@ -96,7 +96,7 @@ binance 模块当前**规格端与 runtime 端均未达生产级别**：
 - **2026-06-24 执行状态**: `[COMPUTED, HIGH]` local-fixed；Beads `ZoneCNH-q6r` 已关闭；GitHub `ZoneCNH/ZoneCNH#977` 已关闭（GitHub API: `2026-06-24T01:27:02Z`）。
 - **动作**: 添加 ZoneCNH 标准 LICENSE 文件（与 domain_market 等公开仓一致）
 - **验证**: `ls LICENSE*` 返回文件；`git ls-files | grep -i license` 命中
-- **本地验证证据**: `[COMPUTED, HIGH]` `/home/binance/LICENSE` 已被 Git 跟踪；内容为 MIT License；`git ls-files | grep -Ei '(^|/)LICENSE$'` 命中；`git diff --check` PASS；100 次重复检查未发现许可证文件缺失。
+- **本地验证证据**: `[COMPUTED, HIGH]` `/home/workspace/binance/LICENSE` 已被 Git 跟踪；内容为 MIT License；`git ls-files | grep -Ei '(^|/)LICENSE$'` 命中；`git diff --check` PASS；100 次重复检查未发现许可证文件缺失。
 - **STOP 条件**: 需确认 ZoneCNH 标准许可证选择（MIT/Apache-2.0/私有）
 
 ### Task 1.4: 锁定 Go toolchain [P2]
@@ -137,7 +137,7 @@ binance 模块当前**规格端与 runtime 端均未达生产级别**：
 
 ## Phase 1 2026-06-24 worker evidence refresh
 
-- **状态**: ✅ Local hygiene/build/readiness evidence refreshed in `/home/binance` worker lane; release remains **Not Done** until remote CI, live websocket, external integration, and release tag evidence are captured.
+- **状态**: ✅ Local hygiene/build/readiness evidence refreshed in `/home/workspace/binance` worker lane; release remains **Not Done** until remote CI, live websocket, external integration, and release tag evidence are captured.
 - **Runtime HEAD**: `dd3332d3452f4eaa8146563bdb82caf577a3d4c1` with existing dirty readiness changes preserved; no history rewrite or commit was performed by the team worker.
 - **已验证**:
   - `bash -n scripts/runtime-release-evidence.sh scripts/boundary-gates.sh scripts/readiness-audit.sh` PASS
@@ -162,7 +162,7 @@ binance 模块当前**规格端与 runtime 端均未达生产级别**：
   - 运行 CLAUDE.md §5.4 跨文件检查脚本
 - **验证**:
   ```bash
-  cd /home/ZoneCNH
+  cd /home/workspace/ZoneCNH
   grep -c "FR-006a" module/binance/SPEC.md
   grep -c "FR-006a" module/binance/TRACEABILITY.md
   grep -c "FR-006a" module/binance/ACCEPTANCE.md
@@ -204,12 +204,12 @@ binance 模块当前**规格端与 runtime 端均未达生产级别**：
 
 - **来源**: §13.4, §12.4
 - **动作**:
-  - 确认 runtime 当前 HEAD SHA（`cd /home/binance && git rev-parse HEAD`）
+  - 确认 runtime 当前 HEAD SHA（`cd /home/workspace/binance && git rev-parse HEAD`）
   - 统一 README.md / STATUS.md / ARCHITECTURE.md / ACCEPTANCE.md 的 runtime SHA 到当前 HEAD
   - 若有多个 evidence SHA，区分「验证代码 SHA」与「证据提交 SHA」并统一
 - **验证**:
   ```bash
-  cd /home/ZoneCNH
+  cd /home/workspace/ZoneCNH
   grep -ohE "[0-9a-f]{40}" README.md STATUS.md ARCHITECTURE.md module/binance/ACCEPTANCE.md | sort -u
   # runtime 相关 SHA 应收敛到 ≤2 个（代码 SHA + 证据 SHA）
   ```
@@ -222,11 +222,11 @@ binance 模块当前**规格端与 runtime 端均未达生产级别**：
 
 - **来源**: §2.2, §8.3
 - **状态**: ✅ DONE（2026-06-24，runtime §12~§14 presence gates 已加入并通过）
-- **动作**: 在 `/home/binance/scripts/boundary-gates.sh` 增加 3 道 gate:
+- **动作**: 在 `/home/workspace/binance/scripts/boundary-gates.sh` 增加 3 道 gate:
   - `§12 natsx runtime adapter presence`: 验证 server dispatch 构造 core `natsx.Envelope` 并通过 `Publish(context.Context, natsx.Envelope)` 能力发布
   - `§13 runtime storage integrations presence`: 验证 `taosx` / `clickhousex` / `redisx` / `kafkax` package boundary 进入 runtime code
   - `§14 gin route existence`: 验证 Gin API 路由存在
-- **验证**: `/home/binance/scripts/boundary-gates.sh` 已扩展为 §2~§14；本地结果 `13 passed, 0 failed`
+- **验证**: `/home/workspace/binance/scripts/boundary-gates.sh` 已扩展为 §2~§14；本地结果 `13 passed, 0 failed`
 - **STOP 条件**: 新 gate 被绕过或禁用
 - **注**: 当前 gate 是存在性/边界门禁；2026-06-24 gated integration 已补真实本地 JetStream PubAck duplicate、ManualAck 成功不重投、immediate Nak 至 MaxDeliver=5 后停止这一子集；完整 JetStream TC-004/TC-006（独立进程、NakWithDelay、dead-letter/parking）、真实外部 storage IO、fanout delivery 和 query API 仍由 Phase 4~7 功能验收关闭。
 
@@ -287,7 +287,7 @@ binance 模块当前**规格端与 runtime 端均未达生产级别**：
 ### Task 4.2: 实现 natsx publisher + consumer [P0, FR-003/004]
 
 - **来源**: §3.1 FR-003/004
-- **2026-06-24 执行状态**: `[COMPUTED, HIGH]` local runtime wiring + gated JetStream 子集 increment；`/home/binance` 已升级 `github.com/ZoneCNH/natsx v1.0.3`，新增 `internal/client/publisher/`、`internal/server/consumer/`，并把 client/server runtime 接入 `XGO_BINANCE_INGEST_TRANSPORT=http|natsx` 与 `XGO_BINANCE_NATS_URL`；新增 gated integration 在真实本地 NATS JetStream 上验证 accepted publish 非 duplicate PubAck、重复 publish duplicate PubAck、成功处理 Ack 后不重投、retryable reject immediate Nak 重投至 MaxDeliver=5 后停止；Beads `ZoneCNH-7dn` 与 GitHub `ZoneCNH/ZoneCNH#990` 保持 open，等待独立 client/server 进程、`NakWithDelay(5s)`、dead-letter/parking 与完整 live TC-004/005/006 证据。
+- **2026-06-24 执行状态**: `[COMPUTED, HIGH]` local runtime wiring + gated JetStream 子集 increment；`/home/workspace/binance` 已升级 `github.com/ZoneCNH/natsx v1.0.3`，新增 `internal/client/publisher/`、`internal/server/consumer/`，并把 client/server runtime 接入 `XGO_BINANCE_INGEST_TRANSPORT=http|natsx` 与 `XGO_BINANCE_NATS_URL`；新增 gated integration 在真实本地 NATS JetStream 上验证 accepted publish 非 duplicate PubAck、重复 publish duplicate PubAck、成功处理 Ack 后不重投、retryable reject immediate Nak 重投至 MaxDeliver=5 后停止；Beads `ZoneCNH-7dn` 与 GitHub `ZoneCNH/ZoneCNH#990` 保持 open，等待独立 client/server 进程、`NakWithDelay(5s)`、dead-letter/parking 与完整 live TC-004/005/006 证据。
 - **动作**:
   - client: `internal/client/publisher/` 调用 `pkg/natsx/ingest` publisher，`js.Publish("binance.market.{pl}.{et}", json)` 等待 PubAck
   - server: `internal/server/consumer/` 调用 `pkg/natsx/ingest` consumer，durable `binance-server`，ManualAck，AckWait 30s，MaxDeliver 5
@@ -301,7 +301,7 @@ binance 模块当前**规格端与 runtime 端均未达生产级别**：
 ### Task 4.3: 实现四产品线 connector [P0, FR-001/002]
 
 - **来源**: §3.1 FR-001/002, §12.10, §12.11
-- **2026-06-24 执行状态**: `[COMPUTED, HIGH]` local connector increment；`/home/binance` 已新增 `internal/client/product_line.go` 与 `internal/client/connectors/{spot,um_perp,cm_perp,options}.go`，并扩展 catalog/parser/normalizer 覆盖 spot、um_perp、cm_perp、options。Beads `ZoneCNH-i18` 保持 in_progress，GitHub `ZoneCNH/ZoneCNH#991` 保持 open，等待 live Binance websocket TC-001/002/003、远端 CI 与 release 证据。
+- **2026-06-24 执行状态**: `[COMPUTED, HIGH]` local connector increment；`/home/workspace/binance` 已新增 `internal/client/product_line.go` 与 `internal/client/connectors/{spot,um_perp,cm_perp,options}.go`，并扩展 catalog/parser/normalizer 覆盖 spot、um_perp、cm_perp、options。Beads `ZoneCNH-i18` 保持 in_progress，GitHub `ZoneCNH/ZoneCNH#991` 保持 open，等待 live Binance websocket TC-001/002/003、远端 CI 与 release 证据。
 - **动作**:
   - `internal/client/connectors/um_perp.go` — USDⓈ-M 合约
   - `internal/client/connectors/cm_perp.go` — COIN-M 合约
@@ -324,7 +324,7 @@ binance 模块当前**规格端与 runtime 端均未达生产级别**：
   - 冲突终止（同 key 不同 payload → terminal reject）
   - 实现错误码 BNC-006/009（替换 runtime 的无编号 reject code）
 - **验证**: TC-007/008 PASS；`grep -rn "redisx" internal/server/` > 0
-- **本地验证证据**: `[COMPUTED, HIGH]` `/home/binance/internal/server/idempotency/redis_store.go` 使用 `redisx` `SetNX` 与 72h TTL；`/home/binance/internal/server/idempotency/pg_log.go` 写入 postgresx backup log；冲突路径返回 `BNC-006`，Redis 失败路径返回 `BNC-009`；`go test ./internal/server/idempotency -count=1`、`go test ./internal/server/... -count=1`、`go test ./... -count=1`、`rg "redisx" internal/server -n`、`git diff --check` 与 100 次重复检查（`plan006_task_4_4_repeat_checks=100`）PASS。
+- **本地验证证据**: `[COMPUTED, HIGH]` `/home/workspace/binance/internal/server/idempotency/redis_store.go` 使用 `redisx` `SetNX` 与 72h TTL；`/home/workspace/binance/internal/server/idempotency/pg_log.go` 写入 postgresx backup log；冲突路径返回 `BNC-006`，Redis 失败路径返回 `BNC-009`；`go test ./internal/server/idempotency -count=1`、`go test ./internal/server/... -count=1`、`go test ./... -count=1`、`rg "redisx" internal/server -n`、`git diff --check` 与 100 次重复检查（`plan006_task_4_4_repeat_checks=100`）PASS。
 - **STOP 条件**: 无
 - **依赖**: Task 4.2
 
@@ -547,7 +547,7 @@ gitleaks 扫 binance 仓时应无任何 dev.md 中登记的凭据片段命中；
   # dev.md 含四仓摘出段
   grep -c "FOUNDATIONX_REDISX_\|FOUNDATIONX_KAFKAX_\|FOUNDATIONX_POSTGRESX_\|FOUNDATIONX_TAOSX_" sre/secrets/env/dev.md
   # binance configx 升 direct
-  cd /home/binance && grep -E "configx v" go.mod | grep -v indirect
+  cd /home/workspace/binance && grep -E "configx v" go.mod | grep -v indirect
   # binance 仓内零硬编码凭据
   grep -rnE "password|passwd|secret|api_?key" --include="*.go" internal/ cmd/ | grep -vE "configx|os\.Getenv|FOUNDATIONX" || echo "零硬编码 ✅"
   ```

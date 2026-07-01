@@ -21,14 +21,14 @@ Does NOT implement Kafka broker deployment, topic auto-creation, or Kafka Connec
 
 ## Files
 
-- `/home/kafkax/go.mod` / `go.sum` — `module github.com/ZoneCNH/kafkax`, go 1.23, `segmentio/kafka-go v0.4.51`
-- `/home/kafkax/Makefile` — `make ci` / `make ci-extended` / `make evidence` gate 链
-- `/home/kafkax/README.md` — API 参考、Kafka 语义、Driver-Neutral、配置、健康检查、Metrics、错误模型（v0.4.13）
-- `/home/kafkax/CHANGELOG.md` — 版本历史，最新 `v0.4.13`
-- `/home/kafkax/pkg/kafkax/version.go` — `Version = "v0.4.13"`
-- `/home/kafkax/testkit/` — `KafkaFake` fake runtime、golden 断言
-- `/home/kafkax/cmd/goalcli/` — goal 治理 CLI + 版本一致性测试
-- `/home/kafkax/scripts/` — CI gate 与 evidence 脚本
+- `/home/workspace/kafkax/go.mod` / `go.sum` — `module github.com/ZoneCNH/kafkax`, go 1.23, `segmentio/kafka-go v0.4.51`
+- `/home/workspace/kafkax/Makefile` — `make ci` / `make ci-extended` / `make evidence` gate 链
+- `/home/workspace/kafkax/README.md` — API 参考、Kafka 语义、Driver-Neutral、配置、健康检查、Metrics、错误模型（v0.4.13）
+- `/home/workspace/kafkax/CHANGELOG.md` — 版本历史，最新 `v0.4.13`
+- `/home/workspace/kafkax/pkg/kafkax/version.go` — `Version = "v0.4.13"`
+- `/home/workspace/kafkax/testkit/` — `KafkaFake` fake runtime、golden 断言
+- `/home/workspace/kafkax/cmd/goalcli/` — goal 治理 CLI + 版本一致性测试
+- `/home/workspace/kafkax/scripts/` — CI gate 与 evidence 脚本
 
 ## Acceptance
 

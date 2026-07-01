@@ -6,7 +6,7 @@
 
 **架构：** 双轨并行。
 
-- **Track A（功能就绪）** 针对 `/home/binance` runtime + 本仓库 `module/binance` 规格；
+- **Track A（功能就绪）** 针对 `/home/workspace/binance` runtime + 本仓库 `module/binance` 规格；
 - **Track B（架构卫生）** 针对 `/home/{transportx,domain*,binance}` 跨仓库。
 - 两轨无强阻塞耦合（已核实），可由不同工程师并行推进；仅在 Phase 8 验收阶段汇合。
 
@@ -121,11 +121,11 @@ Report1 §6.2 给出合计 **0.8~1.8 人月**（1 名全职 Go 工程师）。�
 
 | 锚点                   | 命令                                                  | 结果                                                           | 判定 |
 | ---------------------- | ----------------------------------------------------- | -------------------------------------------------------------- | :--: |
-| transportx go.mod      | `head -1 /home/transportx/go.mod`                     | `module github.com/ZoneCNH/xlib_standard`（remote=transportx） |  ✅  |
+| transportx go.mod      | `head -1 /home/workspace/transportx/go.mod`                     | `module github.com/ZoneCNH/xlib_standard`（remote=transportx） |  ✅  |
 | transportx 孤岛        | `rg -l 'ZoneCNH/transportx' /home --type go \| wc -l` | `0`                                                            |  ✅  |
-| domain\_\* main path   | `head -1 /home/domain-{market,macro,exchange}/go.mod` | 全下划线 `domain_market/macro/exchange`                        |  ✅  |
-| binance require domain | `grep domain /home/binance/go.mod`                    | 连字符 `domain-exchange v1.0.0`/`domain-market v1.1.0`（错配） |  ✅  |
-| domainx 主目录         | `ls /home/domainx/go.mod`                             | 不存在（仅 worktree/v100 有）                                  |  ✅  |
+| domain\_\* main path   | `head -1 /home/workspace/domain-{market,macro,exchange}/go.mod` | 全下划线 `domain_market/macro/exchange`                        |  ✅  |
+| binance require domain | `grep domain /home/workspace/binance/go.mod`                    | 连字符 `domain-exchange v1.0.0`/`domain-market v1.1.0`（错配） |  ✅  |
+| domainx 主目录         | `ls /home/workspace/domainx/go.mod`                             | 不存在（仅 worktree/v100 有）                                  |  ✅  |
 | runtime.go:172         | `grep -n 'natsx.New' runtime.go`                      | `172: client, err := natsx.New(ctx, natsx.Config{`             |  ✅  |
 | history_fetcher stub   | `grep -n ErrNotConnected history_fetcher.go`          | `64-65: return nil, ErrNotConnected`（66 行文件）              |  ✅  |
 | consumer Nak           | `grep -n '.Nak()\|NakWithDelay' consumer.go`          | `195: msg.Nak()`；NakWithDelay=0；dead-letter=9（读端点）      |  ✅  |
@@ -135,7 +135,7 @@ Report1 §6.2 给出合计 **0.8~1.8 人月**（1 名全职 Go 工程师）。�
 
 ## 2. 统一缺口清单（双轨 + 交叉映射）
 
-### Track A — 功能就绪（runtime `/home/binance` + 本仓库 `module/binance`）
+### Track A — 功能就绪（runtime `/home/workspace/binance` + 本仓库 `module/binance`）
 
 | ID  | 标题                                             | 优先级 | 依赖            | Phase |
 | --- | ------------------------------------------------ | :----: | --------------- | :---: |
@@ -167,7 +167,7 @@ Report1 §6.2 给出合计 **0.8~1.8 人月**（1 名全职 Go 工程师）。�
 
 ## 3. 文件结构（将创建/修改的文件，按仓库分组）
 
-### `/home/binance`（runtime 仓库，Track A + B4/B5）
+### `/home/workspace/binance`（runtime 仓库，Track A + B4/B5）
 
 - 修改：`internal/client/history_fetcher.go`（A1：替换 ExchangeHistoryFetcher stub）
 - 创建：`internal/client/history_rest.go`（A1：真实 REST 客户端 + 限流/分页/重试）
@@ -177,28 +177,28 @@ Report1 §6.2 给出合计 **0.8~1.8 人月**（1 名全职 Go 工程师）。�
 - 修改：`internal/client/instrumentkey_test.go`（A4：补四线碰撞断言）
 - 修改：`internal/server/ingest.go` 或 normalize 逻辑文件（A7：补 options 分支）
 - 修改：`internal/client/runtime.go:172` + `cmd/binance-client/main.go`（B4：assembly 下沉）
-- 修改：`internal/wire/*` → 迁移到 `/home/contracts`（B5）
+- 修改：`internal/wire/*` → 迁移到 `/home/workspace/contracts`（B5）
 - 修改：`go.mod`（B5：require contracts）
 - 修改：`release/evidence/binance/{date}/`（A2/A5：归档证据）
 
-### `/home/transportx`（B1）
+### `/home/workspace/transportx`（B1）
 
 - 修改：`go.mod:1`（`xlib_standard` → `transportx`）
 - 全仓替换：internal import path（`xlib_standard/...` → `transportx/...`）
 
-### `/home/domainx`（B3）
+### `/home/workspace/domainx`（B3）
 
 - 创建：主目录 `go.mod`（从 worktree/v100 提升或新建）
 
-### `/home/domain-market` `/home/domain-macro` `/home/domain-exchange`（B2/B7）
+### `/home/workspace/domain-market` `/home/workspace/domain-macro` `/home/workspace/domain-exchange`（B2/B7）
 
 - 同步：main go.mod 与 worktree/v100 的 module path（统一 snake_case）+ 版本号
 
-### `/home/bootstrap`（B6，仅文档）
+### `/home/workspace/bootstrap`（B6，仅文档）
 
 - 文档：分层定位说明（如无 README 则在 ARCHITECTURE 注明）
 
-### 本仓库 `/home/ZoneCNH`（A8/A9 + gate 推广文档）
+### 本仓库 `/home/workspace/ZoneCNH`（A8/A9 + gate 推广文档）
 
 - 修改：`module/binance/TRACEABILITY.md`（A8：SHA→8290dc9、FR-006a 补齐、状态刷新）
 - 修改：`module/binance/ACCEPTANCE.md`（A8：DoD/状态刷新）
@@ -214,10 +214,10 @@ Report1 §6.2 给出合计 **0.8~1.8 人月**（1 名全职 Go 工程师）。�
 
 #### Task 0.1：确认两份报告锚点无漂移
 
-- [ ] **步骤 1**：在 `/home/binance` 跑 `git log --oneline -3`，确认 HEAD 仍为 `8290dc9`（或更新则记录新 SHA）
+- [ ] **步骤 1**：在 `/home/workspace/binance` 跑 `git log --oneline -3`，确认 HEAD 仍为 `8290dc9`（或更新则记录新 SHA）
 - [ ] **步骤 2**：重跑 §1.3 的 9 条核实命令，确认锚点未漂移；若漂移，更新本计划 file:line
-- [ ] **步骤 3**：`cd /home/binance && go test ./internal/... ./cmd/... ./pkg/... -count=1 -short`，确认基线全绿（Report1 §1.2 验证 6）
-- [ ] **步骤 4**：`bash /home/binance/scripts/boundary-gates.sh`，确认 13 gates PASS
+- [ ] **步骤 3**：`cd /home/workspace/binance && go test ./internal/... ./cmd/... ./pkg/... -count=1 -short`，确认基线全绿（Report1 §1.2 验证 6）
+- [ ] **步骤 4**：`bash /home/workspace/binance/scripts/boundary-gates.sh`，确认 13 gates PASS
 - [ ] **提交**：无（基线确认，不改文件；结果记入执行对齐文档）
 
 ---
@@ -230,7 +230,7 @@ Report1 §6.2 给出合计 **0.8~1.8 人月**（1 名全职 Go 工程师）。�
 
 **文件：**
 
-- 创建：`/home/binance/internal/client/history_rest_test.go`
+- 创建：`/home/workspace/binance/internal/client/history_rest_test.go`
 
 - [ ] **步骤 1：编写失败测试**
 
@@ -264,15 +264,15 @@ func TestExchangeHistoryFetcher_Pagination_Aggregation(t *testing.T) {
 ```
 
 - [ ] **步骤 2：运行测试验证失败**
-      运行：`cd /home/binance && go test ./internal/client/ -run TestExchangeHistoryFetcher -v`
+      运行：`cd /home/workspace/binance && go test ./internal/client/ -run TestExchangeHistoryFetcher -v`
       预期：FAIL（`ExchangeHistoryFetcher` 仍返回 ErrNotConnected）
 
 #### Task A1.2：实现真实 REST fetcher（TDD-GREEN）
 
 **文件：**
 
-- 创建：`/home/binance/internal/client/history_rest.go`
-- 修改：`/home/binance/internal/client/history_fetcher.go:55-65`（替换 stub body）
+- 创建：`/home/workspace/binance/internal/client/history_rest.go`
+- 修改：`/home/workspace/binance/internal/client/history_fetcher.go:55-65`（替换 stub body）
 
 - [ ] **步骤 1：实现 REST 客户端骨架**（复用 `resiliencx`/`controlplane/reliability.go` WeightGate 做限流；`net/http` + JSON decode）
 - [ ] **步骤 2：实现 spot klines 端点** `GET /api/v3/klines`（testnet: testnet.binance.vision）
@@ -300,34 +300,34 @@ func TestExchangeHistoryFetcher_Pagination_Aggregation(t *testing.T) {
 
 #### Task B3：domainx 主目录补 go.mod（前置 B2）
 
-**文件：** 创建 `/home/domainx/go.mod`
+**文件：** 创建 `/home/workspace/domainx/go.mod`
 
-- [ ] **步骤 1**：`git -C /home/domainx log --oneline -3` + `ls /home/domainx/.worktree/workspaces/v100/`，确认 canonical 源
+- [ ] **步骤 1**：`git -C /home/workspace/domainx log --oneline -3` + `ls /home/workspace/domainx/.worktree/workspaces/v100/`，确认 canonical 源
 - [ ] **步骤 2**：若 worktree/v100 是 canonical，复制其 go.mod 到主目录（保留 `module github.com/ZoneCNH/domainx` + require decimalx）
-- [ ] **步骤 3**：`cd /home/domainx && go build ./...`，确认主目录可独立 build
+- [ ] **步骤 3**：`cd /home/workspace/domainx && go build ./...`，确认主目录可独立 build
 - [ ] **步骤 4**：`git add go.mod && git commit -m "fix(domainx): 主目录补 go.mod (Report2 §7.3)"`
 
 #### Task B2：domain\_\* module path 统一为 snake_case
 
-**文件：** `/home/domain-{market,macro,exchange}/go.mod`（main）+ 对应 worktree/v100
+**文件：** `/home/workspace/domain-{market,macro,exchange}/go.mod`（main）+ 对应 worktree/v100
 
 - [ ] **步骤 1：核实当前分叉**（已确认 main=下划线，worktree/v100=连字符，binance require=连字符）
 - [ ] **步骤 2：决策**——本仓库 AGENTS.md 强制 snake_case，**统一为下划线**（domain_market/macro/exchange）
 - [ ] **步骤 3：改 worktree/v100 go.mod** 的 module 行为下划线（3 个仓库）
 - [ ] **步骤 4：全仓替换 worktree internal import path**（`domain-market` → `domain_market` 等）
-- [ ] **步骤 5：改 binance `/home/binance/go.mod`** require + replace 为下划线（`domain-exchange`→`domain_exchange`、`domain-market`→`domain_market`）
-- [ ] **步骤 6：验证** `cd /home/binance && go build ./...`，确认编译通过（无 unknown import path）
+- [ ] **步骤 5：改 binance `/home/workspace/binance/go.mod`** require + replace 为下划线（`domain-exchange`→`domain_exchange`、`domain-market`→`domain_market`）
+- [ ] **步骤 6：验证** `cd /home/workspace/binance && go build ./...`，确认编译通过（无 unknown import path）
 - [ ] **步骤 7：回滚**：`git revert` go.mod + replace；分叉恢复（不破坏当前 worktree 路径构建）
 - [ ] **步骤 8：提交**（各仓库独立 commit）：`fix(domain_*): 统一 module path 为 snake_case (Report2 §7.2)`
 
 #### Task B1：transportx module name bug 修复
 
-**文件：** `/home/transportx/go.mod` + 全仓 import path
+**文件：** `/home/workspace/transportx/go.mod` + 全仓 import path
 
 - [ ] **步骤 1：确认 bug**（已确认 go.mod=`xlib_standard`，remote=transportx，孤岛 0 import）
 - [ ] **步骤 2：改 go.mod:1** 为 `module github.com/ZoneCNH/transportx`
-- [ ] **步骤 3：全仓替换** `rg -l 'github.com/ZoneCNH/xlib_standard' /home/transportx --type go` 命中文件的 import path
-- [ ] **步骤 4：验证** `cd /home/transportx && go build ./... && go test ./...`
+- [ ] **步骤 3：全仓替换** `rg -l 'github.com/ZoneCNH/xlib_standard' /home/workspace/transportx --type go` 命中文件的 import path
+- [ ] **步骤 4：验证** `cd /home/workspace/transportx && go build ./... && go test ./...`
 - [ ] **步骤 5：验证 import 可达**——临时在 binance 加 `import "github.com/ZoneCNH/transportx/..."` 跑 build 后回退（确认定时炸弹已拆除）
 - [ ] **步骤 6：回滚**：`git revert` go.mod + import path；恢复孤岛态（当前无人 import，回滚安全）
 - [ ] **步骤 7：提交**：`fix(transportx): 修正 module name (xlib_standard→transportx, Report2 §7.1)`
@@ -338,7 +338,7 @@ func TestExchangeHistoryFetcher_Pagination_Aggregation(t *testing.T) {
 
 #### Task A2.1：启用 testnet live 测试
 
-- [ ] **步骤 1**：`cd /home/binance && BINANCE_TESTNET_LIVE=1 go test ./test/e2e -run TestTestnetLive -v`（spot 公开 testnet.binance.vision）
+- [ ] **步骤 1**：`cd /home/workspace/binance && BINANCE_TESTNET_LIVE=1 go test ./test/e2e -run TestTestnetLive -v`（spot 公开 testnet.binance.vision）
 - [ ] **步骤 2**：配置合约 testnet 凭据后启用 um/cm/options
 - [ ] **步骤 3**：捕获输出到 `release/evidence/binance/{date}/testnet-live.txt`
 
@@ -356,7 +356,7 @@ func TestExchangeHistoryFetcher_Pagination_Aggregation(t *testing.T) {
 
 #### Task A3：NakWithDelay + DLQ 写入侧（FR-004）
 
-**文件：** `/home/binance/internal/server/consumer/consumer.go:195` + 新建 deadletter 包
+**文件：** `/home/workspace/binance/internal/server/consumer/consumer.go:195` + 新建 deadletter 包
 
 - [ ] **步骤 1：编写失败测试**（TDD-RED）——失败注入：第 6 次投递（MaxDeliver 耗尽）后消息进入 DLQ 持久化
 - [ ] **步骤 2：运行验证失败**
@@ -368,7 +368,7 @@ func TestExchangeHistoryFetcher_Pagination_Aggregation(t *testing.T) {
 
 #### Task A4：跨产品线碰撞测试（FR-002 / TC-003）
 
-**文件：** `/home/binance/internal/client/instrumentkey_test.go`
+**文件：** `/home/workspace/binance/internal/client/instrumentkey_test.go`
 
 - [ ] **步骤 1：编写碰撞断言**（TDD-RED）
 
@@ -385,9 +385,9 @@ func TestInstrumentKey_CrossProductLine_NoCollision(t *testing.T) {
 
 #### Task A7：options 结构化 parser（FR-030）
 
-**文件：** `/home/binance/internal/server/`（normalize 逻辑文件，需先定位 switch）
+**文件：** `/home/workspace/binance/internal/server/`（normalize 逻辑文件，需先定位 switch）
 
-- [ ] **步骤 1：定位** `grep -rn 'switch.*productLine\|case.*spot\|case.*um_perp' /home/binance/internal/`，找到 normalize switch
+- [ ] **步骤 1：定位** `grep -rn 'switch.*productLine\|case.*spot\|case.*um_perp' /home/workspace/binance/internal/`，找到 normalize switch
 - [ ] **步骤 2：编写失败测试**——options 事件（greek/strike/expiry）应解析成功而非命中 default→normalizeError
 - [ ] **步骤 3：补 options 专用分支**（解析 greek/strike/expiry 字段，保留 RawPayload 透传）
 - [ ] **步骤 4：运行验证通过**
@@ -399,7 +399,7 @@ func TestInstrumentKey_CrossProductLine_NoCollision(t *testing.T) {
 
 #### Task B4：client assembly 下沉到 cmd（Report2 §7.4）
 
-**文件：** `/home/binance/internal/client/runtime.go:172` + `cmd/binance-client/main.go`
+**文件：** `/home/workspace/binance/internal/client/runtime.go:172` + `cmd/binance-client/main.go`
 
 - [ ] **步骤 1：编写失败测试**——`internal/client` 包禁止出现 `natsx.New`（gate 式测试）
 - [ ] **步骤 2：把 `runtime.go:172` 的 `natsx.New` 构造移到 `cmd/binance-client/main.go`**
@@ -409,10 +409,10 @@ func TestInstrumentKey_CrossProductLine_NoCollision(t *testing.T) {
 
 #### Task B5：wire → contracts 迁移（ADR-002 收口）
 
-**文件：** `/home/binance/internal/wire/*` → `/home/contracts`；修改 binance `go.mod`
+**文件：** `/home/workspace/binance/internal/wire/*` → `/home/workspace/contracts`；修改 binance `go.mod`
 
 - [ ] **步骤 1：确认 ADR-002 计划**（`internal/wire/doc.go` + `module/binance/ADR-002-wire-boundary.md`）
-- [ ] **步骤 2：把 wire 契约（doc.go/transport.go/types.go）上提到 `/home/contracts`**
+- [ ] **步骤 2：把 wire 契约（doc.go/transport.go/types.go）上提到 `/home/workspace/contracts`**
 - [ ] **步骤 3：binance go.mod require contracts**（当前 0 命中，见 §1.3）
 - [ ] **步骤 4：全仓替换** `internal/wire` import → `contracts`
 - [ ] **步骤 5：回归** `go build ./... && bash scripts/boundary-gates.sh`（确认 13 gates 仍 PASS）
@@ -453,7 +453,7 @@ func TestInstrumentKey_CrossProductLine_NoCollision(t *testing.T) {
 
 #### Task A9：§12.10/§12.11 代码级复核
 
-- [ ] **步骤 1：bar 多周期**——`grep -rn 'interval\|period\|1m\|5m\|15m' /home/binance/internal/client/connectors/`，确认是否仅 1m
+- [ ] **步骤 1：bar 多周期**——`grep -rn 'interval\|period\|1m\|5m\|15m' /home/workspace/binance/internal/client/connectors/`，确认是否仅 1m
 - [ ] **步骤 2：depth update_id 拼合**——grep depth/lastUpdateId，确认是否实现
 - [ ] \*\*步骤 3：据实更新 Report1 §4.1 对应行的 ⚠️ 状态
 - [ ] **步骤 4：提交**（若有实现缺口则建后续 Task；仅复核则记入执行对齐文档）
@@ -466,7 +466,7 @@ func TestInstrumentKey_CrossProductLine_NoCollision(t *testing.T) {
 
 #### Task B6/B7/B8：架构文档与 gate 推广
 
-- [ ] **B6**：在 `/home/bootstrap` 文档单列「装配层（composition root）」，与 6 零依赖叶子基座区分
+- [ ] **B6**：在 `/home/workspace/bootstrap` 文档单列「装配层（composition root）」，与 6 零依赖叶子基座区分
 - [ ] **B7**：同步 domain_exchange/macro main 与 worktree/v100（B2 完成后消除版本漂移）
 - [ ] **B8**：把 Report2 §6 的 9 个 gate 固化为可执行脚本，以 binance `boundary-gates.sh` 为模板推广（更新 `module/binance/BOUNDARY-GATES.md`）
 - [ ] **提交**：`docs(arch): bootstrap 分层 + gate 推广 (Report2 §6/§7.6)`
@@ -479,7 +479,7 @@ func TestInstrumentKey_CrossProductLine_NoCollision(t *testing.T) {
 
 - [ ] **步骤 1**：Track A——A1~A10 全 DONE，FR 闭合度 30/30、AC/TC 重核全 PASS
 - [ ] **步骤 2**：Track B——B1~B8 全 DONE，重跑 Report2 §6 四硬门禁（反向依赖=0、领域纯度=0、infra 互耦=0、config split=0）
-- [ ] **步骤 3**：`cd /home/binance && bash scripts/boundary-gates.sh`（13 gates）+ `go test ./... -count=1`（全绿）+ `govulncheck`
+- [ ] **步骤 3**：`cd /home/workspace/binance && bash scripts/boundary-gates.sh`（13 gates）+ `go test ./... -count=1`（全绿）+ `govulncheck`
 
 #### Task 8.2：文档对齐（三文档同步）
 

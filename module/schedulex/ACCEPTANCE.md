@@ -5,11 +5,11 @@
 - Module-Version: v1.0.0
 - Module-State: 本地发布验收通过
 - Layer: L1 调度基座
-- Runtime-Repo: /home/schedulex
+- Runtime-Repo: /home/workspace/schedulex
 - Runtime-Branch: ci/sre-cicd-pools-20260618
-- Source: /home/schedulex release-check evidence, SPEC.md, FEATURES.md
+- Source: /home/workspace/schedulex release-check evidence, SPEC.md, FEATURES.md
 
-> 本清单记录本轮 `schedulex` v1.0.0 验收结论。验收对象是当前运行时仓库 `/home/schedulex` 的 `AddJob` 版公共 API 与 CI/CD 发布门禁；旧文档中的 `Cancel`、`Replace`、`Schedule` 返回 `JobID` 等能力不作为 v1.0.0 验收项。
+> 本清单记录本轮 `schedulex` v1.0.0 验收结论。验收对象是当前运行时仓库 `/home/workspace/schedulex` 的 `AddJob` 版公共 API 与 CI/CD 发布门禁；旧文档中的 `Cancel`、`Replace`、`Schedule` 返回 `JobID` 等能力不作为 v1.0.0 验收项。
 
 ## 1. 验收结论
 
@@ -25,13 +25,13 @@
 
 | 类别 | 命令 | 结果 | 证据说明 |
 | --- | --- | --- | --- |
-| Runtime diff hygiene | `cd /home/schedulex && git diff --check` | PASS | 无尾随空格或补丁格式错误 |
-| Runtime integration | `cd /home/schedulex && GOWORK=off make integration` | PASS | 渲染 `kernel`、`corekit` 模板并执行测试 |
-| Governance all | `cd /home/schedulex && ./scripts/check_governance.sh all` | PASS | CI、规则集、release gates、文档与证据配置一致 |
-| Governance p1 | `cd /home/schedulex && ./scripts/check_governance.sh p1` | PASS | CI 包含 lint、release-check 与 required status checks |
-| Score gate | `cd /home/schedulex && ./scripts/check_schedulex_score.sh --min 9.8` | PASS | `score=10.0 min=9.8 status=pass` |
-| Release check | `cd /home/schedulex && GOWORK=off make release-check VERSION=v1.0.0` | PASS | fmt、vet、lint、test、race、boundary、contracts、docs、security、api、downstream-smoke、integration、governance、score、release-preflight 全链路通过 |
-| Module docs hygiene | `cd /home/ZoneCNH && git diff --check -- module/schedulex` | PASS | 本目录文档补丁格式通过 |
+| Runtime diff hygiene | `cd /home/workspace/schedulex && git diff --check` | PASS | 无尾随空格或补丁格式错误 |
+| Runtime integration | `cd /home/workspace/schedulex && GOWORK=off make integration` | PASS | 渲染 `kernel`、`corekit` 模板并执行测试 |
+| Governance all | `cd /home/workspace/schedulex && ./scripts/check_governance.sh all` | PASS | CI、规则集、release gates、文档与证据配置一致 |
+| Governance p1 | `cd /home/workspace/schedulex && ./scripts/check_governance.sh p1` | PASS | CI 包含 lint、release-check 与 required status checks |
+| Score gate | `cd /home/workspace/schedulex && ./scripts/check_schedulex_score.sh --min 9.8` | PASS | `score=10.0 min=9.8 status=pass` |
+| Release check | `cd /home/workspace/schedulex && GOWORK=off make release-check VERSION=v1.0.0` | PASS | fmt、vet、lint、test、race、boundary、contracts、docs、security、api、downstream-smoke、integration、governance、score、release-preflight 全链路通过 |
+| Module docs hygiene | `cd /home/workspace/ZoneCNH && git diff --check -- module/schedulex` | PASS | 本目录文档补丁格式通过 |
 
 ## 3. AC 验收登记
 
@@ -79,10 +79,10 @@
 
 ## 6. 发布 DoD
 
-- [x] `FEATURES.md` 的功能清单与 `/home/schedulex` 当前公共 API、Makefile gate 和 release evidence 对齐。
+- [x] `FEATURES.md` 的功能清单与 `/home/workspace/schedulex` 当前公共 API、Makefile gate 和 release evidence 对齐。
 - [x] `ACCEPTANCE.md` 的 AC/TC 与运行时代码测试、契约、CI/CD 证据一致。
-- [x] `/home/schedulex` 通过 fmt、vet、lint、test、race、build、boundary、contracts、docs-check 与 security。
-- [x] `/home/schedulex` 通过 integration、governance、p1、p2、score 与 release-preflight。
+- [x] `/home/workspace/schedulex` 通过 fmt、vet、lint、test、race、build、boundary、contracts、docs-check 与 security。
+- [x] `/home/workspace/schedulex` 通过 integration、governance、p1、p2、score 与 release-preflight。
 - [x] 安全检查确认没有凭证、私有端点、账户 ID 或实盘配置进入公开文档与代码。
 - [x] 版本号、release manifest、CI/CD required checks 与本目录状态一致。
 - [ ] tag 发布后执行外部网络 downstream smoke 并回填发布后证据。

@@ -46,7 +46,7 @@ BODY: |
   状态: ✅ DONE（2026-06-24，runtime 生成物已从工作树移除且未被 git 跟踪）
   来源: §10.1
   动作:
-      cd /home/binance
+      cd /home/workspace/binance
       git rm --cached binance-server
       echo "binance-server" >> .gitignore
       echo "binance-client" >> .gitignore  # 若存在
@@ -67,7 +67,7 @@ BODY: |
   状态: ✅ DONE（2026-06-24，go.sum 已跟踪且 .gitignore 无 go.sum 条目）
   背景: go.sum 已被 git 跟踪（git cat-file -s HEAD:go.sum = 11677），构建可复现。.gitignore 里的 go.sum 是陈旧无效条目。
   动作:
-      cd /home/binance
+      cd /home/workspace/binance
       sed -i '/^go.sum$/d' .gitignore
       git add .gitignore
   验证: git ls-files --error-unmatch go.sum 成功；grep -n "^go.sum$" .gitignore 返回空
@@ -163,7 +163,7 @@ BODY: |
   动作: 确认 FR-006a 真实存在；在 TRACEABILITY.md 补 FR-006a 行；在 ACCEPTANCE.md 补对应 AC；运行 CLAUDE.md §5.4 跨文件检查脚本。
   注意: 此任务修改 ZoneCNH/ZoneCNH 仓的 module/binance/* 文档（非 runtime 仓）。
   验证:
-      cd /home/ZoneCNH
+      cd /home/workspace/ZoneCNH
       rg -n "FR-006a" module/binance/SPEC.md module/binance/TRACEABILITY.md module/binance/ACCEPTANCE.md
   STOP: 任一文件缺失 FR-006a 语义映射
   合规: CLAUDE.md §5.2 附录版本同步
@@ -219,10 +219,10 @@ DEPS:
 BODY: |
   状态: ✅ DONE（2026-06-24，README/STATUS/ARCHITECTURE/ACCEPTANCE runtime SHA 收敛到当前本地 runtime HEAD dd3332d3452f4eaa8146563bdb82caf577a3d4c1；runtime 工作树仍有未提交变更，不作为 release evidence）
   来源: §13.4, §12.4
-  动作: 确认 runtime 当前 HEAD SHA（cd /home/binance && git rev-parse HEAD）；统一 README.md/STATUS.md/ARCHITECTURE.md/ACCEPTANCE.md 的 runtime SHA 到当前 HEAD；区分「验证代码 SHA」与「证据提交 SHA」并统一。
+  动作: 确认 runtime 当前 HEAD SHA（cd /home/workspace/binance && git rev-parse HEAD）；统一 README.md/STATUS.md/ARCHITECTURE.md/ACCEPTANCE.md 的 runtime SHA 到当前 HEAD；区分「验证代码 SHA」与「证据提交 SHA」并统一。
   注意: 修改 ZoneCNH/ZoneCNH 仓文档。
   验证:
-      cd /home/ZoneCNH
+      cd /home/workspace/ZoneCNH
       grep -ohE "[0-9a-f]{40}" README.md STATUS.md ARCHITECTURE.md module/binance/ACCEPTANCE.md | sort -u
       # runtime 相关 SHA 应收敛到 ≤2 个（代码 SHA + 证据 SHA）
   STOP: SHA 数量 > 2
@@ -239,7 +239,7 @@ SOURCE: §2.2, §8.3
 DEPS: 
 BODY: |
   状态: ✅ DONE（2026-06-24，runtime §12~§14 presence gates 已加入并通过）
-  动作: 在 /home/binance/scripts/boundary-gates.sh 增加 §12 natsx runtime adapter presence / §13 runtime storage integrations presence / §14 gin route existence 三道 gate。
+  动作: 在 /home/workspace/binance/scripts/boundary-gates.sh 增加 §12 natsx runtime adapter presence / §13 runtime storage integrations presence / §14 gin route existence 三道 gate。
   验证: boundary-gates.sh 已扩展为 §2~§14；本地结果 13 passed, 0 failed。
   注: 当前 gate 是存在性/边界门禁；JetStream PubAck/ManualAck、真实外部 storage IO、fanout delivery、query API 仍由 Phase 4~7 功能验收关闭。
 
@@ -545,7 +545,7 @@ SOURCE: §11.6
 DEPS: 
 BODY: |
   状态: ✅ DONE（2026-06-24，runtime 已添加 spot/um_perp/cm_perp/options 4 产品线真实 Binance 事件样本、匹配 `.golden.json` 与 `TestNormalizeMarketMessageFixtures`）
-  证据: /home/binance/internal/client/normalize_fixture_test.go；/home/binance/internal/client/normalize.go；/home/binance/internal/client/testdata/market_events/{spot_trade,um_perp_depth,cm_perp_kline,options_depth}.{json,golden.json}
+  证据: /home/workspace/binance/internal/client/normalize_fixture_test.go；/home/workspace/binance/internal/client/normalize.go；/home/workspace/binance/internal/client/testdata/market_events/{spot_trade,um_perp_depth,cm_perp_kline,options_depth}.{json,golden.json}
   验证: go test ./internal/client -run TestNormalizeMarketMessageFixtures -count=1；go test ./internal/client -count=1；go test ./... -count=1；git diff --check；100/100 loop PASS（fixture golden 测试 + testdata 文件数 >= 8 + golden 文件数 = 4）
   兼容修正: rawKlineCandle 显式吸收 Binance 官方 kline L/V 字段，避免 encoding/json 大小写宽松匹配覆盖 l/v。
   来源: §11.6
@@ -563,7 +563,7 @@ SOURCE: §11.13, §12.12
 DEPS: 
 BODY: |
   状态: ✅ DONE（2026-06-24，runtime connector 添加 recover + WS ping/pong heartbeat）
-  证据: /home/binance/internal/client/spot.go；/home/binance/internal/client/stream_control.go；/home/binance/internal/client/spot_control_test.go
+  证据: /home/workspace/binance/internal/client/spot.go；/home/workspace/binance/internal/client/stream_control.go；/home/workspace/binance/internal/client/spot_control_test.go
   验证: go test ./internal/client -count=1；go test ./internal/client -race -count=1；go test ./... -count=1；git diff --check；100/100 loop PASS（go test + recover grep + heartbeat grep）
   来源: §11.13, §12.12
   动作: 关键 goroutine 加 recover + metrics；public stream WS ping/pong keepalive
@@ -601,7 +601,7 @@ BODY: |
         ls sre/secrets/env/$m.env >/dev/null 2>&1 && echo "$m.env ✅" || echo "$m.env MISSING"
       done
       grep -c "FOUNDATIONX_REDISX_\|FOUNDATIONX_KAFKAX_\|FOUNDATIONX_POSTGRESX_\|FOUNDATIONX_TAOSX_" sre/secrets/env/dev.md
-      cd /home/binance && grep -E "configx v" go.mod | grep -v indirect
+      cd /home/workspace/binance && grep -E "configx v" go.mod | grep -v indirect
       grep -rnE "password|passwd|secret|api_?key" --include="*.go" internal/ cmd/ | grep -vE "configx|os\.Getenv|FOUNDATIONX" || echo "零硬编码 ✅"
   STOP: binance 仓内出现任何明文凭据；或任一 infra 仓缺 .env 摘出导致 configx 加载失败
   依赖: Task 3.1（接口就绪）→ 本 Task（凭据就绪）→ Task 7.1/7.3

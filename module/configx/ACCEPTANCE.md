@@ -5,7 +5,7 @@
 - Module-Version: v1.1.0（运行时 version.go = v1.1.0、CHANGELOG 最新 = v1.1.0、git tag = v1.1.0、GitHub Release 已发布；版本号已完全对齐）
 - Module-State: v1.0 路线 5 项 MUST 已全部交付（ArgsSource / RemoteSource SPI / Bind / ConfigSnapshot+ChangeEvent+Watch+Rollback / DocGen）
 - Layer: L1 基础能力
-- Runtime-Repo: /home/configx
+- Runtime-Repo: /home/workspace/configx
 - Source: goal.md, SPEC.md, DESIGN.md, TRACEABILITY.md, IMPLEMENTATION-PLAN.md, tasks/
 
 > 版本基线说明：v1.1.0（2026-06-18 发布）完整交付 goal.md §文首状态戳列出的 v1.0 路线 5 项 MUST：ArgsSource、RemoteSource SPI、Bind()、ConfigSnapshot/ChangeEvent/Watch/Rollback、配置文档自动生成。运行时 `pkg/configx/version.go` = `v1.1.0`、CHANGELOG 顶部 = `v1.1.0`、git tag = `v1.1.0`、GitHub Release 已发布；之前 v1.0.0 git tag 与 version.go=v0.1.3 的版本漂移已修复，此后 version.go / CHANGELOG / git tag 严格保持同步。
@@ -16,13 +16,13 @@
 
 | 类别 | 命令 | 通过标准 |
 | --- | --- | --- |
-| 文档存在性 | cd /home/ZoneCNH && test -f module/configx/FEATURES.md && test -f module/configx/ACCEPTANCE.md | FEATURES.md 与 ACCEPTANCE.md 均存在 |
-| 文档格式 | cd /home/ZoneCNH && git diff --check -- module/configx | 无尾随空格或补丁格式错误 |
-| 运行时测试 | cd /home/configx && go test ./... | 所有包测试通过 |
-| 竞态检查 | cd /home/configx && go test ./... -race -count=1 | 无 data race，测试稳定通过 |
-| 静态检查 | cd /home/configx && go vet ./... | 无 vet 问题 |
-| 覆盖率证据 | cd /home/configx && go test ./... -coverprofile=coverage.out | 覆盖率文件生成并满足模块 Spec 门槛 |
-| 依赖边界 | cd /home/configx && go list -deps ./... | 依赖不越过 FOUNDATION-DEPS.yaml 登记边界 |
+| 文档存在性 | cd /home/workspace/ZoneCNH && test -f module/configx/FEATURES.md && test -f module/configx/ACCEPTANCE.md | FEATURES.md 与 ACCEPTANCE.md 均存在 |
+| 文档格式 | cd /home/workspace/ZoneCNH && git diff --check -- module/configx | 无尾随空格或补丁格式错误 |
+| 运行时测试 | cd /home/workspace/configx && go test ./... | 所有包测试通过 |
+| 竞态检查 | cd /home/workspace/configx && go test ./... -race -count=1 | 无 data race，测试稳定通过 |
+| 静态检查 | cd /home/workspace/configx && go vet ./... | 无 vet 问题 |
+| 覆盖率证据 | cd /home/workspace/configx && go test ./... -coverprofile=coverage.out | 覆盖率文件生成并满足模块 Spec 门槛 |
+| 依赖边界 | cd /home/workspace/configx && go list -deps ./... | 依赖不越过 FOUNDATION-DEPS.yaml 登记边界 |
 
 ## 2. AC 验收登记
 
@@ -86,8 +86,8 @@
 ## 5. 发布 DoD 清单
 
 - [x] FEATURES.md 的 FR、BR/NFR、任务清单与 SPEC/TRACEABILITY 当前登记一致。（2026-06-18 已核对，FR-001~013、BR-001~011、NFR-001~006 与 TRACEABILITY.md §1-§3 一致）
-- [x] ACCEPTANCE.md 的 AC、TC 与运行时代码测试名、证据文件或 CI 记录一致。（2026-06-18 AC-001~005、TC-001~009 已挂接 /home/configx Go 测试函数）
-- [x] 运行时代码仓库 /home/configx 通过 go test、go test -race、go vet 与覆盖率门槛。（2026-06-18 go test ./... -race -count=1 PASS；go vet 0 告警；coverage total 94.0% / pkg/configx 98.5%）
+- [x] ACCEPTANCE.md 的 AC、TC 与运行时代码测试名、证据文件或 CI 记录一致。（2026-06-18 AC-001~005、TC-001~009 已挂接 /home/workspace/configx Go 测试函数）
+- [x] 运行时代码仓库 /home/workspace/configx 通过 go test、go test -race、go vet 与覆盖率门槛。（2026-06-18 go test ./... -race -count=1 PASS；go vet 0 告警；coverage total 94.0% / pkg/configx 98.5%）
 - [x] 所有外部服务依赖有本地可重复的测试替身或明确 live-gate 证据。（2026-06-18 go test ./... 8 packages PASS，无外部依赖）
 - [x] 安全检查确认没有凭证、私有端点、账户 ID 或实盘配置进入公开文档与代码。（2026-06-18 bash scripts/check_secrets.sh PASS；bash scripts/check_boundary.sh PASS；bash scripts/check-no-global-state.sh PASS；bash scripts/check_contracts.sh PASS）
 - [x] 版本号、发布标签、CHANGELOG 或 release note 与本目录状态一致。（2026-06-18 release/manifest/latest.json checks 全 passed）

@@ -117,7 +117,7 @@ boundary-gates.sh 5 道专属 Gate（SPEC §20）：
 6. foundationx 退出（白名单+计时）：仅 `pkg/bootstrap/stores.go` 允许 import，其他文件零命中（OQ-004）
 
 ## 20. Release Gate
-ACCEPTANCE §5 DoD（当前全部未勾选，运行时证据待 /home/bootstrap 复验）：[ ] FEATURES/ACCEPTANCE 与 SPEC/TRACEABILITY 一致；[ ] AC/TC 与运行时测试名一致；[ ] go test/-race/vet/coverage 通过；[ ] 外部服务依赖有测试替身；[ ] 安全检查通过；[ ] 版本号/标签/CHANGELOG 一致。
+ACCEPTANCE §5 DoD（当前全部未勾选，运行时证据待 /home/workspace/bootstrap 复验）：[ ] FEATURES/ACCEPTANCE 与 SPEC/TRACEABILITY 一致；[ ] AC/TC 与运行时测试名一致；[ ] go test/-race/vet/coverage 通过；[ ] 外部服务依赖有测试替身；[ ] 安全检查通过；[ ] 版本号/标签/CHANGELOG 一致。
 SPEC §22 v0.1.0 已发布（2026-06-17）：[x] go build/test -race（10 测试）/boundary-gates.sh 5 道/CHANGELOG+README/GitHub Release v0.1.0/Stores=None 路径端到端就绪。
 v0.2.0 准入项：[ ] Stores=All 与位组合冒烟（market_data 接入）；[ ] foundationx 依赖移除；[ ] binance 接入验证（main.go ≤10 行）；[ ] SPEC 四源 ≥98 分转 Approved。
 
@@ -171,7 +171,7 @@ App.ConfigHash（FR-008）暴露 configx EffectiveConfigHash（SHA-256）用于�
 - [~] stores optional ready（FR-004 Stores=None 就绪；非 None 存储位为 v0.2.0 准入，TC-BS-002/004 Pending）
 - [~] spec approved ready（SPEC 仍为 Draft，待四源 ≥98 分门禁转 Approved，v0.2.0 准入项）
 - [~] foundationx exit ready（OQ-004 Open，pkg/bootstrap/stores.go:217 残留 1 行，bootstrap v0.1.1 一行替换清零）
-- [ ] release dod ready（ACCEPTANCE §5 DoD 6 项全部未勾选，运行时证据待 /home/bootstrap 复验归档）
+- [ ] release dod ready（ACCEPTANCE §5 DoD 6 项全部未勾选，运行时证据待 /home/workspace/bootstrap 复验归档）
 
 ## 30. Roadmap
 - v0.1.0（2026-06-17 已发布）：初始 SPEC + 实现，Build/Run/Shutdown + Spec/StoreSet/App + 7 存储 Component 适配 + 5 道边界门禁；Stores=None 路径端到端就绪（adapter 23 接入）

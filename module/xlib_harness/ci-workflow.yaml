@@ -1,5 +1,5 @@
 # Reference CI/CD projection for xlib_harness.
-# The authoritative workflow files live in /home/xlib-harness/.github/workflows/.
+# The authoritative workflow files live in /home/workspace/xlib-harness/.github/workflows/.
 
 name: CI/CD
 

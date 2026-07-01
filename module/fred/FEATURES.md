@@ -11,7 +11,7 @@
 | Layer | 数据域 · 宏观 |
 | Module-Type | 独立 C/S Module |
 | Runtime-Service | `fred` |
-| Runtime-Repo | `/home/fred` |
+| Runtime-Repo | `/home/workspace/fred` |
 | Config-Source | `sre/secrets/env/dev.md` |
 | Sources | `goal.md`, `SPEC.md`, `TRACEABILITY.md`, `IMPLEMENTATION-PLAN.md` |
 
@@ -38,7 +38,7 @@
 | --- | --- | --- | --- | --- |
 | FR-001 | 服务启动、生命周期、健康检查、ready/live、优雅关闭、版本输出 | Planned | `SPEC.md` 已定义 | runtime 需实现并提供启动/探活证据 |
 | FR-002 | 从 `sre/secrets/env/dev.md` 装载配置，禁止复制 secret 值 | Planned | `SPEC.md` 配置源已定义 | runtime 需接入共享 `configx`，并完成 secret scan |
-| FR-003 | FRED client 支持 series、observations、releases、vintages、分页、限流、退避重试、错误分类、请求审计字段 | Planned | `SPEC.md` FR 与 TC 已定义 | `/home/fred/pkg/fredx` 需完成 SDK 行为测试 |
+| FR-003 | FRED client 支持 series、observations、releases、vintages、分页、限流、退避重试、错误分类、请求审计字段 | Planned | `SPEC.md` FR 与 TC 已定义 | `/home/workspace/fred/pkg/fredx` 需完成 SDK 行为测试 |
 | FR-004 | 支持 backfill、incremental、series sync、revision scan，并生成 job、checkpoint、idempotency key | Planned | `SPEC.md` 写明作业模型 | runtime 需落地 job 状态机和幂等账本 |
 | FR-005 | provider 响应归一化到 `domain_macro`，保留 `released_at`、`available_at`、`vintage_at` | Planned | `SPEC.md` 领域模型已定义 | 需确认 `domain_macro` 实际包路径和字段映射 |
 | FR-006 | 原始 provider 响应先写入 `oss`，再归一化、写多存储、发事件 | Planned | `SPEC.md` 写明 raw-first 顺序 | runtime 需实现内容 hash、路径规则和失败回滚策略 |
@@ -85,15 +85,15 @@
 | 功能清单 | Done | 本文档补齐 `FEATURES.md`，将 FR-001..FR-014 投影为可审查清单。 |
 | 验收清单 | Done | `ACCEPTANCE.md` 补齐 AC/TC/命令闭合口径。 |
 | `ms_brain` 消费契约 | Done | 已补充下游画像、初始序列锚点、PIT/no-lookahead、freshness/degrade 和事件覆盖要求。 |
-| runtime 实现 | Pending | 当前文档未证明 `/home/fred` 已实现完整目标边界。 |
+| runtime 实现 | Pending | 当前文档未证明 `/home/workspace/fred` 已实现完整目标边界。 |
 | 边界 gate | Pending | 旧 `Stores=None` 口径必须迁移为完整存储边界。 |
 | 集成环境 | Pending | 需要可用的 `sre/secrets/env/dev.md` 映射和 dev infra 连接。 |
 
 ## 当前缺口
 
 1. `TRACEABILITY.md` 的 BR 编号与 `SPEC.md` 存在漂移，补实现前应以 `SPEC.md` 为准并修正矩阵。
-2. `/home/fred` 旧边界脚本仍需从 `Stores=None` 迁移到 `taos`、`kafka`、`postgres`、`Redis`、`oss`、`nats`、`clickhouse` 完整目标。
+2. `/home/workspace/fred` 旧边界脚本仍需从 `Stores=None` 迁移到 `taos`、`kafka`、`postgres`、`Redis`、`oss`、`nats`、`clickhouse` 完整目标。
 3. `domain_macro` 的实际 Go 包路径、字段名和版本契约仍需在 runtime 实现前确认。
-4. `sre/secrets/env/dev.md` 只能作为配置键名和装载约定来源，不能把 secret 值复制到 `module/fred/` 或 `/home/fred`。
+4. `sre/secrets/env/dev.md` 只能作为配置键名和装载约定来源，不能把 secret 值复制到 `module/fred/` 或 `/home/workspace/fred`。
 5. 集成验收依赖 dev 环境中的 FRED 凭证和七类基础设施可用性；未满足前只能完成文档与单元级验证。
 6. `ms_brain` 当前证据主要来自文档、spec 和 YAML 配置；在其 runtime 落地前，`fred` 只能先用 contract fixture 和回放样例闭合消费契约。

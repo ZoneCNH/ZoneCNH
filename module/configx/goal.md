@@ -1,6 +1,6 @@
 # configx 发布版本 1.2 Goal 定位与实现标准
 
-> ✅ **交付状态戳（2026-06-18 v1.2.0 发布更新）**：本 goal.md 描述 configx 1.0 的**完整目标基线**。运行时仓库 `/home/configx` 已通过 **v1.2.0** GitHub Release 完整交付 §2 中的全部 MUST 能力，包括此前推迟的 5 项：
+> ✅ **交付状态戳（2026-06-18 v1.2.0 发布更新）**：本 goal.md 描述 configx 1.0 的**完整目标基线**。运行时仓库 `/home/workspace/configx` 已通过 **v1.2.0** GitHub Release 完整交付 §2 中的全部 MUST 能力，包括此前推迟的 5 项：
 > - ✅ ArgsSource（命令行参数源）— `pkg/configx/source_args.go`
 > - ✅ RemoteSource SPI（远程配置源扩展点）— `pkg/configx/remote.go`
 > - ✅ `Bind(result, prefix, target)` 按 prefix 切片绑定 API — `pkg/configx/bind.go`

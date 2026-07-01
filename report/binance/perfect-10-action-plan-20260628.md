@@ -3,7 +3,7 @@
 > 创建日期：2026-06-28
 > 基线报告：`report/binance/deep-structural-analysis-20260628.md`
 > 目标：每个维度从当前评分提升至 10/10，达到生产级可发布状态
-> Spec-Version：v3.9.0 · Runtime-Version：v0.2.0 · Runtime-Anchor：`/home/binance@2efc44a`
+> Spec-Version：v3.9.0 · Runtime-Version：v0.2.0 · Runtime-Anchor：`/home/workspace/binance@2efc44a`
 
 > Current alignment note（2026-06-28 v3.9.6 → P10 fix round COMPLETE）：P10 修复轮已完成。43 GitHub issues (#1289~#1331) + 43 Beads issues 全部关闭。Phase 1（16 issues）deliverable 完整验证 [DONE]；Phase 2-6（27 issues）deliverable 已合并到 main，pending live infrastructure validation [DELIVERED]。10 轮验证全部 PASS（build/vet/test 19pkgs/boundary-gates 15/15/gofmt/YAML/scripts/issue-mapping 43/43）。Git 分支治理完成——ZoneCNH 与 Binance 两仓库均仅剩 main 分支，无 stash、无残留 worktree。当前 SSOT 为 `module/binance/spec/SPEC.md`（225 行）、`module/binance/matrix/TRACEABILITY.md`（114 行）、`module/binance/todo.md`（0 open/43 closed）与 `module/binance/evidence/2026-06-28/review/p10-issue-alignment.md`。当前结论为 `release_closeable=NO`（Code-Done 23/48 ≈ 47.9% < 90%）。ZoneCNH main: `bbb52654` = `origin/main`（protected, PR-only）。Binance main: `848e393` = `origin/main`。
 
@@ -343,7 +343,7 @@ release_closeable = (
 # scripts/spec-drift-check.sh
 # 对比 SPEC WHEN/THEN 数量与 runtime test 覆盖的分支数
 when_count=$(rg "^\*\*WHEN\*\*" module/binance/spec/SPEC.md | wc -l)
-test_count=$(rg "func Test" /home/binance/internal/ | wc -l)
+test_count=$(rg "func Test" /home/workspace/binance/internal/ | wc -l)
 # 当 when_count / test_count < 0.8 时 WARN
 ```
 

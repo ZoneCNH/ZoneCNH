@@ -5,7 +5,7 @@
 - Module-Version: v1.0.2
 - Module-State: 本地验收通过，待远端发布
 - Layer: L1 工程标准
-- Runtime-Repo: /home/xlib_standard
+- Runtime-Repo: /home/workspace/xlib-standard
 - Source: goal.md, SPEC.md, TRACEABILITY.md, IMPLEMENTATION-PLAN.md, README.md, tasks/, prompt/
 
 > 本清单用于约束 xlib_standard 的完整实现范围。条目来自本目录已有 Spec、Traceability、Plan、Task 等文档；若运行时代码状态与本文不一致，以相应模块仓库的最新验证证据补充更新本文。
@@ -14,8 +14,8 @@
 
 | 项目 | 证据 |
 | --- | --- |
-| 功能分支提交 | `/home/xlib-standard/.worktree/workspaces/xlib_standard` branch `xlib_standard` / `c899cf530f29ade438da048ddeff3f30584b6b04` |
-| 本地 main 合并提交 | `/home/xlib-standard/.worktree/workspaces/main-merge` branch `main` / `8c41021d5d2573c8c97ccd968d5d3fbf0b0bf872` |
+| 功能分支提交 | `/home/workspace/xlib-standard/.worktree/workspaces/xlib_standard` branch `xlib_standard` / `c899cf530f29ade438da048ddeff3f30584b6b04` |
+| 本地 main 合并提交 | `/home/workspace/xlib-standard/.worktree/workspaces/main-merge` branch `main` / `8c41021d5d2573c8c97ccd968d5d3fbf0b0bf872` |
 | Release 版本 | `v1.0.2` |
 | Release facts target | `26792dc01317794fb337a0dc81bd732285e49100`；`ci_pull_request` 本地上下文跳过 tag 校验 |
 | 本地发布验收 | `GOWORK=off XLIB_CONTEXT=ci_pull_request make release-check` 在功能分支与本地 main 合并提交均通过 |
@@ -32,7 +32,7 @@
 | --- | --- |
 | 模块职责 | Go 工程标准、目录约束、依赖边界与质量门禁 |
 | 文档目录 | module/xlib_standard |
-| 运行时代码目录 | /home/xlib_standard |
+| 运行时代码目录 | /home/workspace/xlib-standard |
 | Go 基线 | 1.23 |
 | 允许依赖 | 无 |
 | 禁止依赖 | 禁止越过 FOUNDATION-DEPS.yaml 登记边界依赖上层业务域或未授权基座模块 |
@@ -139,5 +139,5 @@
 - [x] 所有 BR/NFR 条目均有测试、静态检查或人工可审计证据覆盖（boundary、security、contracts、docs-check、cli-contract、adoption 与 evidence gates 通过）。
 - [x] 所有任务文档均能追溯到 FR、BR/NFR、AC 或 TC（traceability gate 与 `goalcli traceability-check` 在 release-preflight 中通过）。
 - [x] 依赖边界符合 FOUNDATION-DEPS.yaml，不引入未授权运行时依赖（boundary gate 与 `GOWORK=off go list -deps ./...` 相关检查通过）。
-- [x] 运行时代码仓库 /home/xlib_standard 的 lint、typecheck、test、coverage 与 release 验证证据已归档（v1.0.2 功能分支与本地 main 合并提交通过 `go test ./...`、100.0% coverage、`coverage-check`、`release-check` 与 goal score 10）。
+- [x] 运行时代码仓库 /home/workspace/xlib-standard 的 lint、typecheck、test、coverage 与 release 验证证据已归档（v1.0.2 功能分支与本地 main 合并提交通过 `go test ./...`、100.0% coverage、`coverage-check`、`release-check` 与 goal score 10）。
 - [x] 发布说明、版本号与本目录登记状态一致（v1.0.2 功能分支提交 `c899cf530f29ade438da048ddeff3f30584b6b04`，本地 main 合并提交 `8c41021d5d2573c8c97ccd968d5d3fbf0b0bf872`；远端 tag 与 GitHub Release 待执行）。

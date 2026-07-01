@@ -3,7 +3,7 @@
 - Spec-Version: v3.9.6
 - Module: binance
 - Last-Updated: 2026-06-29
-- Runtime-Repo: `/home/binance`
+- Runtime-Repo: `/home/workspace/binance`
 - Runtime-Version: v0.8.0
 - State-Model: single-state only
 - Current-State: 48 Done / 0 Partial / 0 Drifted / 0 Pending
@@ -23,7 +23,7 @@
 | 追溯矩阵 | `module/binance/matrix/TRACEABILITY.md` |
 | issue 投影 | Beads 与 GitHub issue 为当前 SSOT；历史本地投影归档于 `module/binance/evidence/2026-06-28/todo-archived.md` |
 | 配置 schema | `module/binance/design/CONFIG-SCHEMA.md` |
-| runtime 证据 | `/home/binance` 的测试、脚本、tag、CI/release evidence |
+| runtime 证据 | `/home/workspace/binance` 的测试、脚本、tag、CI/release evidence |
 
 ## 3. Scope
 
@@ -118,7 +118,7 @@
 | AC | Requirement |
 | --- | --- |
 | AC-001 | runtime tests pass before local completion claims |
-| AC-002 | `scripts/spec-runtime-drift-check.sh` passes in `/home/binance` |
+| AC-002 | `scripts/spec-runtime-drift-check.sh` passes in `/home/workspace/binance` |
 | AC-003 | active docs use only `binance.market.{product_line}.{event_type}.v1` for market subjects |
 | AC-004 | production `/ingest` is disabled or 404 |
 | AC-005 | `SPEC.md` remains compact; detailed parameter tables live in design docs |
@@ -135,7 +135,7 @@
 
 ## 11. Configuration
 
-Configuration parameters are owned by `module/binance/design/CONFIG-SCHEMA.md` and projected into `/home/binance/configs/binance-client.env.example` and `/home/binance/configs/binance-server.env.example`. This SPEC keeps only the ownership rule to avoid parameter-table duplication.
+Configuration parameters are owned by `module/binance/design/CONFIG-SCHEMA.md` and projected into `/home/workspace/binance/configs/binance-client.env.example` and `/home/workspace/binance/configs/binance-server.env.example`. This SPEC keeps only the ownership rule to avoid parameter-table duplication.
 
 ## 12. API Boundary
 
@@ -172,12 +172,12 @@ Deprecated root spec files were physically deleted in v3.9.5; history is recover
 Minimum local proof for this SPEC revision:
 
 ```bash
-cd /home/binance
+cd /home/workspace/binance
 bash -n scripts/spec-runtime-drift-check.sh
 scripts/spec-runtime-drift-check.sh
 go test ./...
 
-cd /home/ZoneCNH
+cd /home/workspace/ZoneCNH
 git diff --check
 wc -l module/binance/spec/SPEC.md module/binance/matrix/TRACEABILITY.md
 ```

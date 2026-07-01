@@ -5,7 +5,7 @@
 - Last-Updated: 2026-06-30
 - Layer: L1 基础能力（与 `module/FOUNDATION-DEPS.yaml` 登记一致；ACCEPTANCE/FEATURES/goal 同步对齐为 L1）
 - Version: v1.0.2
-- Runtime-Version: v1.0.2（运行时代码仓库 `/home/resiliencx` tag `v1.0.2`，commit `1aaa0dc`）
+- Runtime-Version: v1.0.2（运行时代码仓库 `/home/workspace/resiliencx` tag `v1.0.2`，commit `1aaa0dc`）
 - Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `kernel`
 
 > 公开投影 caveat：Status=Approved 与 v1.0.2 发布通过不等同于 Foundation factory-grade；BLK-007 关闭前机器事实层保持 factory=false。

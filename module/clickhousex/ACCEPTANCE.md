@@ -5,21 +5,21 @@
 - Module-Version: v1.0.10
 - Module-State: full client API 已验收；v1.0.10 production release gate（unit/race/vet/build/lint/coverage/live 集成/60s soak/benchmark/CI 配置）已在本地 release evidence 与版本元数据闭合；非 factory/L2-T4
 - Layer: L2 基础设施适配器
-- Runtime-Repo: /home/clickhousex
-- Source: goal.md, SPEC.md, TRACEABILITY.md, IMPLEMENTATION-PLAN.md, tasks/, /home/clickhousex/release/evidence/v1.0.10.md
+- Runtime-Repo: /home/workspace/clickhousex
+- Source: goal.md, SPEC.md, TRACEABILITY.md, IMPLEMENTATION-PLAN.md, tasks/, /home/workspace/clickhousex/release/evidence/v1.0.10.md
 
-> 本清单用于验收 clickhousex 是否达到可发布、可追溯、可复验状态。当前验收结论以运行时代码仓库 `/home/clickhousex` 的 `v1.0.10` release evidence、版本元数据与本地复验输出为准。v1.0.10 为生产门禁强化发布，客户端 API 与 AC/TC 覆盖范围与 v1.0.7 一致；远端 push、GitHub Release 与 v1.0.10 Actions 需后续触发，本清单不将其作为已完成证据。
+> 本清单用于验收 clickhousex 是否达到可发布、可追溯、可复验状态。当前验收结论以运行时代码仓库 `/home/workspace/clickhousex` 的 `v1.0.10` release evidence、版本元数据与本地复验输出为准。v1.0.10 为生产门禁强化发布，客户端 API 与 AC/TC 覆盖范围与 v1.0.7 一致；远端 push、GitHub Release 与 v1.0.10 Actions 需后续触发，本清单不将其作为已完成证据。
 
 ## 0. v1.0.10 验收结论
 
-- `/home/clickhousex` 的 `factory-grade-clickhousex` 分支完成 `v1.0.10` 生产门禁强化（commit `9356c77`）；版本元数据、release manifest 与 release evidence 已对齐到 `v1.0.10`。
+- `/home/workspace/clickhousex` 的 `factory-grade-clickhousex` 分支完成 `v1.0.10` 生产门禁强化（commit `9356c77`）；版本元数据、release manifest 与 release evidence 已对齐到 `v1.0.10`。
 - 本轮未执行远端 push 或 GitHub Release 创建；公开 release URL、v1.0.10 远端 Actions run 与 PR 编号不作为本次证据。
 - 已通过本地命令：`make release-check`（含 `go build ./...`、unit test、race、100.0% coverage、vet、contract/chaos/adoption/benchmark/release-check gates）、`make lint` 与 `git diff --check`。
 - 已对齐版本元数据与 release manifest：`VERSION`、`.repo-contract.yaml`、`pkg/clickhousex/version.go`、`CHANGELOG.md` 与 `release/manifest/latest.json` 均登记 `v1.0.10`。
 - CI/CD 已配置：`.github/workflows/ci.yml` 覆盖 `make test-coverage` 与 `make release-check`，`.github/workflows/factory-grade.yml` 覆盖 `make release-check`；`Makefile` 保留 `factory-check` 作为 factory/L2-T4 gate。
 - 公开 release evidence 保持密钥脱敏；使用 dev 配置时仅通过本地 shell 投影注入变量，文档不记录敏感值。
 - 已确认无 `configx` 依赖。
-- 已使用 `sre/secrets/env/dev.md` 的本地 shell 投影 `/home/ZoneCNH/sre/secrets/env/clickhousex.env` 完成真实 ClickHouse live 集成测试：`CLICKHOUSEX_RUN_INTEGRATION=1 GOWORK=off go test -count=1 -run TestClickHouseLiveIntegration -v ./pkg/clickhousex` 通过，覆盖 `New`、`Ping`、`HealthCheck`、`Exec`、`InsertBatch`、`Query`、`Rows` 元数据与扫描/cleanup。
+- 已使用 `sre/secrets/env/dev.md` 的本地 shell 投影 `/home/workspace/ZoneCNH/sre/secrets/env/clickhousex.env` 完成真实 ClickHouse live 集成测试：`CLICKHOUSEX_RUN_INTEGRATION=1 GOWORK=off go test -count=1 -run TestClickHouseLiveIntegration -v ./pkg/clickhousex` 通过，覆盖 `New`、`Ping`、`HealthCheck`、`Exec`、`InsertBatch`、`Query`、`Rows` 元数据与扫描/cleanup。
 - 已使用同一 dev 配置投影完成真实 ClickHouse live soak：`CLICKHOUSEX_RUN_INTEGRATION=1 CLICKHOUSEX_RUN_SOAK=1 CLICKHOUSEX_SOAK_DURATION=60s CLICKHOUSEX_SOAK_INTERVAL=100ms GOWORK=off go test -count=1 -run TestClickHouseLiveSoak -v ./pkg/clickhousex` 通过，结果 `duration=1m0s`、`iterations=329`、`interval=100ms`。
 - Benchmark 已完成：`make release-check` benchmark 阶段通过，基准结果包括 `BenchmarkClientExec` 约 `4156 ns/op`、`BenchmarkClientQueryRowsScan` 约 `5632 ns/op`、`BenchmarkClientInsertBatch` 约 `6155 ns/op`、`BenchmarkClientHealthCheck` 约 `1538 ns/op`。
 - 对外客户端 API 已验收：`New`、`Close`、`CloseContext`、`Ping`、`Health`、`HealthCheck`、`Exec`、`Query`、`Rows`、`Rows.ColumnTypes`、`InsertBatch`、retry、metrics、tracing、logger 与错误映射。
@@ -29,24 +29,24 @@
 
 | 类别 | 命令 | 通过标准 |
 | --- | --- | --- |
-| 文档存在性 | cd /home/ZoneCNH && test -f module/clickhousex/FEATURES.md && test -f module/clickhousex/ACCEPTANCE.md | FEATURES.md 与 ACCEPTANCE.md 均存在 |
-| 文档格式 | cd /home/ZoneCNH && git diff --check -- README.md module/README.md module/clickhousex/FEATURES.md module/clickhousex/ACCEPTANCE.md | 无尾随空格或补丁格式错误 |
-| 运行时测试 | cd /home/clickhousex && GOWORK=off go test ./... | 所有包测试通过 |
-| 竞态检查 | cd /home/clickhousex && GOWORK=off go test -race ./... | 无 data race，测试稳定通过 |
-| 静态检查 | cd /home/clickhousex && GOWORK=off go vet ./... | 无 vet 问题 |
-| 编译检查 | cd /home/clickhousex && GOWORK=off go build ./... | 所有包编译通过 |
-| Lint 检查 | cd /home/clickhousex && GOWORK=off golangci-lint run ./... | 零 lint issue |
-| 覆盖率证据 | cd /home/clickhousex && GOWORK=off go test ./... -covermode=atomic -coverprofile=coverage.out && GOWORK=off go tool cover -func=coverage.out | 总覆盖率 100.0% |
-| 真实 ClickHouse live 集成 | cd /home/clickhousex && set -a && . /home/ZoneCNH/sre/secrets/env/clickhousex.env && set +a && CLICKHOUSEX_RUN_INTEGRATION=1 GOWORK=off go test -count=1 -run TestClickHouseLiveIntegration -v ./pkg/clickhousex | 使用 `sre/secrets/env/dev.md` 的本地投影注入变量；`TestClickHouseLiveIntegration` PASS，覆盖 `New`、`Ping`、`HealthCheck`、`Exec`、`InsertBatch`、`Query`、`Rows` 元数据与扫描/cleanup |
-| 版本元数据一致性 | cd /home/clickhousex && test "$(cat VERSION)" = "v1.0.10" && rg -n "v1.0.10" .repo-contract.yaml pkg/clickhousex/version.go CHANGELOG.md release/manifest/latest.json | runtime 版本源、契约、CHANGELOG 与 release manifest 均指向 v1.0.10 |
-| 依赖边界 | cd /home/clickhousex && GOWORK=off go list -deps ./... | 输出不包含 `configx` |
-| API 边界 | cd /home/clickhousex && rg -n "func \\(c \\*Client\\) (Exec|Query|InsertBatch|Ping|Close|CloseContext)|func \\(c \\*Client\\) Health|func \\(c \\*Client\\) HealthCheck|type Rows interface|func \\(.*ColumnTypes" pkg/clickhousex | 完整客户端 API 可定位，且与 FEATURES.md 登记一致 |
-| CI Trust Alignment 配置 | cd /home/clickhousex && rg -n "trust-alignment|xlibgate trust identity|xlibgate trust template-residue|xlibgate trust secret-redaction" .github/workflows/ci.yml | workflow 已配置 identity/template-residue/secret-redaction；远端 v1.0.10 Actions 待 push 后触发 |
-| 真实 ClickHouse live soak | cd /home/clickhousex && set -a && . /home/ZoneCNH/sre/secrets/env/clickhousex.env && set +a && CLICKHOUSEX_RUN_INTEGRATION=1 CLICKHOUSEX_RUN_SOAK=1 CLICKHOUSEX_SOAK_DURATION=60s CLICKHOUSEX_SOAK_INTERVAL=100ms GOWORK=off go test -count=1 -run TestClickHouseLiveSoak -v ./pkg/clickhousex | 使用 `sre/secrets/env/dev.md` 的本地投影注入变量；`TestClickHouseLiveSoak` PASS，结果 `duration=1m0s`、`iterations=329`、`interval=100ms` |
-| Benchmark | cd /home/clickhousex && make release-check | benchmark stage PASS；Exec 约 `4156 ns/op`、QueryRowsScan 约 `5632 ns/op`、InsertBatch 约 `6155 ns/op`、HealthCheck 约 `1538 ns/op` |
-| CI/CD 工作流配置 | cd /home/clickhousex && test -f .github/workflows/ci.yml && test -f .github/workflows/factory-grade.yml && rg -n "test-coverage|release-check|factory-check" Makefile .github/workflows | release、coverage 与 factory gates 可定位；远端 v1.0.10 Actions 待 push 后触发 |
-| 本地 Release 对账 | cd /home/clickhousex && rg -n "v1.0.10" .repo-contract.yaml VERSION pkg/clickhousex/version.go CHANGELOG.md release/manifest/latest.json | 版本元数据、CHANGELOG 与 release manifest 均指向 v1.0.10 |
-| Factory L2-T4 gate | cd /home/clickhousex && make factory-check | 预期未通过：actual L2-T3, expected L2-T4；缺口为多小时 soak、外部 rollout 与 factory archive |
+| 文档存在性 | cd /home/workspace/ZoneCNH && test -f module/clickhousex/FEATURES.md && test -f module/clickhousex/ACCEPTANCE.md | FEATURES.md 与 ACCEPTANCE.md 均存在 |
+| 文档格式 | cd /home/workspace/ZoneCNH && git diff --check -- README.md module/README.md module/clickhousex/FEATURES.md module/clickhousex/ACCEPTANCE.md | 无尾随空格或补丁格式错误 |
+| 运行时测试 | cd /home/workspace/clickhousex && GOWORK=off go test ./... | 所有包测试通过 |
+| 竞态检查 | cd /home/workspace/clickhousex && GOWORK=off go test -race ./... | 无 data race，测试稳定通过 |
+| 静态检查 | cd /home/workspace/clickhousex && GOWORK=off go vet ./... | 无 vet 问题 |
+| 编译检查 | cd /home/workspace/clickhousex && GOWORK=off go build ./... | 所有包编译通过 |
+| Lint 检查 | cd /home/workspace/clickhousex && GOWORK=off golangci-lint run ./... | 零 lint issue |
+| 覆盖率证据 | cd /home/workspace/clickhousex && GOWORK=off go test ./... -covermode=atomic -coverprofile=coverage.out && GOWORK=off go tool cover -func=coverage.out | 总覆盖率 100.0% |
+| 真实 ClickHouse live 集成 | cd /home/workspace/clickhousex && set -a && . /home/workspace/ZoneCNH/sre/secrets/env/clickhousex.env && set +a && CLICKHOUSEX_RUN_INTEGRATION=1 GOWORK=off go test -count=1 -run TestClickHouseLiveIntegration -v ./pkg/clickhousex | 使用 `sre/secrets/env/dev.md` 的本地投影注入变量；`TestClickHouseLiveIntegration` PASS，覆盖 `New`、`Ping`、`HealthCheck`、`Exec`、`InsertBatch`、`Query`、`Rows` 元数据与扫描/cleanup |
+| 版本元数据一致性 | cd /home/workspace/clickhousex && test "$(cat VERSION)" = "v1.0.10" && rg -n "v1.0.10" .repo-contract.yaml pkg/clickhousex/version.go CHANGELOG.md release/manifest/latest.json | runtime 版本源、契约、CHANGELOG 与 release manifest 均指向 v1.0.10 |
+| 依赖边界 | cd /home/workspace/clickhousex && GOWORK=off go list -deps ./... | 输出不包含 `configx` |
+| API 边界 | cd /home/workspace/clickhousex && rg -n "func \\(c \\*Client\\) (Exec|Query|InsertBatch|Ping|Close|CloseContext)|func \\(c \\*Client\\) Health|func \\(c \\*Client\\) HealthCheck|type Rows interface|func \\(.*ColumnTypes" pkg/clickhousex | 完整客户端 API 可定位，且与 FEATURES.md 登记一致 |
+| CI Trust Alignment 配置 | cd /home/workspace/clickhousex && rg -n "trust-alignment|xlibgate trust identity|xlibgate trust template-residue|xlibgate trust secret-redaction" .github/workflows/ci.yml | workflow 已配置 identity/template-residue/secret-redaction；远端 v1.0.10 Actions 待 push 后触发 |
+| 真实 ClickHouse live soak | cd /home/workspace/clickhousex && set -a && . /home/workspace/ZoneCNH/sre/secrets/env/clickhousex.env && set +a && CLICKHOUSEX_RUN_INTEGRATION=1 CLICKHOUSEX_RUN_SOAK=1 CLICKHOUSEX_SOAK_DURATION=60s CLICKHOUSEX_SOAK_INTERVAL=100ms GOWORK=off go test -count=1 -run TestClickHouseLiveSoak -v ./pkg/clickhousex | 使用 `sre/secrets/env/dev.md` 的本地投影注入变量；`TestClickHouseLiveSoak` PASS，结果 `duration=1m0s`、`iterations=329`、`interval=100ms` |
+| Benchmark | cd /home/workspace/clickhousex && make release-check | benchmark stage PASS；Exec 约 `4156 ns/op`、QueryRowsScan 约 `5632 ns/op`、InsertBatch 约 `6155 ns/op`、HealthCheck 约 `1538 ns/op` |
+| CI/CD 工作流配置 | cd /home/workspace/clickhousex && test -f .github/workflows/ci.yml && test -f .github/workflows/factory-grade.yml && rg -n "test-coverage|release-check|factory-check" Makefile .github/workflows | release、coverage 与 factory gates 可定位；远端 v1.0.10 Actions 待 push 后触发 |
+| 本地 Release 对账 | cd /home/workspace/clickhousex && rg -n "v1.0.10" .repo-contract.yaml VERSION pkg/clickhousex/version.go CHANGELOG.md release/manifest/latest.json | 版本元数据、CHANGELOG 与 release manifest 均指向 v1.0.10 |
+| Factory L2-T4 gate | cd /home/workspace/clickhousex && make factory-check | 预期未通过：actual L2-T3, expected L2-T4；缺口为多小时 soak、外部 rollout 与 factory archive |
 
 ## 2. AC 验收登记
 
@@ -104,7 +104,7 @@
 
 - [x] FEATURES.md 的 FR、BR/NFR、任务清单与 SPEC/TRACEABILITY 当前登记一致。
 - [x] ACCEPTANCE.md 的 AC、TC 与运行时代码测试名、证据文件或 CI 记录一致。
-- [x] 运行时代码仓库 /home/clickhousex 通过 `make release-check`、`make lint`、`git diff --check`、覆盖率门槛、版本元数据与 release evidence 对账。
+- [x] 运行时代码仓库 /home/workspace/clickhousex 通过 `make release-check`、`make lint`、`git diff --check`、覆盖率门槛、版本元数据与 release evidence 对账。
 - [x] 所有外部服务依赖有本地可重复的测试替身或明确 live-gate 证据；本地真实 ClickHouse live 集成测试与 60s live soak 均已通过，生产时长多小时 soak 仍作为 factory 前缺口登记。
 - [x] 安全检查确认没有凭证、私有端点、账户 ID 或实盘配置进入公开文档与代码；公开 release evidence 保持密钥脱敏，dev 配置只作本地投影。
 - [x] 版本号、CHANGELOG、release manifest 与本目录状态一致。

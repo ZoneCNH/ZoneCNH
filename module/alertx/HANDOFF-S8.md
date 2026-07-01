@@ -43,9 +43,9 @@
 
 ### 仓库位置
 
-- **alertx 代码仓**：`/home/alertx`（**当前不存在，需新建 + git init**）
-- **开发分支**：`/home/alertx/.worktree/workspaces/feat/alertx-v1.0.0`（§0 分支纪律）
-- **contracts 依赖**：`/home/contracts`（feat/contracts-alert-types 分支，pkg/contracts/alert.go 已实现，待 v1.6.0 tag）
+- **alertx 代码仓**：`/home/workspace/alertx`（**当前不存在，需新建 + git init**）
+- **开发分支**：`/home/workspace/alertx/.worktree/workspaces/feat/alertx-v1.0.0`（§0 分支纪律）
+- **contracts 依赖**：`/home/workspace/contracts`（feat/contracts-alert-types 分支，pkg/contracts/alert.go 已实现，待 v1.6.0 tag）
 
 ### Task 实现顺序（关键路径，依赖链无环）
 
@@ -70,7 +70,7 @@
 
 ```bash
 # 1. 新建 alertx 仓 + git init
-mkdir -p /home/alertx && cd /home/alertx && git init
+mkdir -p /home/workspace/alertx && cd /home/workspace/alertx && git init
 
 # 2. 创建开发分支（worktree 或 feature branch，§0 纪律）
 git checkout -b feat/alertx-v1.0.0
@@ -100,15 +100,15 @@ git checkout -b feat/alertx-v1.0.0
 
 | 制品 | 路径 | 用途 |
 | --- | --- | --- |
-| **SPEC** | `/home/ZoneCNH/module/alertx/SPEC.md` | 23 节权威规格（Status: Approved） |
-| **PLAN** | `/home/ZoneCNH/module/alertx/IMPLEMENTATION-PLAN.md` | 实现步骤+文件归属+技术决策+回滚 |
-| **PROMPT** | `/home/ZoneCNH/module/alertx/prompt/PROMPT-ALERTX-001~008.md` | 每 task 的 Context Packet |
-| **TASK** | `/home/ZoneCNH/module/alertx/tasks/TASK-ALERTX-001~008.md` | 每 task 的验收标准 |
-| **TRACEABILITY** | `/home/ZoneCNH/module/alertx/TRACEABILITY.md` | FR→AC→TC 映射（Status ⏳ 待 S8 翻 ✅） |
-| **ADR-001** | `/home/ZoneCNH/module/alertx/ADR-001-foundations.md` | 架构基线（双订阅/YAML DSL/v1.0.0） |
-| **contracts alert.go** | `/home/contracts/pkg/contracts/alert.go` | 已实现的契约类型（AlertEvent/AlertRule/Severity/AlertStatus/AlertSink/AlertRuleStore） |
-| **observex 范本** | `/home/observex/` | 生产级 Go 模块布局范本（库布局，alertx 需加 cmd/ + Dockerfile） |
-| **observex SPEC** | `/home/ZoneCNH/module/observex/SPEC.md` | FR/BR/接口写法范式参照 |
+| **SPEC** | `/home/workspace/ZoneCNH/module/alertx/SPEC.md` | 23 节权威规格（Status: Approved） |
+| **PLAN** | `/home/workspace/ZoneCNH/module/alertx/IMPLEMENTATION-PLAN.md` | 实现步骤+文件归属+技术决策+回滚 |
+| **PROMPT** | `/home/workspace/ZoneCNH/module/alertx/prompt/PROMPT-ALERTX-001~008.md` | 每 task 的 Context Packet |
+| **TASK** | `/home/workspace/ZoneCNH/module/alertx/tasks/TASK-ALERTX-001~008.md` | 每 task 的验收标准 |
+| **TRACEABILITY** | `/home/workspace/ZoneCNH/module/alertx/TRACEABILITY.md` | FR→AC→TC 映射（Status ⏳ 待 S8 翻 ✅） |
+| **ADR-001** | `/home/workspace/ZoneCNH/module/alertx/ADR-001-foundations.md` | 架构基线（双订阅/YAML DSL/v1.0.0） |
+| **contracts alert.go** | `/home/workspace/contracts/pkg/contracts/alert.go` | 已实现的契约类型（AlertEvent/AlertRule/Severity/AlertStatus/AlertSink/AlertRuleStore） |
+| **observex 范本** | `/home/workspace/observex/` | 生产级 Go 模块布局范本（库布局，alertx 需加 cmd/ + Dockerfile） |
+| **observex SPEC** | `/home/workspace/ZoneCNH/module/observex/SPEC.md` | FR/BR/接口写法范式参照 |
 
 ---
 
@@ -143,7 +143,7 @@ git checkout -b feat/alertx-v1.0.0
 
 ### go.mod 依赖（版本对齐，来自 composer go.mod）
 
-- `github.com/ZoneCNH/contracts v1.6.0-alert`（本地 replace → /home/contracts，待 contracts 发 v1.6.0 tag）
+- `github.com/ZoneCNH/contracts v1.6.0-alert`（本地 replace → /home/workspace/contracts，待 contracts 发 v1.6.0 tag）
 - `github.com/ZoneCNH/observex v0.3.1+`
 - `github.com/ZoneCNH/kernel v1.0.0` / `configx v1.0.0` / `resiliencx v0.4.9`
 - `gopkg.in/yaml.v3`（DSL 解析）
@@ -153,7 +153,7 @@ git checkout -b feat/alertx-v1.0.0
 ## 5. 评分基础设施（S8 code gate 用）
 
 ```bash
-# 三个脚本都在 /home/ZoneCNH/scripts/
+# 三个脚本都在 /home/workspace/ZoneCNH/scripts/
 # 状态目录：.omc/state/pipeline/alertx/{stage}/{scores/,verdict.json}
 
 # code gate 流程：
@@ -196,7 +196,7 @@ python3 scripts/arbiter.py alertx code --runtime claude --force # 仲裁（--for
 
 | 风险 | 缓解 |
 | --- | --- |
-| contracts v1.6.0 未发 tag | TASK-001 用 replace 指向 /home/contracts，发 tag 后改 require |
+| contracts v1.6.0 未发 tag | TASK-001 用 replace 指向 /home/workspace/contracts，发 tag 后改 require |
 | observex Exporter 接口与订阅假设不符 | TASK-006 先验证 observex Exporter 签名 |
 | Soak 发现内存泄漏 | TASK-008 Soak harness 监控，泄漏则修复重跑 |
 | webhook 集成测试需 HTTP server | 用 httptest.Server mock，不依赖外部 |
@@ -209,9 +209,9 @@ python3 scripts/arbiter.py alertx code --runtime claude --force # 仲裁（--for
 继续 alertx 生产化项目的 S8 Code 阶段。
 
 背景：S0-S7 已全部完成（7 个 gate PASS），规格→制品全链闭合。详见交接文档：
-/home/ZoneCNH/module/alertx/HANDOFF-S8.md
+/home/workspace/ZoneCNH/module/alertx/HANDOFF-S8.md
 
-任务：在 /home/alertx 新建 Go 仓，按 TASK-ALERTX-001~008 顺序实现完整代码 + 测试 + CI。
+任务：在 /home/workspace/alertx 新建 Go 仓，按 TASK-ALERTX-001~008 顺序实现完整代码 + 测试 + CI。
 
 起手：从 TASK-001 开始（读 PROMPT-ALERTX-001.md → TASK-ALERTX-001.md → SPEC §8/§9/§11/§13），
 每个 task 完成后验证 + code gate，全部完成后进入 S9 验收 + Release v1.0.0。

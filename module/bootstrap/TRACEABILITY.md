@@ -4,7 +4,7 @@
 
 Last-Updated: 2026-06-30
 Source: SPEC.md, FEATURES.md, ACCEPTANCE.md
-Runtime-Repo: /home/bootstrap
+Runtime-Repo: /home/workspace/bootstrap
 
 > 本矩阵补齐 bootstrap 的 FEATURES/ACCEPTANCE 追溯输入。v0.1.0 仅 Stores=None 路径已发布；非 None 存储构造、foundationx 清零与 Spec Approved 属于 v0.2.0 准入。
 
@@ -110,6 +110,6 @@ Runtime-Repo: /home/bootstrap
 ## 当前缺口
 
 - `module/bootstrap/SPEC.md` 仍为 Draft；发布前需通过 Spec 管线翻转 Approved。
-- `/home/bootstrap` 运行时测试、race、vet、coverage 与 boundary gate 证据需重新归档。
+- `/home/workspace/bootstrap` 运行时测试、race、vet、coverage 与 boundary gate 证据需重新归档。
 - Stores=None 是 v0.1.0 已发布路径；Stores=All、TD/PG 组合与其他非 None 位组合属于 v0.2.0 准入。
 - OQ-004 仍未关闭：`stores.go` 中 foundationx 遗留依赖需在 v0.1.1 或 v0.2.0 前清零。

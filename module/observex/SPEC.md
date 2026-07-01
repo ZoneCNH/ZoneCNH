@@ -814,6 +814,6 @@ Then 返回 false
 | --------------- | ------- | ------------------------------------------ | ------------------------------------- |
 | Spec-Version    | v1.0.1  | 本规格文档版本                             | 本文件头部                            |
 | Version（模块） | v1.0.0  | 模块发布目标版本（API 冻结目标，尚未达成） | 本文件头部、goal.md                   |
-| Runtime Tag     | v0.3.1  | 运行时仓库已发布 git tag（实证事实层）     | `/home/observex`、ARCHITECTURE.md     |
+| Runtime Tag     | v0.3.1  | 运行时仓库已发布 git tag（实证事实层）     | `/home/workspace/observex`、ARCHITECTURE.md     |
 
 > Spec-Version v1.0.1 描述当前规格状态；模块尚未达到 v1.0.0 发布（Runtime 仍在 v0.3.1）。发布 DoD 全部达成且 Runtime tag 推进到 v1.0.0 后，三轴对齐。
