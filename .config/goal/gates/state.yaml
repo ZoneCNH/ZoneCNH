@@ -765,7 +765,7 @@ gates:
     pass_with_risk_max: 97
   allow_pass_with_risk: true
   risk:
-    risk_id: RISK-BINANCE-SPEC-001
+    risk_id: RISK-GOAL-BINANCE-001-001
     risk_owner: ZoneCNH
     risk_level: low
     risk_reason: 原评分 97/100，P2（DEPRECATED 文件目录重组）+ P3（子模块 TC→SC 重编号）已修复，评分提升至 98/100，达到门禁。
@@ -986,7 +986,7 @@ gates:
       evidence: build/vet/test-race/boundary-gates(14/14)/golangci-lint/govulncheck 全 PASS
     - check: 无 release_blocking 风险
       status: PASS
-      evidence: RISK-BINANCE-SPEC-001 release_blocking=false
+      evidence: RISK-GOAL-BINANCE-001-001 release_blocking=false
 - gate_id: GB-11
   gate_name: Retrospective Gate
   type: Semantic
