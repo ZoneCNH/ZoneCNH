@@ -125,3 +125,18 @@
 - [v0.3.0]: https://github.com/ZoneCNH/ZoneCNH/releases/tag/v0.3.0
 - [v0.2.0]: https://github.com/ZoneCNH/ZoneCNH/releases/tag/v0.2.0
 - [v0.1.0]: https://github.com/ZoneCNH/ZoneCNH/releases/tag/v0.1.0
+
+
+
+凯利准则
+
+几何布朗运动
+协整与统计套利
+高维神经网络
+隐马尔可夫模型
+主成分分析
+copula尾部相关性
+BSM期权定价
+Markowitz均值方差优化
+GARCH波动率模型
+

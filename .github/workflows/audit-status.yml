@@ -28,6 +28,7 @@ jobs:
           bash -n .github/ci/status-consistency-check.sh
       - name: Run audit regression tests
         run: |
+          pip install pytest
           python3 -m pytest scripts/tests -q
       - name: Run cross-document consistency check
         run: |
