@@ -1,6 +1,6 @@
 # binance 二进制构建与部署
 
-- Runtime-Version: v0.10.0（anchor: `/home/binance@e424c25` — lifecycle worker + full gap repair pipeline）
+- Runtime-Version: v0.11.0（anchor: `/home/binance@f53303f` — gap repair runtime bug fixes: NATS timeout, kline storage, stale gate exemption, repair re-publish）
 - Target: jp1 (84.247.154.45)
 - Last-Updated: 2026-07-01
 
@@ -802,22 +802,25 @@ taosx [PR #21](https://github.com/ZoneCNH/taosx/pull/21)（tag v1.0.3）修复�
 - purge/restart 后 `lastEventTime` / `lastSequence` map（`quality.go:18-19`）清空，重建 baseline 时业务序列号（trade_id 等）天然不连续，每条不连续触发 `gapDetected++`
 - **这不是 NATS JetStream 消费者层面的 sequence gap**——NATS durable consumer（`consumer.go:20-29`，durable=`binance-server`，AckExplicit，AckWait=30s，MaxDeliver=5）本身不丢数据
 
-**gap repair 机制现状**（binance #361/#362 后更新）：
+**gap repair 机制现状**（binance #361/#362/#364 后更新）：
 
 | 层面                            | 状态                          | 证据                                                            |
 | ------------------------------- | ----------------------------- | --------------------------------------------------------------- |
 | gap 检测                        | ✅ 完整                       | `quality.go:50-218`（sequence + event-time 双检测）             |
 | gap 计数/metrics                | ✅ 完整                       | `quality.go:70`, `metrics.go:221-224`, `admin.go:255`           |
-| AlertDispatcher                 | ✅ 已接线（NATS publisher）   | `assemble.go` — `lazyNATSPublisher` 延迟绑定 NATS client        |
+| AlertDispatcher                 | ✅ 已接线（NATS publisher + 5s timeout） | `assemble.go` — `lazyNATSPublisher` 延迟绑定 + `context.WithTimeout` |
 | ReplayBridge                    | ✅ 已接线                     | `assemble.go` — `InMemoryReplayBridge` 实例化并注入             |
 | Replay job worker               | ✅ 30s drain + NATS 发布      | `assemble.go` Run goroutine — Drain(64) → publish → MarkDone    |
 | NATS 缺失消息请求               | ✅ 发布到 `binance.replay.requests` | replay worker 将 ReplayJob 作为 natsx Envelope 发布       |
 | Server 侧 REST 回填             | ❌ 无代码（设计如此）         | server 不直接调 Binance REST，由 client 执行                    |
-| Client 侧 gap-fill              | ✅ 自动触发（NATS 订阅）      | `runtime.go` — `GapAlertSubscriber` 订阅 → `QueueGapFill`       |
-| Server↔Client 自动联动          | ✅ 完整闭环                   | server replay worker → NATS → client subscriber → QueueGapFill  |
-| durable historical fetch/replay | ✅ HistoryRuntime.RequestBackfill | `history_lifecycle.go:328-414` — HistoryFetcher async REST fetch  |
+| Client 侧 gap-fill              | ✅ 自动触发（NATS 订阅）+ 无效区间跳过 | `runtime.go` — `GapAlertSubscriber` 订阅 → `QueueGapFill`（`startTime >= endTime` 跳过） |
+| Repair re-publish               | ✅ RepairIngestor 回填再发布   | `history_lifecycle.go` — `republishBackfill` 以 `repair=verified` 元数据重新发布 |
+| Stale gate 修复豁免             | ✅ repair=verified 豁免       | `server.go` — `SourceMetadata["repair"]=="verified"` 跳过 stale 检查 |
+| Server↔Client 自动联动          | ✅ 完整闭环 + repair 验证     | server replay worker → NATS → client → QueueGapFill → REST fetch → RepairIngestor → server 豁免 stale → 存储 |
+| durable historical fetch/replay | ✅ HistoryRuntime.RequestBackfill + RepairIngestor | `history_lifecycle.go` — HistoryFetcher async REST fetch → republishBackfill |
+| Kline 存储路由                  | ✅ bar/kline 双匹配           | `taos_writer.go` — `toPoint`/`taosDeleteStable` 匹配 `"bar"` 和 `"kline"` |
 
-**结论：38272 gap 为历史遗留。** gap 检测是纯观测性的，不阻塞处理（`quality.go:63-80` 在 `observe()` 内，事件仍正常接受/持久化/ACK）。server→client 自动联动已完整闭环：replay worker 30s drain → 发布到 `binance.replay.requests` → client 订阅 → 自动 `QueueGapFill` → lifecycle worker 30s drain → `HistoryRuntime.RequestBackfill` → `HistoryFetcher.FetchHistorical` (REST) → 任务完成。
+**结论：38272 gap 为历史遗留。** gap 检测是纯观测性的，不阻塞处理（`quality.go:63-80` 在 `observe()` 内，事件仍正常接受/持久化/ACK）。server→client 自动联动已完整闭环：replay worker 30s drain → 发布到 `binance.replay.requests` → client 订阅 → 自动 `QueueGapFill` → lifecycle worker 30s drain（跳过零时长任务）→ `HistoryRuntime.RequestBackfill` → `HistoryFetcher.FetchHistorical` (REST，aggTrades 不传 interval 参数) → `RepairIngestor.Ingest`（`repair=verified` 元数据）→ server stale gate 豁免 → TDengine 存储持久化（kline→st_bar）。
 
 **手动操作**：
 
@@ -825,7 +828,28 @@ taosx [PR #21](https://github.com/ZoneCNH/taosx/pull/21)（tag v1.0.3）修复�
 2. **回填已丢数据**：手动调用 client admin API `POST /api/v1/admin/backfill/gap-fill`（`internal/client/admin.go:114`），指定时间范围和 symbol 从 Binance REST 回填
 3. **已实现（server）**：replay worker（30s drain + NATS 发布到 `binance.replay.requests`）+ AlertDispatcher NATS 发布（gap alert 到 `binance.alerts.runtime`）
 4. **已实现（client 订阅）**：`GapAlertSubscriber` 订阅 `binance.replay.requests`，自动触发 `QueueGapFill`（`runtime.go` RunStandalone goroutine）
-5. **已实现（client 执行）**：lifecycle worker 30s drain queued tasks → `HistoryRuntime.RequestBackfill` → `HistoryFetcher.FetchHistorical` (REST) → 任务完成
+5. **已实现（client 执行）**：lifecycle worker 30s drain queued tasks（跳过零时长 `start >= end` 任务）→ `HistoryRuntime.RequestBackfill` → `HistoryFetcher.FetchHistorical` (REST) → `RepairIngestor.Ingest` 以 `repair=verified` 元数据重新发布 → server stale gate 豁免 → 存储
+
+### 13.6 gap repair runtime bugs（commit f53303f，PR #364）
+
+**症状**：gap repair 管线在首次端到端运行时发现 8 个运行时 bug，导致 NATS 发布超时、aggTrades REST 400、kline 事件未存储、stale gate 误拒回填事件、零时长任务空转等问题。
+
+**修复**（commit `f53303f`，10 项措施）：
+
+| #   | 症状                                       | 根因                                                                 | 修复                                                                        |
+| --- | ------------------------------------------ | -------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| G1  | NATS 发布阻塞（lazyNATSPublisher 无超时）   | `lazyNATSPublisher.Publish` 直接透传 context，无超时保护              | 新增 `context.WithTimeout(ctx, 5s)` 防止单条发布阻塞                       |
+| G2  | aggTrades REST 400 错误                     | `history_rest` 对所有 eventType 都传 `interval` 参数，aggTrades 不支持 | 仅 kline 类型传 `interval`，trade/aggTrade 不传                             |
+| G3  | 零时长 gap 任务空转                         | `lifecycle_worker` 未检查 `EndTime <= StartTime`                     | `start >= end` 时直接标记完成跳过                                           |
+| G4  | aggTrades JSON 解析失败                     | `history_rest` 用 `parseKlineArray` 解析 aggTrades 的 `[]object` 格式 | 新增 `parseAggTradeArray` 解析 aggTrades 响应                               |
+| G5  | 回填事件未进入存储                         | `HistoryRuntime` fetch 完成后未重新发布到 ingest pipeline             | 新增 `RepairIngestor` 接口 + `republishBackfill` 以 `repair=verified` 发布 |
+| G6  | Stale gate 误拒回填事件                    | `server.go` stale gate 对所有事件统一检查 `now.Sub(EventTime)`        | `SourceMetadata["repair"]=="verified"` 豁免 stale 检查                     |
+| G7  | Kline 事件未写入 TDengine                  | `taos_writer.toPoint`/`taosDeleteStable` 仅匹配 `"bar"` 不匹配 `"kline"` | `"bar"` 和 `"kline"` 双匹配，路由到 `st_bar`                                |
+| G8  | REST kline 数组未转换为事件对象             | `parseKlineArray` 直接 marshal 数组行，缺少 `e`/`E`/`k` 字段          | 转换为 `{e:"kline", E:openTime, k:{...}}` 对象格式                          |
+| G9  | 无效 gap-fill（endTime <= startTime）      | `runtime.go` gap alert handler 未校验时间区间有效性                  | `startTime.Before(endTime)` 校验，无效区间跳过                              |
+| G10 | KafkaConfig struct 字段未对齐（gofmt）      | `SASLMechanism` 字段对齐不一致                                        | gofmt 统一对齐                                                               |
+
+**影响范围**：`history_lifecycle.go`、`history_rest.go`、`lifecycle_worker.go`、`runtime.go`、`server.go`、`assemble.go`、`taos_writer.go`、`config.go`（12 文件，+180/-24 行）。
 
 ---
 
