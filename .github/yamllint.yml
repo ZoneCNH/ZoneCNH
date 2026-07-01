@@ -14,4 +14,4 @@ rules:
   document-start: disable
   indentation:
     spaces: 2
-    indent-sequences: true
+    indent-sequences: consistent
