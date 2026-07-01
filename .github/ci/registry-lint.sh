@@ -115,7 +115,7 @@ VALID_DOMAINS = {"foundation", "l2_5", "data", "analytics", "decision",
 VALID_LAYERS = {"L0", "L1", "storage", "contracts", "l2_5",
                 "standard_source", "harness", "evidence", "gate", "business"}
 VALID_ARCH_TYPES = {"library", "cs_module", "independent_process", "cli", "contract"}
-VALID_LIFECYCLES = {"proposed", "active", "maintained", "deprecated", "archived"}
+VALID_LIFECYCLES = {"proposed", "active", "maintained", "deprecated", "archived", "production"}
 
 print("--- 规则 3: 枚举合法性 ---")
 for name, mod in modules.items():
@@ -136,8 +136,8 @@ for name, mod in modules.items():
 print("")
 
 # --- 规则 4：格式校验 ---
-REPO_RE = re.compile(r"^github\.com/ZoneCNH/[a-z0-9_.]+$")
-PATH_RE = re.compile(r"^/home/[a-z0-9_.]+$")
+REPO_RE = re.compile(r"^github\.com/ZoneCNH/[a-z0-9_.-]+$")
+PATH_RE = re.compile(r"^/home/workspace/[a-z0-9_.-]+$")
 VERSION_RE = re.compile(r"^v\d+\.\d+\.\d+")
 
 print("--- 规则 4: 格式校验 ---")
@@ -149,16 +149,17 @@ for name, mod in modules.items():
 
     repo = mod.get("repo")
     if isinstance(repo, str) and repo != "~":
-        expected_repo = f"github.com/ZoneCNH/{name}"
-        if repo != expected_repo:
+        # GitHub repo name may use hyphens while module name uses underscores (e.g. xlib_standard → xlib-standard)
+        expected_repo = f"github.com/ZoneCNH/{name.replace('_', '-')}"
+        if repo != expected_repo and repo != f"github.com/ZoneCNH/{name}":
             err(f"{name}: repo={repo!r} 应为 {expected_repo!r}")
         elif not REPO_RE.match(repo):
             err(f"{name}: repo={repo!r} 格式不合规")
 
     lp = mod.get("local_path")
     if isinstance(lp, str) and lp != "~":
-        expected_path = f"/home/{name}"
-        if lp != expected_path:
+        expected_path = f"/home/workspace/{name.replace('_', '-')}"
+        if lp != expected_path and lp != f"/home/workspace/{name}":
             err(f"{name}: local_path={lp!r} 应为 {expected_path!r}")
         elif not PATH_RE.match(lp):
             err(f"{name}: local_path={lp!r} 格式不合规")
