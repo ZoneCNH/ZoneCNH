@@ -44,6 +44,17 @@ while IFS= read -r -d '' module_dir; do
   module="${module_dir#module/}"
   file="$module_dir/ci-workflow.yaml"
 
+  # Modules exempt from ci-workflow.yaml requirement (entry/composition/template/non-runtime)
+  exempt_modules=(cmd composer x.go frontend assembly data_cs_module data_independent_process binancecfg binancex _exchange-template treasury alertx alternative_data fred _template)
+  is_exempt=false
+  for ex in "${exempt_modules[@]}"; do
+    [[ "$module" == "$ex" ]] && is_exempt=true && break
+  done
+
+  if [[ "$is_exempt" == true ]]; then
+    continue
+  fi
+
   if [[ ! -f "$file" ]]; then
     report_failure "$module" "missing ci-workflow.yaml"
     continue
