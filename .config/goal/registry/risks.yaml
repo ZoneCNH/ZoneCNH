@@ -89,7 +89,7 @@ risks:
     related_tasks:
       - TASK-GOAL-20260608-001-003
 
-  - risk_id: RISK-BINANCE-SPEC-001
+  - risk_id: RISK-GOAL-BINANCE-001-001
     document_version: "2026-06-28"
     goal_id: GOAL-BINANCE-20260601-001
     title: SPEC 结构性评分 97/100（差 98 门禁 1 分）
