@@ -20,6 +20,7 @@
 | FR-006 | `MarketDataService.Ingest(...)`、`IngestRequest`、`IngestResult`、`IngestAck`、`IngestReject`、`RejectCode`、`AllRejectCodes()` | `ingestion.go` | `SPEC.md`、`README.md`、`FEATURES.md` | `TASK-CONTRACTS-005` |
 | FR-007 | `RegimeSnapshotEvent`、`RegimeCardEvent`、`DecisionCardEvent`、`MarketRegimePort`、`MacroRegimePort`、`RegimeEnginePort` | `projections.go` | `SPEC.md`、`README.md`、`FEATURES.md` | `TASK-CONTRACTS-003` |
 | FR-008 | 文档基线与 runtime truth 同步 | `/home/workspace/contracts/pkg/contracts`、`module/contracts/*` | `SPEC.md`、`README.md`、`goal.md`、`TRACEABILITY.md`、`ACCEPTANCE.md`、`FEATURES.md`、`IMPLEMENTATION-PLAN.md`、`tasks/` | `TASK-CONTRACTS-004` |
+| FR-009 | `AlertEvent`、`AlertRule`、`Severity`、`AlertStatus`、`AlertSink`、`AlertRuleStore` 告警跨域稳定契约面 | `alert.go` | `SPEC.md`、`README.md`、`FEATURES.md` | `TASK-CONTRACTS-005` |
 
 ---
 

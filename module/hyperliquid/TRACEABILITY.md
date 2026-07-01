@@ -18,7 +18,7 @@
 | FR-004 | At-Least-Once Delivery（继承） | AC-008~AC-010 | TC-006 | - | Pending |
 | FR-005 | Idempotent Acceptance（含 onchain 维度） | AC-011~AC-013 | TC-007, TC-019 | - | Pending |
 | FR-006 | Admin Surface（含 wallet-health / chain-status 端点） | AC-014~AC-017 | TC-008, TC-009 | - | Pending |
-| FR-007 | Boundary Enforcement（继承 + 钱包安全 gate） | AC-018~AC-020 | TC-010~TC-012 | - | Pending |
+| FR-007 | Boundary Enforcement（继承 + 钱包安全 gate） | AC-018~AC-020 | TC-010, TC-011, TC-012 | - | Pending |
 | FR-008 | Onchain Origin Metadata（DEX 特异） | AC-021, AC-022 | TC-019, TC-020 | - | Pending |
 | FR-009 | Wallet Signature Management（DEX 特异） | AC-023, AC-024 | TC-022, TC-023 | - | Pending |
 
@@ -49,13 +49,18 @@
 
 | TC ID | 覆盖 FR(s) | 覆盖 BR(s) | 测试类型 |
 |-------|------------|------------|----------|
-| TC-001, TC-002 | FR-001 | — | 集成（Perp + Spot connector） |
-| TC-003, TC-004 | FR-002 | BR-005 | 单元（identity） |
+| TC-001 | FR-001 | — | 集成（Perp + Spot connector） |
+| TC-002 | FR-001 | — | 集成（Perp + Spot connector） |
+| TC-003 | FR-002 | BR-005 | 单元（identity） |
+| TC-004 | FR-002 | BR-005 | 单元（identity） |
 | TC-005 | FR-003 | BR-007 | 契约测试 |
 | TC-006 | FR-004 | BR-004, BR-008 | 集成 |
 | TC-007 | FR-005 | BR-008 | 集成 |
-| TC-008, TC-009 | FR-006 | BR-009 | 单元 + 集成 |
-| TC-010 ~ TC-012 | FR-007 | BR-001 ~ BR-003 | CI gate |
+| TC-008 | FR-006 | BR-009 | 单元 + 集成 |
+| TC-009 | FR-006 | BR-009 | 单元 + 集成 |
+| TC-010 | FR-007 | BR-001 | CI gate |
+| TC-011 | FR-007 | BR-002 | CI gate |
+| TC-012 | FR-007 | BR-003 | CI gate |
 | TC-019 | FR-005, FR-008 | BR-010 | 单元（onchain idempotency key） |
 | TC-020 | FR-008 | — | 集成（confirmation gate） |
 | TC-021 | FR-008 | — | 集成（reorg detection） |

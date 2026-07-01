@@ -23,6 +23,7 @@ Last-Updated: 2026-06-30
 | FR-010 | Counter 与 fixed-window RateLimitHelper — 原子执行 incr/add/get/reset/allow，返回 remaining/resetAt，保证窗口 TTL | AC-010-1 | TC-010 | TASK-REDISX-010 | `go test ./... -run TestRateLimit` | ✅ |
 | FR-011 | JSON 默认 Codec 与自定义 Codec SPI — 默认 JSON 稳定，Decode 接收目标类型，自定义 Codec 错误被分类且不泄露完整 Key | AC-011-1 | TC-011 | TASK-REDISX-011 | `go test ./... -run TestCodec` | ✅ |
 | FR-012 | Health、pool stats 与观测 hooks — 输出 PING 状态、pool active/idle、低基数指标/log hooks 和脱敏错误 | AC-012-1 | TC-012 | TASK-REDISX-012 | `go test ./... -run TestHealth` | ✅ |
+| FR-013 | SetNX 条件写入 — 仅当 key 不存在时原子设置值；key 已存在返回 false 不修改；负 TTL 拒绝 | AC-013-1 | TC-013 | TASK-REDISX-002 | `go test ./... -run TestSetNX` | ✅ |
 
 ---
 

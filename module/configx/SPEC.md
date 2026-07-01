@@ -183,6 +183,33 @@ THEN 通过 Metrics 接口输出 counter/histogram/gauge（8 个标准指标名�
 WHEN 未配置 Metrics
 THEN 使用 NoopMetrics（零开销空实现）
 
+### FR-014: ArgsSource — 命令行参数源
+
+WHEN 注册 ArgsSource 并指定 prefix/key-flag/secret 标记
+THEN 支持 `--key=val` / `--key val` / `--key` / `-k 短标志` / `-- 终结符` 五种形式
+AND 按前缀过滤后导出为 MapSource；secret 标记进入 Provenance
+
+### FR-015: RemoteSource SPI
+
+WHEN 实现 RemoteSource SPI（`Endpoint() / Fetch(ctx) / Subscribe(ctx, handler)`）
+THEN 通过 RemoteEvent（Created/Updated/Deleted/Error）+ Subscription 抽象对接远端配置中心（etcd/consul/Apollo 等）
+
+### FR-016: Bind(prefix, target) 强类型绑定
+
+WHEN 调用 `Bind(prefix, &target)`
+THEN 按 prefix 切片 LoadResult 后 Decode 到目标 struct，校验失败返回 wrapping error
+
+### FR-017: ConfigSnapshot / ChangeEvent / Rollback
+
+WHEN 调用 SnapshotStore.Publish/Current/Subscribe/Rollback
+THEN 通过 ConfigChangeEvent（Add/Remove/Modify）+ ConfigDiff 报告支持热更新回滚
+
+### FR-018: Watcher 热更新 + 配置文档自动生成
+
+WHEN 启动 Watcher（Start/Stop/Reload/Rollback/History）
+THEN 监听 Source 变更触发 Reload；失败回滚到 Snapshot
+AND 通过 GenerateDocs + RenderDocsMarkdown + cmd/configdoc 生成配置文档
+
 ---
 
 ## 7. 行为约束

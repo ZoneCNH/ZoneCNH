@@ -12,11 +12,11 @@ Status: Draft — SPEC 已定义 FR-001~005 + BR-001~004，完整 FR/BR/NFR 待�
 
 | FR ID | Requirement | AC | TC | Task | Status |
 | ----- | ----------- | --- | --- | --- | ------ |
-| FR-PE-001 | 13F 数据采集 — 爬取 SEC EDGAR 13F 季度机构持仓，映射到 InstrumentKey | -- | -- | TASK-PE-001 | Draft |
-| FR-PE-002 | 内部人交易采集 — 采集 Form 4 内部人交易，标记 is_cluster | -- | -- | TASK-PE-002 | Draft |
-| FR-PE-003 | 机构持仓变化检测 — 计算 institutional_flow + ownership_concentration + new_buyers_count | -- | -- | TASK-PE-003 | Draft |
-| FR-PE-004 | PE 事件归一化 — 归一化为 canonical PEvent{Type/InstrumentKey/Timestamp/Data/RawMetadata/Quality} | -- | -- | TASK-PE-004 | Draft |
-| FR-PE-005 | 数据时效性管理 — 超期未刷新标记 STALE，恢复后自动 CURRENT | -- | -- | TASK-PE-005 | Draft |
+| FR-001 | 13F 数据采集 — 爬取 SEC EDGAR 13F 季度机构持仓，映射到 InstrumentKey | AC-PE-001 | TC-PE-001 | TASK-PE-001 | Draft |
+| FR-002 | 内部人交易采集 — 采集 Form 4 内部人交易，标记 is_cluster | AC-PE-002 | TC-PE-002 | TASK-PE-002 | Draft |
+| FR-003 | 机构持仓变化检测 — 计算 institutional_flow + ownership_concentration + new_buyers_count | AC-PE-003 | TC-PE-003 | TASK-PE-003 | Draft |
+| FR-004 | PE 事件归一化 — 归一化为 canonical PEvent{Type/InstrumentKey/Timestamp/Data/RawMetadata/Quality} | AC-PE-004 | TC-PE-004 | TASK-PE-004 | Draft |
+| FR-005 | 数据时效性管理 — 超期未刷新标记 STALE，恢复后自动 CURRENT | AC-PE-005 | TC-PE-005 | TASK-PE-005 | Draft |
 
 ---
 
@@ -42,7 +42,13 @@ Status: Draft — SPEC 已定义 FR-001~005 + BR-001~004，完整 FR/BR/NFR 待�
 
 ## §4 TC -> FR 反向追溯
 
-> 待 SPEC 补全后创建。
+| TC ID | Covers FR | 测试类型 | Status |
+| ----- | --------- | -------- | ------ |
+| TC-PE-001 | FR-001 | 集成（SEC EDGAR 13F 爬取） | Draft |
+| TC-PE-002 | FR-002 | 集成（Form 4 内部人交易） | Draft |
+| TC-PE-003 | FR-003 | 单元（持仓变化计算） | Draft |
+| TC-PE-004 | FR-004 | 单元（canonical PEvent 归一化） | Draft |
+| TC-PE-005 | FR-005 | 集成（STALE/CURRENT 状态机） | Draft |
 
 ---
 
