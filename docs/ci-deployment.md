@@ -5,7 +5,7 @@
 
 ## 1. 概述
 
-本仓库使用 GitHub Actions 作为 CI/CD 平台，所有直接声明 runner 的 job 统一运行在 **self-hosted runner**（`[self-hosted, Linux, X64, homepage]`）上。
+本仓库使用 GitHub Actions 作为 CI/CD 平台，所有直接声明 runner 的 job 统一运行在 **self-hosted runner**（`[self-hosted, Linux, X64, ci-governance]`）上。
 Reusable workflow job 只能调用仓库内 workflow 或批准的 SRE 部署合同入口。真实部署不在本仓库内联执行，部署到运行环境或远端机器时，目标机器池统一为 **`sre/`**。
 
 共 **11 个 workflow**、**57 个 top-level job**（其中 **54** 个直接声明 `runs-on`，**3** 个调用 reusable workflow），覆盖仓库文档、Goal 体系、依赖矩阵、Foundation 跨仓集成、Foundation 发布前置、外部评分锚点、发布元数据、SRE 部署合同预检和 runner 烟雾测试：
@@ -31,14 +31,14 @@ Reusable workflow job 只能调用仓库内 workflow 或批准的 SRE 部署合�
 所有直接声明 runner 的 workflow job 必须使用完全一致的标签：
 
 ```yaml
-runs-on: [self-hosted, Linux, X64, homepage]
+runs-on: [self-hosted, Linux, X64, ci-governance]
 ```
 
 禁止项：
 
 - `ubuntu-latest`、`macos-*`、`windows-*` 等 GitHub-hosted runner
 - `Linux` / `X64` 大小写漂移
-- 未批准的业务、个人或模块专属额外 label；当前仓库批准的项目标签仅为 `homepage`
+- 未批准的业务、个人或模块专属额外 label；当前仓库批准的项目标签仅为 `ci-governance`
 - 未经批准的外部 reusable workflow 绕过仓库内 runner 策略
 
 job 级 reusable workflow `uses:` 只能指向 `./.github/workflows/*` 或批准的 `ZoneCNH/sre/.github/workflows/deploy-contract.yml@main`。
@@ -442,7 +442,7 @@ bash .github/ci/deploy-contract-preflight.sh
 - `yamllint: command not found`：job-local Python 工具链未激活；运行 `bash docs/goal/tools/setup-ci-toolchain.sh` 后激活 venv。
 - `pytest: command not found`：job-local Python 工具链未激活；运行 `bash docs/goal/tools/setup-ci-toolchain.sh` 后激活 venv。
 - `jq: command not found`：runner 未安装 jq；安装 `jq`。
-- `workflow-policy-guard` 失败：runner 标签或部署目标违反全局规则；改为 `[self-hosted, Linux, X64, homepage]`，部署目标统一声明为 `sre/`。
+- `workflow-policy-guard` 失败：runner 标签或部署目标违反全局规则；改为 `[self-hosted, Linux, X64, ci-governance]`，部署目标统一声明为 `sre/`。
 - `deployment-policy` 失败：本仓出现内联远程部署或 `sre/` 边界漂移；删除本仓部署命令，保留 `.gitignore` 中 `sre/`，改走 SRE 合同入口。
 - `deploy-contract-preflight` 失败：SRE 合同字段、证据路径或执行面声明不合规；重新生成 manifest/evidence，确保 `target_pool` 以 `sre/` 开头。
 - `foundation-deps-full-check` 失败：常见原因是模块 `go.mod` module path 与矩阵不一致、Go baseline 偏离 `go_baseline`、模块本地 boundary/secret scan 失败。兼容期只能显式设置 `FOUNDATION_GO_BASELINE_MODE=warn` 降级，默认必须阻断。
@@ -527,7 +527,7 @@ git push origin v0.5.0
 | 2026-06-13 | Foundation boundary 以真实 Go import 图和 module path 判定 | 防止 YAML-only 检查漏掉依赖与身份漂移      |
 | 2026-06-11 | 全局 workflow 策略由 `workflow-policy-guard.sh` 强制校验   | 防止 runner 与部署规则回退                 |
 | 2026-06-11 | 部署到运行环境或远端机器统一落在 `sre/` 机器池             | 避免业务机或个人机承载发布职责             |
-| 2026-06-08 | 全部 workflow 切换到 `[self-hosted, Linux, X64, homepage]` | 降低成本，利用项目 self-hosted runner 资源 |
+| 2026-06-08 | 全部 workflow 切换到 `[self-hosted, Linux, X64, ci-governance]` | 降低成本，利用项目 self-hosted runner 资源 |
 | 2026-06-08 | 所有 job 添加 `timeout-minutes`                            | 防止 self-hosted runner 挂起阻塞           |
 | 2026-06-08 | Python 包改为 job-local 工具链                             | 避免 runner 全局 Python 依赖漂移           |
 | 2026-06-08 | release.yml 质量门禁改为 `workflow_call` 复用 docs-ci      | 消除重复维护，DRY 原则                     |
@@ -546,7 +546,7 @@ git push origin v0.5.0
 
 ### 新增 Workflow 时
 
-- [ ] 每个 job 使用 `[self-hosted, Linux, X64, homepage]` runner
+- [ ] 每个 job 使用 `[self-hosted, Linux, X64, ci-governance]` runner
 - [ ] 不添加未批准的业务、个人或模块专属 runner label
 - [ ] 每个 job 添加 `timeout-minutes`
 - [ ] 路径过滤避免无关变更触发

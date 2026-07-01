@@ -92,7 +92,7 @@ jobs:
         continue-on-error: true
 ```
 
-> **注意**：以上 CI 使用 `ubuntu-latest`（hosted runner），适用于无 self-hosted runner 的仓库。ZoneCNH 主仓库强制使用 `[self-hosted, Linux, X64, homepage]`，其他仓库可按需选择。
+> **注意**：以上 CI 使用 `ubuntu-latest`（hosted runner），适用于无 self-hosted runner 的仓库。ZoneCNH 主仓库强制使用 `[self-hosted, Linux, X64, ci-governance]`，其他仓库可按需选择。
 
 ## 4. 不复制的内容
 
