@@ -122,7 +122,7 @@ Goal 体系定义目标交付规则、状态机、Gate、Registry 和证据闭�
 
 模块结构：目录表达当前状态——`goal/spec/design/plan/tasks/prompt`（S1-S6）+ `evidence/YYYY-MM-DD/`（S8-S11 按日期归档）+ `matrix/gate/schema`（横切）+ `README.md` `CHANGELOG.md`。Goal 文档位于 `module/{module}/goal/goal.md`。历史通过 `git log`/`git tag` 追溯，版本号在 `spec/SPEC.md` 的 `Spec-Version` 字段。
 
-模块实现代码不属于 `module/{module}/`；本地实现、测试和源码修改统一在 `/home/{module}` 对应 GitHub 仓库中完成，`module/{module}/` 只同步规格、任务、计划、Prompt 和证据引用。
+模块实现代码不属于 `module/{module}/`；本地实现、测试和源码修改统一在 `/home/workspace/{module}` 对应 GitHub 仓库中完成，`module/{module}/` 只同步规格、任务、计划、Prompt 和证据引用。
 
 ## 文档索引
 

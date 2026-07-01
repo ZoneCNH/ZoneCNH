@@ -24,9 +24,9 @@ README.md / ARCHITECTURE.md / STATUS.md generated blocks
 
 ## 更新方式
 
-- **自动**：`xlibgate fleet-status` 扫描 `/home/{module}` 下的 `.repo-contract.yaml` 生成
+- **自动**：`xlibgate fleet-status` 扫描 `/home/workspace/{module}` 下的 `.repo-contract.yaml` 生成
 - **手动**：仅在尚无 `.repo-contract.yaml` 的模块中编辑 `index.json`
-- **验证**：`xlibgate trust all --repo /home/{module}` 逐模块验证
+- **验证**：`xlibgate trust all --repo /home/workspace/{module}` 逐模块验证
 
 ## 成熟度维度
 

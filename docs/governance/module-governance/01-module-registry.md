@@ -50,7 +50,7 @@ modules:
 | 字段 | 类型 | 必填 | 语义 | 性质 |
 | --- | --- | --- | --- | --- |
 | `repo` | string | 是 | GitHub 仓库全名 | 治理事实 |
-| `local_path` | string | 是 | 本地工作目录（`/home/{module}`） | 治理事实 |
+| `local_path` | string | 是 | 本地工作目录（`/home/workspace/{module}`） | 治理事实 |
 | `domain` | enum | 是 | 所属域（见 §2.3） | 治理事实 |
 | `layer` | enum | 是 | 架构层（见 §2.4） | 治理事实 |
 | `arch_type` | enum | 是 | 架构类型（见 §2.5） | 治理事实 |

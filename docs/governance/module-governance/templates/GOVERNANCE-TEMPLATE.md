@@ -18,7 +18,7 @@
 | Governance Level | L1 / L2 / L3 |
 | Runtime Repo | `github.com/ZoneCNH/{module}` |
 | Spec Root | `module/{module}/spec/SPEC.md` |
-| Runtime Root | `/home/{module}` |
+| Runtime Root | `/home/workspace/{module}` |
 
 ## §1 可复用规则层
 

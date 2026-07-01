@@ -221,7 +221,7 @@ cases:
   - id: EVAL-CASE-027
     type: module_code_boundary
     source: CHANGELOG 2026-06-10 (模块代码本地路径规则固化)
-    description: /home/{module} 源码 + module/{module}/ 制品分离，rule-drift-check.py 接入
+    description: /home/workspace/{module} 源码 + module/{module}/ 制品分离，rule-drift-check.py 接入
     expected: code_boundary_enforced
     verdict: PASS
     captured_at: "2026-06-12"

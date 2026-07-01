@@ -92,7 +92,7 @@ GATE_LIFECYCLE_STATUSES = GATE_DECISION_STATUSES | {"NOT_STARTED", "IN_PROGRESS"
 MATRIX_TERMINAL_COVERAGE_THRESHOLD = 95
 MATRIX_WARNING_COVERAGE_THRESHOLD = 60
 LEGACY_NAMESPACE_MODE = "grandfathered_import_only"
-MODULE_CODE_ROOT_PATTERN = "/home/{module}"
+MODULE_CODE_ROOT_PATTERN = "/home/workspace/{module}"
 MODULE_SPEC_ROOT_PATTERN = "module/{module}/"
 MODULE_REPOSITORY_BOUNDARY = "ZoneCNH/ZoneCNH"
 MODULE_REQUIRED_LINT_RULES = {"C-LINT-006", "C-LINT-007"}
@@ -327,11 +327,11 @@ def check_module_code_location(
             f"expected {MODULE_REPOSITORY_BOUNDARY}, actual {policy.get('repository_boundary')}"
         )
     if str(policy.get("prompt_required_code_root", "")) != MODULE_CODE_ROOT_PATTERN:
-        fail("module_code_location.prompt_required_code_root must be /home/{module}")
+        fail("module_code_location.prompt_required_code_root must be /home/workspace/{module}")
     if str(policy.get("evidence_allowed_changed_file_prefix", "")) != f"{MODULE_CODE_ROOT_PATTERN}/":
-        fail("module_code_location.evidence_allowed_changed_file_prefix must be /home/{module}/")
+        fail("module_code_location.evidence_allowed_changed_file_prefix must be /home/workspace/{module}/")
     if str(policy.get("forbidden_copy_source_pattern", "")) != f"{MODULE_CODE_ROOT_PATTERN}/**":
-        fail("module_code_location.forbidden_copy_source_pattern must be /home/{module}/**")
+        fail("module_code_location.forbidden_copy_source_pattern must be /home/workspace/{module}/**")
 
     forbidden_patterns = set(as_list(policy.get("forbidden_repository_patterns", [])))
     missing_forbidden = sorted(MODULE_FORBIDDEN_SOURCE_PATTERNS - forbidden_patterns)
@@ -423,7 +423,7 @@ def check_module_code_location(
 
     if ok:
         report.pass_(
-            f"Module code location policy keeps {len(module_dirs)} module specs outside /home/{{module}} code roots"
+            f"Module code location policy keeps {len(module_dirs)} module specs outside /home/workspace/{{module}} code roots"
         )
 
 
