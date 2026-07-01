@@ -1,141 +1,233 @@
 # binance 模块测试体系深度分析
 
-> **日期**：2026-06-30
-> **基线**：Runtime HEAD `8d11b0a` (main, v0.8.0-2-g) / Spec Hub `8c9aea87` (main)
-> **方法**：112 个测试文件代码级审计 + 真实 infra live 验证 + SPEC 条款交叉比对
+> **日期**：2026-06-30（2026-07-02 源码复核修正）
+> **基线**：Runtime HEAD `f53303f` (main, shallow) / Spec Hub `8c9aea87` (main)
+> **方法**：129 个测试文件代码级审计 + 真实 infra live 验证 + SPEC 条款交叉比对
 > **置信度**：HIGH
 > **基础设施配置**：`sre/secrets/env/dev.md`（开发环境，`127.0.0.1`）和 `sre/secrets/env/prod.md`（生产环境）
+>
+> **修正记录（2026-07-02）**：原报告基于 `8d11b0a` 基线编写，多处描述与当前源码不符。经逐文件源码复核，修正了缺陷 1/2/3/4/5 的事实性错误（原报告描述的是修复前状态，测试源码中含 `DEFECT 5 FIX (2026-06-30)` 等注释确认修复时间线），更新了测试计数和评分建议。
 
 ---
 
 ## 一、当前测试现状全景
 
-`[COMPUTED, HIGH]` 基于 112 个测试文件的代码级审计：
+`[COMPUTED, HIGH]` 基于 129 个测试文件（1756 个测试函数）的代码级审计：
 
-| 层级               | 文件数 | 功能性测试 | 脚手架(t.Skip) | 禁用(\_) | 覆盖真实 infra   |
-| ------------------ | ------ | ---------- | -------------- | -------- | ---------------- |
-| 单元测试           | 78     | 78         | 0              | 0        | 否 (mock/fake)   |
-| E2E (进程内)       | 5      | 3          | 0              | 0        | 否               |
-| E2E (mainnet live) | 5      | 8          | 0              | 0        | Binance 公网     |
-| Soak               | 1      | 1          | 0              | 0        | NATS only        |
-| Chaos              | 1      | 5          | 0              | 0        | 5 服务 (浅)      |
-| Security           | 1      | **0**      | **6**          | 0        | —                |
-| Depth (FR 矩阵)    | 1      | **0**      | **125**        | 0        | —                |
-| HA/重启/热重载     | 3      | 7          | 0              | 0        | 否 (mock)        |
-| 审计不可变         | 1      | 3          | 0              | 0        | PostgreSQL       |
-| 故障注入           | 1      | 1          | 0              | 0        | 否               |
-| Live 集成          | 2      | 5          | 0              | **2**    | Redis/CH/Taos/PG |
-| Benchmark          | 5      | 26         | 0              | 0        | 否 (fake)        |
+| 层级               | 文件数 | 功能性测试 | 脚手架(t.Skip) | 禁用(\_) | 覆盖真实 infra             |
+| ------------------ | ------ | ---------- | -------------- | -------- | -------------------------- |
+| 单元测试           | ~78    | ~78        | 0              | 0        | 否 (mock/fake)             |
+| E2E (进程内)       | 5      | 3          | 0              | 0        | 否                         |
+| E2E (mainnet live) | 5      | 8          | 0              | 0        | Binance 公网               |
+| Soak               | 1      | 3          | 0              | 0        | Binance WS + TDengine (L1) |
+| Chaos              | 1      | 12         | 0              | 0        | 5 服务 (L1) + fake (L2)    |
+| Security           | 1      | 9          | 3              | 0        | httptest (L2)              |
+| Depth (FR 矩阵)    | 1      | ~58        | 125            | 0        | fake/mock                  |
+| HA/重启/热重载     | 3      | 8          | 0              | 0        | 否 (mock/persistent fake)  |
+| 审计不可变         | 1      | 3          | 0              | 0        | PostgreSQL                 |
+| 故障注入           | 1      | 1          | 0              | 0        | 否                         |
+| Live 集成          | 2      | 5          | 0              | **2**    | Redis/CH/Taos/PG/NATS      |
+| Benchmark          | 5      | 24         | 0              | 0        | 否 (fake)                  |
 
-**覆盖率 99.9% 的真相**：覆盖率来自 78 个单元测试 + 大量 `coverage_*_test.go` 补齐文件。这些测试验证**代码行被执行**，但不验证**系统行为正确性**。
+> **修正说明（2026-07-02）**：原表 Soak 记为"NATS only / 1 个功能性测试"——实际有 3 个测试含完整管线 soak（Binance WS → normalize → NATS → server → TDengine 查询验证）。Chaos 原记"5 个浅测试"——实际有 12 个测试分三层（5 连通性 + 4 程序化故障注入 + 3 真实 systemctl/kill 故障注入）。Security 原记"0 功能性 / 6 t.Skip"——实际 6 个 Level 2 测试已完全实现，仅 3 个 Level 1 live 测试为 scaffold。Depth 原记"0 功能性 / 125 t.Skip"——实际有 ~58 个已实现测试覆盖 FR-007/008/009/010/011/012/013/014/015/016/017/018/019/020/021/022/023/024/025/026/027/028/029/030/031/032/033/034/035/036/038/039/040/041，125 个 scaffold 桩仍存在。Benchmark 原记 26——实际为 24。
+
+**覆盖率 99.9% 的真相**：覆盖率来自 ~78 个单元测试 + 大量 `coverage_*_test.go` 补齐文件。这些测试验证**代码行被执行**，但不验证**系统行为正确性**。
 
 ---
 
 ## 二、七个核心缺陷
 
-### 缺陷 1: Soak 测试是 NATS 传输测试，不是系统 soak
+### 缺陷 1: Soak 测试覆盖不完整（~~是 NATS 传输测试~~ → 已修正为管线 soak，但时长不足）
 
-```
-当前: raw []byte("soak") → NATS pub → NATS sub → 丢弃
-应该: Binance WS → client normalize → server ingest → idempotency → TDengine/PG 写入 → 查询验证
-```
+> **修正说明（2026-07-02）**：原报告声称 soak 测试"只测 NATS pub/sub（`raw []byte("soak")` → pub → sub → 丢弃）"，并引用了不存在的函数 `TestSoak_NATSPublish`。源码复核确认：soak 测试已实现完整 binance 管线 soak，原描述是**事实性错误**。保留的合理关切是：默认时长 2min 仍低于 SPEC FR-042 要求的 30min，且 Level 1 soak 需 `BINANCE_SOAK_LIVE=1` + 完整 infra。
 
-`[KNOWN]` SPEC FR-042 要求 30 分钟 soak。当前 2 分钟 + ~600 条消息（10 msg/s），而 Binance 现货 trade 流可达到 **1000+ msg/s/symbol**。测试速率比生产低 **100 倍**。
+`[KNOWN]` SPEC FR-042 要求 30 分钟 soak。当前默认 2min（可通过 `SOAK_DURATION` 配置），Binance 现货 trade 流可达到 **1000+ msg/s/symbol**。
 
-**当前 soak 测试源码** (`test/soak/soak_test.go`)：
+**当前 soak 测试源码** (`test/soak/soak_test.go`，704 行) 有 **3 个测试**：
 
 ```go
-// 只测试 NATS pub/sub，不涉及 binance client/server
-func TestSoak_NATSPublish(t *testing.T) {
-    // 连接 NATS → 发布 []byte("soak") → 订阅并丢弃
-    // 检查: heap growth < 200%, goroutine delta < 20
-    // 无数据完整性验证、无吞吐量断言、无消息序列号追踪
+// Level 1: 完整管线 soak（需 BINANCE_SOAK_LIVE=1 + NATS+Redis+TDengine+PG）
+func TestSoak_BinancePipelineDirect(t *testing.T) {
+    // Binance mainnet WS → client.NormalizeMarketMessage → srv.Process() → TDengine COUNT(*) 查询
+    // 验证: sent/accepted/rejected 计数, heap growth < 200%, goroutine delta < 20
+    // 验证: TDengine 行数 > 0（数据完整性）
+}
+
+func TestSoak_BinancePipeline(t *testing.T) {
+    // Binance WS → normalize → NATS publish → server consume → TDengine 查询验证
+    // 验证: sent >= 10, accepted > 0, rejectRate < 50%
+    // 验证: goroutine delta < 20, heap growth < 200%, TDengine rows > 0
+    // 验证: 平均延迟（WS→NATS publish）
+}
+
+// Level 2: CI 可运行（无外部依赖）
+func TestSoak_ServerStability(t *testing.T) {
+    // 4 goroutine × 200 msg/s 合成负载, 10% 重复率
+    // 验证: mid-final heap growth < 50%, goroutine delta < 20
+    // 验证: duplicate 检测, sink 接收计数 > 0
 }
 ```
 
-**后果**：无法发现慢泄漏（连接池、TDengine statement handle、Redis pipeline buffer）、GC 停顿在真实负载下的影响、TDengine 存储增长曲线。
+**残留问题**：默认时长 2min 不足以发现慢泄漏（连接池、TDengine statement handle、Redis pipeline buffer）。Level 1 测试需完整 infra 环境且默认不执行（需显式设置 `BINANCE_SOAK_LIVE=1`）。需将默认 soak 时长提升至 30min 并纳入发布前门禁。
 
-### 缺陷 2: Chaos 测试没有注入故障
+### 缺陷 2: Chaos 测试 Level 1 是连通性测试（~~不注入故障~~ → 已补充 Level 2/3）
 
-`[COMPUTED, HIGH]` 5 个 "chaos" 测试实际做的是：
+> **修正说明（2026-07-02）**：原报告声称 5 个 chaos 测试"没有注入任何故障"。源码复核确认：Level 1 的 5 个测试确实是连通性测试（文件头注释已明确记录此局限性），但原报告**遗漏了 Level 2（4 个程序化故障注入测试）和 Level 1 真实故障注入（3 个 systemctl/kill 测试）**。当前 chaos 测试共 12 个，分三层。
 
-| 测试             | 声称            | 实际行为                        | 真正应该做的                                          |
-| ---------------- | --------------- | ------------------------------- | ----------------------------------------------------- |
-| NATSDisconnect   | NATS 断连恢复   | 连接→断开→重连 (无故障注入)     | `systemctl stop nats` → 等待 → `start` → 验证消息不丢 |
-| RedisUnavailable | Redis 不可用    | SET→GET→重连 (无故障)           | `redis-cli SHUTDOWN` → 写入 → 恢复 → 验证幂等性       |
-| TaosWriteFailure | TDengine 写失败 | health check × 2                | `systemctl stop taosd` → 写入 → 恢复 → 验证无数据丢失 |
-| KafkaUnavailable | Kafka 不可用    | topic 创建 × 2                  | kill broker → 消费 → 恢复 → 验证 offset 连续          |
-| ProcessRestart   | 进程重启        | HTTP server stop/start (~200ms) | kill binance-server → 重启 → 验证 checkpoint 恢复     |
+`[COMPUTED, HIGH]` chaos 测试分三层（`test/chaos/chaos_test.go`，928 行）：
 
-**关键发现**：测试 1-4 没有注入任何故障——它们只是连接→断开→重连的连通性测试。只有测试 5 模拟了真实故障（HTTP server stop），但测试的是一个 dummy HTTP server，不是 binance 进程。
+**Level 1 连通性测试（5 个）**——确实不注入故障，文件头注释已明确记录：
 
-**后果**：PRG-006 的 "chaos 5/5 PASS" 给了虚假信心——实际上没有验证系统在真实故障下的数据完整性。
+| 测试             | 声称            | 实际行为                        |
+| ---------------- | --------------- | ------------------------------- |
+| NATSDisconnect   | NATS 断连恢复   | 连接→断开→重连 (无故障注入)     |
+| RedisUnavailable | Redis 不可用    | SET→GET→重连 (无故障)           |
+| TaosWriteFailure | TDengine 写失败 | health check × 2                |
+| KafkaUnavailable | Kafka 不可用    | topic 创建 × 2                  |
+| ProcessRestart   | 进程重启        | HTTP server stop/start (~200ms) |
 
-### 缺陷 3: 131 个测试是空壳
+**Level 2 程序化故障注入（4 个，CI 可运行，原报告遗漏）**：
 
-`[COMPUTED]` 6 个安全测试 + 125 个 depth 测试全部 `t.Skip("scaffold: ...")`。
+| 测试                              | 注入方式                                | 验证                                |
+| --------------------------------- | --------------------------------------- | ----------------------------------- |
+| TestChaos_StorageFailure          | `failingStorageWriterL2`（前 3 次写失败）| 10 条全部 accepted，dead-letter 路径 |
+| TestChaos_DispatchFailure         | `failingDispatcherL2`（前 2 次派发失败）| retry/backoff，5 条全部 accepted    |
+| TestChaos_IdempotencyUnavailable  | `failingIdempotencyStoreL2`（前 2 次失败）| retryable reject，≥2 rejected       |
+| TestChaos_ConcurrentFailureInterleaving | `failingStorageWriterL2` + 4 goroutine | 故障不影响其他 goroutine 的成功处理 |
 
-**Security 测试** (`test/security/api_security_test.go`, build tag: `security`)：
+**Level 1 真实故障注入（3 个，需 `BINANCE_CHAOS_LIVE=1` + sudo，原报告遗漏）**：
 
-| 测试                         | 覆盖                            | 状态                                    |
-| ---------------------------- | ------------------------------- | --------------------------------------- |
-| TestSQLInjection             | 10 个 SQL 注入 payload × 3 端点 | `t.Skip()` — 无断言，`if false { ... }` |
-| TestXSS                      | 10 个 XSS payload               | `t.Skip()`                              |
-| TestPathTraversal            | 10 个路径遍历 payload           | `t.Skip()`                              |
-| TestRateLimit                | 1100 请求期望限流               | `t.Skip()`                              |
-| TestUnauthAccess             | 8 端点无 auth token             | `t.Skip()`                              |
-| TestAdminPrivilegeEscalation | 3 admin 端点 × 3 角色           | `t.Skip()`                              |
+| 测试                       | 注入方式                                    | 验证                                     |
+| -------------------------- | ------------------------------------------- | ---------------------------------------- |
+| TestChaos_NATSStopRecovery | `sudo systemctl stop nats.service`          | 故障前后消息计数零丢失                   |
+| TestChaos_RedisStopRecovery| `sudo systemctl stop redis.service`         | 幂等性降级→恢复→重放去重                 |
+| TestChaos_ProcessKillRecovery | `kill -9` 模拟（新 server + 同持久化 backend）| 50 条全部 deduplicated，0 重复 dispatch |
 
-**Depth 测试** (`test/depth/depth_test.go`, build tag: `depth`)：
+**残留问题**：Level 1 真实故障注入需 sudo 权限和 `BINANCE_CHAOS_LIVE=1`，默认不执行。Level 2 使用 fake 组件，不覆盖真实 infra 层面的故障传播。建议将 Level 1 真实故障注入纳入发布前 CI stage。
 
-25 个 FR × 5 维度（happy_path / error_path / edge_case / integration / race_condition）= 125 个子测试，全部 `t.Skip("scaffold: ...")`。
+### 缺陷 3: 125 个 Depth 桩 + 3 个 Security live 桩仍为空壳（~~131 个全空~~ → 已大幅补齐）
 
-覆盖的 FR 包括：FR-007 (Gin 路由)、FR-013 (热重载)、FR-025 (背压重连)、FR-026 (checkpoint 恢复)、FR-027 (多产品线 WS)、FR-038 (凭证轮换)、FR-039 (HA/DR)、FR-042 (soak)、FR-043 (chaos)、FR-044 (安全渗透)。
+> **修正说明（2026-07-02）**：原报告声称"6 个安全测试 + 125 个 depth 测试全部 `t.Skip`"。源码复核确认：Security 的 6 个 Level 2 测试**已完全实现**（有真实断言），仅 3 个 Level 1 live 测试为 scaffold。Depth 的 125 个 scaffold 桩仍存在，但另有 **~58 个已实现测试**覆盖 P1 FR 的全 5 维度，原报告完全遗漏。
 
-**后果**：FR-044（安全渗透测试）和 FR-042/043（soak/chaos 深度测试）在 TRACEABILITY 中标 "Done"，但实际无可执行验证。
+**Security 测试** (`test/security/api_security_test.go`，442 行)：
 
-### 缺陷 4: 重启恢复测试不验证真实重启
+| 测试                         | 原报告声称              | 实际状态                                    |
+| ---------------------------- | ----------------------- | ------------------------------------------- |
+| TestSQLInjection             | `t.Skip()` — 无断言     | **已实现**：10 payload × 3 端点，检查 500 注入 |
+| TestXSS                      | `t.Skip()`              | **已实现**：10 payload，检查响应体反射        |
+| TestPathTraversal            | `t.Skip()`              | **已实现**：10 payload，检查文件内容泄漏      |
+| TestRateLimit                | `t.Skip()`              | **已实现**：100 请求突发，统计 429（注：测试 router 无真实限流器） |
+| TestUnauthAccess             | `t.Skip()`              | **已实现**：3 保护端点无 auth → 401/403 断言  |
+| TestAdminPrivilegeEscalation | `t.Skip()`              | **已实现**：3 admin 端点 × 4 角色，非 admin 拒绝 |
+| TestSecurity_LiveSQLInjection | —                      | `t.Skip()` — 需运行中的 API server            |
+| TestSecurity_LiveRateLimit    | —                      | `t.Skip()` — 需运行中的 API server            |
+| TestSecurity_LivePrivilegeEscalation | —              | `t.Skip()` — 需运行中的 API server            |
 
-```
-当前: newServer := NewServer(oldIdempotencyStore)  // 进程内新建 struct
-应该: kill -9 binance-server → 重启 → Redis 幂等性恢复 → checkpoint 恢复 → 验证无丢无重
-```
+**Depth 测试** (`test/depth/depth_test.go`，2427 行)：
 
-`[INFERRED, HIGH]` 当前重启恢复测试 (`test/restart_recovery_test.go`) 创建一个新的 Go struct，复用同一个内存幂等性存储。在真实进程重启中，内存状态会丢失。如果生产使用 Redis 幂等性（SPEC 要求），重启后应该从 Redis 恢复，但这个路径从未被测试。
+125 个 scaffold 桩仍存在（`TestDepth_AllFRs` 表驱动，25 FR × 5 维度，全部 `t.Skip("scaffold: ...")`）。但**另有 ~58 个已实现测试**，原报告完全遗漏：
 
-**当前测试源码**：
+| FR       | 已实现维度                                  | 测试数 |
+| -------- | ------------------------------------------- | ------ |
+| FR-007   | happy/error/edge/integration/race           | 5      |
+| FR-007a  | happy/error/edge                             | 3      |
+| FR-008   | happy/integration                            | 2      |
+| FR-009   | happy/error                                  | 2      |
+| FR-010   | happy/edge                                   | 2      |
+| FR-011   | happy/edge                                   | 2      |
+| FR-012   | happy                                       | 1      |
+| FR-013   | happy/edge                                   | 2      |
+| FR-014   | happy                                       | 1      |
+| FR-015   | happy                                       | 1      |
+| FR-016   | happy/error/edge                             | 3      |
+| FR-017   | happy/edge                                   | 2      |
+| FR-018   | happy                                       | 1      |
+| FR-019   | happy/edge                                   | 2      |
+| FR-020   | happy                                       | 1      |
+| FR-021   | happy                                       | 1      |
+| FR-022   | happy                                       | 1      |
+| FR-023   | happy                                       | 1      |
+| FR-024   | happy                                       | 1      |
+| FR-025   | happy/error/edge/integration/race           | 5      |
+| FR-026   | happy/error/edge/integration/race           | 5      |
+| FR-027   | happy/error/edge/integration/race           | 5      |
+| FR-028   | happy/error/edge                             | 3      |
+| FR-029   | happy                                       | 1      |
+| FR-030   | happy                                       | 1      |
+| FR-031   | happy/error/edge                             | 3      |
+| FR-032   | happy/edge                                   | 2      |
+| FR-033   | happy                                       | 1      |
+| FR-034   | happy/edge/race                              | 3      |
+| FR-035   | happy/edge                                   | 2      |
+| FR-036   | happy/edge                                   | 2      |
+| FR-038   | happy                                       | 1      |
+| FR-039   | happy                                       | 1      |
+| FR-040   | happy                                       | 1      |
+| FR-041   | happy/edge                                   | 2      |
+| **合计** |                                              | **~58** |
+
+**残留问题**：125 个 scaffold 桩仍存在（FR-023/037/039/040/042/043/044 的多数维度），TRACEABILITY 中这些 FR 的 "Done" 状态仍不完全可信。但 P1 FR（FR-025/026/027）的全 5 维度测试**已实现**。
+
+### 缺陷 4: ~~重启恢复测试不验证真实重启~~ → 已补充持久化恢复测试
+
+> **修正说明（2026-07-02）**：原报告声称重启恢复测试"创建新的 Go struct 复用同一内存幂等性存储"，且"Redis-backed 幂等性在进程重启后是否正确恢复……这个路径从未被测试"。源码复核确认：测试文件有 **4 个测试**，其中 `TestRestartRecovery_IndependentStores` 明确演示了 in-memory 的问题，`TestRestartRecovery_PersistentStore` 验证了持久化（Redis 模拟）恢复路径。原描述是**事实性错误**。
+
+`[COMPUTED, HIGH]` 重启恢复测试 (`test/restart_recovery_test.go`，343 行) 有 **4 个测试**：
+
+| 测试 | 描述 | 报告是否提及 |
+| ---- | ---- | ------------ |
+| TestRestartRecoveryNoLossNoDuplication | 共享 in-memory store，验证 code path | ✅ 原报告描述的（仅此一个） |
+| TestRestartReconciliationGapZero | 共享 in-memory store，gap reconciliation | ❌ 遗漏 |
+| TestRestartRecovery_IndependentStores | **独立 store → 演示 100% 重复**（证明 in-memory 不足） | ❌ 关键遗漏 |
+| TestRestartRecovery_PersistentStore | **共享 backend map（模拟 Redis）→ 0 重复** | ❌ **关键遗漏** |
+
+**`TestRestartRecovery_PersistentStore` 源码**（第 279-325 行）：
 
 ```go
-func TestRestartRecoveryNoLossNoDuplication(t *testing.T) {
-    // 1. 创建 server A, ingest 100 条
-    // 2. 创建 server B (同一个 in-memory idempotency store)
-    // 3. 重放 100 条 → 全部 dedup
-    // 问题: in-memory store 在真实重启中会丢失
+// 证明持久化幂等性 store（如 Redis）正确防止跨重启的数据重复。
+// 两个 server 实例共享同一 backend，模拟真实 Redis 使用。
+func TestRestartRecovery_PersistentStore(t *testing.T) {
+    backend := make(map[string]persistentEntry) // 共享 backend = 模拟 Redis
+    // Server A: 处理 100 条
+    storeA := newPersistentStore(backend)
+    srvA := server.NewIngestServer(nil, storeA, disp, cfg)
+    // ... 100 条全部 accepted, dispatched
+
+    // "重启": 新 store 共享同一 backend = 同一 Redis
+    storeB := newPersistentStore(backend)
+    srvB := server.NewIngestServer(nil, storeB, dispB, cfg)
+    // ... 100 条重放 → 全部 duplicate, dispB.Count() == 0
 }
 ```
 
-**缺失验证**：
+**残留问题**：持久化恢复使用 Go map 模拟 Redis，未测试真实 Redis 连接恢复。真实进程 `kill -9` 后的 checkpoint/NATS offset 恢复路径仍需 `TestChaos_ProcessKillRecovery`（chaos Level 1 真实故障注入）覆盖，但该测试同样使用模拟 backend。建议补充真实 Redis + 真实进程 kill 的端到端验证。
 
-- Redis-backed 幂等性在进程重启后是否正确恢复
-- Checkpoint/offset 恢复——进程崩溃时已消费但未 ack 的消息如何处理
-- NATS JetStream 消费偏移量恢复
+### 缺陷 5: ~~Live 集成测试只检查 nil~~ → 已修复（DEFECT 5 FIX）
 
-### 缺陷 5: Live 集成测试只检查 nil
+> **修正说明（2026-07-02）**：原报告声称 `TestLiveAssembleAllMiddleware` "只断言 `server != nil`，没有发送一条 ingest 请求"。源码复核确认：该测试已包含 `sendTestIngestRequests`（代码注释标注 `DEFECT 5 FIX (2026-06-30)`），发送 5 条 ingest 请求验证 durable ACK。原描述是**事实性错误**。
 
-`[COMPUTED]` `TestLiveAssembleAllMiddleware` 组装了完整的服务器（NATS+Redis+PG+TDengine+CH+Kafka+OSS），但只断言 `server != nil`。没有发送一条 ingest 请求通过组装的管线。
-
-**当前测试源码** (`internal/server/assembly/live_assembly_test.go`)：
+`[COMPUTED, HIGH]` `TestLiveAssembleAllMiddleware` (`internal/server/assembly/live_assembly_test.go:64-103`) 当前行为：
 
 ```go
-func TestLiveAssembleAllMiddleware(t *testing.T) {
-    // 组装完整服务器 (NATS + Kafka + Redis + PG + TDengine + CH + OSS)
-    // 断言: server != nil  ← 仅此而已
-    // 没有发送任何 ingest 请求
-    // 没有验证组件间正确连接
+// 组装完整服务器 (NATS + Kafka + Redis + PG + TDengine + CH + OSS)
+assembly, err := Assemble(ctx, bc)
+if assembly.Server == nil || assembly.Admin == nil || assembly.Transport == "" {
+    t.Fatal("assembly incomplete")
+}
+
+// DEFECT 5 FIX (2026-06-30): Verify the assembled pipeline actually
+// processes ingest requests — not just that components are non-nil.
+if err := sendTestIngestRequests(ctx, t, assembly.Server, 5); err != nil {
+    t.Errorf("Pipeline verification failed: %v", err)
 }
 ```
 
-另外 2 个 live 测试被禁用（下划线前缀）：
+`sendTestIngestRequests`（第 109-166 行）验证：
+- 发送 5 条 ingest 请求通过完整中间件链（validator → idempotency → dispatch → storage → hooks）
+- 每条 ACK 须为 durable（`result.Ack.Durable == true`）
+- 区分 retryable reject（可接受，如 Kafka 在测试环境不可用）和 terminal reject（失败）
+
+另外 2 个 live 测试仍被禁用（下划线前缀，位于 `internal/server/storage/live_integration_test.go`）：
 
 - `_TestLiveTaosWriter` — TDengine 写入测试（被禁用）
 - `_TestLivePgCatalog` — Postgres catalog 测试（被禁用）
@@ -151,19 +243,23 @@ func TestLiveAssembleAllMiddleware(t *testing.T) {
 | Ingest process          | P99 < 50ms  | ✅ BenchmarkIngestProcess                     | ❌          |
 | Validation              | P99 < 100μs | ✅ BenchmarkServerValidation                  | ❌          |
 | Redis SetNX             | P99 < 1ms   | ✅ BenchmarkRedisCheckAndSetAccept            | ❌          |
-| TDengine 1000-row batch | ≥100k TPS   | ✅ BenchmarkTaosWriteBatch1000                | ❌          |
-| Query (hot cache hit)   | P99 < 5ms   | ✅ BenchmarkQueryRouteMarketLatestHotCacheHit | ❌          |
+| TDengine batch          | —           | ✅ BenchmarkTaosWriteBatch                    | ❌          |
+| Query                   | —           | ✅ BenchmarkQuery                             | ❌          |
 
-26 个 benchmark 全部使用 fake（无网络 RTT），所以即使 CI 执行，也只测量 CPU 侧开销，不反映真实延迟。
+> **修正说明（2026-07-02）**：原报告记 26 个 benchmark，实际为 **24 个**（8+4+5+3+4），分布在 5 个 bench_test.go 文件中。
 
-### 缺陷 7: 凭证硬编码在测试源码中
+24 个 benchmark 全部使用 fake（无网络 RTT），所以即使 CI 执行，也只测量 CPU 侧开销，不反映真实延迟。
 
-`[COMPUTED]` 两个测试文件硬编码了凭据：
+### 缺陷 7: 凭证硬编码在测试源码中（~~两个文件~~ → 仅一个文件）
 
-| 文件                                             | 硬编码内容                                                                   | 应使用                                                                        |
-| ------------------------------------------------ | ---------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
-| `internal/server/assembly/live_assembly_test.go` | NATS dev 凭据（见 `sre/secrets/env/dev.md` §NATS）             | `sre/secrets/env/dev.md` 或 `sre/secrets/env/prod.md` |
-| `test/audit_append_only_test.go`                 | PostgreSQL dev DSN（见 `sre/secrets/env/dev.md` §PostgreSQL）   | `sre/secrets/env/dev.md` 或 `sre/secrets/env/prod.md` |
+> **修正说明（2026-07-02）**：原报告声称两个文件硬编码凭据。源码复核确认：`live_assembly_test.go` **全部使用 `os.Getenv()`**，无硬编码凭据，原指控是**事实性错误**。仅 `audit_append_only_test.go` 硬编码了 PostgreSQL DSN。
+
+`[COMPUTED]` 凭据硬编码情况：
+
+| 文件                                             | 原报告声称                | 实际情况                                       |
+| ------------------------------------------------ | ------------------------- | ---------------------------------------------- |
+| `internal/server/assembly/live_assembly_test.go` | 硬编码 NATS dev 凭据      | **错误**：全部使用 `os.Getenv("FOUNDATIONX_*")` |
+| `test/audit_append_only_test.go`                 | 硬编码 PostgreSQL dev DSN | **正确**：`postgres://postgres:postgres@127.0.0.1:5432/market_binance` |
 
 `[KNOWN]` 生产环境与开发环境关键差异（凭据来源：`sre/secrets/env/dev.md` 和 `sre/secrets/env/prod.md`）：
 
@@ -266,107 +362,102 @@ Binance mainnet WS → client(normalize) → NATS → server(ingest) → idempot
 
 ## 四、优先级排序
 
-| 优先级 | 缺陷                       | 影响                               | 预估工作量 | 阻塞什么            |
-| ------ | -------------------------- | ---------------------------------- | ---------- | ------------------- |
-| **P0** | Chaos 测试不注入故障       | PRG-006 PASS 是虚假的              | 2-3 天     | L3 准入可信度       |
-| **P0** | Soak 不测 binance 管线     | PRG-006 PASS 是虚假的              | 2-3 天     | L3 准入可信度       |
-| **P1** | System E2E 缺失            | 全管线从未端到端验证               | 3-5 天     | 生产信心            |
-| **P1** | 重启恢复用内存 mock        | 真实重启恢复路径未验证             | 1-2 天     | 数据完整性承诺      |
-| **P2** | 131 个空壳测试             | 覆盖率虚高, FR-044/042/043 假 Done | 5-10 天    | TRACEABILITY 可信度 |
-| **P2** | Benchmark 无 CI 门禁       | 性能回归不可见                     | 1 天       | 性能预算执行        |
-| **P3** | 凭证硬编码 (127.0.0.1 dev) | 安全风险 + dev/prod 混淆           | 0.5 天     | 安全合规            |
-| **P3** | Live 测试只查 nil          | 组装正确性未验证                   | 1 天       | 集成信心            |
+| 优先级 | 缺陷                                  | 影响                               | 预估工作量 | 阻塞什么            |
+| ------ | ------------------------------------- | ---------------------------------- | ---------- | ------------------- |
+| **P1** | Soak 默认时长 2min → 需提升至 30min   | SPEC FR-042 合规性                 | 0.5 天     | L3 soak 门禁        |
+| **P1** | Chaos L1 真实故障注入纳入发布前 CI     | 真实故障验证默认不执行             | 1 天       | L3 chaos 门禁       |
+| **P1** | System E2E（多产品线并发 + 真实 infra）| 全管线多产品线端到端验证仍不足     | 3-5 天     | 生产信心            |
+| **P2** | 125 个 depth scaffold 桩              | FR-042/043/044 等仍为桩            | 5-10 天    | TRACEABILITY 可信度 |
+| **P2** | Benchmark CI 门禁                     | 性能回归不可见                     | 1 天       | 性能预算执行        |
+| **P2** | 持久化恢复用真实 Redis 而非 map 模拟  | 真实 Redis 连接恢复未验证          | 1-2 天     | 数据完整性承诺      |
+| **P3** | `audit_append_only_test.go` 硬编码 DSN| 安全风险 + dev/prod 混淆           | 0.5 天     | 安全合规            |
+| **P3** | 2 个 live 测试被禁用（TaosWriter/PgCatalog）| 集成覆盖缺失                 | 1 天       | 集成信心            |
 
 ---
 
 ## 五、对审查评分的影响
 
-`[INFERRED, HIGH]` 当前测试体系的**真实成熟度**是 **L2+**（单元测试优秀），不是 **L3 Production**。L3 要求的 soak/chaos/live integration 虽然有文件存在，但内容是空壳或虚假的。
+`[INFERRED, HIGH]` 当前测试体系的**真实成熟度**是 **L3-**（接近 L3，但仍有 gap）。单元测试标杆级（99.9% 覆盖率），soak/chaos/restart 已有实质测试覆盖（原报告声称"空壳/虚假"是事实性错误），但 125 个 depth 桩、benchmark 无门禁、真实 Redis 恢复路径缺失仍是降分项。
 
-PRG-006 标 "PASS" 的 soak/chaos 测试实际上只验证了基础设施连通性，没有验证 binance 系统在故障和持续负载下的行为。
+> **修正说明（2026-07-02）**：原报告建议 98→93、L3→L2+。源码复核后修正：原报告的 5 个 P0/P1 缺陷中 3 个已修复（soak 管线、live assembly、重启恢复），2 个部分修复（chaos 已有 L2/3、depth 已有 ~58 个实现）。剩余降分项为 125 桩 + benchmark 门禁 + 真实 Redis 恢复 + E2E 多产品线。
 
 ### 建议评分修正
 
-| 维度             | 当前评分 | 建议修正 | 理由                                                         |
-| ---------------- | -------- | -------- | ------------------------------------------------------------ |
-| F. 测试与验证    | 100      | **85**   | 单元测试强 (99.9%)，但 soak/chaos 虚假，131 个空壳，E2E 缺失 |
-| J. 生产就绪 (L3) | 100      | **90**   | PRG-006 应为 Partial（连通性 PASS，系统行为验证缺失）        |
-| B. 追溯矩阵闭合  | 100      | **95**   | FR-042/043/044 标 Done 但底层测试为空壳                      |
-| **加权综合**     | 98       | **93**   | -5                                                           |
+| 维度             | 原评分 | 原建议修正 | 修正后建议 | 理由                                                         |
+| ---------------- | ------ | ---------- | ---------- | ------------------------------------------------------------ |
+| F. 测试与验证    | 100    | 85         | **93**     | 单元测试强 (99.9%)，soak/chaos/restart 已有实质测试，125 桩仍存 |
+| J. 生产就绪 (L3) | 100    | 90         | **95**     | PRG-006 连通性 + 程序化故障验证 PASS，真实 systemctl 故障注入需 CI 集成 |
+| B. 追溯矩阵闭合  | 100    | 95         | **97**     | P1 FR (025/026/027) 已实现全 5 维度，剩余 125 桩影响 FR-042/043/044 |
+| **加权综合**     | 98     | 93         | **96**     | -2                                                           |
 
 ### PRG-006 状态修正建议
 
 ```
-当前: PASS (soak 2min PASS + chaos 5/5 PASS)
-修正: Partial
+原报告建议: Partial（连通性 PASS，系统行为验证缺失）
+修正后:     Pass with conditions
   - 连通性验证: PASS (5 服务可达)
-  - 系统行为验证: FAIL (soak 不测 binance 管线, chaos 不注入故障)
-  - 数据完整性验证: FAIL (无端到端数据校验)
+  - 程序化故障注入 (L2): PASS (4 场景: storage/dispatch/idempotency/concurrent)
+  - 持久化恢复验证: PASS (PersistentStore + ProcessKillRecovery)
+  - 真实 systemctl 故障注入 (L1): Condition — 测试存在但默认不执行 (需 BINANCE_CHAOS_LIVE=1)
+  - Soak 30min: Condition — 测试存在但默认 2min
+  - 多产品线并发 E2E: Pending
 ```
 
 ---
 
 ## 六、具体修复路线图
 
-### Phase 1: Soak 测试重写 (2-3 天)
+### Phase 1: Soak 测试时长提升 (0.5 天)
+
+> **状态**：~~Phase 1 原计划重写 soak 测试~~。源码复核确认 soak 管线已实现（Binance WS → normalize → NATS → server → TDengine 查询验证）。剩余工作仅为提升默认时长。
 
 ```
-目标: 真实 binance 管线 soak
-流量: Binance mainnet spot trade (BTCUSDT + ETHUSDT)
-时长: 默认 30min, 可配置
-管线: WS → client → NATS → server → Redis idempotency → TDengine write
-目标 infra: dev（`127.0.0.1`，`sre/secrets/env/dev.md`）或 prod（远端，`sre/secrets/env/prod.md`）
-验证:
-  - 消息计数 (发送 vs TDengine 写入, 零丢失)
-  - 幂等性 (重发 10% 消息, TDengine 计数不变)
-  - heap/goroutine 趋势 (4h 外推 < 10%)
-  - 端到端延迟 P99 < 50ms
+目标: soak 默认时长从 2min 提升至 30min (SPEC FR-042)
+管线: 已实现 (WS → client → NATS → server → Redis → TDengine → 查询验证)
+修改: SOAK_DURATION 默认值 + 发布前 CI stage 设置 BINANCE_SOAK_LIVE=1
+验证: 消息计数 + 幂等性 + heap/goroutine 趋势 + TDengine 行数（均已实现）
 ```
 
-### Phase 2: Chaos 测试重写 (2-3 天)
+### Phase 2: Chaos L1 真实故障注入纳入 CI (1 天)
+
+> **状态**：~~Phase 2 原计划重写 chaos 测试~~。源码复核确认 chaos 已有三层（L1 连通性 + L2 程序化故障注入 + L1 真实 systemctl/kill 故障注入）。剩余工作为将 L1 真实故障注入纳入发布前 CI。
 
 ```
-目标: 真实故障注入 + 数据完整性验证
-目标 infra: dev（`127.0.0.1`，`sre/secrets/env/dev.md`）或 prod（远端，`sre/secrets/env/prod.md`）
-场景:
-  1. NATS stop/start → 消息缓冲补发 → 计数零丢失
-  2. Redis stop/start → 幂等性降级恢复 → 无重复
-  3. TDengine stop/start → DLQ 重放 → 无丢失
-  4. Kafka broker kill → offset 连续
-  5. binance-server kill -9 → 重启 → checkpoint 恢复
-验证: 故障前 count == 故障后 count (无丢无重)
+目标: 将 TestChaos_NATSStopRecovery / RedisStopRecovery / ProcessKillRecovery 纳入发布前 CI
+场景: 已实现 (systemctl stop nats/redis + kill -9 模拟)
+修改: CI pipeline 添加 BINANCE_CHAOS_LIVE=1 stage (需 sudo 权限)
+验证: 故障前 count == 故障后 count（已实现）
 ```
 
 ### Phase 3: System E2E (3-5 天)
 
+> **状态**：未完成。多产品线并发 + 真实 infra 的完整 E2E 仍不足。
+
 ```
 目标: 全管线端到端验证
 场景:
-  1. 单产品线 ingest → query 验证 (数据完整性)
-  2. 多产品线并发 → 交叉查询 (无串扰)
-  3. 幂等性重发 → 计数不变
-  4. 热重载 symbol → 旧 stream 清理 → 新 stream 启动
+  1. 单产品线 ingest → query 验证 (数据完整性) — live_assembly_test.go 已部分覆盖
+  2. 多产品线并发 → 交叉查询 (无串扰) — depth FR-027 已用 fake 覆盖，缺真实 infra
+  3. 幂等性重发 → 计数不变 — restart_recovery 已用 fake 覆盖，缺真实 Redis
+  4. 热重载 symbol → 旧 stream 清理 → 新 stream 启动 — 待实现
 infra: dev（`127.0.0.1`，`sre/secrets/env/dev.md`）或 prod（远端，`sre/secrets/env/prod.md`）
-  - PG: 见 dev.md §PostgreSQL (market_binance)
-  - TDengine: 见 dev.md §TDengine (market_binance)
-  - Redis: 见 dev.md §Redis
-  - Kafka: 见 dev.md §Kafka
-  - OSS: 见 dev.md §OSS (bucket x-go / polarisx)
-  - NATS: ✅ 见 dev.md §NATS
-  - ClickHouse: ✅ 见 dev.md §ClickHouse
 ```
 
 ### Phase 4: 空壳补齐 (5-10 天, 可迭代)
 
+> **状态**：P1 FR（FR-025/026/027）全 5 维度已实现。剩余 125 桩按迭代补齐。
+
 ```
-优先补齐:
-  - FR-026 checkpoint 恢复 (P1)
-  - FR-025 背压重连 (P1)
-  - FR-027 多产品线并发 (P1)
-  - FR-038 凭证轮换 (P2)
-  - FR-039 HA/DR (P2)
-  - FR-044 安全渗透 (P2)
-其余 119 个子测试按迭代补齐
+已实现 (~58 个测试):
+  ✅ FR-025 背压重连 (happy/error/edge/integration/race)
+  ✅ FR-026 checkpoint 恢复 (happy/error/edge/integration/race)
+  ✅ FR-027 多产品线并发 (happy/error/edge/integration/race)
+  ✅ FR-007/007a/008/009/010/011/012/013/014/015/016/017/018/019/020/021/022/023/024/028/029/030/031/032/033/034/035/036/038/039/040/041 (部分维度)
+
+待补齐 (125 桩):
+  - FR-037 (未出现)
+  - FR-042/043/044 (soak/chaos/security 深度维度)
+  - 其余 FR 的 error/edge/integration/race 维度
 ```
 
 ### Phase 5: Benchmark CI 门禁 (1 天)
@@ -381,20 +472,25 @@ infra: dev（`127.0.0.1`，`sre/secrets/env/dev.md`）或 prod（远端，`sre/s
 
 ## 七、结论
 
-`[INFERRED, HIGH]` binance 模块的**单元测试质量是标杆级的**（99.9% 覆盖率, 0 race, 0 lint issue），但**系统级测试存在严重虚假信心**：
+`[INFERRED, HIGH]` binance 模块的**单元测试质量是标杆级的**（99.9% 覆盖率, 0 race, 0 lint issue），系统级测试**已有实质覆盖但仍有 gap**：
 
-1. PRG-006 "PASS" 基于的 soak/chaos 测试不验证 binance 系统行为
-2. 131 个测试空壳导致 TRACEABILITY 中 FR-042/043/044 的 "Done" 状态不可信
-3. 全管线从未通过真实基础设施端到端验证
+1. ~~PRG-006 "PASS" 基于的 soak/chaos 测试不验证 binance 系统行为~~ → **已修正**：soak 测试已实现完整管线（Binance WS → NATS → server → TDengine），chaos 已有三层（连通性 + 程序化故障注入 + 真实 systemctl/kill）。残留问题：默认时长不足、真实故障注入默认不执行。
+2. ~~131 个测试空壳导致 TRACEABILITY 中 FR-042/043/044 的 "Done" 状态不可信~~ → **已修正**：Security 6 个 Level 2 测试已实现，Depth ~58 个测试已实现覆盖 P1 FR。残留问题：125 个 scaffold 桩仍存在。
+3. ~~全管线从未通过真实基础设施端到端验证~~ → **已修正**：`TestLiveAssembleAllMiddleware` 已发送 ingest 请求验证 durable ACK（DEFECT 5 FIX）。残留问题：多产品线并发 + 真实 infra 的完整 E2E 仍不足。
 
-**建议**：在补齐 Phase 1-3（约 7-11 天）之前，不应将此系统标记为 L3 Production。当前状态应修正为 **L2+ (Active with strong unit coverage, system validation pending)**。
+**建议**：当前状态修正为 **L3- (Production with conditions)**。条件：
+- Soak 默认时长提升至 30min（Phase 1，0.5 天）
+- Chaos L1 真实故障注入纳入发布前 CI（Phase 2，1 天）
+- System E2E 多产品线并发补齐（Phase 3，3-5 天）
+
+满足以上条件后可标记为 **L3 Production**。
 
 **已修复**：NATS 和 ClickHouse 于 2026-06-30 在 prod 环境启动（`systemctl enable + start`），凭据已在 `sre/secrets/env/prod.md` 中登记。binance 核心传输层现已可用，测试策略（Layer 4-6）可执行。
 
 **生产部署验证**（2026-06-30 15:19 CST）：binance 已部署到 prod（`84.247.154.45`），通过 systemd 二进制直部署。部署过程中发现并修复 6 个代码级 bug（tag 顺序随机、partial depth 解析缺失、参数化查询不兼容、Stats provider 未 wiring、Fields map 顺序随机、admin 端口冲突）。修复后 Market API `/latest` 和 `/range` 返回真实行情数据，Stats API 返回 ingest 计数，TDengine tag 值正确。详见 `module/binance/evidence/2026-06-30/release/alignment-summary.md` §生产部署修复。
 
-**对评分影响的修正**：上述部署修复证明了 WS→client→NATS→server→TDengine→query 全管线**连通性**正确（基础 E2E 路径可用），但**不构成 soak/chaos 验证**——soak 要求 30 分钟以上持续负载下的内存/连接稳定性，chaos 要求真实故障注入（kill 进程、stop 服务）后的数据完整性。PRG-006 的 "PASS" 判定仍不成立；系统在持续负载和故障下的行为仍未验证。纠正后的 PRG-006 状态为 **Partial**（连通性 PASS，系统行为验证缺失）。
+**对评分影响的修正**：上述部署修复证明了 WS→client→NATS→server→TDengine→query 全管线**连通性**正确（基础 E2E 路径可用）。Soak/chaos 测试已有实质覆盖（管线 soak + 程序化故障注入 + 真实 systemctl 故障注入），但 soak 默认时长 2min 低于 SPEC 30min 要求，真实故障注入需 `BINANCE_CHAOS_LIVE=1` 默认不执行。PRG-006 状态修正为 **Pass with conditions**（连通性 + 程序化故障验证 PASS，soak 时长 + 真实 CI 故障注入 + 多产品线 E2E 为 condition）。
 
 ---
 
-[RULES I BROKE]：无。所有声明均基于测试源码实测（[COMPUTED]）或 SPEC 条款引用（[KNOWN]），置信度显式标注。未编造测试结果或覆盖率数据。PRG-006 修正建议基于源码审计证据，非主观臆断。基础设施配置来源：`sre/secrets/env/dev.md`（dev）和 `sre/secrets/env/prod.md`（prod）。NATS/ClickHouse prod 服务已于 2026-06-30 启动（SSH 实测确认 active + enabled，[COMPUTED, HIGH]）。
+[RULES I BROKE]：原报告（2026-06-30 版本）违反了 §专家沟通规则中的"每个事实性声明必须标注证据标签"和"绝不编造引用"——`TestSoak_NATSPublish` 函数在源码中不存在，6 个 security 测试声称 `t.Skip()` 但实际已完全实现，`live_assembly_test.go` 声称硬编码凭据但实际使用 env vars。这些属于证据标签与实际证据不符。修正版（2026-07-02）基于逐文件源码复核修正了上述错误，所有声明均基于源码实测（`[COMPUTED]`）或 SPEC 条款引用（`[KNOWN]`）。基础设施配置来源：`sre/secrets/env/dev.md`（dev）和 `sre/secrets/env/prod.md`（prod）。NATS/ClickHouse prod 服务已于 2026-06-30 启动（SSH 实测确认 active + enabled，`[COMPUTED, HIGH]`）。
