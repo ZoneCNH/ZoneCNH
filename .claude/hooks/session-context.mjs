@@ -177,12 +177,10 @@ if (existsSync(worktreeBase)) {
   const PROTECT = new Set(["note.md", "v2.md"]);
 
   // === GC 自动清理（#3）：超阈值时本次启动自动按 CLEAN 逻辑清理 ===
-  // WORKTREE_GC_AUTO=1 且 worktree>15 或 stash>30 时，视同 CLEAN 模式。
+  // WORKTREE_GC_AUTO=1 且触发条件命中时，视同 CLEAN 模式。
   // 护栏不变：dirty / 白名单 / 残骸全部跳过。阈值未超仍 dry-run 报告。
   const worktreeCount = worktreeState.registered.size;
   const stashCount = parseInt(run("git stash list 2>/dev/null | wc -l") || "0", 10) || 0;
-  const autoTrigger = process.env.WORKTREE_GC_AUTO === "1" && (worktreeCount > 15 || stashCount > 30);
-  const effectiveClean = cleanMode || autoTrigger;
 
   // 注册的 worktree 路径（git worktree list）
   const registered = worktreeState.registered;
@@ -209,6 +207,15 @@ if (existsSync(worktreeBase)) {
     }
     return "ORPHAN";
   };
+
+  // AUTO 触发：注册 worktree 超 15 / stash 超 30 / 孤儿超 5 三选一。
+  // 叠加 orphanCount：OMX team worker 经 git worktree forget 后注册数 = 0，
+  // 仅靠 worktreeCount>15 永不触发 → 形成永久 dry-run 噪音。orphanCount
+  // 直接统计文件系统孤儿，与 git 注册数解耦，治理 forget-but-not-rm 场景。
+  const orphanCount = candidates.filter((c) => classify(c) === "ORPHAN").length;
+  const autoTrigger = process.env.WORKTREE_GC_AUTO === "1" &&
+    (worktreeCount > 15 || stashCount > 30 || orphanCount > 5);
+  const effectiveClean = cleanMode || autoTrigger;
 
   // 白名单：目录直接含 note.md / v2.md 文件则保护
   const hasProtectedFile = (dir) => {
