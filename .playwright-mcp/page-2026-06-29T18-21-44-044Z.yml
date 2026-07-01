@@ -1,0 +1,150 @@
+- application [ref=e1]:
+  - img [ref=e77]
+  - generic [ref=e78]:
+    - generic [ref=e79]:
+      - button "显示桌面" [ref=e80] [cursor=pointer]
+      - generic "主菜单" [ref=e81] [cursor=pointer]:
+        - button [ref=e82]
+    - listbox [ref=e89]:
+      - button "消息" [ref=e90] [cursor=pointer]
+      - button [ref=e91] [cursor=pointer]
+      - button "小工具" [ref=e92] [cursor=pointer]
+      - button [ref=e93] [cursor=pointer]
+  - generic [ref=e94]:
+    - menu [ref=e95]:
+      - generic "桌面" [ref=e96]:
+        - menuitem "套件中心" [ref=e97] [cursor=pointer]:
+          - generic [ref=e99]: 套件中心
+        - menuitem "控制面板" [ref=e100] [cursor=pointer]:
+          - generic [ref=e102]: 控制面板
+        - menuitem "File Station" [ref=e103] [cursor=pointer]:
+          - generic [ref=e105]: File Station
+        - menuitem "DSM 说明" [ref=e106] [cursor=pointer]:
+          - generic [ref=e108]: DSM 说明
+    - generic [ref=e109]:
+      - generic [ref=e110]:
+        - img [ref=e112]
+        - generic [ref=e116]: 控制面板
+        - generic [ref=e117]:
+          - img [ref=e119] [cursor=pointer]
+          - img [ref=e122] [cursor=pointer]
+          - img [ref=e125] [cursor=pointer]
+      - generic [ref=e127]:
+        - generic [ref=e128]:
+          - application "控制面板"
+          - generic [ref=e136]:
+            - tablist [ref=e139]:
+              - tab "系统更新" [expanded] [selected] [ref=e140]:
+                - generic "系统更新" [ref=e141]:
+                  - emphasis [ref=e142]:
+                    - generic [ref=e144]: 系统更新
+              - tab "系统设置备份" [ref=e145]:
+                - generic "系统设置备份" [ref=e146] [cursor=pointer]:
+                  - emphasis [ref=e147]:
+                    - generic [ref=e149]: 系统设置备份
+              - tab "系统重置" [ref=e150]:
+                - generic "系统重置" [ref=e151] [cursor=pointer]:
+                  - emphasis [ref=e152]:
+                    - generic [ref=e154]: 系统重置
+              - tab "系统还原" [ref=e155]:
+                - generic "系统还原" [ref=e156] [cursor=pointer]:
+                  - emphasis [ref=e157]:
+                    - generic [ref=e159]: 系统还原
+              - listitem [ref=e160]
+            - generic [ref=e168]:
+              - generic "当有可用的新功能或修复了安全性问题和漏洞时，Synology 会提供 DSM更新以提升系统性能和稳定性。" [ref=e171]
+              - generic [ref=e172]:
+                - generic [ref=e173]: 产品型号：
+                - generic "产品型号 DS1821+" [ref=e175]: DS1821+
+              - generic [ref=e176]:
+                - generic [ref=e177]: DSM 版本：
+                - generic "DSM 版本 DSM 7.2.1-69057 Update 6 (发行说明)" [ref=e179]:
+                  - text: DSM 7.2.1-69057 Update 6 (
+                  - link "发行说明" [ref=e213] [cursor=pointer]:
+                    - /url: http://update7.synology.com/autoupdate/whatsnew.php?model=DS1821%2B&update_version=69057-6
+                  - text: )
+              - generic [ref=e181]:
+                - generic [ref=e182]: 状态：
+                - generic "状态 DSM 7.3.2-86009 Update 3可供下载。 (发行说明)" [ref=e184]:
+                  - text: DSM 7.3.2-86009 Update 3可供下载。 (
+                  - link "发行说明" [ref=e214] [cursor=pointer]:
+                    - /url: http://update7.synology.com/autoupdate/whatsnew.php?model=DS1821%2B&update_version=86009-3
+                  - text: )
+              - emphasis [ref=e194] [cursor=pointer]:
+                - button "下载" [ref=e195]
+              - generic [ref=e200]:
+                - emphasis [ref=e202] [cursor=pointer]:
+                  - button "手动更新 DSM" [ref=e203]
+                - emphasis [ref=e206] [cursor=pointer]:
+                  - button "更新设置" [ref=e207]
+        - alert: 指的是此窗口中最后一个的元素。按 Tab 可返回顶部。
+  - generic [ref=e217]:
+    - search "搜索" [active] [ref=e220]
+    - generic [ref=e226]:
+      - generic:
+        - generic:
+          - generic "应用程序":
+            - menuitem "控制面板" [ref=e227] [cursor=pointer]:
+              - generic [ref=e229]: 控制面板
+            - menuitem "DSM 说明" [ref=e230] [cursor=pointer]:
+              - generic [ref=e232]: DSM 说明
+            - menuitem "套件中心" [ref=e233] [cursor=pointer]:
+              - generic [ref=e235]: 套件中心
+            - menuitem "资源监控" [ref=e236] [cursor=pointer]:
+              - generic [ref=e238]: 资源监控
+            - menuitem "存储管理器" [ref=e239] [cursor=pointer]:
+              - generic [ref=e241]: 存储管理器
+            - menuitem "日志中心" [ref=e242] [cursor=pointer]:
+              - generic [ref=e244]: 日志中心
+            - menuitem "安全顾问" [ref=e245] [cursor=pointer]:
+              - generic [ref=e247]: 安全顾问
+            - menuitem "技术支持中心" [ref=e248] [cursor=pointer]:
+              - generic [ref=e250]: 技术支持中心
+            - menuitem "SAN Manager" [ref=e251] [cursor=pointer]:
+              - generic [ref=e253]: SAN Manager
+            - menuitem "Active Insight" [ref=e254] [cursor=pointer]:
+              - generic [ref=e256]: Active Insight
+            - menuitem "USB Copy" [ref=e257] [cursor=pointer]:
+              - generic [ref=e259]: USB Copy
+            - menuitem "File Station" [ref=e260] [cursor=pointer]:
+              - generic [ref=e262]: File Station
+            - menuitem "Advanced Media Extensions" [ref=e263] [cursor=pointer]:
+              - generic [ref=e265]: Advanced Media Extensions
+            - menuitem "Universal Search" [ref=e266] [cursor=pointer]:
+              - generic [ref=e268]: Universal Search
+            - menuitem "Audio Station" [ref=e269] [cursor=pointer]:
+              - generic [ref=e271]: Audio Station
+            - menuitem "Central Management System" [ref=e272] [cursor=pointer]:
+              - generic [ref=e274]: Central Management System
+            - menuitem "Download Station" [ref=e275] [cursor=pointer]:
+              - generic [ref=e277]: Download Station
+            - menuitem "媒体服务器" [ref=e278] [cursor=pointer]:
+              - generic [ref=e280]: 媒体服务器
+            - menuitem "Note Station" [ref=e281] [cursor=pointer]:
+              - generic [ref=e283]: Note Station
+            - menuitem "OAuth Service" [ref=e284] [cursor=pointer]:
+              - generic [ref=e286]: OAuth Service
+            - menuitem "存储空间分析器" [ref=e287] [cursor=pointer]:
+              - generic [ref=e289]: 存储空间分析器
+            - menuitem "Video Station" [ref=e290] [cursor=pointer]:
+              - generic [ref=e292]: Video Station
+            - menuitem "Cloud Sync" [ref=e293] [cursor=pointer]:
+              - generic [ref=e295]: Cloud Sync
+            - menuitem "Container Manager" [ref=e296] [cursor=pointer]:
+              - generic [ref=e298]: Container Manager
+            - menuitem "Synology Photos" [ref=e299] [cursor=pointer]:
+              - generic [ref=e301]: Synology Photos
+            - menuitem "Synology Contacts" [ref=e302] [cursor=pointer]:
+              - generic [ref=e304]: Synology Contacts
+            - menuitem "Synology Drive" [ref=e305] [cursor=pointer]:
+              - generic [ref=e307]: Synology Drive
+            - menuitem "Synology Drive ShareSync" [ref=e308] [cursor=pointer]:
+              - generic [ref=e310]: Synology Drive ShareSync
+            - menuitem "Synology Drive 管理控制台" [ref=e311] [cursor=pointer]:
+              - generic [ref=e313]: Synology Drive 管理控制台
+            - menuitem "Synology MailPlus Server" [ref=e314] [cursor=pointer]:
+              - generic [ref=e316]: Synology MailPlus Server
+            - menuitem "文档查看器" [ref=e317] [cursor=pointer]:
+              - generic [ref=e319]: 文档查看器
+            - menuitem "Synology AI Console" [ref=e320] [cursor=pointer]:
+              - generic [ref=e322]: Synology AI Console

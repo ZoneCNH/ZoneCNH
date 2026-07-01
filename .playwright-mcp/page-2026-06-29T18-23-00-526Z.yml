@@ -1,0 +1,109 @@
+- application [ref=e1]:
+  - img [ref=e3]
+  - generic [ref=e4]:
+    - generic [ref=e5]:
+      - button "显示桌面" [ref=e6] [cursor=pointer]
+      - generic "主菜单" [ref=e7] [cursor=pointer]:
+        - button [ref=e8]
+    - listbox [ref=e15]:
+      - button "消息" [ref=e16] [cursor=pointer]
+      - button [ref=e17] [cursor=pointer]
+      - button "小工具" [ref=e18] [cursor=pointer]
+      - button [ref=e19] [cursor=pointer]
+  - generic [ref=e20]:
+    - menu [ref=e21]:
+      - generic "桌面" [ref=e22]:
+        - menuitem "套件中心" [ref=e23] [cursor=pointer]:
+          - generic [ref=e25]: 套件中心
+        - menuitem "控制面板" [ref=e26] [cursor=pointer]:
+          - generic [ref=e28]: 控制面板
+        - menuitem "File Station" [ref=e29] [cursor=pointer]:
+          - generic [ref=e31]: File Station
+        - menuitem "DSM 说明" [ref=e32] [cursor=pointer]:
+          - generic [ref=e34]: DSM 说明
+    - generic [ref=e35]:
+      - generic [ref=e36]:
+        - img [ref=e38]
+        - generic [ref=e42]: 控制面板
+        - generic [ref=e43]:
+          - img [ref=e45] [cursor=pointer]
+          - img [ref=e48] [cursor=pointer]
+          - img [ref=e51] [cursor=pointer]
+      - generic [ref=e53]:
+        - generic [ref=e54]:
+          - application "控制面板" [active]
+          - generic [ref=e62]:
+            - tablist [ref=e65]:
+              - tab "系统更新" [expanded] [selected] [ref=e66]:
+                - generic "系统更新" [ref=e67]:
+                  - emphasis [ref=e68]:
+                    - generic [ref=e70]: 系统更新
+              - tab "系统设置备份" [ref=e71]:
+                - generic "系统设置备份" [ref=e72] [cursor=pointer]:
+                  - emphasis [ref=e73]:
+                    - generic [ref=e75]: 系统设置备份
+              - tab "系统重置" [ref=e76]:
+                - generic "系统重置" [ref=e77] [cursor=pointer]:
+                  - emphasis [ref=e78]:
+                    - generic [ref=e80]: 系统重置
+              - tab "系统还原" [ref=e81]:
+                - generic "系统还原" [ref=e82] [cursor=pointer]:
+                  - emphasis [ref=e83]:
+                    - generic [ref=e85]: 系统还原
+              - listitem [ref=e86]
+            - generic [ref=e94]:
+              - generic "当有可用的新功能或修复了安全性问题和漏洞时，Synology 会提供 DSM更新以提升系统性能和稳定性。" [ref=e97]
+              - generic [ref=e98]:
+                - generic [ref=e99]: 产品型号：
+                - generic "产品型号 DS1821+" [ref=e101]: DS1821+
+              - generic [ref=e102]:
+                - generic [ref=e103]: DSM 版本：
+                - generic "DSM 版本 DSM 7.2.1-69057 Update 6 (发行说明)" [ref=e105]:
+                  - text: DSM 7.2.1-69057 Update 6 (
+                  - link "发行说明" [ref=e192] [cursor=pointer]:
+                    - /url: http://update7.synology.com/autoupdate/whatsnew.php?model=DS1821%2B&update_version=69057-6
+                  - text: )
+              - generic [ref=e107]:
+                - generic [ref=e108]: 状态：
+                - generic "状态 DSM 7.3.2-86009 Update 3可供下载。 (发行说明)" [ref=e110]:
+                  - text: DSM 7.3.2-86009 Update 3可供下载。 (
+                  - link "发行说明" [ref=e193] [cursor=pointer]:
+                    - /url: http://update7.synology.com/autoupdate/whatsnew.php?model=DS1821%2B&update_version=86009-3
+                  - text: )
+              - emphasis [ref=e120] [cursor=pointer]:
+                - button "下载" [ref=e121]
+              - generic [ref=e126]:
+                - emphasis [ref=e128] [cursor=pointer]:
+                  - button "手动更新 DSM" [ref=e129]
+                - emphasis [ref=e132] [cursor=pointer]:
+                  - button "更新设置" [ref=e133]
+        - alert: 指的是此窗口中最后一个的元素。按 Tab 可返回顶部。
+    - generic [ref=e172]:
+      - generic:
+        - generic:
+          - generic:
+            - listbox:
+              - listitem [ref=e173]: 搜索结果
+              - option "终端机和 SNMP > 终端机" [selected] [ref=e174] [cursor=pointer]:
+                - generic [ref=e176]: 终端机和 SNMP > 终端机
+              - option "终端机和 SNMP" [ref=e177] [cursor=pointer]:
+                - generic [ref=e179]: 终端机和 SNMP
+              - option "终端机和 SNMP > SNMP" [ref=e180] [cursor=pointer]:
+                - generic [ref=e182]: 终端机和 SNMP > SNMP
+  - generic [ref=e136]:
+    - img [ref=e138] [cursor=pointer]
+    - generic [ref=e140]:
+      - img [ref=e142]
+      - generic [ref=e147]:
+        - generic [ref=e148]: 管理员帐户安全性
+        - generic [ref=e149]:
+          - text: 默认帐户“admin”容易遭到暴力破解，可能受到勒索软件攻击。您可以通过
+          - link "双重验证" [ref=e150] [cursor=pointer]:
+            - /url: https://kb.synology.com/DSM/help/DSM/SecureSignIn/2factor_authentication?version=7
+          - text: (2FA) 来保护您的帐户，不过我们建议您停用“admin”帐户。
+          - text: 了解
+          - link "停用“admin”帐户后可能受到影响的套件/服务" [ref=e151] [cursor=pointer]:
+            - /url: https://kb.synology.com/DSM/tutorial/services_affected_by_disable_admin
+          - text: 。
+    - button "启用 2FA" [ref=e153] [cursor=pointer]:
+      - generic [ref=e155]: 启用 2FA

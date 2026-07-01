@@ -46,7 +46,9 @@ ZoneCNH Frontend (React SPA)
 
 ## Read Next
 
-- `goal/goal.md`
-- `spec/SPEC.md`
-- `spec/FEATURES.md`
-- <https://github.com/ZoneCNH/frontend>
+- `goal/goal.md` — Module goals
+- `spec/SPEC.md` — Full specification
+- `spec/FEATURES.md` — Feature checklist
+- `spec/INTERACTION-PROTOCOL.md` — Frontend-backend interaction protocol
+- <https://github.com/ZoneCNH/frontend> — Source code
+- <https://www.wecode7.com> — Live deployment
