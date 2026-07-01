@@ -99,18 +99,24 @@ GET /api/v1/{domain}/instrument/{product_line}
 
 ### 错误响应
 
+无数据时返回空数组 `[]`（非错误），参数错误时返回错误对象：
+
 ```json
-{"code":"BNC_NOT_FOUND","message":"no data for symbol","request_id":"req-..."}
+// 无数据（正常情况）
+[]
+
+// 参数错误
 {"code":"BNC_BAD_REQUEST","message":"start must be RFC3339","request_id":"req-..."}
 {"code":"BNC_BACKEND_DOWN","message":"catalog unavailable","request_id":"req-..."}
 ```
 
-| Code | HTTP | 含义 |
-|------|:----:|------|
-| `BNC_NOT_FOUND` | 404 | 数据不存在 |
-| `BNC_BAD_REQUEST` | 400 | 参数格式错误 |
-| `BNC_BACKEND_DOWN` | 503 | 后端依赖不可用 |
-| `BNC_TIMEOUT` | 504 | 处理超时 |
+### 错误码
+
+| Code | HTTP | 含义 | 触发条件 |
+|------|:----:|------|------|
+| `BNC_BAD_REQUEST` | 400 | 参数格式错误 | 缺少/格式错误的时间参数 |
+| `BNC_BACKEND_DOWN` | 503 | 后端依赖不可用 | 数据库/消息队列不可达 |
+| `BNC_NOT_FOUND` | 404 | 数据不存在 | 无历史数据 |
 
 ### 数值精度
 
@@ -190,9 +196,14 @@ fetch('/metrics')
 ## 6. 安全规范
 
 ```
-TLS:            HTTPS only, Let's Encrypt certbot
+TLS:            HTTPS only, Let's Encrypt certbot (verified 2026-07-01)
 HTTP → HTTPS:   301 redirect
-Headers:        X-Content-Type-Options, X-Frame-Options, Referrer-Policy
+Security headers (all verified):
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
 Auth (future):  nginx auth_request + httpOnly JWT cookie
 ```
 
