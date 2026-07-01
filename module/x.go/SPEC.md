@@ -50,7 +50,7 @@ module/x.go (goalcli + templatex)
 
 ---
 
-## Open Questions
+## Appendix A: Open Questions
 
 - [ ] x.go 作为治理 CLI，是否需要完整的 23 节业务规格，还是工具文档（README/man page）更合适？
 - [ ] goalcli 与 templatex 是否应拆为独立模块？
