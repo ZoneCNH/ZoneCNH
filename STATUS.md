@@ -38,6 +38,12 @@
 | [contracts](https://github.com/ZoneCNH/contracts)         | v1.5.0 | spec/code/release       | factory-ready   | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | 跨域稳定端口/事件/DTO 契约；✅ P0 DTO 已固化（RegimeSnapshot/RegimeCard/DecisionCard + 3 Provider ports，PR #10）；✅ P1 SignalIntent DTO 升入（PR #12，2026-06-21）；ingestion contract §8.4 已实现 |
 | [transportx](https://github.com/ZoneCNH/transportx)       | v1.3.0 | spec/code/release       | factory-ready   | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | 应用通信底座规格基线；spec-only；✅ GitHub Release v1.1.1-spec 已发布                                                                                                                            |
 
+### 展示层
+
+| 组件 | 版本（目标投影）| 阶段投影 | 门禁口径 | 子维度投影 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| [frontend](https://github.com/ZoneCNH/frontend) | v1.0.0 | spec/code/release | released | spec=100 cod=100 | ZoneCNH 统一前端平台 — React 19 + TypeScript + Vite + Tailwind CSS 4 + Recharts；多模块路由；binance 5 页面 39 功能 Done；nginx 静态部署；Playwright 18 E2E |
+
 > ✅ **版本 / release 注记**：公开文档是投影层；"版本（目标投影）"列为规划目标版本，已发布版本以"状态总览"表或 `.foundationx/status/index.json` + `.foundationx/blockers.json` 与 GitHub Release 实际证据为准。当前 21-module projection 中 21/21 已发布 GitHub Release；2026-06-24 核查：`natsx` GitHub Release `v1.0.2` 已发布，`v1.0.3` 远端 tag-only；factory 投影必须读取 release/live/blocker 证据，不能由 tag 自动推出。
 
 > **成熟度语义说明（2026-06-14 v2 Trust Alignment）**：上表"进度"反映本仓库 Spec 管线评分（spec→code），不代表可投产等级（factory grade）。"子维度投影"列中 `pln/prm/cod` 对外仓模块为文档模板 pass-through 评分 **[P]**，不代表代码编译或测试已验证——权威代码质量见对应仓库 CI/GitHub Release。下表提供多维度成熟度视图；RELEASE=❌ 或存在 open blocker 的模块不得投影为 FACTORY=✅。
