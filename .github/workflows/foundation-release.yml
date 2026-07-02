@@ -29,7 +29,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     needs: quality-gate
-    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'workflow_dispatch'
     steps:
       - uses: actions/checkout@v4
       - name: Validate release inputs
@@ -82,7 +82,7 @@ jobs:
     needs: release-prep
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'workflow_dispatch'
     strategy:
       fail-fast: false
       matrix:
@@ -149,7 +149,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     needs: release-modules
-    if: always() && needs.release-modules.result != 'failure' && needs.release-modules.result != 'cancelled'
+    if: always() && needs.release-modules.result != 'failure' && needs.release-modules.result != 'cancelled' && github.event_name == 'workflow_dispatch'
     steps:
       - uses: actions/checkout@v4
       - name: Generate aggregated foundation release manifest
