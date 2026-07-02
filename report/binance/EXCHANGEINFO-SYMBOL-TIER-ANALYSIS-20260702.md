@@ -4,6 +4,8 @@
 > **方法**：源码审计（`/home/workspace/binance/internal/client/*`、`pkg/binancecfg/`、`cmd/binance-client/`，行号已现场核验）+ GAP 交叉对照（`DATA-INTEGRITY-E2E-20260701.md` v3.9）
 > **关联**：`report/binance/DATA-INTEGRITY-E2E-20260701.md`（GAP-E6/E24/E25/E26）
 
+> ⚠️ **实施前必读 §8 勘误（2026-07-02 第二轮复核）**：§3.1 options 归 T4 存在语义错配（期权应按距到期/moneyness 分而非 Tier）、§5 GAP-E25 依赖链顺序倒置（分级后单副本富余，E25 应为可选非依赖）、§3-§4 跳过了更便宜的白名单 MVP 方案。实施落地以 §8 修正为准。
+
 ---
 
 ## 0. 一句话结论
@@ -345,6 +347,85 @@ GAP-E1 v3.2（server 端 coverage SSOT，多副本语义）
 5. **同名 Priority 冲突需消解** [COMPUTED, HIGH]：现有 `LifecycleTask.Priority` 是任务级，用户要的是 symbol 级。落地时 symbol 级用 `SymbolPriority`，复合排序 `(SymbolPriority, TaskPriority)`。
 
 置信度：现状分析 **HIGH**（全部 [COMPUTED]，源码行号经 explore agent 现场核验）；分级体系设计 **MED**（方案合理但 `classifyTier` 的 volume 阈值依赖 Binance 实际数据，标 [INFERRED]）；资源推算 **MED**（基于 `defaultMaxWSConns=10` 与 Binance 单连接 1024 stream 常识推算）；MVP 工时 **LOW**（0.5d~4d 经验估算，未拆到 task 级）。
+
+---
+
+## 8. 勘误与补充（2026-07-02 第二轮复核）
+
+> 本节为报告发布后的对抗性复核，针对 §3 分级体系设计与 §5 缺口依赖链中两处可商榷点给出修正。原文 §1-§7 不动，保留作历史；落地实施以本节修正为准。
+
+### 8.1 [勘误] §3.1 把 options 整条产品线归 T4 是数据灾难
+
+**原文**（§3.1 Tier 五级分层表 + §4.2）："options 无 volume 概念，按 expiry/strike 统一归 T4"，T4 采集策略 = `rest_daily`（日线 + funding）。
+
+**问题**（源码核验 + 期权业务常识）：
+
+1. **末日/近月期权归 T4 daily 丢失全部日内 gamma** [INFERRED, HIGH]。临近到期的期权（0DTE、近月）是 gamma 交易最活跃的合约，价格日内跳动剧烈。日级 REST 采样会把这类高价值合约当成"监控级"慢采，等同于丢弃核心数据。Tier 模型按"流动性/重要性"分档，但期权的"重要性"由 **距到期天数 + moneyness（strike 与标的现价比）** 决定，而非 quoteVolume——Tier 维度对 options 语义错配。
+
+2. **options 量级被严重低估** [INFERRED, MED]。§5 称 "options 数千"，但 Binance 每个标的（BTC/ETH/...）有 ~10-20 个到期日 × ~20-50 个 strike × CALL/PUT，单标的可达上千张合约，全量 options 实际是**数万张**，且每日大量新挂 + 到期滚动。把数万张合约走 `rest_daily` 仍是不可承受的 REST 负载（数万 × 1d/1w kline = 数万请求/日），分级并未真正解决 options 问题，只是把它藏进 T4。
+
+3. **根因前置：options decode 无 status 过滤** [COMPUTED, HIGH]。`exchangeinfo_option.go:30-36` 的 `optionsExchangeSymbol` 结构体无 status 字段，`DecodeOptionsExchangeInfo`（L74-84）仅按 `expiryDate > now` 判 active，**不做 TRADING 过滤**（spot/um/cm 都做了，见 exchangeinfo.go:40/118/200）。这意味着所有未过期合约——含大量流动性极差、远月、深度虚值的"垃圾合约"——全部以 `status="active"` 灌入 catalog。这是 GAP-E6 的关联问题（DATA-INTEGRITY §GAP-E6 已提及），但在本报告 §7 核心论断中未被强调。**分级落地前必须先修 options 的 TRADING 过滤，否则 T4 会塞满无效合约**。
+
+**修正建议**：
+
+- **options 不进 Tier 模型**，单列一个 `options_classification` 维度，按 `(距到期天数, moneyness)` 分桶：
+  - 近月 + 近价（ATM）→ 实时 stream（类比 T0/T1）
+  - 远月或深虚值（OTM）→ REST 采样或不采
+- **decode 结构体加 status 字段**（Binance options exchangeInfo 实际返回 `openTime`/可推断活跃度），与 GAP-E6 一并修复。
+- §3.1 表格的 "T4（监控）其他产品线" 这一行应拆分：cm_perp 可按 Tier 分（有 volume），options 不在此列。
+
+### 8.2 [勘误] §5 缺口依赖链 GAP-E25 顺序倒置——应改为可选，非依赖
+
+**原文**（§5）：依赖链画为 `E6 → E26 → E24 → E25 → E1`，且 "GAP-E25 是 GAP-E24 的放大器：无分片时 3 副本都跑全量 = 3 倍资源浪费"。
+
+**逻辑矛盾**（报告自身前提导出相反结论）：
+
+报告 §3.2 已论证：分级后单副本 WS 占用 = T0+T1(110)×4 + T2(500)×1 = **940 stream（2 连接）**，REST 冷启动 T3 ~60K 请求（8h）。即 **分级后单副本完全扛得住**。
+
+那么 §5 所述 "无分片时 3 副本都跑全量" 的前提**在分级落地后不成立**——既然单副本只采 T0+T1+T2 的子集（≤940 stream），就不存在"3 副本跑全量"的 3 倍浪费。**GAP-E25（一致性哈希分片）的前提消失，它不应是 E24 的下游依赖，而应是分级后单副本仍不够时的可选扩容手段。** [INFERRED, HIGH]
+
+**资源账重算**（修正 §7 论断 3 的隐含前提）：
+
+| 场景 | 单副本 WS | 单副本 REST 冷启动 | 是否需要 GAP-E25 分片 |
+| --- | --- | --- | --- |
+| 全量、不分级（现状） | 8000 stream（8 连接，逼近上限） | 103K 请求（14h） | 需要（单副本扛不住） |
+| 分级后（E24 落地） | 940 stream（2 连接） | ~60K（8h，T3 长尾） | **不需要**（单副本富余） |
+| 分级 + 业务增长到 T0+T1=500 | ~2000 stream（2 连接） | 更高 | 视负载评估，可能需要 |
+
+**修正后的依赖链**：
+
+```
+GAP-E6（全量化）→ GAP-E26（interval SSOT）→ GAP-E24（分级）→ [评估单副本负载]
+                                                       ↓ 大概率够
+                                                      完成
+                                                       ↓ 极少数情况不够
+                                                     GAP-E25（可选扩容）
+```
+
+**结论**：E24 和 E25 是**互斥的扩容路径**，不是配套。应先做分级（E24），评估单副本是否够（几乎肯定够），再决定是否需要分片（E25）。把 E25 列为 E24 下游依赖是顺序倒置，会诱导过度工程化（一致性哈希 ring + Redis ClientRegistry + NATS heartbeat + 分片 diff 广播，5-8d 工作量服务于一个不存在的需求）。
+
+### 8.3 [补充] 更便宜的替代方案：静态白名单优先于动态分级
+
+原文 §3-§4 把"五级动态分级 + classifyTier 三层降级算法 + per-tier 配置矩阵"作为唯一路径，但忽略了 ROI 高得多的渐进方案 [INFERRED, MED]：
+
+**静态白名单方案**（GAP-E24 的 MVP）：
+
+- catalog 仍全量化（GAP-E6 独立该修）
+- `stream_control.go:337` 加一个 `STREAM_SYMBOLS` 配置白名单，仅白名单内 symbol 进 WS 订阅
+- 改动量 ~20 行，工时 0.5d
+- 覆盖 ~90% 实际业务需求（DATA-INTEGRITY §GAP-E24 原文："策略通常只需 Top 50-100 主流 symbol 实时"）
+
+**渐进路径**：白名单（0.5d，覆盖 90%）→ 评估是否需要动态分级（3-5d，覆盖 100%）→ 评估是否需要分片（5-8d，水平扩展）。原文把后两步列为必做，跳过了 stop-and-evaluate，违反 Simplicity First。
+
+### 8.4 勘误置信度
+
+| 论断 | 标签 | 置信度 | 依据 |
+| --- | --- | --- | --- |
+| options 归 T4 语义错配 | [INFERRED] | HIGH | 期权 gamma 业务常识 + Tier 按流动性分档的语义不匹配 |
+| options 量级数万 | [INFERRED] | MED | Binance 期权合约组合估算（到期日 × strike × CALL/PUT），未拉实测 |
+| options 无 TRADING 过滤 | [COMPUTED] | HIGH | exchangeinfo_option.go:30-36, 74-84 现场核验 |
+| E25 依赖链倒置 | [INFERRED] | HIGH | 报告自身 §3.2 资源账推演导出相反结论 |
+| 白名单更优 | [INFERRED] | MED | 基于 DATA-INTEGRITY §GAP-E24 原文的业务需求前提 |
 
 ---
 
