@@ -452,9 +452,9 @@ else: ok("No stale 'strategies' references")
 
 # ── 6. Domain-sum arithmetic ───────────────────────────────
 print("\n--- 6. Domain-sum row sums ---")
-st_sum = sum(int(r["total"]) for r in rows.values())
-se_sum = sum(int(r["existing"]) for r in rows.values())
-sc_sum = sum(int(r["created"]) for r in rows.values())
+st_sum = sum(int(r["total"]) for r in rows.values() if re.match(r'\d+', str(r.get("total", ""))))
+se_sum = sum(int(r["existing"]) for r in rows.values() if re.match(r'\d+', str(r.get("existing", ""))))
+sc_sum = sum(int(r["created"]) for r in rows.values() if re.match(r'\d+', str(r.get("created", ""))))
 chk("Total",    str(st_sum), totals["total"])
 chk("Existing", str(se_sum), totals["existing"])
 chk("Created",  str(sc_sum), totals["created"])
