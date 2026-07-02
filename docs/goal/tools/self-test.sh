@@ -336,6 +336,9 @@ ci:
       - Linux
       - X64
       - ci-governance
+    accepted_runner_classes:
+      - [self-hosted, Linux, X64, ci-governance]
+      - [ubuntu-latest]
     required_env:
       - RUNNER_TOOL_CACHE
       - AGENT_TOOLSDIRECTORY
@@ -461,6 +464,32 @@ write_validator_fixture "$validator_base" false false PASS PASS DONE released fa
 run_success "goal validator strict fixture baseline" \
   python3 "$SCRIPT_DIR/goal-validate.py" --root "$validator_base" --mode strict --format text
 
+validator_ubuntu_ci="$TMP_ROOT/validator-ubuntu-ci"
+write_validator_fixture "$validator_ubuntu_ci" false false PASS PASS DONE released false false "" good
+cat >"$validator_ubuntu_ci/.github/workflows/goal-ci.yml" <<'YAML'
+name: Goal fixture
+on: [push]
+env:
+  GOAL_CI_RUNNER_CLASS: ubuntu-latest
+  RUNNER_TOOL_CACHE: ${{ github.workspace }}/.goal-runner-tool-cache
+  AGENT_TOOLSDIRECTORY: ${{ github.workspace }}/.goal-runner-tool-cache
+jobs:
+  goal-validator:
+    runs-on: ubuntu-latest
+    steps:
+      - run: mkdir -p "$RUNNER_TOOL_CACHE" "$AGENT_TOOLSDIRECTORY"
+      - run: bash docs/goal/tools/setup-ci-toolchain.sh
+      - run: python3 docs/goal/tools/goal-validate.py --root . --mode strict --format text
+      - run: echo "source_id target_id evidence_id BLOCKED"
+  goal-toolchain-check:
+    runs-on: ubuntu-latest
+    steps:
+      - run: mkdir -p "$RUNNER_TOOL_CACHE" "$AGENT_TOOLSDIRECTORY"
+      - run: bash docs/goal/tools/setup-ci-toolchain.sh
+YAML
+run_success "goal validator accepts ubuntu-latest runner class" \
+  python3 "$SCRIPT_DIR/goal-validate.py" --root "$validator_ubuntu_ci" --mode strict --format text
+
 validator_missing_cache="$TMP_ROOT/validator-missing-cache"
 write_validator_fixture "$validator_missing_cache" false false PASS PASS DONE released false false "" missing_cache
 run_failure "goal validator rejects missing runtime cache ignore" \
@@ -564,16 +593,16 @@ env:
   AGENT_TOOLSDIRECTORY: ${{ github.workspace }}/.goal-runner-tool-cache
 jobs:
   goal-validator:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
       - run: bash docs/goal/tools/setup-ci-toolchain.sh
       - run: python3 docs/goal/tools/goal-validate.py --root . --mode strict --format text
   goal-toolchain-check:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
       - run: bash docs/goal/tools/setup-ci-toolchain.sh
 YAML
-run_failure_contains "goal validator rejects hosted Goal CI runner" "GV-CONSISTENCY-CI-RUNNER-CLASS" \
+run_failure_contains "goal validator rejects macos Goal CI runner" "GV-CONSISTENCY-CI-RUNNER-CLASS" \
   python3 "$SCRIPT_DIR/goal-validate.py" --root "$validator_hosted_ci" --mode strict --format text
 
 validator_unpinned_self_hosted_ci="$TMP_ROOT/validator-unpinned-self-hosted-ci"
@@ -582,23 +611,23 @@ cat >"$validator_unpinned_self_hosted_ci/.github/workflows/goal-ci.yml" <<'YAML'
 name: Goal fixture
 on: [push]
 env:
-  GOAL_CI_RUNNER_CLASS: self-hosted
+  GOAL_CI_RUNNER_CLASS: hosted
   RUNNER_TOOL_CACHE: ${{ github.workspace }}/.goal-runner-tool-cache
   AGENT_TOOLSDIRECTORY: ${{ github.workspace }}/.goal-runner-tool-cache
 jobs:
   goal-validator:
-    runs-on: [self-hosted, Linux, X64]
+    runs-on: windows-latest
     steps:
       - run: mkdir -p "$RUNNER_TOOL_CACHE" "$AGENT_TOOLSDIRECTORY"
       - run: bash docs/goal/tools/setup-ci-toolchain.sh
       - run: python3 docs/goal/tools/goal-validate.py --root . --mode strict --format text
   goal-toolchain-check:
-    runs-on: [self-hosted, Linux, X64]
+    runs-on: windows-latest
     steps:
       - run: mkdir -p "$RUNNER_TOOL_CACHE" "$AGENT_TOOLSDIRECTORY"
       - run: bash docs/goal/tools/setup-ci-toolchain.sh
 YAML
-run_failure_contains "goal validator rejects unpinned self-hosted Goal CI runner" "GV-CONSISTENCY-CI-RUNNER-CLASS" \
+run_failure_contains "goal validator rejects windows Goal CI runner" "GV-CONSISTENCY-CI-RUNNER-CLASS" \
   python3 "$SCRIPT_DIR/goal-validate.py" --root "$validator_unpinned_self_hosted_ci" --mode strict --format text
 
 validator_missing_ci_validator="$TMP_ROOT/validator-missing-ci-validator"

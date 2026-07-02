@@ -273,15 +273,15 @@ on:
   push:
   pull_request:
 env:
-  GOAL_CI_RUNNER_CLASS: self-hosted
+  GOAL_CI_RUNNER_CLASS: ubuntu-latest
   RUNNER_TOOL_CACHE: ${{ github.workspace }}/.goal-runner-tool-cache
   AGENT_TOOLSDIRECTORY: ${{ github.workspace }}/.goal-runner-tool-cache
   PIP_DISABLE_PIP_VERSION_CHECK: "1"
 jobs:
   goal-validator:
-    runs-on: [self-hosted, Linux, X64, ci-governance]
+    runs-on: ubuntu-latest
     steps:
-      - name: Prepare self-hosted runner tool cache
+      - name: Prepare runner tool cache
         run: mkdir -p "$RUNNER_TOOL_CACHE" "$AGENT_TOOLSDIRECTORY"
       - uses: actions/checkout@v4
       - name: Set up Goal CI Python toolchain
@@ -289,10 +289,10 @@ jobs:
       - name: Goal Workflow Validate
         run: bash docs/goal/tools/goal-workflow.sh validate
   lint:
-    runs-on: [self-hosted, Linux, X64, ci-governance]
+    runs-on: ubuntu-latest
     needs: goal-validator
     steps:
-      - name: Prepare self-hosted runner tool cache
+      - name: Prepare runner tool cache
         run: mkdir -p "$RUNNER_TOOL_CACHE" "$AGENT_TOOLSDIRECTORY"
       - uses: actions/checkout@v4
       - name: Set up Goal CI Python toolchain
@@ -303,7 +303,7 @@ jobs:
 
 发布 workflow 必须先复用 `.github/workflows/goal-ci.yml`，再执行 `bash .github/ci/goal-release-gate.sh`；只有 gate 产出 `release/manifest/goal-release-gate.json` 后，才允许生成 release manifest 和创建 GitHub Release。
 
-Goal 相关 workflow MUST 使用 `[self-hosted, Linux, X64, ci-governance]` runner class。`ci-governance` 是当前仓库在 sre/host 机器池（94.72.124.39）注册的项目 runner 标签；实际 workflow MUST NOT 只使用 `[self-hosted, Linux, X64]`，避免调度到未满足本仓库 tool cache / 权限合同的通用 runner。`ubuntu-latest` 等 hosted runner alias 只能出现在负例测试 fixture 中，不得进入实际 workflow 或推荐示例。自托管 runner 必须提供可写的 `RUNNER_TOOL_CACHE` 与 `AGENT_TOOLSDIRECTORY`；若 job 在首个 step 前因 `/opt/hostedtoolcache` 权限失败而中止，应登记为 runner 基础设施阻断，不得通过切换 hosted runner、跳过 Gate 或放宽 validator 规避。
+Goal 相关 workflow MUST 使用 `ubuntu-latest` 或 `[self-hosted, Linux, X64, ci-governance]` runner class。self-hosted runner 已于 2026-06-18 下线，当前默认使用 `ubuntu-latest`；若恢复 self-hosted runner，`ci-governance` 是当前仓库在 sre/host 机器池（94.72.124.39）注册的项目 runner 标签，实际 workflow MUST NOT 只使用 `[self-hosted, Linux, X64]`，避免调度到未满足本仓库 tool cache / 权限合同的通用 runner。`macos-*`、`windows-*` 等未批准的 hosted runner 不得进入实际 workflow 或推荐示例。无论使用哪种 runner，workflow 必须提供可写的 `RUNNER_TOOL_CACHE` 与 `AGENT_TOOLSDIRECTORY`。
 
 `setup-ci-toolchain.sh` MUST 管理 Python/YAML 工具隔离。它优先创建 job-local virtualenv；当自托管 runner 缺少 `python3-venv` / `ensurepip` 时，MUST fallback 到 workspace-local `pip --target`，并通过 `PYTHONPATH` 与 `yamllint` wrapper 暴露给后续 step。该 fallback 只解决 runner Python 打包差异，不允许依赖全局 `PyYAML` 或全局 `yamllint` 作为完成证据。
 

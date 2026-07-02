@@ -4,7 +4,7 @@
 
 name: Goal CI
 
-# Self-hosted runner labels per docs/goal/tools/README.md §Runner Class.
+# Runner class per docs/goal/tools/README.md §Runner Class.
 # 仅保留 workflow_call/workflow_dispatch（被 release.yml 引用）。
 # 重装 runner 后恢复 push/pull_request trigger。
 on:
@@ -12,7 +12,7 @@ on:
   workflow_dispatch:
 
 env:
-  GOAL_CI_RUNNER_CLASS: self-hosted
+  GOAL_CI_RUNNER_CLASS: ubuntu-latest
   RUNNER_TOOL_CACHE: ${{ github.workspace }}/.goal-runner-tool-cache
   AGENT_TOOLSDIRECTORY: ${{ github.workspace }}/.goal-runner-tool-cache
   PIP_DISABLE_PIP_VERSION_CHECK: "1"

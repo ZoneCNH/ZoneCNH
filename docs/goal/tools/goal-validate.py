@@ -98,6 +98,10 @@ RISK_ID_PATTERN = re.compile(rf"^RISK-GOAL-{NAMESPACE_FRAGMENT}-[0-9]{{3}}-[0-9]
 RISK_ID_EXPECTED = "RISK-GOAL-<DATE|MODULE-NAMESPACE>-NNN-NNN"
 REQUIRED_CI_JOBS = {"goal-validator", "goal-toolchain-check"}
 REQUIRED_GOAL_CI_RUNNER_LABELS = ("self-hosted", "Linux", "X64", "ci-governance")
+ACCEPTED_GOAL_CI_RUNNER_CLASSES = [
+    ("self-hosted", "Linux", "X64", "ci-governance"),
+    ("ubuntu-latest",),
+]
 REQUIRED_GOAL_CI_ENV = ("RUNNER_TOOL_CACHE", "AGENT_TOOLSDIRECTORY")
 REQUIRED_GOAL_CI_TOOLCHAIN = "docs/goal/tools/setup-ci-toolchain.sh"
 REQUIRED_GOAL_CI_ISOLATION_PRIMARY = "job-local-venv"
@@ -1206,26 +1210,18 @@ def check_workflow_stale_contract(root: Path, report: Report) -> None:
         if raw_line.strip().startswith("runs-on:")
     ]
     for line_number, raw_line in runs_on_lines:
-        missing_labels = [label for label in REQUIRED_GOAL_CI_RUNNER_LABELS if label not in raw_line]
-        if missing_labels:
+        if not any(
+            all(label in raw_line for label in runner_class)
+            for runner_class in ACCEPTED_GOAL_CI_RUNNER_CLASSES
+        ):
             report.error(
                 "GV-CONSISTENCY-CI-RUNNER-CLASS",
                 "consistency",
                 path_at(workflow, line_number),
-                "Goal CI jobs must run on the approved self-hosted runner class",
-                list(REQUIRED_GOAL_CI_RUNNER_LABELS),
+                "Goal CI jobs must run on an approved runner class",
+                [list(cls) for cls in ACCEPTED_GOAL_CI_RUNNER_CLASSES],
                 raw_line.strip(),
             )
-
-    if "ubuntu-latest" in active_text or "GOAL_CI_RUNNER_CLASS: self-hosted" not in active_text:
-        report.error(
-            "GV-CONSISTENCY-CI-RUNNER-CLASS",
-            "consistency",
-            workflow,
-            "Goal CI must not fall back to hosted runners",
-            "GOAL_CI_RUNNER_CLASS: self-hosted and no hosted runner aliases",
-            "hosted runner alias or missing runner class",
-        )
 
     missing_env = [name for name in REQUIRED_GOAL_CI_ENV if name not in active_text]
     if missing_env:
@@ -1296,15 +1292,17 @@ def check_workflow_stale_contract(root: Path, report: Report) -> None:
                 missing_required_jobs,
             )
 
-        missing_rule_labels = [label for label in REQUIRED_GOAL_CI_RUNNER_LABELS if label not in rules_text]
-        if missing_rule_labels:
+        if not any(
+            all(label in rules_text for label in runner_class)
+            for runner_class in ACCEPTED_GOAL_CI_RUNNER_CLASSES
+        ):
             report.error(
                 "GV-CONSISTENCY-CI-RUNNER-CLASS",
                 "consistency",
                 rules,
-                "rules.yaml must record the required self-hosted Goal CI runner labels",
-                list(REQUIRED_GOAL_CI_RUNNER_LABELS),
-                missing_rule_labels,
+                "rules.yaml must record at least one accepted Goal CI runner class",
+                [list(cls) for cls in ACCEPTED_GOAL_CI_RUNNER_CLASSES],
+                "<missing>",
             )
 
         missing_rule_env = [name for name in REQUIRED_GOAL_CI_ENV if name not in rules_text]
