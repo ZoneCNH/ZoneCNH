@@ -20,7 +20,7 @@ done
 
 # 2. 创建独立 worktree（每个管线阶段一个，路径按分支名原样落盘，斜杠会形成子目录）
 for agent in spec design plan tasks matrix prompt; do
-  git worktree add /home/$MODULE/.worktree/workspaces/feat/$MODULE-$agent -b feat/$MODULE-$agent origin/main
+  git worktree add /home/workspace/$MODULE/.worktree/workspaces/feat/$MODULE-$agent -b feat/$MODULE-$agent origin/main
 done
 ```
 
@@ -46,7 +46,7 @@ done
 
 ```
 Agent G: go-coder
-  工作目录: /home/$MODULE
+  工作目录: /home/workspace/$MODULE
   输入: PROMPT + SPEC §9.3 (JSON schema)
   产出: internal/*/*.go + *_test.go
   验证: go build + go vet + go test -race

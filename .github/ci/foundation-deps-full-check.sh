@@ -64,7 +64,7 @@ resolve_module_dir() {
     local current_module
 
     local last_local_dir=""
-    for local_dir in "$SOURCE_ROOT/$mod" "/home/$mod"; do
+    for local_dir in "$SOURCE_ROOT/$mod" "/home/workspace/$mod"; do
         if [ "$local_dir" = "$last_local_dir" ]; then
             continue
         fi
