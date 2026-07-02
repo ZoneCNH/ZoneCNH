@@ -1,8 +1,10 @@
 # Definition of Done
 
+> **投影声明**（2026-07-03 P2.3）：分层 DoR/DoD 的 canonical SSOT 是 `docs/goal/06-dod.md`（12 层完整定义）。本文件定义 Spec→Code 快速通道的 Code 层 DoD 检查清单。Code DoD 的权威定义见 `06-dod.md §8`。
+>
 > 一个模块实现完成的验收条件。
 
-最后更新：2026-06-07
+最后更新：2026-07-03
 
 ---
 

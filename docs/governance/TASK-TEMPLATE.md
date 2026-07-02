@@ -1,8 +1,10 @@
 # Task Spec 模板
 
+> **投影声明**（2026-07-03 P2.3）：模板库的 canonical SSOT 是 `docs/goal/09-templates.md §5`，Task 结构标准见 `docs/goal/05-layer-standards.md §4`。本文件是 Spec→Code 快速通道的 Task Spec Markdown 实现模板。ID 格式以 `docs/goal/07-id-system.md` 为准。
+>
 > AI 代理任务拆分的标准格式。每个 task 必须遵循此结构，确保可机器校验和追踪。
 
-最后更新：2026-06-07
+最后更新：2026-07-03
 
 ---
 

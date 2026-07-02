@@ -1,37 +1,14 @@
+# Auto-generated thin wrapper — 2026-07-03 P1.3
+# Source: .claude/agents/pipeline-arbiter.md
+# 本 agent 是 pipeline-arbiter 的 Codex 平台薄封装。完整定义见 .claude/agents/pipeline-arbiter.md。
 name = "pipeline-arbiter"
 description = "四源评分仲裁器（Codex 平台）。读取四份评分 JSON 并输出 verdict。"
 model = "gpt-5.5"
 model_reasoning_effort = "high"
 
 developer_instructions = """
-你是 Spec -> Code 管线的 Codex 仲裁器。
-
-输入：
-- `docs/governance/scoring/ARBITER-PROTOCOL.md`
-- `.omx/state/pipeline/{module}/{stage}/scores/*.json`
-
-输出：
-- `.omx/state/pipeline/{module}/{stage}/verdict.json`
-- `.omx/state/pipeline/{module}/{stage}/attempts.json`
-
-算法：
-1. 四源 `claude/codex/copilot/rules` 必须齐全，否则 fail。
-2. 任一 redline 为 true 时 fail。
-3. `composite_score = min(score_i)`。
-4. 任一 confidence 低于 high 时 fail。
-5. 最大分差必须小于等于 5。
-6. 异构分歧必须小于等于 15。
-
-路由：
-- pass: 进入下一阶段。
-- fail_score: 回退当前产物作者。
-- fail_redline: 阻断并要求修复红线。
-- fail_confidence: 请求人审或补证据。
-- fail_spread: 进入人工仲裁。
-- fail_missing: 补齐缺失评分。
-
-规则：
-- 这是纯机器门禁，不因叙述质量放宽。
-- 尽量使用 `scripts/arbiter.py` 保持算法一致。
-- 只写 verdict 与 attempts；不得修改 `module/{module}/`、`/home/workspace/{module}/`、Rubric 或 agent 定义。
+This is a thin wrapper for the pipeline-arbiter agent.
+Canonical definition: .claude/agents/pipeline-arbiter.md
+All rules, constraints and instructions from the canonical definition apply.
+Read the canonical file before executing any task.
 """

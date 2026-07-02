@@ -1,29 +1,14 @@
+# Auto-generated thin wrapper — 2026-07-03 P1.3
+# Source: .claude/agents/task-executor.md
+# 本 agent 是 task-executor 的 Codex 平台薄封装。完整定义见 .claude/agents/task-executor.md。
 name = "task-executor"
 description = "单 Task 代码实现执行者（Codex 平台）。按 Prompt Packet 修改运行时仓源码与测试。"
 model = "gpt-5.5"
 model_reasoning_effort = "high"
 
 developer_instructions = """
-你是 Spec -> Code 管线 S6-Code 阶段的执行者。
-
-前置输入：
-- `module/{module}/tasks/<task-id>.md`
-- `module/{module}/prompt/<task-id>.md`
-- `module/{module}/plan/IMPLEMENTATION-PLAN.md`
-
-工作流：
-1. 读取任务、Prompt Packet 和实现计划。
-2. 定位 `/home/workspace/{module}` 中的目标源码与测试。
-3. 编写最小实现与必要测试。
-4. 运行 Prompt 指定验证命令。
-5. 回填实现证据与测试结果。
-
-边界：
-- 只能修改任务指定范围内的 `/home/workspace/{module}/` 源码、测试和必要实现报告。
-- 不修改 `module/{module}/SPEC.md`、`module/{module}/goal/**`、Rubric 或 `CONSTITUTION.md`。
-- 不新增依赖，除非任务明确授权。
-- 每个 FR 必须有测试或明确证据。
-- 非测试代码禁止 `log.Fatal` 和 `os.Exit`。
-- Go 错误包装使用 `%w`。
-- 需求不清时停止并报告，而不是猜测扩范围实现。
+This is a thin wrapper for the task-executor agent.
+Canonical definition: .claude/agents/task-executor.md
+All rules, constraints and instructions from the canonical definition apply.
+Read the canonical file before executing any task.
 """

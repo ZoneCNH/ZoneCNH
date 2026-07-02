@@ -1,6 +1,6 @@
 # 仓库指南
 
-> **工作流快速导航**：`docs/workflow/README.md` — 双管线统一入口、阶段对应表、四源评分速览、快速通道。
+> **工作流快速导航**：`docs/workflow/README.md` — 统一管线入口、阶段总览、四源评分速览、快速通道。
 
 ## 最高指令源
 
@@ -106,7 +106,7 @@ Spec 编写完成后，不是直接写代码，而是按管线推进：Spec → 
 | Codex       | `.codex/agents/`   | GPT-5.5 + reasoning effort | TOML                 | 21       |
 | Copilot CLI | `.copilot/agents/` | Copilot/Claude 模型        | Markdown prompt      | 21       |
 
-三平台 agent 镜像对齐（21=21=21，零漂移），由 scripts/sync-agents.py 在 goal-workflow.sh preflight 阶段自动检测漂移。5 个 governance executor agent（spec/matrix/task-split/task-planner/prompt-builder）在 .claude/.copilot 中为 symlink→goal-*，在 .codex 中为带 canonical name 的 thin wrapper，sync-agents.py 按 name 去重后三平台均为 21。
+三平台 agent 镜像对齐（21=21=21，零漂移），由 scripts/sync-agents.py 在 goal-workflow.sh preflight 阶段自动检测漂移。5 个 governance executor agent（spec/matrix/task-split/task-planner/prompt-builder）在 .claude/.copilot 中为 symlink→goal-*。.codex/agents/ 全部 21 个文件为 thin wrapper（引用 .claude canonical 定义），sync-agents.py 按 name 去重后三平台均为 21。
 
 运行时状态目录按平台隔离：Claude 使用 `.omc/state/pipeline/`，Codex 使用 `.omx/state/pipeline/`，Copilot 使用 `.copilot/state/pipeline/`。
 
@@ -206,7 +206,7 @@ Goal 驱动交付体系确保每一行代码都能追溯到一个可验证的业
 | Evidence | goal-evidence                 | —                                           | 统一用 goal-evidence                                          |
 | Governance | goal-governance             | pipeline-arbiter, meta-arbiter              | 一致性审计用 goal-governance；评分仲裁用 arbiter              |
 
-路由规则说明：当 Goal 管线与 governance 管线同时适用时，Goal Gate 为权威裁决（见 `docs/goal/00-authority-map.md` §双管线优先级）。Goal agent 负责制品创建与 Gate 审查；governance agent 负责四源评分与仲裁。
+路由规则说明：Goal→Retro 是唯一管线（G0-G11），Spec→Code（S1-S6）是 G2-G6 的快速通道子集。Goal Gate 为权威裁决（见 `docs/goal/00-authority-map.md` §管线优先级）。Goal agent 负责制品创建与 Gate 审查；governance agent 负责四源评分与仲裁。
 
 ### 统一配置中心
 

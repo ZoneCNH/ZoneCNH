@@ -1,4 +1,5 @@
 # Agent runtime directories
+.claude/worktrees/
 .omc/*
 !.omc/state/
 .omc/state/*
