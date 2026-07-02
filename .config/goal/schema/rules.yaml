@@ -522,6 +522,9 @@ ci:
       - Linux
       - X64
       - ci-governance
+    accepted_runner_classes:
+      - [self-hosted, Linux, X64, ci-governance]
+      - [ubuntu-latest]
     required_env:
       - RUNNER_TOOL_CACHE
       - AGENT_TOOLSDIRECTORY
