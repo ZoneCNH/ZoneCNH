@@ -3,7 +3,7 @@
 # 与 FOUNDATION-V1.md Issue 2 对应
 
 version: "1.3.0"
-updated: "2026-06-26"
+updated: "2026-07-02"
 
 # ============================================================
 # Go baseline
@@ -68,14 +68,14 @@ modules:
     description: "标准事实源 / Go Reference Template / schema / template"
 
   xlib_harness:
-    path: github.com/ZoneCNH/xlib_harness
+    path: github.com/ZoneCNH/xlib-harness
     layer: harness
     stdlib_only: false
     runtime_dependency: false
     description: "generator/scaffold/spec-lint/boundary/traceability/format/template 门禁运行器"
 
   xlib_evidence:
-    path: github.com/ZoneCNH/xlib-evidence
+    path: github.com/ZoneCNH/xlib_evidence
     layer: evidence
     stdlib_only: false
     runtime_dependency: false
@@ -142,6 +142,7 @@ modules:
     path: github.com/ZoneCNH/transportx
     layer: contracts
     stdlib_only: false
+    shared_module: xlib_standard
     description: "跨 runtime / adapter 传输契约"
 
   domainx:
@@ -149,6 +150,12 @@ modules:
     layer: L2.5
     stdlib_only: false
     description: "领域共享基础契约与原语"
+
+  decimalx:
+    path: github.com/ZoneCNH/decimalx
+    layer: L2.5
+    stdlib_only: true
+    description: "高精度十进制运算原语（纯 stdlib）"
 
 # ============================================================
 # 允许的依赖关系（单向箭头 = 调用方可以依赖被调方）
@@ -174,7 +181,8 @@ allowed_deps:
   clickhousex:   [kernel, observex]                   # kernel 原语 + observex 观测接口
   contracts:     []                                    # 跨域契约独立，无 Foundation 运行时依赖
   transportx:    [contracts, configx, observex, resiliencx, xlib-standard]  # 传输契约可消费公开契约和横切接口；xlib-standard 为标准源依赖
-  domainx:       [kernel]                              # 领域共享原语只依赖 kernel
+  domainx:       [kernel, decimalx]                     # 领域共享原语依赖 kernel 原语 + decimalx 高精度运算
+  decimalx:      []                                    # 纯 stdlib，无 Foundation 运行时依赖
   alertx:        [observex, contracts]                # 横切告警消费者：单向依赖 observex 导出 + contracts 契约（ADR-001 D1）
 
 # ============================================================
@@ -354,12 +362,12 @@ forbidden_foundation_edges:
 
   # 存储扩展
   - from: redisx
-    to: [configx, observex, resiliencx, schedulex, kafkax, natsx, postgresx, taosx, ossx, clickhousex, contracts, testkitx, x.go, business]
-    rule: "redisx 只封装 Redis 客户端，不跨越存储引擎边界。"
+    to: [configx, resiliencx, schedulex, kafkax, natsx, postgresx, taosx, ossx, clickhousex, contracts, testkitx, x.go, business]
+    rule: "redisx 只封装 Redis 客户端，不跨越存储引擎边界。允许依赖 observex 的 metric 常量与 NoopMetrics alias（统一跨组件指标名，非观测实现耦合）。"
 
   - from: kafkax
-    to: [configx, observex, resiliencx, schedulex, redisx, natsx, postgresx, taosx, ossx, clickhousex, contracts, testkitx, x.go, business]
-    rule: "kafkax 只封装 Kafka 客户端，不跨越存储引擎边界。"
+    to: [configx, resiliencx, schedulex, redisx, natsx, postgresx, taosx, ossx, clickhousex, contracts, testkitx, x.go, business]
+    rule: "kafkax 只封装 Kafka 客户端，不跨越存储引擎边界。允许依赖 observex 的 metric 常量与 NoopMetrics alias（统一跨组件指标名，非观测实现耦合）。"
 
   - from: natsx
     to: [configx, observex, resiliencx, schedulex, redisx, kafkax, postgresx, taosx, ossx, clickhousex, contracts, testkitx, x.go, business]
@@ -378,8 +386,8 @@ forbidden_foundation_edges:
     rule: "ossx 只封装对象存储客户端，不跨越存储引擎边界。"
 
   - from: clickhousex
-    to: [configx, observex, resiliencx, schedulex, redisx, kafkax, natsx, postgresx, taosx, ossx, contracts, testkitx, x.go, business]
-    rule: "clickhousex 只封装 ClickHouse 客户端，不跨越存储引擎边界。"
+    to: [configx, resiliencx, schedulex, redisx, kafkax, natsx, postgresx, taosx, ossx, contracts, testkitx, x.go, business]
+    rule: "clickhousex 只封装 ClickHouse 客户端，不跨越存储引擎边界。允许依赖 observex 的 metric 常量与 NoopMetrics alias（统一跨组件指标名，非观测实现耦合）。"
 
   # 契约
   - from: contracts
