@@ -681,13 +681,33 @@ Goal→Retro 管线和 Spec→Code 管线在设计上是"管线 A 是管线 B �
 
 ### P3：长期治理（持续）
 
-| #    | 建议                                                                 | 解决问题 | 工作量 |
-| ---- | -------------------------------------------------------------------- | -------- | ------ |
-| P3.1 | 逐步完成剩余 56 个模块的嵌套结构迁移                                 | S2       | 持续   |
-| P3.2 | 实现 xlibgate Phase F（业务域依赖机器执行）                          | S5       | 2 周   |
-| P3.3 | 统一 GitHub 仓库名为 snake_case（xlib-standard → xlib_standard）     | S6       | 协调   |
-| P3.4 | 减少根目录隐藏目录数量（合并 .omc/.omx，移除 .brooks/.pytest_cache） | S7       | 1 周   |
-| P3.5 | 为全部模块补齐 CHANGELOG.md                                          | S10      | 持续   |
+| #    | 建议                                                                 | 解决问题 | 工作量 | 状态 |
+| ---- | -------------------------------------------------------------------- | -------- | ------ | ---- |
+| P3.1 | 逐步完成剩余 56 个模块的嵌套结构迁移                                 | S2       | 持续   | 待执行 |
+| P3.2 | 实现 xlibgate Phase F（业务域依赖机器执行）                          | S5       | 2 周   | 待执行 |
+| P3.3 | 统一 GitHub 仓库名为 snake_case（xlib-standard → xlib_standard）     | S6       | 协调   | ✅ 完成 2026-07-03 |
+| P3.4 | 减少根目录隐藏目录数量（合并 .omc/.omx，移除 .brooks/.pytest_cache） | S7       | 1 周   | ✅ 完成 2026-07-03 |
+| P3.5 | 为全部模块补齐 CHANGELOG.md                                          | S10      | 持续   | ✅ 完成 2026-07-03 |
+
+#### P3 完成记录
+
+**P3.3 仓库名统一**（2026-07-03）：
+- 49 个文件中 kebab-case 引用（`xlib-standard`/`xlib-harness`/`xlib-evidence`）全部替换为 snake_case
+- 覆盖：docs/（architecture、constitution、production-standards、templates）、module/（44 个 SPEC/README/task/prompt 文件）、registry.yaml、FOUNDATION-DEPS.yaml、ci-workflow.yaml
+- `module/registry.yaml` 注释更新：移除"GitHub 仓库使用 kebab-case"说明
+- 排除 report/archive/ 和 report/arch/（历史快照不改）
+
+**P3.4 隐藏目录治理**（2026-07-03）：
+- `.gitignore` 新增：`.brooks/`、`.lsp.json`、`.filetree.json`
+- `git rm --cached`：取消跟踪 `.lsp.json`（空 `{}`）和 `.filetree.json`（本地编辑器配置）
+- `.omc`/`.omx` 保持分离（AGENTS.md 平台隔离设计，不合并），添加注释说明
+- `.pytest_cache/`、`.worktree/` 已在 .gitignore 中（无需额外操作）
+
+**P3.5 CHANGELOG 补齐**（2026-07-03）：
+- 20 个已发布基座模块：创建 CHANGELOG.md，含当前版本号和摘要（版本来源 `.foundationx/status/index.json`）
+- 39 个未发布模块：创建占位 CHANGELOG.md（`[Unreleased]` 段）
+- 4 个模板目录跳过（`_template`、`_exchange-template`、`data_cs_module`、`data_independent_process`）
+- 共创建 59 个 CHANGELOG.md 文件
 
 ---
 
