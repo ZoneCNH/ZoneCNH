@@ -223,6 +223,14 @@ PRG-001~007 全部 PASS：
 | v3.9.5 | 2026-06-28 | deprecated spec files physically deleted |
 | v3.9.4 | 2026-06-28 | structural score gate repair |
 
+## 22a. Runtime Gap Matrix Reference
+
+> **双口径声明**：本 SPEC 的统计口径（48 Done / 0 Partial / 0 Drifted / 0 Pending）表示 **规格口径**——FR 功能面已闭合。运行时口径的 58 个数据完整性/安全性/可运维性缺口记录在独立制品 `module/binance/RUNTIME-GAP-MATRIX.md` 中。两者正交，不矛盾。详见该文件 §7 双口径声明。
+>
+> 来源报告：`report/binance/DATA-INTEGRITY-E2E-20260701.md`（v3.9，6358 行，27 轮对抗性自审，200+ 维度矩阵核验）。
+
 ## 23. Stop Condition
 
 All PRG gates are closed and remote CI/release/production/security/load/pentest artifacts are auditable. release_closeable=YES（PRG-001~007 全 PASS），功能面 48/48 FR Done（100%）已闭合，生产就绪面 PRG-001~007 全 PASS。
+
+> **运行时缺口说明**：规格口径 release_closeable=YES 基于 FR 功能面闭合。运行时口径 58 个缺口（GAP-E1~E58）记录在 `module/binance/RUNTIME-GAP-MATRIX.md` 中，需在 binance 仓库 feature branch 上逐步修复。详见该文件 §7 双口径声明与 §10 后续行动。
