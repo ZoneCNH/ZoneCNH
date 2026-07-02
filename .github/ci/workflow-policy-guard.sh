@@ -9,10 +9,14 @@ import re
 import sys
 
 WORKFLOW_DIR = Path(".github/workflows")
-# Self-hosted runner decommissioned 2026-06-18; ubuntu-latest is now the accepted runner.
+# Accepted runner labels. Self-hosted runner was relabeled 2026-07-01 from
+# `homepage` to `ci-governance` (commit 88239ab4) to match the label actually
+# registered on sre host 94.72.124.39 (sre/bootstrap/hosts.env). `homepage`
+# now survives only as a deploy target / repository concept (DEPLOY_TARGET),
+# not as a runner label, so it is removed from this runner whitelist.
 ACCEPTED_RUNNERS = [
     ["ubuntu-latest"],
-    ["self-hosted", "Linux", "X64", "homepage"],
+    ["self-hosted", "Linux", "X64", "ci-governance"],
 ]
 EXPECTED_REUSABLE_PREFIX = "./.github/workflows/"
 EXPECTED_DEPLOY_CONTRACT = "ZoneCNH/sre/.github/workflows/deploy-contract.yml@main"
