@@ -1657,6 +1657,8 @@ grep -rn 'decimalx\|Decimal' internal/server/quality_gate*.go internal/server/in
 
 ### GAP-E24 [HIGH]（v3.5 新增）：CatalogEntry 无 Tier/Priority，全量采集所有 active symbol
 
+> 🔁 **被取代指针（2026-07-02）**：本条目的源码现场核验与深化分析见 `report/binance/EXCHANGEINFO-SYMBOL-TIER-ANALYSIS-20260702.md`（该报告修正了本条目 §6.24.2 关于 quoteAsset 的事实性错误，并完成 Tier/Level/Priority 三维度拆分）。本条目保留作历史追溯，实施请以上位报告为准。
+
 **位置**：`internal/client/catalog.go:16-46`
 
 **核验证据**：
@@ -1710,10 +1712,15 @@ grep -n 'Tier\|Priority\|Tier\|Weight' internal/client/catalog.go
 
 **修复方向**（参见 §6.24）：
 
+> ⚠️ **本条目已被上位报告取代（2026-07-02 修正）**：`report/binance/EXCHANGEINFO-SYMBOL-TIER-ANALYSIS-20260702.md` 在本条目基础上做了源码现场核验与深化，是本条目的严格上位替代。下文修复方向第 2 条存在事实性错误，已在该报告中纠正（见下方勘误）。后续实施以 EXCHANGEINFO 报告为准。
+
 1. CatalogEntry 新增 `Tier int` + `Priority int` 字段
-2. ExchangeInfo decode 解析 Binance `quoteAsset`（USDT/USDC 优先）/`volume` 作为 Tier 分级依据
+2. ~~ExchangeInfo decode 解析 Binance `quoteAsset`（USDT/USDC 优先）/`volume` 作为 Tier 分级依据~~
+   - **勘误（2026-07-02，源码核验）**：`quoteAsset` 字段**早已被解析**（`exchangeinfo.go:23` `QuoteAsset string` 已声明并填入 CatalogEntry），并非分级缺口。真正在 decode 入口被丢弃的是 `quoteVolume`（24h 计价成交量）——`spotExchangeSymbol`（`exchangeinfo.go:19-24`）仅声明 4 字段（symbol/status/baseAsset/quoteAsset），Binance 原始 JSON 中的 `quoteVolume`/`permissions`/`filters` 均被 `json.Decode` 静默丢弃。流动性分级判定的真正根因是 **quoteVolume 信号在入口丢失**，而非 quoteAsset 缺失。详见 EXCHANGEINFO 报告 §1.2。
 3. 配置文件 `binance-client.yaml`：tier 配置（per product_line × tier × max_symbols）
 4. LifecycleManager 按 Tier 决定采集策略（stream / REST / 不采集）
+
+**勘误补充**：原修复方向未识别三维度混淆——用户指令的"分级别/分层级/分优先级"是三个正交维度（Tier/Level/Priority），且 symbol 级 `Priority` 与现有任务级 `LifecycleTask.Priority`（lifecycle.go:16-19）命名冲突，需重命名为 `SymbolPriority`。EXCHANGEINFO 报告 §2 已完成该拆分。
 
 ---
 
@@ -3881,21 +3888,34 @@ tiers:
       collection: rest_sample_daily
 ```
 
-3. ExchangeInfo decode 解析 Tier：
+3. ExchangeInfo decode 解析 Tier（⚠️ 2026-07-02 勘误：`quoteAsset` 已在 `exchangeinfo.go:23` 解析，无需重复解析；真正缺失的是 `quoteVolume` 流动性信号）：
 
 ```go
-// internal/client/exchangeinfo_spot.go (新建，目前 spot decode 内联在 catalog.go)
-func classifyTier(symbol string, quoteAsset string, volumeUSD float64) int {
-    // T0：显式配置
+// internal/client/exchangeinfo.go — 扩展 spotExchangeSymbol 结构体以保留流动性信号
+// （当前仅声明 4 字段：symbol/status/baseAsset/quoteAsset，quoteVolume 被 json.Decode 丢弃）
+type spotExchangeSymbol struct {
+    Symbol      string   `json:"symbol"`
+    Status      string   `json:"status"`
+    BaseAsset   string   `json:"baseAsset"`
+    QuoteAsset  string   `json:"quoteAsset"`  // 已存在
+    QuoteVolume string   `json:"quoteVolume"` // 新增：24h 计价成交量，分级判定依据
+    Permissions []string `json:"permissions"` // 新增：交易能力过滤
+}
+
+// classifyTier 的入参应来自 decode 保留的 QuoteVolume（转为 USD），而非重复解析 quoteAsset
+func classifyTier(symbol string, quoteAsset string, quoteVolumeUSD float64) int {
+    // T0：显式配置（Level 决策，人工维护）
     if isConfiguredT0(symbol) { return 0 }
     // T1：USDT 计价 + volume Top 100
-    if quoteAsset == "USDT" && volumeUSD >= t1VolumeThreshold { return 1 }
+    if quoteAsset == "USDT" && quoteVolumeUSD >= t1VolumeThreshold { return 1 }
     // T2：USDT/USDC + volume > 1M USD
-    if (quoteAsset == "USDT" || quoteAsset == "USDC") && volumeUSD >= 1_000_000 { return 2 }
+    if (quoteAsset == "USDT" || quoteAsset == "USDC") && quoteVolumeUSD >= 1_000_000 { return 2 }
     // T3：长尾
     return 3
 }
 ```
+
+> **勘误说明**：原方案将 `quoteAsset` 列为"需解析的 Tier 分级依据"是事实错误——该字段早已解析并存入 CatalogEntry。分级落地的真正前置是 **扩展 decode 结构体以保留 `quoteVolume`**，否则 `classifyTier` 的 `volumeUSD` 入参无来源，只能退化为纯人工配置 T0 列表 + quoteAsset 兜底。详见 EXCHANGEINFO 报告 §4.2。
 
 4. LifecycleManager 按 Tier 决定采集（lifecycle.go:428）：
 
