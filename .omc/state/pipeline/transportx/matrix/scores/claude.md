@@ -2,7 +2,7 @@
 
 - **评分平台**: Claude (claude)
 - **评分时间**: 2026-06-14T09:00:00Z
-- **评分对象**: `module/transportx/TRACEABILITY.md` (post-#177 fix)
+- **评分对象**: `module/transportx/matrix/TRACEABILITY.md` (post-#177 fix)
 - **Spec 版本**: v1.1.1
 - **总分**: 100 / 100
 - **红线**: 无

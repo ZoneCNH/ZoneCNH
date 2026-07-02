@@ -30,8 +30,8 @@ v<MAJOR>.<MINOR>.<PATCH>
 | CONSTITUTION.md 任何条款    | MINOR 起步，重写为 MAJOR |
 | docs/governance/ 新增文件   | MINOR                    |
 | docs/governance/ 内容修改   | PATCH                    |
-| module/*/SPEC.md 新增       | MINOR                    |
-| module/*/SPEC.md 修改       | PATCH                    |
+| module/*/spec/SPEC.md 新增       | MINOR                    |
+| module/*/spec/SPEC.md 修改       | PATCH                    |
 | .claude/agents/ 新增        | MINOR                    |
 | .claude/agents/ 修改        | PATCH                    |
 | README.md / ARCHITECTURE.md | PATCH                    |

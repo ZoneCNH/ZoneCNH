@@ -1,6 +1,6 @@
 ---
 name: spec-review
-description: FoundationX 规格审查者（Copilot 平台投影），以对抗性视角审查 module/*/SPEC.md 的结构完整性、内容质量、治理合规性和跨规格一致性。给出参考性 Go/No-Go 风险判断；不作为独立管线门禁。
+description: FoundationX 规格审查者（Copilot 平台投影），以对抗性视角审查 module/*/spec/SPEC.md 的结构完整性、内容质量、治理合规性和跨规格一致性。给出参考性 Go/No-Go 风险判断；不作为独立管线门禁。
 platform: copilot
 goal_role: spec-review
 writes: none (read-only review)
@@ -55,7 +55,7 @@ writes: none (read-only review)
 | 就绪审查 | "检查是否可以进入开发" | §1-§8 + Blocking OQ + 宪法 |
 | 发布审查 | "检查是否可以发布" | 追溯链 + DoD + 全部 23 节 |
 | 变更审查 | "审查 spec 变更" | 变更影响 + 状态转换 + 链完整性 |
-| 常规审查 | "审查 module/{module}/SPEC.md" | 全部维度 |
+| 常规审查 | "审查 module/{module}/spec/SPEC.md" | 全部维度 |
 
 ## 严重度
 

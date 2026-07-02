@@ -84,7 +84,7 @@ Step 5: 初始登记（registry + SPEC Draft）
 
 通过 Step 1-4 后，初始登记：
 
-1. 创建 `module/{module}/SPEC.md`（至少 Draft，使用 [`SPEC-TEMPLATE.md`](../SPEC-TEMPLATE.md)）
+1. 创建 `module/{module}/spec/SPEC.md`（至少 Draft，使用 [`SPEC-TEMPLATE.md`](../SPEC-TEMPLATE.md)）
 2. 在 `module/registry.yaml` 新增条目，`lifecycle: proposed`（见 [01](01-module-registry.md) §4.1）
 3. 选架构类型对应模板创建目录结构（见 §3）
 

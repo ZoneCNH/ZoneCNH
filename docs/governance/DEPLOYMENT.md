@@ -285,7 +285,7 @@ jobs:
 
 ```text
 README.md
-module/{module}/SPEC.md
+module/{module}/spec/SPEC.md
 module/{module}/tasks/TASK-*.md
 CHANGELOG.md
 .env.example

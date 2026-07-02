@@ -142,10 +142,10 @@ Workflow Retrospective / RSI Review（可选，受宪法 §14 约束）
 
 | 阶段   | 评分对象                                 | Rubric                                     |
 | ------ | ---------------------------------------- | ------------------------------------------ |
-| Spec   | `module/{module}/SPEC.md`                | `docs/governance/scoring/RUBRIC-spec.md`   |
-| Matrix | `module/{module}/TRACEABILITY.md`        | `docs/governance/scoring/RUBRIC-matrix.md` |
+| Spec   | `module/{module}/spec/SPEC.md`                | `docs/governance/scoring/RUBRIC-spec.md`   |
+| Matrix | `module/{module}/matrix/TRACEABILITY.md`        | `docs/governance/scoring/RUBRIC-matrix.md` |
 | Tasks  | `module/{module}/tasks/TASK-*.md`        | `docs/governance/scoring/RUBRIC-tasks.md`  |
-| Plan   | `module/{module}/IMPLEMENTATION-PLAN.md` | `docs/governance/scoring/RUBRIC-plan.md`   |
+| Plan   | `module/{module}/plan/PLAN.md` | `docs/governance/scoring/RUBRIC-plan.md`   |
 | Prompt | `module/{module}/TASK-*-PROMPT.md`       | `docs/governance/scoring/RUBRIC-prompt.md` |
 | Code   | 本次 Task diff + 测试 + 验证证据         | `docs/governance/scoring/RUBRIC-code.md`   |
 
@@ -198,10 +198,10 @@ Confidence、LLM 分差与 rules 异构一致性是 gate 条件，不能用作�
 
 | 阶段   | 可自动修复对象                           |
 | ------ | ---------------------------------------- |
-| Spec   | `module/{module}/SPEC.md`                |
-| Matrix | `module/{module}/TRACEABILITY.md`        |
+| Spec   | `module/{module}/spec/SPEC.md`                |
+| Matrix | `module/{module}/matrix/TRACEABILITY.md`        |
 | Tasks  | `module/{module}/tasks/TASK-*.md`        |
-| Plan   | `module/{module}/IMPLEMENTATION-PLAN.md` |
+| Plan   | `module/{module}/plan/PLAN.md` |
 | Prompt | `module/{module}/TASK-*-PROMPT.md`       |
 | Code   | 当前 task 指定源码、测试与证据回填       |
 
@@ -427,7 +427,7 @@ Draft → Review → Approved → Implemented
 
 ## 第四步：生成模块级 Traceability Matrix
 
-建立 `module/{module}/TRACEABILITY.md` 模块级需求追踪表，**防止 AI 漏功能，也防止 AI 乱加功能。**
+建立 `module/{module}/matrix/TRACEABILITY.md` 模块级需求追踪表，**防止 AI 漏功能，也防止 AI 乱加功能。**
 
 ### 格式
 
@@ -441,7 +441,7 @@ Draft → Review → Approved → Implemented
 ### 生成方式
 
 ```text
-Agent(subagent_type="matrix", prompt="根据 module/{module}/SPEC.md 生成或校验 module/{module}/TRACEABILITY.md")
+Agent(subagent_type="matrix", prompt="根据 module/{module}/spec/SPEC.md 生成或校验 module/{module}/matrix/TRACEABILITY.md")
 ```
 
 ### 校验规则
@@ -499,7 +499,7 @@ Review + Polish
 ### 使用方式
 
 ```text
-Agent(subagent_type="task-split", prompt="根据 module/{module}/SPEC.md 和 module/{module}/TRACEABILITY.md 拆分 Task")
+Agent(subagent_type="task-split", prompt="根据 module/{module}/spec/SPEC.md 和 module/{module}/matrix/TRACEABILITY.md 拆分 Task")
 ```
 
 ### 输出格式
@@ -526,12 +526,12 @@ Task 拆分后，先生成实现顺序，不直接编码。
 ### 使用方式
 
 ```text
-Agent(subagent_type="task-planner", prompt="根据 module/{module}/SPEC.md、module/{module}/TRACEABILITY.md 和 module/{module}/tasks/ 生成 IMPLEMENTATION-PLAN.md")
+Agent(subagent_type="task-planner", prompt="根据 module/{module}/spec/SPEC.md、module/{module}/matrix/TRACEABILITY.md 和 module/{module}/tasks/ 生成 IMPLEMENTATION-PLAN.md")
 ```
 
 ### 输出
 
-`module/{module}/IMPLEMENTATION-PLAN.md` 至少包含：
+`module/{module}/plan/PLAN.md` 至少包含：
 
 1. Task 执行顺序
 2. 依赖关系和阻塞点
@@ -555,7 +555,7 @@ Agent(subagent_type="task-planner", prompt="根据 module/{module}/SPEC.md、mod
 ### 使用方式
 
 ```text
-Agent(subagent_type="prompt-builder", prompt="根据 module/{module}/IMPLEMENTATION-PLAN.md 和当前 ready task 生成 TASK-{MODULE}-{NNN}-PROMPT.md")
+Agent(subagent_type="prompt-builder", prompt="根据 module/{module}/plan/PLAN.md 和当前 ready task 生成 TASK-{MODULE}-{NNN}-PROMPT.md")
 ```
 
 ### 输出
@@ -601,7 +601,7 @@ Code Review
   ↓
 更新 Task 状态为 Done
   ↓
-更新 module/{module}/TRACEABILITY.md
+更新 module/{module}/matrix/TRACEABILITY.md
   ↓
 实现 TASK-{NNN+1}
 ```
@@ -612,7 +612,7 @@ Code Review
 请实现 TASK-{MODULE}-{NNN}。
 
 上下文：
-- Spec: module/{module}/SPEC.md
+- Spec: module/{module}/spec/SPEC.md
 - Task: module/{module}/tasks/TASK-{MODULE}-{NNN}.md
 - Agent Rules: AGENTS.md
 
@@ -635,7 +635,7 @@ Code Review
 ### 自查 Prompt
 
 ```markdown
-请根据 module/{module}/SPEC.md 检查当前实现。
+请根据 module/{module}/spec/SPEC.md 检查当前实现。
 
 不要写新功能。
 
@@ -653,7 +653,7 @@ Code Review
 ```markdown
 请作为严格代码审查者 review 当前 diff。
 
-参考：module/{module}/SPEC.md
+参考：module/{module}/spec/SPEC.md
 
 重点检查：
 1. 是否满足 spec
@@ -696,7 +696,7 @@ Code Review
 ### 验收 Prompt
 
 ```markdown
-请根据 module/{module}/SPEC.md 对当前功能做完整验收。
+请根据 module/{module}/spec/SPEC.md 对当前功能做完整验收。
 
 检查：
 1. 所有 Functional Requirements 是否实现
@@ -734,7 +734,7 @@ PR 描述应引用 Spec：
 # PR: Implement {module}
 
 ## Related Spec
-- module/{module}/SPEC.md
+- module/{module}/spec/SPEC.md
 
 ## Requirements Covered
 - FR-001, FR-002, FR-003...
@@ -851,7 +851,7 @@ Goal → Spec → [单源 Matrix check] → Tasks → Plan → Prompt → Code
 
 ### 申请流程
 
-1. 模块负责人在 `module/{module}/SPEC.md` 元数据中声明 `Fast-Track: true`
+1. 模块负责人在 `module/{module}/spec/SPEC.md` 元数据中声明 `Fast-Track: true`
 2. 附带准入条件验证证据（3 条检查输出）
 3. CI gate 自动检测 `Fast-Track` 标记并切换门禁阈值
 

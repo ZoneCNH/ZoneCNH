@@ -40,7 +40,7 @@ TASK-{NNN}: {任务标题}
 
 ## Related Spec
 
-module/{module}/SPEC.md
+module/{module}/spec/SPEC.md
 
 ## Related Requirements
 
@@ -106,7 +106,7 @@ golangci-lint run
 
 请阅读以下上下文并输出实现计划：
 
-- Spec: module/{module}/SPEC.md
+- Spec: module/{module}/spec/SPEC.md
 - Task: module/{module}/tasks/TASK-{MODULE}-{NNN}.md
 - Architecture: ARCHITECTURE.md
 - Agent Rules: AGENTS.md
@@ -352,7 +352,7 @@ AI 自查不够，你还要看 diff。
 
 ## Context
 
-Spec: module/{module}/SPEC.md
+Spec: module/{module}/spec/SPEC.md
 Task: module/{module}/tasks/TASK-{MODULE}-{NNN}.md
 Architecture: ARCHITECTURE.md
 Agent Rules: AGENTS.md
@@ -420,7 +420,7 @@ TASK-{NNN}: {任务标题}
 请 review 当前 diff。
 
 参考：
-- module/{module}/SPEC.md
+- module/{module}/spec/SPEC.md
 - module/{module}/tasks/TASK-{MODULE}-{NNN}.md
 - ARCHITECTURE.md
 - AGENTS.md

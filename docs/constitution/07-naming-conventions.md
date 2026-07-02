@@ -33,7 +33,7 @@
 | -------- | ------------------ | ------------------------------ |
 | Go 源码  | snake_case         | `client.go`, `health_check.go` |
 | 测试文件 | `<source>_test.go` | `client_test.go`               |
-| 规格文档 | `SPEC.md`          | `module/redisx/SPEC.md`        |
+| 规格文档 | `SPEC.md`          | `module/redisx/spec/SPEC.md`        |
 | 变更日志 | `CHANGELOG.md`     | 每个模块根目录                 |
 
 ### 7.4 数据域跨层命名

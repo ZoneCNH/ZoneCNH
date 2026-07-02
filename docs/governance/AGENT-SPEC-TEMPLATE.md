@@ -15,7 +15,7 @@
 - Last-Updated: {YYYY-MM-DD}
 - Agent Name: {代理名称，如 kernel-implementer}
 - Role: {角色定位，如 模块实现者 / Spec 审查者 / 测试工程师}
-- Scope: {职责范围，如 实现 module/kernel/SPEC.md 中定义的功能}
+- Scope: {职责范围，如 实现 module/kernel/spec/SPEC.md 中定义的功能}
 - Related:
   - [`docs/ai/agent-rules.md`](../../docs/ai/agent-rules.md)
   - [`docs/ai/prompt-templates.md`](../../docs/ai/prompt-templates.md)

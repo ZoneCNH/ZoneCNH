@@ -21,27 +21,27 @@ Foundation 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中在 
 
 | 层级                  | 模块          | 完整规格                                                         |
 | --------------------- | ------------- | ---------------------------------------------------------------- |
-| **L0 原语**           | kernel        | [`module/kernel/SPEC.md`](./module/kernel/SPEC.md)               |
-| **L1 primitives**     | configx       | [`module/configx/SPEC.md`](./module/configx/SPEC.md)             |
-|                       | observex      | [`module/observex/SPEC.md`](./module/observex/SPEC.md)           |
-|                       | resiliencx    | [`module/resiliencx/SPEC.md`](./module/resiliencx/SPEC.md)       |
-|                       | schedulex     | [`module/schedulex/SPEC.md`](./module/schedulex/SPEC.md)         |
-| **L1 Assembly**       | bootstrap     | [`module/bootstrap/SPEC.md`](./module/bootstrap/SPEC.md)         |
-| **L1 测试**           | testkitx      | [`module/testkitx/SPEC.md`](./module/testkitx/SPEC.md)           |
+| **L0 原语**           | kernel        | [`module/kernel/spec/SPEC.md`](./module/kernel/spec/SPEC.md)               |
+| **L1 primitives**     | configx       | [`module/configx/spec/SPEC.md`](./module/configx/spec/SPEC.md)             |
+|                       | observex      | [`module/observex/spec/SPEC.md`](./module/observex/spec/SPEC.md)           |
+|                       | resiliencx    | [`module/resiliencx/spec/SPEC.md`](./module/resiliencx/spec/SPEC.md)       |
+|                       | schedulex     | [`module/schedulex/spec/SPEC.md`](./module/schedulex/spec/SPEC.md)         |
+| **L1 Assembly**       | bootstrap     | [`module/bootstrap/spec/SPEC.md`](./module/bootstrap/spec/SPEC.md)         |
+| **L1 测试**           | testkitx      | [`module/testkitx/spec/SPEC.md`](./module/testkitx/spec/SPEC.md)           |
 | **门禁**              | xlib_standard | [`module/xlib_standard/spec/SPEC.md`](./module/xlib_standard/spec/SPEC.md) |
 |                       | xlibgate      | [`module/xlibgate/spec/SPEC.md`](./module/xlibgate/spec/SPEC.md)           |
 |                       | xlib_harness  | [`module/xlib_harness/spec/SPEC.md`](./module/xlib_harness/spec/SPEC.md)   |
 |                       | xlib_evidence | [`module/xlib_evidence/spec/SPEC.md`](./module/xlib_evidence/spec/SPEC.md) |
-| **存储扩展**          | redisx        | [`module/redisx/SPEC.md`](./module/redisx/SPEC.md)               |
-|                       | kafkax        | [`module/kafkax/SPEC.md`](./module/kafkax/SPEC.md)               |
-|                       | natsx         | [`module/natsx/SPEC.md`](./module/natsx/SPEC.md)                 |
-|                       | postgresx     | [`module/postgresx/SPEC.md`](./module/postgresx/SPEC.md)         |
-|                       | taosx         | [`module/taosx/SPEC.md`](./module/taosx/SPEC.md)                 |
-|                       | ossx          | [`module/ossx/SPEC.md`](./module/ossx/SPEC.md)                   |
-|                       | clickhousex   | [`module/clickhousex/SPEC.md`](./module/clickhousex/SPEC.md)     |
-| **契约/传输**         | contracts     | [`module/contracts/SPEC.md`](./module/contracts/SPEC.md)         |
-|                       | transportx    | [`module/transportx/SPEC.md`](./module/transportx/SPEC.md)       |
-| **L2.5 · 领域共享层** | domainx       | [`module/domainx/SPEC.md`](./module/domainx/SPEC.md)             |
+| **存储扩展**          | redisx        | [`module/redisx/spec/SPEC.md`](./module/redisx/spec/SPEC.md)               |
+|                       | kafkax        | [`module/kafkax/spec/SPEC.md`](./module/kafkax/spec/SPEC.md)               |
+|                       | natsx         | [`module/natsx/spec/SPEC.md`](./module/natsx/spec/SPEC.md)                 |
+|                       | postgresx     | [`module/postgresx/spec/SPEC.md`](./module/postgresx/spec/SPEC.md)         |
+|                       | taosx         | [`module/taosx/spec/SPEC.md`](./module/taosx/spec/SPEC.md)                 |
+|                       | ossx          | [`module/ossx/spec/SPEC.md`](./module/ossx/spec/SPEC.md)                   |
+|                       | clickhousex   | [`module/clickhousex/spec/SPEC.md`](./module/clickhousex/spec/SPEC.md)     |
+| **契约/传输**         | contracts     | [`module/contracts/spec/SPEC.md`](./module/contracts/spec/SPEC.md)         |
+|                       | transportx    | [`module/transportx/spec/SPEC.md`](./module/transportx/spec/SPEC.md)       |
+| **L2.5 · 领域共享层** | domainx       | [`module/domainx/spec/SPEC.md`](./module/domainx/spec/SPEC.md)             |
 
 ### 规格体系与治理文档
 

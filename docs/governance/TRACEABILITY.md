@@ -1,6 +1,6 @@
 # Traceability Matrix 规范
 
-> **投影声明**（2026-07-03 P2.3）：Matrix 横切口径的 canonical SSOT 是 `docs/goal/05-layer-standards.md §9`（canonical edge model，10 字段图模型）。本文件定义模块级 `module/{module}/TRACEABILITY.md` 的展示视图格式（row/table model）。展示表格在进入 Gate、validator、CI 或 Release 前 MUST 投影为 canonical edge（见 §9 第 307 行）。状态枚举以 §9 为准（Unmapped→Mapped→Linked→Verified/Dropped）。
+> **投影声明**（2026-07-03 P2.3）：Matrix 横切口径的 canonical SSOT 是 `docs/goal/05-layer-standards.md §9`（canonical edge model，10 字段图模型）。本文件定义模块级 `module/{module}/matrix/TRACEABILITY.md` 的展示视图格式（row/table model）。展示表格在进入 Gate、validator、CI 或 Release 前 MUST 投影为 canonical edge（见 §9 第 307 行）。状态枚举以 §9 为准（Unmapped→Mapped→Linked→Verified/Dropped）。
 >
 > 本文件定义模块级追溯矩阵的展示视图格式；canonical edge model 见 `docs/goal/05-layer-standards.md §9`。
 
@@ -26,11 +26,11 @@ Last-Updated: 2026-07-03
 | 制品         | 路径                                          | 职责                                                   |
 | ------------ | --------------------------------------------- | ------------------------------------------------------ |
 | 追溯矩阵规范 | `docs/governance/TRACEABILITY.md`             | 定义结构、字段、状态和校验命令                         |
-| 模块追溯矩阵 | `module/{module}/TRACEABILITY.md`             | 记录该模块的具体 `FR/BR -> AC -> TC -> Task -> Status` |
+| 模块追溯矩阵 | `module/{module}/matrix/TRACEABILITY.md`             | 记录该模块的具体 `FR/BR -> AC -> TC -> Task -> Status` |
 | 评分规则     | `docs/governance/scoring/RUBRIC-matrix.md`    | 对矩阵结构完整性打分                                   |
 | 仲裁协议     | `docs/governance/scoring/ARBITER-PROTOCOL.md` | 聚合四源评分并决定 gate                                |
 
-`docs/governance/TRACEABILITY.md` 不保存具体模块行；新增模块必须创建自己的 `module/{module}/TRACEABILITY.md`。
+`docs/governance/TRACEABILITY.md` 不保存具体模块行；新增模块必须创建自己的 `module/{module}/matrix/TRACEABILITY.md`。
 
 ---
 
@@ -89,7 +89,7 @@ Last-Updated: 2026-07-03
 TRACEABILITY_STRICT=1 bash .github/ci/traceability-check.sh
 ```
 
-该检查以 `module/{module}/TRACEABILITY.md` 为事实来源，并验证：
+该检查以 `module/{module}/matrix/TRACEABILITY.md` 为事实来源，并验证：
 
 - 必需模块均存在矩阵文件。
 - `FR-*` 覆盖数量与模块参考文件一致。
@@ -103,7 +103,7 @@ TRACEABILITY_STRICT=1 bash .github/ci/traceability-check.sh
 ## 8. Review Prompt
 
 ```text
-请审查 module/{module}/TRACEABILITY.md：
+请审查 module/{module}/matrix/TRACEABILITY.md：
 1. 是否覆盖 SPEC.md 或模块级 FR 参考文件中的所有 FR/BR？
 2. 每个 FR 是否具备可测试的 AC？
 3. 每个 FR/BR 是否至少有一个 TC 或 CI Gate？

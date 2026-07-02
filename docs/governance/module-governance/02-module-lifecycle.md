@@ -104,7 +104,7 @@ proposed 模块若决定不推进，可直接删除 registry 条目（不走退�
 
 lifecycle 变更须同 PR 更新：
 1. `module/registry.yaml` 的 `lifecycle` 字段
-2. `module/{module}/SPEC.md` Metadata Status（若涉及 deprecated）
+2. `module/{module}/spec/SPEC.md` Metadata Status（若涉及 deprecated）
 3. `module/README.md` 投影（标注状态）
 4. 退役类变更额外同步 FOUNDATION-DEPS / .foundationx/status / CODEOWNERS（见 [07](07-module-decommission.md) §5）
 

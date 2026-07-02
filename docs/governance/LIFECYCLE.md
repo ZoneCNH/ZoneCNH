@@ -2,7 +2,7 @@
 
 > **投影声明**（2026-07-03 P2.3）：Spec 状态枚举的 canonical SSOT 是 `docs/goal/05-layer-standards.md §1`（四态：Draft→Review→Approved→Superseded/Deprecated）。本文件定义 Spec→Code 快速通道的状态流转规则、变更分类和 CI 集成。`Implemented` 和 `Changed` 是快速通道的 CI 执行状态，对应 goal 管线中 Pipeline `phase_status`（`DONE`）和 Spec 重新进入 `Draft`/`Review` 周期。状态集对齐计划见 `report/arch/module-structure-deep-analysis-20260703.md` P2.3。
 >
-> 定义 `module/*/SPEC.md` 的状态流转规则。
+> 定义 `module/*/spec/SPEC.md` 的状态流转规则。
 
 最后更新：2026-07-03
 
@@ -48,7 +48,7 @@ Deprecated is terminal.
 | Draft       | Review      | Spec 内容完整，进入 Spec 结构评分                                            |
 | Review      | Approved    | 四源评分齐全，`pipeline-arbiter` gate=pass                                   |
 | Review      | Draft       | gate=fail 且需要重写基础需求                                                 |
-| Approved    | Implemented | `module/{module}/TRACEABILITY.md` 所有 FR 标记 `Done` / `✅`，且 DoD 证据齐全 |
+| Approved    | Implemented | `module/{module}/matrix/TRACEABILITY.md` 所有 FR 标记 `Done` / `✅`，且 DoD 证据齐全 |
 | Approved    | Changed     | 修改 spec 行为语义                                                           |
 | Implemented | Changed     | 修改 spec 内容（需求变更）                                                   |
 | Changed     | Review      | 变更提交四源评分                                                             |
@@ -67,7 +67,7 @@ Deprecated is terminal.
 
 ## 3. Metadata 节规范
 
-每个 `module/*/SPEC.md` 的 Metadata 节必须包含：
+每个 `module/*/spec/SPEC.md` 的 Metadata 节必须包含：
 
 ```markdown
 ## 1. Metadata
@@ -125,7 +125,7 @@ Spec lint 和 rule scorer 至少校验：
 
 ### 5.2 流转校验
 
-当变更修改 `module/*/SPEC.md` 时：
+当变更修改 `module/*/spec/SPEC.md` 时：
 
 1. 读取 Metadata 节的当前 `Status`。
 2. 判断变更是否影响 FR/BR/AC/TC、接口、设计原则或验收语义。
@@ -136,7 +136,7 @@ Spec lint 和 rule scorer 至少校验：
 ### 5.3 自动推进
 
 - Spec 阶段四源评分通过后，`pipeline-arbiter` 可将 `Draft` / `Review` / `Changed` 自动推进为 `Approved`。
-- `module/{module}/TRACEABILITY.md` 中该模块所有 FR 标记 `Done` / `✅`，且 DoD 证据齐全后，CI 可建议将 `Approved` 推进为 `Implemented`。
+- `module/{module}/matrix/TRACEABILITY.md` 中该模块所有 FR 标记 `Done` / `✅`，且 DoD 证据齐全后，CI 可建议将 `Approved` 推进为 `Implemented`。
 - 普通模块 Spec 的 `Approved` 不依赖额外人工批准；人工批准只用于受保护治理文件、外部生产权限、凭证、依赖引入或 `CONSTITUTION.md` 明确要求的场景。
 
 ---
@@ -145,7 +145,7 @@ Spec lint 和 rule scorer 至少校验：
 
 ### 6.1 新建 Spec
 
-1. 复制 `docs/governance/SPEC-TEMPLATE.md` 到 `module/{module}/SPEC.md`。
+1. 复制 `docs/governance/SPEC-TEMPLATE.md` 到 `module/{module}/spec/SPEC.md`。
 2. 填写 Metadata，设置 `Status: Draft`。
 3. 完成 23 节内容和 FR/BR/AC/TC 编号。
 4. 运行 Spec 阶段四源评分；arbiter pass 后进入 `Approved`。
@@ -156,11 +156,11 @@ Spec lint 和 rule scorer 至少校验：
 2. PATCH 且无语义变化时，更新 `Last-Updated` 和必要说明。
 3. MINOR / MAJOR 或任何语义变化时，将 `Status` 改为 `Changed`。
 4. 重跑 Spec 四源评分；pass 后由 arbiter 推进为 `Approved`。
-5. 同步更新 `module/{module}/TRACEABILITY.md` 和受影响 Task。
+5. 同步更新 `module/{module}/matrix/TRACEABILITY.md` 和受影响 Task。
 
 ### 6.3 标记为已实现
 
-1. 确保 `module/{module}/TRACEABILITY.md` 中该模块所有 FR 为 `Done` / `✅`。
+1. 确保 `module/{module}/matrix/TRACEABILITY.md` 中该模块所有 FR 为 `Done` / `✅`。
 2. 确保 `docs/governance/DEFINITION-OF-DONE.md` 要求的证据齐全。
 3. 将 `SPEC.md` 的 `Status: Approved` 改为 `Status: Implemented`。
 4. 运行 traceability、lint、测试和状态报告校验。
@@ -181,7 +181,7 @@ Spec lint 和 rule scorer 至少校验：
 - [ ] 状态流转合法。
 - [ ] `Spec-Version` 和 `Last-Updated` 已按变更分类更新。
 - [ ] FR/BR/AC/TC 语义变化已进入 `Changed`。
-- [ ] `module/{module}/TRACEABILITY.md` 已同步更新。
+- [ ] `module/{module}/matrix/TRACEABILITY.md` 已同步更新。
 - [ ] 受影响 Task、Plan、Prompt 或证据文件已同步。
 - [ ] 四源评分与 arbiter 结论已记录。
 - [ ] 受保护治理文件变更已按 `CONSTITUTION.md` 第十四条处理。
@@ -193,7 +193,7 @@ Spec lint 和 rule scorer 至少校验：
 | 文档                                                                   | 用途                                                         |
 | ---------------------------------------------------------------------- | ------------------------------------------------------------ |
 | [`module/README.md`](../../module/README.md)                           | 模块规格体系总览                                             |
-| [`docs/governance/TRACEABILITY.md`](./TRACEABILITY.md)                 | 追溯矩阵规范；具体矩阵位于 `module/{module}/TRACEABILITY.md` |
+| [`docs/governance/TRACEABILITY.md`](./TRACEABILITY.md)                 | 追溯矩阵规范；具体矩阵位于 `module/{module}/matrix/TRACEABILITY.md` |
 | [`docs/governance/DEVELOPMENT-WORKFLOW.md`](./DEVELOPMENT-WORKFLOW.md) | Spec -> Code 管线                                            |
 | [`docs/governance/DEFINITION-OF-READY.md`](./DEFINITION-OF-READY.md)   | 进入开发的前置条件                                           |
 | [`docs/governance/DEFINITION-OF-DONE.md`](./DEFINITION-OF-DONE.md)     | 实现完成的验收条件                                           |

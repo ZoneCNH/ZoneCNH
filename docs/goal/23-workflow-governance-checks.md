@@ -47,7 +47,7 @@ Drift Check 的输出应是结构化报告，至少包含 `detected_at`、`artif
 
 | 基线          | 权威位置                                                          | 失败信号                                       | 验证方式                                         |
 | ------------- | ----------------------------------------------------------------- | ---------------------------------------------- | ------------------------------------------------ |
-| 模块规格库    | `module/*/SPEC.md`、`module/*/TRACEABILITY.md`、`module/*/tasks/` | Goal、Prompt、agent 或 CI 仍引用旧规格路径     | 旧路径扫描必须为空                               |
+| 模块规格库    | `module/*/spec/SPEC.md`、`module/*/matrix/TRACEABILITY.md`、`module/*/tasks/` | Goal、Prompt、agent 或 CI 仍引用旧规格路径     | 旧路径扫描必须为空                               |
 | 管线治理规则  | `docs/governance/`                                                | DoR/DoD、Template、Scoring、Arbiter 口径不一致 | `spec-lint.sh`、`spec-drift-guard.sh`            |
 | Goal 运行状态 | `.config/goal/`                                                   | Registry、Gate、Evidence 与模块任务断链        | `traceability-check.sh`、`task-spec-validate.sh` |
 | 公开索引      | `README.md`、`ARCHITECTURE.md`、`STATUS.md`                       | 组件数量、模块路径或 Goal 适配入口不一致       | `status-consistency-check.sh`                    |

@@ -52,7 +52,7 @@
 当两个模块的边界存在争议时，按以下优先级裁定：
 
 1. 本宪法第一条设计原则
-2. `module/*/SPEC.md` 中的"明确不做"声明
+2. `module/*/spec/SPEC.md` 中的"明确不做"声明
 3. `ARCHITECTURE.md` 中的依赖拓扑
 4. `module/foundation-modules.md` 中的能力需求
 

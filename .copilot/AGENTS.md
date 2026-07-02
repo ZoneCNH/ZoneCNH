@@ -22,10 +22,10 @@ Copilot CLI 在本仓库中承担三类职责：
 
 | Agent                     | 评分对象                                 | Rubric                                                          |
 | ------------------------- | ---------------------------------------- | --------------------------------------------------------------- |
-| `spec-structural-score`   | `module/{module}/SPEC.md`                | `docs/governance/scoring/RUBRIC-spec.md`                        |
-| `matrix-structural-score` | `module/{module}/TRACEABILITY.md`        | `docs/governance/scoring/RUBRIC-matrix.md`                      |
+| `spec-structural-score`   | `module/{module}/spec/SPEC.md`                | `docs/governance/scoring/RUBRIC-spec.md`                        |
+| `matrix-structural-score` | `module/{module}/matrix/TRACEABILITY.md`        | `docs/governance/scoring/RUBRIC-matrix.md`                      |
 | `tasks-structural-score`  | `module/{module}/tasks/TASK-*.md`        | `docs/governance/scoring/RUBRIC-tasks.md`                       |
-| `plan-structural-score`   | `module/{module}/IMPLEMENTATION-PLAN.md` | `docs/governance/scoring/RUBRIC-plan.md`                        |
+| `plan-structural-score`   | `module/{module}/plan/PLAN.md` | `docs/governance/scoring/RUBRIC-plan.md`                        |
 | `prompt-structural-score` | `module/{module}/TASK-*-PROMPT.md`       | `docs/governance/scoring/RUBRIC-prompt.md`                      |
 | `code-structural-score`   | 本次 Task diff + 测试输出                | `docs/governance/scoring/RUBRIC-code.md`                        |
 | `pipeline-arbiter`        | 四源评分聚合                             | `docs/governance/scoring/ARBITER-PROTOCOL.md`                   |
@@ -60,7 +60,7 @@ Copilot CLI 在本仓库中承担三类职责：
 | `goal-governance`        | SSOT 一致性审计、漂移检测                          | none (read-only audit)                                             |
 | `goal-lint`              | Lint 规则验证与漂移检查                            | none (read-only validation)                                        |
 | `goal-context-recovery`  | 会话中断后上下文恢复                               | `.config/goal/runtime/recovery.md`                                 |
-| `spec-review`            | 对抗性审查 module/*/SPEC.md（参考性 Go/No-Go）     | none (read-only review)                                            |
+| `spec-review`            | 对抗性审查 module/*/spec/SPEC.md（参考性 Go/No-Go）     | none (read-only review)                                            |
 | `ci-governance-auditor`  | 跨仓 CI/CD 治理审计                                | none (read-only validation)                                        |
 
 Goal Agent 必须遵守以下边界：

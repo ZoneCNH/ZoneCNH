@@ -64,7 +64,7 @@ FOUNDATIONX_NATS_CA_FILE=<authorized-ca-file> \
 GOWORK=off go test ./pkg/natsx -run TestLiveNATSIntegration -count=1 -v
 ```
 
-Run this command only from an authorized environment with approved credentials. Store the resulting redacted log in the release evidence archive and cross-link it from `module/natsx/TRACEABILITY.md`; until then, no local documentation edit closes `BLK-002`.
+Run this command only from an authorized environment with approved credentials. Store the resulting redacted log in the release evidence archive and cross-link it from `module/natsx/matrix/TRACEABILITY.md`; until then, no local documentation edit closes `BLK-002`.
 
 ## Minimal evidence matrix
 
@@ -75,8 +75,8 @@ Run this command only from an authorized environment with approved credentials. 
 | Public projection consistency | `README.md`, `ARCHITECTURE.md`, `STATUS.md`, `module/README.md`, `.foundationx/*`, `scripts/audit-status.py` | `python3 scripts/audit-status.py` | `Summary: 52 passed, 0 failed`; 404 check skipped unless `--network` | Public status rows match fact-layer release/factory values; factory ✅ rows have no open blockers | Network reachability, GitHub release existence, external CI results |
 | Status CI gate | `.github/ci/status-consistency-check.sh`, `STATUS.md`, `.foundationx/*` | `bash .github/ci/status-consistency-check.sh` | exit 0; status consistency and FoundationX guard passed | Repo status tables, counts, and fact-layer projections are locally consistent | Remote CI execution on GitHub |
 | Task topology gate | `.github/ci/task-spec-validate.sh`, `module/*/tasks/*.md` | `bash .github/ci/task-spec-validate.sh` | exit 0; `146` tasks validated | Task IDs, spec refs, AC coverage, dependencies, and in-progress file-conflict checks pass locally | Human PR review or cross-repo task completion |
-| Spec lint gate | `.github/ci/spec-lint.sh`, `module/*/SPEC.md` | `bash .github/ci/spec-lint.sh` | exit 0 with warnings only: fuzzy word `合理` in `backtestx`, empty Non-goals in `taosx` | Repo-wide SPEC lint no longer blocks the local documentation proof | Warning cleanup; human review of wording quality |
-| Traceability gate | `.github/ci/traceability-check.sh`, `module/*/TRACEABILITY.md` | `TRACEABILITY_STRICT=1 bash .github/ci/traceability-check.sh` | exit 0; all 24 modules OK, including zero-FR modules | Strict repo-wide FR/BR/AC/TC traceability now passes locally | External evidence freshness or remote CI execution |
+| Spec lint gate | `.github/ci/spec-lint.sh`, `module/*/spec/SPEC.md` | `bash .github/ci/spec-lint.sh` | exit 0 with warnings only: fuzzy word `合理` in `backtestx`, empty Non-goals in `taosx` | Repo-wide SPEC lint no longer blocks the local documentation proof | Warning cleanup; human review of wording quality |
+| Traceability gate | `.github/ci/traceability-check.sh`, `module/*/matrix/TRACEABILITY.md` | `TRACEABILITY_STRICT=1 bash .github/ci/traceability-check.sh` | exit 0; all 24 modules OK, including zero-FR modules | Strict repo-wide FR/BR/AC/TC traceability now passes locally | External evidence freshness or remote CI execution |
 | Deployment boundary | `.github/ci/deploy-policy-guard.sh`, `docs/ci-deployment.md`, `docs/governance/DEPLOYMENT.md` | `bash .github/ci/deploy-policy-guard.sh` | exit 0; `deployment_workflows=0` | Business repo has no inline deployment workflow and preserves SRE boundary | Real deployment, environment approval, runner/secrets success |
 | Audit-status unit tests | `scripts/tests/test_audit_status.py`, `scripts/audit-status.py` | `python3 -m pytest scripts/tests/test_audit_status.py -q` | `13 passed` | Projection guard behavior is covered by the focused test suite | Full repository test coverage outside this script |
 | Release trust package | `release/trust/index.json`, `release/trust/open-blockers.json`, `release/trust/projection-guard.json`, `release/trust/summary.json` | `jq '{summary,open_blockers,projection_guard,claim_policy,missing_sources}' release/trust/index.json` | summary matches fact layer; `missing_sources=[]`; `reason_present=true`; `audit_status_factory_grade_proof=false` | Trust package records projection guard and the no-overclaim policy | Public release/tag publication or external evidence closure |
@@ -115,7 +115,7 @@ Result:
 
 - Add this evidence matrix so the current local proof boundary is reviewable and repeatable.
 - Optionally clean the remaining non-blocking spec-lint warnings in `backtestx` and `taosx` without changing release/factory facts.
-- Preserve the strict traceability pass when future `module/*/TRACEABILITY.md` or `module/*/SPEC.md` files change.
+- Preserve the strict traceability pass when future `module/*/matrix/TRACEABILITY.md` or `module/*/spec/SPEC.md` files change.
 - Add missing local evidence archives only when the evidence actually exists and is not a credentialed/external action.
 
 ## User-authorized external actions required before full ✅ can be honest

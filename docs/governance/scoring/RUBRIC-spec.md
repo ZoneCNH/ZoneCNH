@@ -1,6 +1,6 @@
 # Spec 评分 Rubric
 
-> 评分对象：`module/{module}/SPEC.md`
+> 评分对象：`module/{module}/spec/SPEC.md`
 > 总分：100；维度详见下表。
 
 参考 `.claude/agents/spec-structural-score.md` 和 `.codex/agents/spec-structural-score.toml` 的完整算法定义。本文件作为三平台共享 rubric 引用源。

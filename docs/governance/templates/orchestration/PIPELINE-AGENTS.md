@@ -37,11 +37,11 @@ done
 输入: goal.md, SPEC.md 骨架
 Prompt 要点:
   - 读 CONSTITUTION.md §4.4 (WHEN/THEN 格式)
-  - 读 module/$MODULE/goal.md 了解目标
+  - 读 module/$MODULE/goal/goal.md 了解目标
   - 写 FR (WHEN/THEN), BR (约束+违反时), TC (Given/When/Then)
   - 每 FR 至少 2 个 WHEN/THEN
   - 读 rule-scorer.py spec 阶段逻辑, 确保 required 节存在
-输出: module/$MODULE/SPEC.md v1.0
+输出: module/$MODULE/spec/SPEC.md v1.0
 验证: python3 scripts/rule-scorer.py spec $MODULE
 ```
 
@@ -66,7 +66,7 @@ Prompt 要点:
   - 拆分为独立 Task（无依赖的 → 可并行）
   - 画 DAG
   - 估算工时、识别风险、定义里程碑
-输出: module/$MODULE/PLAN.md v1
+输出: module/$MODULE/plan/PLAN.md v1
 验证: python3 scripts/rule-scorer.py plan $MODULE
 ```
 
@@ -96,7 +96,7 @@ Prompt 要点:
   - 读 TRACEABILITY.md 现有格式
   - 构建 FR→AC→TC→Task 映射
   - 更新覆盖率仪表盘
-输出: module/$MODULE/TRACEABILITY.md v1
+输出: module/$MODULE/matrix/TRACEABILITY.md v1
 验证: python3 scripts/rule-scorer.py matrix $MODULE
 ```
 

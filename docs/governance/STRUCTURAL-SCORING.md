@@ -10,11 +10,11 @@
 
 | 阶段         | 评分对象                                 | Rubric                         |
 | ------------ | ---------------------------------------- | ------------------------------ |
-| Spec         | `module/{module}/SPEC.md`                | `scoring/RUBRIC-spec.md`       |
+| Spec         | `module/{module}/spec/SPEC.md`                | `scoring/RUBRIC-spec.md`       |
 | Design       | `module/{module}/DESIGN.md`              | `scoring/RUBRIC-design.md`     |
-| Matrix       | `module/{module}/TRACEABILITY.md`        | `scoring/RUBRIC-matrix.md`     |
+| Matrix       | `module/{module}/matrix/TRACEABILITY.md`        | `scoring/RUBRIC-matrix.md`     |
 | Tasks        | `module/{module}/tasks/TASK-*.md`        | `scoring/RUBRIC-tasks.md`      |
-| Plan         | `module/{module}/IMPLEMENTATION-PLAN.md` | `scoring/RUBRIC-plan.md`       |
+| Plan         | `module/{module}/plan/PLAN.md` | `scoring/RUBRIC-plan.md`       |
 | Prompt       | `module/{module}/TASK-*-PROMPT.md`       | `scoring/RUBRIC-prompt.md`     |
 | Code         | 本次 Task diff + 测试 + 验证证据         | `scoring/RUBRIC-code.md`       |
 | Test         | 测试结果与覆盖率报告                     | `scoring/RUBRIC-test.md`       |

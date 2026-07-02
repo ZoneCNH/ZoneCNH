@@ -20,7 +20,7 @@
 ### 阶段 2: 业务域扩展
 - 新增 `.foundationx/status/business-modules.json` schema
 - 字段: module / layer / spec_status / impl_progress / tasks_coverage / ac_coverage / tc_coverage / evidence_coverage / tests_pass / release_tag
-- 数据来源: audit-status.py 扫描 module/*/SPEC.md + TRACEABILITY.md + tasks/ 生成
+- 数据来源: audit-status.py 扫描 module/*/spec/SPEC.md + TRACEABILITY.md + tasks/ 生成
 
 ### 阶段 3: 投影生成器
 - `scripts/generate-projections.py` 从 index.json + business-modules.json 生成 STATUS.md / ARCHITECTURE.md 表格行

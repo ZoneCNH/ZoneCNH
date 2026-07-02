@@ -61,7 +61,7 @@ reporting: 完成后向主会话返回实现报告
 读取以下文件：
 
 1. `module/{module}/tasks/TASK-{MODULE}-{NNN}.md` — 当前 Task
-2. `module/{module}/SPEC.md` — 相关规格
+2. `module/{module}/spec/SPEC.md` — 相关规格
 3. `ARCHITECTURE.md` — 架构约束
 4. `AGENTS.md` — 编码规范
 5. 实现计划（如果有 task-planner 输出）
@@ -255,7 +255,7 @@ golangci-lint run
 请实现 TASK-{MODULE}-{NNN}。
 
 上下文：
-- Spec: module/{module}/SPEC.md
+- Spec: module/{module}/spec/SPEC.md
 - Task: module/{module}/tasks/TASK-{MODULE}-{NNN}.md
 - Architecture: ARCHITECTURE.md
 - Agent Rules: AGENTS.md

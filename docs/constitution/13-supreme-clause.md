@@ -14,7 +14,7 @@
 ```text
 本宪法 (CONSTITUTION.md)
   ↓
-模块规格 (module/*/SPEC.md)
+模块规格 (module/*/spec/SPEC.md)
   ↓
 交付治理文档 (docs/governance/DEVELOPMENT-WORKFLOW.md, TRACEABILITY.md, LIFECYCLE.md 等)
   ↓

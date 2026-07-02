@@ -1,6 +1,6 @@
 # Plan 评分 Rubric
 
-> 评分对象：`module/{module}/IMPLEMENTATION-PLAN.md`
+> 评分对象：`module/{module}/plan/PLAN.md`
 > 总分：100。
 
 ## 维度（满分 100）

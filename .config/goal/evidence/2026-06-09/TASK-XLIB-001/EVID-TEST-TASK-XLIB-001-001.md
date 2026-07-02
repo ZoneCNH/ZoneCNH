@@ -6,5 +6,5 @@
 - **Goal ID**: GOAL-XLIB-STD-001
 - **Date**: 2026-06-09
 - **Status**: PASS
-- **Files Changed**: module/xlib_standard/SPEC.md, module/xlib_standard/goal.md, module/xlib_standard/plan/PLAN.md
-- **Commands Run**: wc -l module/xlib_standard/SPEC.md; grep -c '## [0-9]' module/xlib_standard/SPEC.md
+- **Files Changed**: module/xlib_standard/spec/SPEC.md, module/xlib_standard/goal/goal.md, module/xlib_standard/plan/PLAN.md
+- **Commands Run**: wc -l module/xlib_standard/spec/SPEC.md; grep -c '## [0-9]' module/xlib_standard/spec/SPEC.md

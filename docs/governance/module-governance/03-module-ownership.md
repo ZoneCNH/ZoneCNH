@@ -58,8 +58,8 @@ owner 字段允许三类值，优先级从高到低：
 
 ```
 # 模块规格
-module/kernel/SPEC.md           @owner-kernel
-module/configx/SPEC.md          @owner-configx
+module/kernel/spec/SPEC.md           @owner-kernel
+module/configx/spec/SPEC.md          @owner-configx
 module/binance/spec/SPEC.md     @owner-binance
 # ...
 ```
@@ -68,7 +68,7 @@ module/binance/spec/SPEC.md     @owner-binance
 
 过渡期（owner=ZoneCNH）CODEOWNERS 保留现有粗粒度规则，但须满足：
 
-1. `module/*/SPEC.md` 全部由 `@ZoneCNH` 覆盖（现状已满足）
+1. `module/*/spec/SPEC.md` 全部由 `@ZoneCNH` 覆盖（现状已满足）
 2. registry.yaml owner 字段细化后，CODEOWNERS 同步细化对应行
 3. 禁止 CODEOWNERS 出现 registry.yaml 未登记的模块路径
 

@@ -9,7 +9,7 @@
 
 `[COMPUTED, HIGH]` 本专题把数据 C/S 模块划分为 L1 / L2 / L3 三个治理等级，用于避免把原型模块、新建活跃模块和生产模块混用同一验收标准。
 
-`[COMPUTED, HIGH]` 等级只描述治理与证据成熟度，不替代 `module/registry.yaml` 的生命周期字段，也不替代模块自身 `spec/SPEC.md` 的 `Spec-Version`。
+`[COMPUTED, HIGH]` 等级只描述治理与证据成熟度，不替代 `module/registry.yaml` 的生命周期字段，也不替代模块自身 `spec/spec/SPEC.md` 的 `Spec-Version`。
 
 ## §2 等级定义
 

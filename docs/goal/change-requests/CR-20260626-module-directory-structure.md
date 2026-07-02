@@ -17,7 +17,7 @@
 |------|---------|
 | `AGENTS.md` | "模块级 Goal 文档命名规则" → "模块目录结构规则"；定义 10 层目录结构 |
 | `docs/goal/README.md` | 同步表格行 + 模块级目录结构说明 |
-| `module/README.md` | Goal 文档路径 `goal.md` → `goal/goal.md`；目录化结构说明 |
+| `module/README.md` | Goal 文档路径 `goal.md` → `goal/goal/goal.md`；目录化结构说明 |
 | `module/AGENTS.md` | 移除 `goal/` 目录禁止陷阱项；更新注意项 |
 | `docs/goal/00-authority-map.md` | §4 配置边界表新增 10 行模块目录，澄清模块级 vs `.config/goal/` SSOT 边界 |
 | `.config/goal/schema/rules.yaml` | `canonical_path_pattern` → `module/{module}/goal/goal.md`；移除 `goal/` 目录禁止，保留多文件槽位禁止 |

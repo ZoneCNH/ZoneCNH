@@ -2,7 +2,7 @@
 
 - **评分平台**: Claude (claude)
 - **评分时间**: 2026-06-14T09:30:00Z
-- **评分对象**: `module/contracts/TRACEABILITY.md`
+- **评分对象**: `module/contracts/matrix/TRACEABILITY.md`
 - **Spec 版本**: v1.0.1-spec
 - **总分**: 100 / 100
 - **红线**: 无
