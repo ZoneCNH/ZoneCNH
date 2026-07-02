@@ -2,9 +2,9 @@
 
 - Spec-Version: v3.9.6
 - Module: binance
-- Last-Updated: 2026-06-29
+- Last-Updated: 2026-07-02
 - Runtime-Repo: `/home/workspace/binance`
-- Runtime-Version: v0.8.0
+- Runtime-Version: v0.11.0
 - State-Model: single-state only
 - Current-State: 48 Done / 0 Partial / 0 Drifted / 0 Pending
 - release_closeable: YES
@@ -208,7 +208,7 @@ Current release gate verdict: `release_closeable=YES`（48/48 Done = 100% ≥ 90
 
 PRG-001~007 全部 PASS：
 - PRG-001：CI runner 从 self-hosted 迁移到 ubuntu-latest，CI 已触发运行 → PASS
-- PRG-002：v0.8.0 tag + GitHub Release 已存在 → PASS
+- PRG-002：v0.11.0 tag + GitHub Release 已存在（2026-07-02 创建，target=f53303f） → PASS
 - PRG-003：PRG-001~006 全 PASS → PASS
 - PRG-004：Jaeger/Grafana/Loki/AlertManager 全在线 → PASS
 - PRG-005：OpenTelemetry SDK v1.44.0，govulncheck 清洁 → PASS
