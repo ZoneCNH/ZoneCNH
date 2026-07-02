@@ -296,7 +296,7 @@ check_xlib_standard_artifacts() {
     ANALYSIS.md
     FR-DETAIL.md
     INDEX.md
-    TRACEABILITY.md
+    matrix/TRACEABILITY.md
     CONFLICT-LEDGER.md
     SNAPSHOT-BOUNDARY.md
     COVERAGE-MANIFEST.md
@@ -381,7 +381,7 @@ check_xlib_standard_artifacts() {
     FAIL=1
   fi
 
-  local trace_file="$xlib_dir/TRACEABILITY.md"
+  local trace_file="$xlib_dir/matrix/TRACEABILITY.md"
   if [[ -f "$trace_file" ]]; then
     if ! grep -qP '^\| FR \|.*\| 证据类型 \|' "$trace_file"; then
       echo "  ❌ module/xlib_standard/matrix/TRACEABILITY.md missing 证据类型 column"

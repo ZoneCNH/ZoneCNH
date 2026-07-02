@@ -110,6 +110,16 @@ jobs:
 
               # Check allowed deps
               mod_allowed = set(allowed.get(mod_name, []))
+              # Normalize: treat - and _ as equivalent (kebab-case go.mod vs snake_case DEPS)
+              mod_allowed_norm = {a.replace('-', '_') for a in mod_allowed}
+              # Read actual module path from go.mod for robust self-detection
+              # (handles shared modules like transportx→xlib_standard and kebab-case paths)
+              actual_module = ""
+              with open(gomod) as f:
+                  for line in f:
+                      if line.startswith("module "):
+                          actual_module = line.strip().split()[1]
+                          break
               if mod_allowed:
                   ret = subprocess.run(
                       ["go", "list", "-m", "all"],
@@ -118,14 +128,19 @@ jobs:
                   if ret.returncode == 0:
                       for dep_line in ret.stdout.strip().split("\n"):
                           dep = dep_line.split()[0] if dep_line.strip() else ""
-                          if dep.startswith("github.com/ZoneCNH/") and dep != f"github.com/ZoneCNH/{mod_name}":
-                              dep_short = dep.replace("github.com/ZoneCNH/", "")
-                              if dep_short not in mod_allowed:
-                                  violations.append({
-                                      "module": mod_name,
-                                      "type": "UNAUTHORIZED_DEP",
-                                      "detail": f"Depends on {dep_short} (not in allowed list)"
-                                  })
+                          if not dep.startswith("github.com/ZoneCNH/"):
+                              continue
+                          # Skip self (account for kebab-case go.mod path and shared modules)
+                          if dep == actual_module or dep == f"github.com/ZoneCNH/{mod_name}":
+                              continue
+                          dep_short = dep.replace("github.com/ZoneCNH/", "")
+                          # Normalize: - and _ are equivalent for comparison
+                          if dep_short.replace('-', '_') not in mod_allowed_norm:
+                              violations.append({
+                                  "module": mod_name,
+                                  "type": "UNAUTHORIZED_DEP",
+                                  "detail": f"Depends on {dep_short} (not in allowed list)"
+                              })
 
               # Check forbidden deps
               for forb in forbidden:

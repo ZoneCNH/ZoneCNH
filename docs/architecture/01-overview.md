@@ -59,7 +59,7 @@ market_data (14) ──────────────► market_regime ─
   domain_market (Bar/Tick/OB)     S1-S7 状态     │
   质量门禁 → 特征 → 分类器       bias/permission  │
                                                ├──► regime_engine ──► DecisionCard
-macro_data (10) ───────────────► macro_regime ──┘     M×S 融合        action A-E
+macro_data (11) ───────────────► macro_regime ──┘     M×S 融合        action A-E
   domain_macro (MacroPoint)      M1-M7 状态           冲突门           profile
   LGIP 四因子                    LGIP 得分            风险放大          risk_tier
                                                                       position_caps

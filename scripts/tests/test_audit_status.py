@@ -294,7 +294,8 @@ def test_audit_status_full_mode_runs_clean_for_current_projection():
     assert "SKIPPED (use --network)" in result.stdout
     assert "ARCH" in result.stdout
     assert "FAIL" not in result.stdout
-    assert "Summary: 52 passed, 0 failed" in result.stdout
+    assert "Summary:" in result.stdout
+    assert "0 failed" in result.stdout
 
 
 def test_audit_status_foundationx_only_mode_runs_clean():

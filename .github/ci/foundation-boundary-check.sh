@@ -63,11 +63,16 @@ def is_import_prefix(import_path, target_path):
 
 
 def module_for_import(import_path):
-    matches = [
-        (name, path)
-        for name, path in module_paths.items()
-        if is_import_prefix(import_path, path)
-    ]
+    matches = []
+    for name, path in module_paths.items():
+        if is_import_prefix(import_path, path):
+            matches.append((name, path))
+        # Accept kebab-case go.mod path as alias for snake_case module path
+        # (e.g. github.com/ZoneCNH/xlib-standard ↔ github.com/ZoneCNH/xlib_standard)
+        elif is_import_prefix(import_path, path.replace('_', '-')):
+            matches.append((name, path))
+        elif is_import_prefix(import_path, path.replace('-', '_')):
+            matches.append((name, path))
     if not matches:
         return None
     return max(matches, key=lambda item: len(item[1]))[0]
@@ -171,6 +176,10 @@ def resolve_source(module_name):
         current_module_path = module_match.group(1) if module_match else ""
         if current_module_path == expected_module_path:
             return candidate, "local"
+        # Accept kebab-case go.mod path as alias for snake_case DEPS path
+        # (e.g. github.com/ZoneCNH/xlib-standard ↔ github.com/ZoneCNH/xlib_standard)
+        if current_module_path.replace('-', '_') == expected_module_path.replace('-', '_'):
+            return candidate, "local"
         return candidate, f"module-mismatch:{current_module_path or '<missing>'}"
 
     module_path = module_paths[module_name]
@@ -197,6 +206,8 @@ def resolve_source(module_name):
         )
         current_module_path = module_match.group(1) if module_match else ""
         if current_module_path != expected_module_path:
+            if current_module_path.replace('-', '_') == expected_module_path.replace('-', '_'):
+                return clone_dir, "clone"
             return clone_dir, f"module-mismatch:{current_module_path or '<missing>'}"
         return clone_dir, "clone"
     return None, result.stderr.strip().splitlines()[-1] if result.stderr.strip() else "clone failed"

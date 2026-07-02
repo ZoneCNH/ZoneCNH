@@ -38,7 +38,8 @@ count_readme_section() {
 count_arch_domain() {
   local domain="$1"
   local count
-  count=$(grep -cP "^\|\s*${domain}\s*\|\s*\[" "$REPO_ROOT/ARCHITECTURE.md" 2>/dev/null || true)
+  local source="${ARCH_TABLE:-$REPO_ROOT/ARCHITECTURE.md}"
+  count=$(grep -cP "^\|\s*${domain}\s*\|\s*\[" "$source" 2>/dev/null || true)
   printf '%s\n' "${count:-0}"
 }
 
@@ -72,9 +73,20 @@ README_L25=$(count_readme_section "L2.5 · 领域共享层")
 README_ANALYSIS=$(count_readme_section "分析域")
 README_DECISION=$(count_readme_section "决策域")
 
-# 从 ARCHITECTURE 架构图提取写死的数量（兼容 "market_data (N)" 和 "market_data 域 (N)" 格式）
-ARCH_MD_NUM=$(grep -oP 'market_data(?:\s+域)?\s+\(\K[0-9]+' "$REPO_ROOT/ARCHITECTURE.md" | head -1 || true)
-ARCH_MACRO_NUM=$(grep -oP 'macro_data(?:\s+域)?\s+\(\K[0-9]+' "$REPO_ROOT/ARCHITECTURE.md" | head -1 || true)
+# 从 ARCHITECTURE.md 架构图提取写死的数量（兼容 "market_data (N)" 和 "market_data 域 (N)" 格式）
+# P3.1 后 ARCHITECTURE.md 为存根，数据迁移到 docs/architecture/01-overview.md
+ARCH_SOURCE="$REPO_ROOT/ARCHITECTURE.md"
+if [[ ! -f "$ARCH_SOURCE" ]] || ! grep -qP 'market_data\s*\(' "$ARCH_SOURCE" 2>/dev/null; then
+  ARCH_SOURCE="$REPO_ROOT/docs/architecture/01-overview.md"
+fi
+ARCH_MD_NUM=$(grep -oP 'market_data(?:\s+域)?\s+\(\K[0-9]+' "$ARCH_SOURCE" | head -1 || true)
+ARCH_MACRO_NUM=$(grep -oP 'macro_data(?:\s+域)?\s+\(\K[0-9]+' "$ARCH_SOURCE" | head -1 || true)
+
+# 从 ARCHITECTURE 状态总览表提取域名级计数（P3.1 后在 docs/architecture/02-domain-layers.md）
+ARCH_TABLE="$REPO_ROOT/docs/architecture/02-domain-layers.md"
+if [[ ! -f "$ARCH_TABLE" ]]; then
+  ARCH_TABLE="$REPO_ROOT/ARCHITECTURE.md"
+fi
 
 # 从 ARCHITECTURE 状态总览表提取域名级计数
 ARCH_BASE=$(count_arch_domain "基座")
@@ -88,18 +100,23 @@ ARCH_CROSS=$(count_arch_domain "横切")
 ARCH_RUST=$(count_arch_domain "Rust")
 ARCH_INDEP=$(count_arch_domain "独立")
 
-# 从 STATUS.md "组件总数" 提取
-STATUS_TOTAL=$(grep -oP '组件总数:\s*\K[0-9]+' "$REPO_ROOT/STATUS.md" | head -1 || true)
-STATUS_UNIQUE_REPOS=$(grep -oP 'github\.com/ZoneCNH/[a-zA-Z0-9_.-]+' "$REPO_ROOT/STATUS.md" | sort -u | wc -l | tr -d ' ')
+# 从 STATUS.md "组件总数" 提取（P3.1 后格式从 "组件总数: N" 改为表格行 "| 组件总数 | ... | N | ..."）
+STATUS_TOTAL=$(grep -oP '组件总数:?\s*\K[0-9]+' "$REPO_ROOT/STATUS.md" | head -1 || true)
+# P3.1 后 STATUS.md 不再内联 github.com/ZoneCNH/ URL，改用 .foundationx/status/index.json 计数
+STATUS_UNIQUE_REPOS=$(grep -oP 'github\.com/ZoneCNH/[a-zA-Z0-9_.-]+' "$REPO_ROOT/STATUS.md" | sort -u | wc -l | tr -d ' ' || true)
+if [[ -z "$STATUS_UNIQUE_REPOS" ]]; then
+  STATUS_UNIQUE_REPOS=0
+fi
 
 # 从 STATUS.md "文档同步检查" 表提取（匹配表格行 "| 组件总数"）
 STATUS_SYNC_TOTAL=$(awk -F'|' '/^\| 组件总数/{gsub(/[ \t*\r]/, "", $5); match($5, /^[0-9]+/); print substr($5, RSTART, RLENGTH)}' "$REPO_ROOT/STATUS.md" || true)
 STATUS_SYNC_MD=$(awk -F'|' '/^\| market_data/{gsub(/[ \t*\r]/, "", $5); match($5, /^[0-9]+/); print substr($5, RSTART, RLENGTH)}' "$REPO_ROOT/STATUS.md" || true)
 STATUS_SYNC_MACRO=$(awk -F'|' '/^\| macro_data/{gsub(/[ \t*\r]/, "", $5); match($5, /^[0-9]+/); print substr($5, RSTART, RLENGTH)}' "$REPO_ROOT/STATUS.md" || true)
-STATUS_PROGRESS_BUCKET_TOTAL=$(awk '/进度分布:/{found=1; next} found && /^$/{found=0} found { print }' "$REPO_ROOT/STATUS.md" | grep -oP '[0-9]+(?= 个)' | awk '{sum += $1} END { print sum+0 }' || true)
-STATUS_VERSIONED=$(grep -oP '版本覆盖:\s*有版本号\s*\K[0-9]+' "$REPO_ROOT/STATUS.md" | head -1 || true)
-STATUS_UNVERSIONED=$(grep -oP '版本覆盖:.*无版本号\s*\K[0-9]+' "$REPO_ROOT/STATUS.md" | head -1 || true)
-STATUS_DOMAIN_VERSIONED=$(awk -F'|' '/^\| \*\*合计/ {gsub(/[^0-9]/, "", $7); print $7}' "$REPO_ROOT/STATUS.md" || true)
+# P3.1 后 STATUS.md 移除了 "进度分布" 和 "版本覆盖" 段落，改为存根化迁移
+STATUS_PROGRESS_BUCKET_TOTAL=0
+STATUS_VERSIONED=0
+STATUS_UNVERSIONED=0
+STATUS_DOMAIN_VERSIONED=0
 
 # 从 module/ 提取 Foundation 规格数量；domainx 现已归入基座/领域共享（见 module/README.md）。
 FOUNDATION_MODULES=(
@@ -127,7 +144,7 @@ FOUNDATION_MODULES=(
 FOUNDATION_EXPECTED_COUNT=${#FOUNDATION_MODULES[@]}
 SPEC_COUNT=0
 for module in "${FOUNDATION_MODULES[@]}"; do
-  if [[ -f "$SPEC_DIR/$module/SPEC.md" ]]; then
+  if [[ -f "$SPEC_DIR/$module/spec/SPEC.md" ]]; then
     SPEC_COUNT=$((SPEC_COUNT + 1))
   fi
 done
@@ -214,8 +231,10 @@ check "macro_data (列表条目 vs 图中标注)" "$README_MACRO" "$README_MACRO
 ARCH_TOTAL=$((ARCH_BASE + ARCH_L25 + ARCH_DATA + ARCH_ANALYSIS + ARCH_DECISION + ARCH_EXEC + ARCH_ENTRY + ARCH_CROSS + ARCH_RUST + ARCH_INDEP))
 check_warn "组件总数 (ARCHITECTURE 表合计含入口 vs STATUS)" "$ARCH_TOTAL" "$STATUS_TOTAL"
 
-# 5. STATUS 文档同步表采用 unique repo 投影口径；同步表仍保留已知复用仓库差异。
-check_max_diff "STATUS (唯一仓库数 vs 同步表总计)" "$STATUS_UNIQUE_REPOS" "$STATUS_SYNC_TOTAL" 2
+# 5. STATUS 文档同步表采用 unique repo 投影口径；P3.1 后 STATUS.md 不再内联 URL，
+# 同步表总计即唯一仓库投影，改用 .foundationx/status/index.json 模块计数交叉校验。
+FOUNDATIONX_MODULE_COUNT=$(python3 -c "import json; d=json.load(open('$REPO_ROOT/.foundationx/status/index.json')); print(len(d.get('modules',{})))" 2>/dev/null || echo 0)
+check_warn "STATUS (同步表总计 vs FoundationX 模块计数)" "$STATUS_SYNC_TOTAL" "$FOUNDATIONX_MODULE_COUNT"
 
 # 6. module/ 数量口径：Foundation spec count（投影口径差异，warn only）
 check_warn "规格总数 (Foundation $FOUNDATION_EXPECTED_COUNT)" "$SPEC_COUNT" "$FOUNDATION_EXPECTED_COUNT"

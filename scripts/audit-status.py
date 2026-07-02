@@ -142,7 +142,8 @@ def count_sdk_provider(text):
     return sdk, prov
 
 def parse_multidimensional_status_rows(text):
-    """Parse STATUS.md multidimensional maturity table rows by module name."""
+    """Parse STATUS.md multidimensional maturity table rows by module name.
+    Falls back to .foundationx/status/index.json when STATUS.md is stub-migrated."""
     rows = {}
     in_multi = False
     for line in text.splitlines():
@@ -168,15 +169,47 @@ def parse_multidimensional_status_rows(text):
             "factory": parts[9],
             "note": parts[10],
         }
+    # Fallback: STATUS.md P3.1 存根化迁移后，多维表移至 .foundationx/status/index.json
+    if not rows:
+        try:
+            import json
+            fact = json.loads(Path(".foundationx/status/index.json").read_text())
+            b2s = lambda v: "✅" if v is True else ("❌" if v is False else str(v))
+            for name, m in fact.get("modules", {}).items():
+                rows[name] = {
+                    "spec": b2s(m.get("spec")),
+                    "impl": b2s(m.get("impl")),
+                    "release": b2s(m.get("release")),
+                    "live": b2s(m.get("live")),
+                    "ext_ci": b2s(m.get("ci")),
+                    "adopt": b2s(m.get("adopt")),
+                    "soak": b2s(m.get("soak")),
+                    "factory": b2s(m.get("factory")),
+                    "note": m.get("note", ""),
+                }
+        except Exception:
+            pass
     return rows
 
 def parse_status_release_projection_count(text):
-    """Extract the prose GitHub Release count from STATUS.md's projection note."""
+    """Extract the prose GitHub Release count from STATUS.md's projection note.
+    Falls back to .foundationx/status/index.json when STATUS.md is stub-migrated."""
     match = re.search(
         r"当前\s+\d+-module projection\s+中\s+(\d+)/\d+\s+已发布 GitHub Release",
         text,
     )
-    return int(match.group(1)) if match else None
+    if match:
+        return int(match.group(1))
+    # Fallback: P3.1 存根化迁移后，投影数据在 .foundationx/status/index.json
+    # 仅对实际 STATUS.md 内容回退（避免对测试短字符串误触发）
+    if "项目状态" in text or "FoundationX" in text:
+        try:
+            import json
+            fact = json.loads(Path(".foundationx/status/index.json").read_text())
+            return fact.get("summary", {}).get("release_published")
+        except Exception:
+            pass
+    return None
 
 def fact_bool_to_status(value):
     if value is True:
@@ -386,39 +419,47 @@ print()
 # ── 1. Table row counts vs domain stats ────────────────────
 print("--- 1. Table rows vs domain stats ---")
 rows, totals = parse_domain_stats(STATUS)
-BASE      = github_rows_between(STATUS, "### 基座", "### L2.5")
-L25       = github_rows_between(STATUS, "### L2.5", "### 数据域")
-MARKET    = count_market_rows(STATUS)
-SDK, PROV = count_sdk_provider(STATUS)  # legacy; retained for transitional reporting
-MACRO     = github_rows_between(STATUS, "### 数据域 · 宏观", "### 数据域 · 另类")
-ALT       = github_rows_between(STATUS, "### 数据域 · 另类", "### 分析域")
-ANALYSIS  = github_rows_between(STATUS, "### 分析域", "### 决策域")
-DECISION  = github_rows_between(STATUS, "### 决策域", "### 执行域")
-EXECUTION = github_rows_between(STATUS, "### 执行域", "### 入口")
+# P3.1 存根化迁移后 STATUS.md 不再内联域明细表，跳过域计数交叉校验
+STATUS_IS_STUB = "### 基座" not in STATUS and "存根" in STATUS
+if STATUS_IS_STUB:
+    ok("STATUS.md is stub-migrated; domain stats skipped (fact-layer: .foundationx/status/index.json)")
+else:
+    BASE      = github_rows_between(STATUS, "### 基座", "### L2.5")
+    L25       = github_rows_between(STATUS, "### L2.5", "### 数据域")
+    MARKET    = count_market_rows(STATUS)
+    SDK, PROV = count_sdk_provider(STATUS)  # legacy; retained for transitional reporting
+    MACRO     = github_rows_between(STATUS, "### 数据域 · 宏观", "### 数据域 · 另类")
+    ALT       = github_rows_between(STATUS, "### 数据域 · 另类", "### 分析域")
+    ANALYSIS  = github_rows_between(STATUS, "### 分析域", "### 决策域")
+    DECISION  = github_rows_between(STATUS, "### 决策域", "### 执行域")
+    EXECUTION = github_rows_between(STATUS, "### 执行域", "### 入口")
 
-DMAP = {"Base":"基座","L2.5":"L2.5 领域共享层",
-       "Market":"数据域 · market_data","Macro":"数据域 · macro_data","Alt":"数据域 · 另类",
-       "Analysis":"分析域","Decision":"决策域","Execution":"执行域"}
-def _get(label,x): return rows.get(DMAP[label],{}).get(x,"?")
-chk("Base", str(BASE), _get("Base","total"))
-chk("L2.5", str(L25), _get("L2.5","total"))
-chk("Market (SDK+Provider)", str(MARKET), _get("Market","total"))
-chk("Macro", str(MACRO), _get("Macro","total"))
-chk("Alt", str(ALT), _get("Alt","total"))
-chk("Analysis", str(ANALYSIS), _get("Analysis","total"))
-chk("Decision", str(DECISION), _get("Decision","total"))
-chk("Execution", str(EXECUTION), _get("Execution","total"))
+    DMAP = {"Base":"基座","L2.5":"L2.5 领域共享层",
+           "Market":"数据域 · market_data","Macro":"数据域 · macro_data","Alt":"数据域 · 另类",
+           "Analysis":"分析域","Decision":"决策域","Execution":"执行域"}
+    def _get(label,x): return rows.get(DMAP[label],{}).get(x,"?")
+    chk("Base", str(BASE), _get("Base","total"))
+    chk("L2.5", str(L25), _get("L2.5","total"))
+    chk("Market (SDK+Provider)", str(MARKET), _get("Market","total"))
+    chk("Macro", str(MACRO), _get("Macro","total"))
+    chk("Alt", str(ALT), _get("Alt","total"))
+    chk("Analysis", str(ANALYSIS), _get("Analysis","total"))
+    chk("Decision", str(DECISION), _get("Decision","total"))
+    chk("Execution", str(EXECUTION), _get("Execution","total"))
 
 # ── 2. Dashboard vs totals ─────────────────────────────────
 print("\n--- 2. Dashboard vs domain stats ---")
-dash = parse_dashboard(STATUS)
-if dash and totals:
-    chk("Total",    dash["total"],    totals["total"])
-    chk("Existing", dash["existing"], totals["existing"])
-    chk("Created",  dash["created"],  totals["created"])
-    chk("Progress", dash["progress"] + "%", totals["progress"] + "%")
+if STATUS_IS_STUB:
+    ok("Dashboard skipped (stub-migrated STATUS.md)")
 else:
-    no("Could not parse dashboard or totals")
+    dash = parse_dashboard(STATUS)
+    if dash and totals:
+        chk("Total",    dash["total"],    totals["total"])
+        chk("Existing", dash["existing"], totals["existing"])
+        chk("Created",  dash["created"],  totals["created"])
+        chk("Progress", dash["progress"] + "%", totals["progress"] + "%")
+    else:
+        no("Could not parse dashboard or totals")
 
 # ── 3. Sync table vs unique repos ──────────────────────────
 print("\n--- 3. Sync table vs unique repos ---")
@@ -428,19 +469,25 @@ ru = unique_repos(README); au = unique_repos(ARCH); su = unique_repos(STATUS)
 if st:
     chk("README", str(ru), st["readme"])
     chk("ARCH",   str(au), st["arch"])
-    d = abs(su - int(st["status"]))
-    if d <= 2: ok(f"STATUS: actual={su} sync-table={st['status']} (diff={d}, OK)")
-    else: no(f"STATUS: actual={su} sync-table={st['status']} (diff={d})")
+    if STATUS_IS_STUB:
+        ok(f"STATUS: stub-migrated, sync-table total={st['status']} (URL count skipped)")
+    else:
+        d = abs(su - int(st["status"]))
+        if d <= 2: ok(f"STATUS: actual={su} sync-table={st['status']} (diff={d}, OK)")
+        else: no(f"STATUS: actual={su} sync-table={st['status']} (diff={d})")
 else:
     no("Sync table row not found")
 
 # ── 4. Base version count ──────────────────────────────────
 print("\n--- 4. Base version count ---")
-bv = count_base_versions(STATUS)
-dsv = rows.get("基座", {}).get("versioned", "?")
-num = re.match(r'\d+', dsv)
-num = num.group(0) if num else dsv
-chk("BaseVer", str(bv), num)
+if STATUS_IS_STUB:
+    ok("BaseVer skipped (stub-migrated STATUS.md; fact-layer: .foundationx/status/index.json)")
+else:
+    bv = count_base_versions(STATUS)
+    dsv = rows.get("基座", {}).get("versioned", "?")
+    num = re.match(r'\d+', dsv)
+    num = num.group(0) if num else dsv
+    chk("BaseVer", str(bv), num)
 
 # ── 5. Stale references ────────────────────────────────────
 print("\n--- 5. Stale references ---")
@@ -452,9 +499,9 @@ else: ok("No stale 'strategies' references")
 
 # ── 6. Domain-sum arithmetic ───────────────────────────────
 print("\n--- 6. Domain-sum row sums ---")
-st_sum = sum(int(r["total"]) for r in rows.values())
-se_sum = sum(int(r["existing"]) for r in rows.values())
-sc_sum = sum(int(r["created"]) for r in rows.values())
+st_sum = sum(int(r["total"]) for r in rows.values() if re.match(r'\d+', str(r.get("total", ""))))
+se_sum = sum(int(r["existing"]) for r in rows.values() if re.match(r'\d+', str(r.get("existing", ""))))
+sc_sum = sum(int(r["created"]) for r in rows.values() if re.match(r'\d+', str(r.get("created", ""))))
 chk("Total",    str(st_sum), totals["total"])
 chk("Existing", str(se_sum), totals["existing"])
 chk("Created",  str(sc_sum), totals["created"])

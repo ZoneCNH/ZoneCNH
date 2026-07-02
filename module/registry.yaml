@@ -107,7 +107,7 @@ kernel:
   lifecycle: active
   owner: ZoneCNH
   registered: 2026-06-01
-  spec_ref: module/kernel/SPEC.md
+  spec_ref: module/kernel/spec/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml
   maturity_ref: .foundationx/status/index.json#kernel
   spec_version: v2.1.0
@@ -125,7 +125,7 @@ configx:
   lifecycle: active
   owner: ZoneCNH
   registered: 2026-06-01
-  spec_ref: module/configx/SPEC.md
+  spec_ref: module/configx/spec/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml
   maturity_ref: .foundationx/status/index.json#configx
   spec_version: v1.2.0
@@ -142,7 +142,7 @@ observex:
   lifecycle: active
   owner: ZoneCNH
   registered: 2026-06-01
-  spec_ref: module/observex/SPEC.md
+  spec_ref: module/observex/spec/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml
   maturity_ref: .foundationx/status/index.json#observex
   spec_version: v1.1.0
@@ -159,7 +159,7 @@ resiliencx:
   lifecycle: active
   owner: ZoneCNH
   registered: 2026-06-01
-  spec_ref: module/resiliencx/SPEC.md
+  spec_ref: module/resiliencx/spec/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml
   maturity_ref: .foundationx/status/index.json#resiliencx
   spec_version: v1.1.0
@@ -176,7 +176,7 @@ schedulex:
   lifecycle: active
   owner: ZoneCNH
   registered: 2026-06-01
-  spec_ref: module/schedulex/SPEC.md
+  spec_ref: module/schedulex/spec/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml
   maturity_ref: .foundationx/status/index.json#schedulex
   spec_version: v1.1.0
@@ -194,7 +194,7 @@ bootstrap:
   lifecycle: active
   owner: ZoneCNH
   registered: 2026-06-01
-  spec_ref: module/bootstrap/SPEC.md
+  spec_ref: module/bootstrap/spec/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml
   maturity_ref: .foundationx/status/index.json#bootstrap
   spec_version: v0.2.0
@@ -212,7 +212,7 @@ testkitx:
   lifecycle: active
   owner: ZoneCNH
   registered: 2026-06-01
-  spec_ref: module/testkitx/SPEC.md
+  spec_ref: module/testkitx/spec/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml
   maturity_ref: .foundationx/status/index.json#testkitx
   spec_version: v1.1.0
@@ -230,7 +230,7 @@ redisx:
   lifecycle: active
   owner: ZoneCNH
   registered: 2026-06-01
-  spec_ref: module/redisx/SPEC.md
+  spec_ref: module/redisx/spec/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml
   maturity_ref: .foundationx/status/index.json#redisx
   spec_version: v1.3.0
@@ -247,7 +247,7 @@ kafkax:
   lifecycle: active
   owner: ZoneCNH
   registered: 2026-06-01
-  spec_ref: module/kafkax/SPEC.md
+  spec_ref: module/kafkax/spec/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml
   maturity_ref: .foundationx/status/index.json#kafkax
   spec_version: v1.2.0
@@ -264,7 +264,7 @@ natsx:
   lifecycle: active
   owner: ZoneCNH
   registered: 2026-06-01
-  spec_ref: module/natsx/SPEC.md
+  spec_ref: module/natsx/spec/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml
   maturity_ref: .foundationx/status/index.json#natsx
   spec_version: v1.2.0
@@ -281,7 +281,7 @@ postgresx:
   lifecycle: active
   owner: ZoneCNH
   registered: 2026-06-01
-  spec_ref: module/postgresx/SPEC.md
+  spec_ref: module/postgresx/spec/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml
   maturity_ref: .foundationx/status/index.json#postgresx
   spec_version: v1.1.0
@@ -298,7 +298,7 @@ taosx:
   lifecycle: active
   owner: ZoneCNH
   registered: 2026-06-01
-  spec_ref: module/taosx/SPEC.md
+  spec_ref: module/taosx/spec/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml
   maturity_ref: .foundationx/status/index.json#taosx
   spec_version: v1.2.0
@@ -315,7 +315,7 @@ ossx:
   lifecycle: active
   owner: ZoneCNH
   registered: 2026-06-01
-  spec_ref: module/ossx/SPEC.md
+  spec_ref: module/ossx/spec/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml
   maturity_ref: .foundationx/status/index.json#ossx
   spec_version: v1.3.0
@@ -332,7 +332,7 @@ clickhousex:
   lifecycle: active
   owner: ZoneCNH
   registered: 2026-06-01
-  spec_ref: module/clickhousex/SPEC.md
+  spec_ref: module/clickhousex/spec/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml
   maturity_ref: .foundationx/status/index.json#clickhousex
   spec_version: v1.1.0
@@ -350,7 +350,7 @@ contracts:
   lifecycle: active
   owner: ZoneCNH
   registered: 2026-06-01
-  spec_ref: module/contracts/SPEC.md
+  spec_ref: module/contracts/spec/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml
   maturity_ref: .foundationx/status/index.json#contracts
   spec_version: v1.2.0
@@ -367,7 +367,7 @@ transportx:
   lifecycle: active
   owner: ZoneCNH
   registered: 2026-06-01
-  spec_ref: module/transportx/SPEC.md
+  spec_ref: module/transportx/spec/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml
   maturity_ref: .foundationx/status/index.json#transportx
   spec_version: v1.3.0
@@ -390,7 +390,7 @@ domainx:
   lifecycle: active
   owner: ZoneCNH
   registered: 2026-06-01
-  spec_ref: module/domainx/SPEC.md
+  spec_ref: module/domainx/spec/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml
   maturity_ref: .foundationx/status/index.json#domainx
   spec_version: v1.0.0
@@ -407,7 +407,7 @@ decimalx:
   lifecycle: active
   owner: ZoneCNH
   registered: 2026-06-01
-  spec_ref: module/decimalx/SPEC.md
+  spec_ref: module/decimalx/spec/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml
   maturity_ref: .foundationx/status/index.json#decimalx
   spec_version: v0.2.0
@@ -424,7 +424,7 @@ domain_market:
   lifecycle: active
   owner: ZoneCNH
   registered: 2026-06-01
-  spec_ref: module/domain_market/SPEC.md
+  spec_ref: module/domain_market/spec/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml
   maturity_ref: .foundationx/status/index.json#domain_market
   spec_version: v1.1.0
@@ -441,7 +441,7 @@ domain_macro:
   lifecycle: active
   owner: ZoneCNH
   registered: 2026-06-01
-  spec_ref: module/domain_macro/SPEC.md
+  spec_ref: module/domain_macro/spec/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml
   maturity_ref: .foundationx/status/index.json#domain_macro
   spec_version: v0.1.0
@@ -458,7 +458,7 @@ domain_exchange:
   lifecycle: active
   owner: ZoneCNH
   registered: 2026-06-01
-  spec_ref: module/domain_exchange/SPEC.md
+  spec_ref: module/domain_exchange/spec/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml
   maturity_ref: .foundationx/status/index.json#domain_exchange
   spec_version: v0.1.0
@@ -499,7 +499,7 @@ okx:
   lifecycle: proposed
   owner: ZoneCNH
   registered: 2026-06-10
-  spec_ref: module/okx/SPEC.md
+  spec_ref: module/okx/spec/SPEC.md
   spec_version: v0.1.0-draft
   release:
     cadence: irregular
@@ -513,7 +513,7 @@ hyperliquid:
   lifecycle: proposed
   owner: ZoneCNH
   registered: 2026-06-10
-  spec_ref: module/hyperliquid/SPEC.md
+  spec_ref: module/hyperliquid/spec/SPEC.md
   spec_version: v0.1.0-draft
   release:
     cadence: irregular
@@ -527,7 +527,7 @@ coinglass:
   lifecycle: proposed
   owner: ZoneCNH
   registered: 2026-06-10
-  spec_ref: module/coinglass/SPEC.md
+  spec_ref: module/coinglass/spec/SPEC.md
   spec_version: v0.1.0-draft
   release:
     cadence: irregular
@@ -541,7 +541,7 @@ fred:
   lifecycle: proposed
   owner: ZoneCNH
   registered: 2026-06-10
-  spec_ref: module/fred/SPEC.md
+  spec_ref: module/fred/spec/SPEC.md
   spec_version: v0.1.0-draft
   release:
     cadence: irregular
@@ -555,7 +555,7 @@ treasury:
   lifecycle: proposed
   owner: ZoneCNH
   registered: 2026-06-10
-  spec_ref: module/treasury/SPEC.md
+  spec_ref: module/treasury/spec/SPEC.md
   spec_version: v0.1.0-draft
   release:
     cadence: irregular
@@ -570,7 +570,7 @@ market_data:
   lifecycle: proposed
   owner: ZoneCNH
   registered: 2026-06-10
-  spec_ref: module/market_data/SPEC.md
+  spec_ref: module/market_data/spec/SPEC.md
   spec_version: v0.1.0-draft
   release:
     cadence: irregular
@@ -584,7 +584,7 @@ macro_data:
   lifecycle: proposed
   owner: ZoneCNH
   registered: 2026-06-10
-  spec_ref: module/macro_data/SPEC.md
+  spec_ref: module/macro_data/spec/SPEC.md
   spec_version: v0.1.0-draft
   release:
     cadence: irregular
@@ -598,7 +598,7 @@ pe_data:
   lifecycle: proposed
   owner: ZoneCNH
   registered: 2026-06-10
-  spec_ref: module/pe_data/SPEC.md
+  spec_ref: module/pe_data/spec/SPEC.md
   spec_version: v0.1.0-draft
   release:
     cadence: irregular
@@ -612,7 +612,7 @@ alternative_data:
   lifecycle: proposed
   owner: ZoneCNH
   registered: 2026-06-10
-  spec_ref: module/alternative_data/SPEC.md
+  spec_ref: module/alternative_data/spec/SPEC.md
   spec_version: v0.1.0-draft
   release:
     cadence: irregular
@@ -630,7 +630,7 @@ factor_engine:
   lifecycle: proposed
   owner: ZoneCNH
   registered: 2026-06-10
-  spec_ref: module/factor_engine/SPEC.md
+  spec_ref: module/factor_engine/spec/SPEC.md
   spec_version: v0.1.0-draft
   release:
     cadence: irregular
@@ -644,7 +644,7 @@ feature_store:
   lifecycle: proposed
   owner: ZoneCNH
   registered: 2026-06-10
-  spec_ref: module/feature_store/SPEC.md
+  spec_ref: module/feature_store/spec/SPEC.md
   spec_version: v0.1.0-draft
   release:
     cadence: irregular
@@ -658,7 +658,7 @@ factor_eval:
   lifecycle: proposed
   owner: ZoneCNH
   registered: 2026-06-10
-  spec_ref: module/factor_eval/SPEC.md
+  spec_ref: module/factor_eval/spec/SPEC.md
   spec_version: v0.1.0-draft
   release:
     cadence: irregular
@@ -672,7 +672,7 @@ market_regime:
   lifecycle: proposed
   owner: ZoneCNH
   registered: 2026-06-10
-  spec_ref: module/market_regime/SPEC.md
+  spec_ref: module/market_regime/spec/SPEC.md
   spec_version: v0.1.0-draft
   release:
     cadence: irregular
@@ -686,7 +686,7 @@ macro_regime:
   lifecycle: proposed
   owner: ZoneCNH
   registered: 2026-06-10
-  spec_ref: module/macro_regime/SPEC.md
+  spec_ref: module/macro_regime/spec/SPEC.md
   spec_version: v0.1.0-draft
   release:
     cadence: irregular
@@ -700,7 +700,7 @@ regime_engine:
   lifecycle: proposed
   owner: ZoneCNH
   registered: 2026-06-10
-  spec_ref: module/regime_engine/SPEC.md
+  spec_ref: module/regime_engine/spec/SPEC.md
   spec_version: v0.1.0-draft
   release:
     cadence: irregular
@@ -714,7 +714,7 @@ ms_brain:
   lifecycle: proposed
   owner: ZoneCNH
   registered: 2026-06-10
-  spec_ref: module/ms_brain/SPEC.md
+  spec_ref: module/ms_brain/spec/SPEC.md
   spec_version: v0.1.0-draft
   release:
     cadence: irregular
@@ -728,7 +728,7 @@ flowx:
   lifecycle: proposed
   owner: ZoneCNH
   registered: 2026-06-10
-  spec_ref: module/flowx/SPEC.md
+  spec_ref: module/flowx/spec/SPEC.md
   spec_version: v0.1.0-draft
   release:
     cadence: irregular
@@ -746,7 +746,7 @@ signal_factory:
   lifecycle: proposed
   owner: ZoneCNH
   registered: 2026-06-10
-  spec_ref: module/signal_factory/SPEC.md
+  spec_ref: module/signal_factory/spec/SPEC.md
   spec_version: v0.1.0-draft
   release:
     cadence: irregular
@@ -760,7 +760,7 @@ backtestx:
   lifecycle: proposed
   owner: ZoneCNH
   registered: 2026-06-10
-  spec_ref: module/backtestx/SPEC.md
+  spec_ref: module/backtestx/spec/SPEC.md
   spec_version: v0.1.0-draft
   release:
     cadence: irregular
@@ -774,7 +774,7 @@ optimizer:
   lifecycle: proposed
   owner: ZoneCNH
   registered: 2026-06-10
-  spec_ref: module/optimizer/SPEC.md
+  spec_ref: module/optimizer/spec/SPEC.md
   spec_version: v0.1.0-draft
   release:
     cadence: irregular
@@ -788,7 +788,7 @@ strategyx:
   lifecycle: proposed
   owner: ZoneCNH
   registered: 2026-06-10
-  spec_ref: module/strategyx/SPEC.md
+  spec_ref: module/strategyx/spec/SPEC.md
   spec_version: v0.1.0-draft
   release:
     cadence: irregular
@@ -802,7 +802,7 @@ maestro:
   lifecycle: proposed
   owner: ZoneCNH
   registered: 2026-06-10
-  spec_ref: module/maestro/SPEC.md
+  spec_ref: module/maestro/spec/SPEC.md
   spec_version: v0.1.0-draft
   release:
     cadence: irregular
@@ -820,7 +820,7 @@ riskx:
   lifecycle: proposed
   owner: ZoneCNH
   registered: 2026-06-10
-  spec_ref: module/riskx/SPEC.md
+  spec_ref: module/riskx/spec/SPEC.md
   spec_version: v0.1.0-draft
   release:
     latest_tag: v0.1.0
@@ -835,7 +835,7 @@ orderx:
   lifecycle: proposed
   owner: ZoneCNH
   registered: 2026-06-10
-  spec_ref: module/orderx/SPEC.md
+  spec_ref: module/orderx/spec/SPEC.md
   spec_version: v0.1.0-draft
   release:
     cadence: irregular
@@ -849,7 +849,7 @@ positionx:
   lifecycle: proposed
   owner: ZoneCNH
   registered: 2026-06-10
-  spec_ref: module/positionx/SPEC.md
+  spec_ref: module/positionx/spec/SPEC.md
   spec_version: v0.1.0-draft
   release:
     cadence: irregular
@@ -863,7 +863,7 @@ settlement:
   lifecycle: proposed
   owner: ZoneCNH
   registered: 2026-06-10
-  spec_ref: module/settlement/SPEC.md
+  spec_ref: module/settlement/spec/SPEC.md
   spec_version: v0.1.0-draft
   release:
     cadence: irregular
@@ -881,7 +881,7 @@ composer:
   lifecycle: proposed
   owner: ZoneCNH
   registered: 2026-06-10
-  spec_ref: module/composer/SPEC.md
+  spec_ref: module/composer/spec/SPEC.md
   spec_version: v0.2.0
   release:
     latest_tag: v0.2.0
@@ -891,8 +891,8 @@ frontend:
   repo: github.com/ZoneCNH/frontend
   local_path: /home/workspace/frontend
   domain: entry
-  layer: presentation
-  arch_type: web_app
+  layer: business
+  arch_type: independent_process
   lifecycle: production
   maturity: L3
   owner: ZoneCNH
@@ -911,60 +911,60 @@ frontend:
 # ============================================================================
 
 assembly:
-  repo: github.com/ZoneCNH/runtime-patches/assembly
-  local_path: ~
+  repo: github.com/ZoneCNH/assembly
+  local_path: /home/workspace/assembly
   domain: data
   layer: business
   arch_type: library
   lifecycle: proposed
   owner: ZoneCNH
   registered: 2026-07-03
-  spec_ref: module/assembly/SPEC.md
+  spec_ref: module/assembly/spec/SPEC.md
   spec_version: v0.1.0-draft
   release:
     cadence: irregular
   note: "binance ingest pipeline 中间件注入与装配层；runtime-patches 子模块"
 
 binancecfg:
-  repo: github.com/ZoneCNH/runtime-patches/binancecfg
-  local_path: ~
+  repo: github.com/ZoneCNH/binancecfg
+  local_path: /home/workspace/binancecfg
   domain: data
   layer: business
   arch_type: library
   lifecycle: proposed
   owner: ZoneCNH
   registered: 2026-07-03
-  spec_ref: module/binancecfg/SPEC.md
+  spec_ref: module/binancecfg/spec/SPEC.md
   spec_version: v0.1.0-draft
   release:
     cadence: irregular
   note: "binance ingest pipeline 配置加载层；runtime-patches 子模块"
 
 binancex:
-  repo: github.com/ZoneCNH/runtime-patches/binancex
-  local_path: ~
+  repo: github.com/ZoneCNH/binancex
+  local_path: /home/workspace/binancex
   domain: data
   layer: business
   arch_type: library
   lifecycle: proposed
   owner: ZoneCNH
   registered: 2026-07-03
-  spec_ref: module/binancex/SPEC.md
+  spec_ref: module/binancex/spec/SPEC.md
   spec_version: v0.1.0-draft
   release:
     cadence: irregular
   note: "binance ingest pipeline SDK 抽象层；runtime-patches 子模块"
 
 cmd:
-  repo: github.com/ZoneCNH/runtime-patches/cmd
-  local_path: ~
+  repo: github.com/ZoneCNH/cmd
+  local_path: /home/workspace/cmd
   domain: data
   layer: business
   arch_type: cli
   lifecycle: proposed
   owner: ZoneCNH
   registered: 2026-07-03
-  spec_ref: module/cmd/SPEC.md
+  spec_ref: module/cmd/spec/SPEC.md
   spec_version: v0.1.0-draft
   release:
     cadence: irregular
@@ -983,7 +983,7 @@ alertx:
   lifecycle: active
   owner: ZoneCNH
   registered: 2026-06-10
-  spec_ref: module/alertx/SPEC.md
+  spec_ref: module/alertx/spec/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml
   spec_version: v1.0.0
   release:
@@ -999,7 +999,7 @@ x.go:
   lifecycle: active
   owner: ZoneCNH
   registered: 2026-06-01
-  spec_ref: module/x.go/SPEC.md
+  spec_ref: module/x.go/spec/SPEC.md
   spec_version: v0.1.0-draft
   release:
     cadence: irregular
