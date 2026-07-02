@@ -8,6 +8,13 @@
 >
 > 同步基线：`module/` 为模块规格库 SSOT，`docs/governance/` 为 Spec 治理 SSOT，`docs/goal/` 为 Goal 规则 SSOT，`specs/` 已移除。
 > 机器事实源：`.foundationx/status/index.json` — 由 `xlibgate fleet-status` 生成，供 CI 和自动投影消费。多维成熟度以该文件为准，本文手工块为投影。
+>
+> **模块计数口径说明**（2026-07-03 S4 修复）：本文涉及多种计数口径，各处已标注来源：
+> - **口径-DEPS20**：FOUNDATION-DEPS.yaml modules 段定义的 20 个基座模块（不含 L2.5），用于 CI 和依赖矩阵治理
+> - **口径-STATUS21**：.foundationx/status/index.json 覆盖的 21 个模块（20 基座 + domainx L2.5 锚点），用于成熟度追踪
+> - **口径-REG59**：registry.yaml 全域注册模块 59 个（含 4 archived），用于模块身份管理
+> - **口径-REG55**：registry.yaml 全域活跃模块 55 个（不含 archived），用于活跃模块统计
+> - **口径-FULL73**：全域活跃组件 73 个（含业务域模块，扣除 4 archived），用于域统计汇总
 
 ---
 
@@ -44,7 +51,7 @@
 | --- | --- | --- | --- | --- | --- |
 | [frontend](https://github.com/ZoneCNH/frontend) | v1.0.0 | spec/code/release | released | spec=100 cod=100 | ZoneCNH 统一前端平台 — React 19 + TypeScript + Vite + Tailwind CSS 4 + Recharts；多模块路由；binance 5 页面 39 功能 Done；nginx 静态部署；Playwright 18 E2E |
 
-> ✅ **版本 / release 注记**：公开文档是投影层；"版本（目标投影）"列为规划目标版本，已发布版本以"状态总览"表或 `.foundationx/status/index.json` + `.foundationx/blockers.json` 与 GitHub Release 实际证据为准。当前 21-module projection 中 21/21 已发布 GitHub Release；2026-06-24 核查：`natsx` GitHub Release `v1.0.2` 已发布，`v1.0.3` 远端 tag-only；factory 投影必须读取 release/live/blocker 证据，不能由 tag 自动推出。
+> ✅ **版本 / release 注记**：公开文档是投影层；"版本（目标投影）"列为规划目标版本，已发布版本以"状态总览"表或 `.foundationx/status/index.json` + `.foundationx/blockers.json` 与 GitHub Release 实际证据为准。当前 [口径-STATUS21] 21/21 已发布 GitHub Release；2026-06-24 核查：`natsx` GitHub Release `v1.0.2` 已发布，`v1.0.3` 远端 tag-only；factory 投影必须读取 release/live/blocker 证据，不能由 tag 自动推出。
 
 > **成熟度语义说明（2026-06-14 v2 Trust Alignment）**：上表"进度"反映本仓库 Spec 管线评分（spec→code），不代表可投产等级（factory grade）。"子维度投影"列中 `pln/prm/cod` 对外仓模块为文档模板 pass-through 评分 **[P]**，不代表代码编译或测试已验证——权威代码质量见对应仓库 CI/GitHub Release。下表提供多维度成熟度视图；RELEASE=❌ 或存在 open blocker 的模块不得投影为 FACTORY=✅。
 
@@ -78,7 +85,7 @@
 
 > **数据来源**：本表依据 `module/` 规格状态、`.foundationx/status/index.json`、`.foundationx/blockers.json`、公开 GitHub release 页面、GitHub Actions CI 运行状态与 FOUNDATION-DEPS.yaml 反向依赖图（ADOPT）投影。Open blocker 会下调 FACTORY 投影。
 >
-> **CI 构建状态**（最新 run，2026-06-15）：✅ 全部 20 模块已配置 CI workflows | Trust Alignment 5 模块本次部署: xlib_harness / xlib_evidence / ossx / clickhousex / domainx
+> **CI 构建状态**（最新 run，2026-06-15）：✅ 全部 [口径-DEPS20] 20 模块已配置 CI workflows | Trust Alignment 5 模块本次部署: xlib_harness / xlib_evidence / ossx / clickhousex / domainx
 >
 > **管线评分注记**：上表 `pln/prm/cod` 列对外仓模块为 pass-through（未实际在目标 repo 运行验证），100 分仅表示 plan/prompt 文档模板完整，不代表代码可编译或已通过测试。CI 构建状态为此处补充机械证据。
 
@@ -320,7 +327,7 @@
 
 | 域                     | 总数   | 已有   | 已创建 | 平均进度                           | 架构组成                                              |
 | ---------------------- | ------ | ------ | ------ | ---------------------------------- | ----------------------------------------------------- |
-| 基座                   | 21     | 21     | 0      | Spec→Code 投影完成；Foundation 整体非 factory | 21 独立 module                                                    |
+| 基座                   | 21     | 21     | 0      | Spec→Code 投影完成；Foundation 整体非 factory | 21 独立 module [口径-STATUS21]                                        |
 | L2.5 领域共享层        | 5      | 5      | 0      | 100%                               | 5 纯值对象库 (factory grade；live/soak N/A)            |
 | 数据域 · market_data   | 14     | 13     | 1      | 85%                                | binance 生产就绪 ✅；12 C/S Module 待升级 + 1 独立进程 (dispatch)            |
 | 数据域 · macro_data    | 11     | 11     | 0      | 80%                                | 10 C/S Module + 1 独立进程 (dispatch)                                      |
@@ -333,7 +340,7 @@
 | 独立                   | 1      | 1      | 0      | -                                  | 0                                                     |
 | **合计**               | **74** | **60** | **14** | **81%**                            | **74**                                                |
 
-> ⚠️ **历史占位移除说明**（2026-06-22）：4 个历史占位模块（`backtest_engine`/`risk_engine`/`order_engine`/`portfolio_engine`）已从 `module/` 目录物理移除，迁移至对应新名称（backtestx/riskx/orderx/positionx）。多维成熟度表中保留行作为档案，标注"已移除"。当前活跃组件 73 个（原 77，扣除 4 个已移除占位）。
+> ⚠️ **历史占位移除说明**（2026-06-22）：4 个历史占位模块（`backtest_engine`/`risk_engine`/`order_engine`/`portfolio_engine`）已从 `module/` 目录物理移除，迁移至对应新名称（backtestx/riskx/orderx/positionx）。多维成熟度表中保留行作为档案，标注"已移除"。当前活跃组件 [口径-FULL73] 73 个（原 77，扣除 4 个已移除占位）。
 
 ---
 
@@ -341,7 +348,7 @@
 
 ### 🟢 基座（健康）
 
-- 组件：19 个（不含 L2.5；机器事实层另将 `domainx` 作为 L2.5 模块计入 20-module projection）；
+- 组件：19 个 [口径-DEPS20 减 testkitx(test-only)]；机器事实层 [口径-STATUS21] 另将 `domainx` 作为 L2.5 模块计入 21-module projection；
   Spec→Code 管线投影已闭合，但不等于 Foundation 整体 factory grade。
  - 核心模块 release/tag 投影仍需逐项读取 GitHub Release 与 blocker 证据；natsx 已确认 GitHub Release v1.0.2，v1.0.3 仅作为 tag-only 事实保留。
  - 存储层 GitHub Release 与 blocker 投影已按当前 fact-layer 对齐。
@@ -457,7 +464,7 @@
 
 | 检查项           | README | ARCHITECTURE | STATUS    | 一致性 |
 | ---------------- | ------ | ------------ | --------- | ------ |
-| 组件总数         | 71     | 69           | 71        | ✅（2026-06-22 PR #845 命名 snake_case 化后；README/STATUS=71，ARCH=69 是 ARCHITECTURE.md 不重复列出 2 个仓库的合法差异） |
+| 组件总数         | 71     | 69           | 71        | ✅（2026-06-22 PR #845 命名 snake_case 化后；README/STATUS=71 [口径-FULL73 减 2 非模块目录]，ARCH=69 是 ARCHITECTURE.md 不重复列出 2 个仓库的合法差异） |
 | market_data 数量 | 14     | 14          | 14        | ✅     |
 | macro_data 数量  | 11     | 11           | 11        | ✅            |
 | L2.5 组件        | 5      | 5            | 5         | ✅ 已验证 |
@@ -480,7 +487,7 @@
 
 ## 管线状态总览
 
-20/20 模块全部阶段 ≥67（rule-scorer 真实评分），其中 13/20 全线 ≥98。该表是 Spec→Code 管线分项评分，不代表 release/factory；release/factory 投影以 `.foundationx/status/index.json` + `.foundationx/blockers.json` 为准。
+[口径-DEPS20] 20/20 模块全部阶段 ≥67（rule-scorer 真实评分），其中 13/20 全线 ≥98。该表是 Spec→Code 管线分项评分，不代表 release/factory；release/factory 投影以 `.foundationx/status/index.json` + `.foundationx/blockers.json` 为准。
 
 | 模块          | spec | matrix | tasks | plan | prompt | code |
 | ------------- | :--: | :----: | :---: | :--: | :----: | :--: |

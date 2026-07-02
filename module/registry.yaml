@@ -17,7 +17,7 @@
 # 强制级别：本文件字段变更须遵循 01-module-registry.md §4 登记变更规则。
 
 schema_version: module-registry/v1
-updated: 2026-06-29
+updated: 2026-07-03
 
 # ============================================================================
 # 基座层（Foundation）— 20 模块
@@ -378,8 +378,7 @@ transportx:
 
 # ============================================================================
 # L2.5 领域共享层（5 模块）
-# domainx 在 FOUNDATION-DEPS.yaml modules 段（基座依赖治理锚点）；
-# decimalx/domain_market/domain_macro/domain_exchange 暂不在 DEPS modules 段（后续补登记，见 08）。
+# 全部 5 个 L2.5 模块已在 FOUNDATION-DEPS.yaml modules 段登记（2026-07-03 P1.5 完成）。
 # 计数口径：domainx 计入 L2.5（domain=l2_5）；基座计数仍为 20（DEPS modules 段口径不变）。
 # ============================================================================
 
@@ -871,7 +870,7 @@ settlement:
     cadence: irregular
 
 # ============================================================================
-# 入口（Entry）— 组合根
+# 入口（Entry）— 组合根 + 展示层
 # ============================================================================
 
 composer:
@@ -888,6 +887,89 @@ composer:
   release:
     latest_tag: v0.2.0
     cadence: irregular
+
+frontend:
+  repo: github.com/ZoneCNH/frontend
+  local_path: /home/workspace/frontend
+  domain: entry
+  layer: presentation
+  arch_type: web_app
+  lifecycle: production
+  maturity: L3
+  owner: ZoneCNH
+  registered: 2026-07-03
+  spec_ref: module/frontend/spec/SPEC.md
+  spec_version: v1.0.0
+  release:
+    latest_tag: v1.0.0
+    cadence: on-demand
+  note: "ZoneCNH 统一前端平台 — React 19 + TypeScript + Vite + Tailwind CSS 4；展示层，非组合根"
+
+# ============================================================================
+# binance runtime-patches 子模块（L3 内部架构层）
+# 来源：从 binance Go 源码反向提取的 4 个内部模块，repo 统一在 runtime-patches 下
+# 治理状态：proposed，SPEC 待创建；与 binance 模块关联但不归属 binance 目录
+# ============================================================================
+
+assembly:
+  repo: github.com/ZoneCNH/runtime-patches/assembly
+  local_path: ~
+  domain: data
+  layer: business
+  arch_type: library
+  lifecycle: proposed
+  owner: ZoneCNH
+  registered: 2026-07-03
+  spec_ref: module/assembly/SPEC.md
+  spec_version: v0.1.0-draft
+  release:
+    cadence: irregular
+  note: "binance ingest pipeline 中间件注入与装配层；runtime-patches 子模块"
+
+binancecfg:
+  repo: github.com/ZoneCNH/runtime-patches/binancecfg
+  local_path: ~
+  domain: data
+  layer: business
+  arch_type: library
+  lifecycle: proposed
+  owner: ZoneCNH
+  registered: 2026-07-03
+  spec_ref: module/binancecfg/SPEC.md
+  spec_version: v0.1.0-draft
+  release:
+    cadence: irregular
+  note: "binance ingest pipeline 配置加载层；runtime-patches 子模块"
+
+binancex:
+  repo: github.com/ZoneCNH/runtime-patches/binancex
+  local_path: ~
+  domain: data
+  layer: business
+  arch_type: library
+  lifecycle: proposed
+  owner: ZoneCNH
+  registered: 2026-07-03
+  spec_ref: module/binancex/SPEC.md
+  spec_version: v0.1.0-draft
+  release:
+    cadence: irregular
+  note: "binance ingest pipeline SDK 抽象层；runtime-patches 子模块"
+
+cmd:
+  repo: github.com/ZoneCNH/runtime-patches/cmd
+  local_path: ~
+  domain: data
+  layer: business
+  arch_type: cli
+  lifecycle: proposed
+  owner: ZoneCNH
+  registered: 2026-07-03
+  spec_ref: module/cmd/SPEC.md
+  spec_version: v0.1.0-draft
+  release:
+    cadence: irregular
+  note: "binance ingest pipeline 组合根入口；runtime-patches 子模块；命名为例外（非 snake_case 单词）"
 
 # ============================================================================
 # 横切（Crosscut）
@@ -980,3 +1062,13 @@ portfolio_engine:
   spec_ref: ~
   spec_version: ~
   note: "已删除占位模块（2026-06-22）；重命名为 positionx"
+
+# ============================================================================
+# 非模块目录（module/ 下存在但不作为模块注册的模板/规范目录）
+# 这些目录有下划线前缀（_template, _exchange-template）或明确为规范文档
+# ============================================================================
+
+# data_cs_module: 模板目录 — C/S 模块 SPEC 模板与升级路线图，非运行时模块
+# data_independent_process: 模板目录 — 独立进程 SPEC 模板，非运行时模块
+# _exchange-template: 模板目录 — 交易所 C/S 模块骨架模板
+# _template: 模板目录 — C/S 模块通用模板（含 cex-cs-module/ 子目录）
