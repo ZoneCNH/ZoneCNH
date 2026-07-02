@@ -112,3 +112,7 @@ Beads and GitHub issues are the current P10 tracking SSOT. The retired local pro
 | GitHub P10 open | 0 |
 | Beads P10 open | 0 |
 | release_closeable | YES |
+
+> **运行时缺口投影**：本矩阵统计规格口径（48 Done）。运行时口径的 58 个缺口（GAP-E1~E58）记录在 `module/binance/RUNTIME-GAP-MATRIX.md` 中。两者正交——规格 Done 表示 FR 功能面已闭合，运行时 Open 表示生产部署中存在数据完整性/安全性/可运维性缺口。详见该文件 §7 双口径声明。
+>
+> release_closeable = Code-Done FR / Total FR = 48/48 = 100% ≥ 90% → YES（PRG-001~007 全 PASS）。

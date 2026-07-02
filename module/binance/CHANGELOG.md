@@ -3,9 +3,40 @@
 所有 notable 变更记录，按 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/) 格式维护。
 
 - Module-Version: v3.9.7
-- Last-Updated: 2026-07-01
+- Last-Updated: 2026-07-02
 - Spec-Reference: `module/binance/spec/SPEC.md` v3.9.6
 - 治理规则：`module/binance/gate/RULES.md` R9 文档存在性
+
+---
+
+## 2026-07-02 运行时缺口矩阵制品创建（RUNTIME-GAP-MATRIX.md）
+
+### Added — module/binance/
+
+- **RUNTIME-GAP-MATRIX.md**（新建）：58 个运行时缺口完整矩阵（GAP-E1~E58），来源于 `report/binance/DATA-INTEGRITY-E2E-20260701.md` v3.9（6358 行，27 轮对抗性自审）。包含：
+  - §2 完整缺口矩阵（P0=3, P1=13, P2=22, P3=20，共 58 项）
+  - §3 漏洞链分析（15 条协同放大效应链路）
+  - §4 依赖关系图（关键路径）
+  - §5 MVP 分批建议（MVP-M → MVP-J → MVP-A+ → MVP-F → MVP-G → MVP-I → MVP-O）
+  - §7 双口径声明（规格口径 48 Done vs 运行时口径 58 Open，正交不矛盾）
+  - §8 自审验证日志（20 轮深度自审，确保无遗漏）
+
+### Changed — module/binance/
+
+- **spec/SPEC.md §22a**（新增）：Runtime Gap Matrix Reference 小节，引用 RUNTIME-GAP-MATRIX.md，声明双口径正交关系
+- **todo.md**（更新）：新增"运行时缺口投影"小节，投影 P0/P1 缺口摘要 + 立即可上项 ROI 排序
+- **matrix/TRACEABILITY.md**（更新）：新增 Runtime Gap Matrix 引用注释
+
+### CI 兼容性
+
+- 不修改任何 CI 校验的统计字段（`48 Done / 0 Partial / 0 Drifted / 0 Pending` 保持不变）
+- `binance-status-consistency-check.sh` 所有 pattern 检查保持 PASS
+- 运行时缺口在独立制品中追踪，不触发 CI 状态变更
+
+### 来源
+
+- 用户指令："深度分析 report/binance/DATA-INTEGRITY-E2E-20260701.md 根据缺口信息，补齐 module/binance/ 以上重复分析20遍，不得有遗漏，深度检查"
+- 来源报告 v3.9 §14 记录了第 8~27 轮 200 维度对抗性自审
 
 ---
 
