@@ -39,17 +39,29 @@ fi
 
 echo ""
 echo "── Building all modules jointly ──"
-go build ./... 2>&1 && echo "  BUILD PASS" || {
-    echo "  BUILD FAIL (check module compatibility and dependencies)"
-    exit 1
-}
+for mod in "${FOUNDATION_MODULES[@]}"; do
+    if [ -d "$mod" ] && [ -f "$mod/go.mod" ]; then
+        echo "  building $mod ..."
+        (cd "$mod" && go build ./...) || {
+            echo "  BUILD FAIL in $mod (check module compatibility and dependencies)"
+            exit 1
+        }
+    fi
+done
+echo "  BUILD PASS"
 
 echo ""
 echo "── Running all tests ──"
-go test -count=1 ./... 2>&1 | tail -30 || {
-    echo "  TEST FAIL (check individual module CI for details)"
-    exit 1
-}
+for mod in "${FOUNDATION_MODULES[@]}"; do
+    if [ -d "$mod" ] && [ -f "$mod/go.mod" ]; then
+        echo "  testing $mod ..."
+        (cd "$mod" && go test -count=1 ./...) || {
+            echo "  TEST FAIL in $mod (check individual module CI for details)"
+            exit 1
+        }
+    fi
+done
+echo "  TEST PASS"
 
 echo ""
 echo "── Joint Build and Test PASS ──"
