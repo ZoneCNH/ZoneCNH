@@ -29,6 +29,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     needs: quality-gate
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     steps:
       - uses: actions/checkout@v4
       - name: Validate release inputs
@@ -81,6 +82,7 @@ jobs:
     needs: release-prep
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     strategy:
       fail-fast: false
       matrix:
@@ -190,9 +192,12 @@ jobs:
           }
           EOF
       - name: Commit and push manifest
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          # actions/checkout 在 push/event 下处于 detached HEAD；切回目标分支以使 push 生效。
+          git checkout -B "$GITHUB_REF_NAME"
           git add release/foundation/
           if ! git diff --cached --quiet; then
             cat > /tmp/foundation-release-commit-message.txt << MSG
@@ -208,5 +213,5 @@ jobs:
           Co-authored-by: OmX <omx@oh-my-codex.dev>
           MSG
             git commit -F /tmp/foundation-release-commit-message.txt
-            git push
+            git push origin "$GITHUB_REF_NAME"
           fi

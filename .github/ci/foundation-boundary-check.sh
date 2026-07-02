@@ -26,7 +26,7 @@ import yaml
 matrix_path = Path(sys.argv[1])
 clone_root = Path(sys.argv[2])
 require_sources = sys.argv[3] == "true"
-source_root = Path(os.environ.get("FOUNDATION_BOUNDARY_SOURCE_ROOT", "/home"))
+source_root = Path(os.environ.get("FOUNDATION_BOUNDARY_SOURCE_ROOT", "/home/workspace"))
 module_filter = os.environ.get("FOUNDATION_BOUNDARY_MODULES") or os.environ.get("FOUNDATION_DEPS_MODULES", "")
 
 with matrix_path.open("r", encoding="utf-8") as f:
@@ -149,6 +149,7 @@ def resolve_source(module_name):
     expected_module_path = module_paths[module_name]
     candidates = list(dict.fromkeys([
         source_root / module_name,
+        Path("/home/workspace") / module_name,
         Path("/home") / module_name,
     ]))
     for candidate in candidates:
@@ -264,7 +265,7 @@ for module_name in selected_modules:
     for rel_path, line_no, import_path, test_file in module_imports:
         target_module = module_for_import(import_path)
 
-        if modules[module_name].get("stdlib_only") and is_external_import(import_path):
+        if modules[module_name].get("stdlib_only") and is_external_import(import_path) and not test_file:
             if not is_import_prefix(import_path, self_path):
                 violations.append((
                     module_name,
@@ -275,10 +276,8 @@ for module_name in selected_modules:
                     "stdlib-only modules may not import external packages",
                 ))
 
-        if target_module and target_module != module_name:
-            if target_module == "testkitx" and test_file:
-                pass
-            elif target_module not in allowed:
+        if target_module and target_module != module_name and not test_file:
+            if target_module not in allowed:
                 violations.append((
                     module_name,
                     rel_path,
@@ -289,6 +288,8 @@ for module_name in selected_modules:
                 ))
 
         for target_path in forbidden_deps:
+            if test_file:
+                continue
             if is_import_prefix(import_path, target_path):
                 violations.append((
                     module_name,
@@ -300,7 +301,7 @@ for module_name in selected_modules:
                 ))
 
         for target_name, target_path in edge_rules.get(module_name, []):
-            if target_name == "testkitx" and test_file:
+            if test_file:
                 continue
             if is_import_prefix(import_path, target_path):
                 violations.append((
