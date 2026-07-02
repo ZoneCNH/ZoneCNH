@@ -90,7 +90,7 @@
 | FR-030 | admin | health/readiness/admin status | Done | local runtime evidence |
 | FR-031 | catalog | full ExchangeInfo sync | Done | exchangeinfo.go (247 lines) + refresh_test.go |
 | FR-032 | catalog | diff ExchangeInfo sync | Done | exchangeinfo_refresh.go (+36 lines) + catalog.go (+136 lines) |
-| FR-033 | catalog | delist handling | Done | exchangeinfo.go symbols BREAK/HALT/DELISTED lifecycle |
+| FR-033 | catalog | delist handling | Done | exchangeinfo.go symbols BREAK/HALT/DELISTED lifecycle（注：交易状态生命周期，非采集分级；symbol 采集 Tier 见 [ADR-005](../design/ADR-005-symbol-tier-classification.md)） |
 | FR-034 | identity | InstrumentKey stability | Done | product_line.go (+27 lines) + DTO validation |
 | FR-035 | identity | delivery expiry metadata | Done | exchangeinfo_option.go delivery metadata + catalog |
 | FR-036 | identity | options metadata | Done | exchangeinfo_option.go (111 lines) options metadata |

@@ -88,7 +88,7 @@
 | --- | --- | --- | --- | --- |
 | FR-031 | REST ExchangeInfo Discovery | Done | exchangeinfo.go (247 lines) + refresh_test.go | 无。 |
 | FR-032 | ExchangeInfo Refresh & Diff | Done | exchangeinfo_refresh.go (36 lines) + catalog.go (136 lines) | 无。 |
-| FR-033 | Symbol Tiering & Priority | Done | exchangeinfo.go symbols BREAK/HALT/DELISTED lifecycle | 无。 |
+| FR-033 | Symbol Tiering & Priority | Done | exchangeinfo.go symbols BREAK/HALT/DELISTED lifecycle（**澄清**：本 FR 承载 delist 交易状态生命周期，非 GAP-E24 采集分级；symbol 采集 Tier/Collection 见 [ADR-005](../design/ADR-005-symbol-tier-classification.md)） | 无。 |
 | FR-034 | Dynamic Pair Universe | Done | product_line.go (27 lines) + DTO validation | 无。 |
 | FR-035 | Admin Control Surface | Done | exchangeinfo_option.go delivery metadata + catalog | 无。 |
 | FR-036 | Stream Load Shedding | Done | exchangeinfo_option.go (111 lines) options metadata | 无。 |
