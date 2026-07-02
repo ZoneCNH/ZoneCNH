@@ -28,7 +28,7 @@ modules:
   <module_name>:
     # 身份字段（治理事实）
     repo: github.com/ZoneCNH/<module_name>
-    local_path: /home/<module_name>
+    local_path: /home/workspace/<module_name>
     domain: <foundation | l2_5 | data | analytics | decision | execution | entry | crosscut>
     layer: <L0 | L1 | storage | contracts | l2_5 | standard_source | harness | evidence | gate | business>
     arch_type: <library | cs_module | independent_process | cli | contract>
