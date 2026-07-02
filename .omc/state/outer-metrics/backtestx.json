@@ -1,6 +1,6 @@
 {
   "module": "backtestx",
-  "last_updated": "2026-07-01T19:59:25Z",
+  "last_updated": "2026-07-02T20:14:40Z",
   "ship_history": [
     {
       "computed_at": "2026-06-28T22:56:11Z",
@@ -44,6 +44,23 @@
         "real_bug_count_90d": null,
         "rework_commit_count": 9,
         "rework_loc_ratio": 0.0708,
+        "test_flakiness_7d": null,
+        "ci_failure_rate_post_merge_7d": null,
+        "production_incident_count": null,
+        "p99_latency_regression_pct": null,
+        "security_advisory_count": null,
+        "developer_override_count": 0,
+        "rollback_occurred": null
+      }
+    },
+    {
+      "computed_at": "2026-07-02T20:14:40Z",
+      "spec_sha": "936fda86264c9e71185f9f1b61cb59335b11f66f",
+      "outer_metrics": {
+        "real_bug_count_30d": null,
+        "real_bug_count_90d": null,
+        "rework_commit_count": 10,
+        "rework_loc_ratio": 0.0723,
         "test_flakiness_7d": null,
         "ci_failure_rate_post_merge_7d": null,
         "production_incident_count": null,

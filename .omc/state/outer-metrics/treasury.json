@@ -1,6 +1,6 @@
 {
   "module": "treasury",
-  "last_updated": "2026-07-01T19:59:27Z",
+  "last_updated": "2026-07-02T20:14:41Z",
   "ship_history": [
     {
       "computed_at": "2026-06-28T22:56:13Z",
@@ -44,6 +44,23 @@
         "real_bug_count_90d": null,
         "rework_commit_count": 9,
         "rework_loc_ratio": 0.0220,
+        "test_flakiness_7d": null,
+        "ci_failure_rate_post_merge_7d": null,
+        "production_incident_count": null,
+        "p99_latency_regression_pct": null,
+        "security_advisory_count": null,
+        "developer_override_count": 0,
+        "rollback_occurred": null
+      }
+    },
+    {
+      "computed_at": "2026-07-02T20:14:41Z",
+      "spec_sha": "62d6f5afd624e752e1d4339c6cb934bef9de1f07",
+      "outer_metrics": {
+        "real_bug_count_30d": null,
+        "real_bug_count_90d": null,
+        "rework_commit_count": 10,
+        "rework_loc_ratio": 0.0215,
         "test_flakiness_7d": null,
         "ci_failure_rate_post_merge_7d": null,
         "production_incident_count": null,
