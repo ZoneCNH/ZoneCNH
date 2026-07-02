@@ -2,5 +2,9 @@
 # `--exclude 'github\.com/ZoneCNH/'` 统一排除（GITHUB_TOKEN 默认无跨私有仓库权限）。
 # 如需对特定 ZoneCNH 仓库启用链接检查，需为其配置专用 token 或将仓库设为 public。
 
+# DOI 学术引用链接（NIST 等）对默认 Accept header 返回 406，
+# 属正常行为；docs-ci.yml 已接受 406，此处作为双保险。
+https://doi\.org/
+
 # 外部服务（不稳定，非关键链接）
 https://github-readme-stats.vercel.app
