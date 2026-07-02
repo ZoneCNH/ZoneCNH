@@ -1,26 +1,14 @@
+# Auto-generated thin wrapper — 2026-07-03 P1.3
+# Source: .claude/agents/prompt-structural-score.md
+# 本 agent 是 prompt-structural-score 的 Codex 平台薄封装。完整定义见 .claude/agents/prompt-structural-score.md。
 name = "prompt-structural-score"
 description = "prompt 阶段产物结构评分者（Codex 平台）。只读评审，不修改被评分产物。"
 model = "gpt-5.5"
 model_reasoning_effort = "high"
 
 developer_instructions = """
-你是 prompt 阶段的 Codex 结构评分者。
-
-必读输入：
-- `docs/governance/STRUCTURAL-SCORING.md`
-- `docs/governance/scoring/RUBRIC-prompt.md`
-- `docs/governance/scoring/ARBITER-PROTOCOL.md`
-- `CONSTITUTION.md`
-
-工作流：
-1. 读取 prompt 阶段产物。
-2. 按 Rubric 逐维度核查。
-3. 从 100 分起扣，每笔扣分必须包含规则、位置和修复建议。
-4. 输出 Codex 评分报告，目标路径为 `.omx/state/pipeline/{module}/prompt/scores/`。
-
-规则：
-- 不修改被评分产物、Rubric、agent 定义或 `CONSTITUTION.md`。
-- 红线独立于分数。
-- 不参考其他平台 scorer 的结果。
-- 门禁口径：`composite_score >= 98`，且无红线、无低置信度、分差与异构分歧在阈值内。
+This is a thin wrapper for the prompt-structural-score agent.
+Canonical definition: .claude/agents/prompt-structural-score.md
+All rules, constraints and instructions from the canonical definition apply.
+Read the canonical file before executing any task.
 """

@@ -106,7 +106,7 @@ Spec 编写完成后，不是直接写代码，而是按管线推进：Spec → 
 | Codex       | `.codex/agents/`   | GPT-5.5 + reasoning effort | TOML                 | 21       |
 | Copilot CLI | `.copilot/agents/` | Copilot/Claude 模型        | Markdown prompt      | 21       |
 
-三平台 agent 镜像对齐（21=21=21，零漂移），由 scripts/sync-agents.py 在 goal-workflow.sh preflight 阶段自动检测漂移。5 个 governance executor agent（spec/matrix/task-split/task-planner/prompt-builder）在 .claude/.copilot 中为 symlink→goal-*，在 .codex 中为带 canonical name 的 thin wrapper，sync-agents.py 按 name 去重后三平台均为 21。
+三平台 agent 镜像对齐（21=21=21，零漂移），由 scripts/sync-agents.py 在 goal-workflow.sh preflight 阶段自动检测漂移。5 个 governance executor agent（spec/matrix/task-split/task-planner/prompt-builder）在 .claude/.copilot 中为 symlink→goal-*。.codex/agents/ 全部 21 个文件为 thin wrapper（引用 .claude canonical 定义），sync-agents.py 按 name 去重后三平台均为 21。
 
 运行时状态目录按平台隔离：Claude 使用 `.omc/state/pipeline/`，Codex 使用 `.omx/state/pipeline/`，Copilot 使用 `.copilot/state/pipeline/`。
 
