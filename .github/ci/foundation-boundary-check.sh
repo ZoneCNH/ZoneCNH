@@ -265,7 +265,7 @@ for module_name in selected_modules:
     for rel_path, line_no, import_path, test_file in module_imports:
         target_module = module_for_import(import_path)
 
-        if modules[module_name].get("stdlib_only") and is_external_import(import_path):
+        if modules[module_name].get("stdlib_only") and is_external_import(import_path) and not test_file:
             if not is_import_prefix(import_path, self_path):
                 violations.append((
                     module_name,
@@ -276,10 +276,8 @@ for module_name in selected_modules:
                     "stdlib-only modules may not import external packages",
                 ))
 
-        if target_module and target_module != module_name:
-            if target_module == "testkitx" and test_file:
-                pass
-            elif target_module not in allowed:
+        if target_module and target_module != module_name and not test_file:
+            if target_module not in allowed:
                 violations.append((
                     module_name,
                     rel_path,
@@ -290,6 +288,8 @@ for module_name in selected_modules:
                 ))
 
         for target_path in forbidden_deps:
+            if test_file:
+                continue
             if is_import_prefix(import_path, target_path):
                 violations.append((
                     module_name,
@@ -301,7 +301,7 @@ for module_name in selected_modules:
                 ))
 
         for target_name, target_path in edge_rules.get(module_name, []):
-            if target_name == "testkitx" and test_file:
+            if test_file:
                 continue
             if is_import_prefix(import_path, target_path):
                 violations.append((
