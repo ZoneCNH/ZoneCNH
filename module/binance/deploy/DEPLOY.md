@@ -124,13 +124,13 @@ ENTRYPOINT ["/usr/local/bin/binance-server"]
 
 ```bash
 docker build \
-  --build-arg VERSION=v0.8.0 \
+  --build-arg VERSION=v0.11.0 \
   --build-arg COMMIT=$(git rev-parse HEAD) \
   --build-arg BUILD_TIME=$(date -u +%Y-%m-%dT%H:%M:%SZ) \
-  -t ghcr.io/zonecnh/binance:v0.8.0 \
+  -t ghcr.io/zonecnh/binance:v0.11.0 \
   -f Dockerfile .
 
-docker push ghcr.io/zonecnh/binance:v0.8.0
+docker push ghcr.io/zonecnh/binance:v0.11.0
 ```
 
 ---

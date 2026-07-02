@@ -489,7 +489,7 @@ binance:
   maturity_ref: .foundationx/status/index.json#binance
   spec_version: v3.9.6
   release:
-    latest_tag: v0.8.0
+    latest_tag: v0.11.0
     cadence: on-demand
 
 okx:
