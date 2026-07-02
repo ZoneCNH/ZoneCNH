@@ -3,12 +3,12 @@
 > FoundationX 全系统的最高治理文件。
 >
 > 本文件是 AI 代理和人类贡献者在实现、审查或修改任何模块或交付流程时的最高权威参考。
-> 当本文件与 `module/*/SPEC.md`、`module/FOUNDATION-SPEC.md`、`docs/governance/DEVELOPMENT-WORKFLOW.md` 或其他文档冲突时，以本文件为准。
+> 当本文件与 `module/*/spec/SPEC.md`、`module/FOUNDATION-SPEC.md`、`docs/governance/DEVELOPMENT-WORKFLOW.md` 或其他文档冲突时，以本文件为准。
 
 最后更新：2026-06-21
 
 > **迁移通知**：宪法条款已按章节拆分至 [`docs/constitution/`](docs/constitution/)，便于按条款快速导航。
-> 本文件作为向后兼容存根保留，所有外部引用（`CLAUDE.md`、`AGENTS.md`、`module/*/SPEC.md` 等）无需修改。
+> 本文件作为向后兼容存根保留，所有外部引用（`CLAUDE.md`、`AGENTS.md`、`module/*/spec/SPEC.md` 等）无需修改。
 
 ---
 

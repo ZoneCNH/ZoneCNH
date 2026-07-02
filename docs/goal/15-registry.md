@@ -43,7 +43,7 @@ pipeline_state: DESIGN_READY
 related_issues:
   - "#1393"
 related_specs:
-  - module/market_data/SPEC.md
+  - module/market_data/spec/SPEC.md
 success_criteria:
   - market_data 独立运行
   - 支持历史 K 线采集

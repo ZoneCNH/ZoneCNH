@@ -213,7 +213,7 @@
 # {MODULE} 需求追溯矩阵
 
 > 更新：{DATE} (Matrix v1.0)
-> 来源：module/{MODULE}/SPEC.md {VERSION}
+> 来源：module/{MODULE}/spec/SPEC.md {VERSION}
 > 规范：docs/governance/TRACEABILITY.md
 
 ---

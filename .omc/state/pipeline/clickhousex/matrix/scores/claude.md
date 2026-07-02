@@ -2,7 +2,7 @@
 
 - **评分平台**: Claude (claude)
 - **评分时间**: 2026-06-14T10:00:00Z
-- **评分对象**: `module/clickhousex/TRACEABILITY.md` (Matrix v1.1)
+- **评分对象**: `module/clickhousex/matrix/TRACEABILITY.md` (Matrix v1.1)
 - **Spec 版本**: v1.0.1
 - **总分**: 100 / 100
 - **红线**: 无

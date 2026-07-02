@@ -13,7 +13,7 @@ FoundationX 由基座层（19 个模块）、L2.5 领域共享层（5 个模块�
 
 - 所有基座模块和领域模块的源码实现
 - 全系统的交付管线（Goal → Spec → Design → Plan → Tasks → Prompt → Code → Test → Review → Release → Retrospective；Matrix 为横切追溯制品）
-- 所有 `module/*/SPEC.md` 规格文档
+- 所有 `module/*/spec/SPEC.md` 规格文档
 - 所有 AI 代理的代码生成、审查和重构行为
 - 所有人类贡献者的 PR 和代码审查
 

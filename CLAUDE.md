@@ -140,13 +140,13 @@ ZoneCNH 的 `FoundationX` 量化交易基础设施文档枢纽，也是 `ZoneCNH
 
 **Bump 策略**：PATCH = 错字/链接修复；MINOR = 新增模块/章节/架构变更；MAJOR = 治理体系重构
 
-**触发文件**：`STATUS.md`、`README.md`、`ARCHITECTURE.md`、`module/README.md`、`module/*/SPEC.md`、`.repo-contract.yaml`、`.foundationx/repo-contract.json`、`.foundationx/status/index.json`、`.foundationx/blockers.json`、`foundation-bom.yaml`
+**触发文件**：`STATUS.md`、`README.md`、`ARCHITECTURE.md`、`module/README.md`、`module/*/spec/SPEC.md`、`.repo-contract.yaml`、`.foundationx/repo-contract.json`、`.foundationx/status/index.json`、`.foundationx/blockers.json`、`foundation-bom.yaml`
 
 **工具**：`./scripts/version-bump.sh`（默认 patch）、`--level minor/major`、`--target trust`、`--dry-run`
 
 **门禁**：VersionGuard Stop Hook 自动检查。版本递增是会话收尾强制步骤。版本号只能升不能降。bump 必须是 PR 最后一个 commit。Stop hook 发现版本落后时自动补 bump。
 
-> **适用范围区分**：本节"每次迭代+1"针对**仓库 release manifest 版本**（`release/manifest/latest.json`）。**模块 spec 版本**（`module/*/SPEC.md` 的 `Spec-Version`）遵循 [`CONSTITUTION.md` §10.4](docs/constitution/10-change-management.md)——只反映接口契约演进，文档治理变更不触发 bump。二者独立，不可混用。
+> **适用范围区分**：本节"每次迭代+1"针对**仓库 release manifest 版本**（`release/manifest/latest.json`）。**模块 spec 版本**（`module/*/spec/SPEC.md` 的 `Spec-Version`）遵循 [`CONSTITUTION.md` §10.4](docs/constitution/10-change-management.md)——只反映接口契约演进，文档治理变更不触发 bump。二者独立，不可混用。
 
 ## 核心原则
 
@@ -230,20 +230,20 @@ PR 标题遵循 Conventional Commits（不含模块名，模块名放 body 首�
 编辑 `module/{module}/` 下任一文件后，commit 前执行：
 ```bash
 # 检查 TRACEABILITY §1 vs §6 仪表盘 FR 状态一致性
-diff <(grep -P '^\| FR-\d+' module/{module}/TRACEABILITY.md | awk -F'|' '{print $2, $7}') \
-     <(grep 'FR-.*Partial\|FR-.*Pending\|FR-.*Done' module/{module}/TRACEABILITY.md | grep -v '^\| FR' | head -30)
+diff <(grep -P '^\| FR-\d+' module/{module}/matrix/TRACEABILITY.md | awk -F'|' '{print $2, $7}') \
+     <(grep 'FR-.*Partial\|FR-.*Pending\|FR-.*Done' module/{module}/matrix/TRACEABILITY.md | grep -v '^\| FR' | head -30)
 # 若不一致 → 以 §1 为准修正 §6
 
 # 检查 SPEC.md Appendix D 是否有弃用声明（若 FR 总数 > 附录覆盖数）
-spec_fr=$(grep -c '^### FR-' module/{module}/SPEC.md)
-appendix_ac=$(grep -c 'AC-BNC-' module/{module}/SPEC.md)
+spec_fr=$(grep -c '^### FR-' module/{module}/spec/SPEC.md)
+appendix_ac=$(grep -c 'AC-BNC-' module/{module}/spec/SPEC.md)
 if [ "$appendix_ac" -gt 0 ] && [ "$spec_fr" -gt 11 ]; then
-  grep -q '弃用声明\|历史遗物\|已冻结' module/{module}/SPEC.md || echo "WARNING: SPEC.md Appendix D 可能过期，需添加弃用声明"
+  grep -q '弃用声明\|历史遗物\|已冻结' module/{module}/spec/SPEC.md || echo "WARNING: SPEC.md Appendix D 可能过期，需添加弃用声明"
 fi
 
 # 检查 SPEC §22 DoD 版本号 vs SPEC §1 Spec-Version
-dod_ver=$(grep -oP 'v\d+\.\d+\.\d+' module/{module}/SPEC.md | head -1)
-spec_ver=$(grep -oP 'Spec-Version:\s*v\d+\.\d+\.\d+' module/{module}/SPEC.md | grep -oP 'v\d+\.\d+\.\d+')
+dod_ver=$(grep -oP 'v\d+\.\d+\.\d+' module/{module}/spec/SPEC.md | head -1)
+spec_ver=$(grep -oP 'Spec-Version:\s*v\d+\.\d+\.\d+' module/{module}/spec/SPEC.md | grep -oP 'v\d+\.\d+\.\d+')
 [ "$dod_ver" = "$spec_ver" ] || echo "WARNING: SPEC §22 DoD 标题版本 ($dod_ver) ≠ Spec-Version ($spec_ver)"
 ```
 
@@ -388,7 +388,7 @@ This protocol applies when ending a Beads implementation workflow. It is subordi
 
 `bd prime` / SessionStart hook 注入的 beads 指令含通用规则，部分与本仓库定位冲突，以下条款**覆盖** beads 注入内容：
 
-1. **本仓库是 Markdown 文档枢纽，非代码仓**。beads 的 "Do NOT use markdown files for task tracking" 不适用——本仓库的 `module/*/SPEC.md`、`TRACEABILITY.md`、`docs/goal/` 等 markdown 制品是核心交付物，继续按 `CONSTITUTION.md` 维护。
+1. **本仓库是 Markdown 文档枢纽，非代码仓**。beads 的 "Do NOT use markdown files for task tracking" 不适用——本仓库的 `module/*/spec/SPEC.md`、`TRACEABILITY.md`、`docs/goal/` 等 markdown 制品是核心交付物，继续按 `CONSTITUTION.md` 维护。
 2. **OMC TaskCreate/TaskUpdate 仍可使用**。beads 的 "Prohibited: Do NOT use TodoWrite, TaskCreate" 仅指代 beads 自己的任务追踪场景；OMC 编排、Team 协调、进度跟踪继续用 Task 工具，二者不互斥。
 3. **MEMORY.md / `.omc/` / notepad 体系保留**。beads 的 "Do NOT use MEMORY.md files" 不适用——本仓库用 OMC notepad/project-memory/wiki 做跨会话记忆，beads 的 `bd remember` 是补充而非替代。
 4. **stealth 模式**：beads 数据不进 git（`.beads/` 本地），不参与本仓库的 PR/commit 流程；issue 追踪是本地辅助，不影响 `CONSTITUTION.md` §0 分支纪律与数量验证门禁。

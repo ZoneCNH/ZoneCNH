@@ -13,7 +13,7 @@
 ## 投影链路
 
 ```text
-module/*/SPEC.md + module/FOUNDATION-DEPS.yaml
+module/*/spec/SPEC.md + module/FOUNDATION-DEPS.yaml
         ↓
 xlibgate fleet-status --repos-root /home --output .foundationx/status/index.json
         ↓

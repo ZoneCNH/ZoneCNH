@@ -5,14 +5,14 @@
 - 模块版本: v1.0.0
 - 运行时仓库: github.com/ZoneCNH/kernel
 - 运行时分支: ci/sre-cicd-pools-20260618（HEAD de6ae91 — route foundation delivery through SRE runner pools）
-- 文档基线: module/kernel/SPEC.md v2.0.0
+- 文档基线: module/kernel/spec/SPEC.md v2.0.0
 - 验证日期: 2026-06-18
 
 ## 验收命令与结果
 
 | 类别 | 命令 | 结果 | 证据 |
 | --- | --- | --- | --- |
-| 文档存在性 | `test -f module/kernel/FEATURES.md && test -f module/kernel/ACCEPTANCE.md` | ✅ PASS | 两份文档均存在（116 行 / 127 行） |
+| 文档存在性 | `test -f module/kernel/spec/FEATURES.md && test -f module/kernel/spec/ACCEPTANCE.md` | ✅ PASS | 两份文档均存在（116 行 / 127 行） |
 | 文档格式 | `git diff --check -- module/kernel` | ✅ PASS | 无尾随空格 |
 | 运行时测试 | `cd /home/workspace/kernel && go test ./...` | ✅ PASS | 27 个包全部通过（含 contracts、contracttest、12 子包、12 examples、internal/testutil） |
 | 竞态检查 | `cd /home/workspace/kernel && go test ./... -race -count=1` | ✅ PASS | 27 个包全部通过，无 data race，单包平均 1s |

@@ -168,7 +168,7 @@ Spec → Matrix → Tasks → Plan → Prompt → Code
 | `docs/governance/SPEC-TEMPLATE.md`        | 23 节 spec 模板                                                  |
 | `docs/governance/TASK-TEMPLATE.md`        | Task spec 模板                                                   |
 | `docs/governance/LIFECYCLE.md`            | Spec 状态流转规则                                                |
-| `docs/governance/TRACEABILITY.md`         | 需求追踪矩阵规范；具体矩阵位于 `module/{module}/TRACEABILITY.md` |
+| `docs/governance/TRACEABILITY.md`         | 需求追踪矩阵规范；具体矩阵位于 `module/{module}/matrix/TRACEABILITY.md` |
 | `docs/governance/DEFINITION-OF-READY.md`  | 进入开发的前置条件                                               |
 | `docs/governance/DEFINITION-OF-DONE.md`   | 完成验收条件                                                     |
 | `CONSTITUTION.md`                         | 最高治理权威（§0-§19，向后兼容存根；完整条款见 `docs/constitution/`） |
@@ -309,7 +309,7 @@ bd prime                # Refresh Beads context
 
 `bd prime` / codex hook 注入的 beads 指令含通用规则，部分与本仓库定位冲突，以下条款**覆盖** beads 注入内容：
 
-1. **本仓库是 Markdown 文档枢纽，非代码仓**。beads 的 "do not create markdown TODO lists" 不适用——本仓库的 `module/*/SPEC.md`、`TRACEABILITY.md`、`docs/goal/` 等 markdown 制品是核心交付物，继续按 `CONSTITUTION.md` 维护。
+1. **本仓库是 Markdown 文档枢纽，非代码仓**。beads 的 "do not create markdown TODO lists" 不适用——本仓库的 `module/*/spec/SPEC.md`、`TRACEABILITY.md`、`docs/goal/` 等 markdown 制品是核心交付物，继续按 `CONSTITUTION.md` 维护。
 2. **OMC TaskCreate/TaskUpdate 仍可使用**。beads 的 "Prohibited: Do NOT use TodoWrite, TaskCreate" 仅指代 beads 自己的任务追踪场景；OMC 编排、Team 协调、进度跟踪继续用 Task 工具，二者不互斥。
 3. **MEMORY.md / `.omc/` / notepad 体系保留**。beads 的 "do not create ad hoc memory files" 不适用——本仓库用 OMC notepad/project-memory/wiki 做跨会话记忆，beads 的 `bd remember` 是补充而非替代。
 4. **stealth 模式**：beads 数据不进 git（`.beads/` 本地），不参与本仓库的 PR/commit 流程；issue 追踪是本地辅助，不影响 `CONSTITUTION.md` §0 分支纪律与数量验证门禁。

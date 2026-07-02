@@ -139,7 +139,7 @@ Step 7: registry 归档
 | 文件 | 同步动作 |
 | --- | --- |
 | `module/registry.yaml` | lifecycle=archived |
-| `module/{module}/SPEC.md` | Status=Deprecated |
+| `module/{module}/spec/SPEC.md` | Status=Deprecated |
 | `module/{module}/MIGRATION.md` | 已发布 |
 | `module/FOUNDATION-DEPS.yaml` | 从 modules 段移除（若曾登记） |
 | `.foundationx/status/index.json` | 标记 archived |

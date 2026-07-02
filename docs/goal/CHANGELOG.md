@@ -5,7 +5,7 @@
 ## 2026-06-26 — 模块目录化结构治理规则变更
 
 - **模块目录化结构**：模块规格制品从扁平文件升级为 10 层管线目录结构（`goal/spec/design/plan/tasks/prompt/matrix/gate/evidence/registry`）
-- **Goal 文档路径**：`module/{module}/goal.md` → `module/{module}/goal/goal.md`
+- **Goal 文档路径**：`module/{module}/goal/goal.md` → `module/{module}/goal/goal.md`
 - **受影响的 SSOT**：`AGENTS.md`、`docs/goal/README.md`、`module/README.md`、`module/AGENTS.md`、`docs/goal/00-authority-map.md`、`.config/goal/schema/rules.yaml`
 - **`.config/goal/` 边界不变**：Registry、Matrix canonical edge、Gate 状态、Evidence Bundle 和 Pipeline 状态仍归属 `.config/goal/` 跨模块控制面；模块级 `matrix/`、`gate/`、`evidence/`、`registry/` 为本地投影
 - **首个目标模块**：`module/binance` 按新结构重构
@@ -176,7 +176,7 @@
 
 ### 命名规则
 
-- 固定模块级 Goal 文档路径为 `module/{module}/goal.md`，禁止 `module/{module}/goal/`、`module/{module}/goal/1.md` 和 `goal/*.md` 槽位。
+- 固定模块级 Goal 文档路径为 `module/{module}/goal/goal.md`，禁止 `module/{module}/goal/`、`module/{module}/goal/1.md` 和 `goal/*.md` 槽位。
 - 同步 `module/README.md`、`AGENTS.md` 与 `.config/goal/schema/rules.yaml`，避免后续导入重新生成目录式 Goal。
 
 ## 2026-06-09 — Phase 1 权威边界与配置边界固化

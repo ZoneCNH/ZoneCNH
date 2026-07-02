@@ -37,7 +37,7 @@ modules:
     registered: YYYY-MM-DD
 
     # 引用字段（指向其他 SSOT）
-    spec_ref: module/<module_name>/SPEC.md
+    spec_ref: module/<module_name>/spec/SPEC.md
     deps_ref: module/FOUNDATION-DEPS.yaml  # 仅当模块在 DEPS 中登记
     maturity_ref: .foundationx/status/index.json#<module_name>  # 仅当在 status 中登记
 
@@ -134,7 +134,7 @@ modules:
 1. `lifecycle` 初始设为 `proposed`
 2. `registered` 设为登记日期
 3. `owner` 设为准入 ADR 决策者（或 ZoneCNH 过渡默认）
-4. `spec_ref` 指向已创建的 `module/{module}/SPEC.md`（至少 Draft）
+4. `spec_ref` 指向已创建的 `module/{module}/spec/SPEC.md`（至少 Draft）
 5. `deps_ref` / `maturity_ref` 暂不填（待 DEPS 扩展 / 首次 release 后补）
 
 ### §4.2 模块状态变更同步【硬】
@@ -166,7 +166,7 @@ registry.yaml 是**身份与治理状态 SSOT**；以下文档是其投影，须
 | `docs/constitution/appendix.md` | 条款级模块清单 | 【软】宪法附录，重大变更时同步 |
 | `README.md`（根） | 公开项目清单 | 【软】公开投影，重大变更时同步 |
 | `STATUS.md` | 成熟度多维表 | 【软】引用 maturity_ref，不重复 |
-| `module/{module}/SPEC.md` Metadata | Layer/Owner/Status | 【硬】SPEC Metadata 须与 registry 一致 |
+| `module/{module}/spec/SPEC.md` Metadata | Layer/Owner/Status | 【硬】SPEC Metadata 须与 registry 一致 |
 
 > 投影文档的全量对齐是后续工作；本次仅建立 registry.yaml SSOT，不强制一次性改写全部投影。
 

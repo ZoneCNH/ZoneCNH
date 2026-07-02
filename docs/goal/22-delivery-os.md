@@ -141,7 +141,7 @@ docs/goal/
   01-methodology.md
   ...
 module/
-  {module}/SPEC.md
+  {module}/spec/SPEC.md
   {module}/TRACEABILITY.md
   {module}/TASKS.md
   {module}/PLAN.md

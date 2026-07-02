@@ -11,7 +11,7 @@
 This note is the migration index for the Binance v2 move from the historical
 same-process C/S shape to the required distributed C/S architecture.
 
-Normative constraints live in `module/binance/SPEC.md` §4.1. Historical
+Normative constraints live in `module/binance/spec/SPEC.md` §4.1. Historical
 rationale and the code-state audit are consolidated here so
 `module/binance/DEEP-ANALYSIS.md` §0 and §12 can remain archive stubs without
 becoming a second SSOT.
@@ -20,7 +20,7 @@ becoming a second SSOT.
 
 | Source | Why it matters |
 |---|---|
-| `module/binance/SPEC.md` §4.1 | Normative distributed constraints: independent client/server processes, natsx JetStream as the only client→server channel, no same-process bridge. |
+| `module/binance/spec/SPEC.md` §4.1 | Normative distributed constraints: independent client/server processes, natsx JetStream as the only client→server channel, no same-process bridge. |
 | `module/binance/DEEP-ANALYSIS.md` §0 | Archive stub pointing to SPEC §4.1 and this migration note. |
 | `module/binance/DEEP-ANALYSIS.md` §12 | Archive stub pointing to this historical code-state evidence index. |
 | `docs/migrations/binance-v2-upgrade.md` | Migration contract plus historical evidence index for distributed C/S migration. |

@@ -2,13 +2,13 @@
 
 > 本文件记录 `binance-market` 旧模块从 ZoneCNH active architecture 中移除的迁移过程。
 >
-> 此路径是 `module/binance/SPEC.md` BR-001、`module/binance/BOUNDARY-GATES.md` §2 显式允许的 legacy 历史性提及位置（与 `CHANGELOG.md` 并列）。
+> 此路径是 `module/binance/spec/SPEC.md` BR-001、`module/binance/BOUNDARY-GATES.md` §2 显式允许的 legacy 历史性提及位置（与 `CHANGELOG.md` 并列）。
 
 - Migration-ID: MIG-001
 - Status: Completed
 - Last-Updated: 2026-06-17
 - Owner: ZoneCNH
-- Related: `module/binance/SPEC.md` v1.0.0、`module/binance/BOUNDARY-GATES.md` §2、`module/binance/TRACEABILITY.md` BR-001、`module/binance/tasks/TASK-BINANCE-ROOT-000-remove-binance-market.md`
+- Related: `module/binance/spec/SPEC.md` v1.0.0、`module/binance/BOUNDARY-GATES.md` §2、`module/binance/matrix/TRACEABILITY.md` BR-001、`module/binance/tasks/TASK-BINANCE-ROOT-000-remove-binance-market.md`
 
 ---
 
@@ -106,9 +106,9 @@ active 文档中（除本文件 + `CHANGELOG.md`）任何对 `binance-market` �
   - PR #674：fix: binance/server SPEC Repository 字段 monorepo 对齐（同期清理 server SPEC 引用）
   - 本 PR：docs: 创建 binance-market 移除迁移文档 + 清理 FOUNDATION-DEPS
 - 关联 SPEC：
-  - `module/binance/SPEC.md` §5（Non-goals 中显式声明不兼容）+ §8 BR-001（CI gate 强制）+ §21 Upgrade Compatibility + Appendix B
+  - `module/binance/spec/SPEC.md` §5（Non-goals 中显式声明不兼容）+ §8 BR-001（CI gate 强制）+ §21 Upgrade Compatibility + Appendix B
   - `module/binance/BOUNDARY-GATES.md` §2（gate script）
-  - `module/binance/TRACEABILITY.md` BR-001 + AC-022
+  - `module/binance/matrix/TRACEABILITY.md` BR-001 + AC-022
   - `module/binance/tasks/TASK-BINANCE-ROOT-000-remove-binance-market.md`
 
 ---

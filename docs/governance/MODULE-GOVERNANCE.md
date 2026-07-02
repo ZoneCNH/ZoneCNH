@@ -3,7 +3,7 @@
 - Module-Version: v1.1.1
 - Last-Updated: 2026-06-27
 - 适用范围：本仓库全部 `module/*/` 规格制品、`module/registry.yaml` 注册表、以及本仓库索引的全部外部模块仓库（`github.com/ZoneCNH/*`）
-- 效力层级：本文位于 `docs/governance/` 层，受 [`CONSTITUTION.md` §13.1](../constitution/13-supreme-clause.md) 效力层级管辖（CONSTITUTION > module/\*/SPEC.md > governance 文档 > ARCHITECTURE > module 详情 > 其他）
+- 效力层级：本文位于 `docs/governance/` 层，受 [`CONSTITUTION.md` §13.1](../constitution/13-supreme-clause.md) 效力层级管辖（CONSTITUTION > module/\*/spec/SPEC.md > governance 文档 > ARCHITECTURE > module 详情 > 其他）
 - 优先级：本文 > `module/{module}/spec/SPEC.md` 治理条款 > `module/{module}/gate/RULES.md` 单模块规则；与 CONSTITUTION 冲突时以 CONSTITUTION 为准
 - 强制级别：每条规则标注【硬】（违反即治理违规）/【软】（推荐）/【开】（仅验证存在性），沿用 [`module/binance/gate/RULES.md`](../../module/binance/gate/RULES.md) R1-R10 模式
 
@@ -99,7 +99,7 @@ module/FOUNDATION-DEPS.yaml     → 依赖矩阵（allowed / forbidden / constra
 
 - `registry.yaml` 的 `deps_ref` 字段指向 `FOUNDATION-DEPS.yaml`（若模块在 DEPS 中登记）；不重复登记依赖边
 - `registry.yaml` 的 `maturity_ref` 字段指向 `.foundationx/status/index.json`（若模块在 status 中登记）；不重复登记 version/release/factory
-- `registry.yaml` 的 `spec_version` 字段是**投影**（mirror from `module/{module}/SPEC.md` Metadata），不作为版本 SSOT
+- `registry.yaml` 的 `spec_version` 字段是**投影**（mirror from `module/{module}/spec/SPEC.md` Metadata），不作为版本 SSOT
 - `FOUNDATION-DEPS.yaml` 和 `.foundationx/status/index.json` 的字段**不反向引用** registry.yaml（保持各自独立性）
 
 ### §3.2 覆盖范围差异【软】

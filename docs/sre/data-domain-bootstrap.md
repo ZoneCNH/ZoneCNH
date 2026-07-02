@@ -3,7 +3,7 @@
 > 从 binance 骨架到 23 个 adapter 的标准化落地手册
 >
 > 版本: v1.0.0 | 最后更新: 2026-06-17
-> 关联: [数据域基础架构报告](../report/data-domain-infrastructure-20260617.md)、[market_data SPEC](../../module/market_data/SPEC.md)、[macro_data SPEC](../../module/macro_data/SPEC.md)
+> 关联: [数据域基础架构报告](../report/data-domain-infrastructure-20260617.md)、[market_data SPEC](../../module/market_data/spec/SPEC.md)、[macro_data SPEC](../../module/macro_data/spec/SPEC.md)
 > 分支纪律: 本 SOP 是新增模块的落地参照，所有新模块仍须走 CONSTITUTION §0 分支纪律 + Spec→Code 管线
 
 ---
@@ -347,10 +347,10 @@ go test ./... -race -count=1
 | `<workspace>/binance/` | 已落地的行情 C/S 参照实现（2971 行） |
 | `<workspace>/binance/scripts/boundary-gates.sh` | 9 道边界门禁参照脚本 |
 | `<workspace>/binance/internal/cs/types.go` | 临时自包含契约层参照 |
-| `module/market_data/SPEC.md` | 行情聚合层 DownstreamDispatchPort |
-| `module/macro_data/SPEC.md` | 宏观聚合层 MacroDispatchPort |
+| `module/market_data/spec/SPEC.md` | 行情聚合层 DownstreamDispatchPort |
+| `module/macro_data/spec/SPEC.md` | 宏观聚合层 MacroDispatchPort |
 | `../report/data-domain-infrastructure-20260617.md` | 数据域基础架构报告（§五骨架/§六go.mod/§七配置/§十三bootstrap/§十五聚合层） |
-| `module/contracts/SPEC.md` | MarketDataProvider + MacroDataProvider（§8.1） |
+| `module/contracts/spec/SPEC.md` | MarketDataProvider + MacroDataProvider（§8.1） |
 
 ---
 

@@ -64,11 +64,11 @@ L2.5: domainx / decimalx / domain_market / domain_macro / domain_exchange (5/5 �
 
 | 模块 | 当前版本 | 目标版本 | 状态 | 模块文档 |
 | --- | --- | --- | --- | --- |
-| `decimalx` | v1.0.0 | v1.0.0 | v1.0.0 GitHub Release 已发布；API freeze 完成 | [module/decimalx](module/decimalx/goal.md) |
-| `domainx` | v1.0.1 | v1.0.1 | 领域共享值对象基线；v1.0.1 GitHub Release 已发布 | [module/domainx](module/domainx/goal.md) |
-| `domain_market` | v1.1.0 | v1.1.0 | 市场数据域模型 + canonical 类型（ProductLine/InstrumentKey/MarketFactEnvelope）+ Binance C/S ingestion 语义 | [module/domain_market](module/domain_market/goal.md) |
-| `domain_macro` | v1.0.0 | v1.0.0 | v1.0.0 GitHub Release 已发布；no-lookahead 冻结 | [module/domain_macro](module/domain_macro/goal.md) |
-| `domain_exchange` | v1.0.0 | v1.0.0 | v1.0.0 GitHub Release 已发布；Exchange SPI 冻结 | [module/domain_exchange](module/domain_exchange/goal.md) |
+| `decimalx` | v1.0.0 | v1.0.0 | v1.0.0 GitHub Release 已发布；API freeze 完成 | [module/decimalx](module/decimalx/goal/goal.md) |
+| `domainx` | v1.0.1 | v1.0.1 | 领域共享值对象基线；v1.0.1 GitHub Release 已发布 | [module/domainx](module/domainx/goal/goal.md) |
+| `domain_market` | v1.1.0 | v1.1.0 | 市场数据域模型 + canonical 类型（ProductLine/InstrumentKey/MarketFactEnvelope）+ Binance C/S ingestion 语义 | [module/domain_market](module/domain_market/goal/goal.md) |
+| `domain_macro` | v1.0.0 | v1.0.0 | v1.0.0 GitHub Release 已发布；no-lookahead 冻结 | [module/domain_macro](module/domain_macro/goal/goal.md) |
+| `domain_exchange` | v1.0.0 | v1.0.0 | v1.0.0 GitHub Release 已发布；Exchange SPI 冻结 | [module/domain_exchange](module/domain_exchange/goal/goal.md) |
 
 成熟度口径：5/5 已发布 v1.0.0+ GitHub Release（decimalx v1.0.0/domain_market v1.1.0/domain_macro v1.0.0/domain_exchange v1.0.0/domainx v1.0.1）；5/5 factory grade；live/soak N/A（纯值对象库，无运行时服务不需 EXT CI/adoption/soak 证据）。
 

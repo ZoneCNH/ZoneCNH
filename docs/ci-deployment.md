@@ -247,7 +247,7 @@ yaml-lint ──┬── registry-check ──┬── rule-drift-check ──
 **数据流**：
 
 ```text
-module/*/SPEC.md → outer-metrics-from-git.sh → outer-metrics-eval.sh
+module/*/spec/SPEC.md → outer-metrics-from-git.sh → outer-metrics-eval.sh
                                                     ↓
                                           .omc/state/outer-metrics/
                                                     ↓

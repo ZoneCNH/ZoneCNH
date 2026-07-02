@@ -9,7 +9,7 @@ Status: Approved
 
 ## 1. 目的
 
-本文档定义 Foundation v1 的整体验收场景，聚焦于**跨模块协作**。单模块的单元测试见各模块 `module/*/SPEC.md` Section 16。
+本文档定义 Foundation v1 的整体验收场景，聚焦于**跨模块协作**。单模块的单元测试见各模块 `module/*/spec/SPEC.md` Section 16。
 
 验收场景回答的问题：**Foundation v1 作为一个整体是否可以正常工作？**
 

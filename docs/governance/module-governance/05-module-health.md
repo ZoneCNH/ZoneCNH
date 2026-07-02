@@ -34,7 +34,7 @@
 
 | 信号 | 来源 | 绿 | 黄 | 红 |
 | --- | --- | --- | --- | --- |
-| SPEC Status | `module/{m}/SPEC.md` Metadata | Approved/Implemented/Changed | Draft/Review | Deprecated（非 archived 模块） |
+| SPEC Status | `module/{m}/spec/SPEC.md` Metadata | Approved/Implemented/Changed | Draft/Review | Deprecated（非 archived 模块） |
 | spec drift | SPEC-DRIFT-PROTOCOL 检查 | 无 drift | 轻微 drift | 严重 drift |
 | 版本一致性 | SPEC Spec-Version vs .foundationx status version | 一致 | — | 不一致 |
 
@@ -118,7 +118,7 @@
 
 健康度信号须来自以下来源，**禁止人工编造**：
 
-- SPEC Status / spec drift → `module/{m}/SPEC.md` + spec-lint
+- SPEC Status / spec drift → `module/{m}/spec/SPEC.md` + spec-lint
 - 覆盖率 / CI → 模块仓 CI（引用，不内嵌）
 - open blockers → `.foundationx/blockers.json`
 - release 一致性 → registry.yaml + .foundationx/status 对比

@@ -14,7 +14,7 @@
 
 ## 0. 文档类型与模板映射
 
-本文件是 `docs/spec/` 下的控制面规格，不是 `module/{module}/SPEC.md` 的模块实现规格。它接受 `docs/governance/SPEC-TEMPLATE.md` 的结构约束，但以等价职责映射而不是标题逐字匹配作为判定标准。
+本文件是 `docs/spec/` 下的控制面规格，不是 `module/{module}/spec/SPEC.md` 的模块实现规格。它接受 `docs/governance/SPEC-TEMPLATE.md` 的结构约束，但以等价职责映射而不是标题逐字匹配作为判定标准。
 
 | SPEC-TEMPLATE 结构责任            | 本规格承载位置                      |
 | --------------------------------- | ----------------------------------- |

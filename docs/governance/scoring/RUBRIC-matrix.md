@@ -1,6 +1,6 @@
 # Matrix 评分 Rubric
 
-> 评分对象：`module/{module}/TRACEABILITY.md`
+> 评分对象：`module/{module}/matrix/TRACEABILITY.md`
 > 总分：100。
 
 ## 维度（满分 100）

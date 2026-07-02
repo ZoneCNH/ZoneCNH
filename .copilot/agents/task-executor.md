@@ -15,7 +15,7 @@ pipeline_gate: 构建通过；测试通过；-race 通过；Review 通过；Code
 
 - `module/{module}/tasks/TASK-{MODULE}-NNN.md`
 - `module/{module}/prompt/PROMPT-{MODULE}-NNN.md`（Context Packet）
-- `module/{module}/IMPLEMENTATION-PLAN.md`
+- `module/{module}/plan/PLAN.md`
 - `AGENTS.md`
 - `ARCHITECTURE.md`
 - 现有源文件
@@ -60,6 +60,6 @@ go test ./... -race -count=1
 
 ## 禁止写入
 
-- `module/{module}/SPEC.md`
+- `module/{module}/spec/SPEC.md`
 - `module/{module}/goal/**`
 - 受保护文件（宪法 §14.1）

@@ -244,4 +244,4 @@ func (m *LifecycleManager) HealthCheck(_ context.Context) healthx.HealthStatus {
 |------|------|
 | [`go-coding-standards.md`](./go-coding-standards.md) | 通用 Go 编码规范（基础层） |
 | [`CONSTITUTION.md`](../../CONSTITUTION.md) §1-§5 | L0 宪法约束 |
-| [`module/kernel/SPEC.md`](../../module/kernel/SPEC.md) | kernel 完整功能规格 |
+| [`module/kernel/spec/SPEC.md`](../../module/kernel/spec/SPEC.md) | kernel 完整功能规格 |

@@ -19,7 +19,7 @@
 
 ```text
 1. 提出修正案 → 修改本文件
-2. 更新受影响的 module/*/SPEC.md
+2. 更新受影响的 module/*/spec/SPEC.md
 3. 更新 ARCHITECTURE.md（如涉及拓扑变更）
 4. 更新 FOUNDATION-DEPS.yaml（如涉及依赖变更）
 5. 更新受影响的 `module/*` 规格或 `docs/governance/` 治理文档（如涉及 §15-§19）
