@@ -24,6 +24,7 @@
 11. [测试规范](#11-测试规范)
 12. [工具链](#12-工具链)
 13. [参考资料](#13-参考资料)
+14. [AI 协作 Checkpoint](#14-ai-协作-checkpoint)
 
 ---
 
@@ -905,6 +906,94 @@ linters-settings:
 | [Google Go Style Guide](https://google.github.io/styleguide/go/guide) | Google 内部的 Go 风格指南，全面且深入 |
 | [Uber Go Style Guide](https://github.com/uber-go/guide) | Uber 开源的风格指南，非常详细实用，有中文翻译 |
 | [Standard Go Project Layout](https://github.com/golang-standards/project-layout) | 社区公认的项目目录布局规范 |
+
+---
+
+## 14. AI 协作 Checkpoint
+
+**目标**：在 AI 辅助编码（Vibe Coding）场景下，用分阶段 Checkpoint 拦截"能编译通过却在运行时 Panic、死锁或数据竞争"的代码。
+
+> Go 没有 Rust 的所有权与借用检查兜底，且并发原语使用频繁，AI 代码更易通过编译却在运行时崩溃。本节为 AI 协作场景的补充流程规范，与 §5（并发）、§6（接口）、§11（测试）、§12（工具链）配合使用，不重复其中的编码细则。
+
+### 14.1 质量层：工具链三连
+
+每次接受 AI 生成代码后，必须依次执行以下三项作为 Accept Checkpoint：
+
+| 顺序 | 命令 | 作用 |
+|------|------|------|
+| 1 | `go build ./...` | 基础编译检查 |
+| 2 | `go vet ./...` | 拦截低级逻辑错误（Printf 格式错误、不可达代码、锁拷贝等）|
+| 3 | `go test -race ./...` | **最关键**：检测数据竞争 |
+
+> **FoundationX 强制（来自 CONSTITUTION.md §5.1）**：`-race` 为必选项。量化系统并发密度高，AI 误用 goroutine、channel 或全局变量产生的数据竞争只能由 race detector 暴露，禁止以"测试变慢"为由省略。
+
+```bash
+go build ./... && go vet ./... && go test -race ./...
+```
+
+### 14.2 设计层：接口先行（契约 Checkpoint）
+
+让 AI 先定义 `interface`，经人工确认契约合理后再编写 `struct` 实现。Go 接口为隐式实现，AI 在编写实现时易偏离预期；接口定义即架构 Checkpoint，防止实现细节失控导致后期无法重构。
+
+```text
+1. AI 定义 interface（如 MarketDataFeed、OrderRouter）
+2. 人工审查契约：方法集、参数、返回值、context 传递
+3. 确认后 AI 编写 struct 实现
+4. 补编译期断言（见 §6 编译期接口检查）
+```
+
+### 14.3 规范层：Lint 与 Git 回滚
+
+| 手段 | Checkpoint 作用 |
+|------|----------------|
+| `golangci-lint` | 拦截不符合 Idiomatic Go 的代码（错误处理嵌套过深、未处理 `err`、命名不规范等）|
+| Git 小步提交 | 每通过一次 Checkpoint 即提交一个逻辑单元；一旦 Lint 或 race 测试报错且 AI 修复陷入循环，立即回滚到上一个绿色提交 |
+
+```bash
+# 回滚到上一个通过全部检查的提交
+git reset --hard <last-green-commit>
+```
+
+### 14.4 业务层：Context 与状态落盘
+
+**Context 传递检查**：AI 生成的所有网络请求与长耗时任务必须正确接收并传递 `context.Context`，这是优雅退出与防资源泄漏的 Checkpoint。
+
+- `ctx context.Context` 必须为函数首参，并向下传递到所有子调用。
+- 在 `select` 中监听 `ctx.Done()`，禁止将 `ctx` 存入结构体字段（见 §5）。
+
+**状态落盘**：策略运行中定时将内存状态（持仓、订单）序列化落盘，防止 Panic 导致内存数据全丢。
+
+```go
+// 定时快照：用 encoding/gob 或 json 序列化到 Redis / 本地文件
+type PositionSnapshot struct {
+    Positions map[string]Position
+    Orders    []Order
+    UpdatedAt time.Time
+}
+
+func (s *Store) Snapshot(ctx context.Context) error {
+    snap := s.buildSnapshot()
+    data, err := json.Marshal(snap)
+    if err != nil {
+        return fmt.Errorf("strategy: marshal snapshot: %w", err)
+    }
+    return s.sink.Save(ctx, data)
+}
+```
+
+> 错误信息须含模块名前缀（见 §4）；Context 传递规范见 §5。
+
+### 14.5 流程小结
+
+```text
+AI 写代码 → go vet && go test -race → golangci-lint → git commit
+                ↑                          │
+                └─── 报错且修复循环 ──→ git reset --hard 回滚
+```
+
+- `interface` 是设计 Checkpoint，`go test -race` 是安全 Checkpoint。
+- 永远不盲信 AI 生成的 goroutine 并发代码，必须经 `-race` 验证。
+- 小步提交，保留可回滚的绿色锚点。
 
 ---
 

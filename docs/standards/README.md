@@ -11,7 +11,7 @@
 
 | 文档 | 适用范围 | 说明 |
 |------|---------|------|
-| [go-coding-standards.md](./go-coding-standards.md) | 所有 Go 模块 | 格式化、命名、错误处理、并发、接口设计、测试等 13 个维度 |
+| [go-coding-standards.md](./go-coding-standards.md) | 所有 Go 模块 | 格式化、命名、错误处理、并发、接口设计、测试等 14 个维度 |
 
 ---
 
