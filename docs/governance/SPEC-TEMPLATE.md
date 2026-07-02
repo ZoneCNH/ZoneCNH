@@ -1,10 +1,12 @@
 # SPEC-TEMPLATE.md — 23 节结构模板
 
+> **投影声明**（2026-07-03 P2.3）：模板库的 canonical SSOT 是 `docs/goal/09-templates.md`（端到端模板），Spec 结构标准见 `docs/goal/05-layer-standards.md §1`。本文件是 Spec→Code 快速通道的 23 节 Markdown 实现模板，被 `spec-lint.sh` 强制校验。ID 格式以 `docs/goal/07-id-system.md` 为准；本文使用 `FR-001`/`BR-001` 简写，对应 `REQ-SPEC-<domain>-v1-001` canonical 格式。
+>
 > FoundationX 模块规格模板。新建 `module/{module}/SPEC.md` 时复制本文件。
 >
 > `spec-lint.sh` 校验所有 23 节必须存在。每节的 `{占位符}` 需替换为实际内容。
 
-最后更新：2026-06-07
+最后更新：2026-07-03
 
 ---
 

@@ -1,6 +1,6 @@
 # 仓库指南
 
-> **工作流快速导航**：`docs/workflow/README.md` — 双管线统一入口、阶段对应表、四源评分速览、快速通道。
+> **工作流快速导航**：`docs/workflow/README.md` — 统一管线入口、阶段总览、四源评分速览、快速通道。
 
 ## 最高指令源
 
@@ -206,7 +206,7 @@ Goal 驱动交付体系确保每一行代码都能追溯到一个可验证的业
 | Evidence | goal-evidence                 | —                                           | 统一用 goal-evidence                                          |
 | Governance | goal-governance             | pipeline-arbiter, meta-arbiter              | 一致性审计用 goal-governance；评分仲裁用 arbiter              |
 
-路由规则说明：当 Goal 管线与 governance 管线同时适用时，Goal Gate 为权威裁决（见 `docs/goal/00-authority-map.md` §双管线优先级）。Goal agent 负责制品创建与 Gate 审查；governance agent 负责四源评分与仲裁。
+路由规则说明：Goal→Retro 是唯一管线（G0-G11），Spec→Code（S1-S6）是 G2-G6 的快速通道子集。Goal Gate 为权威裁决（见 `docs/goal/00-authority-map.md` §管线优先级）。Goal agent 负责制品创建与 Gate 审查；governance agent 负责四源评分与仲裁。
 
 ### 统一配置中心
 

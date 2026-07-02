@@ -1,8 +1,10 @@
 # 开发前准备
 
+> **投影声明**（2026-07-03 P2.3）：各层 DoR/DoD 的 canonical SSOT 是 `docs/goal/06-dod.md`。本文件定义 Spec→Code 快速通道中 Spec→Code 的实操步骤（Matrix/Tasks/Plan/Prompt 一键生成），是 goal 管线 G4-G6 前置准备的快速通道实现。
+>
 > Spec 完成后、写代码前必须生成的 4 个产物。
 
-最后更新：2026-06-08
+最后更新：2026-07-03
 
 ---
 

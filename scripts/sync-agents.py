@@ -11,6 +11,7 @@ Exit code:
 """
 
 import argparse
+import hashlib
 import json
 import re
 import sys
@@ -250,6 +251,76 @@ def mirror_agents(root, dry_run=False):
     }
 
 
+def content_check(root):
+    """Check content-level drift between .claude canonical agents and
+    .codex/.copilot wrappers.
+
+    Platform-specific checks:
+    - .codex: must be thin wrapper (<30 lines, reference .claude canonical file)
+    - .copilot: symlinks are OK; non-symlinks are full definitions, check name match
+
+    Returns a report dict with per-agent content status.
+    """
+    claude_dir = root / ".claude" / "agents"
+    codex_dir = root / ".codex" / "agents"
+    copilot_dir = root / ".copilot" / "agents"
+
+    results = {
+        "checked": 0,
+        "content_drift": [],
+        "missing_reference": [],
+        "not_thin_wrapper": [],
+        "ok": 0,
+    }
+
+    if not claude_dir.is_dir():
+        return results
+
+    for src_file in sorted(claude_dir.glob("*.md")):
+        stem = src_file.stem
+        canonical_name = extract_name_md(src_file)
+        if canonical_name != stem:
+            continue
+
+        results["checked"] += 1
+        canonical_hash = hashlib.sha256(src_file.read_bytes()).hexdigest()[:12]
+
+        issues = []
+
+        # .codex: must be thin wrapper
+        codex_target = codex_dir / f"{stem}.toml"
+        if codex_target.exists() and not codex_target.is_symlink():
+            content = codex_target.read_text(encoding="utf-8")
+            line_count = content.count("\n")
+            ref_pattern = f".claude/agents/{stem}.md"
+
+            if ref_pattern not in content:
+                issues.append(f".codex: missing reference to {ref_pattern}")
+                results["missing_reference"].append(
+                    {"agent": canonical_name, "platform": ".codex"}
+                )
+
+            if line_count > 30:
+                issues.append(
+                    f".codex: {line_count} lines (thin wrapper should be <30)"
+                )
+                results["not_thin_wrapper"].append(
+                    {"agent": canonical_name, "platform": ".codex", "lines": line_count}
+                )
+
+        # .copilot: symlinks OK; non-symlinks are full definitions (expected)
+        # Only check that name matches (already done by name-level drift)
+
+        if issues:
+            results["content_drift"].append(
+                {"agent": canonical_name, "canonical_hash": canonical_hash, "issues": issues}
+            )
+        else:
+            results["ok"] += 1
+
+    return results
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Detect agent drift across Claude, Codex, and Copilot platforms."
@@ -279,6 +350,11 @@ def main():
         action="store_true",
         help="With --mirror: show what would be copied without creating files",
     )
+    parser.add_argument(
+        "--content-check",
+        action="store_true",
+        help="Check content-level drift (thin wrapper integrity, reference validity)",
+    )
     args = parser.parse_args()
 
     if args.root:
@@ -297,6 +373,35 @@ def main():
     if args.dry_run and not args.mirror:
         print("sync-agents: --dry-run requires --mirror", file=sys.stderr)
         sys.exit(2)
+
+    if args.content_check and args.mirror:
+        print("sync-agents: --content-check and --mirror are mutually exclusive", file=sys.stderr)
+        sys.exit(2)
+
+    if args.content_check:
+        cc = content_check(root)
+        if args.as_json:
+            print(json.dumps(cc, indent=2, ensure_ascii=False))
+        else:
+            print(f"Content check: {cc['checked']} canonical agents examined")
+            print(f"  OK: {cc['ok']}")
+            if cc["missing_reference"]:
+                print(f"\nMissing references ({len(cc['missing_reference'])}):")
+                for item in cc["missing_reference"]:
+                    print(f"  {item['agent']} -> {item['platform']}")
+            if cc["not_thin_wrapper"]:
+                print(f"\nNot thin wrappers ({len(cc['not_thin_wrapper'])}):")
+                for item in cc["not_thin_wrapper"]:
+                    print(f"  {item['agent']} -> {item['platform']} ({item['lines']} lines)")
+            if cc["content_drift"]:
+                print(f"\nContent drift summary ({len(cc['content_drift'])}):")
+                for item in cc["content_drift"]:
+                    print(f"  {item['agent']} (hash={item['canonical_hash']}):")
+                    for issue in item["issues"]:
+                        print(f"    - {issue}")
+            if not cc["content_drift"]:
+                print("\nNo content drift detected")
+        sys.exit(1 if cc["content_drift"] else 0)
 
     if args.mirror:
         result = mirror_agents(root, dry_run=args.dry_run)

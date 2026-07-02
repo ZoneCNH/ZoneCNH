@@ -1,8 +1,10 @@
 # Traceability Matrix 规范
 
-> 本文件定义模块级追溯矩阵的结构、字段和校验规则；具体矩阵存放在 `module/{module}/TRACEABILITY.md`。
+> **投影声明**（2026-07-03 P2.3）：Matrix 横切口径的 canonical SSOT 是 `docs/goal/05-layer-standards.md §9`（canonical edge model，10 字段图模型）。本文件定义模块级 `module/{module}/TRACEABILITY.md` 的展示视图格式（row/table model）。展示表格在进入 Gate、validator、CI 或 Release 前 MUST 投影为 canonical edge（见 §9 第 307 行）。状态枚举以 §9 为准（Unmapped→Mapped→Linked→Verified/Dropped）。
+>
+> 本文件定义模块级追溯矩阵的展示视图格式；canonical edge model 见 `docs/goal/05-layer-standards.md §9`。
 
-Last-Updated: 2026-06-09
+Last-Updated: 2026-07-03
 
 ---
 

@@ -1,8 +1,10 @@
 # Definition of Ready
 
+> **投影声明**（2026-07-03 P2.3）：分层 DoR/DoD 的 canonical SSOT 是 `docs/goal/06-dod.md`（12 层完整定义）。本文件定义 Spec→Code 快速通道的 Spec 层 DoR 检查清单和 CI 机器门禁实现（spec-lint.sh 集成）。Spec DoR 的权威定义见 `06-dod.md §2`。
+>
 > 一个 spec 可以进入开发的前置条件。
 
-最后更新：2026-06-07
+最后更新：2026-07-03
 
 ---
 

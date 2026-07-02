@@ -1,8 +1,10 @@
 # Spec 生命周期
 
+> **投影声明**（2026-07-03 P2.3）：Spec 状态枚举的 canonical SSOT 是 `docs/goal/05-layer-standards.md §1`（四态：Draft→Review→Approved→Superseded/Deprecated）。本文件定义 Spec→Code 快速通道的状态流转规则、变更分类和 CI 集成。`Implemented` 和 `Changed` 是快速通道的 CI 执行状态，对应 goal 管线中 Pipeline `phase_status`（`DONE`）和 Spec 重新进入 `Draft`/`Review` 周期。状态集对齐计划见 `report/arch/module-structure-deep-analysis-20260703.md` P2.3。
+>
 > 定义 `module/*/SPEC.md` 的状态流转规则。
 
-最后更新：2026-06-25
+最后更新：2026-07-03
 
 ---
 

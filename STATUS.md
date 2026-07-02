@@ -26,7 +26,9 @@
 > - **Blocker 状态**：[`.foundationx/blockers.json`](./.foundationx/blockers.json)
 > - **模块注册表**：[`module/registry.yaml`](./module/registry.yaml)
 >
-> 下方保留汇总摘要和域级分析。P2.2 将用自动化脚本从此 JSON 生成投影表。
+> 下方保留汇总摘要和域级分析。汇总表和明细表可用 `scripts/generate-status-projection.py` 从 JSON 自动生成。
+
+<!-- BEGIN AUTO-PROJECTION: python3 scripts/generate-status-projection.py --summary -->
 
 ### 汇总（from .foundationx/status/index.json）
 
@@ -40,7 +42,12 @@
 | Factory Grade | 20/21 | 口径-STATUS21（testkitx 不适用） |
 | Open Blockers | 0 | .foundationx/blockers.json |
 
+<!-- END AUTO-PROJECTION -->
+
 > ✅ [口径-STATUS21] 21/21 已发布 GitHub Release。factory 投影必须读取 release/live/blocker 证据，不能由 tag 自动推出。
+
+<!-- 模块明细表: python3 scripts/generate-status-projection.py --detail -->
+<!-- 已迁移至机器事实源 .foundationx/status/index.json，不再手工维护 -->
 
 ### 按域统计
 
