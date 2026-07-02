@@ -41,6 +41,12 @@ module_paths = {
     for name, data in modules.items()
 }
 
+shared_modules = {
+    name: data.get("shared_module")
+    for name, data in modules.items()
+    if data.get("shared_module")
+}
+
 if module_filter.strip():
     selected_modules = [item for item in re.split(r"[\s,]+", module_filter.strip()) if item]
 else:
@@ -79,6 +85,7 @@ def is_test_file(path):
         or "testdata" in parts
         or "tests" in parts
         or "test" in parts
+        or "fixtures" in parts
     )
 
 
@@ -146,7 +153,8 @@ def expand_target(target):
 
 
 def resolve_source(module_name):
-    expected_module_path = module_paths[module_name]
+    host = shared_modules.get(module_name)
+    expected_module_path = module_paths[host] if host and host in module_paths else module_paths[module_name]
     candidates = list(dict.fromkeys([
         source_root / module_name,
         Path("/home/workspace") / module_name,
@@ -233,6 +241,8 @@ for module_name in selected_modules:
     source_dir, source_kind = resolve_source(module_name)
     if isinstance(source_kind, str) and source_kind.startswith("module-mismatch:"):
         current_module_path = source_kind.split(":", 1)[1]
+        host = shared_modules.get(module_name)
+        expected_module_path = module_paths[host] if host and host in module_paths else module_paths[module_name]
         print(f"FAIL {module_name}: {source_dir} has module {current_module_path}")
         violations.append((
             module_name,
@@ -240,7 +250,7 @@ for module_name in selected_modules:
             1,
             current_module_path,
             "module-path",
-            f"expected module path {module_paths[module_name]}",
+            f"expected module path {expected_module_path}",
         ))
         continue
     if source_dir is None:
@@ -260,7 +270,13 @@ for module_name in selected_modules:
             module_imports.append((rel_path, line_no, import_path, test_file))
 
     allowed = set(allowed_deps.get(module_name, []))
-    self_path = module_paths[module_name]
+    host = shared_modules.get(module_name)
+    # shared_module 模块共享宿主的 Go module（如 transportx 共享 xlib_standard），
+    # 因此宿主 path 既是自身 import 前缀，宿主 key 也属 self —— 不得判为跨模块依赖。
+    self_path = module_paths[host] if host and host in module_paths else module_paths[module_name]
+    self_keys = {module_name}
+    if host and host in module_paths:
+        self_keys.add(host)
 
     for rel_path, line_no, import_path, test_file in module_imports:
         target_module = module_for_import(import_path)
@@ -276,7 +292,7 @@ for module_name in selected_modules:
                     "stdlib-only modules may not import external packages",
                 ))
 
-        if target_module and target_module != module_name and not test_file:
+        if target_module and target_module not in self_keys and not test_file:
             if target_module not in allowed:
                 violations.append((
                     module_name,
