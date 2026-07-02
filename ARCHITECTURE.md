@@ -20,7 +20,9 @@
 | [契约固化清单](./docs/architecture/08-contracts.md) | P0-P2 契约优先级、三引擎实现路径 |
 | [ADR 目录](./docs/architecture/adr/) | 架构决策记录 |
 
-> 📊 实时状态与成熟度 → **[STATUS.md](./STATUS.md)**（投影，机器事实源 `.foundationx/status/index.json`）
+> 📊 实时状态与成熟度 → **[STATUS.md](./STATUS.md)**（公开投影，机器事实源 `.foundationx/status/index.json`、`.foundationx/blockers.json`）
+>
+> release/factory 投影以机器事实源为准；domainx 归入 L2.5 锚点；factory-grade 见 `.foundationx/status/index.json` summary。
 >
 > 🗺️ 交付路线图 → **[ROADMAP.md](./ROADMAP.md)**
 >
