@@ -94,38 +94,67 @@ var streamSuffixesByCollection = map[string][]string{
 ## 3. classifyTier 三层降级算法（伪代码）
 
 ```go
-// classifyTier 根据 symbol 元数据判定 Tier 与同 Tier 内优先级。
-// 返回 (tier, priority)：tier ∈ [0,4]，priority ∈ [0,3]，0 为最高优先。
-func classifyTier(symbol, quoteAsset string, quoteVolumeUSD float64) (tier int, priority int) {
+// classifyTier 根据 symbol 元数据判定 Tier 与同 Tier 内初始优先级。
+// 返回 (tier, priorityWithinTier)：tier ∈ [0,4]，priority ∈ [0,3] 为 Tier 内初始值
+// （非同 Tier 内最终排序，最终 SymbolPriority 由 §3.1 派生规则计算）。
+func classifyTier(symbol, quoteAsset string, quoteVolumeUSD float64) (tier int, priorityWithinTier int) {
     // 第一层：显式配置（Level 决策）—— T0 列表人工维护，最高优先
     if t, ok := configuredTier(symbol); ok {
         return t, 0
     }
-    // 第二层：流动性信号（依赖 decode 保留 quoteVolume）
+    // 第三层（前置短路）：计价资产兜底——quoteVolumeUSD==0 时流动性信号缺失，
+    // 必须在第二层 switch 之前判定，否则第二层会走 default 返回 T3，丢失 quoteAsset 信息。
+    if quoteVolumeUSD == 0 {
+        switch quoteAsset {
+        case "USDT", "USDC", "FDUSD", "BTC":
+            return 2, 2 // 容错：主流计价资产至少 T2，避免误降 T3
+        default:
+            return 3, 3
+        }
+    }
+    // 第二层：流动性信号（依赖 decode 保留 quoteVolume，quoteVolumeUSD > 0）
     switch {
-    case quoteVolumeUSD >= t1VolumeThreshold: // [INFERRED] 阈值待校准
+    case quoteVolumeUSD >= t1VolumeThreshold: // [INFERRED] 阈值待校准，初始建议 50_000_000
         return 1, 1
     case quoteVolumeUSD >= 1_000_000:
         return 2, 2
     default:
         return 3, 3
     }
-    // 第三层：计价资产兜底（无 volume 信号时）
-    // quoteAsset ∈ {USDT, USDC} → 至少 T2；其他 → T3
 }
 ```
 
-**三层优先级**：第一层（显式配置，priority=0，人工边界）> 第二层（流动性信号，priority=1/2/3，数据驱动）> 第三层（计价资产兜底，容错决策，仅当 quoteVolumeUSD==0 时触发）。
+**三层优先级**：第一层（显式配置，priority=0，人工边界）> 第三层（计价资产兜底，**quoteVolumeUSD==0 时前置短路**）> 第二层（流动性信号，priority=1/2/3，数据驱动，仅 quoteVolumeUSD>0 时进入）。
 
 | 层 | 触发条件 | 优先级 | 决策性质 |
 | --- | --- | --- | --- |
 | **第一层**：显式配置 | symbol 在配置文件的 `symbols` 列表中 | 最高（priority=0） | Level 决策（人工边界） |
-| **第二层**：流动性信号 | `quoteVolumeUSD` 满足阈值 | 中（priority=1/2/3） | 自动决策（数据驱动） |
-| **第三层**：计价资产兜底 | 无 volume 信号 | 低 | 容错决策（信号缺失兜底） |
+| **第三层**：计价资产兜底 | `quoteVolumeUSD == 0`（流动性信号缺失，前置短路） | 低 | 容错决策（信号缺失兜底） |
+| **第二层**：流动性信号 | `quoteVolumeUSD > 0` 且满足阈值 | 中（priority=1/2/3） | 自动决策（数据驱动） |
+
+> **第三层为何前置**：`quoteVolumeUSD==0` 时第二层 switch 必走 `default` 返回 T3，会丢失"主流计价资产至少 T2"的容错语义。故第三层必须在第二层之前短路判定 quoteAsset。AC-017-004（quoteVolume==0 + USDT 命中第三层 T2）即验证此顺序。
+
+### 3.1 同 Tier 内 SymbolPriority 派生规则
+
+classifyTier 返回的 `priorityWithinTier`（0/1/2/3）只是 Tier 标记初值，**非同 Tier 内最终排序**——否则同 Tier 内所有 symbol priority 相同，调度退化为无序。refresher 全量重算后，按以下规则计算最终 `SymbolPriority`：
+
+1. 按 Tier ASC 分组（T0 组 / T1 组 / ...）；
+2. 同 Tier 内按 `quoteVolumeUSD DESC` 排序得 rank，**SymbolPriority = rank**（0 为 Tier 内最高流动性，优先调度）；
+3. `quoteVolumeUSD` 相同（含第三层兜底组全为 0）按 `symbol ASC` 字母序兜底，确保稳定排序（同名 symbol 跨 refresher 周期 rank 不抖动）。
+
+示例：T2 组 3 个 symbol，quoteVolumeUSD 分别 5M / 2M / 2M，symbol 为 `BBBUSDT` / `AAACUSDT` / `CCCUSDT`。按 quoteVolume DESC：BBBUSDT(5M) rank=0；AAACUSDT 与 CCCUSDT quoteVolume 相同（2M），按字母序 AAACUSDT < CCCUSDT，故 AAACUSDT rank=1、CCCUSDT rank=2。最终 SymbolPriority：BBBUSDT=0、AAACUSDT=1、CCCUSDT=2。
+
+> **调用时机**：classifyTier 由 ExchangeInfoRefresher（CLIENT-015）每 N 分钟（建议 N=5 [GUESS, LOW]，待校准——依据：Binance ExchangeInfo 变更频率低，5min 足以捕捉 symbol 上线/退市；过短会放大 WS diff 风暴）全量重算一次，结果写 CatalogEntry 的 Tier/SymbolPriority/Collection 字段，触发 ADR-004 stream manager diff。降级施加 hysteresis（见 §8.1.1），升级即时生效。详见 CLIENT-017 FR-017-008。
+
+### 3.2 边界场景规则
+
+1. **status≠TRADING 强制 disabled**：classifyTier 第一层之前短路——若 `CatalogEntry.Status != "TRADING"`（BREAK/HALT/DELISTED/EXPIRED 等），直接返回 `(tier=4, collection="disabled")`，不进三层判定。覆盖退市/停牌 symbol 污染 WS 订阅（与 FR-033 delist lifecycle 协同）。
+2. **新上线 symbol 宽限期**：catalog 中 symbol 的 `firstSeenAt` 距今 < N 天（N=7 [GUESS, LOW]，待校准）且 quoteVolumeUSD==0（无历史）时，给予 T2 宽限（`kline_only`），避免新 symbol 因无 volume 信号被立即降到 T3 长尾。宽限期过后 quoteVolumeUSD 仍为 0 则按第三层兜底降级。依赖：CatalogEntry 需记录 `firstSeenAt`（CLIENT-015 后续扩展，标记待落地）。
+3. **跨产品线同标的 Tier 派生**：spot T0 symbol ⇒ 同 underlying 的 `um_perp` / `cm_perp` 至少 T1（不强制 T0，因衍生品流动性与 spot 不完全同步）。实现：classifyTier 全量重算后做一次 cross-product-line 提升 pass——`if spot_tier(symbol)==0 && perp_tier(symbol)>1 { perp_tier=1 }`。覆盖 `BTCUSDT`(spot T0) → `BTCUSDT`(um_perp) 不应被降到 T2+ 的场景。
 
 **volume 阈值的 [INFERRED] 性质**：`t1VolumeThreshold` 不是硬编码常量，而是依赖 Binance 实测数据校准的运行时配置——初始建议 `50_000_000` USD（24h quoteVolume）起步 [GUESS, LOW]；校准方法是拉全量 symbol 的 quoteVolume 降序排列取第 100 名；初期保守配置（高阈值），灰度调整。产品线差异：spot / um_perp / cm_perp 各自维护独立阈值（cm_perp 流动性整体低于 spot，阈值应更低）。整体置信度 [INFERRED, MED]——方案合理，具体数值依赖实测数据校准。
 
-**与"任务级 Priority"的消解**：现有 `LifecycleTask.Priority`（`lifecycle.go:16-19`，gapfill=100/coldstart=50/reconcile=20）是任务类型优先级。symbol 级用 `SymbolPriority`（或 `TierWeight`），任务级保留 `Priority`；任务最终出队键 = `(SymbolPriority, TaskPriority)` 复合排序。
+**与"任务级 Priority"的消解**：现有 `LifecycleTask.Priority`（`lifecycle.go:16-19`，gapfill=100/coldstart=50/reconcile=20）是任务类型优先级。symbol 级统一用 `SymbolPriority`（命名裁决见 ADR-005 §2.1 / tier-gap-cross-reference.md L42，无备选名），任务级保留 `Priority`；任务最终出队键 = `(SymbolPriority, TaskPriority)` 复合排序。
 
 ---
 
@@ -186,6 +215,8 @@ tiers:
 **字段语义**：`max_symbols`（int，0=不限，必填）；`collection`（枚举，必填）；`symbols`（显式列表，走 classifyTier 第一层，与 filter 互斥）；`filter.quote_asset` / `filter.min_volume_usd` / `filter.status`（自动筛选条件）。`symbols` 与 `filter` 同时指定时配置加载 fail-fast。
 
 **配置加载优先级**：环境变量 `FOUNDATIONX_BINANCE_TIERS_SPOT_T0_SYMBOLS` > 配置文件 `tiers.spot.t0.symbols` > 内置默认值（`DefaultSpotCatalog`，`catalog.go:64-87`）。
+
+**STREAM_SYMBOLS 白名单 env var 全名**：`FOUNDATIONX_BINANCE_STREAM_SYMBOLS`（逗号分隔，如 `FOUNDATIONX_BINANCE_STREAM_SYMBOLS=BTCUSDT,ETHUSDT`）。配置文件键为 `stream_symbols`；env var 优先级高于配置文件（与上述 tiers 配置同优先级链）。白名单存在时短路 classifyTier/per-tier 矩阵（ADR-005 §5 白名单 MVP），非空时仅采集列表内 symbol。
 
 ---
 
@@ -285,10 +316,43 @@ type optionsExchangeSymbol struct {
 
 | 风险 | 置信度 | 缓解 |
 | --- | --- | --- |
-| **T0 误降级**：quoteVolume 临时为 0 / decode 失败，核心 symbol 降为 REST 采样 → 实时策略失效 | [INFERRED, HIGH] | T0 配置**人工 review**（`symbols` 显式列表，不依赖自动判定）；admin API 强制 override 锁定 T0；metrics 监控 `binance_tier_symbol_count{tier="0"}`，低于阈值告警 |
+| **T0 误降级**：quoteVolume 临时为 0 / decode 失败，核心 symbol 降为 REST 采样 → 实时策略失效 | [INFERRED, HIGH] | 详见 §8.1（hysteresis N=3 降级迟滞 + admin override API + `tier_symbol_count{tier="0"}<4` 告警）；T0 由第一层显式配置决定，classifyTier 第二/三层无权降级 T0（§8.1.1 T0 豁免） |
 | **volume 阈值偏离实际**：`t1VolumeThreshold` 初始值偏离，T1/T2 symbol 数量失衡 | [INFERRED, MED] | 初期保守配置（高阈值 → T1 偏少），灰度调整；用真实 exchangeInfo 响应校准（§3） |
 | **options 量级数万**：不先修 TRADING 过滤，T4 / `rest_daily` / `far` 桶塞满无效合约 | [COMPUTED, HIGH] | **必须先修 §6.2 的 TRADING 过滤**（exchangeinfo_option.go:30-36 加 status），再启用 options_classification；分桶前 options 默认 `disabled` |
 | **配置爆炸**：四产品线 × 五 Tier YAML 复杂，运维易配错 | [INFERRED, MED] | 配置加载 fail-fast（schema 校验）；`symbols` 与 `filter` 互斥校验；提供 `binancectl tier validate` 预检 |
+
+### 8.1 T0 误降级缓解机制（hysteresis + admin override + 告警）
+
+§8 风险表"T0 误降级"行的具体机制展开。三段所有阈值均为初始建议值，标 `[GUESS]`/`[INFERRED]` + 待校准，禁止冒充实测。
+
+#### 8.1.1 hysteresis 降级稳定窗口 [GUESS, LOW]
+
+为防 `quoteVolume` 单次抖动（decode 失败、Binance 短暂返回 0、API 限流）导致 symbol 被误降级，classifyTier 对**降级**（高 Tier → 低 Tier）施加迟滞，**升级**（低 Tier → 高 Tier）即时生效：
+
+- **降级需连续 N 次 refresher 都判定为更低 Tier 才生效**，N=3 [GUESS, LOW]，待校准。
+  - 实现形态：classifyTier 维护 per-symbol 的 `pendingDowngrade{targetTier, consecutiveHits}` 计数器；连续命中目标 Tier 计数 +1，中断（中间出现高 Tier）归零；计数达 N 后写 catalog 触发 ADR-004 stream manager diff。
+  - 按 §3 调用时机（N=5min refresher 周期），稳定窗口 ≈ 15min。
+- **升级即时生效**：流动性增长（T3→T2）不应被迟滞，避免错失升 Tier 的采集覆盖。
+- 备选形态（与计数器二选一，待运行时评估）：7 天滑动均值 `quoteVolumeUSD` 低于阈值才降级 [GUESS, LOW]。
+- **T0 豁免**：T0 由第一层显式配置（`configuredTier`）决定，**完全不参与 hysteresis**——T0 降级只能由 admin override（§8.1.2）或配置变更触发，classifyTier 第二/三层无权降级 T0（对应 AC-017-006）。
+
+#### 8.1.2 admin override API [INFERRED, MED]
+
+人工强制锁定 symbol 的 Tier，优先级高于 classifyTier 三层与 hysteresis。
+
+- **路径**：`POST /admin/v1/symbols/{symbol}/tier-override`（复用 gin-admin，CLIENT-010/server-006 既有 admin 路由族）
+- **请求体**：`{"tier": <0-4>, "reason": "<free text>", "ttl_seconds": <optional>}`
+- **行为**：写入 `binance_symbols.tier_override`（运行时字段，非本 PR schema 范围；SERVER-018 已预留 `shard_id` 列，override 列待后续 migration 扩展），优先级高于 classifyTier 三层；`ttl_seconds` 过期后回归 classifyTier 自动判定（不传则永久）。
+- **持久化**：override 记录进 audit log（复用 FR-015 AuditLog）。
+- 标记 [INFERRED]：API 路径与字段为推断设计，待 CLIENT-017 实现阶段确认与 gin-admin 既有路由风格一致。
+
+#### 8.1.3 metrics 告警阈值 [GUESS, LOW]
+
+- **指标**：`binance_tier_symbol_count{product_line, tier}`（CLIENT-017 metrics 暴露）
+- **告警规则（AlertManager）**：
+  - `binance_tier_symbol_count{tier="0"} < 4` → CRITICAL（T0 核心蓝筹不应少于 4，对应 §4 spot T0 默认 `BTCUSDT/ETHUSDT/BNBUSDT/SOLUSDT`）
+  - `binance_tier_symbol_count{tier="0"} == 0` → P0 页面（分级体系完全失效，所有 symbol 误降级）
+- 阈值 `4` 为 [GUESS]：基于 §4 spot T0 四个默认值；待校准依据：上线 2 周后观察实际 T0 symbol 数稳定值。
 
 ---
 

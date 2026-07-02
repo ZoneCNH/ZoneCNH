@@ -52,13 +52,13 @@ ALTER TABLE binance_symbols DROP COLUMN IF EXISTS tier;
 ```go
 // internal/server/storage/catalog/catalog.go （扩展 TASK-012 的 CatalogStore）
 type SymbolTierRow struct {
-    Symbol        string
-    ProductLine   string
-    Tier          int
-    Priority      int
-    Collection    string
+    Symbol         string
+    ProductLine    string
+    Tier           int
+    SymbolPriority int // Go 字段 SymbolPriority 对应 SQL 列 symbol_priority（命名裁决见 ADR-005 §2.1）
+    Collection     string
     QuoteVolumeUSD float64
-    ShardID       *string // NULL → nil 指针
+    ShardID        *string // NULL → nil 指针
 }
 
 // UpsertSymbol 扩展签名（分级四字段；shard_id 由 CLIENT-018 分片器写入，本任务保持 NULL）
@@ -68,19 +68,22 @@ func (s *CatalogStore) ListSymbolsByTier(ctx context.Context, productLine string
 
 ## Functional Requirements
 
-- **FR-018-001**：`binance_symbols` 含 5 新列，类型对齐 ADR-005：`tier INT` / `symbol_priority INT` / `collection VARCHAR(32)` / `quote_volume_usd DECIMAL(20,4)` / `shard_id VARCHAR(64) NULL`。
+- **FR-018-001**：`binance_symbols` 含 5 新列，类型对齐 ADR-005：`tier INT` / `symbol_priority INT` / `collection VARCHAR(32)` / `quote_volume_usd DECIMAL(20,4)` / `shard_id VARCHAR(64) NULL`。Go 结构体字段为 `SymbolPriority`（对应 SQL 列 `symbol_priority`），与 ADR-005 §2.1 命名裁决一致，避免与 `LifecycleTask.Priority` 冲突。
 - **FR-018-002**：migration `002_add_tier_columns.sql` 可重复执行（`IF NOT EXISTS`），up/down 对称（down 完整删除 5 列 + 索引）。
 - **FR-018-003**：`ListSymbolsByTier` 返回的每个 symbol 含 `tier` 字段，供 server 侧 gin-admin / market API 消费与 ADR-004 stream manager 按 `(productLine, tier)` 分组。
 - **FR-018-004**：`shard_id` 列存在但默认 NULL——本任务不实现填充逻辑；仅当 CLIENT-018（GAP-E25 可选扩容，ADR-005 §6.2）启用一致性哈希分片时由分片器写入。
 
 ## Acceptance Criteria
 
-| AC | 验证方式 |
-|----|---------|
-| AC-018-001 | migration 在干净库（仅跑过 001_init）执行成功，`\d binance_symbols` 含 5 新列；重复执行不报错 |
-| AC-018-002 | catalog API（ListSymbolsByTier）返回的 symbol 行含非空 `tier` 字段，UpsertSymbol 写入的 tier 可读回 |
-| AC-018-003 | `shard_id` 列存在但默认 NULL，UpsertSymbol 不传 shard_id 时读回 `*string == nil`，不强制分片 |
-| AC-018-004 | migration down 执行后 5 列 + 索引全消失，恢复 TASK-012 三列原状 |
+> AC 编号使用 `AC-SVR-018-*` 前缀，避免与 CLIENT-018 的 `AC-018-*` 撞车（CLIENT-018 先占 018 编号空间）。
+> 映射关系：本 task AC → ACCEPTANCE.md §2.1 运行时口径 AC-TIER-*。
+
+| AC | 验证方式 | 映射 AC-TIER |
+|----|---------|--------------|
+| AC-SVR-018-001 | migration 在干净库（仅跑过 001_init）执行成功，`\d binance_symbols` 含 5 新列；重复执行不报错 | AC-TIER-006 |
+| AC-SVR-018-002 | catalog API（ListSymbolsByTier）返回的 symbol 行含非空 `tier` 字段，UpsertSymbol 写入的 tier 可读回 | AC-TIER-006 |
+| AC-SVR-018-003 | `shard_id` 列存在但默认 NULL，UpsertSymbol 不传 shard_id 时读回 `*string == nil`，不强制分片 | AC-TIER-006 |
+| AC-SVR-018-004 | migration down 执行后 5 列 + 索引全消失，恢复 TASK-012 三列原状 | AC-TIER-006 |
 
 ## Dependencies
 

@@ -80,13 +80,15 @@ for _, pl := range productLines {
 
 ## Acceptance Criteria
 
-| AC | 验证方式 |
-|----|---------|
-| AC-015-001：4 线 refresher 启动后 catalog 含全量 symbol | client 启动 mock，验证 catalog 含 spot/um/cm/options 各自的 symbol 全集，非仅 1 条种子（覆盖 GAP-E6） |
-| AC-015-002：decode 后 entry.QuoteVolumeUSD 非零 | 单测：mock spot ExchangeInfo JSON 含 `quoteVolume`，验证 decode 后 `entry.QuoteVolumeUSD > 0`，spot BTCUSDT 有值 |
-| AC-015-003：options decode 过滤掉非 TRADING 合约 | 单测：mock options JSON 含 `status=SETTLED` 与 `status=TRADING` 两种合约且 `expiryDate > now`，验证仅 TRADING 合约进入 catalog |
-| AC-015-004：CatalogEntry 字段名与 ADR-005 一致 | `grep -P 'Tier\s+int\|SymbolPriority\s+int\|Collection\s+string\|QuoteVolumeUSD\s+float64' catalog.go` 命中 4 行 |
-| AC-015-005：旧 catalog 反序列化兼容 | 单测：用不含 4 字段的旧 JSON 反序列化，验证 Tier=0 / SymbolPriority=0 / Collection="" / QuoteVolumeUSD=0，不报错 |
+> 映射关系：本 task AC → ACCEPTANCE.md §2.1 运行时口径 AC-TIER-*。
+
+| AC | 验证方式 | 映射 AC-TIER |
+|----|---------|--------------|
+| AC-015-001：4 线 refresher 启动后 catalog 含全量 symbol | client 启动 mock，验证 catalog 含 spot/um/cm/options 各自的 symbol 全集，非仅 1 条种子（覆盖 GAP-E6） | AC-TIER-001 |
+| AC-015-002：decode 后 entry.QuoteVolumeUSD 非零 | 单测：mock spot ExchangeInfo JSON 含 `quoteVolume`，验证 decode 后 `entry.QuoteVolumeUSD > 0`，spot BTCUSDT 有值 | AC-TIER-002 |
+| AC-015-003：options decode 过滤掉非 TRADING 合约 | 单测：mock options JSON 含 `status=SETTLED` 与 `status=TRADING` 两种合约且 `expiryDate > now`，验证仅 TRADING 合约进入 catalog | AC-TIER-002 |
+| AC-015-004：CatalogEntry 字段名与 ADR-005 一致 | `grep -P 'Tier\s+int\|SymbolPriority\s+int\|Collection\s+string\|QuoteVolumeUSD\s+float64' catalog.go` 命中 4 行 | AC-TIER-002 |
+| AC-015-005：旧 catalog 反序列化兼容 | 单测：用不含 4 字段的旧 JSON 反序列化，验证 Tier=0 / SymbolPriority=0 / Collection="" / QuoteVolumeUSD=0，不报错 | AC-TIER-002 |
 
 ## Dependencies
 

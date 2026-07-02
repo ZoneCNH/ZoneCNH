@@ -139,6 +139,8 @@
 | AC-TIER-005    | GAP-E24 决策层 / ADR-005                | spot 全量 catalog 但 WS 仅订 T0+T1+T2 子集（~940 stream，2 连接），options 走 options_classification 不进 Tier 模型 | CLIENT-017             | Open           |
 | AC-TIER-006    | GAP-E24 server / ADR-005                | binance_symbols 表含 tier/symbol_priority/collection/quote_volume_usd/shard_id 5 列，shard_id 默认 NULL          | SERVER-018             | Open           |
 
+> **GAP-E25 / CLIENT-018 暂不建 AC-TIER**：CLIENT-018 为可选任务（ADR-005 §6.2 / TIER-DESIGN-DETAILS §9 勘误降为可选扩容，非 GAP-E24 下游依赖），当前 deferred。待负载评估触发启用时补 `AC-TIER-007`（多副本分片无重复采集）+ `AC-TIER-008`（副本缩容 30s 内接管）。在此之前 CLIENT-018 的 `AC-018-001/002` 为 task-local 验收，不进本 §2.1 运行时口径表（故本表止于 AC-TIER-006，不加行）。
+
 ## 3. Test Case 登记
 
 | TC            | 覆盖                          | 类型 / 验证口径                                                                                  | 当前状态                                                | 关闭证据                                                                                                                                                                            |

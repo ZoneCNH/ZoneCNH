@@ -72,10 +72,12 @@ type Ring struct {
 
 ## Acceptance Criteria
 
-| AC | 验证方式 |
-|----|---------|
-| AC-018-001 | 3 副本部署时，同一 symbol 仅被 1 个副本采集（grep 3 副本订阅列表交集为空） |
-| AC-018-002 | 副本缩容（3→2）后，剩余副本在 30s heartbeat timeout 内接管离线副本的分片，无采集中断（NATS 流量无 gap） |
+> 映射关系：本 task 为可选任务（deferred），**暂不映射 AC-TIER**（见 ACCEPTANCE.md §2.1 声明——待启用时补 AC-TIER-007/008）。下列 AC-018-* 为 task-local 验收。
+
+| AC | 验证方式 | 映射 AC-TIER |
+|----|---------|--------------|
+| AC-018-001 | 3 副本部署时，同一 symbol 仅被 1 个副本采集（grep 3 副本订阅列表交集为空） | 无（task-local，待启用补 AC-TIER-007） |
+| AC-018-002 | 副本缩容（3→2）后，剩余副本在 30s heartbeat timeout 内接管离线副本的分片，无采集中断（NATS 流量无 gap） | 无（task-local，待启用补 AC-TIER-008） |
 
 ## Dependencies（可选）
 

@@ -79,14 +79,16 @@ func IsValidInterval(interval string) bool {
 
 ## Acceptance Criteria
 
-| AC | 验证方式 |
-|----|---------|
-| AC-016-001 WS 覆盖 15/15 | `len(client.RequiredBarIntervals) == len(client.BinanceStandardIntervals) == 15`，单测断言集合相等 |
-| AC-016-002 4h backfill 实际拉 4h | 注入 mock HTTP，请求 4h backfill，断言 outgoing URL 含 `i=4h` 且请求次数按 4h 桶计，而非 60× 的 1m |
-| AC-016-003 mapper 缺 interval reject | 构造 `Bar.Interval == ""` 的 kline 事件喂 mapper，断言返回 error 且不向下游发送任何时间桶事件 |
-| AC-016-004 history_rest 无 fallback | 构造缺 interval 的 backfill 请求，断言返回带上下文的 error，grep `history_rest.go` 无 `"1m"` 字面量 |
-| AC-016-005 TDengine 白名单校验 | 对 `taos_writer` 喂 `interval="13m"`（非法），断言拒绝写入并返回 error |
-| AC-016-006 SSOT 无重复定义 | `grep -rn '"1m"\|"5m"\|"15m"' internal/client/ --exclude=interval.go` 仅命中注释或测试夹具 |
+> 映射关系：本 task AC → ACCEPTANCE.md §2.1 运行时口径 AC-TIER-003（GAP-E26 interval SSOT）。
+
+| AC | 验证方式 | 映射 AC-TIER |
+|----|---------|--------------|
+| AC-016-001 WS 覆盖 15/15 | `len(client.RequiredBarIntervals) == len(client.BinanceStandardIntervals) == 15`，单测断言集合相等 | AC-TIER-003 |
+| AC-016-002 4h backfill 实际拉 4h | 注入 mock HTTP，请求 4h backfill，断言 outgoing URL 含 `i=4h` 且请求次数按 4h 桶计，而非 60× 的 1m | AC-TIER-003 |
+| AC-016-003 mapper 缺 interval reject | 构造 `Bar.Interval == ""` 的 kline 事件喂 mapper，断言返回 error 且不向下游发送任何时间桶事件 | AC-TIER-003 |
+| AC-016-004 history_rest 无 fallback | 构造缺 interval 的 backfill 请求，断言返回带上下文的 error，grep `history_rest.go` 无 `"1m"` 字面量 | AC-TIER-003 |
+| AC-016-005 TDengine 白名单校验 | 对 `taos_writer` 喂 `interval="13m"`（非法），断言拒绝写入并返回 error | AC-TIER-003 |
+| AC-016-006 SSOT 无重复定义 | `grep -rn '"1m"\|"5m"\|"15m"' internal/client/ --exclude=interval.go` 仅命中注释或测试夹具 | AC-TIER-003 |
 
 ## Dependencies
 

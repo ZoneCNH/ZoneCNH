@@ -45,14 +45,25 @@ scope_out:
 
 ```go
 // internal/client/tier.go
-// classifyTier 按 ADR-005 §4 三层降级判定 Tier 与同 Tier 内优先级。
-// 返回 (tier, priority)：tier ∈ [0,4]，priority ∈ [0,3]，0 为最高优先。
-func classifyTier(symbol, quoteAsset string, quoteVolumeUSD float64, cfg TierConfig) (tier int, priority int) {
+// classifyTier 按 ADR-005 §4 三层降级判定 Tier 与同 Tier 内初始优先级。
+// 返回 (tier, priorityWithinTier)：tier ∈ [0,4]，priority ∈ [0,3] 为 Tier 内初值
+// （非同 Tier 内最终排序，最终 SymbolPriority 由 DETAILS §3.1 派生规则计算）。
+func classifyTier(symbol, quoteAsset string, quoteVolumeUSD float64, cfg TierConfig) (tier int, priorityWithinTier int) {
     // 第一层：显式配置（Level 决策，T0 人工维护，最高优先）
     if t, ok := cfg.ConfiguredTier(symbol); ok {
         return t, 0
     }
-    // 第二层：流动性信号（依赖 CLIENT-015 decode 保留的 quoteVolumeUSD）
+    // 第三层（前置短路）：计价资产兜底——quoteVolumeUSD==0 时流动性信号缺失，
+    // 必须在第二层 switch 之前判定（否则第二层走 default 返回 T3 丢失 quoteAsset 信息）。
+    if quoteVolumeUSD == 0 {
+        switch quoteAsset {
+        case "USDT", "USDC", "FDUSD", "BTC":
+            return 2, 2 // 容错：主流计价资产至少 T2
+        default:
+            return 3, 3
+        }
+    }
+    // 第二层：流动性信号（依赖 CLIENT-015 decode 保留的 quoteVolumeUSD，quoteVolumeUSD > 0）
     switch {
     case quoteVolumeUSD >= cfg.T1VolumeThreshold: // [INFERRED] 阈值待校准，初始建议 50_000_000
         return 1, 1
@@ -61,9 +72,10 @@ func classifyTier(symbol, quoteAsset string, quoteVolumeUSD float64, cfg TierCon
     default:
         return 3, 3
     }
-    // 第三层：计价资产兜底（quoteVolumeUSD==0 时）—— USDT/USDC 至少 T2，其他 → T3
 }
 ```
+
+> **同 Tier 内 SymbolPriority 派生**：上述 `priorityWithinTier`（0/1/2/3）只是 Tier 标记初值。refresher 全量重算后，同 Tier 内按 `quoteVolumeUSD DESC` 排序得 rank，`SymbolPriority = rank`（0 为 Tier 内最高流动性）；quoteVolumeUSD 相同按 `symbol ASC` 兜底。详见 DETAILS §3.1。
 
 ### stream_control 按 Collection 过滤 + 白名单 MVP（DETAILS §2）
 
@@ -128,17 +140,21 @@ func taskSortKey(t LifecycleTask) (int, int) {
 
 **FR-017-007**（REST budget 按 Collection 分配）：QueueColdStartBackfill / QueueDailyReconciliation（lifecycle.go:177-291）按 Collection 分配 REST budget——stream 系列不额外对账，rest_sample 每小时、rest_daily 每日。
 
+**FR-017-008**（classifyTier 调用时机与重算频率，DETAILS §3 调用时机 + §8.1.1）：classifyTier 由 ExchangeInfoRefresher（CLIENT-015）在每次 refresher tick 完成 catalog decode 后**全量重算**，结果写 CatalogEntry 的 Tier/SymbolPriority/Collection 字段，触发 ADR-004 stream manager diff。重算周期 = refresher tick 周期，**建议初始值 5 分钟** [GUESS, LOW]，待校准（依据：Binance ExchangeInfo 变更频率低，5min 足以捕捉 symbol 上线/退市；过短会放大 WS diff 风暴）。**降级施加 hysteresis**（DETAILS §8.1.1，连续 N=3 次 refresher 判定为更低 Tier 才生效，≈15min 稳定窗口），**升级即时生效**；T0 由 configuredTier 决定，不参与 hysteresis。
+
 ## Acceptance Criteria
 
-| AC | 验证方式 |
-|----|---------|
-| AC-017-001 白名单 MVP 生效 | 配置 `STREAM_SYMBOLS=[BTCUSDT,ETHUSDT]`，断言 streamConfig 输出的 activeStreams 仅含这两 symbol 的后缀流，spot 全量 catalog 其他 symbol 不进 WS |
-| AC-017-002 spot 全量但 WS 仅 T0+T1+T2 子集 | 不配白名单时，spot catalog 含 ~2000 active symbol，但 streamConfig 仅订阅 T0+T1+T2 子集 ≈940 stream（2 连接），T3/T4 不占 WS |
-| AC-017-003 options 不进 Tier 模型 | options symbol 经 options_classify 分桶而非 classifyTier；近月 ATM 期权走 full_stream，远月走 rest_daily；assert options 不调用 classifyTier |
-| AC-017-004 classifyTier 三层降级 | 显式配置 symbol 命中第一层（priority=0）；quoteVolume≥阈值命中第二层；quoteVolume==0 + USDT 计价命中第三层 T2 |
-| AC-017-005 复合排序 | 任务队列中 (SymbolPriority=0, TaskPriority=20) 排在 (SymbolPriority=2, TaskPriority=100) 之前 |
-| AC-017-006 T0 不自动降级 | quoteVolumeUSD==0 时，非显式配置的 symbol 最多降到 T1，T0 必须由 configuredTier 显式返回 |
-| AC-017-007 无 server/cs 依赖 | `go list -deps ./internal/client/...` 不含 internal/server、internal/cs |
+> 映射关系：本 task AC → ACCEPTANCE.md §2.1 运行时口径 AC-TIER-*。
+
+| AC | 验证方式 | 映射 AC-TIER |
+|----|---------|--------------|
+| AC-017-001 白名单 MVP 生效 | 配置 `STREAM_SYMBOLS=[BTCUSDT,ETHUSDT]`，断言 streamConfig 输出的 activeStreams 仅含这两 symbol 的后缀流，spot 全量 catalog 其他 symbol 不进 WS | AC-TIER-004 |
+| AC-017-002 spot 全量但 WS 仅 T0+T1+T2 子集 | 不配白名单时，spot catalog 含 ~2000 active symbol，但 streamConfig 仅订阅 T0+T1+T2 子集 ≈940 stream（2 连接），T3/T4 不占 WS | AC-TIER-004 |
+| AC-017-003 options 不进 Tier 模型 | options symbol 经 options_classify 分桶而非 classifyTier；近月 ATM 期权走 full_stream，远月走 rest_daily；assert options 不调用 classifyTier | AC-TIER-004 |
+| AC-017-004 classifyTier 三层降级 | 显式配置 symbol 命中第一层（priority=0）；quoteVolume≥阈值命中第二层；quoteVolume==0 + USDT 计价命中第三层 T2（第三层前置短路，见 DETAILS §3） | AC-TIER-005 |
+| AC-017-005 复合排序 | 任务队列中 (SymbolPriority=0, TaskPriority=20) 排在 (SymbolPriority=2, TaskPriority=100) 之前 | AC-TIER-005 |
+| AC-017-006 T0 不自动降级 | quoteVolumeUSD==0 时，非显式配置的 symbol 最多降到 T1，T0 必须由 configuredTier 显式返回（hysteresis T0 豁免，见 DETAILS §8.1.1） | AC-TIER-005 |
+| AC-017-007 无 server/cs 依赖 | `go list -deps ./internal/client/...` 不含 internal/server、internal/cs | AC-TIER-005 |
 
 ## Dependencies
 
