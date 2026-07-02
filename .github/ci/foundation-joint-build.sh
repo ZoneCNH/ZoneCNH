@@ -64,10 +64,10 @@ test_fail=0
 for mod in "${FOUNDATION_MODULES[@]}"; do
     if [ -d "$mod" ] && [ -f "$mod/go.mod" ]; then
         echo "  testing $mod ..."
-        (cd "$mod" && go test -count=1 ./... 2>&1) | tail -15 || {
+        if ! (cd "$mod" && go test -count=1 ./... 2>&1); then
             echo "  $mod: TEST FAIL"
             test_fail=1
-        }
+        fi
     fi
 done
 if [ "$test_fail" -ne 0 ]; then
