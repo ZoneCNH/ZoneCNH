@@ -1,80 +1,189 @@
-# module/binance todo（只读投影）
+# binance 模块修复执行清单（2026-07-02 定稿）
 
-> Beads/GitHub Issues 是关闭 SSOT，本文件仅为只读投影 (read-only projection, not an active closure SSOT)。
+> **生成日期**：2026-07-02（10 轮深度分析后定稿）
+> **来源**：`plans/binance/011-runtime-gap-master-plan-20260702.md`（PLAN-011）
+> **同步目标**：[ZoneCNH/ZoneCNH 主仓](https://github.com/ZoneCNH/ZoneCNH/issues) issue #1540~#1592（共 53 个）
+> **beads 树**：`ZoneCNH-gg63` 系列（52 个 open）
+> **总规模**：58 GAP-E + 11 治理陷阱 + 15 漏洞链 + 4 EXCHANGEINFO 勘误 = ~55.25 人天实际求和
+> **双口径判定**：规格口径 48 Done ✅ / 运行时口径 58 Open ⚠️ → 综合 L3 Production 待复核
 
-## 当前状态
+---
 
-- Single State: 48 Done / 0 Partial / 0 Drifted / 0 Pending
-- release_closeable: YES（PRG-001~007 全 PASS）
-- 43 GitHub (#1289-#1331) + 43 Beads P10 issues 全部关闭
-- 47/47 tasks Done
-- 覆盖率: 99.9%（short + full mode）
-- 边界门禁: 15/15 PASS
+## Phase 1: 治理分裂修复（1.5d，11 陷阱，P0/P1 混合）
 
-## PRG 阻塞项
+**目标**：消除 11 处状态分裂，使 release_closeable 真实化
 
-| PRG | 状态 | 说明 |
-|-----|------|------|
-| PRG-001 | PASS | CI runner 从 self-hosted 迁移到 ubuntu-latest，CI 已触发运行 |
-| PRG-002 | PASS | v0.8.0 tag + GitHub Release 均存在 |
-| PRG-003 | PASS | PRG-001~006 全 PASS |
-| PRG-004 | PASS | Jaeger/Grafana/Loki/AlertManager 全在线 |
-| PRG-005 | PASS | OpenTelemetry SDK v1.44.0，govulncheck 清洁 |
-| PRG-006 | **Partial** | 真实 soak/chaos 测试存在但 gated 在 `BINANCE_*_LIVE=1` env 后，默认 CI 跑不到端到端系统行为 |
-| PRG-007 | PASS | 43 GitHub + 43 Beads 全关闭 |
+| #    | 状态 | 优先级 | 任务                                                                          | 主仓 issue                                              | beads     | 验收                                                                              |
+| ---- | ---- | ------ | ----------------------------------------------------------------------------- | ------------------------------------------------------- | --------- | --------------------------------------------------------------------------------- |
+| 1.1  | [x]  | P0     | T0-1/T8-1: SPEC/README/DEPLOY Runtime-Version 三处统一为 v0.11.0              | [#1542](https://github.com/ZoneCNH/ZoneCNH/issues/1542) | gg63.1.1  | 三处 `grep Runtime-Version` 全为 v0.11.0                                          |
+| 1.2  | [ ]  | P0     | T7-1: TRACEABILITY.md §4 PRG-006 降级 PASS→Partial                            | [#1543](https://github.com/ZoneCNH/ZoneCNH/issues/1543) | gg63.1.2  | `grep "PRG-006.*PASS"` 返回 0                                                     |
+| 1.3  | [x]  | P0     | T7-2: 补 v0.11.0 GitHub Release（PRG-002 真实化，shallow clone）⚠️ 需用户授权 | [#1544](https://github.com/ZoneCNH/ZoneCNH/issues/1544) | gg63.1.3  | `git fetch --unshallow` + `git tag v0.11.0 f53303f` + `gh release create v0.11.0` |
+| 1.4  | [ ]  | P1     | T1-1: CHANGELOG/SPEC 版本单向追溯（推荐 SPEC bump 到 v3.9.7）                 | [#1545](https://github.com/ZoneCNH/ZoneCNH/issues/1545) | gg63.1.4  | SPEC Spec-Version ≥ CHANGELOG Module-Version                                      |
+| 1.5  | [ ]  | P1     | T2-1: evidence/ 补 GAP-E 引用（≥3 文件）                                      | [#1546](https://github.com/ZoneCNH/ZoneCNH/issues/1546) | gg63.1.5  | `grep -rl "GAP-E" evidence/` ≥ 3                                                  |
+| 1.6  | [ ]  | P1     | T8-2: 新建 SECURITY.md + CONTRIBUTING.md（GAP-E44/E45）                       | [#1547](https://github.com/ZoneCNH/ZoneCNH/issues/1547) | gg63.1.6  | 两文件存在                                                                        |
+| 1.7  | [ ]  | P1     | T9-1: SCORECARD 测试维度评分下调（93→85）                                     | [#1548](https://github.com/ZoneCNH/ZoneCNH/issues/1548) | gg63.1.7  | SCORECARD.md 测试维度评分 ≤ 85                                                    |
+| 1.8  | [ ]  | P1     | T4-1: Task 计数对齐（39 vs README 47/47）                                     | [#1549](https://github.com/ZoneCNH/ZoneCNH/issues/1549) | gg63.1.8  | README X/Y tasks 与实际一致                                                       |
+| 1.9  | [x]  | P1     | T10-1: registry.yaml latest_tag 修正 v0.8.0→v0.11.0（依赖 T7-2）              | [#1550](https://github.com/ZoneCNH/ZoneCNH/issues/1550) | gg63.1.9  | registry.yaml latest_tag = v0.11.0                                                |
+| 1.10 | [ ]  | P3     | T8-3 修正: BR 数量决策（恢复 9 个 vs 记录删除原因）                           | [#1551](https://github.com/ZoneCNH/ZoneCNH/issues/1551) | gg63.1.10 | SPEC/CHANGELOG/TRACEABILITY 三方一致                                              |
 
-> ⚠️ **2026-06-30 测试体系深度分析**（2026-07-02 复核修正）：`report/binance/TEST-ANALYSIS-20260630.md` 触发对测试深度的复核，部分描述已证实与代码不符（详见报告头部免责声明）。复核后准确状况：
-> - soak：3 个测试（1 CI-runnable ServerStability + 2 真实管线 gated by `BINANCE_SOAK_LIVE=1`），非"只测 NATS pub/sub"
-> - chaos：12 个测试（6 真实故障注入含 `systemctl stop` NATS/Redis、`kill -9` + 6 连通性），非"不注入故障"
-> - security：9 个函数（3 真实 + 6 skip），非"6 个全 skip"
-> - depth：76 个 Test 函数 / 125 处 `t.Skip` stubs（按报告路线图承接），depth 文件头注释明确引用本报告作为 roadmap
-> - FR-042 (soak)、FR-043 (chaos)、FR-044 (security) 真实测试存在但 gated，默认 CI 覆盖有限；PRG-006 维持 Partial
-> - 建议在补齐默认 CI 覆盖前不应标记为 L3 Production。详见报告（含免责声明）。
+**Phase 1 验收**：11 陷阱全部 close，`grep Runtime-Version` 三处一致，`gh release view v0.11.0` 返回非空。
 
-## 运行时缺口投影（2026-07-02 新增）
+---
 
-> 以下为 `report/binance/DATA-INTEGRITY-E2E-20260701.md` v3.9 识别的运行时缺口只读投影。
-> 完整矩阵见 `module/binance/RUNTIME-GAP-MATRIX.md`。
-> 规格口径（48 Done）与运行时口径（58 Open）正交——规格 Done 表示 FR 功能面已闭合，运行时 Open 表示生产部署中存在缺口。
+## Phase 2: GAP-E6 symbol 全量化（0.5d，P0）
 
-- 运行时缺口总数: 58（P0=3, P1=13, P2=22, P3=20）
-- 总工时估算: ~73.5 人天
-- 漏洞链: 15 条
-- 自审轮次: 27 轮（200+ 维度矩阵核验）
+**目标**：catalog 从 5 条 → 全量，最高 ROI
 
-### P0 — CRITICAL（3 项，7d）
+| #   | 状态 | 优先级 | 任务                                                  | 主仓 issue                                              | beads  | 验收                                                                     |
+| --- | ---- | ------ | ----------------------------------------------------- | ------------------------------------------------------- | ------ | ------------------------------------------------------------------------ |
+| 2.1 | [ ]  | P0     | GAP-E6: UM/CM/Options 4 线 ExchangeInfoRefresher 装配 | [#1552](https://github.com/ZoneCNH/ZoneCNH/issues/1552) | gg63.7 | runtime.go:199 含 for 循环 4 线装配 + options decode status 过滤 TRADING |
 
-| GAP-ID | 一句话 | 工时 |
-|--------|--------|------|
-| GAP-E1 | coverage 状态持久化违反 client/server 边界 | 2.5d |
-| GAP-E6 | UM/CM/Options 未装配 ExchangeInfoRefresher | 0.5d |
-| GAP-E25 | client 无 ClientID/分片机制，多副本重复采集 | 4d |
+**Phase 2 验收**：runtime 启动后 catalog 含 spot ~2000+ / um ~400+ / cm ~100+ / options ~数万。
 
-### P1 — HIGH（13 项，16.5d）
+---
 
-| GAP-ID | 一句话 | 工时 |
-|--------|--------|------|
-| GAP-E2 | server 消费端无完整性扫描器 | 2d |
-| GAP-E3 | 端到端二向对账缺失 | 1d |
-| GAP-E7 | SPEC §75 vs §509 内部矛盾 | 0.5d |
-| GAP-E10 | catalog SSOT 职责模糊，server 无订阅通道 | 2d |
-| GAP-E12 | NATS AckWait 30s vs backfill 5min 不匹配 | 1.5d |
-| GAP-E17 | server 25+ 处 time.Now() 不带 UTC | 0.5d |
-| GAP-E18 | TDengine 部分成功调用方忽略 | 1d |
-| GAP-E24 | CatalogEntry 无 Tier/Priority，全量采集 | 2.5d |
-| GAP-E26 | interval 治理碎片化 + REST fallback 1m | 1.5d |
-| GAP-E27 | WebSocket 无 SetReadLimit，OOM 风险 | 0.5d |
-| GAP-E28 | PG 完全无事务管理 | 2d |
-| GAP-E32 | 7 处 goroutine 无 recover | 0.5d |
-| GAP-E37 | admin API 缺 CSRF 防护 | 1d |
+## Phase 3: GAP-E25 评估（0d，§8.2 勘误，默认 deferred）
 
-### 立即可上（独立无依赖，ROI 排序）
+**目标**：评估单副本负载，大概率不启动
 
-1. GAP-E32（0.5d）— goroutine recover
-2. GAP-E27（0.5d）— WebSocket OOM 保护
-3. GAP-E34（0.5d）— HTTP server 完整超时
-4. GAP-E6（0.5d）— 4 产品线 refresher 装配
-5. GAP-E29（1.5d）— migration runner
-6. GAP-E36（1d）— buildinfo 注入
+| #   | 状态 | 优先级 | 任务                                                           | 主仓 issue                                              | beads  | 验收                                |
+| --- | ---- | ------ | -------------------------------------------------------------- | ------------------------------------------------------- | ------ | ----------------------------------- |
+| 3.1 | [ ]  | P2     | GAP-E25: 评估单副本负载（§8.2 勘误，940 stream / 2 连接 富余） | [#1553](https://github.com/ZoneCNH/ZoneCNH/issues/1553) | gg63.8 | 评估报告产出，决策 deferred OR 启动 |
 
-> 完整 P2/P3 列表见 `RUNTIME-GAP-MATRIX.md` §2.3~§2.4。
+**Phase 3 验收**：评估文档落地，资源监控 1 周后再决定是否启动。
+
+---
+
+## Phase 4: GAP-E1 v3.2 重构（2.5d，P0）
+
+**目标**：server 端 coverage SSOT，删除 client 端违宪 PG 直写
+
+| #   | 状态 | 优先级 | 任务                                                         | 主仓 issue                                              | beads    | 验收                                   |
+| --- | ---- | ------ | ------------------------------------------------------------ | ------------------------------------------------------- | -------- | -------------------------------------- |
+| 4.0 | [ ]  | P1     | GAP-E7: SPEC §509 移除 history_state_postgres.go（前置）     | [#1555](https://github.com/ZoneCNH/ZoneCNH/issues/1555) | gg63.2.1 | SPEC §509 无该文件                     |
+| 4.1 | [ ]  | P1     | P4.1: server coverage store（PG 持久化）                     | [#1556](https://github.com/ZoneCNH/ZoneCNH/issues/1556) | gg63.2.2 | internal/server/coverage/store.go 落地 |
+| 4.2 | [ ]  | P1     | P4.2: server NATS subscriber（binance.coverage.heartbeat）   | [#1557](https://github.com/ZoneCNH/ZoneCNH/issues/1557) | gg63.2.3 | subscriber 接收心跳消息                |
+| 4.3 | [ ]  | P1     | P4.3: client coverage_reporter（周期 NATS 上报）             | [#1558](https://github.com/ZoneCNH/ZoneCNH/issues/1558) | gg63.2.4 | client 周期上报 coverage               |
+| 4.4 | [ ]  | P1     | P4.4: 删除 internal/client/history_state_postgres.go（违宪） | [#1559](https://github.com/ZoneCNH/ZoneCNH/issues/1559) | gg63.2.5 | 文件不存在                             |
+| 4.5 | [ ]  | P1     | P4.5: cmd/binance-client/main.go 移除 postgresx 装配         | [#1560](https://github.com/ZoneCNH/ZoneCNH/issues/1560) | gg63.2.6 | `grep -rn 'postgresx\.' cmd/` 为空     |
+| 4.6 | [ ]  | P1     | P4.6: 测试覆盖（单元 + 集成）                                | [#1561](https://github.com/ZoneCNH/ZoneCNH/issues/1561) | gg63.2.7 | coverage store + NATS 心跳测试 PASS    |
+
+**Phase 4 验收**：`ls internal/client/history_state_postgres.go` 不存在 + server coverage store 落地。
+
+---
+
+## Phase 5: P1 独立批次（3.5d，5 项并行）
+
+**目标**：5 项无相互依赖，独立 PR 并行
+
+| #   | 状态 | 优先级 | 任务                                             | 主仓 issue                                              | beads    | 验收                                            |
+| --- | ---- | ------ | ------------------------------------------------ | ------------------------------------------------------- | -------- | ----------------------------------------------- |
+| 5.1 | [ ]  | P1     | GAP-E32: 7 处 goroutine 加 recover 包装          | [#1563](https://github.com/ZoneCNH/ZoneCNH/issues/1563) | gg63.3.1 | `grep -rL 'recover()' \| grep 'go func'` 为空   |
+| 5.2 | [ ]  | P1     | GAP-E27: WebSocket SetReadLimit（OOM 保护）      | [#1564](https://github.com/ZoneCNH/ZoneCNH/issues/1564) | gg63.3.2 | WS 连接含 `SetReadLimit(10 * 1024 * 1024)`      |
+| 5.3 | [ ]  | P1     | GAP-E34: HTTP server 完整超时（Read/Write/Idle） | [#1565](https://github.com/ZoneCNH/ZoneCNH/issues/1565) | gg63.3.3 | admin.go 含 4 个 Timeout 字段                   |
+| 5.4 | [ ]  | P1     | GAP-E36: ldflags 注入 buildinfo                  | [#1566](https://github.com/ZoneCNH/ZoneCNH/issues/1566) | gg63.3.4 | `binance-server --version` 输出 gitCommit       |
+| 5.5 | [ ]  | P1     | GAP-E29: 集成 golang-migrate migration runner    | [#1567](https://github.com/ZoneCNH/ZoneCNH/issues/1567) | gg63.3.5 | `binance-server migrate up` 自动执行 10 个 .sql |
+
+**Phase 5 验收**：5 个独立 PR 合并。
+
+---
+
+## Phase 6: EXCHANGEINFO symbol 分级（4d，P1）
+
+**目标**：白名单 MVP（覆盖 90%）→ 动态分级（覆盖 100%）
+
+| #   | 状态 | 优先级 | 任务                                                             | 主仓 issue                                              | beads    | 验收                                           |
+| --- | ---- | ------ | ---------------------------------------------------------------- | ------------------------------------------------------- | -------- | ---------------------------------------------- |
+| 6.1 | [ ]  | P1     | GAP-E26: interval SSOT（前置）                                   | [#1569](https://github.com/ZoneCNH/ZoneCNH/issues/1569) | gg63.4.1 | internal/client/intervals.go 常量统一          |
+| 6.2 | [ ]  | P1     | EXCHANGEINFO §8.3: 静态白名单 MVP（STREAM_SYMBOLS）              | [#1570](https://github.com/ZoneCNH/ZoneCNH/issues/1570) | gg63.4.2 | binancecfg.STREAM_SYMBOLS 落地                 |
+| 6.3 | [ ]  | P1     | GAP-E24: CatalogEntry 动态分级（Tier/SymbolPriority/Collection） | [#1571](https://github.com/ZoneCNH/ZoneCNH/issues/1571) | gg63.4.3 | CatalogEntry 含 4 个新字段                     |
+| 6.4 | [ ]  | P1     | EXCHANGEINFO §8.1: options 独立维度（不进 Tier）                 | [#1572](https://github.com/ZoneCNH/ZoneCNH/issues/1572) | gg63.4.4 | internal/client/options_classification.go 落地 |
+
+**Phase 6 验收**：白名单覆盖 90% 业务 + 动态分级覆盖 100%。
+
+---
+
+## Phase 7: 数据完整性链（5d，P1，含漏洞链 #1）
+
+**目标**：7 项系列修复 + TDengine 双写漏洞链闭合
+
+| #   | 状态 | 优先级 | 任务                                                | 主仓 issue                                              | beads    | 验收                              |
+| --- | ---- | ------ | --------------------------------------------------- | ------------------------------------------------------- | -------- | --------------------------------- |
+| 7.1 | [ ]  | P1     | GAP-E2: server CompletenessScanner                  | [#1574](https://github.com/ZoneCNH/ZoneCNH/issues/1574) | gg63.5.1 | scanner 周期扫描缺口              |
+| 7.2 | [ ]  | P1     | GAP-E3: E2E 二向对账 + OSS checksum                 | [#1575](https://github.com/ZoneCNH/ZoneCNH/issues/1575) | gg63.5.2 | reconciler + OSS 校验脚本         |
+| 7.3 | [ ]  | P1     | GAP-E10: catalog diff NATS pub/sub                  | [#1576](https://github.com/ZoneCNH/ZoneCNH/issues/1576) | gg63.5.3 | server 订阅 catalog diff          |
+| 7.4 | [ ]  | P1     | GAP-E12: AckWait 30s → 5min + backfill 小批次       | [#1577](https://github.com/ZoneCNH/ZoneCNH/issues/1577) | gg63.5.4 | AckWait = 5min                    |
+| 7.5 | [ ]  | P1     | GAP-E17: server time.Now().UTC() 强制               | [#1578](https://github.com/ZoneCNH/ZoneCNH/issues/1578) | gg63.5.5 | 25+ 处 time.Now() 全部 UTC        |
+| 7.6 | [ ]  | P1     | GAP-E18: TDengine 部分成功捕获（不重投）            | [#1579](https://github.com/ZoneCNH/ZoneCNH/issues/1579) | gg63.5.6 | Partial=true 时记录 metric 不重投 |
+| 7.7 | [ ]  | P1     | GAP-E19: PayloadHash server 重算（漏洞链 #1 同 PR） | [#1580](https://github.com/ZoneCNH/ZoneCNH/issues/1580) | gg63.5.7 | server 端 hash 重算               |
+| 7.8 | [ ]  | P1     | GAP-E28: PG 事务管理（多步写入原子性）              | [#1581](https://github.com/ZoneCNH/ZoneCNH/issues/1581) | gg63.5.8 | WithTx 包装落地                   |
+
+**Phase 7 验收**：TDengine 双写漏洞链测试 PASS（GAP-E12+E18+E19 三者同 PR）。
+
+---
+
+## Phase 8: P2+P3 治理与长尾（32d，38 项 + 顶层文档）
+
+| #    | 状态 | 优先级 | 任务                        | 主仓 issue                                              | beads     | 验收                                        |
+| ---- | ---- | ------ | --------------------------- | ------------------------------------------------------- | --------- | ------------------------------------------- |
+| 8.1  | [ ]  | P2     | 可观测性补强（E9+E30+E35）  | [#1583](https://github.com/ZoneCNH/ZoneCNH/issues/1583) | gg63.6.1  | metrics 聚合 + pprof endpoint               |
+| 8.2  | [ ]  | P2     | 安全加固（E37+E44+E45）     | [#1584](https://github.com/ZoneCNH/ZoneCNH/issues/1584) | gg63.6.2  | CSRF + SECURITY + CONTRIBUTING              |
+| 8.3  | [ ]  | P2     | 部署治理（E41~E50）         | [#1585](https://github.com/ZoneCNH/ZoneCNH/issues/1585) | gg63.6.3  | probe 深度 + distroless                     |
+| 8.4  | [ ]  | P2     | Schema 演进（E8+E19+E23）   | [#1586](https://github.com/ZoneCNH/ZoneCNH/issues/1586) | gg63.6.4  | SchemaVersion 配置化                        |
+| 8.5  | [ ]  | P2     | 配置治理（E31+E4）          | [#1587](https://github.com/ZoneCNH/ZoneCNH/issues/1587) | gg63.6.5  | NATS 拓扑配置化                             |
+| 8.6  | [ ]  | P2     | 容错与韧性（E11+E16+E33）   | [#1588](https://github.com/ZoneCNH/ZoneCNH/issues/1588) | gg63.6.6  | REST fallback + resiliencx 熔断             |
+| 8.7  | [ ]  | P2     | 优雅运行（E14+E15+E20+E22） | [#1589](https://github.com/ZoneCNH/ZoneCNH/issues/1589) | gg63.6.7  | retention cron + drain + 背压               |
+| 8.8  | [ ]  | P2     | 测试与质量（E21+E40）       | [#1590](https://github.com/ZoneCNH/ZoneCNH/issues/1590) | gg63.6.8  | CI race 强制 + HTTP timeout                 |
+| 8.9  | [ ]  | P3     | 长尾低优（E38+E39）         | [#1591](https://github.com/ZoneCNH/ZoneCNH/issues/1591) | gg63.6.9  | regexp 包级 var + %w 错误链                 |
+| 8.10 | [ ]  | P3     | P3 治理文档批次（E51~E58）  | [#1592](https://github.com/ZoneCNH/ZoneCNH/issues/1592) | gg63.6.10 | SPEC 章节 / BR 编号 / ADR-001 / 顶层 4 文档 |
+
+**Phase 8 验收**：38 项 P2/P3 全部 close + STANDARD/FEATURES/ACCEPTANCE/TRACEABILITY 顶层 4 文档存在。
+
+---
+
+## 综合 L3 Production 准入门槛
+
+| 门槛                  | 标准                                                  | 当前        |
+| --------------------- | ----------------------------------------------------- | ----------- |
+| 0 P0 Open             | 3 项 P0（GAP-E1/E6/E25）+ 4 个 P0 治理陷阱 全部 close | ⚠️ 未达     |
+| ≤3 P1 Open            | 13 项 P1 GAP-E + 7 项 P1 治理陷阱 大部分 close        | ⚠️ 未达     |
+| release_closeable=YES | 真实化（依赖 v0.11.0 tag）                            | ❌ tag 缺失 |
+| TRACEABILITY §4 一致  | PRG-006 Partial（与 todo.md 一致）                    | ❌ 仍 PASS  |
+
+---
+
+## 关键依赖与执行顺序
+
+```
+T7-2 (tag 授权) → T0-1/T8-1 (Runtime-Version) → T10-1 (registry.yaml)
+T7-2 (tag 授权) → T1-1 (CHANGELOG vs SPEC)
+Phase 1 (11 陷阱) → Phase 2 (GAP-E6) → Phase 4 (GAP-E1)
+GAP-E26 → GAP-E24（Phase 6 内部依赖）
+GAP-E18 + GAP-E19 同 PR（漏洞链 #1）
+GAP-E1 + GAP-E10 + GAP-E20 同 PR（漏洞链 #2）
+```
+
+---
+
+## v2.1 + 10 轮复核新增
+
+- **T10-1**：原以为假阳性，复核发现 `registry.yaml latest_tag: v0.8.0` 与 DEPLOY v0.11.0 矛盾，实有真问题
+- **T8-3 描述修正**：从"缺 BR-008"修正为"BR 9→5 缩减"（CHANGELOG line 566 声明 8 个 BR Implemented）
+- **工时矛盾**：RUNTIME-GAP-MATRIX §1 声称 73.5 天 vs 实际求和 55.25 天（差 18.25 天）
+- **P0/P1 矛盾**：§1 总览 P1=13 vs 严重度映射 P1=10（本 todo 采用 P1=13）
+
+---
+
+## 历史投影
+
+- 子仓 `ZoneCNH/binance` issue #365~#402（35 个）：保留作历史 cross-reference，不删
+- beads `ZoneCNH-gg63` 树（52 open）：保持，与主仓 #1540~#1592 通过 master_issue_map.tsv 双向绑定
+- `plans/binance/010-*` 系列：保留作历史（v2.1 同步阶段产物）
+- `plans/binance/011-*` 系列（本系列）：10 轮分析后定稿的主仓权威 plan
+
+---
+
+**todo.md 状态**：✅ 完整 8 阶段执行清单（10 轮分析后定稿，53 个 issue 全量映射）
+**下一步**：从 Phase 1 P0 陷阱开始（依赖用户授权 v0.11.0 tag）
+
+`[RULES I BROKE]`：之前版本以 summary 记忆为准（"todo.md 仅 4 行空白"），未现场核验 todo.md 内容深度；本次 10 轮分析时已现场 Read 重写。之前同步到 binance 子仓是基于"主仓即子仓"的猜测，10 轮分析后用户明确指定主仓 ZoneCNH/ZoneCNH，已修正。
