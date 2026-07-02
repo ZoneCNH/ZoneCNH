@@ -1,6 +1,6 @@
 # xlib_standard 上游 SSOT 索引
 
-本文件是本地索引，不是可执行规格。上游事实以 `github.com/ZoneCNH/xlib-standard@93753b30e6d01fb4a9b096acaa0d7d53a2fb231c` 为准。
+本文件是本地索引，不是可执行规格。上游事实以 `github.com/ZoneCNH/xlib_standard@93753b30e6d01fb4a9b096acaa0d7d53a2fb231c` 为准。
 
 - Snapshot-Date: 2026-06-08
 - Upstream-Commit: `93753b30e6d01fb4a9b096acaa0d7d53a2fb231c` (v0.6.5)

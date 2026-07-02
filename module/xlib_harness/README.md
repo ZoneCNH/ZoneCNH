@@ -4,7 +4,7 @@
 
 | 字段 | 值 |
 | --- | --- |
-| 仓库 | https://github.com/ZoneCNH/xlib-harness |
+| 仓库 | https://github.com/ZoneCNH/xlib_harness |
 | 层级 | 门禁 |
 | Spec 版本 | v1.3.0 |
 | 依赖 | 无运行时依赖 |

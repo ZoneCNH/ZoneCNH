@@ -4,13 +4,13 @@
 - Worker: `worker-2`
 - Task: `2`
 - Generated: 2026-06-20
-- Scope: read-only audit and verification planning for `/home/workspace/xlib-standard/.worktree/workspaces/xlib_standard`; scoped evidence file written only in generated worker worktree.
+- Scope: read-only audit and verification planning for `/home/workspace/xlib_standard/.worktree/workspaces/xlib_standard`; scoped evidence file written only in generated worker worktree.
 - Mandatory context used: `/home/workspace/ZoneCNH/.worktree/workspaces/xlib_standard/.omx/context/xlib_standard-20260619-192426.md`
 - Worker-local context note: `.omx/context/xlib_standard-20260619-192426.md` was not present inside this generated worktree; the leader docs-repo context above was used.
 
 ## Scope Guard
 
-No edits were made to the shared code repository `/home/workspace/xlib-standard/.worktree/workspaces/xlib_standard`. The code repo had pre-existing uncommitted files before verification and remained with the same modified files after verification:
+No edits were made to the shared code repository `/home/workspace/xlib_standard/.worktree/workspaces/xlib_standard`. The code repo had pre-existing uncommitted files before verification and remained with the same modified files after verification:
 
 - `cmd/goalcli/main_test.go`
 - `internal/goalruntime/goalruntime_test.go`
@@ -75,7 +75,7 @@ Safe documentation patches for the leader lane:
 
 ## CI/CD and Release Gate Audit
 
-Inspected by the CI/CD subagent in `/home/workspace/xlib-standard/.worktree/workspaces/xlib_standard`:
+Inspected by the CI/CD subagent in `/home/workspace/xlib_standard/.worktree/workspaces/xlib_standard`:
 
 - `.github/workflows/ci.yml`
 - `.github/workflows/integration.yml`

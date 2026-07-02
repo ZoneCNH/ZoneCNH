@@ -268,8 +268,8 @@ PR: #8 (squash merged → main)
 仓库：ZoneCNH/contracts, ZoneCNH/transportx
 ```text
 
-- [x] `/home/workspace/contracts/go.mod` 声明 `module github.com/ZoneCNH/xlib-standard`
-- [x] `/home/workspace/transportx/go.mod` 声明 `module github.com/ZoneCNH/xlib-standard`
+- [x] `/home/workspace/contracts/go.mod` 声明 `module github.com/ZoneCNH/xlib_standard`
+- [x] `/home/workspace/transportx/go.mod` 声明 `module github.com/ZoneCNH/xlib_standard`
 - [x] 诊断结论：contracts/transportx 共享 xlib_standard module 是有意为之的 monorepo 架构（二者 import `xlib_standard/internal/*` 内部包，Go 编译器禁止外部模块导入 internal 包，独立 go.mod 不可行）
 - [x] ARCHITECTURE.md 待注明三者共享 Go module（非独立模块）
 

@@ -5,7 +5,7 @@
 - Module-Version: v0.2.4
 - Module-State: v0.2.4 已发布；runtime 本地 100.0% 覆盖率、并发 Store 防护、仓库身份契约、CI/CD workflow 已部署，GitHub Release v0.2.4 与 release evidence assets 已闭合
 - Layer: L1 证据
-- Runtime-Repo: /home/workspace/xlib-evidence
+- Runtime-Repo: /home/workspace/xlib_evidence
 - Source: goal.md, SPEC.md, TRACEABILITY.md, IMPLEMENTATION-PLAN.md, tasks/
 
 > 本清单用于约束 xlib_evidence 的完整实现范围。条目来自本目录已有 Spec、Traceability、Plan、Task 等文档；若运行时代码状态与本文不一致，以相应模块仓库的最新验证证据补充更新本文。
@@ -16,7 +16,7 @@
 | --- | --- |
 | 模块职责 | 验收证据、覆盖率、产物与审计记录的结构化归档 |
 | 文档目录 | module/xlib_evidence |
-| 运行时代码目录 | /home/workspace/xlib-evidence |
+| 运行时代码目录 | /home/workspace/xlib_evidence |
 | Go 基线 | 1.23 |
 | 允许依赖 | 无 |
 | 禁止依赖 | 禁止越过 FOUNDATION-DEPS.yaml 登记边界依赖上层业务域或未授权基座模块 |
@@ -79,5 +79,5 @@
 - [x] 所有 BR/NFR 条目均有测试、静态检查或人工可审计证据覆盖。
 - [x] 所有任务文档均能追溯到 FR、BR/NFR、AC 或 TC。
 - [x] 依赖边界符合 FOUNDATION-DEPS.yaml，不引入未授权运行时依赖。
-- [x] 运行时代码仓库 /home/workspace/xlib-evidence 的 lint、typecheck、test、race、coverage 验证证据已归档。
+- [x] 运行时代码仓库 /home/workspace/xlib_evidence 的 lint、typecheck、test、race、coverage 验证证据已归档。
 - [x] v0.2.4 本地生产验收已通过并发布到 GitHub Release；runtime 发布包包含根级 `FEATURES.md`、`ACCEPTANCE.md`、`.repo-contract.yaml`、CI docs contract、Trust Alignment 与 release evidence assets。

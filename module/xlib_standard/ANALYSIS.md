@@ -8,7 +8,7 @@
 
 ## 1. 快照定位
 
-本快照服务于 `ZoneCNH/ZoneCNH` 架构索引，记录 `github.com/ZoneCNH/xlib-standard` 在固定提交上的标准结构、证据边界和下游采纳提示。上游 `docs/standard/**`、根级标准文档与 harness 配置仍是可执行事实来源。
+本快照服务于 `ZoneCNH/ZoneCNH` 架构索引，记录 `github.com/ZoneCNH/xlib_standard` 在固定提交上的标准结构、证据边界和下游采纳提示。上游 `docs/standard/**`、根级标准文档与 harness 配置仍是可执行事实来源。
 
 ## 2. 输入范围
 

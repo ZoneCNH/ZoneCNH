@@ -4,7 +4,7 @@
 
 | 字段 | 值 |
 | --- | --- |
-| 仓库 | https://github.com/ZoneCNH/xlib-evidence |
+| 仓库 | https://github.com/ZoneCNH/xlib_evidence |
 | 层级 | 证据 |
 | Spec 版本 | v1.2.1 |
 | 依赖 | 无运行时依赖 |

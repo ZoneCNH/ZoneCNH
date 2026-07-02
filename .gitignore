@@ -1,4 +1,5 @@
 # Agent runtime directories
+# .omc = Claude Code state, .omx = Codex state — intentionally separated by platform (AGENTS.md)
 .claude/worktrees/
 .omc/*
 !.omc/state/
@@ -123,3 +124,10 @@ __pycache__/
 
 # Playwright MCP runtime logs/screenshots
 .playwright-mcp/
+
+# Brooks reports (local runtime, not tracked)
+.brooks/
+
+# LSP / filetree cache (local editor state)
+.lsp.json
+.filetree.json

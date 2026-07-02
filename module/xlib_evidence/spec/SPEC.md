@@ -7,7 +7,7 @@ Status: Approved
 - Version: v0.2.4
 - Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `github.com/ZoneCNH/xlib_evidence`, `github.com/ZoneCNH/xlib_standard`（标准/治理参考，不承载运行时代码）
 
-> 公开投影说明：本规格已按 /home/workspace/xlib-evidence 的独立 Go module 验收证据更新；xlib_standard 仅作为标准/治理参考，不承载本模块运行时代码。
+> 公开投影说明：本规格已按 /home/workspace/xlib_evidence 的独立 Go module 验收证据更新；xlib_standard 仅作为标准/治理参考，不承载本模块运行时代码。
 
 ---
 

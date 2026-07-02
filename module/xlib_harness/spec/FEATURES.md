@@ -3,7 +3,7 @@
 > Module: `xlib_harness`
 > Version: v0.1.6
 > Last-Updated: 2026-06-30
-> Implementation-Baseline: `/home/workspace/xlib-harness@d90b35124701`
+> Implementation-Baseline: `/home/workspace/xlib_harness@d90b35124701`
 
 ## Feature Summary
 
@@ -64,7 +64,7 @@
 | Functional coverage | 100/100 | FR-001 到 FR-006 均有 CLI、fixture 或单元测试证据 |
 | Test coverage | 100/100 | `go tool cover -func=/tmp/xlib_harness-v016.cover` total 100.0%，所有函数 100.0% |
 | CI/CD | 100/100 | Release run `27855366871` 与 main CI run `27855396013` 均 PASS |
-| Documentation sync | 100/100 | `/home/workspace/xlib-harness` 与根仓库 `module/xlib_harness` 的 FEATURES/ACCEPTANCE/SPEC 投影已同步到 `v0.1.6` |
+| Documentation sync | 100/100 | `/home/workspace/xlib_harness` 与根仓库 `module/xlib_harness` 的 FEATURES/ACCEPTANCE/SPEC 投影已同步到 `v0.1.6` |
 | Overall | 100/100 | 无已知阻断缺陷 |
 
 ## Release Notes

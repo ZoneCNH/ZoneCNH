@@ -2,7 +2,7 @@
 
 > 模块: xlib_evidence
 > 版本: v0.2.4
-> 工作目录: /home/workspace/xlib-evidence
+> 工作目录: /home/workspace/xlib_evidence
 > Spec: module/xlib_evidence/spec/SPEC.md v1.2.1
 
 ## 模块定位

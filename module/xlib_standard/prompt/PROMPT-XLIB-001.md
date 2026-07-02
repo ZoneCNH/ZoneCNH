@@ -2,7 +2,7 @@
 
 > PR-2: 文档对齐 — 重写 README、standard.md、INDEX.md
 > 工作分支: `feat/xlib-v1-docs`
-> 工作目录: /home/workspace/xlib-standard/.worktree/workspaces/feat/xlib-v1-docs
+> 工作目录: /home/workspace/xlib_standard/.worktree/workspaces/feat/xlib-v1-docs
 
 ## Current Task
 
