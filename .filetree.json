@@ -1,5 +1,0 @@
-{
-  "manifest_path": "FILETREE.md",
-  "exclude": [".claude/", ".omc/", ".worktree/", "**/*.output", "node_modules/"],
-  "language": "zh"
-}

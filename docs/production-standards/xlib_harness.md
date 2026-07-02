@@ -1,7 +1,7 @@
 # xlib_harness
 
 ## 1. 模块定位
-xlib_harness 是 Foundation 的**模块生成器与门禁执行器**——从标准模板生成新模块骨架（generate），并对已有模块执行机器化合规检查（check）。与 xlibgate 互补：xlibgate 检查编译/依赖/发布，xlib_harness 检查规格结构/模板/格式。Status=Approved（SPEC v1.0.0），模块版本 v0.1.1（Acceptance-Baseline `/home/workspace/xlib-harness@335eef9`），Layer=基座·模块生成器与门禁执行器（L1 执行器）。从 xlib_standard 拆分而来，读取其模板/schema 作为输入（只读文件，非 import 依赖）。
+xlib_harness 是 Foundation 的**模块生成器与门禁执行器**——从标准模板生成新模块骨架（generate），并对已有模块执行机器化合规检查（check）。与 xlibgate 互补：xlibgate 检查编译/依赖/发布，xlib_harness 检查规格结构/模板/格式。Status=Approved（SPEC v1.0.0），模块版本 v0.1.1（Acceptance-Baseline `/home/workspace/xlib_harness@335eef9`），Layer=基座·模块生成器与门禁执行器（L1 执行器）。从 xlib_standard 拆分而来，读取其模板/schema 作为输入（只读文件，非 import 依赖）。
 
 ## 2. 生产职责
 - FR-001 generate-module：从 xlib_standard 模板生成完整模块骨架（SPEC.md/TRACEABILITY.md/goal.md/tasks/IMPLEMENTATION-PLAN.md）
@@ -15,7 +15,7 @@ xlib_harness 是 Foundation 的**模块生成器与门禁执行器**——从标
 - generate 在 5 秒内完成骨架生成（BR-001）
 - check 不得修改被检模块的任何文件（BR-002）
 - check 失败退出码必须非零（BR-003）
-- 允许只读 xlib_standard 模板；禁止 `github.com/ZoneCNH/xlib-standard` Go import/module dependency（NFR-004）
+- 允许只读 xlib_standard 模板；禁止 `github.com/ZoneCNH/xlib_standard` Go import/module dependency（NFR-004）
 - 禁止依赖 observex/configx/resiliencx/schedulex 及业务域模块
 
 ## 4. 不负责什么
@@ -25,7 +25,7 @@ xlib_harness 是 Foundation 的**模块生成器与门禁执行器**——从标
 - 不参与生产运行时
 
 ## 5. 架构位置
-基座层（L1 执行器）。依赖方向：允许 xlib_standard（只读模板文件，非 import 依赖），禁止 observex/configx/resiliencx/schedulex/业务域任何模块。与 xlibgate 互补：xlibgate 管 CI 门禁（编译/依赖/发布），xlib_harness 管规格结构/模板/格式门禁。目录根：`module/xlib_harness/`（SPEC.md/goal.md/TRACEABILITY.md/IMPLEMENTATION-PLAN.md/tasks/）+ 运行时代码 `/home/workspace/xlib-harness`。
+基座层（L1 执行器）。依赖方向：允许 xlib_standard（只读模板文件，非 import 依赖），禁止 observex/configx/resiliencx/schedulex/业务域任何模块。与 xlibgate 互补：xlibgate 管 CI 门禁（编译/依赖/发布），xlib_harness 管规格结构/模板/格式门禁。目录根：`module/xlib_harness/`（SPEC.md/goal.md/TRACEABILITY.md/IMPLEMENTATION-PLAN.md/tasks/）+ 运行时代码 `/home/workspace/xlib_harness`。
 
 ## 6. 生命周期
 短生命周期 CLI 工具，无运行时生命周期管理。每次执行：加载配置（profiles）→ 生成或检查 → 输出 GenerateResult（FilesCreated/Warnings）或 CheckResult（Module/Passed/Checks[]/Summary）→ exit 0（通过）或非零（BR-003 失败）。
@@ -39,7 +39,7 @@ module/xlib_harness/
   IMPLEMENTATION-PLAN.md
   tasks/               # 5 个 task markdown
 
-/home/workspace/xlib-harness/    # 运行时代码（独立 Go module）
+/home/workspace/xlib_harness/    # 运行时代码（独立 Go module）
   Generator / HarnessGate 接口实现
   GateProfile: full / spec / boundary
   fixtures/            # compliant/broken/bad-dep/format-issues/broken-trace 测试夹具
@@ -126,7 +126,7 @@ v1 门禁 profile 名称保持稳定（full/spec/boundary）。check 输出格�
 ## 28. Forbidden Patterns
 - generate 写入路径越界（path traversal）
 - check 修改被检模块文件（BR-002 违反）
-- import `github.com/ZoneCNH/xlib-standard`（NFR-004 禁止 Go import/module dependency）
+- import `github.com/ZoneCNH/xlib_standard`（NFR-004 禁止 Go import/module dependency）
 - check 失败退出码为零（BR-003 违反）
 - 依赖业务域模块或未授权基座
 

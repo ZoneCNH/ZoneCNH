@@ -6,8 +6,8 @@ spec_ref:
 acceptance_criteria:
   - "FR-001 baseline coverage"
 files:
-  - "/home/workspace/xlib-harness/internal/harness/harness.go"
-  - "/home/workspace/xlib-harness/internal/harness/harness_test.go"
+  - "/home/workspace/xlib_harness/internal/harness/harness.go"
+  - "/home/workspace/xlib_harness/internal/harness/harness_test.go"
 priority: P1
 status: completed
 ---
@@ -28,4 +28,4 @@ FR-001 实现与验证
 
 ## Evidence
 
-- /home/workspace/xlib-harness@d90b35124701：`make ci`、`go test -bench=. -run '^$' ./...`、`git diff --check`、pinned `gitleaks` CLI、`xlibgate@v1.0.0` imports/gomod/baseline 均 PASS；coverage total 100.0%；full profile 15 项通过；Release run `27855366871` 与 main CI run `27855396013` 均 PASS。
+- /home/workspace/xlib_harness@d90b35124701：`make ci`、`go test -bench=. -run '^$' ./...`、`git diff --check`、pinned `gitleaks` CLI、`xlibgate@v1.0.0` imports/gomod/baseline 均 PASS；coverage total 100.0%；full profile 15 项通过；Release run `27855366871` 与 main CI run `27855396013` 均 PASS。

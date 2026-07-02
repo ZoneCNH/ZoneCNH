@@ -26,12 +26,11 @@ updated: 2026-07-03
 # ============================================================================
 
 # --- 标准源 / 生成器 / 证据 / 门禁（4）---
-# 注：xlib-standard / xlib-harness / xlib-evidence 的 GitHub 仓库使用 kebab-case
-# （早于 snake_case 命名规范建立），module 目录使用 snake_case。repo 和 local_path
-# 字段反映实际 GitHub 仓库和本地克隆路径。
+# 注：xlib_standard / xlib_harness / xlib_evidence 的 GitHub 仓库和本地路径
+# 统一使用 snake_case，与 AGENTS.md §仓库命名强制规则一致。
 xlib_standard:
-  repo: github.com/ZoneCNH/xlib-standard
-  local_path: /home/workspace/xlib-standard
+  repo: github.com/ZoneCNH/xlib_standard
+  local_path: /home/workspace/xlib_standard
   domain: foundation
   layer: standard_source
   arch_type: library
@@ -49,7 +48,7 @@ xlib_standard:
 
 xlib_harness:
   repo: github.com/ZoneCNH/xlib_harness
-  local_path: /home/workspace/xlib-harness
+  local_path: /home/workspace/xlib_harness
   domain: foundation
   layer: harness
   arch_type: library
@@ -65,8 +64,8 @@ xlib_harness:
     cadence: stable
 
 xlib_evidence:
-  repo: github.com/ZoneCNH/xlib-evidence
-  local_path: /home/workspace/xlib-evidence
+  repo: github.com/ZoneCNH/xlib_evidence
+  local_path: /home/workspace/xlib_evidence
   domain: foundation
   layer: evidence
   arch_type: library

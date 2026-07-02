@@ -432,7 +432,7 @@ JSON 输出必须包含 machine-readable 的 status 字段（pass/fail/error）�
 4. "渲染后会移动到 pkg/<package-name>"
 5. "生成库包括 configx、observex、testkitx"
 
-**约束**：只有 `github.com/ZoneCNH/xlib-standard` 仓库允许包含以上短语。其他所有 Foundation 仓库包含任一短语即违规。`template-residue` 检查必须执行精确字符串匹配（含标点和空格），不区分注释或代码上下文。
+**约束**：只有 `github.com/ZoneCNH/xlib_standard` 仓库允许包含以上短语。其他所有 Foundation 仓库包含任一短语即违规。`template-residue` 检查必须执行精确字符串匹配（含标点和空格），不区分注释或代码上下文。
 
 **违反时**：下游仓库包含模板身份声明，导致模块身份定义冲突——CI 和文档工具无法区分真正的标准源/生成器/模板实现与残留模板文案。处理：检查结果中逐文件、逐行列出匹配短语，给出 reason_code=TEMPLATE_RESIDUE。
 

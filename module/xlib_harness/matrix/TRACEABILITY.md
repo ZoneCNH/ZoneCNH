@@ -3,7 +3,7 @@
 > Module: `xlib_harness`
 > Version: v0.1.6
 > Last-Updated: 2026-06-30
-> Implementation-Baseline: `/home/workspace/xlib-harness@d90b35124701`
+> Implementation-Baseline: `/home/workspace/xlib_harness@d90b35124701`
 
 ## Requirement Traceability Matrix
 

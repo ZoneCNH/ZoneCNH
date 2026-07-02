@@ -5,7 +5,7 @@
 - Module-Version: v0.2.4
 - Module-State: v0.2.4 已发布；runtime 本地 100.0% atomic coverage、race、vet、build、benchmark、Trust Alignment 与 GitHub Release evidence contract 已通过；CI/CD workflows 已部署，GitHub Release v0.2.4 与 release evidence assets 已发布归档
 - Layer: L1 证据
-- Runtime-Repo: /home/workspace/xlib-evidence
+- Runtime-Repo: /home/workspace/xlib_evidence
 - Source: goal.md, SPEC.md, TRACEABILITY.md, IMPLEMENTATION-PLAN.md, tasks/
 
 > 本清单用于验收 xlib_evidence 是否达到可发布、可追溯、可复验状态。除非条目明确记录为已通过，默认需要在运行时代码仓库重新执行验证并补充证据。
@@ -16,16 +16,16 @@
 | --- | --- | --- |
 | 文档存在性 | cd /home/workspace/ZoneCNH && test -f module/xlib_evidence/FEATURES.md && test -f module/xlib_evidence/ACCEPTANCE.md | FEATURES.md 与 ACCEPTANCE.md 均存在 |
 | 文档格式 | cd /home/workspace/ZoneCNH && git diff --check -- module/xlib_evidence | 无尾随空格或补丁格式错误 |
-| 运行时测试 | cd /home/workspace/xlib-evidence && go test ./... | 所有包测试通过 |
-| 竞态检查 | cd /home/workspace/xlib-evidence && go test ./... -race -count=1 | 无 data race，测试稳定通过 |
-| 静态检查 | cd /home/workspace/xlib-evidence && go vet ./... | 无 vet 问题 |
-| 构建检查 | cd /home/workspace/xlib-evidence && go build ./... | 所有包可构建 |
-| 覆盖率证据 | cd /home/workspace/xlib-evidence && go test ./... -covermode=atomic -coverprofile=coverage.out | 覆盖率文件生成且 total = 100.0%，满足 v0.2.4 生产发布门槛 |
-| 性能基线 | cd /home/workspace/xlib-evidence && go test -bench='Benchmark(ManifestGen\|MultiModuleAggregate)$' -run '^$' ./... | manifest 生成 < 1s，20 模块聚合 < 5s |
-| 依赖边界 | cd /home/workspace/xlib-evidence && go list -deps ./... | 依赖不越过 FOUNDATION-DEPS.yaml 登记边界 |
-| 仓库身份契约 | cd /home/workspace/xlib-evidence && test -f .repo-contract.yaml && grep -q '^public_package: github.com/ZoneCNH/xlib_evidence$' .repo-contract.yaml && grep -q '^latest_git_tag: v0.2.4$' .repo-contract.yaml | repo/module/public_package/tag 身份对齐 |
-| Trust Identity | cd /home/workspace/xlib-evidence && GOWORK=off xlibgate trust identity --repo . | xlibgate 身份门禁通过 |
-| Trust Template Residue | cd /home/workspace/xlib-evidence && GOWORK=off xlibgate trust template-residue --repo . | 无模板残留、占位符或生成器身份误配 |
+| 运行时测试 | cd /home/workspace/xlib_evidence && go test ./... | 所有包测试通过 |
+| 竞态检查 | cd /home/workspace/xlib_evidence && go test ./... -race -count=1 | 无 data race，测试稳定通过 |
+| 静态检查 | cd /home/workspace/xlib_evidence && go vet ./... | 无 vet 问题 |
+| 构建检查 | cd /home/workspace/xlib_evidence && go build ./... | 所有包可构建 |
+| 覆盖率证据 | cd /home/workspace/xlib_evidence && go test ./... -covermode=atomic -coverprofile=coverage.out | 覆盖率文件生成且 total = 100.0%，满足 v0.2.4 生产发布门槛 |
+| 性能基线 | cd /home/workspace/xlib_evidence && go test -bench='Benchmark(ManifestGen\|MultiModuleAggregate)$' -run '^$' ./... | manifest 生成 < 1s，20 模块聚合 < 5s |
+| 依赖边界 | cd /home/workspace/xlib_evidence && go list -deps ./... | 依赖不越过 FOUNDATION-DEPS.yaml 登记边界 |
+| 仓库身份契约 | cd /home/workspace/xlib_evidence && test -f .repo-contract.yaml && grep -q '^public_package: github.com/ZoneCNH/xlib_evidence$' .repo-contract.yaml && grep -q '^latest_git_tag: v0.2.4$' .repo-contract.yaml | repo/module/public_package/tag 身份对齐 |
+| Trust Identity | cd /home/workspace/xlib_evidence && GOWORK=off xlibgate trust identity --repo . | xlibgate 身份门禁通过 |
+| Trust Template Residue | cd /home/workspace/xlib_evidence && GOWORK=off xlibgate trust template-residue --repo . | 无模板残留、占位符或生成器身份误配 |
 | Release 证据资产 | gh release view v0.2.4 --repo ZoneCNH/xlib_evidence --json assets,isDraft,isPrerelease | release 非 draft、非 prerelease，且包含 coverage.out、module.json、checksums.txt |
 
 ## 2. AC 验收登记
@@ -71,7 +71,7 @@
 
 - [x] FEATURES.md 的 FR、BR/NFR、任务清单与 SPEC/TRACEABILITY 当前登记一致。
 - [x] ACCEPTANCE.md 的 AC、TC 与运行时代码测试名、证据文件或 CI 记录一致。
-- [x] 运行时代码仓库 /home/workspace/xlib-evidence 通过 go test、go test -race、go vet、go build、benchmark 与 100.0% atomic coverage 门槛。
+- [x] 运行时代码仓库 /home/workspace/xlib_evidence 通过 go test、go test -race、go vet、go build、benchmark 与 100.0% atomic coverage 门槛。
 - [x] 所有外部服务依赖有本地可重复的测试替身或明确 live-gate 证据。
 - [x] 安全检查确认没有凭证、私有端点、账户 ID 或实盘配置进入公开文档与代码。
 - [x] v0.2.4 已通过本地可复验命令并发布；release workflow 已配置 `coverage.out`、`module.json`、`checksums.txt` 证据资产、`.repo-contract.yaml` 仓库身份契约、Trust Alignment 与 tag/version 合约。

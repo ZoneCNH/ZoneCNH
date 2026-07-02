@@ -61,14 +61,14 @@ modules:
 
   # 标准源 / 门禁（不参与运行时依赖）
   xlib_standard:
-    path: github.com/ZoneCNH/xlib-standard
+    path: github.com/ZoneCNH/xlib_standard
     layer: standard-source
     stdlib_only: false
     runtime_dependency: false
     description: "标准事实源 / Go Reference Template / schema / template"
 
   xlib_harness:
-    path: github.com/ZoneCNH/xlib-harness
+    path: github.com/ZoneCNH/xlib_harness
     layer: harness
     stdlib_only: false
     runtime_dependency: false
@@ -198,7 +198,7 @@ allowed_deps:
   ossx:          [kernel]                              # 只依赖 kernel 原语
   clickhousex:   [kernel, observex]                   # kernel 原语 + observex 观测接口
   contracts:     []                                    # 跨域契约独立，无 Foundation 运行时依赖
-  transportx:    [contracts, configx, observex, resiliencx, xlib-standard]  # 传输契约可消费公开契约和横切接口；xlib-standard 为标准源依赖
+  transportx:    [contracts, configx, observex, resiliencx, xlib_standard]  # 传输契约可消费公开契约和横切接口；xlib_standard 为标准源依赖
   domainx:       [kernel, decimalx]                     # 领域共享原语依赖 kernel 原语 + decimalx 高精度运算
   decimalx:      []                                    # 纯 stdlib，无 Foundation 运行时依赖
   domain_market: [decimalx, domainx]                    # 市场语义依赖 decimalx 高精度 + domainx 共享原语

@@ -133,7 +133,7 @@ AND MUST NOT be `# xlib_standard`
 
 WHEN module documentation references the `backtestx` Go module path
 THEN it MUST use `github.com/ZoneCNH/backtestx`
-AND MUST NOT use `github.com/ZoneCNH/xlib-standard`
+AND MUST NOT use `github.com/ZoneCNH/xlib_standard`
 
 WHEN `go.mod` declares the module name
 THEN it MUST be `module github.com/ZoneCNH/backtestx`
