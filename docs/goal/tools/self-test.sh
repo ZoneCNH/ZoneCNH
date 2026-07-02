@@ -289,7 +289,7 @@ env:
   AGENT_TOOLSDIRECTORY: ${{ github.workspace }}/.goal-runner-tool-cache
 jobs:
   goal-validator:
-    runs-on: [self-hosted, Linux, X64, homepage]
+    runs-on: [self-hosted, Linux, X64, ci-governance]
     steps:
       - run: mkdir -p "$RUNNER_TOOL_CACHE" "$AGENT_TOOLSDIRECTORY"
       - run: bash docs/goal/tools/setup-ci-toolchain.sh
@@ -298,7 +298,7 @@ jobs:
           valid_gate_statuses = ['PASS', 'PASS_WITH_RISK', 'FAIL', 'BLOCKED', 'PENDING']
           valid_result_verdicts = ['PASS', 'PASS_WITH_RISK', 'FAIL']
   goal-toolchain-check:
-    runs-on: [self-hosted, Linux, X64, homepage]
+    runs-on: [self-hosted, Linux, X64, ci-governance]
     steps:
       - run: mkdir -p "$RUNNER_TOOL_CACHE" "$AGENT_TOOLSDIRECTORY"
       - run: bash docs/goal/tools/setup-ci-toolchain.sh
@@ -313,14 +313,14 @@ env:
   AGENT_TOOLSDIRECTORY: ${{ github.workspace }}/.goal-runner-tool-cache
 jobs:
   goal-validator:
-    runs-on: [self-hosted, Linux, X64, homepage]
+    runs-on: [self-hosted, Linux, X64, ci-governance]
     steps:
       - run: mkdir -p "$RUNNER_TOOL_CACHE" "$AGENT_TOOLSDIRECTORY"
       - run: bash docs/goal/tools/setup-ci-toolchain.sh
       - run: python3 docs/goal/tools/goal-validate.py --root . --mode strict --format text
       - run: echo "source_id target_id evidence_id BLOCKED"
   goal-toolchain-check:
-    runs-on: [self-hosted, Linux, X64, homepage]
+    runs-on: [self-hosted, Linux, X64, ci-governance]
     steps:
       - run: mkdir -p "$RUNNER_TOOL_CACHE" "$AGENT_TOOLSDIRECTORY"
       - run: bash docs/goal/tools/setup-ci-toolchain.sh
@@ -335,7 +335,7 @@ ci:
       - self-hosted
       - Linux
       - X64
-      - homepage
+      - ci-governance
     required_env:
       - RUNNER_TOOL_CACHE
       - AGENT_TOOLSDIRECTORY
@@ -612,13 +612,13 @@ env:
   AGENT_TOOLSDIRECTORY: ${{ github.workspace }}/.goal-runner-tool-cache
 jobs:
   current:
-    runs-on: [self-hosted, Linux, X64, homepage]
+    runs-on: [self-hosted, Linux, X64, ci-governance]
     steps:
       - run: mkdir -p "$RUNNER_TOOL_CACHE" "$AGENT_TOOLSDIRECTORY"
       - run: bash docs/goal/tools/setup-ci-toolchain.sh
       - run: echo "source_id target_id evidence_id BLOCKED"
   goal-toolchain-check:
-    runs-on: [self-hosted, Linux, X64, homepage]
+    runs-on: [self-hosted, Linux, X64, ci-governance]
     steps:
       - run: mkdir -p "$RUNNER_TOOL_CACHE" "$AGENT_TOOLSDIRECTORY"
       - run: bash docs/goal/tools/setup-ci-toolchain.sh
@@ -636,7 +636,7 @@ ci:
       - self-hosted
       - Linux
       - X64
-      - homepage
+      - ci-governance
     required_env:
       - RUNNER_TOOL_CACHE
       - AGENT_TOOLSDIRECTORY
@@ -679,7 +679,7 @@ env:
   AGENT_TOOLSDIRECTORY: ${{ github.workspace }}/.goal-runner-tool-cache
 jobs:
   summary:
-    runs-on: [self-hosted, Linux, X64, homepage]
+    runs-on: [self-hosted, Linux, X64, ci-governance]
     steps:
       - run: mkdir -p "$RUNNER_TOOL_CACHE" "$AGENT_TOOLSDIRECTORY"
       - run: bash docs/goal/tools/setup-ci-toolchain.sh

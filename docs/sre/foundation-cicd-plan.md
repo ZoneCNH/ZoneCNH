@@ -112,7 +112,7 @@ x.go ——→ 基座运行时 / L2.5 / 数据域 / 分析域 / 决策域 / 执�
 |------|:----:|------|
 | GitHub Actions workflows | 11 个 | deps-matrix, docs-ci, foundation-integration, foundation-release, goal-ci, release 等 |
 | CI shell scripts | 17 个 | spec-lint, traceability-check, foundation-boundary-check 等 |
-| Self-hosted runner | 1 台 | 标签 [self-hosted, Linux, X64, homepage] |
+| Self-hosted runner | 1 台 | 标签 [self-hosted, Linux, X64, ci-governance] |
 | 依赖矩阵(机器可读) | v1.1 | module/FOUNDATION-DEPS.yaml |
 | SRE 部署入口 | 已有 | ZoneCNH/sre reusable workflow |
 | Release manifest | 已有 | generate-release-manifest.sh + deploy-contract-preflight.sh |

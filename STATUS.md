@@ -116,7 +116,7 @@
 | 组件                                                          | 架构类型     | 版本   | 进度     | 覆盖率要求 | 说明                  |
 | ------------------------------------------------------------- | -------- | ------ | -------- | ---------- | --------------------- |
 | [market_data](https://github.com/ZoneCNH/market_data)         | 独立进程 | v1.0.0 | ██░░ 30% | 100%       | dispatch 聚合（域入口）：Receiver + DualWriteSink；FR-MD-001~008；v1.0.0 released |
-| [binance](https://github.com/ZoneCNH/binance)                 | C/S Module | v0.8.0 ✅ / v3.9.6 (spec) | ████ 100% | 100%       | C/S 分布式：48/48 FR Done（100%）；release_closeable=YES 🎉；v0.8.0 tag 已发布；deep-review 37/37 fixed；15/15 gates；21/21 tests race-free；controlplane 100%（72 tests）；coverage 100.0%（21/23 包 100%）；47/47 tasks Done；⚠️ 测试深度审计发现 soak/chaos/security 测试存在空壳（见 report/binance/TEST-ANALYSIS-20260630.md） |
+| [binance](https://github.com/ZoneCNH/binance)                 | C/S Module | v0.8.0 ✅ / v3.9.6 (spec) | ████ 100% | 100%       | C/S 分布式：48/48 FR Done（100%）；release_closeable=YES 🎉；v0.8.0 tag 已发布；deep-review 37/37 fixed；15/15 gates；21/21 tests race-free；controlplane 100%（72 tests）；coverage 100.0%（21/23 包 100%）；47/47 tasks Done；⚠️ 测试深度审计：soak/chaos 真实测试 gated 在 BINANCE_*_LIVE env 后，默认 CI 不覆盖端到端系统行为（见 report/binance/TEST-ANALYSIS-20260630.md，部分描述已证实与代码不符，详见报告头部免责声明） |
 | [okx](https://github.com/ZoneCNH/okx)                         | C/S Module      | v0.1.1 | ███░ 80% | 100%       | OKX CEX 行情采集；待升级 client/server 拆分 |
 | [bybit](https://github.com/ZoneCNH/bybit)                     | C/S Module      | v0.1.1 | ███░ 80% | 100%       | Bybit CEX             |
 | [bitget](https://github.com/ZoneCNH/bitget)                   | C/S Module      | v0.1.1 | ███░ 80% | 100%       | Bitget CEX            |
@@ -135,7 +135,7 @@
 
 | 模块            | SPEC | IMPL | RELEASE | LIVE INT | EXT CI | ADOPT | SOAK | FACTORY | 备注                               |
 | --------------- | :--: | :--: | :-----: | :------: | :----: | :---: | :--: | :-----: | ---------------------------------- |
-| binance         |  ✅  |  ✅  |   ✅    |   ✅    |  ⏳   |  N/A  | N/A  |   ✅    | C/S Module；coverage 100.0%；spec v3.9.6 ✅；v0.8.0 released；48/48 Done (100%)；release_closeable=YES 🎉；15/15 gates；21/21 tests；⚠️ 测试审计见 report/binance/TEST-ANALYSIS-20260630.md |
+| binance         |  ✅  |  ✅  |   ✅    |   ✅    |  ⏳   |  N/A  | N/A  |   ✅    | C/S Module；coverage 100.0%；spec v3.9.6 ✅；v0.8.0 released；48/48 Done (100%)；release_closeable=YES 🎉；15/15 gates；21/21 tests；⚠️ 测试审计：soak/chaos gated 测试默认 CI 不覆盖（见 report/binance/TEST-ANALYSIS-20260630.md，部分描述已证实与代码不符） |
 | okx             |  ✅  |  ✅  |   ✅    |   ⏳待验证 |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；OKX CEX；factory ❌ 原因：LIVE INT 待 market_data dispatch 集成验证 |
 | bybit           |  ✅  |  ✅  |   ✅    |   ⏳待验证 |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；Bybit CEX；factory ❌ 同上 |
 | bitget          |  ✅  |  ✅  |   ✅    |   ⏳待验证 |  N/A   |  N/A  | N/A  |   ❌    | SDK；80%；Bitget CEX；factory ❌ 同上 |

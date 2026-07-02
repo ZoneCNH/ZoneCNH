@@ -105,8 +105,8 @@ Feature 做完后，进入 PR 前，做一次 RC 检查。
 
 全局规则：
 
-- 本仓库直接声明的 CI/CD job 必须运行在 self-hosted runner，精确标签为 `[self-hosted, Linux, X64, homepage]`。
-- 普通文档、测试、治理类 job 使用业务仓库 profile 标签 `homepage`。
+- 本仓库直接声明的 CI/CD job 必须运行在 self-hosted runner，精确标签为 `[self-hosted, Linux, X64, ci-governance]`。
+- 普通文档、测试、治理类 job 使用业务仓库 profile 标签 `ci-governance`。
 - 部署执行必须通过 `ZoneCNH/sre` reusable workflow；部署 profile 标签由 SRE 仓库内部承接，本仓库不得直接声明。
 - 部署控制面权威仓库为 `ZoneCNH/sre`；本仓库只引用，不复制、不收纳 `sre/` 源码。
 - 本仓 `release.yml` 只生成并预检 `release/manifest/release-manifest.json` 与 `release/manifest/sre-deploy-contract.json`，不执行真实机器部署。
@@ -203,7 +203,7 @@ on:
 
 jobs:
   check:
-    runs-on: [self-hosted, Linux, X64, homepage]
+    runs-on: [self-hosted, Linux, X64, ci-governance]
 
     steps:
       - name: Checkout
@@ -224,7 +224,7 @@ jobs:
         uses: golangci/golangci-lint-action@v4
 ```
 
-仓库全局 CI/CD 禁止 GitHub-hosted runner。本仓库直接 job 统一使用 `[self-hosted, Linux, X64, homepage]`；本仓 release 只做 manifest、contract 和 preflight，真实部署必须调用 SRE 发布入口并以 `sre/` 机器池为目标。
+仓库全局 CI/CD 禁止 GitHub-hosted runner。本仓库直接 job 统一使用 `[self-hosted, Linux, X64, ci-governance]`；本仓 release 只做 manifest、contract 和 preflight，真实部署必须调用 SRE 发布入口并以 `sre/` 机器池为目标。
 
 ### CI 的作用
 

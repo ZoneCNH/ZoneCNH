@@ -111,7 +111,7 @@ kernel:
   spec_ref: module/kernel/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml
   maturity_ref: .foundationx/status/index.json#kernel
-  spec_version: v1.1.0
+  spec_version: v2.1.0
   release:
     latest_tag: v1.1.0
     cadence: stable
@@ -129,9 +129,9 @@ configx:
   spec_ref: module/configx/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml
   maturity_ref: .foundationx/status/index.json#configx
-  spec_version: v1.0.0
+  spec_version: v1.2.0
   release:
-    latest_tag: v1.0.0
+    latest_tag: v1.1.0
     cadence: stable
 
 observex:
@@ -146,9 +146,9 @@ observex:
   spec_ref: module/observex/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml
   maturity_ref: .foundationx/status/index.json#observex
-  spec_version: v0.3.1
+  spec_version: v1.1.0
   release:
-    latest_tag: v0.3.1
+    latest_tag: v0.3.4
     cadence: stable
 
 resiliencx:
@@ -163,9 +163,9 @@ resiliencx:
   spec_ref: module/resiliencx/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml
   maturity_ref: .foundationx/status/index.json#resiliencx
-  spec_version: v1.0.2
+  spec_version: v1.1.0
   release:
-    latest_tag: v0.4.9
+    latest_tag: v1.0.2
     cadence: stable
 
 schedulex:
@@ -180,7 +180,7 @@ schedulex:
   spec_ref: module/schedulex/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml
   maturity_ref: .foundationx/status/index.json#schedulex
-  spec_version: v1.0.0
+  spec_version: v1.1.0
   release:
     latest_tag: v1.0.0
     cadence: stable
@@ -198,7 +198,7 @@ bootstrap:
   spec_ref: module/bootstrap/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml
   maturity_ref: .foundationx/status/index.json#bootstrap
-  spec_version: v0.1.7
+  spec_version: v0.2.0
   release:
     latest_tag: v0.2.0
     cadence: stable
@@ -216,9 +216,9 @@ testkitx:
   spec_ref: module/testkitx/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml
   maturity_ref: .foundationx/status/index.json#testkitx
-  spec_version: v0.4.0
+  spec_version: v1.1.0
   release:
-    latest_tag: v0.4.0
+    latest_tag: v1.0.0
     cadence: stable
 
 # --- 存储扩展（7）---
@@ -234,9 +234,9 @@ redisx:
   spec_ref: module/redisx/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml
   maturity_ref: .foundationx/status/index.json#redisx
-  spec_version: v1.1.0
+  spec_version: v1.3.0
   release:
-    latest_tag: v1.1.0
+    latest_tag: v1.1.1
     cadence: stable
 
 kafkax:
@@ -253,7 +253,7 @@ kafkax:
   maturity_ref: .foundationx/status/index.json#kafkax
   spec_version: v1.2.0
   release:
-    latest_tag: v1.0.2
+    latest_tag: v1.1.0
     cadence: stable
 
 natsx:
@@ -270,7 +270,7 @@ natsx:
   maturity_ref: .foundationx/status/index.json#natsx
   spec_version: v1.2.0
   release:
-    latest_tag: v1.0.2
+    latest_tag: v1.0.4
     cadence: stable
 
 postgresx:
@@ -285,9 +285,9 @@ postgresx:
   spec_ref: module/postgresx/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml
   maturity_ref: .foundationx/status/index.json#postgresx
-  spec_version: v1.0.0
+  spec_version: v1.1.0
   release:
-    latest_tag: v1.0.0
+    latest_tag: v1.1.2
     cadence: stable
 
 taosx:
@@ -302,9 +302,9 @@ taosx:
   spec_ref: module/taosx/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml
   maturity_ref: .foundationx/status/index.json#taosx
-  spec_version: v1.0.5
+  spec_version: v1.2.0
   release:
-    latest_tag: v1.0.1
+    latest_tag: v1.0.2
     cadence: stable
 
 ossx:
@@ -319,9 +319,9 @@ ossx:
   spec_ref: module/ossx/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml
   maturity_ref: .foundationx/status/index.json#ossx
-  spec_version: v1.2.0
+  spec_version: v1.3.0
   release:
-    latest_tag: v1.2.1
+    latest_tag: v1.2.0
     cadence: stable
 
 clickhousex:
@@ -336,9 +336,9 @@ clickhousex:
   spec_ref: module/clickhousex/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml
   maturity_ref: .foundationx/status/index.json#clickhousex
-  spec_version: v1.0.10
+  spec_version: v1.1.0
   release:
-    latest_tag: v1.0.1
+    latest_tag: v1.0.9
     cadence: stable
 
 # --- 契约与传输（2）---
@@ -356,7 +356,7 @@ contracts:
   maturity_ref: .foundationx/status/index.json#contracts
   spec_version: v1.2.0
   release:
-    latest_tag: v1.0.1-spec
+    latest_tag: v0.4.7
     cadence: stable
 
 transportx:
@@ -371,7 +371,7 @@ transportx:
   spec_ref: module/transportx/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml
   maturity_ref: .foundationx/status/index.json#transportx
-  spec_version: v1.1.1
+  spec_version: v1.3.0
   release:
     latest_tag: v1.1.1-spec
     cadence: stable
@@ -395,7 +395,7 @@ domainx:
   spec_ref: module/domainx/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml
   maturity_ref: .foundationx/status/index.json#domainx
-  spec_version: v1.0.1
+  spec_version: v1.0.0
   release:
     latest_tag: v1.0.1
     cadence: stable

@@ -67,7 +67,7 @@ binance v0.8.0 部署到 prod（`84.247.154.45`），通过 systemd 二进制直
 ### Evidence
 
 - 详细修复记录：`evidence/2026-06-30/release/alignment-summary.md` §生产部署修复
-- 测试分析更新：`report/binance/TEST-ANALYSIS-20260630.md` §生产部署验证
+- 测试分析更新：`report/binance/TEST-ANALYSIS-20260630.md` §生产部署验证（注：该报告部分测试描述已证实与当前代码不符，详见报告头部 2026-07-02 复核追加的免责声明）
 
 ---
 
