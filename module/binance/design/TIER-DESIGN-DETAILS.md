@@ -117,6 +117,12 @@ func classifyTier(symbol, quoteAsset string, quoteVolumeUSD float64) (tier int, 
 
 **三层优先级**：第一层（显式配置，priority=0，人工边界）> 第二层（流动性信号，priority=1/2/3，数据驱动）> 第三层（计价资产兜底，容错决策，仅当 quoteVolumeUSD==0 时触发）。
 
+| 层 | 触发条件 | 优先级 | 决策性质 |
+| --- | --- | --- | --- |
+| **第一层**：显式配置 | symbol 在配置文件的 `symbols` 列表中 | 最高（priority=0） | Level 决策（人工边界） |
+| **第二层**：流动性信号 | `quoteVolumeUSD` 满足阈值 | 中（priority=1/2/3） | 自动决策（数据驱动） |
+| **第三层**：计价资产兜底 | 无 volume 信号 | 低 | 容错决策（信号缺失兜底） |
+
 **volume 阈值的 [INFERRED] 性质**：`t1VolumeThreshold` 不是硬编码常量，而是依赖 Binance 实测数据校准的运行时配置——初始建议 `50_000_000` USD（24h quoteVolume）起步 [GUESS, LOW]；校准方法是拉全量 symbol 的 quoteVolume 降序排列取第 100 名；初期保守配置（高阈值），灰度调整。产品线差异：spot / um_perp / cm_perp 各自维护独立阈值（cm_perp 流动性整体低于 spot，阈值应更低）。整体置信度 [INFERRED, MED]——方案合理，具体数值依赖实测数据校准。
 
 **与"任务级 Priority"的消解**：现有 `LifecycleTask.Priority`（`lifecycle.go:16-19`，gapfill=100/coldstart=50/reconcile=20）是任务类型优先级。symbol 级用 `SymbolPriority`（或 `TierWeight`），任务级保留 `Priority`；任务最终出队键 = `(SymbolPriority, TaskPriority)` 复合排序。
@@ -178,6 +184,8 @@ tiers:
 ```
 
 **字段语义**：`max_symbols`（int，0=不限，必填）；`collection`（枚举，必填）；`symbols`（显式列表，走 classifyTier 第一层，与 filter 互斥）；`filter.quote_asset` / `filter.min_volume_usd` / `filter.status`（自动筛选条件）。`symbols` 与 `filter` 同时指定时配置加载 fail-fast。
+
+**配置加载优先级**：环境变量 `FOUNDATIONX_BINANCE_TIERS_SPOT_T0_SYMBOLS` > 配置文件 `tiers.spot.t0.symbols` > 内置默认值（`DefaultSpotCatalog`，`catalog.go:64-87`）。
 
 ---
 
@@ -259,6 +267,18 @@ type optionsExchangeSymbol struct {
 
 **GAP-E6 与 GAP-E24 的边界**：GAP-E6 修复后 catalog 仍包含**所有 TRADING symbol**（全量），GAP-E24 在**采集层**按 Tier 过滤——catalog 知道 T3 长尾 symbol 存在，但 WS / REST 采集层只采其 Tier 对应数据。symbol 流动性增长（T3→T2）时 catalog 无需变更，只需 classifyTier 重新判定并更新 `Tier` / `Collection` 字段。
 
+### GAP-E14 retention 按 Tier 差异化 TTL
+
+| Tier | TTL | 理由 |
+| --- | --- | --- |
+| T0 | 365 天 | 核心蓝筹，长期回测/审计 |
+| T1 | 180 天 | 主流，中期回测 |
+| T2 | 90 天 | 次主流，短期回测 |
+| T3 | 7 天 | 长尾，仅近期可查询 |
+| T4 | 30 天 | 监控级，中期保留 |
+| options（near_atm） | 90 天 | 高价值期权数据 |
+| options（far/disabled） | 不存 / 7 天 | 低价值 |
+
 ---
 
 ## 8. 风险与缓解
@@ -301,6 +321,16 @@ GAP-E24（分级采集：Tier/Priority/Collection）  ← 用户指令的核心
 | 分级 + 业务增长到 T0+T1=500 | ~2000 stream（2 连接） | 更高 | 视负载评估 |
 
 **渐进路径建议**（EXCHANGEINFO §8.3 补充，遵循 Simplicity First）：先做静态白名单 MVP（0.5d，~20 行，`stream_control.go` 加 `STREAM_SYMBOLS` 白名单，覆盖 ~90% 业务需求）→ 评估是否需要完整分级（GAP-E24，2.5d，覆盖 100%）→ 评估是否需要分片（GAP-E25，4d，水平扩展）。
+
+### 实施步骤
+
+| 步骤 | 缺口 | 工时估算 | 必做? |
+| --- | --- | --- | --- |
+| 1 | GAP-E6（全量化） | ~0.5d（80 行） | ✅ 必做 |
+| 2 | GAP-E26（interval SSOT） | ~1.5d（150 行） | ✅ 必做 |
+| 3 | GAP-E24（分级采集） | ~2.5d（300 行） | ✅ 必做 |
+| 4 | 评估单副本负载 | 观察期 1-2 周 | ✅ 必做 |
+| 5 | GAP-E25（分片） | ~4d（500 行） | ❌ 可选（仅当步骤 4 评估不够时） |
 
 ---
 
