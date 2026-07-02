@@ -39,17 +39,41 @@ fi
 
 echo ""
 echo "── Building all modules jointly ──"
-go build ./... 2>&1 && echo "  BUILD PASS" || {
+# go.work 模式下，go build ./... 不能在 work 根目录跑（work 根本身不是 module，
+# 会报 "directory prefix . does not contain modules listed in go.work"）。
+# 需进入每个 module 子目录单独构建；go.work 仍提供跨 module 依赖解析。
+build_fail=0
+for mod in "${FOUNDATION_MODULES[@]}"; do
+    if [ -d "$mod" ] && [ -f "$mod/go.mod" ]; then
+        echo "  building $mod ..."
+        (cd "$mod" && go build ./... 2>&1) || {
+            echo "  $mod: BUILD FAIL"
+            build_fail=1
+        }
+    fi
+done
+if [ "$build_fail" -ne 0 ]; then
     echo "  BUILD FAIL (check module compatibility and dependencies)"
     exit 1
-}
+fi
+echo "  BUILD PASS"
 
 echo ""
 echo "── Running all tests ──"
-go test -count=1 ./... 2>&1 | tail -30 || {
+test_fail=0
+for mod in "${FOUNDATION_MODULES[@]}"; do
+    if [ -d "$mod" ] && [ -f "$mod/go.mod" ]; then
+        echo "  testing $mod ..."
+        (cd "$mod" && go test -count=1 ./... 2>&1) | tail -15 || {
+            echo "  $mod: TEST FAIL"
+            test_fail=1
+        }
+    fi
+done
+if [ "$test_fail" -ne 0 ]; then
     echo "  TEST FAIL (check individual module CI for details)"
     exit 1
-}
+fi
 
 echo ""
 echo "── Joint Build and Test PASS ──"
