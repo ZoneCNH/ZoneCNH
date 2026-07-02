@@ -46,8 +46,10 @@ Claude、Codex 和 Copilot 的 `goal-*` Agent 定义都是 `docs/goal/` 的平�
 
 ### Worktree 命名
 
+worktree 路径与 [docs/constitution/00-branch-discipline.md](../../docs/constitution/00-branch-discipline.md) §5、`scripts/worktree-policy.mjs` `WORKTREE_PATH_RULE` 一致：`.worktree/workspaces/<branch-name>`，`<branch-name>` 直接使用 Git 分支名本体（`/` 自然展开为嵌套目录）。
+
 ```text
-.worktrees/
+.worktree/workspaces/
   issue-1393-market_data/
   issue-1394-macro_data/
   task-goal-20260531-001-003/
