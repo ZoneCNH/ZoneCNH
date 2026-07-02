@@ -26,7 +26,7 @@ import yaml
 matrix_path = Path(sys.argv[1])
 clone_root = Path(sys.argv[2])
 require_sources = sys.argv[3] == "true"
-source_root = Path(os.environ.get("FOUNDATION_BOUNDARY_SOURCE_ROOT", "/home"))
+source_root = Path(os.environ.get("FOUNDATION_BOUNDARY_SOURCE_ROOT", "/home/workspace"))
 module_filter = os.environ.get("FOUNDATION_BOUNDARY_MODULES") or os.environ.get("FOUNDATION_DEPS_MODULES", "")
 
 with matrix_path.open("r", encoding="utf-8") as f:
@@ -149,6 +149,7 @@ def resolve_source(module_name):
     expected_module_path = module_paths[module_name]
     candidates = list(dict.fromkeys([
         source_root / module_name,
+        Path("/home/workspace") / module_name,
         Path("/home") / module_name,
     ]))
     for candidate in candidates:

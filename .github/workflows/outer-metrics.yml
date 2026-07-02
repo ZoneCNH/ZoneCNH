@@ -65,6 +65,7 @@ jobs:
         if: steps.collect.outputs.collected != '0'
         uses: peter-evans/create-pull-request@v7
         with:
+          base: main
           commit-message: |
             [outer-metrics] scheduled update via outer-metrics-eval.sh
 

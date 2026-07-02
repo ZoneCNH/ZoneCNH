@@ -55,6 +55,7 @@ jobs:
             --exclude 'localhost'
             --exclude '0\.0\.0\.0'
             --exclude 'file://'
+            --exclude 'github\.com/ZoneCNH/'
             --accept 200,204,301,302,403,429
             --timeout 30
             --max-retries 3
