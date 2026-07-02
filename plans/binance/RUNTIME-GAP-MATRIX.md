@@ -43,8 +43,8 @@
 | GAP-ID  | 类别     | 一句话                                                                                                     | 关联 FR        | 关联 AC | 源码位置                                                                      | 工时 | 引入版本 | 依赖                               |
 | ------- | -------- | ---------------------------------------------------------------------------------------------------------- | -------------- | ------- | ----------------------------------------------------------------------------- | ---- | -------- | ---------------------------------- |
 | GAP-E1  | 边界合宪 | coverage 状态持久化违反 client/server 边界（SPEC §75/§166），v3.2 重构为 server 端 SSOT + client NATS 上报 | FR-026         | AC-001  | `cmd/binance-client/main.go:234`, `internal/client/history_state_postgres.go` | 2.5d | v3.2     | 前置 GAP-E7/E10/E28；同 PR GAP-E20 |
-| GAP-E6  | 目录覆盖 | UM/CM/Options 未装配 ExchangeInfoRefresher，catalog 仅 1 条示例 symbol                                     | FR-012, FR-031 | AC-001  | `internal/client/runtime.go:199-217`                                          | 0.5d | v3.1     | 独立可上，ROI 最高                 |
-| GAP-E25 | 水平扩展 | client 无 ClientID/分片机制，多副本重复采集相同 symbol 集                                                  | FR-004, FR-014 | AC-002  | `cmd/binance-client/main.go`（无 ClientID）                                   | 4d   | v3.5     | 前置 GAP-E10/E31；同 PR GAP-E24    |
+| GAP-E6  | 目录覆盖 | UM/CM/Options 未装配 ExchangeInfoRefresher，catalog 仅 1 条示例 symbol                                     | FR-012, FR-031 | AC-001  | `internal/client/runtime.go:199-217`                                          | 0.5d | v3.1     | 独立可上，ROI 最高；task=CLIENT-015 |
+| GAP-E25 | 水平扩展 | client 无 ClientID/分片机制，多副本重复采集相同 symbol 集                                                  | FR-004, FR-014 | AC-002  | `cmd/binance-client/main.go`（无 ClientID）                                   | 4d   | v3.5     | **可选扩容**（§8.2 勘误：分级后单副本 ~940 stream 通常足够，非 E24 下游依赖）；前置 GAP-E10/E31；task=CLIENT-018 |
 
 ### §2.2 P1 — HIGH（13 项）
 
@@ -57,8 +57,8 @@
 | GAP-E12 | 时序一致性    | NATS AckWait 30s vs backfill timeout 5min 不匹配，阻断 GAP-E4 提并发            | FR-011         | AC-001  | `internal/server/consumer/consumer.go:24`                                            | 1.5d | v3.3     | 同 PR GAP-E4/E31               |
 | GAP-E17 | 时区一致性    | server 关键路径 25+ 处 `time.Now()` 不带 UTC，跨时区部署时戳漂移                | FR-029         | AC-001  | `internal/server/ingest.go:198,254,447` 等 6 处                                      | 0.5d | v3.4     | 独立可上                       |
 | GAP-E18 | 失败原子性    | TDengine WriteBatch 部分成功仅设 `Partial=true`，调用方用 `_` 忽略              | FR-005         | AC-001  | `internal/server/storage/taos_writer.go:116`                                         | 1d   | v3.4     | 同 PR GAP-E12/E19              |
-| GAP-E24 | 采集治理      | CatalogEntry 无 Tier/Priority 字段，全量采集所有 active symbol 资源不可承受     | FR-012         | AC-005  | `internal/client/catalog.go:16-46`                                                   | 2.5d | v3.5     | 前置 GAP-E6/E26                |
-| GAP-E26 | interval 治理 | interval 列表碎片化 + REST backfill 硬编码 fallback `1m` + WebSocket 覆盖率 40% | FR-002         | AC-003  | `internal/client/product_line.go:26`, `history_rest.go:181-188,284`, `mapper.go:166` | 1.5d | v3.6     | 前置 GAP-E24；同 PR GAP-E8/E23 |
+| GAP-E24 | 采集治理      | CatalogEntry 无 Tier/Priority 字段，全量采集所有 active symbol 资源不可承受     | FR-012         | AC-TIER | `internal/client/catalog.go:16-46`                                                   | 2.5d | v3.5     | 前置 GAP-E6/E26；ADR-005；task=CLIENT-015/017, SERVER-018 |
+| GAP-E26 | interval 治理 | interval 列表碎片化 + REST backfill 硬编码 fallback `1m` + WebSocket 覆盖率 40% | FR-002         | AC-003  | `internal/client/product_line.go:26`, `history_rest.go:181-188,284`, `mapper.go:166` | 1.5d | v3.6     | 前置 GAP-E24；同 PR GAP-E8/E23；task=CLIENT-016 |
 | GAP-E27 | 网络安全      | WebSocket 无 SetReadLimit，1GB 异常消息致 client OOM killed                     | FR-001         | AC-001  | `internal/client/spot.go:118`（无 SetReadLimit）                                     | 0.5d | v3.7     | 独立可上，ROI 最高             |
 | GAP-E28 | 数据原子性    | PG 完全无事务管理（pgx.Tx/BeginTx/Commit 零命中），多步写入无原子性             | FR-005, FR-015 | AC-001  | `internal/server/storage/pg_catalog.go` 等                                           | 2d   | v3.7     | 前置 GAP-E1 v3.2 落地          |
 | GAP-E32 | 可用性        | 7 处 goroutine 启动无 recover，单 panic 崩全进程                                | FR-014         | AC-001  | `client/runtime.go:231,234`, `history_lifecycle.go:406` 等 7 处                      | 0.5d | v3.8     | 独立可上                       |
@@ -129,7 +129,7 @@
 | 3   | schema 演进链             | GAP-E8 + GAP-E19 + GAP-E23           | 版本协商 × hash 算法 × 精度校验 = 完整 schema 治理                     | 三者同 PR                   |
 | 4   | 背压传导链                | GAP-E4 + GAP-E12 + GAP-E22           | 加速 × AckWait × 反压 = 单向控制风险                                   | 三者同 PR                   |
 | 5   | 时区一致性链              | GAP-E17 + GAP-E8                     | 时间戳 UTC × schema 时间字段声明 = 时区治理                            | 二者同 PR                   |
-| 6   | 分级与水平扩展链          | GAP-E6 + GAP-E24 + GAP-E25 + GAP-E1  | catalog 全量化 × Tier 分级 × 一致性哈希分片 × 多副本 SSOT              | 四者顺序前置                |
+| 6   | 分级与水平扩展链          | GAP-E6 + GAP-E24 + GAP-E25 + GAP-E1  | catalog 全量化 × Tier 分级 × 一致性哈希分片 × 多副本 SSOT              | E6→E26→E24 顺序前置；**E25 可选**（§8.2 勘误，分级后单副本 ~940 stream 通常足够，非 E24 下游） |
 | 7   | interval 治理与 schema 链 | GAP-E26 + GAP-E8 + GAP-E23 + GAP-E24 | interval SSOT × schema 协商 × 精度校验 × Tier 配置                     | 四者同 PR，E26 前置         |
 | 8   | WebSocket OOM 链          | GAP-E27 + GAP-E11                    | 无大小限制 × fallback 单点 × binance 异常推送 = OOM 全副本宕机         | 二者同 PR，E27 独立可上     |
 | 9   | 数据原子性链              | GAP-E28 + GAP-E18 + GAP-E1           | PG 无事务 × TDengine 部分成功 × coverage SSOT = 多步写入无原子性       | 三者同 PR，E28 前置 E1      |
@@ -295,6 +295,16 @@ GAP-E2 + GAP-E3                             ← 服务端完整性闭环
 - 检查每个 GAP-E 是否有关联 FR
 - GAP-E38/E51/E52/E53/E54/E55/E56 为治理类缺口，无直接 FR 映射（标注 "—"）
 - 其余 52 项均有 FR 映射
+- **无遗漏**
+- **AC 映射调整（2026-07-02）**：GAP-E24 原映射 `AC-005`（实属 FR-002 同名不冲突，与采集分级语义无关，悬空），已改映射为 `AC-TIER-*`（运行时口径，见 ACCEPTANCE.md §2.1）。同时为 GAP-E6/E24/E25/E26 回填 task 引用（CLIENT-015/016/017/018、SERVER-018），并据 §8.2 勘误将 GAP-E25 依赖关系由「同 PR GAP-E24」更正为「可选扩容，非 E24 下游」。FR 映射本身未变（GAP-E24 仍关联 FR-012）。
+
+### 轮 13a：分级体系治理制品补齐核验（2026-07-02 新增）
+
+- design 层：ADR-001（占位）、ADR-005（分级体系核心）、TIER-DESIGN-DETAILS（细节）已补齐
+- tasks 层：CLIENT-015/016/017/018、SERVER-018 五个 task spec 已补齐
+- spec 层：FR-033 命名歧义已加澄清括注（指向 ADR-005），ACCEPTANCE §2.1 新增 AC-TIER 运行时口径段
+- evidence 层：`evidence/2026-07-02/tier-gap-cross-reference.md` 建立 GAP-E↔ADR↔task 交叉引用（修 GAP-E57）
+- 双口径保护：SPEC 规格口径 48 Done 未变，运行时口径 58 GAP 未变
 - **无遗漏**
 
 ### 轮 14：源码位置完整性核验
