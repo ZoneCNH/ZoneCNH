@@ -3,7 +3,7 @@
 > **read-only projection**：This file is a read-only projection, not an active closure SSOT. Closure SSOTs are Beads and GitHub Issues. 请勿在此编辑任务状态——状态变更请直接操作 GitHub Issues / Beads，本文件仅作快照投影。
 
 > **生成日期**：2026-07-02（10 轮深度分析后定稿）
-> **快照时间**：2026-07-03（GitHub #1540~#1592：Open 26 / Closed 27）
+> **快照时间**：2026-07-03（GitHub #1540~#1592：Open 21 / Closed 32）
 > **来源**：`plans/binance/011-runtime-gap-master-plan-20260702.md`（PLAN-011）
 > **同步目标**：[ZoneCNH/ZoneCNH 主仓](https://github.com/ZoneCNH/ZoneCNH/issues) issue #1540~#1592（共 53 个）
 > **beads 树**：`ZoneCNH-gg63` 系列（52 个 open）
@@ -97,10 +97,10 @@
 
 | #   | 状态 | 优先级 | 任务                                                             | 主仓 issue                                              | beads    | 验收                                           |
 | --- | ---- | ------ | ---------------------------------------------------------------- | ------------------------------------------------------- | -------- | ---------------------------------------------- |
-| 6.1 | [ ]  | P1     | GAP-E26: interval SSOT（前置）                                   | [#1569](https://github.com/ZoneCNH/ZoneCNH/issues/1569) | gg63.4.1 | internal/client/intervals.go 常量统一          |
-| 6.2 | [ ]  | P1     | EXCHANGEINFO §8.3: 静态白名单 MVP（STREAM_SYMBOLS）              | [#1570](https://github.com/ZoneCNH/ZoneCNH/issues/1570) | gg63.4.2 | binancecfg.STREAM_SYMBOLS 落地                 |
-| 6.3 | [ ]  | P1     | GAP-E24: CatalogEntry 动态分级（Tier/SymbolPriority/Collection） | [#1571](https://github.com/ZoneCNH/ZoneCNH/issues/1571) | gg63.4.3 | CatalogEntry 含 4 个新字段                     |
-| 6.4 | [ ]  | P1     | EXCHANGEINFO §8.1: options 独立维度（不进 Tier）                 | [#1572](https://github.com/ZoneCNH/ZoneCNH/issues/1572) | gg63.4.4 | internal/client/options_classification.go 落地 |
+| 6.1 | [x]  | P1     | GAP-E26: interval SSOT（前置）                                   | [#1569](https://github.com/ZoneCNH/ZoneCNH/issues/1569) | gg63.4.1 | internal/client/intervals.go 常量统一          |
+| 6.2 | [x]  | P1     | EXCHANGEINFO §8.3: 静态白名单 MVP（STREAM_SYMBOLS）              | [#1570](https://github.com/ZoneCNH/ZoneCNH/issues/1570) | gg63.4.2 | binancecfg.STREAM_SYMBOLS 落地                 |
+| 6.3 | [x]  | P1     | GAP-E24: CatalogEntry 动态分级（Tier/SymbolPriority/Collection） | [#1571](https://github.com/ZoneCNH/ZoneCNH/issues/1571) | gg63.4.3 | CatalogEntry 含 4 个新字段                     |
+| 6.4 | [x]  | P1     | EXCHANGEINFO §8.1: options 独立维度（不进 Tier）                 | [#1572](https://github.com/ZoneCNH/ZoneCNH/issues/1572) | gg63.4.4 | options 条目 Tier 置空并标记独立维度            |
 
 **Phase 6 验收**：白名单覆盖 90% 业务 + 动态分级覆盖 100%。
 
