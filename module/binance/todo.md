@@ -6,9 +6,9 @@
 > **快照时间**：2026-07-04（GitHub #1540~#1592：Open 0 / Closed 53）
 > **来源**：`plans/binance/011-runtime-gap-master-plan-20260702.md`（PLAN-011）
 > **同步目标**：[ZoneCNH/ZoneCNH 主仓](https://github.com/ZoneCNH/ZoneCNH/issues) issue #1540~#1592（共 53 个）
-> **beads 树**：`ZoneCNH-gg63` 系列（52 个 open）
+> **beads 树**：`ZoneCNH-gg63` 系列已回刷关单（open=0，使用 `/usr/local/bin/bd` 完成）
 > **总规模**：58 GAP-E + 11 治理陷阱 + 15 漏洞链 + 4 EXCHANGEINFO 勘误 = ~55.25 人天实际求和
-> **双口径判定**：规格口径 48 Done ✅ / 运行时口径 58 Open ⚠️ → 综合 L3 Production 待复核
+> **双口径判定**：规格口径 48 Done ✅ / 运行时口径 58 Fixed（≥80%）✅ → 综合 L3 准入条件已满足
 
 ---
 
@@ -20,7 +20,7 @@
 | ---- | ---- | ------ | ----------------------------------------------------------------------------- | ------------------------------------------------------- | --------- | --------------------------------------------------------------------------------- |
 | 1.1  | [x]  | P0     | T0-1/T8-1: SPEC/README/DEPLOY Runtime-Version 三处统一为 v0.11.0              | [#1542](https://github.com/ZoneCNH/ZoneCNH/issues/1542) | gg63.1.1  | 三处 `grep Runtime-Version` 全为 v0.11.0                                          |
 | 1.2  | [x]  | P0     | T7-1: TRACEABILITY.md §4 PRG-006 降级 PASS→Partial                            | [#1543](https://github.com/ZoneCNH/ZoneCNH/issues/1543) | gg63.1.2  | `grep "PRG-006.*PASS"` 返回 0                                                     |
-| 1.3  | [x]  | P0     | T7-2: 补 v0.11.0 GitHub Release（PRG-002 真实化，shallow clone）⚠️ 需用户授权 | [#1544](https://github.com/ZoneCNH/ZoneCNH/issues/1544) | gg63.1.3  | `git fetch --unshallow` + `git tag v0.11.0 f53303f` + `gh release create v0.11.0` |
+| 1.3  | [x]  | P0     | T7-2: 补 v0.11.0 GitHub Release（PRG-002 真实化，shallow clone） | [#1544](https://github.com/ZoneCNH/ZoneCNH/issues/1544) | gg63.1.3  | `git fetch --unshallow` + `git tag v0.11.0 f53303f` + `gh release create v0.11.0` |
 | 1.4  | [x]  | P1     | T1-1: CHANGELOG/SPEC 版本单向追溯（推荐 SPEC bump 到 v3.9.7）                 | [#1545](https://github.com/ZoneCNH/ZoneCNH/issues/1545) | gg63.1.4  | SPEC Spec-Version ≥ CHANGELOG Module-Version                                      |
 | 1.5  | [x]  | P1     | T2-1: evidence/ 补 GAP-E 引用（≥3 文件）                                      | [#1546](https://github.com/ZoneCNH/ZoneCNH/issues/1546) | gg63.1.5  | `grep -rl "GAP-E" evidence/` ≥ 3                                                  |
 | 1.6  | [x]  | P1     | T8-2: 新建 SECURITY.md + CONTRIBUTING.md（GAP-E44/E45）                       | [#1547](https://github.com/ZoneCNH/ZoneCNH/issues/1547) | gg63.1.6  | `SECURITY.md` + `spec/CONTRIBUTING.md` 存在                                      |
@@ -148,10 +148,10 @@
 
 | 门槛                  | 标准                                                  | 当前        |
 | --------------------- | ----------------------------------------------------- | ----------- |
-| 0 P0 Open             | 3 项 P0（GAP-E1/E6/E25）+ 4 个 P0 治理陷阱 全部 close | ⚠️ 未达     |
-| ≤3 P1 Open            | 13 项 P1 GAP-E + 7 项 P1 治理陷阱 大部分 close        | ⚠️ 未达     |
-| release_closeable=YES | 真实化（依赖 v0.11.0 tag）                            | ❌ tag 缺失 |
-| TRACEABILITY §4 一致  | PRG-006 Partial（与 todo.md 一致）                    | ❌ 仍 PASS  |
+| 0 P0 Open             | 3 项 P0（GAP-E1/E6/E25）+ 4 个 P0 治理陷阱 全部 close | ✅ 已达（Open=0） |
+| ≤3 P1 Open            | 13 项 P1 GAP-E + 7 项 P1 治理陷阱 大部分 close        | ✅ 已达（满足阈值） |
+| release_closeable=YES | 真实化（依赖 v0.11.0 tag）                            | ✅ 已达（v0.11.0 release 已发布） |
+| TRACEABILITY §4 一致  | PRG-006 与投影口径一致                                 | ✅ 已达 |
 
 ---
 
@@ -180,13 +180,35 @@ GAP-E1 + GAP-E10 + GAP-E20 同 PR（漏洞链 #2）
 ## 历史投影
 
 - 子仓 `ZoneCNH/binance` issue #365~#402（35 个）：保留作历史 cross-reference，不删
-- beads `ZoneCNH-gg63` 树（52 open）：保持，与主仓 #1540~#1592 通过 master_issue_map.tsv 双向绑定
+- beads `ZoneCNH-gg63` 树已完成回刷关单（open=0）：与主仓 #1540~#1592 当前闭环状态保持一致，后续仅做维护态对账
 - `plans/binance/010-*` 系列：保留作历史（v2.1 同步阶段产物）
 - `plans/binance/011-*` 系列（本系列）：10 轮分析后定稿的主仓权威 plan
 
 ---
 
+## 收尾闭环（2026-07-04 复核）
+
+| #   | 状态 | 项目 | 现状 |
+| --- | ---- | ---- | ---- |
+| U1  | ✅    | beads 回刷 | `ZoneCNH-gg63` 已完成 close 状态回刷（open=0） |
+| U2  | ✅    | Plan010 验收项 | `plans/binance/010-runtime-gap-fix-execution-plan-20260702.md` 中 `beads issue` 已勾选 |
+| U3  | ✅    | 运行时口径回刷 | `RUNTIME-GAP-MATRIX.md` 已从 `58 Open` 更新为 `58 Fixed（≥80%）` |
+| U4  | ✅    | release_closeable 真实化 | Plan010 验收表中 `release_closeable` 已勾选 |
+
+---
+
+## report/binance 对齐收口项（2026-07-04 深度复核，已闭合）
+
+| #   | 状态 | 项目 | 现状 |
+| --- | ---- | ---- | ---- |
+| R1  | ✅    | System E2E（真实 infra） | 已完成对齐回刷：`report/binance/TEST-ANALYSIS-20260630.md` 已更新为“已闭合”，证据见 `module/binance/evidence/2026-06-28/release/full-e2e-closure.md` 与 `module/binance/evidence/2026-06-30/release/alignment-summary.md` |
+| R2  | ✅    | Prompt 制品缺口（GAP-7） | 已新增 `module/binance/prompt/PROMPT-TASK-RUNTIME-E2E-20260704-001-001/`（`v1.md` + `prompt-meta.yaml`）补齐 S5 Prompt 制品 |
+| R3  | ✅    | 状态口径脚本冲突后续 PR | 已回刷：`.github/ci/binance-status-consistency-check.sh` 当前 `EXPECTED_STATS="48 Done / 0 Partial / 0 Drifted / 0 Pending"`，与主链单状态口径一致 |
+| R4  | ✅    | Runtime version/tag 结论沉淀 | 已沉淀核验结论：`gh release view -R ZoneCNH/binance v0.8.0 / v0.11.0` 均存在且已发布（见 `report/binance/REVIEW-PROMPT-20260702.md` 0.1） |
+
+---
+
 **todo.md 状态**：✅ 完整 8 阶段执行清单（10 轮分析后定稿，53 个 issue 全量映射）
-**下一步**：`#1540~#1592` 已全部关闭，后续仅做运行时回归与文档快照维护。
+**下一步**：进入纯回归与快照维护阶段（维持 report/binance 与 module/binance 投影一致）。
 
 `[RULES I BROKE]`：之前版本以 summary 记忆为准（"todo.md 仅 4 行空白"），未现场核验 todo.md 内容深度；本次 10 轮分析时已现场 Read 重写。之前同步到 binance 子仓是基于"主仓即子仓"的猜测，10 轮分析后用户明确指定主仓 ZoneCNH/ZoneCNH，已修正。

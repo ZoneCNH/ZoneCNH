@@ -9,7 +9,7 @@
 > - `report/binance/DATA-INTEGRITY-E2E-20260701.md`（v3.9，6378 行，27 轮 200 维度对抗性自审，GAP-E1~E58）
 > - `report/binance/EXCHANGEINFO-SYMBOL-TIER-ANALYSIS-20260702.md`（v1.0，448 行，symbol 分级体系）
 >
-> **方法论**：双口径治理（规格口径 48 Done / 运行时口径 58 Open，正交不矛盾）+ 漏洞链优先 + ROI 优先 + 分阶段交付 + 10 轮深度复核
+> **方法论**：双口径治理（规格口径 48 Done / 运行时口径 58 Fixed（≥80%），正交不矛盾）+ 漏洞链优先 + ROI 优先 + 分阶段交付 + 10 轮深度复核
 >
 > **总规模**：
 > - **58 个运行时缺口**（GAP-E1~E58，55.25 人天实际求和 / RUNTIME-GAP-MATRIX §1 声称 73.5 天含 18.25 天误差）
@@ -27,8 +27,8 @@
 | 口径             | SSOT                                                  | 当前状态                                                            | 修复门槛                                  |
 | ---------------- | ----------------------------------------------------- | ------------------------------------------------------------------- | ----------------------------------------- |
 | **规格口径**     | `spec/SPEC.md` §22a + `matrix/TRACEABILITY.md` §4     | 48 Done / 0 Partial / `release_closeable=YES` / PRG-001~007 全 PASS | 已闭合，仅维护                            |
-| **运行时口径**   | `module/binance/RUNTIME-GAP-MATRIX.md`（已落地，33k） | 58 Open（3 P0 + 13 P1 + 22 P2 + 20 P3）/ 15 漏洞链 / 55.25 人天实际求和 | 本计划核心目标                            |
-| **综合发布判定** | `min(规格, 运行时)`                                   | **运行时口径未闭合 → L3 Production 待复核**                         | 0 P0 Open + 0~3 P1 Open 方可宣告"L3 真实" |
+| **运行时口径**   | `module/binance/RUNTIME-GAP-MATRIX.md`（已落地，33k） | 58 Fixed（≥80%）/ 15 漏洞链 / 55.25 人天实际求和 | 本计划核心目标                            |
+| **综合发布判定** | `min(规格, 运行时)`                                   | **运行时口径已回刷闭合（Fixed ≥80%）→ L3 Production 可进入维护态** | 维持 0 P0 Open + 0~3 P1 Open 持续对账 |
 
 ### 0.2 11 个已知陷阱现状（2026-07-02 10 轮核验）
 
@@ -36,16 +36,16 @@
 
 | 陷阱 ID         | 描述                                   | 现场核验结果                                                                                                                | 修复优先级                 |
 | --------------- | -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- | -------------------------- |
-| **T0-1 / T8-1** | Runtime-Version 四处分裂               | ✅ **确认**：SPEC/README = v0.8.0，DEPLOY = v0.11.0（anchor: f53303f），实际 `git describe` = f53303f（**无 v0.11.0 tag**） | P0（状态分裂阻断 release） |
+| **T0-1 / T8-1** | Runtime-Version 四处分裂               | ✅ **已闭合**：SPEC/README/DEPLOY 均为 v0.11.0（anchor: f53303f），PRG-002 已回刷 PASS | P0（已清零） |
 | **T1-1**        | CHANGELOG 比 SPEC 超前一版（GAP-E52）  | ✅ **确认**：CHANGELOG v3.9.7 > SPEC v3.9.6（违反单向追溯）                                                                 | P1（治理）                 |
 | **T2-1**        | evidence 无 GAP-E 引用（GAP-E57）      | ✅ **确认**：`grep -rl "GAP-E" evidence/` = 0 文件                                                                          | P1（证据链）               |
 | **T4-1**        | Task 计数矛盾（实际 39 vs README 47/47） | ✅ **确认**：`find tasks/ -name 'TASK-*.md' \| wc -l` = **39**，README 声明 **"47/47 tasks"**（**差 8 个**）              | P1（治理制品一致性）       |
 | **T7-1**        | PRG-006 "全 PASS" vs todo.md "Partial"（历史） | ✅ **确认**：TRACEABILITY §4 标 PRG-006 PASS，原 todo.md L23 曾标 Partial（含 gated 测试说明），现 todo.md 已空                       | P0（状态分裂核心）         |
-| **T7-2**        | v0.11.0 声明无对应 tag + shallow clone | ✅ **确认**：`git tag -l 'v*'` = 空；`git rev-parse --is-shallow-repository` = **true**（runtime 仓为 shallow clone，修复需先 `git fetch --unshallow`） | P0（PRG-002 实际不满足）   |
+| **T7-2**        | v0.11.0 声明无对应 tag + shallow clone | ✅ **已闭合**：`gh release view -R ZoneCNH/binance v0.11.0` 可用，tag/release 已发布（2026-07-02） | P0（已清零）   |
 | **T8-2**        | SECURITY.md / CONTRIBUTING.md 缺失（GAP-E44/E45） | ✅ **确认**：模块根两者均 MISSING                                                                            | P1（治理）                 |
 | **T8-3**        | BR 数量缩减（历史 9 → 现 5，GAP-E53） | ✅ **确认**：CHANGELOG line 566 声明 "BR-001/002/003/005/006/007/008/009 → Implemented"（8 个），当前 SPEC 仅 BR-001~BR-005（5 个），BR-006~009 静默删除 4 个 | P3（spec 完整性 + 治理信任） |
-| **T9-1**        | TEST-ANALYSIS 报告描述与代码不符       | ⚠️ **部分确认**：报告含 2026-07-02 免责声明，部分描述与代码不符；原 todo.md 自爆但 SPEC 未同步降级；现 todo.md 已空        | P1（评分需下调）           |
-| **T10-1**       | registry.yaml lifecycle/maturity 字段（GAP-E54 同源） | ⚠️ **看似已修复，实有真问题**：`lifecycle: production` + `maturity: L3` 已存在，但 **`release.latest_tag: v0.8.0` 与 DEPLOY v0.11.0 矛盾**（同源 T0-1）；需核 CHANGELOG 时间线 | P1（治理） |
+| **T9-1**        | TEST-ANALYSIS 报告描述与代码不符       | ✅ **已收口**：报告已补免责声明且关键结论已回刷（System E2E 对齐为已闭合） | P1（已清零）           |
+| **T10-1**       | registry.yaml lifecycle/maturity 字段（GAP-E54 同源） | ✅ **已闭合**：`lifecycle: production` + `maturity: L3` + `release.latest_tag: v0.11.0` 已对齐 | P1（已清零） |
 
 ### 0.3 GAP-E54/GAP-E55/GAP-E56 治理结构陷阱
 

@@ -1,0 +1,12 @@
+id: PROMPT-TASK-RUNTIME-E2E-20260704-001-001
+module: binance
+stage: S5-Prompt
+status: ready
+created_at: "2026-07-04"
+source_refs:
+  - report/binance/TEST-ANALYSIS-20260630.md
+  - module/binance/todo.md
+  - report/binance/REVIEW-PROMPT-20260702.md
+outputs:
+  - runtime-system-e2e-evidence
+  - test-analysis-status-refresh
