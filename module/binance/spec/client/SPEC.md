@@ -358,6 +358,12 @@ type IdempotencyKeyer interface {
 | PricePrecision | `int` | ✅ | 价格精度 |
 | QuantityPrecision | `int` | ✅ | 数量精度 |
 | Status | `string` | ✅ | 状态：`active` / `paused` / `delisted` |
+| Tier | `int` | ❌ | **分级档位**（0=核心 / 1=主流 / 2=次主流 / 3=长尾 / 4=监控）。slot 预留，落地见 [ADR-005](../../design/ADR-005-symbol-tier-classification.md) §3 |
+| SymbolPriority | `int` | ❌ | **同 Tier 内调度优先级**（0=最高）。命名消解见 [ADR-005](../../design/ADR-005-symbol-tier-classification.md) §2（与任务级 `LifecycleTask.Priority` 区分） |
+| Collection | `string` | ❌ | **采集策略**：`full_stream` / `stream_no_depth` / `kline_only` / `rest_sample` / `rest_daily` / `disabled`。路由矩阵见 [ADR-005](../../design/ADR-005-symbol-tier-classification.md) §3.1 |
+| QuoteVolumeUSD | `float64` | ❌ | **流动性信号**（分级判定依据）。依赖 ExchangeInfo decode 保留 `quoteVolume`，见 [ADR-005](../../design/ADR-005-symbol-tier-classification.md) §4.2 |
+
+> **分级字段状态声明**：`Tier` / `SymbolPriority` / `Collection` / `QuoteVolumeUSD` 四字段为 **slot 预留**——当前 runtime（`/home/workspace/binance` `catalog.go:16-43`）尚未实现，对应运行时缺口 GAP-E24（`RUNTIME-GAP-MATRIX.md §2.2`）。落地实现需先完成 GAP-E6（catalog 全量化）+ GAP-E26（interval SSOT）前置。本 SPEC 开列字段槽位以提前锁定数据模型契约，避免落地时 CatalogEntry 二次重构。设计决策与三维度建模（Tier / Level / Priority 正交）权威来源为 [ADR-005](../../design/ADR-005-symbol-tier-classification.md)。
 
 ### 10.2 NormalizedEvent
 
@@ -421,6 +427,43 @@ const (
 > **字段名规范**：所有 client 配置键使用 `binance.*` / `nats.*` / `publisher.*` / `retry.*` / `admin.*` 前缀，与根 §11.1 canonical 一致。禁止使用 `client.*` 前缀（历史遗留字段名，已废弃）。
 >
 > Client 不配置：redis / postgres / taos / clickhouse / kafka / oss / Gin API — 这些全部属于 server（根 §11.2）。
+
+### 11.1 Symbol 分级配置（tiers，slot 预留）
+
+> **状态**：本节为 **slot 预留**——当前 runtime `binanceFields`（`/home/workspace/binance` `pkg/binancecfg/config.go:249-269`）无任何 symbol 范围项，对应运行时缺口 GAP-E24（`RUNTIME-GAP-MATRIX.md §2.2`）。设计权威与完整 schema 见 [ADR-005](../../design/ADR-005-symbol-tier-classification.md) §4.4。
+
+分级配置通过 `binance.tiers` 嵌套结构声明 per-product-line × per-tier 的采集范围（Level 边界）与采集策略（Tier 决策）：
+
+| 配置键 | 类型 | 默认值 | 说明 |
+|--------|------|--------|------|
+| `binance.tiers.<product_line>.<tier>.max_symbols` | `int` | `0` | 该 Tier symbol 数量上限；`0` = 不限（T3 长尾 / T4 监控常用） |
+| `binance.tiers.<product_line>.<tier>.collection` | `string` | 按 Tier 默认 | 采集策略：`full_stream` / `stream_no_depth` / `kline_only` / `rest_sample` / `rest_daily` / `disabled` |
+| `binance.tiers.<product_line>.<tier>.symbols` | `[]string` | `[]` | 显式 symbol 列表（Level 边界，T0 人工维护蓝筹） |
+| `binance.tiers.<product_line>.<tier>.filter.quote_asset` | `[]string` | `["USDT"]` | 计价资产筛选（自动选择边界） |
+| `binance.tiers.<product_line>.<tier>.filter.min_volume_usd` | `float64` | `0` | 最低 24h 成交量阈值（流动性筛选，T2 常用） |
+
+完整 YAML 示例与 `classifyTier` 三层降级算法（显式配置 → quoteVolume 流动性 → quoteAsset 兜底）见 [ADR-005](../../design/ADR-005-symbol-tier-classification.md) §4.4 / §5。
+
+---
+
+## 11a. Symbol 分级体系（设计引用）
+
+> **设计权威**：[ADR-005 ExchangeInfo Symbol 采集分级体系架构裁决](../../design/ADR-005-symbol-tier-classification.md)
+> **运行时状态**：slot 预留，未实现（GAP-E24，`RUNTIME-GAP-MATRIX.md §2.2`）
+
+**用户架构指令**："ExchangeInfo symbol 采集的币种要分级别、分层级、分优先级，不是所有币种都采集。" 当前 runtime 在这三个维度上均为零支撑——4 条产品线把所有 TRADING（或未过期）symbol 100% 灌入 catalog，下游采集以 `Status == "active"` 为唯一谓词全量采集，无数量上限、流动性筛选或优先级分级（源码核验证据见 `report/binance/EXCHANGEINFO-SYMBOL-TIER-ANALYSIS-20260702.md` §1）。
+
+分级体系定义三个正交维度（详见 [ADR-005 §1](../../design/ADR-005-symbol-tier-classification.md)）：
+
+| 维度 | 决定 | 数据模型字段 |
+|------|------|--------------|
+| **Tier（级别）** | 采集策略 + retention TTL | `CatalogEntry.Tier`（§10.1） |
+| **Level（层级）** | 采集范围边界（产品线 × 数量 cap） | `binance.tiers.*.*` 配置（§11.1） |
+| **Priority（优先级）** | 同 Tier 内调度次序 | `CatalogEntry.SymbolPriority`（§10.1） |
+
+**五级分层**（T0 核心 / T1 主流 / T2 次主流 / T3 长尾 / T4 监控）、**采集策略路由矩阵**、**资源推算**（8000 stream → 940 stream）、**classifyTier 算法**、**缺口依赖链**（GAP-E6 → E26 → E24 → E25）均见 [ADR-005](../../design/ADR-005-symbol-tier-classification.md)。
+
+**落地前置**：分级是 GAP-E6 catalog 全量化的硬前置——全量化后若不分级，资源账不可承受（spot 2000 symbol × 1m kline × 4 线，30 天 backfill ~103K 请求）。实现顺序见 [ADR-005 §9](../../design/ADR-005-symbol-tier-classification.md)。
 
 ---
 

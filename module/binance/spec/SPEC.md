@@ -228,6 +228,8 @@ PRG-001~007 全部 PASS：
 > **双口径声明**：本 SPEC 的统计口径（48 Done / 0 Partial / 0 Drifted / 0 Pending）表示 **规格口径**——FR 功能面已闭合。运行时口径的 58 个数据完整性/安全性/可运维性缺口记录在独立制品 `module/binance/RUNTIME-GAP-MATRIX.md` 中。两者正交，不矛盾。详见该文件 §7 双口径声明。
 >
 > 来源报告：`report/binance/DATA-INTEGRITY-E2E-20260701.md`（v3.9，6358 行，27 轮对抗性自审，200+ 维度矩阵核验）。
+>
+> **分级体系设计制品**：GAP-E6/E24/E25/E26（分级与水平扩展链）的系统设计沉淀于 [`design/ADR-005-symbol-tier-classification.md`](../design/ADR-005-symbol-tier-classification.md)，来源 `report/binance/EXCHANGEINFO-SYMBOL-TIER-ANALYSIS-20260702.md`。client SPEC §10.1 CatalogEntry 与 §11.1 tiers 配置已开列分级字段槽位（slot 预留，落地不触发规格口径变更）。
 
 ## 23. Stop Condition
 

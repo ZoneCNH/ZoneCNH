@@ -2,10 +2,45 @@
 
 所有 notable 变更记录，按 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/) 格式维护。
 
-- Module-Version: v3.9.7
+- Module-Version: v3.9.8
 - Last-Updated: 2026-07-02
 - Spec-Reference: `module/binance/spec/SPEC.md` v3.9.6
 - 治理规则：`module/binance/gate/RULES.md` R9 文档存在性
+
+---
+
+## 2026-07-02 Symbol 分级体系设计制品沉淀（ADR-005）
+
+### Added — module/binance/design/
+
+- **ADR-005-symbol-tier-classification.md**（新建）：ExchangeInfo Symbol 采集分级体系架构裁决。系统沉淀 `report/binance/EXCHANGEINFO-SYMBOL-TIER-ANALYSIS-20260702.md` 的设计内容，补齐 RUNTIME-GAP-MATRIX 仅有缺口条目、无设计制品的空白。包含：
+  - §1 三维度正交建模（Tier 级别 / Level 层级 / Priority 优先级）
+  - §2 SymbolPriority 命名裁决（消解与任务级 `LifecycleTask.Priority` 同名冲突）
+  - §3 T0-T4 五级分层 + 采集策略路由矩阵 + 资源推算（8000 stream → 940 stream）
+  - §4 四支撑层（数据模型 / 信号采集 decode quoteVolume / 决策谓词 / 配置层 tiers schema）
+  - §5 classifyTier 三层降级算法
+  - §6 缺口依赖链（GAP-E6 → E26 → E24 → E25）
+  - §7 与既有 FR 边界（FR 语义以 SPEC §7 为 SSOT：FR-012 直接承载 / FR-033 delist 无重叠 / FR-036 options 无直接关系）+ ADR-004 命名 drift 澄清 + 既有缺口连锁影响
+
+### Changed — module/binance/spec/
+
+- **client/SPEC.md §10.1 CatalogEntry**（更新）：新增 4 个分级字段 slot 预留——`Tier` / `SymbolPriority` / `Collection` / `QuoteVolumeUSD`，附 slot 状态声明（未实现，对应 GAP-E24）与 ADR-005 交叉引用
+- **client/SPEC.md §11.1**（新增）：Symbol 分级配置（`binance.tiers.*.*`）slot 预留，含 max_symbols / collection / symbols / filter 配置键说明
+- **client/SPEC.md §11a**（新增）：Symbol 分级体系设计引用小节，作为 reader 进入 ADR-005 的入口
+- **SPEC.md §22a**（更新）：Runtime Gap Matrix Reference 增加 ADR-005 引用，关联 GAP-E6/E24/E25/E26 设计制品指针
+
+### CI 兼容性
+
+- 本变更**不修改任何 CI 校验的统计字段**：规格口径维持 `48 Done / 0 Partial / 0 Drifted / 0 Pending`，运行时口径维持 RUNTIME-GAP-MATRIX 的 58 项缺口
+- ADR-005 是设计制品 + SPEC slot 预留，不声明运行时统计口径变更
+- 分级字段明确标注"slot 预留，未实现"，避免被误读为已落地
+
+### 认识论标签
+
+- 现状分析（零支撑）：[COMPUTED, HIGH]，源码行号经现场核验
+- 资源推算（8000→940 stream）：[INFERRED, MED]
+- classifyTier volume 阈值：[INFERRED, LOW]，落地需校准
+- 详细标签见 ADR-005 §8
 
 ---
 
