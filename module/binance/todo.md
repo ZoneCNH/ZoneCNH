@@ -3,7 +3,7 @@
 > **read-only projection**：This file is a read-only projection, not an active closure SSOT. Closure SSOTs are Beads and GitHub Issues. 请勿在此编辑任务状态——状态变更请直接操作 GitHub Issues / Beads，本文件仅作快照投影。
 
 > **生成日期**：2026-07-02（10 轮深度分析后定稿）
-> **快照时间**：2026-07-04（GitHub #1540~#1592：Open 4 / Closed 49）
+> **快照时间**：2026-07-04（GitHub #1540~#1592：Open 3 / Closed 50）
 > **来源**：`plans/binance/011-runtime-gap-master-plan-20260702.md`（PLAN-011）
 > **同步目标**：[ZoneCNH/ZoneCNH 主仓](https://github.com/ZoneCNH/ZoneCNH/issues) issue #1540~#1592（共 53 个）
 > **beads 树**：`ZoneCNH-gg63` 系列（52 个 open）
@@ -137,7 +137,7 @@
 | 8.6  | [x]  | P2     | 容错与韧性（E11+E16+E33）   | [#1588](https://github.com/ZoneCNH/ZoneCNH/issues/1588) | gg63.6.6  | REST fallback + resiliencx 熔断             |
 | 8.7  | [x]  | P2     | 优雅运行（E14+E15+E20+E22） | [#1589](https://github.com/ZoneCNH/ZoneCNH/issues/1589) | gg63.6.7  | retention cron + drain + 背压               |
 | 8.8  | [x]  | P2     | 测试与质量（E21+E40）       | [#1590](https://github.com/ZoneCNH/ZoneCNH/issues/1590) | gg63.6.8  | CI race 强制 + HTTP timeout                 |
-| 8.9  | [ ]  | P3     | 长尾低优（E38+E39）         | [#1591](https://github.com/ZoneCNH/ZoneCNH/issues/1591) | gg63.6.9  | regexp 包级 var + %w 错误链                 |
+| 8.9  | [x]  | P3     | 长尾低优（E38+E39）         | [#1591](https://github.com/ZoneCNH/ZoneCNH/issues/1591) | gg63.6.9  | regexp 包级 var + %w 错误链                 |
 | 8.10 | [ ]  | P3     | P3 治理文档批次（E51~E58）  | [#1592](https://github.com/ZoneCNH/ZoneCNH/issues/1592) | gg63.6.10 | SPEC 章节 / BR 编号 / ADR-001 / 顶层 4 文档 |
 
 **Phase 8 验收**：38 项 P2/P3 全部 close + STANDARD/FEATURES/ACCEPTANCE/TRACEABILITY 顶层 4 文档存在。
