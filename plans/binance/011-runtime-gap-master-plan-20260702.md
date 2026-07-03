@@ -227,6 +227,8 @@ phase-1 ~ phase-8（8 个）+ runtime-gap + governance-trap + p0/p1/p2/P3 + inde
 | Phase 8 完成 | 38 项 P2/P3 + 顶层文档 | STANDARD/FEATURES/ACCEPTANCE/TRACEABILITY 顶层 4 文档存在 |
 | **综合 L3** | **0 P0 Open + ≤3 P1 Open** | `gh issue list -R ZoneCNH/ZoneCNH --label runtime-gap --search "P0 in:title" --state open` = 0 |
 
+> **进度快照（2026-07-04）**：主仓 `#1540~#1592` 当前 **Open 14 / Closed 39**；Phase 7 已完成 `#1574/#1576/#1577/#1578/#1579/#1580/#1581`，剩余 `#1575`。
+
 ---
 
 ## 4. 风险与缓解
