@@ -18,7 +18,7 @@
 
 | 层级 | 权威 |
 | --- | --- |
-| 最高治理 | `CONSTITUTION.md` |
+| 最高治理 | `CONSTITUTION.md`（§4 规格结构、§10 变更管理、§15 交付管线、§20 认识论标准） |
 | 模块规格 | 本文件 |
 | 追溯矩阵 | `module/binance/matrix/TRACEABILITY.md` |
 | issue 投影 | Beads 与 GitHub issue 为当前 SSOT；历史本地投影归档于 `module/binance/evidence/2026-06-28/todo-archived.md` |
@@ -112,6 +112,9 @@
 | BR-003 | data contracts are explicit and versioned | FR-003, FR-015, FR-029 |
 | BR-004 | market catalog changes do not require manual schema edits | FR-012, FR-031~036 |
 | BR-005 | production promotion requires observable, secure, repeatable operation | FR-016~017, FR-038~044 |
+| BR-006 | runtime-gap issue closure must be backed by merged runtime evidence | FR-023, FR-037~044 |
+| BR-007 | issue status projection docs must match GitHub issue snapshot | FR-030, FR-037 |
+| BR-008 | issue close workflow must run runtime-gap closure gate script | FR-037, FR-040, FR-043 |
 
 ## 9. Acceptance Criteria
 
