@@ -400,6 +400,12 @@ type UserWriter interface {
 }
 ```
 
+**FoundationX 补充（读写分离与流式分离）**：
+
+- 读操作和写操作不得定义在同一接口中，除非调用方确实同时需要两者（如上例 Reader/Writer 拆分）。
+- 订阅/流式接口与请求/响应接口不得合并为一个接口。本项目 `transportx` 已将 RPC / EventBus / Stream 定义为独立契约，域内接口设计遵循同一原则。
+- 为满足接口而写出 `return errors.New("not supported")` 的空方法，即为接口过大的信号，必须拆分接口而非填充占位实现。
+
 ### 接口在消费方定义
 
 接口应由**使用方**定义，而非由实现方提前声明。这是 Go 最重要的设计哲学之一。
@@ -420,6 +426,8 @@ type UserHandler struct {
     fetcher userFetcher
 }
 ```
+
+**FoundationX 强制（来自 CONSTITUTION.md §4.2）**：接口位置三分法——跨域端口统一定义在 `contracts/`（如 `MarketDataProvider`、`DecisionCardProvider`），域内接口留在域内消费方，L2.5 领域模型来自 `decimalx` / `domain-*`。"消费方定义"原则不适用于跨域端口，跨域契约以 `contracts` 为唯一归属。
 
 ### 不要提前抽象
 
@@ -444,6 +452,29 @@ type ReadWriter interface {
 // 在接口实现的 .go 文件顶部添加
 var _ UserReader = (*userRepository)(nil)
 var _ UserWriter = (*userRepository)(nil)
+```
+
+### 接口稳定性与演进
+
+**FoundationX 补充**：接口一旦发布（进入 tagged release 或被跨模块消费），禁止修改已有方法签名。新增能力通过定义新接口或接口嵌入扩展；确需破坏性变更时按 `CONSTITUTION.md` §10 走 MAJOR 变更流程。
+
+### 禁止类型断言分支
+
+**FoundationX 补充**：禁止用类型断言 `.(ConcreteType)` 或类型 switch 对接口值做业务分支，必须通过接口多态表达差异。同理，业务代码中出现 `switch strategyType`、`if exchange == "binance"` 等实现枚举判断，即为开闭原则违规信号——新增实现应只需注册，不需修改调度代码。
+
+```go
+// Bad：类型断言分支，新增实现必须改此函数
+func process(e Executor) error {
+    if b, ok := e.(*BinanceExecutor); ok {
+        return b.SpecialPath()
+    }
+    return e.Execute()
+}
+
+// Good：差异下沉到实现内部，调用方只面向接口
+func process(e Executor) error {
+    return e.Execute()
+}
 ```
 
 ### 跨域 DTO 不可变
@@ -476,6 +507,17 @@ func Process(r io.Reader) error { ... }
 // 返回具体类型，调用方可以获得完整信息
 func NewUserService(db *sql.DB) *UserService { ... }
 ```
+
+### 依赖注入
+
+**FoundationX 补充**：
+
+- 所有外部依赖（存储、消息、HTTP 客户端、时钟等）通过构造函数参数注入，禁止在业务函数内部直接构造具体实现。
+- 禁止用包级全局变量传递依赖，禁止在 `init()` 中初始化业务依赖。
+- 构造函数参数优先使用接口类型；L2.5 领域模型与 `Config` 结构体（见 `CONSTITUTION.md` §4.3）例外。
+- 装配位置分层：跨域装配集中在 `composer` / `x.go` 组合根（P12）；域仓内装配集中在自身 `cmd/` 入口与 `bootstrap` 组装层，禁止在业务包内散落装配逻辑。
+- 使用显式手动装配或 `google/wire` 等编译期方案，禁止使用反射型 DI 容器。
+- 环境变量与配置文件读取只发生在装配层（`composer` / `bootstrap` / `configx` 加载链），业务代码通过注入的 Config 结构体获取参数，测试环境与生产环境的差异只体现在装配层。
 
 ---
 
@@ -814,6 +856,27 @@ func TestAdd(t *testing.T) {
 - 对外部依赖（数据库、HTTP、消息队列）使用接口抽象。
 - 使用 `gomock` 或 `testify/mock` 生成 Mock 对象。
 - 通过依赖注入传入依赖，便于测试替换。
+
+### Mock 契约一致性
+
+**FoundationX 补充（支撑 CONSTITUTION.md §1 P6 回测与实盘共享代码）**：Mock / Fake 实现是接口契约的一等实现，不是测试便利品。行为漂移的 Mock 会直接污染回测可信度。
+
+- Mock 实现必须通过与生产实现**相同的契约测试套件**验证（同一组 WHEN/THEN 断言跑两种实现）。
+- Mock 必须实现接口的全部方法，禁止 `panic("todo")`、空方法体或返回 `not implemented` 占位——出现占位即说明接口过大，应拆分接口（见 §6 小接口原则）。
+- Mock 必须模拟生产实现的错误场景（如回测用 Mock 交易所须覆盖余额不足、最小下单量限制、限频拒绝等），不得只实现 happy path。
+- Mock 的方法耗时应可配置（配合 `FakeClock`），不得默认零延迟掩盖并发与超时问题。
+- Mock 与生产实现在相同输入下的输出结构必须一致；返回 `nil`、空集合、零值的条件必须与接口 SPEC 的 WHEN/THEN 约定完全一致。
+
+```go
+// 契约测试套件：生产实现与 Mock 共用
+func runProviderContract(t *testing.T, newProvider func(t *testing.T) MarketDataProvider) {
+    t.Run("EmptyRange_ReturnsEmptyNotNil", func(t *testing.T) { ... })
+    t.Run("InsufficientData_ReturnsErrNotEnough", func(t *testing.T) { ... })
+}
+
+func TestBinanceProvider_Contract(t *testing.T) { runProviderContract(t, newRealProvider) }
+func TestMockProvider_Contract(t *testing.T)    { runProviderContract(t, newMockProvider) }
+```
 
 ### 测试覆盖率
 

@@ -8,6 +8,7 @@
 
 | 报告 | 日期 | 主题 | 综合评分 |
 |---|---|---|:---:|
+| [solid-adaptation-20260703.md](./solid-adaptation-20260703.md) | 2026-07-03 | SOLID 规则适配分析与处置账本（外部模板 vs 宪法/编码规范逐条比对：70% 重叠 / 15% 冲突 / 15% 增量；Mock 契约一致性 + 依赖注入细则并入 go-coding-standards） | — |
 | [audit-issues-20260625.md](./audit-issues-20260625.md) | 2026-06-25 | 架构审计 10 项 issue 状态总表（9 closed + 1 long-term open，PR #1098 修复落地） | — |
 | [architecture-structural-analysis-20260625-v1.md](./architecture-structural-analysis-20260625-v1.md) | 2026-06-25 | 架构深度分析与结构性评分 v1（Supersedes 0622-v2；audit 52/52；B 维首破 60；路线图 12 项：5 短期✅ + 4 中期✅ + 3 长期框架✅） | 72/100 (B) |
 | [binance/deep-analysis-20260622-backlog.md](./binance/deep-analysis-20260622-backlog.md) | 2026-06-23 | binance 5 份深度分析未完成项汇总（20 类问题，11 已解决 / 9 剩余，含版本漂移新发现） | — |
@@ -35,6 +36,7 @@
 | [`fred/`](./fred/) | fred 模块深度分析（deep-analysis P0/P1 排序；data-issues 历史/实时/同步/清洗/缺口；ms_brain 下游契约；structural-score 68/42 分账本；iteration-plan 为收敛迭代方案） |
 | [`goal/`](./goal/) | Goal 文档分析（2026-06-09 收尾，含 ISSUE-LEDGER 与 README） |
 | [`archive/`](./archive/) | 历史档案区（已收敛的过程草稿） |
+| [`archive/solid-template-20260703/`](./archive/solid-template-20260703/) | 外部通用 Go 量化 SOLID 规则模板原稿（未落地草案，已由 `solid-adaptation-20260703.md` 逐条处置后归档） |
 | [`archive/xlib-20260608/`](./archive/xlib-20260608/) | xlib_standard 2026-06-08 单日多次产出（0341/0446/0459/0513/0530/0602 六个时间戳版本 + score-team），共 12 文件，已归档 |
 
 ## 命名约定
@@ -54,6 +56,7 @@
 
 | 日期 | 变更 |
 |---|---|
+| 2026-07-03 | 新增 `solid-adaptation-20260703.md`：SOLID 模板逐条处置账本；原模板归档至 `archive/solid-template-20260703/`；采纳项（Mock 契约一致性、依赖注入、接口稳定性、禁类型断言分支、读写/流式分离）同 PR 并入 `docs/standards/go-coding-standards.md` §6/§11 |
 | 2026-06-25 | 新增 `architecture-structural-analysis-20260625-v1.md`：架构深度分析 v1（Supersedes 0622-v2；audit 52/52 PASS；综合 72/B；含 5 项短期修复落地：P1-1 事实层 verified_against 刷新+CI cron、P0-2 五模块 §8 Evidence 投影、P1-2 LIFECYCLE 主态+后缀补态、P1-3 AC ID 规范核实已完成、P2-1 核实取消） |
 | 2026-06-23 | 新增 `binance/deep-analysis-20260622-backlog.md`：5 份深度分析（v1~v5）未完成项汇总，20 类问题逐条回核，11 已解决 / 9 剩余；新发现 STATUS/ARCHITECTURE spec 版本落后（v3.3.0 vs v3.4.0） |
 | 2026-06-23 | 更新 `binance/github-issues-923-931-closure-ledger-20260623.md`：记录 #923-#931 已全部处于 GitHub Closed 状态，同时明确 issue tracking closure 不替代 runtime/release evidence |
