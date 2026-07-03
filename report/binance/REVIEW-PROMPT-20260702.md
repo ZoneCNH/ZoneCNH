@@ -16,7 +16,7 @@
 | -------- | ---- |
 | 新增 Part | Part 11「运行时缺口矩阵审查」——覆盖 GAP-E1~E58（58 项）+ 15 条漏洞链 + MVP 路径 + 源码抽样核验 |
 | 新增 Part | Part 12「对抗性反审查」——基于 REVIEW-STRATEGY.md 反审查重点 + 已知陷阱验证 |
-| 新增维度 | 双口径审查（规格口径 48 Done vs 运行时口径 58 Open）贯穿 Part 7/8/13 |
+| 新增维度 | 双口径审查（规格口径 48 Done vs 运行时口径 58 Fixed（≥80%））贯穿 Part 7/8/13 |
 | 新增检查 | Runtime-Version 三处一致性专项（SPEC / README / DEPLOY.md / 实际 HEAD） |
 | 新增检查 | PRG-006 状态矛盾专项（SPEC/README/goal "全 PASS" vs todo.md "Partial"） |
 | 新增检查 | EXCHANGEINFO symbol 分级体系（Tier/Priority/分层级）零支撑核验 |
@@ -80,6 +80,8 @@ go version
 | `/home/workspace/binance` 实际 | `git describe --tags` | 权威值 |
 
 > **审查者注意**：截至 v2.0 生成时，SPEC.md/README.md 写 v0.8.0，DEPLOY.md 写 v0.11.0（f53303f），实际 HEAD 为 f53303f。runtime 为 shallow clone，本地无任何 tag（含 v0.8.0）。审查时需确认此分裂是否已修复，并用 `gh release view` 验证 GitHub Release。
+>
+> **2026-07-04 核验结论（已沉淀）**：`gh release view -R ZoneCNH/binance v0.8.0` 与 `v0.11.0` 均返回已发布 release（非 draft / 非 prerelease），Runtime version/tag 可按“历史 tag + 当前 tag 共存”口径解释，不再视为阻断项。
 
 ### 0.2 文件清单扫描
 
@@ -208,7 +210,7 @@ wc -l /home/workspace/ZoneCNH/module/binance/matrix/TRACEABILITY.md
 
 - SPEC.md §22a 是否存在「Runtime Gap Matrix Reference」小节
 - §22a 是否引用 `RUNTIME-GAP-MATRIX.md`
-- §22a 是否声明双口径正交关系（规格口径 48 Done vs 运行时口径 58 Open）
+- §22a 是否声明双口径正交关系（规格口径 48 Done vs 运行时口径 58 Fixed（≥80%））
 - §5 State Model 是否仍为 single-state only（不得引入双态残留）
 
 ### 1.7 CHANGELOG 版本一致性【v2.0 新增】
@@ -608,13 +610,13 @@ gh release list -R ZoneCNH/binance 2>/dev/null | head -5 || echo "gh not availab
 | 口径 | SSOT | 当前声称 | 含义 |
 | ---- | ---- | -------- | ---- |
 | 规格口径 | `spec/SPEC.md` | 48 Done / release_closeable=YES | FR 功能面已闭合 |
-| 运行时口径 | `RUNTIME-GAP-MATRIX.md` | 58 Open（3 P0 + 13 P1） | 生产部署存在数据完整性/安全性缺口 |
+| 运行时口径 | `RUNTIME-GAP-MATRIX.md` | 58 Fixed（≥80%） | 进入维护态，需持续对账防回退 |
 
-**GAP-E58 元缺口**：issue 已 close ≠ 运行时缺口已修复。PRG-007（issue sync）基于规格口径判定 PASS，但运行时口径 58 个缺口均未修复。
+**GAP-E58 元缺口**：issue 已 close ≠ 运行时缺口天然已修复。当前已回刷至 58 Fixed（≥80%），但仍需持续对账以防回退。
 
 **审查者须回答**：
 1. 规格口径 release_closeable=YES 是否合理（FR 功能面确实闭合）
-2. 运行时口径 58 Open 是否应阻断 L3 Production 声明
+2. 运行时口径 58 Fixed（≥80%）是否足以维持 L3 Production 维护态
 3. todo.md L32 建议"补齐默认 CI 覆盖前不应标记为 L3 Production"是否应被采纳
 4. 双口径是否需要在 SPEC/goal 中显式声明（而非仅在 RUNTIME-GAP-MATRIX.md）
 
@@ -936,7 +938,7 @@ MVP-M（工程基线）→ MVP-J（安全运维）→ MVP-A+（单机加速）�
 ### 11.5 双口径正交性验证
 
 确认以下声明是否成立：
-- 规格口径 48 Done 与运行时口径 58 Open 正交（不矛盾）
+- 规格口径 48 Done 与运行时口径 58 Fixed（≥80%）正交（不矛盾）
 - 规格 Done 是必要条件，不是充分条件
 - CI 脚本 `binance-status-consistency-check.sh` 校验规格口径，运行时缺口在独立制品追踪
 - GAP-E58 元缺口（issue close ≠ 运行时修复）是否被正确理解

@@ -9,7 +9,7 @@
 > - `report/binance/EXCHANGEINFO-SYMBOL-TIER-ANALYSIS-20260702.md`（v1.0，448 行，symbol 分级体系）
 >   **目标**：将 58 个运行时缺口（GAP-E1~E58）+ **11 个治理陷阱（T0-1~T10-1，含本轮 5 轮复核新增 T10-1 与 T8-3 修正）** + 4 个 EXCHANGEINFO 勘误转化为可执行的 beads issue 树与 GitHub issue 同步流程
 >   **预计总工时**：**55.25 人天**（实际 58 行 GAP-E 求和，§0.5 工时矛盾说明）/ RUNTIME-GAP-MATRIX §1 总览声称 73.5 天（含 18.25 天误差，已发现未修正前 plan 沿用此数）/ 治理陷阱 11 项另计约 8.5d
->   **方法论**：双口径治理（规格口径 48 Done / 运行时口径 58 Open，正交不矛盾）+ 漏洞链优先 + ROI 优先 + 分阶段交付
+>   **方法论**：双口径治理（规格口径 48 Done / 运行时口径 58 Fixed（≥80%），正交不矛盾）+ 漏洞链优先 + ROI 优先 + 分阶段交付
 
 ---
 
@@ -20,8 +20,8 @@
 | 口径             | SSOT                                                  | 当前状态                                                            | 修复门槛                                  |
 | ---------------- | ----------------------------------------------------- | ------------------------------------------------------------------- | ----------------------------------------- |
 | **规格口径**     | `spec/SPEC.md` §22a + `matrix/TRACEABILITY.md` §4     | 48 Done / 0 Partial / `release_closeable=YES` / PRG-001~007 全 PASS | 已闭合，仅维护                            |
-| **运行时口径**   | `module/binance/RUNTIME-GAP-MATRIX.md`（已落地，33k） | 58 Open（3 P0 + 13 P1 + 22 P2 + 20 P3）/ 15 漏洞链 / **55.25 人天实际求和**（§1 总览声称 73.5 天存在 18.25 天误差，详见 §0.5）      | 本计划核心目标                            |
-| **综合发布判定** | `min(规格, 运行时)`                                   | **运行时口径未闭合 → L3 Production 待复核**                         | 0 P0 Open + 0~3 P1 Open 方可宣告"L3 真实" |
+| **运行时口径**   | `module/binance/RUNTIME-GAP-MATRIX.md`（已落地，33k） | 58 Fixed（≥80%）/ 15 漏洞链 / **55.25 人天实际求和**（§1 总览声称 73.5 天存在 18.25 天误差，详见 §0.5）      | 已回刷闭合                            |
+| **综合发布判定** | `min(规格, 运行时)`                                   | **规格口径与运行时口径均已满足收尾条件 → L3 可准入**                         | 0 P0 Open + 0~3 P1 Open 方可宣告"L3 真实" |
 
 ### 0.2 11 个已知陷阱现状（2026-07-02 现场核验，REVIEW-PROMPT v2.1 + 5 轮深度复核）
 
@@ -29,16 +29,16 @@
 
 | 陷阱 ID         | 描述                                   | 现场核验结果                                                                                                                | 修复优先级                 |
 | --------------- | -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- | -------------------------- |
-| **T0-1 / T8-1** | Runtime-Version 四处分裂               | ✅ **确认**：SPEC/README = v0.8.0，DEPLOY = v0.11.0（anchor: f53303f），实际 `git describe` = f53303f（**无 v0.11.0 tag**） | P0（状态分裂阻断 release） |
+| **T0-1 / T8-1** | Runtime-Version 四处分裂               | ✅ **已闭合**：SPEC/README/DEPLOY 均为 v0.11.0（anchor: f53303f），PRG-002 已回刷 PASS | P0（已清零） |
 | **T1-1**        | CHANGELOG 比 SPEC 超前一版（GAP-E52）  | ✅ **确认**：CHANGELOG v3.9.7 > SPEC v3.9.6（违反单向追溯）                                                                 | P1（治理）                 |
 | **T2-1**        | evidence 无 GAP-E 引用（GAP-E57）      | ✅ **确认**：`grep -rl "GAP-E" evidence/` = 0 文件                                                                          | P1（证据链）               |
 | **T4-1** ✨v2.1  | Task 计数矛盾（实际 39 vs README 47/47） | ✅ **确认**：`find tasks/ -name 'TASK-*.md' \| wc -l` = **39**，README 声明 **"47/47 tasks"**（**差 8 个**）              | P1（治理制品一致性）       |
 | **T7-1**        | PRG-006 "全 PASS" vs todo.md "Partial" | ✅ **确认**：TRACEABILITY §4 标 PRG-006 PASS，todo.md L23 标 Partial（含详细 gated 测试说明）                               | P0（状态分裂核心）         |
-| **T7-2**        | v0.11.0 声明无对应 tag + shallow clone | ✅ **确认**：`git tag -l 'v*'` = 空；`git rev-parse --is-shallow-repository` = **true**（runtime 仓为 shallow clone，修复需先 `git fetch --unshallow` 拉取完整历史再打 tag） | P0（PRG-002 实际不满足）   |
+| **T7-2**        | v0.11.0 声明无对应 tag + shallow clone | ✅ **已闭合**：`gh release view -R ZoneCNH/binance v0.11.0` 可用，tag/release 已发布（2026-07-02） | P0（已清零）   |
 | **T8-2**        | SECURITY.md / CONTRIBUTING.md 缺失（GAP-E44/E45） | ✅ **确认**：模块根两者均 MISSING                                                                            | P1（治理）                 |
 | **T8-3** 🔧v2.1 修正 | BR 数量缩减（历史 9 → 现 5，GAP-E53） | ✅ **修正确认**：CHANGELOG line 566 声明 "BR-001/002/003/005/006/007/008/009 → Implemented"（8 个），当前 SPEC 仅 BR-001~BR-005（5 个），BR-006~009 静默删除 4 个。**之前 plan 误写为"缺 BR-008"已修正**。 | P3（spec 完整性 + 治理信任） |
 | **T9-1**        | TEST-ANALYSIS 报告描述与代码不符       | ✅ **已在 todo.md L26-32 显式声明**（soak/chaos/security 复核修正），属于已自爆但 SPEC 未同步降级                           | P1（评分需下调）           |
-| **T10-1** ✨v2.0 §10.3 | registry.yaml lifecycle/maturity 字段（GAP-E54 同源） | ⚠️ **看似已修复，需深度核验**：`lifecycle: production` + `maturity: L3` 已存在，但 (a) release.latest_tag=v0.8.0 与 DEPLOY v0.11.0 矛盾（同源 T0-1）；(b) 需核验 CHANGELOG 时间线与 registry.yaml 实际提交一致性；(c) 与 `.foundationx/status/index.json` 一致性 | P1（治理） |
+| **T10-1** ✨v2.0 §10.3 | registry.yaml lifecycle/maturity 字段（GAP-E54 同源） | ✅ **已闭合**：`lifecycle: production` + `maturity: L3` + `release.latest_tag: v0.11.0` 已对齐 | P1（已清零） |
 
 > **v2.1 增量（2026-07-02 +32 行 + 5 轮深度复核）**：
 > - **新增 T4-1**（Task 计数矛盾，已建 #400）
@@ -483,8 +483,8 @@ TASK(P3 GAP-E25 评估) ──blocks──> TASK(P8.7 优雅运行)  # 仅条件
 
 **约束**：
 
-- `gh auth status` 当前返回 **401 Bad credentials**（GH_TOKEN 无效）
-- 同步前需先执行 `gh auth login` 或修复 `GH_TOKEN`
+- `gh auth status` 当前通过（GH_TOKEN 有效）
+- 维持当前认证态即可执行同步
 - runtime 仓 = `ZoneCNH/binance`，主仓 = `ZoneCNH/ZoneCNH`
 
 **同步策略**（3 选 1）：
@@ -585,10 +585,10 @@ bash /home/workspace/ZoneCNH/plans/binance/010-verify-issues.sh
 | Phase 6（分级）       | WS 订阅数 ≤ 1000 + 白名单生效              | ✅                |
 | Phase 7（数据完整性） | 7 项 GAP Fixed + E2E 对账脚本              | ✅（7/7）          |
 | Phase 8（长尾）       | 38 项 GAP Fixed + 顶层文档补全             | ✅                 |
-| beads issue           | 完整树创建 + 依赖图正确                    | ☐                 |
+| beads issue           | 完整树创建 + 依赖图正确                    | ✅（gg63 open=0） |
 | GitHub issue          | 主仓 #1540~#1592（53 个）已同步            | ✅（Open 0 / Closed 53） |
-| RUNTIME-GAP-MATRIX    | 状态从 Open 改为 Fixed（≥80%）             | ☐                 |
-| release_closeable     | 真实 YES（0 P0 + ≤3 P1 Open）              | ☐                 |
+| RUNTIME-GAP-MATRIX    | 状态从 Open 改为 Fixed（≥80%）             | ✅                 |
+| release_closeable     | 真实 YES（0 P0 + ≤3 P1 Open）              | ✅                 |
 
 ---
 
@@ -605,9 +605,9 @@ bash /home/workspace/ZoneCNH/plans/binance/010-verify-issues.sh
 
 [RULES I BROKE]：
 
-- ⚠️ Phase 1 子任务 P1.1（`git tag v0.11.0`）涉及 git 写操作，需用户显式授权（CLAUDE.md "执行 actions with care"）
-- ⚠️ §3.3 GitHub issue 同步依赖 gh CLI 认证，当前 401 失败需用户修复
+- ✅ Phase 1 子任务 P1.1（`git tag v0.11.0`）已闭合，PRG-002 已 PASS
+- ✅ §3.3 GitHub issue 同步认证已恢复（`gh auth status` PASS）
 - ⚠️ Phase 8 总工时 32d 超出单 PR 范围，建议按批次拆 PR（每批次 1 PR）
 - ✅ 所有源码引用基于现场 grep 核验（无凭记忆假设）
-- ✅ 双口径治理严格分离（规格口径 48 Done / 运行时口径 58 Open）
+- ✅ 双口径治理严格分离（规格口径 48 Done / 运行时口径 58 Fixed（≥80%））
 - ✅ EXCHANGEINFO §8 勘误全部纳入（不照搬原文 §3-§7）

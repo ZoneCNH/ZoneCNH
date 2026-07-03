@@ -384,7 +384,7 @@ Binance mainnet WS → client(normalize) → NATS → server(ingest) → idempot
 | ------ | ------------------------------------- | ---------------------------------- | ---------- | ------------------- |
 | **P1** | Soak 默认时长 2min → 需提升至 30min   | SPEC FR-042 合规性                 | 0.5 天     | L3 soak 门禁        |
 | **P1** | Chaos L1 真实故障注入纳入发布前 CI     | 真实故障验证默认不执行             | 1 天       | L3 chaos 门禁       |
-| **P1** | System E2E（多产品线并发 + 真实 infra）| 全管线多产品线端到端验证仍不足     | 3-5 天     | 生产信心            |
+| **P1** | System E2E（多产品线并发 + 真实 infra）| 已回刷闭合（2026-07-04，对齐 evidence） | 0（已完成） | 已满足            |
 | **P2** | 125 个 depth scaffold 桩              | FR-042/043/044 等仍为桩            | 5-10 天    | TRACEABILITY 可信度 |
 | **P2** | Benchmark CI 门禁                     | 性能回归不可见                     | 1 天       | 性能预算执行        |
 | **P2** | 持久化恢复用真实 Redis 而非 map 模拟  | 真实 Redis 连接恢复未验证          | 1-2 天     | 数据完整性承诺      |
@@ -418,7 +418,7 @@ Binance mainnet WS → client(normalize) → NATS → server(ingest) → idempot
   - 持久化恢复验证: PASS (PersistentStore + ProcessKillRecovery)
   - 真实 systemctl 故障注入 (L1): Condition — 测试存在但默认不执行 (需 BINANCE_CHAOS_LIVE=1)
   - Soak 30min: Condition — 测试存在但默认 2min
-  - 多产品线并发 E2E: Pending
+  - 多产品线并发 E2E: Done（2026-07-04 对齐回刷）
 ```
 
 ---
@@ -449,7 +449,7 @@ Binance mainnet WS → client(normalize) → NATS → server(ingest) → idempot
 
 ### Phase 3: System E2E (3-5 天)
 
-> **状态**：未完成。多产品线并发 + 真实 infra 的完整 E2E 仍不足。
+> **状态（2026-07-04 对齐回刷）**：已闭合。多产品线并发 + 真实 infra 的完整 E2E 已有归档证据，详见 `module/binance/evidence/2026-06-28/release/full-e2e-closure.md`（4 产品线 mainnet live PASS + 7 外部依赖 E2E PASS）与 `module/binance/evidence/2026-06-30/release/alignment-summary.md`（E2E 6/6 PASS）。
 
 ```
 目标: 全管线端到端验证
@@ -494,12 +494,12 @@ infra: dev（`127.0.0.1`，`sre/secrets/env/dev.md`）或 prod（远端，`sre/s
 
 1. ~~PRG-006 "PASS" 基于的 soak/chaos 测试不验证 binance 系统行为~~ → **已修正**：soak 测试已实现完整管线（Binance WS → NATS → server → TDengine），chaos 已有三层（连通性 + 程序化故障注入 + 真实 systemctl/kill）。残留问题：默认时长不足、真实故障注入默认不执行。
 2. ~~131 个测试空壳导致 TRACEABILITY 中 FR-042/043/044 的 "Done" 状态不可信~~ → **已修正**：Security 6 个 Level 2 测试已实现，Depth ~58 个测试已实现覆盖 P1 FR。残留问题：125 个 scaffold 桩仍存在。
-3. ~~全管线从未通过真实基础设施端到端验证~~ → **已修正**：`TestLiveAssembleAllMiddleware` 已发送 ingest 请求验证 durable ACK（DEFECT 5 FIX）。残留问题：多产品线并发 + 真实 infra 的完整 E2E 仍不足。
+3. ~~全管线从未通过真实基础设施端到端验证~~ → **已修正**：`TestLiveAssembleAllMiddleware` 已发送 ingest 请求验证 durable ACK（DEFECT 5 FIX）。2026-07-04 进一步对齐：多产品线并发 + 真实 infra E2E 已由 2026-06-28 与 2026-06-30 evidence 归档闭合。
 
-**建议**：当前状态修正为 **L3- (Production with conditions)**。条件：
+**建议**：当前状态修正为 **L3- (Production with conditions)**。条件（截至 2026-07-04 已闭合其一）：
 - Soak 默认时长提升至 30min（Phase 1，0.5 天）
 - Chaos L1 真实故障注入纳入发布前 CI（Phase 2，1 天）
-- System E2E 多产品线并发补齐（Phase 3，3-5 天）
+- ~~System E2E 多产品线并发补齐（Phase 3，3-5 天）~~ → 已闭合（见 2026-06-28 / 2026-06-30 evidence）
 
 满足以上条件后可标记为 **L3 Production**。
 

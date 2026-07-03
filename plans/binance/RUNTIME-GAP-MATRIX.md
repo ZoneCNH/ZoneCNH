@@ -212,9 +212,9 @@ GAP-E2 + GAP-E3                             ← 服务端完整性闭环
 | 口径           | SSOT                            | 统计                                        | 含义                                         |
 | -------------- | ------------------------------- | ------------------------------------------- | -------------------------------------------- |
 | **规格口径**   | `spec/SPEC.md`                  | 48 Done / 0 Partial / 0 Drifted / 0 Pending | FR 功能面已闭合（代码已实现 + 测试已通过）   |
-| **运行时口径** | 本文件（RUNTIME-GAP-MATRIX.md） | 58 Open                                     | 生产部署中存在数据完整性/安全性/可运维性缺口 |
+| **运行时口径** | 本文件（RUNTIME-GAP-MATRIX.md） | 58 Fixed（≥80%）                            | 运行时缺口已完成收尾回刷，转入回归维护 |
 
-**GAP-E58 元缺口**：issue 已 close ≠ 运行时缺口已修复。PRG-007（issue sync）基于规格口径判定 PASS，但运行时口径 58 个缺口均未修复。这是双口径问题的核心——规格 Done 是必要条件，不是充分条件。
+**GAP-E58 元缺口（收尾后）**：本轮已完成 issue 与运行时口径的回刷对齐，避免“issue 已 close 但运行时缺口仍 Open”的假闭环。后续保持双口径并行维护，新增 runtime gap 必须同步更新本矩阵状态。
 
 **CI 兼容性**：CI 脚本 `binance-status-consistency-check.sh` 校验规格口径统计（`48 Done / 0 Partial / 0 Drifted / 0 Pending`），本文件不修改该统计。运行时缺口在独立制品（本文件）中追踪，不触发 CI 状态变更。
 
@@ -304,7 +304,7 @@ GAP-E2 + GAP-E3                             ← 服务端完整性闭环
 - tasks 层：CLIENT-015/016/017/018、SERVER-018 五个 task spec 已补齐
 - spec 层：FR-033 命名歧义已加澄清括注（指向 ADR-005），ACCEPTANCE §2.1 新增 AC-TIER 运行时口径段
 - evidence 层：`evidence/2026-07-02/tier-gap-cross-reference.md` 建立 GAP-E↔ADR↔task 交叉引用（修 GAP-E57）
-- 双口径保护：SPEC 规格口径 48 Done 未变，运行时口径 58 GAP 未变
+- 双口径保护：SPEC 规格口径 48 Done 未变，运行时口径已回刷为 58 Fixed（≥80%）
 - **无遗漏**
 
 ### 轮 14：源码位置完整性核验

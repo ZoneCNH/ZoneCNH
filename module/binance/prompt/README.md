@@ -28,6 +28,9 @@ prompt/
 
 > [COMPUTED, HIGH] 2026-06-28 full E2E 包仅作为历史运行证据，不构成发布关闭结论。后续生成新 Context Package 时，必须引用当前 P10 action plan、team fix context、Beads/GitHub issue 状态、[`../todo.md`](../todo.md) 只读投影与 [`../evidence/2026-06-28/todo-archived.md`](../evidence/2026-06-28/todo-archived.md) 的历史快照。
 
+**已生成 Context Package**：
+- `PROMPT-TASK-RUNTIME-E2E-20260704-001-001/`（R1：多产品线并发 + 真实 infra System E2E）
+
 **待生成 Context Package 的 Task**（按需排列）：
 - 43 个 Binance P10 issue 已全部关闭；PRG-001~007 全 PASS，release_closeable=YES
 - L3 Production 准入完成：runtime / CI / release / coverage / soak / chaos 证据包已归档于 `evidence/2026-06-30/release/`
