@@ -202,9 +202,10 @@ Foundation 目录内的执行域共享值对象规格，用于订单、成交、
 | coinglass | C/S | [SPEC.md](./coinglass/SPEC.md) | Coinglass 衍生品数据采集 |
 | fred | C/S | [SPEC.md](./fred/SPEC.md) | FRED 宏观经济数据采集 |
 | ecb | C/S | [SPEC.md](./ecb/spec/SPEC.md) | ECB 欧元区宏观与央行数据采集 |
+| uk_cb | C/S | [SPEC.md](./uk_cb/spec/SPEC.md) | BoE 英国央行宏观与政策数据采集 |
 | treasury | C/S | — | 美国国债/财政数据采集 |
 | market_data | 独立进程 | [SPEC.md](./market_data/SPEC.md) | 行情摄取与分发聚合层（14 子模块） |
-| macro_data | 独立进程 | [SPEC.md](./macro_data/SPEC.md) | 宏观摄取与分发聚合层（10/11 子模块） |
+| macro_data | 独立进程 | [SPEC.md](./macro_data/SPEC.md) | 宏观摄取与分发聚合层（11/11 子模块） |
 | pe_data | 独立进程 | [SPEC.md](./pe_data/SPEC.md) | 另类数据（PE 相关）摄取 |
 | alternative_data | 独立进程 | — | 链上数据、社交情绪、新闻 NLP |
 
