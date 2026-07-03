@@ -188,7 +188,7 @@ Foundation 目录内的执行域共享值对象规格，用于订单、成交、
 
 ---
 
-## 数据域（10 个）
+## 数据域（11 个）
 
 数据采集与分发。C/S Module（交易所采集器）与独立进程（聚合层）混合。registry `domain=data`。
 
@@ -201,6 +201,7 @@ Foundation 目录内的执行域共享值对象规格，用于订单、成交、
 | hyperliquid | C/S | [SPEC.md](./hyperliquid/SPEC.md) | Hyperliquid 行情采集 |
 | coinglass | C/S | [SPEC.md](./coinglass/SPEC.md) | Coinglass 衍生品数据采集 |
 | fred | C/S | [SPEC.md](./fred/SPEC.md) | FRED 宏观经济数据采集 |
+| ecb | C/S | [SPEC.md](./ecb/spec/SPEC.md) | ECB 欧元区宏观与央行数据采集 |
 | treasury | C/S | — | 美国国债/财政数据采集 |
 | market_data | 独立进程 | [SPEC.md](./market_data/SPEC.md) | 行情摄取与分发聚合层（14 子模块） |
 | macro_data | 独立进程 | [SPEC.md](./macro_data/SPEC.md) | 宏观摄取与分发聚合层（10/11 子模块） |
@@ -415,7 +416,7 @@ FoundationX 运行模块分为两种架构类型。详见 [`ARCHITECTURE.md`](..
 
 **升级路线图**：[`data_cs_module/UPGRADE-ROADMAP.md`](./data_cs_module/UPGRADE-ROADMAP.md) — market_data / macro_data 的分批升级计划
 
-**宏观模块规格**：[`fred`](./fred/README.md) — FRED 独立 C/S 服务，覆盖共享基座、`domain_macro` 领域共享层、完整持久化和 dev 配置来源。
+**宏观模块规格**：[`fred`](./fred/README.md)、[`ecb`](./ecb/README.md) — 宏观独立 C/S 服务，覆盖共享基座、`domain_macro` 领域共享层、完整持久化和 dev 配置来源。
 
 **参考实现**：[binance](https://github.com/ZoneCNH/binance)（spec v3.9.6；Runtime-Version `v0.8.0`；2026-06-29：Runtime-Anchor `/home/workspace/binance@b2d9d83`；single state `48 Done / 0 Partial`（100%）；coverage 100.0%；release_closeable=YES 🎉；v0.8.0 tag 已发布；47/47 tasks Done）
 
