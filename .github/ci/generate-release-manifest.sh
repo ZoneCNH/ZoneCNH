@@ -24,12 +24,18 @@ if [ ! -f "$STATUS_FILE" ]; then
   exit 1
 fi
 
-# 提取总览仪表盘中的数字
-TOTAL=$(grep -oP '组件总数:\s*\K\d+' "$STATUS_FILE" | head -1)
-EXISTING=$(grep -oP '已有:\s*\K\d+' "$STATUS_FILE" | head -1)
-PLANNED=$(grep -oP '已创建:\s*\K\d+' "$STATUS_FILE" | head -1)
-AVG_PROGRESS=$(grep -oP '平均进度:\s*\K\d+' "$STATUS_FILE" | head -1)
-VERSIONED=$(grep -oP '有版本号\s*\K\d+' "$STATUS_FILE" | head -1)
+# 提取总览仪表盘中的数字（容错：无匹配时返回空，后续统一 fallback 0）
+extract_metric() {
+  local pattern="$1"
+  local file="$2"
+  grep -oP "$pattern" "$file" | head -1 || true
+}
+
+TOTAL=$(extract_metric '组件总数:\s*\K\d+' "$STATUS_FILE")
+EXISTING=$(extract_metric '已有:\s*\K\d+' "$STATUS_FILE")
+PLANNED=$(extract_metric '已创建:\s*\K\d+' "$STATUS_FILE")
+AVG_PROGRESS=$(extract_metric '平均进度:\s*\K\d+' "$STATUS_FILE")
+VERSIONED=$(extract_metric '有版本号\s*\K\d+' "$STATUS_FILE")
 
 # ── 提取 README.md 中的仓库数 ──────────────────────────────────
 README_FILE="README.md"
