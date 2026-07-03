@@ -859,7 +859,7 @@ func TestAdd(t *testing.T) {
 
 ### Mock 契约一致性
 
-**FoundationX 补充（支撑 CONSTITUTION.md §1 P6 回测与实盘共享代码）**：Mock / Fake 实现是接口契约的一等实现，不是测试便利品。行为漂移的 Mock 会直接污染回测可信度。
+**FoundationX 强制（来自 CONSTITUTION.md §5.5）**：Mock / Fake 实现是接口契约的一等实现，不是测试便利品。行为漂移的 Mock 会直接污染回测可信度。
 
 - Mock 实现必须通过与生产实现**相同的契约测试套件**验证（同一组 WHEN/THEN 断言跑两种实现）。
 - Mock 必须实现接口的全部方法，禁止 `panic("todo")`、空方法体或返回 `not implemented` 占位——出现占位即说明接口过大，应拆分接口（见 §6 小接口原则）。

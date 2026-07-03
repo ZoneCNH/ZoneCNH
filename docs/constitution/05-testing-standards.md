@@ -43,4 +43,16 @@ func TestFunctionName_Scenario_ExpectedBehavior(t *testing.T) {
 - 禁止 sleep 等待（使用 channel 或 retry）
 - 禁止测试中硬编码时间（使用 `FakeClock`）
 
+### 5.5 Mock 契约一致性
+
+> 支撑第一条 P6（回测与实盘共享代码）：Mock/Fake 实现是接口契约的一等实现，不是测试便利品。行为漂移的 Mock 会直接污染回测可信度。
+
+| 规则 | 说明 |
+| ---- | ---- |
+| 共用契约测试 | Mock 实现必须通过与生产实现**相同的契约测试套件**验证（同一组 WHEN/THEN 断言分别跑生产实现和 Mock） |
+| 全方法实现 | Mock 必须实现接口的全部方法，禁止 `panic("todo")`、空方法体或返回 `not implemented`；出现占位即说明接口过大，应依 §4.1 拆分接口 |
+| 错误场景覆盖 | Mock 必须模拟生产实现的错误场景（如回测用 Mock 交易所须覆盖余额不足、最小下单量限制、限频拒绝等），不得只实现 happy path |
+| 延迟可配置 | Mock 的方法执行耗时应可配置（配合 `FakeClock`），不得默认零延迟掩盖并发与超时问题 |
+| 输出结构一致 | Mock 与生产实现在相同输入下的输出结构必须一致；返回 `nil`、空集合、零值的条件必须与接口 WHEN/THEN 约定完全一致 |
+
 ---
