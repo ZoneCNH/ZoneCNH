@@ -4,6 +4,12 @@
 # 前置：gh auth login（当前 401 失败）
 set -euo pipefail
 
+if [[ "${1:-}" != "--legacy-force" && "${1:-}" != "--dry-run" ]]; then
+  echo "⚠️ ARCHIVED: 010 系列为历史脚本，默认禁止执行。"
+  echo "如需仅查看请使用 --dry-run；确需旧流程执行请显式传 --legacy-force。"
+  exit 2
+fi
+
 DRY_RUN="${1:-}"
 REPO="ZoneCNH/binance"
 

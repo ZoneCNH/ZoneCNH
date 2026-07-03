@@ -244,11 +244,11 @@ phase-1 ~ phase-8（8 个）+ runtime-gap + governance-trap + p0/p1/p2/P3 + inde
 
 ## 5. 后续工作
 
-- 本 plan 定稿后，立即执行 `011-sync-master-issues.sh` 同步主仓 issues
-- `module/binance/todo.md` 重写为完整 8 阶段执行清单（详见 011 系列产物）
-- beads gg63 树已在 5 轮分析时建立完整 52 个 open issue，10 轮后保持不变（除非用户要求重新拆解）
+- 主仓 issue 已同步到 #1540~#1592，后续按 GitHub/Beads 作为关闭 SSOT 持续对账
+- `module/binance/todo.md` 维持 read-only projection，仅做状态镜像不作为关闭依据
+- beads gg63 树继续保留，用于主仓 issue 的双向映射与跨会话跟踪
 
 ---
 
 **Plan 状态**：✅ 定稿（10 轮深度分析后）
-**下一步**：执行同步脚本 + 重写 todo.md
+**下一步**：按 Phase 4 起始 open issue 执行闭环，并定期回刷 011 映射表

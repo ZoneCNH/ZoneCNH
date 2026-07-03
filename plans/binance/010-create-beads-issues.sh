@@ -4,6 +4,12 @@
 # 前置：cd /home/workspace/ZoneCNH && bd ready
 set -euo pipefail
 
+if [[ "${1:-}" != "--legacy-force" && "${1:-}" != "--dry-run" ]]; then
+  echo "⚠️ ARCHIVED: 010 系列为历史脚本，默认禁止执行。"
+  echo "如需仅查看请使用 --dry-run；确需旧流程执行请显式传 --legacy-force。"
+  exit 2
+fi
+
 DRY_RUN="${1:-}"
 CREATE_ARGS=""
 if [[ "$DRY_RUN" == "--dry-run" ]]; then

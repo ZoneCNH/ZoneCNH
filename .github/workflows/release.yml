@@ -158,6 +158,8 @@ jobs:
       - name: 创建 GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
+          MANIFEST_SUMMARY: ${{ steps.manifest.outputs.summary }}
+          CHANGELOG_BODY: ${{ steps.changelog.outputs.changes }}
         run: |
           TAG="${GITHUB_REF#refs/tags/}"
 
@@ -165,9 +167,9 @@ jobs:
           BODY+=$'\n\n'
           BODY+="### 📊 系统快照"
           BODY+=$'\n'
-          BODY+="${{ steps.manifest.outputs.summary }}"
+          BODY+="${MANIFEST_SUMMARY:-}"
           BODY+=$'\n\n'
-          BODY+="${{ steps.changelog.outputs.changes }}"
+          BODY+="${CHANGELOG_BODY:-}"
           BODY+=$'\n\n'
           BODY+="---"
           BODY+=$'\n'

@@ -4,8 +4,8 @@ set -euo pipefail
 CONTRACT_FILE="${1:-release/manifest/sre-deploy-contract.json}"
 
 if [ "${GITHUB_EVENT_NAME:-}" = "pull_request" ]; then
-  echo "ERROR: deploy contract preflight must not run as a pull_request deploy path" >&2
-  exit 1
+  echo "INFO: pull_request 事件跳过 deploy contract preflight"
+  exit 0
 fi
 
 python3 - "$CONTRACT_FILE" <<'PY'

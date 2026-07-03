@@ -3,6 +3,7 @@
 > **read-only projection**：This file is a read-only projection, not an active closure SSOT. Closure SSOTs are Beads and GitHub Issues. 请勿在此编辑任务状态——状态变更请直接操作 GitHub Issues / Beads，本文件仅作快照投影。
 
 > **生成日期**：2026-07-02（10 轮深度分析后定稿）
+> **快照时间**：2026-07-03（GitHub #1540~#1592：Open 34 / Closed 19）
 > **来源**：`plans/binance/011-runtime-gap-master-plan-20260702.md`（PLAN-011）
 > **同步目标**：[ZoneCNH/ZoneCNH 主仓](https://github.com/ZoneCNH/ZoneCNH/issues) issue #1540~#1592（共 53 个）
 > **beads 树**：`ZoneCNH-gg63` 系列（52 个 open）
@@ -18,15 +19,15 @@
 | #    | 状态 | 优先级 | 任务                                                                          | 主仓 issue                                              | beads     | 验收                                                                              |
 | ---- | ---- | ------ | ----------------------------------------------------------------------------- | ------------------------------------------------------- | --------- | --------------------------------------------------------------------------------- |
 | 1.1  | [x]  | P0     | T0-1/T8-1: SPEC/README/DEPLOY Runtime-Version 三处统一为 v0.11.0              | [#1542](https://github.com/ZoneCNH/ZoneCNH/issues/1542) | gg63.1.1  | 三处 `grep Runtime-Version` 全为 v0.11.0                                          |
-| 1.2  | [ ]  | P0     | T7-1: TRACEABILITY.md §4 PRG-006 降级 PASS→Partial                            | [#1543](https://github.com/ZoneCNH/ZoneCNH/issues/1543) | gg63.1.2  | `grep "PRG-006.*PASS"` 返回 0                                                     |
+| 1.2  | [x]  | P0     | T7-1: TRACEABILITY.md §4 PRG-006 降级 PASS→Partial                            | [#1543](https://github.com/ZoneCNH/ZoneCNH/issues/1543) | gg63.1.2  | `grep "PRG-006.*PASS"` 返回 0                                                     |
 | 1.3  | [x]  | P0     | T7-2: 补 v0.11.0 GitHub Release（PRG-002 真实化，shallow clone）⚠️ 需用户授权 | [#1544](https://github.com/ZoneCNH/ZoneCNH/issues/1544) | gg63.1.3  | `git fetch --unshallow` + `git tag v0.11.0 f53303f` + `gh release create v0.11.0` |
-| 1.4  | [ ]  | P1     | T1-1: CHANGELOG/SPEC 版本单向追溯（推荐 SPEC bump 到 v3.9.7）                 | [#1545](https://github.com/ZoneCNH/ZoneCNH/issues/1545) | gg63.1.4  | SPEC Spec-Version ≥ CHANGELOG Module-Version                                      |
-| 1.5  | [ ]  | P1     | T2-1: evidence/ 补 GAP-E 引用（≥3 文件）                                      | [#1546](https://github.com/ZoneCNH/ZoneCNH/issues/1546) | gg63.1.5  | `grep -rl "GAP-E" evidence/` ≥ 3                                                  |
-| 1.6  | [ ]  | P1     | T8-2: 新建 SECURITY.md + CONTRIBUTING.md（GAP-E44/E45）                       | [#1547](https://github.com/ZoneCNH/ZoneCNH/issues/1547) | gg63.1.6  | 两文件存在                                                                        |
-| 1.7  | [ ]  | P1     | T9-1: SCORECARD 测试维度评分下调（93→85）                                     | [#1548](https://github.com/ZoneCNH/ZoneCNH/issues/1548) | gg63.1.7  | SCORECARD.md 测试维度评分 ≤ 85                                                    |
-| 1.8  | [ ]  | P1     | T4-1: Task 计数对齐（39 vs README 47/47）                                     | [#1549](https://github.com/ZoneCNH/ZoneCNH/issues/1549) | gg63.1.8  | README X/Y tasks 与实际一致                                                       |
+| 1.4  | [x]  | P1     | T1-1: CHANGELOG/SPEC 版本单向追溯（推荐 SPEC bump 到 v3.9.7）                 | [#1545](https://github.com/ZoneCNH/ZoneCNH/issues/1545) | gg63.1.4  | SPEC Spec-Version ≥ CHANGELOG Module-Version                                      |
+| 1.5  | [x]  | P1     | T2-1: evidence/ 补 GAP-E 引用（≥3 文件）                                      | [#1546](https://github.com/ZoneCNH/ZoneCNH/issues/1546) | gg63.1.5  | `grep -rl "GAP-E" evidence/` ≥ 3                                                  |
+| 1.6  | [x]  | P1     | T8-2: 新建 SECURITY.md + CONTRIBUTING.md（GAP-E44/E45）                       | [#1547](https://github.com/ZoneCNH/ZoneCNH/issues/1547) | gg63.1.6  | `SECURITY.md` + `spec/CONTRIBUTING.md` 存在                                      |
+| 1.7  | [x]  | P1     | T9-1: SCORECARD 测试维度评分下调（93→85）                                     | [#1548](https://github.com/ZoneCNH/ZoneCNH/issues/1548) | gg63.1.7  | SCORECARD.md 测试维度评分 ≤ 85                                                    |
+| 1.8  | [x]  | P1     | T4-1: Task 计数对齐（39 vs README 47/47）                                     | [#1549](https://github.com/ZoneCNH/ZoneCNH/issues/1549) | gg63.1.8  | README X/Y tasks 与实际一致                                                       |
 | 1.9  | [x]  | P1     | T10-1: registry.yaml latest_tag 修正 v0.8.0→v0.11.0（依赖 T7-2）              | [#1550](https://github.com/ZoneCNH/ZoneCNH/issues/1550) | gg63.1.9  | registry.yaml latest_tag = v0.11.0                                                |
-| 1.10 | [ ]  | P3     | T8-3 修正: BR 数量决策（恢复 9 个 vs 记录删除原因）                           | [#1551](https://github.com/ZoneCNH/ZoneCNH/issues/1551) | gg63.1.10 | SPEC/CHANGELOG/TRACEABILITY 三方一致                                              |
+| 1.10 | [x]  | P3     | T8-3 修正: BR 数量决策（恢复 9 个 vs 记录删除原因）                           | [#1551](https://github.com/ZoneCNH/ZoneCNH/issues/1551) | gg63.1.10 | SPEC/CHANGELOG/TRACEABILITY 三方一致                                              |
 
 **Phase 1 验收**：11 陷阱全部 close，`grep Runtime-Version` 三处一致，`gh release view v0.11.0` 返回非空。
 
@@ -38,7 +39,7 @@
 
 | #   | 状态 | 优先级 | 任务                                                  | 主仓 issue                                              | beads  | 验收                                                                     |
 | --- | ---- | ------ | ----------------------------------------------------- | ------------------------------------------------------- | ------ | ------------------------------------------------------------------------ |
-| 2.1 | [ ]  | P0     | GAP-E6: UM/CM/Options 4 线 ExchangeInfoRefresher 装配 | [#1552](https://github.com/ZoneCNH/ZoneCNH/issues/1552) | gg63.7 | runtime.go:199 含 for 循环 4 线装配 + options decode status 过滤 TRADING |
+| 2.1 | [x]  | P0     | GAP-E6: UM/CM/Options 4 线 ExchangeInfoRefresher 装配 | [#1552](https://github.com/ZoneCNH/ZoneCNH/issues/1552) | gg63.7 | runtime.go:199 含 for 循环 4 线装配 + options decode status 过滤 TRADING |
 
 **Phase 2 验收**：runtime 启动后 catalog 含 spot ~2000+ / um ~400+ / cm ~100+ / options ~数万。
 
@@ -50,7 +51,7 @@
 
 | #   | 状态 | 优先级 | 任务                                                           | 主仓 issue                                              | beads  | 验收                                |
 | --- | ---- | ------ | -------------------------------------------------------------- | ------------------------------------------------------- | ------ | ----------------------------------- |
-| 3.1 | [ ]  | P2     | GAP-E25: 评估单副本负载（§8.2 勘误，940 stream / 2 连接 富余） | [#1553](https://github.com/ZoneCNH/ZoneCNH/issues/1553) | gg63.8 | 评估报告产出，决策 deferred OR 启动 |
+| 3.1 | [x]  | P2     | GAP-E25: 评估单副本负载（§8.2 勘误，940 stream / 2 连接 富余） | [#1553](https://github.com/ZoneCNH/ZoneCNH/issues/1553) | gg63.8 | 评估报告产出，决策 deferred OR 启动 |
 
 **Phase 3 验收**：评估文档落地，资源监控 1 周后再决定是否启动。
 
@@ -80,11 +81,11 @@
 
 | #   | 状态 | 优先级 | 任务                                             | 主仓 issue                                              | beads    | 验收                                            |
 | --- | ---- | ------ | ------------------------------------------------ | ------------------------------------------------------- | -------- | ----------------------------------------------- |
-| 5.1 | [ ]  | P1     | GAP-E32: 7 处 goroutine 加 recover 包装          | [#1563](https://github.com/ZoneCNH/ZoneCNH/issues/1563) | gg63.3.1 | `grep -rL 'recover()' \| grep 'go func'` 为空   |
-| 5.2 | [ ]  | P1     | GAP-E27: WebSocket SetReadLimit（OOM 保护）      | [#1564](https://github.com/ZoneCNH/ZoneCNH/issues/1564) | gg63.3.2 | WS 连接含 `SetReadLimit(10 * 1024 * 1024)`      |
-| 5.3 | [ ]  | P1     | GAP-E34: HTTP server 完整超时（Read/Write/Idle） | [#1565](https://github.com/ZoneCNH/ZoneCNH/issues/1565) | gg63.3.3 | admin.go 含 4 个 Timeout 字段                   |
-| 5.4 | [ ]  | P1     | GAP-E36: ldflags 注入 buildinfo                  | [#1566](https://github.com/ZoneCNH/ZoneCNH/issues/1566) | gg63.3.4 | `binance-server --version` 输出 gitCommit       |
-| 5.5 | [ ]  | P1     | GAP-E29: 集成 golang-migrate migration runner    | [#1567](https://github.com/ZoneCNH/ZoneCNH/issues/1567) | gg63.3.5 | `binance-server migrate up` 自动执行 10 个 .sql |
+| 5.1 | [x]  | P1     | GAP-E32: 7 处 goroutine 加 recover 包装          | [#1563](https://github.com/ZoneCNH/ZoneCNH/issues/1563) | gg63.3.1 | `grep -rL 'recover()' \| grep 'go func'` 为空   |
+| 5.2 | [x]  | P1     | GAP-E27: WebSocket SetReadLimit（OOM 保护）      | [#1564](https://github.com/ZoneCNH/ZoneCNH/issues/1564) | gg63.3.2 | WS 连接含 `SetReadLimit(10 * 1024 * 1024)`      |
+| 5.3 | [x]  | P1     | GAP-E34: HTTP server 完整超时（Read/Write/Idle） | [#1565](https://github.com/ZoneCNH/ZoneCNH/issues/1565) | gg63.3.3 | admin.go 含 4 个 Timeout 字段                   |
+| 5.4 | [x]  | P1     | GAP-E36: ldflags 注入 buildinfo                  | [#1566](https://github.com/ZoneCNH/ZoneCNH/issues/1566) | gg63.3.4 | `binance-server --version` 输出 gitCommit       |
+| 5.5 | [x]  | P1     | GAP-E29: 集成 golang-migrate migration runner    | [#1567](https://github.com/ZoneCNH/ZoneCNH/issues/1567) | gg63.3.5 | `binance-server migrate up` 自动执行 10 个 .sql |
 
 **Phase 5 验收**：5 个独立 PR 合并。
 
