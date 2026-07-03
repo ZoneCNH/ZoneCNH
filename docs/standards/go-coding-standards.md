@@ -939,11 +939,29 @@ linters:
     - goimports      # import 排序
     - revive         # 代码风格检查
     - gocyclo        # 圈复杂度检查
+    - depguard       # 依赖方向守卫（配合 FOUNDATION-DEPS.yaml）
+    - forbidigo      # 禁用模式检测
 
 linters-settings:
   gocyclo:
     min-complexity: 15
+  depguard:
+    rules:
+      no-testkit-in-prod:
+        deny:
+          - pkg: github.com/ZoneCNH/testkitx
+            desc: testkitx 只能在 _test.go 中导入（CONSTITUTION.md P4）
+  forbidigo:
+    forbid:
+      - p: ^os\.Getenv$
+        msg: 环境变量只能在装配层读取（composer/bootstrap/configx），业务代码使用注入的 Config
+  revive:
+    rules:
+      - name: var-naming
+        arguments: [["ID", "URL", "HTTP"], []]
 ```
+
+> **FoundationX 补充（SOLID 适配违规信号）**：以下模式在 code review 中直接判违规——`utils` / `common` / `misc` 等无语义包名；对接口值做类型断言分支（见 §6）；业务代码中 `switch strategyType`、`if exchange == "binance"` 等实现枚举判断；为满足接口而写 `not supported` 占位方法（见 §6/§11）。处置依据见 `report/solid-adaptation-20260703.md`。
 
 ### CI 集成建议
 
