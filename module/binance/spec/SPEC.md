@@ -1,6 +1,6 @@
 # Binance SPEC
 
-- Spec-Version: v3.9.6
+- Spec-Version: v3.9.8
 - Module: binance
 - Last-Updated: 2026-07-02
 - Runtime-Repo: `/home/workspace/binance`

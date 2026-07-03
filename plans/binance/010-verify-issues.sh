@@ -3,6 +3,12 @@
 # 用法：bash 010-verify-issues.sh
 set -euo pipefail
 
+if [[ "${1:-}" != "--legacy-force" ]]; then
+  echo "⚠️ ARCHIVED: 010 系列为历史脚本，默认禁止执行。"
+  echo "如需历史核对请显式传参 --legacy-force。"
+  exit 2
+fi
+
 echo "=== [1] 验证 beads issue 创建 ==="
 bd stats 2>&1 | head -10
 echo ""

@@ -51,4 +51,4 @@ ZoneCNH-gg63.6.6	Phase 8	#1588	8.6 容错与韧性（E11+E16+E33）	P2	runtime-g
 ZoneCNH-gg63.6.7	Phase 8	#1589	8.7 优雅运行（E14+E15+E20+E22）	P2	runtime-gap
 ZoneCNH-gg63.6.8	Phase 8	#1590	8.8 测试与质量（E21+E40）	P2	runtime-gap
 ZoneCNH-gg63.6.9	Phase 8	#1591	8.9 长尾低优（E38+E39）	P3	runtime-gap
-ZoneCNH-gg63.6.10	Phase 8	#1592	8.10 P3 治理文档批次（E51~E58）	P3	runtime-gap
+ZoneCNH-gg63.6.10	Phase 8	#1592	8.10 P3 治理文档批次（E51~E58）	P3	governance-trap

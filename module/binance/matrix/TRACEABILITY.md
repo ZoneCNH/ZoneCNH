@@ -93,7 +93,7 @@ release_closeable = Code-Done FR / Total FR ≥ 90% AND Drifted FR = 0 AND Pendi
 | PRG-003 | production readiness | PASS | PRG-001~006 全 PASS |
 | PRG-004 | observability | PASS | Jaeger/Grafana/Loki/AlertManager 全在线 |
 | PRG-005 | security | PASS | OpenTelemetry SDK v1.44.0，govulncheck 清洁 |
-| PRG-006 | resilience | PASS | L1+L2 全覆盖（2026-06-30）：19 项 CI-runnable 测试 PASS + `TestSoak_BinancePipeline`（全管线 WS→TDengine）+ `TestChaos_{NATSStop,RedisStop,ProcessKill}Recovery`（真实故障注入）+ `TestE2E_Live{FullPipeline,IdempotencyConflict}`（E2E 全管线验证） |
+| PRG-006 | resilience | Partial | L1+L2 主链覆盖完成，但 gated resilience 测试默认 CI 不执行，需在 runtime 仓按 gate 指南手动触发后才可回升 PASS。 |
 | PRG-007 | issue sync | PASS | 43 GitHub (#1289-#1331) + 43 Beads 全关闭 |
 
 ## 5. Issue Projection
