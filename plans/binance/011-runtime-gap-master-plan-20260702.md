@@ -227,7 +227,7 @@ phase-1 ~ phase-8（8 个）+ runtime-gap + governance-trap + p0/p1/p2/P3 + inde
 | Phase 8 完成 | 38 项 P2/P3 + 顶层文档 | STANDARD/FEATURES/ACCEPTANCE/TRACEABILITY 顶层 4 文档存在 |
 | **综合 L3** | **0 P0 Open + ≤3 P1 Open** | `gh issue list -R ZoneCNH/ZoneCNH --label runtime-gap --search "P0 in:title" --state open` = 0 |
 
-> **进度快照（2026-07-04）**：主仓 `#1540~#1592` 当前 **Open 3 / Closed 50**；Phase 8 已完成 `#1583/#1584/#1585/#1586/#1587/#1588/#1589/#1590/#1591`，当前推进 `#1582/#1592`。
+> **进度快照（2026-07-04）**：主仓 `#1540~#1592` 当前 **Open 0 / Closed 53**；Phase 8（含 `#1592`）与 EPIC `#1582`、ROOT EPIC `#1540` 已全部关闭。
 
 ---
 
@@ -253,4 +253,4 @@ phase-1 ~ phase-8（8 个）+ runtime-gap + governance-trap + p0/p1/p2/P3 + inde
 ---
 
 **Plan 状态**：✅ 定稿（10 轮深度分析后）
-**下一步**：按当前进度推进 Phase 8 EPIC `#1582` 及子任务 `#1583~#1592` 批次执行；持续回刷 011 映射表。
+**下一步**：维持 issue 快照与文档投影一致性，按需进入回归修复批次。

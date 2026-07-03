@@ -584,9 +584,9 @@ bash /home/workspace/ZoneCNH/plans/binance/010-verify-issues.sh
 | Phase 5（独立批次）   | 5 项 GAP 全 Fixed                          | ✅                |
 | Phase 6（分级）       | WS 订阅数 ≤ 1000 + 白名单生效              | ✅                |
 | Phase 7（数据完整性） | 7 项 GAP Fixed + E2E 对账脚本              | ✅（7/7）          |
-| Phase 8（长尾）       | 38 项 GAP Fixed + 顶层文档补全             | ☐                 |
+| Phase 8（长尾）       | 38 项 GAP Fixed + 顶层文档补全             | ✅                 |
 | beads issue           | 完整树创建 + 依赖图正确                    | ☐                 |
-| GitHub issue          | 主仓 #1540~#1592（53 个）已同步            | ✅（Open 3 / Closed 50） |
+| GitHub issue          | 主仓 #1540~#1592（53 个）已同步            | ✅（Open 0 / Closed 53） |
 | RUNTIME-GAP-MATRIX    | 状态从 Open 改为 Fixed（≥80%）             | ☐                 |
 | release_closeable     | 真实 YES（0 P0 + ≤3 P1 Open）              | ☐                 |
 
@@ -596,7 +596,7 @@ bash /home/workspace/ZoneCNH/plans/binance/010-verify-issues.sh
 
 - **Plan-Version**：1.0
 - **生成方式**：基于三份报告（REVIEW-PROMPT v2.0 / DATA-INTEGRITY v3.9 / EXCHANGEINFO v1.0）+ 9 个已知陷阱现场核验 + 4 项 EXCHANGEINFO 勘误
-- **执行节奏**：Phase 7（`#1574~#1581`）与 EPIC `#1573` 已关闭，当前进入 Phase 8（`#1582~#1592`）批次推进。
+- **执行节奏**：Phase 8（`#1582~#1592`）批次已完成并全部关单，转入回归与快照维护阶段。
 - **反馈机制**：每 Phase 完成后更新 `module/binance/RUNTIME-GAP-MATRIX.md` 状态列 + 关闭对应 bd/GitHub issue + 在 evidence/ 落证据
 - **审查节奏**：每 2 周一次对抗性反审查（基于 REVIEW-PROMPT §12）
 - **失败回滚**：每个 Phase 失败时 `git revert` + bd issue reopen + 复盘记录到 `evidence/<date>/retrospective/`
