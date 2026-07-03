@@ -67,7 +67,7 @@
 | 4.1 | [ ]  | P1     | P4.1: server coverage store（PG 持久化）                     | [#1556](https://github.com/ZoneCNH/ZoneCNH/issues/1556) | gg63.2.2 | internal/server/coverage/store.go 落地 |
 | 4.2 | [ ]  | P1     | P4.2: server NATS subscriber（binance.coverage.heartbeat）   | [#1557](https://github.com/ZoneCNH/ZoneCNH/issues/1557) | gg63.2.3 | subscriber 接收心跳消息                |
 | 4.3 | [ ]  | P1     | P4.3: client coverage_reporter（周期 NATS 上报）             | [#1558](https://github.com/ZoneCNH/ZoneCNH/issues/1558) | gg63.2.4 | client 周期上报 coverage               |
-| 4.4 | [ ]  | P1     | P4.4: 删除 internal/client/history_state_postgres.go（违宪） | [#1559](https://github.com/ZoneCNH/ZoneCNH/issues/1559) | gg63.2.5 | 文件不存在                             |
+| 4.4 | [x]  | P1     | P4.4: 删除 internal/client/history_state_postgres.go（违宪） | [#1559](https://github.com/ZoneCNH/ZoneCNH/issues/1559) | gg63.2.5 | 文件不存在                             |
 | 4.5 | [ ]  | P1     | P4.5: cmd/binance-client/main.go 移除 postgresx 装配         | [#1560](https://github.com/ZoneCNH/ZoneCNH/issues/1560) | gg63.2.6 | `grep -rn 'postgresx\.' cmd/` 为空     |
 | 4.6 | [ ]  | P1     | P4.6: 测试覆盖（单元 + 集成）                                | [#1561](https://github.com/ZoneCNH/ZoneCNH/issues/1561) | gg63.2.7 | coverage store + NATS 心跳测试 PASS    |
 
