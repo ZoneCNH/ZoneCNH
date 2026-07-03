@@ -1,50 +1,88 @@
 # fred 模块索引
 
-`fred` 是 **数据域 · 宏观** 下的独立 C/S 模块和独立服务，面向 FRED 宏观经济时间序列的采集、修订管理、领域归一化、持久化、事件发布和查询服务。
+`fred` 是数据域 · 宏观的独立 C/S 模块，按 **client/server 双进程** 形态运行，面向 FRED 宏观序列采集、领域归一化、持久化、事件发布和查询服务。
 
 ## 文档入口
 
 | 文档 | 用途 |
 | ---- | ---- |
-| [goal.md](goal.md) | 业务目标、边界、成功指标 |
-| [SPEC.md](SPEC.md) | 完整模块规格、领域边界、接口与验收 |
-| [TRACEABILITY.md](TRACEABILITY.md) | Goal / FR / BR / AC / TC 追踪矩阵 |
-| [IMPLEMENTATION-PLAN.md](IMPLEMENTATION-PLAN.md) | 从当前仓库状态迁移到目标 C/S 服务的实施计划 |
+| [goal/goal.md](goal/goal.md) | 目标、边界、成功标准 |
+| [spec/SPEC.md](spec/SPEC.md) | 根规格（23 节） |
+| [spec/client/SPEC.md](spec/client/SPEC.md) | client 子模块规格 |
+| [spec/server/SPEC.md](spec/server/SPEC.md) | server 子模块规格 |
+| [matrix/TRACEABILITY.md](matrix/TRACEABILITY.md) | 根追溯矩阵 |
+| [matrix/client/TRACEABILITY.md](matrix/client/TRACEABILITY.md) | client 追溯矩阵 |
+| [matrix/server/TRACEABILITY.md](matrix/server/TRACEABILITY.md) | server 追溯矩阵 |
+| [plan/PLAN.md](plan/PLAN.md) | 根实施计划 |
+| [plan/client/PLAN.md](plan/client/PLAN.md) | client 实施计划 |
+| [plan/server/PLAN.md](plan/server/PLAN.md) | server 实施计划 |
+| [design/DESIGN.md](design/DESIGN.md) | 生产级架构与数据流 |
+| [design/RUNTIME-MAPPING.md](design/RUNTIME-MAPPING.md) | spec→runtime 映射 |
+| [gate/BOUNDARY-GATES.md](gate/BOUNDARY-GATES.md) | 边界门禁与禁止项 |
+| [schema/README.md](schema/README.md) | API/事件/存储契约 |
+| [ci-workflow.yaml](ci-workflow.yaml) | CI/CD 工作流模板 |
 
-## 目标边界
+## C/S 子模块与独立服务
 
-| 维度 | 约束 |
-| ---- | ---- |
-| 所属域 | 数据域 · 宏观 |
-| 模块类型 | 独立 C/S 模块，独立服务 |
-| 代码仓库 | `github.com/ZoneCNH/fred` |
-| 本地代码路径 | `/home/workspace/fred/` |
-| 共享基座 | `bootstrap`、`configx`、`observex`、`resiliencx`、`transportx`、`contracts`、存储适配器 |
-| 领域共享层 | `domain_macro`、`decimalx`、宏观发布日历与 no-lookahead 语义 |
-| 配置来源 | `sre/secrets/env/dev.md`，只引用配置项类别，不复制密钥值 |
-| 持久化目标 | `taos`、`kafka`、`postgres`、`Redis`、`oss`、`nats`、`clickhouse` |
+| 子模块 | 运行形态 | 核心职责 |
+| ---- | ---- | ---- |
+| `fred-client` | 独立进程（`cmd/fred-client`） | 拉取 FRED 完整信息域（series/observations/vintages/releases/categories/tags/sources/updates）、归一化为 `domain_macro`、写 OSS raw、发布 NATS ingest envelope |
+| `fred-server` | 独立进程（`cmd/fred-server`） | 消费 NATS envelope、执行幂等校验、写 `taos/postgres/Redis/clickhouse`、发布 Kafka durable event、提供查询/管理 API |
 
-## 服务职责
+## 生产级持久化职责
 
-1. 从 FRED 拉取 series、observation、release、revision / vintage 相关数据。
-2. 将 provider DTO 转换为 `domain_macro` 共享领域模型，保留发布时间、可见时间与修订版本。
-3. 通过共享基座组件完成配置、观测、生命周期、限流、重试、存储、传输和契约校验。
-4. 将原始载荷、规范化时间序列、元数据、事件流、缓存和分析读模型分别落到对应持久化介质。
-5. 对 `macro_data`、分析域、SRE 工具和回放作业提供稳定的服务端 API 与事件契约。
+| 介质 | 职责 | 权威性 |
+| ---- | ---- | ---- |
+| `oss` | provider raw 归档、回放输入、审计快照 | 原始数据权威 |
+| `taos` | 规范化 observation 时间序列 | 时间序列权威 |
+| `postgres` | catalog、release calendar、checkpoint、idempotency ledger | 控制面权威 |
+| `Redis` | 热缓存、锁、限流桶、短游标 | 可重建派生层 |
+| `clickhouse` | 分析读模型与批量校验 | 可重建派生层 |
+| `nats` | client→server ingest handoff + admin control plane | 服务间通信通道 |
+| `kafka` | 下游 durable business events | 事件分发权威 |
 
-## `ms_brain` 消费画像
+## 关键边界
 
-`/home/workspace/ms_brain` 是 `fred` 的宏观数据下游消费者之一。当前证据显示它主要是文档、规格和 YAML 配置驱动的 Crypto Macro-State Trading OS 设计面，工程实现尚未启动；因此 `fred` 只补充可验证的数据契约，不承接 `ms_brain` 的策略、仓位或状态机逻辑。
+1. 共享基座强制：配置、观测、韧性、存储、消息必须经共享基座组件接入。
+2. 领域共享层强制：出域模型必须来自 `domain_macro`，禁止泄露 provider DTO。
+3. 服务独立强制：`fred-client`/`fred-server` 可独立部署与扩缩容，不允许单进程耦合路径。
+4. 无前视强制：`available_at` 是 as-of 可见性判定基准。
+5. secret 红线：只引用 `sre/secrets/env/dev.md` 键名与映射规则，不复制值。
 
-| 维度 | `fred` 需要提供 |
-| ---- | --------------- |
-| 下游用途 | 支撑 `ms_brain` 的 LGIP/M-state、事件覆盖、回放和 DataQuality 判断。 |
-| 初始序列锚点 | `DFII10`、`T10YIE`、`DFF`、`BAMLH0A0HYM2`、`T10Y2Y`、`ICSA`、`FYFSGDA188S`、`FDHBFRBN`；这是初始契约锚点，不是全量清单。 |
-| 时间语义 | 提供 `released_at`、`available_at`、`vintage_at`、`observed_at`、`data_version`，确保 as-of/no-lookahead 查询可复现。 |
-| 同步周期 | 支持日度刷新、发布日历驱动刷新、revision scan，以及月度/季度财政类序列的延迟发布。 |
-| 输出形态 | 服务 API、Kafka durable events、ClickHouse 读模型、release/calendar 事件与 freshness/degrade 元数据。 |
-| 边界 | `fred` 不实现 M1-M7/S1-S7 分类、7x7 决策矩阵、TradePermission、仓位折扣或风控逻辑。 |
+## 完整采集范围
 
-## 当前迁移提示
+`fred` 的“完整采集”包含以下信息族，不仅是 observation：
 
-`/home/workspace/fred` 当前已有 Go 模块、`cmd/fred-server`、`pkg/fredx` 和边界脚本骨架；目标规格要求从旧的“adapter 零存储”口径迁移为独立服务拥有的完整持久化与事件边界。实施时必须同步更新代码边界门禁，避免旧的 `Stores=None` 约束继续阻止目标架构落地。
+1. 序列与值：series metadata、observations、vintages/revisions。
+2. 发布体系：releases、release dates、release tables、release-series 关联。
+3. 分类体系：categories、category children、category-series 关联。
+4. 标签体系：tags、related tags、tag-series 关联。
+5. 来源体系：sources、source-releases 关联。
+6. 增量体系：series updates 与变更游标。
+
+### Endpoint 级清单（FRED v1）
+
+1. Category：`/category`、`/category/children`、`/category/related`、`/category/related_tags`、`/category/series`、`/category/tags`
+2. Release：`/releases`、`/releases/dates`、`/release`、`/release/dates`、`/release/series`、`/release/sources`、`/release/tables`、`/release/tags`、`/release/related_tags`
+3. Series：`/series`、`/series/categories`、`/series/observations`、`/series/release`、`/series/search`、`/series/search/tags`、`/series/search/related_tags`、`/series/tags`、`/series/updates`、`/series/vintagedates`
+4. Source：`/sources`、`/source`、`/source/releases`
+5. Tags：`/tags`、`/related_tags`、`/tags/series`
+
+## 核心指标包（初始）
+
+| 维度 | 指标 |
+| --- | --- |
+| 流动性 | `WALCL`、`WDTGAL`、`RRPONTSYD`、`ECBASSETSW`、`JPNASSETS`、`DEXUSEU`、`DEXJPUS` |
+| 增长与通胀 | `INDPRO`、`PERMIT`、`T5YIE`、`CPIAUCSL`、`PCEPILFE` |
+| 风险 | `VXVCLS`、`STLFSI4` |
+| 政策立场 | `DFEDTARU`、`PCEPI`、`GDPC1`、`GDPPOT`、`UNRATE`、`NROU` |
+| 基础宏观 | `GDP`、`FEDFUNDS`、`CPILFESL`、`PAYEMS`、`ICSA`、`DGS10`、`M2SL` |
+
+## 同步与回补策略（默认）
+
+1. 首次全量默认起点 `1990-01-01`（约 35 年回溯），series 若更晚则以最早可用日期为准。
+2. 增量同步按 `last_success_cursor -> now` 执行，每次额外回拉最近 3 个月覆盖修订。
+3. 支持批量采集（multi-series batch）与频率聚合（D->M、M->Q），不覆盖原始频率事实。
+4. 日频每日、周频每周、月频/季频按发布后 24h 内触发同步；release calendar trigger 优先。
+5. FRED 限流基线：无 key `30 req/min`、有 key `120 req/min`、突发 `<=2 req/s`，429 走退避重试。
+6. 版本管理保留 `realtime_start`/`realtime_end` + `vintage_at`，支撑 ALFRED 风格回溯分析。
