@@ -13,12 +13,12 @@
 
 | 维度 | 官方文档口径 | 本次交叉核验结论 |
 | --- | --- | --- |
-| 规格完成度 | `48/48 FR Done`，`release_closeable=YES` | **口径本身自相矛盾**：`goal.md`/`README.md`/`SPEC.md` 称 YES，同仓 `evidence/2026-06-30/release/alignment-summary.md` 称 `release_closeable: NO`、`PRG-006 Partial` |
+| 规格完成度 | `48/48 FR Done`，`release_closeable=YES` | **口径本身自相矛盾，且本轮自审复核确认该矛盾在 main 最新提交后依然成立**：`goal.md`/`README.md`/`SPEC.md` 现仍称 `release_closeable=YES（PRG-001~007 全 PASS）`，但同仓 `matrix/TRACEABILITY.md:96` 现仍标注 `PRG-006 | Partial`，`evidence/2026-07-03/gap-e-projection-alignment.md:18` 亦确认此调整；历史文档 `evidence/2026-06-30/release/alignment-summary.md` 当天最终结论同为 `release_closeable: NO` |
 | 运行时缺口 | `RUNTIME-GAP-MATRIX.md` 记录 58 项已知缺口（P0×3/P1×13/P2×22/P3×20） | 属实且证据扎实；但本次发现 **≥3 项新缺口未被该矩阵收录**（见 §6） |
 | main 分支可编译性 | 未在任何文档中声明为风险 | **origin/main 当前编译失败**（`go build ./...` 于干净 worktree 复现，与 CI 失败一致） |
 | 业务覆盖（4 产品线） | Spec 声明 Spot/UM/CM/Options 全覆盖 | **仅 Spot 实际在 runtime 启动**；UM/CM/Options 有连接器代码但未接入生产启动路径 |
 | CI 健康度 | `PRG-001` 称 CI runner 已迁移 ubuntu-latest | 仅 1/12 workflow（`binance-ci.yml`）迁移；其余 11 个仍挂在 **0 个在线的 self-hosted runner** 上，`scheduled.yml` 已卡 16+ 小时 |
-| 消息投递链路 | Spec 称 NATS subject 全链路 `.v1` 后缀一致 | **client 发布 `.v1`，server 订阅模式不含 `.v1`**，存在实际不匹配风险（需实测确认是否影响真实投递） |
+| 消息投递链路 | Spec 称 NATS subject 全链路 `.v1` 后缀一致 | **确认不匹配**（非风险，已用 NATS 通配符语义证实）：client 发布 5 段 subject（`binance.market.{pl}.{et}.v1`），server `Stream`/`Consumer` 固定用 4 段 `FilterSubject="binance.market.*.*"`——NATS `*` 精确匹配 1 个 token，段数不等即不可能匹配，见 §5 N2 修订 |
 
 **一句话结论**：这是一个工程深度和治理密度都很高的模块（27+ 轮自审、58 项已知缺口全部有源码级证据），但当前 `main` 分支存在真实的编译阻断和至少一个高风险的消息链路/ACK 语义问题，**不满足"生产级别可发布状态"**。团队已在 PR #411（分支 `fix/runtime-gap-phase2-5`）中修复编译问题，但该 PR 自身 CI 也未通过（缺失文件未推送）。
 
@@ -128,9 +128,9 @@ flowchart LR
 
     subgraph Bus["NATS"]
         direction TB
-        PubSubj["client 发布：<br/>binance.market.*.*.v1"]
-        SubSubj["server 订阅：<br/>binance.market.*.* （⚠️ 无 .v1）"]
-        PubSubj -.->|"⚠️ pattern 不一致，需实测确认投递"| SubSubj
+        PubSubj["client 发布：<br/>binance.market.*.*.v1（5 段）"]
+        SubSubj["server 订阅：<br/>binance.market.*.*（4 段，⚠️ 无 .v1）"]
+        PubSubj -.->|"❌ 已确认不匹配：NATS * 精确匹配1 token，段数不等无法路由"| SubSubj
     end
 
     subgraph Server["server（真实入口是 NATS consumer，非 gRPC）"]
@@ -214,13 +214,15 @@ internal/server/assembly/storage.go:313:3: unknown field runtime in struct liter
 
 ### 4.3 官方生产就绪证据的内部矛盾
 
-`[COMPUTED, HIGH]` 同一模块内至少两处证据文档对 `release_closeable` 给出相反结论：
+`[COMPUTED, HIGH]` 本轮自审复核发现，矛盾比原表述更严重——**`matrix/TRACEABILITY.md` 存在文件内部自相矛盾**，而非仅仅是跨文档口径不一致：
 
-- `goal.md` / `README.md` / `spec/SPEC.md` / `matrix/TRACEABILITY.md`：**`release_closeable: YES`**（PRG-001~007 全 PASS）
-- `evidence/2026-06-30/release/alignment-summary.md`：**`release_closeable: NO`**，`PRG-006: Partial`
-- `evidence/2026-07-03/gap-e-projection-alignment.md` 也确认 `matrix/TRACEABILITY.md` 中 `PRG-006 已由 PASS 调整为 Partial`
+- `TRACEABILITY.md:8,87,114,118`：多处声明 **`release_closeable: YES`**（`PRG-001~007 全 PASS`，48/48 FR Done）
+- `TRACEABILITY.md:96`（同一文件）：PRG 逐项表中 **`PRG-006 | resilience | Partial`**——按 line 84 公式 `release_closeable = ... AND PRG-001~007 全 PASS`，PRG-006 非 PASS 应推导 `release_closeable = NO`，与该文件自身声明的 YES 矛盾
+- `goal.md` / `README.md` / `spec/SPEC.md`：同步沿用 `release_closeable: YES`
+- `evidence/2026-07-03/gap-e-projection-alignment.md:18`：确认 `PRG-006 已由 PASS 调整为 Partial`（即 TRACEABILITY 的逐项表已下修，但顶部汇总声明未跟随下修）
+- 历史文档 `evidence/2026-06-30/release/alignment-summary.md` 当天最终结论同为 `release_closeable: NO`
 
-`[INFERRED, MED]` 这是**规格口径（spec-level "Done"）与运行时口径（production gate "closeable"）的语义混用**——已被团队自己在 `RUNTIME-GAP-MATRIX.md` §7 显式声明为"双口径正交，不矛盾"，但至少 3 处顶层文档（`goal.md`/`README.md`/`SPEC.md`）仍在对外表述为单一"YES"结论，未附双口径澄清，存在误导读者的风险，属于文档一致性缺口而非纯粹的口径设计问题。
+`[INFERRED, MED]` 这是**规格口径（spec-level "Done"）与运行时口径（production gate "closeable"）的语义混用**——已被团队自己在 `RUNTIME-GAP-MATRIX.md` §7 显式声明为"双口径正交，不矛盾"，但 `TRACEABILITY.md` 自身的顶部汇总声明未随其内部 PRG-006 表格的下修而同步更新，导致**同一份权威追溯文档对外呈现自相矛盾的结论**，属于文档一致性缺口而非纯粹的口径设计问题。
 
 ### 4.4 Release 与 main 的差距
 
@@ -241,7 +243,7 @@ internal/server/assembly/storage.go:313:3: unknown field runtime in struct liter
 | # | 类别 | 一句话 | 源码位置 | 严重度建议 |
 | --- | --- | --- | --- | --- |
 | N1 | 编译阻断 | `storageAssembly` 缺 `runtime` 字段导致 `origin/main` 编译失败 | `internal/server/assembly/storage.go:313`, `assemble.go:368-381` | **P0**（已有 WIP 修复 PR #411，但该 PR 自身未完整推送） |
-| N2 | 消息投递 | client 发布 subject 带 `.v1`，server consumer 订阅 pattern 不含 `.v1`，两者字面不一致 | `internal/client/publisher/publisher.go:42-70` vs `internal/server/consumer/consumer.go:20-25,89-117` | **P0**（若 NATS 通配符实际不兼容将导致静默丢消息，需立即实测确认） |
+| N2 | 消息投递 | **已确认**（非疑似）：client 发布 5 段 subject `binance.market.{pl}.{et}.v1`，server `Stream.Subjects`/`Consumer.FilterSubject` 固定为 4 段 `binance.market.*.*`。NATS subject 通配符 `*` 精确匹配恰好 1 个 token（`>` 才匹配多段），4 段 pattern 结构性无法匹配 5 段 subject——`grep -rn "\.v1" internal/server/` 确认 server 端无任何 NATS market subject 使用 `.v1` | `internal/client/publisher/publisher.go:42-52`（`Subject()` 函数）vs `internal/server/consumer/consumer.go:20-25,101-117`（`Stream`/`EnsureTopology`/`NewNATSXConsumer`） | **P0（已确认的路由缺陷，非待验证风险）**——若无生产遥测证明消息仍在流动（如另有兼容层），当前推送的市场数据事实上不会进入 `BINANCE_MARKET` JetStream Stream |
 | N3 | 数据可靠性 | `MarkDurable()` 先于 `storage.persist()` 执行；`StrictStorageWrite=true` 时首次落库失败、二次重投会被当重复直接 Ack，丢失重试机会 | `internal/server/ingest.go:129-187,207-219`, `assembly/assemble.go:141-147` | **P1**（潜在静默丢数据） |
 | N4 | 运行时产品线覆盖 | runtime 启动路径只 `NewSpotConnector`，UM/CM/Options 未被启动，与 spec/goal 声明的"4 产品线全覆盖"不符 | `internal/client/runtime.go:304-314` | **P1**（业务功能缺口，非纯代码质量问题） |
 | N5 | 可观测性口径 | OLAP/ClickHouse 数据源实为进程内存 10 分钟滚动窗口，非文档所述 "taos→clickhouse ETL" | `internal/server/assembly/olap_source.go:14-60` vs `design/PERSISTENCE-WIRING.md:24-35` | P2 |
@@ -274,7 +276,7 @@ internal/server/assembly/storage.go:313:3: unknown field runtime in struct liter
 
 1. **BOUNDARY-GATES 口径三套并存**：`gate/RULES.md` R10 写"12 个 gate"；主仓 `gate/BOUNDARY-GATES.md` 写"13/13 PASS"；runtime `BOUNDARY-GATES.md` 已扩到 §2-§16。
 2. **STANDARD.md 命名冲突**：根 `STANDARD.md`（导航 stub）与 `gate/STANDARD.md`（FR-024 专项）同名不同职责，根文件未链接后者。
-3. **Token/环境变量命名漂移**：`gate/SECURITY.md` 用 `FOUNDATIONX_BINANCE_API_TOKEN`，`deploy/DEPLOY.md` 与运行时规划文档用 `FOUNDATIONX_BINANCE_ADMIN_TOKEN`。
+3. **client admin 令牌认证机制未被 `gate/SECURITY.md` 收录**（非命名漂移）：`FOUNDATIONX_BINANCE_API_TOKEN`（server Gin 查询 API，`internal/server/api/query.go:510-515`）与 `FOUNDATIONX_BINANCE_ADMIN_TOKEN`（client admin 管理面，`pkg/binancecfg/config.go:261` `config:"ADMIN_TOKEN"`）是**两个合法的不同令牌**，服务于不同管理面，非同一概念的命名不一致；真正的缺口是 `gate/SECURITY.md` 全文未提及 "admin" 或 client 侧管理面认证（`grep -c admin gate/SECURITY.md` = 0），属于安全文档覆盖缺口。
 4. **NAMING.md 内部自相矛盾**：声明 REST path 用 `snake_case`，示例却是 `funding-rate`/`mark-price`（kebab-case）；env 前缀声明 `XGO_BINANCE_*`，实际大量文档用 `FOUNDATIONX_BINANCE_*`。
 5. **未显式声明继承全局 Go 规范**：`docs/standards/go-coding-standards.md` 的 14 维（错误处理/并发/接口设计/性能/泛型等）在 binance 模块规则中无显式继承声明或 delta 说明。
 
@@ -285,7 +287,7 @@ internal/server/assembly/storage.go:313:3: unknown field runtime in struct liter
 1. **P0 - 重写根 `module/binance/STANDARD.md`** 为唯一《binance 模块规则与标准规范总纲》：声明权威层级（`CONSTITUTION.md` → `go-coding-standards.md` → 本模块 `gate/*` → runtime repo docs）+ 10 类规则的 authority map（见下表）+ 仅做链接不重复内容。
 2. **P0 - 将 `gate/STANDARD.md` 改名**为 `gate/FR024-HOT-RELOAD-STANDARD.md`，消除撞名。
 3. **P0 - 统一 BOUNDARY-GATES 口径**（R10 / 主仓 / runtime 三处对齐到同一 gate 数量与编号）。
-4. **P0 - 修复命名漂移**（token 名、env 前缀、REST path 大小写风格），并在 `NAMING.md` 变更历史中记录。
+4. **P0 - 修复命名漂移**（REST path 大小写风格、env 前缀 `XGO_BINANCE_*` vs 实际 `FOUNDATIONX_BINANCE_*`），并在 `NAMING.md` 变更历史中记录；**同时补齐 `gate/SECURITY.md` 对 client admin 令牌（`FOUNDATIONX_BINANCE_ADMIN_TOKEN`）认证机制的文档覆盖**（见 §6.2 第 3 点修订）。
 5. **P1 - 新建 `gate/API-COMPATIBILITY.md`**：统一 gRPC/HTTP/NATS/Kafka/schema 版本与 breaking change 策略（当前散落在多份 SPEC/README 中）。
 6. **P1 - 新建 `gate/TESTING.md`**：统一 unit/integration/E2E/contract/race/coverage 的证据要求（当前散落在 `RULES.md` R4 与 runtime `CONTRIBUTING.md`）。
 7. **P1 - `gate/OBSERVABILITY.md` 补齐 tracing/logging/redaction**，并链接 runtime 已有的 `docs/observability/tracing-setup.md`。
@@ -300,9 +302,9 @@ internal/server/assembly/storage.go:313:3: unknown field runtime in struct liter
 ```text
 P0（立即，阻断构建/发布）
 ├── N1: 合并 PR #411 前先补推 3 个缺失文件，确保 PR CI 全绿，再合并修复 storageAssembly.runtime 编译错误
-├── N2: 实测确认 client/server NATS subject `.v1` 是否真实不匹配；若是，立即同 PR 修复
+├── N2: 已确认 NATS subject 段数不匹配（client 5 段 vs server 4 段），需立即同 PR 修复 consumer.go 的 FilterSubject/Stream.Subjects 定义
 ├── 恢复 self-hosted runner 或将全部 11 个 workflow 迁移至 ubuntu-latest（参考 binance-ci.yml 先例）
-└── 消解 release_closeable YES/NO 的顶层文档矛盾（goal.md/README.md 与 alignment-summary.md）
+└── 消解 release_closeable YES/NO 的顶层文档矛盾（goal.md/README.md/SPEC.md 称 YES + PRG-001~007 全 PASS，同仓 matrix/TRACEABILITY.md 与 evidence/2026-07-03/gap-e-projection-alignment.md 称 PRG-006 Partial——本轮自审复核确认此矛盾在 main 最新提交后依然成立，未被后续文档同步修复）
 
 P1（本迭代）
 ├── N3: 修正 ACK 时序（storage 成功后再 MarkDurable）
@@ -328,3 +330,32 @@ P2（后续）
 - 本会话独立验证：`git worktree add` 于 `origin/main` 干净副本执行 `go build ./...` 复现编译失败（避免本地脏工作区误导）
 
 **[RULES I BROKE]**：无——本报告全程标注证据标签与置信度，编译失败结论已通过干净 worktree 独立复现（非转述 CI 日志），未发生 FRAME→REALITY 误用。
+
+---
+
+## 9. 十轮独立对抗性自审记录（2026-07-04 补充）
+
+`[COMPUTED, HIGH]` 应要求对本报告执行 10 轮独立复核，逐轮聚焦不同维度，钉住锚点 `origin/main@14a30b9`（runtime）与 `ZoneCNH main@b35b158e`（本报告合并提交，复核时确认 `git log HEAD..origin/main` = 0，无漂移风险）。
+
+| 轮次 | 维度 | 方法 | 结论 |
+| --- | --- | --- | --- |
+| 1 | 报告完整性 | 分段 `view` 全文 330+ 行 | 通过，合并后内容完整、无冲突残留标记 |
+| 2 | 主仓文档引用 | 逐一 `[ -f ]` 核验 §8 附录 24 个引用路径 | 全部存在，无 404 引用 |
+| 3 | 客户端代码引用 | 核验 16 个 client 文件存在性 + 行号范围抽查（runtime.go/product_line.go/normalize.go） | 引用准确；**同时发现 N2 可从"风险"升级为"确认"**（见轮次修正① ） |
+| 4 | 服务端代码引用 | 核验 9 个 server 文件存在性 + subject 定义交叉核对 | 引用准确；确认 server 端无任何 `.v1` NATS market subject 用法 |
+| 5 | CI/PR 时效性 | 重新 `gh pr view 411`、`gh run list --branch main` | main SHA、PR #411 状态未变，CI 挂起时长从 1h50m 增至 2h13m，问题持续未解决，结论仍成立 |
+| 6 | GAP 矩阵去重 | 关键词搜索 + `GAP-E\d+` 编号提取 | 矩阵止于 E58，N1-N7 关键词零命中，E59-E65 编号无冲突 |
+| 7 | Mermaid 语法 | `mermaid-cli` 编译两张图为 SVG | 均编译成功（47KB/26KB），语法无误 |
+| 8 | 规则体系漂移证据 | 核验 BOUNDARY-GATES 口径/STANDARD 撞名/NAMING 矛盾/token 命名 | BOUNDARY-GATES（12 vs 13/13 vs §16）、STANDARD 撞名（7 行 vs 87 行）、NAMING.md 两处自相矛盾（REST path snake_case 声明 vs kebab-case 示例；env 前缀 `XGO_BINANCE_` 声明 vs 实际 `FOUNDATIONX_BINANCE_`）**均确认属实**；**token 命名漂移一项确认为误判**（见轮次修正②） |
+| 9 | 用户 5 问覆盖度 | 章节结构 vs 原始问题逐一对照 | §4↔生产级别、§2↔数据流图、§3↔业务类型、§5+§7↔待补充优化、§6↔模块规则，五问全覆盖无遗漏 |
+| 10 | release_closeable 矛盾时效性 | 重新读取当前 `TRACEABILITY.md`/`gap-e-projection-alignment.md` | **发现比原表述更严重的问题**：矛盾并非仅跨文档，而是 `TRACEABILITY.md` **文件内部自相矛盾**（顶部声明 YES，§PRG 表 line 96 却是 PRG-006 Partial）；该矛盾在 main 最新提交后依然成立，未被后续文档同步修复（见轮次修正③） |
+
+### 本轮自审产生的 3 处实质性修正
+
+1. **N2（NATS subject 不匹配）升级**：原表述为"需实测确认的风险"，经 NATS 通配符语义分析（`*` 精确匹配 1 个 token，4 段 pattern 结构性无法匹配 5 段 subject）确认为**已确认缺陷**，已更新 §0/§2.2/§5/§7 对应表述与严重度标注。
+2. **Token 命名"漂移"改判为文档覆盖缺口**：原 §6.2 第 3 点误将 `FOUNDATIONX_BINANCE_API_TOKEN`（server 查询 API）与 `FOUNDATIONX_BINANCE_ADMIN_TOKEN`（client admin 管理面，`pkg/binancecfg/config.go:261` 确认为独立配置项）判定为同一令牌的命名不一致；核实后二者是两个合法的不同令牌，真正问题是 `gate/SECURITY.md` 未记录 client admin 认证机制，已更正措辞并调整 §6.3 建议 4。
+3. **release_closeable 矛盾定性加深**：原 §4.3 表述为"跨文档口径不一致"，本轮发现矛盾实际发生在 `matrix/TRACEABILITY.md` **单一文件内部**（顶部汇总声明与其自身 §PRG 逐项表冲突），已更新 §0/§4.3 表述并保留时间戳证据（复核时点 vs 原撰写时点均确认矛盾持续存在）。
+
+`[INFERRED, HIGH]` 10 轮自审共验证约 60+ 项具体引用（文件路径、行号、CI 状态、GAP 编号、Mermaid 语法、证据标签），发现 3 处需修正、0 处需撤回。原报告核心结论（main 编译失败、Spot-only 生产覆盖、release_closeable 自相矛盾、CI 停摆、模块规则分散漂移）在复核后**全部成立且部分证据强度得到提升**，未发现推翻性反例。
+
+**[RULES I BROKE]**：无——本轮自审对 3 项修正均标注了原判断错误的具体原因与新证据，未静默覆盖历史结论；置信度标注遵循 §20 规范，无 FRAME→REALITY 误用。
