@@ -63,7 +63,7 @@
 
 | #   | 状态 | 优先级 | 任务                                                         | 主仓 issue                                              | beads    | 验收                                   |
 | --- | ---- | ------ | ------------------------------------------------------------ | ------------------------------------------------------- | -------- | -------------------------------------- |
-| 4.0 | [ ]  | P1     | GAP-E7: SPEC §509 移除 history_state_postgres.go（前置）     | [#1555](https://github.com/ZoneCNH/ZoneCNH/issues/1555) | gg63.2.1 | SPEC §509 无该文件                     |
+| 4.0 | [x]  | P1     | GAP-E7: SPEC §509 移除 history_state_postgres.go（前置）     | [#1555](https://github.com/ZoneCNH/ZoneCNH/issues/1555) | gg63.2.1 | SPEC §509 无该文件                     |
 | 4.1 | [ ]  | P1     | P4.1: server coverage store（PG 持久化）                     | [#1556](https://github.com/ZoneCNH/ZoneCNH/issues/1556) | gg63.2.2 | internal/server/coverage/store.go 落地 |
 | 4.2 | [ ]  | P1     | P4.2: server NATS subscriber（binance.coverage.heartbeat）   | [#1557](https://github.com/ZoneCNH/ZoneCNH/issues/1557) | gg63.2.3 | subscriber 接收心跳消息                |
 | 4.3 | [ ]  | P1     | P4.3: client coverage_reporter（周期 NATS 上报）             | [#1558](https://github.com/ZoneCNH/ZoneCNH/issues/1558) | gg63.2.4 | client 周期上报 coverage               |
