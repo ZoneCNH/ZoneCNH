@@ -14,6 +14,8 @@
 | 010 | runtime gap fix execution（历史同步批次） | P0/P1/P2/P3 | L | Plan008 DONE | 🗂️ **ARCHIVED（2026-07-02）** — 010 系列为历史同步产物，含旧仓 `ZoneCNH/binance` 上下文，不再作为当前执行主链。保留用于审计追溯。 |
 | 011 | runtime gap master plan（主仓 issue 执行链） | P0/P1/P2/P3 | XL | Plan010 ARCHIVED | 🔄 **IN PROGRESS（当前主链）** — 主仓 issue #1540~#1592 + beads `ZoneCNH-gg63` 双向映射，按 8 阶段推进闭环。详见 [011-runtime-gap-master-plan-20260702.md](011-runtime-gap-master-plan-20260702.md) · [011-master-issue-map.tsv](011-master-issue-map.tsv) |
 | — | **Spec 缺口闭合**（35 项 plans/reports→spec 交叉比对补齐；SPEC v3.6.0→v3.7.0） | P0 | M | Plan008 DONE | ✅ **DONE（2026-06-26）** — `module/binance/SPEC.md` v3.7.0：新增 FR-037~044（8 个 FR 覆盖发布安全网/taosx retention/分布式 tracing/资源隔离/审计/成本/合规/Schema 版本策略）；AC 104→130；TC 49→65；BNC 13→16。`TRACEABILITY.md` / `FEATURES.md` / `ACCEPTANCE.md` 同步更新。4 文件 +287/-37 行。详见 [spec-gap-closure-20260626.md](../../report/binance/spec-gap-closure-20260626.md) |
+| 010 | binance 运行时缺口修复执行计划（v2.0，58 GAP-E + 11 治理陷阱 + 15 漏洞链；beads/GitHub issue 同步） | P0 | XL | Spec 缺口闭合 | ⚠️ **SUPERSEDED by 011**（v2.0 → v2.1，5 轮 → 10 轮复核）。beads `ZoneCNH-gg63` 树 + 子仓 #365~#402 保留作历史 cross-reference。详见 [010-runtime-gap-fix-execution-plan-20260702.md](010-runtime-gap-fix-execution-plan-20260702.md) |
+| 011 | binance 运行时缺口修复主计划（v2.1，10 轮深度分析定稿；8 Phase，58 GAP-E + 11 陷阱 + 4 EXCHANGEINFO 勘误） | P0 | XL(49d+32d) | Plan010 superseded | 🔄 **IN PROGRESS** — Phase 1 ✅ DONE（2026-07-03）：11 治理陷阱全部闭合（#1541~#1551 全部 closed），PRG-006 降级 Partial，release_closeable=NO，版本对齐 v3.9.8。Phase 2-8（58 GAP-E，55.25 人天）待 binance 子仓独立排期。详见 [011-runtime-gap-master-plan-20260702.md](011-runtime-gap-master-plan-20260702.md) · [todo.md](../../module/binance/todo.md) |
 
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJECTED (with one-line rationale)
 
@@ -22,6 +24,7 @@ Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJE
 - 2026-06-24: [Plan006 执行对齐记录](006-execution-alignment.md) 同步本地验证、Beads、GitHub issue 状态；不改变 Plan006 生产级验收口径。
 - 2026-06-25: [Plan008 final closeout](008-binance-production-fix-master-plan.md) 与 [issues sync report](008-issues-sync-report.md) 同步 GitHub/beads 40/40 closed、Release `v0.2.0`、workflow `28126779885` completed/success、`release_closeable=YES`；不自动重判 FR 为 30/30 Done。
 - 2026-06-26: Plan008 验证脚本从脚本目录解析 Plan、SSOT 与映射文件，feature worktree 内运行时读取 PR 分支文件，不再误读主 checkout。
+- 2026-07-03: Plan011 Phase 1 治理分裂修复完成（11 陷阱全闭合，#1541~#1551 closed）。commit `2f3b03eb`：8 文件对齐 PRG-006 Partial / release_closeable=NO / v3.9.8。Phase 2-8 runtime gap 待 binance 子仓排期。
 
 ## 依赖说明
 
