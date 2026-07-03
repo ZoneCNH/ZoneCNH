@@ -3,7 +3,7 @@
 > **read-only projection**：This file is a read-only projection, not an active closure SSOT. Closure SSOTs are Beads and GitHub Issues. 请勿在此编辑任务状态——状态变更请直接操作 GitHub Issues / Beads，本文件仅作快照投影。
 
 > **生成日期**：2026-07-02（10 轮深度分析后定稿）
-> **快照时间**：2026-07-04（GitHub #1540~#1592：Open 8 / Closed 45）
+> **快照时间**：2026-07-04（GitHub #1540~#1592：Open 7 / Closed 46）
 > **来源**：`plans/binance/011-runtime-gap-master-plan-20260702.md`（PLAN-011）
 > **同步目标**：[ZoneCNH/ZoneCNH 主仓](https://github.com/ZoneCNH/ZoneCNH/issues) issue #1540~#1592（共 53 个）
 > **beads 树**：`ZoneCNH-gg63` 系列（52 个 open）
@@ -133,7 +133,7 @@
 | 8.2  | [x]  | P2     | 安全加固（E37+E44+E45）     | [#1584](https://github.com/ZoneCNH/ZoneCNH/issues/1584) | gg63.6.2  | CSRF + SECURITY + CONTRIBUTING              |
 | 8.3  | [x]  | P2     | 部署治理（E41~E50）         | [#1585](https://github.com/ZoneCNH/ZoneCNH/issues/1585) | gg63.6.3  | probe 深度 + distroless                     |
 | 8.4  | [x]  | P2     | Schema 演进（E8+E19+E23）   | [#1586](https://github.com/ZoneCNH/ZoneCNH/issues/1586) | gg63.6.4  | SchemaVersion 配置化                        |
-| 8.5  | [ ]  | P2     | 配置治理（E31+E4）          | [#1587](https://github.com/ZoneCNH/ZoneCNH/issues/1587) | gg63.6.5  | NATS 拓扑配置化                             |
+| 8.5  | [x]  | P2     | 配置治理（E31+E4）          | [#1587](https://github.com/ZoneCNH/ZoneCNH/issues/1587) | gg63.6.5  | NATS 拓扑配置化                             |
 | 8.6  | [ ]  | P2     | 容错与韧性（E11+E16+E33）   | [#1588](https://github.com/ZoneCNH/ZoneCNH/issues/1588) | gg63.6.6  | REST fallback + resiliencx 熔断             |
 | 8.7  | [ ]  | P2     | 优雅运行（E14+E15+E20+E22） | [#1589](https://github.com/ZoneCNH/ZoneCNH/issues/1589) | gg63.6.7  | retention cron + drain + 背压               |
 | 8.8  | [ ]  | P2     | 测试与质量（E21+E40）       | [#1590](https://github.com/ZoneCNH/ZoneCNH/issues/1590) | gg63.6.8  | CI race 强制 + HTTP timeout                 |
