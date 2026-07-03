@@ -11,7 +11,13 @@
 | [spec/client/SPEC.md](spec/client/SPEC.md) | client 子模块规格 |
 | [spec/server/SPEC.md](spec/server/SPEC.md) | server 子模块规格 |
 | [matrix/TRACEABILITY.md](matrix/TRACEABILITY.md) | 追溯矩阵 |
+| [matrix/client/TRACEABILITY.md](matrix/client/TRACEABILITY.md) | client 追溯矩阵 |
+| [matrix/server/TRACEABILITY.md](matrix/server/TRACEABILITY.md) | server 追溯矩阵 |
 | [plan/PLAN.md](plan/PLAN.md) | 实施计划 |
+| [plan/client/PLAN.md](plan/client/PLAN.md) | client 实施计划 |
+| [plan/server/PLAN.md](plan/server/PLAN.md) | server 实施计划 |
+| [tasks/README.md](tasks/README.md) | 任务拆分入口 |
+| [prompt/README.md](prompt/README.md) | Prompt 包入口 |
 | [design/DESIGN.md](design/DESIGN.md) | 架构与数据流 |
 | [gate/BOUNDARY-GATES.md](gate/BOUNDARY-GATES.md) | 边界门禁 |
 | [schema/README.md](schema/README.md) | 契约与 schema 说明 |
