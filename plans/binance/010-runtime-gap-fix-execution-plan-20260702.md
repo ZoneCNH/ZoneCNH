@@ -586,7 +586,7 @@ bash /home/workspace/ZoneCNH/plans/binance/010-verify-issues.sh
 | Phase 7（数据完整性） | 7 项 GAP Fixed + E2E 对账脚本              | ✅（7/7）          |
 | Phase 8（长尾）       | 38 项 GAP Fixed + 顶层文档补全             | ☐                 |
 | beads issue           | 完整树创建 + 依赖图正确                    | ☐                 |
-| GitHub issue          | 主仓 #1540~#1592（53 个）已同步            | ✅（Open 7 / Closed 46） |
+| GitHub issue          | 主仓 #1540~#1592（53 个）已同步            | ✅（Open 6 / Closed 47） |
 | RUNTIME-GAP-MATRIX    | 状态从 Open 改为 Fixed（≥80%）             | ☐                 |
 | release_closeable     | 真实 YES（0 P0 + ≤3 P1 Open）              | ☐                 |
 
