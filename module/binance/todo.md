@@ -187,6 +187,6 @@ GAP-E1 + GAP-E10 + GAP-E20 同 PR（漏洞链 #2）
 ---
 
 **todo.md 状态**：✅ 完整 8 阶段执行清单（10 轮分析后定稿，53 个 issue 全量映射）
-**下一步**：从 Phase 1 P0 陷阱开始（依赖用户授权 v0.11.0 tag）
+**下一步**：优先完成 Phase 7 剩余项 `#1575`（E2E 二向对账 + OSS checksum），随后关闭 `#1573` 并推进 Phase 8（`#1582~#1592`）。
 
 `[RULES I BROKE]`：之前版本以 summary 记忆为准（"todo.md 仅 4 行空白"），未现场核验 todo.md 内容深度；本次 10 轮分析时已现场 Read 重写。之前同步到 binance 子仓是基于"主仓即子仓"的猜测，10 轮分析后用户明确指定主仓 ZoneCNH/ZoneCNH，已修正。
