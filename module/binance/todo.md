@@ -3,7 +3,7 @@
 > **read-only projection**：This file is a read-only projection, not an active closure SSOT. Closure SSOTs are Beads and GitHub Issues. 请勿在此编辑任务状态——状态变更请直接操作 GitHub Issues / Beads，本文件仅作快照投影。
 
 > **生成日期**：2026-07-02（10 轮深度分析后定稿）
-> **快照时间**：2026-07-03（GitHub #1540~#1592：Open 34 / Closed 19）
+> **快照时间**：2026-07-03（GitHub #1540~#1592：Open 26 / Closed 27）
 > **来源**：`plans/binance/011-runtime-gap-master-plan-20260702.md`（PLAN-011）
 > **同步目标**：[ZoneCNH/ZoneCNH 主仓](https://github.com/ZoneCNH/ZoneCNH/issues) issue #1540~#1592（共 53 个）
 > **beads 树**：`ZoneCNH-gg63` 系列（52 个 open）
@@ -64,12 +64,12 @@
 | #   | 状态 | 优先级 | 任务                                                         | 主仓 issue                                              | beads    | 验收                                   |
 | --- | ---- | ------ | ------------------------------------------------------------ | ------------------------------------------------------- | -------- | -------------------------------------- |
 | 4.0 | [x]  | P1     | GAP-E7: SPEC §509 移除 history_state_postgres.go（前置）     | [#1555](https://github.com/ZoneCNH/ZoneCNH/issues/1555) | gg63.2.1 | SPEC §509 无该文件                     |
-| 4.1 | [ ]  | P1     | P4.1: server coverage store（PG 持久化）                     | [#1556](https://github.com/ZoneCNH/ZoneCNH/issues/1556) | gg63.2.2 | internal/server/coverage/store.go 落地 |
-| 4.2 | [ ]  | P1     | P4.2: server NATS subscriber（binance.coverage.heartbeat）   | [#1557](https://github.com/ZoneCNH/ZoneCNH/issues/1557) | gg63.2.3 | subscriber 接收心跳消息                |
-| 4.3 | [ ]  | P1     | P4.3: client coverage_reporter（周期 NATS 上报）             | [#1558](https://github.com/ZoneCNH/ZoneCNH/issues/1558) | gg63.2.4 | client 周期上报 coverage               |
+| 4.1 | [x]  | P1     | P4.1: server coverage store（PG 持久化）                     | [#1556](https://github.com/ZoneCNH/ZoneCNH/issues/1556) | gg63.2.2 | internal/server/coverage/store.go 落地 |
+| 4.2 | [x]  | P1     | P4.2: server NATS subscriber（binance.coverage.heartbeat）   | [#1557](https://github.com/ZoneCNH/ZoneCNH/issues/1557) | gg63.2.3 | subscriber 接收心跳消息                |
+| 4.3 | [x]  | P1     | P4.3: client coverage_reporter（周期 NATS 上报）             | [#1558](https://github.com/ZoneCNH/ZoneCNH/issues/1558) | gg63.2.4 | client 周期上报 coverage               |
 | 4.4 | [x]  | P1     | P4.4: 删除 internal/client/history_state_postgres.go（违宪） | [#1559](https://github.com/ZoneCNH/ZoneCNH/issues/1559) | gg63.2.5 | 文件不存在                             |
-| 4.5 | [ ]  | P1     | P4.5: cmd/binance-client/main.go 移除 postgresx 装配         | [#1560](https://github.com/ZoneCNH/ZoneCNH/issues/1560) | gg63.2.6 | `grep -rn 'postgresx\.' cmd/` 为空     |
-| 4.6 | [ ]  | P1     | P4.6: 测试覆盖（单元 + 集成）                                | [#1561](https://github.com/ZoneCNH/ZoneCNH/issues/1561) | gg63.2.7 | coverage store + NATS 心跳测试 PASS    |
+| 4.5 | [x]  | P1     | P4.5: cmd/binance-client/main.go 移除 postgresx 装配         | [#1560](https://github.com/ZoneCNH/ZoneCNH/issues/1560) | gg63.2.6 | `grep -rn 'postgresx\.' cmd/` 为空     |
+| 4.6 | [x]  | P1     | P4.6: 测试覆盖（单元 + 集成）                                | [#1561](https://github.com/ZoneCNH/ZoneCNH/issues/1561) | gg63.2.7 | coverage store + NATS 心跳测试 PASS    |
 
 **Phase 4 验收**：`ls internal/client/history_state_postgres.go` 不存在 + server coverage store 落地。
 
