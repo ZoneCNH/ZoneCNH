@@ -549,7 +549,6 @@ module/binance/spec/client/
     ├── history_fetcher.go          # 历史数据拉取
     ├── history_lifecycle.go        # 历史回填生命周期
     ├── history_rest.go             # 历史 REST 请求
-    ├── history_state_postgres.go   # 历史状态持久化（PostgreSQL）
     ├── cron_reconcile.go           # 定时对账
     ├── archive_manifest.go         # 归档清单
     ├── testdata/                   # 测试数据（spot/usdm/coinm/options raw JSON）
