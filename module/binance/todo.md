@@ -3,7 +3,7 @@
 > **read-only projection**：This file is a read-only projection, not an active closure SSOT. Closure SSOTs are Beads and GitHub Issues. 请勿在此编辑任务状态——状态变更请直接操作 GitHub Issues / Beads，本文件仅作快照投影。
 
 > **生成日期**：2026-07-02（10 轮深度分析后定稿）
-> **快照时间**：2026-07-04（GitHub #1540~#1592：Open 14 / Closed 39）
+> **快照时间**：2026-07-04（GitHub #1540~#1592：Open 12 / Closed 41）
 > **来源**：`plans/binance/011-runtime-gap-master-plan-20260702.md`（PLAN-011）
 > **同步目标**：[ZoneCNH/ZoneCNH 主仓](https://github.com/ZoneCNH/ZoneCNH/issues) issue #1540~#1592（共 53 个）
 > **beads 树**：`ZoneCNH-gg63` 系列（52 个 open）
@@ -113,7 +113,7 @@
 | #   | 状态 | 优先级 | 任务                                                | 主仓 issue                                              | beads    | 验收                              |
 | --- | ---- | ------ | --------------------------------------------------- | ------------------------------------------------------- | -------- | --------------------------------- |
 | 7.1 | [x]  | P1     | GAP-E2: server CompletenessScanner                  | [#1574](https://github.com/ZoneCNH/ZoneCNH/issues/1574) | gg63.5.1 | scanner 周期扫描缺口              |
-| 7.2 | [ ]  | P1     | GAP-E3: E2E 二向对账 + OSS checksum                 | [#1575](https://github.com/ZoneCNH/ZoneCNH/issues/1575) | gg63.5.2 | reconciler + OSS 校验脚本         |
+| 7.2 | [x]  | P1     | GAP-E3: E2E 二向对账 + OSS checksum                 | [#1575](https://github.com/ZoneCNH/ZoneCNH/issues/1575) | gg63.5.2 | reconciler + OSS 校验脚本         |
 | 7.3 | [x]  | P1     | GAP-E10: catalog diff NATS pub/sub                  | [#1576](https://github.com/ZoneCNH/ZoneCNH/issues/1576) | gg63.5.3 | server 订阅 catalog diff          |
 | 7.4 | [x]  | P1     | GAP-E12: AckWait 30s → 5min + backfill 小批次       | [#1577](https://github.com/ZoneCNH/ZoneCNH/issues/1577) | gg63.5.4 | AckWait = 5min                    |
 | 7.5 | [x]  | P1     | GAP-E17: server time.Now().UTC() 强制               | [#1578](https://github.com/ZoneCNH/ZoneCNH/issues/1578) | gg63.5.5 | 25+ 处 time.Now() 全部 UTC        |
@@ -121,7 +121,7 @@
 | 7.7 | [x]  | P1     | GAP-E19: PayloadHash server 重算（漏洞链 #1 同 PR） | [#1580](https://github.com/ZoneCNH/ZoneCNH/issues/1580) | gg63.5.7 | server 端 hash 重算               |
 | 7.8 | [x]  | P1     | GAP-E28: PG 事务管理（多步写入原子性）              | [#1581](https://github.com/ZoneCNH/ZoneCNH/issues/1581) | gg63.5.8 | WithTx 包装落地                   |
 
-**Phase 7 验收**：TDengine 双写漏洞链测试 PASS（GAP-E12+E18+E19 三者同 PR）。
+**Phase 7 验收**：8 项数据完整性链全部完成，E2E 二向对账 + TDengine 双写漏洞链闭合。
 
 ---
 
@@ -187,6 +187,6 @@ GAP-E1 + GAP-E10 + GAP-E20 同 PR（漏洞链 #2）
 ---
 
 **todo.md 状态**：✅ 完整 8 阶段执行清单（10 轮分析后定稿，53 个 issue 全量映射）
-**下一步**：优先完成 Phase 7 剩余项 `#1575`（E2E 二向对账 + OSS checksum），随后关闭 `#1573` 并推进 Phase 8（`#1582~#1592`）。
+**下一步**：Phase 7 已收口（`#1573` 关闭），进入 Phase 8（`#1583~#1592`）批次推进。
 
 `[RULES I BROKE]`：之前版本以 summary 记忆为准（"todo.md 仅 4 行空白"），未现场核验 todo.md 内容深度；本次 10 轮分析时已现场 Read 重写。之前同步到 binance 子仓是基于"主仓即子仓"的猜测，10 轮分析后用户明确指定主仓 ZoneCNH/ZoneCNH，已修正。
