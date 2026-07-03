@@ -4,7 +4,7 @@
 > 来源：module/riskx/SPEC.md v1.0.0
 > 规范：docs/governance/TRACEABILITY.md
 
-Last-Updated: 2026-06-30
+Last-Updated: 2026-07-03
 ---
 
 ## §1 功能需求追溯（FR）
@@ -33,6 +33,8 @@ Last-Updated: 2026-06-30
 | BR-003 | 回撤熔断有滞后恢复阈值（0.5x maxDrawdown） | 避免反复触发 | TC-RSK-002 滞后恢复断言 | - | ⬜→§8 |
 | BR-004 | 风控规则优先级：KillSwitch > Drawdown > PositionLimit > RateLimit | 保证最关键规则先执行 | TC-RSK-008 规则优先级断言 | - | ⬜→§8 |
 | BR-005 | 减仓不受集中度限制 | 风控不阻止降风险操作 | TC-RSK-005 减仓豁免断言 | - | ⬜→§8 |
+| BR-006 | 风控规则实现之间禁止直接调用，规则协作只能由风控引擎统一编排 | 规则耦合导致优先级失序，code review 阻断 | TC-RSK-009 规则隔离断言 | - | ⬜→§8 |
+| BR-007 | 新增风控规则类型通过实现 RiskRule 并注册接入，禁止修改引擎调度主流程 | 开闭原则违规，code review 阻断 | TC-RSK-009 注册扩展断言 | - | ⬜→§8 |
 
 ---
 
@@ -60,6 +62,7 @@ Last-Updated: 2026-06-30
 | TC-RSK-006 | FR-006 | 风险指标输出 VaR(95%/99%)/Sharpe/MaxDrawdown/Calmar/Volatility；计算周期可配置 | `go test ./... -run TestRiskMetrics` |
 | TC-RSK-007 | FR-007 | 风控 PASS/REJECT 均记录审计事件；审计事件不可删除 | `go test ./... -run TestRiskAudit` |
 | TC-RSK-008 | FR-008, BR-004 | README H1 为 `# riskx`；go.mod 声明 `module github.com/ZoneCNH/riskx`；规则优先级正确 | `go test ./... -run TestModuleIdentity` |
+| TC-RSK-009 | BR-006, BR-007 | 规则实现互不 import/调用（规则包间零依赖边）；新增规则仅注册即生效，引擎调度主流程代码 diff 为零 | `go test ./... -run TestRuleIsolation` |
 
 ---
 
@@ -75,6 +78,7 @@ Last-Updated: 2026-06-30
 | AC-RSK-006 | FR-006 | VaR(95%/99%)/Sharpe/MaxDrawdown/Calmar/Volatility；周期可配置 | TC-RSK-006 |
 | AC-RSK-007 | FR-007 | PASS/REJECT 记录审计事件；不可删除 | TC-RSK-007 |
 | AC-RSK-008 | FR-008 | README H1 为 `# riskx`；go.mod 声明 `module github.com/ZoneCNH/riskx` | TC-RSK-008 |
+| AC-RSK-009 | BR-006, BR-007 | 规则间零直接调用，协作由引擎编排；新增规则不修改引擎调度主流程 | TC-RSK-009 |
 
 ---
 
@@ -83,11 +87,11 @@ Last-Updated: 2026-06-30
 | 维度 | 总数 | Done | 覆盖率 |
 | --- | --- | --- | --- |
 | FR | 8 | 8 | 100% |
-| BR | 5 | 5 | 100% |
+| BR | 7 | 7 | 100% |
 | NFR | 5 | 5 | 100% |
-| AC | 8 | 8 | 100% |
-| TC | 8 | 8 | 100% |
-| **合计** | **34** | **34** | **100%** |
+| AC | 9 | 9 | 100% |
+| TC | 9 | 9 | 100% |
+| **合计** | **38** | **38** | **100%** |
 
 ---
 
@@ -95,6 +99,7 @@ Last-Updated: 2026-06-30
 
 | 日期 | 变更内容 |
 | --- | --- |
+| 2026-07-03 | 新增 BR-006/BR-007（规则隔离 + 注册扩展）、TC-RSK-009、AC-RSK-009；仪表盘 34→38（SOLID 适配 O-RSK-01/02，见 report/solid-adaptation-20260703.md） |
 | 2026-06-29 | Goal 管线对齐：§6 覆盖率仪表盘标准化为 Done/覆盖率格式 |
 | 日期 | 版本 | 变更 |
 |------|------|------|

@@ -159,6 +159,8 @@ THEN it MUST be `module github.com/ZoneCNH/riskx`
 | BR-003 | 回撤熔断有滞后恢复阈值（0.5×maxDrawdown） | 避免反复触发 |
 | BR-004 | 风控规则优先级：KillSwitch > Drawdown > PositionLimit > RateLimit | 保证最关键规则先执行 |
 | BR-005 | 减仓不受集中度限制                     | 风控不阻止降风险操作 |
+| BR-006 | 风控规则实现之间禁止直接调用，规则协作只能由风控引擎统一编排 | 规则耦合导致优先级失序，code review 阻断 |
+| BR-007 | 新增风控规则类型通过实现 `RiskRule` 并注册接入，禁止修改引擎调度主流程 | 开闭原则违规，code review 阻断 |
 
 ---
 
@@ -360,3 +362,4 @@ riskx/
 | ---------- | ------------ | -------- | ------- |
 | 2026-06-14 | v0.1.0-draft | 初始版本 | ZoneCNH |
 | 2026-06-14 | v0.1.0-draft | FR-008 Module Identity (README H1 + go.mod 校验) | ZoneCNH |
+| 2026-07-03 | v1.0.0       | §8 新增 BR-006/BR-007：规则隔离与注册扩展约束（SOLID 适配 O-RSK-01/02，处置依据见 report/solid-adaptation-20260703.md；文档治理变更，不触发 Spec-Version bump） | ZoneCNH |
