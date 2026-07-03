@@ -1,0 +1,17 @@
+name: bea-docs-ci
+
+on:
+  pull_request:
+    paths:
+      - "module/bea/**"
+  push:
+    paths:
+      - "module/bea/**"
+
+jobs:
+  docs-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Placeholder
+        run: echo "module/bea docs workflow placeholder"
+
