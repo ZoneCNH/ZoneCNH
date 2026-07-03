@@ -1,0 +1,67 @@
+# CI/CD Workflow 参考模板 — ecb
+
+name: CI/CD
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  GO_VERSION: "1.23"
+  SRE_CI_POOL: "sre/storage-light"
+  SRE_DEPLOY_POOL: "sre/deploy"
+
+jobs:
+  preflight:
+    name: Preflight
+    runs-on: [self-hosted, Linux, X64, sre/storage-light]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+      - run: go mod download
+
+  build:
+    name: Build
+    needs: preflight
+    runs-on: [self-hosted, Linux, X64, sre/storage-light]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+      - run: go build ./...
+
+  test:
+    name: Unit Test
+    needs: preflight
+    runs-on: [self-hosted, Linux, X64, sre/storage-light]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+      - run: go test ./... -race -count=1
+
+  boundary:
+    name: Boundary Gates
+    needs: preflight
+    runs-on: [self-hosted, Linux, X64, sre/storage-light]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run boundary gates
+        run: bash scripts/boundary-gates.sh
+
