@@ -1,0 +1,20 @@
+name: eastmoney-ci
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  docs-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify required docs exist
+        run: |
+          test -f module/eastmoney/goal/goal.md
+          test -f module/eastmoney/spec/SPEC.md
+          test -f module/eastmoney/matrix/TRACEABILITY.md
+          test -f module/eastmoney/plan/PLAN.md
+          test -f module/eastmoney/gate/BOUNDARY-GATES.md
