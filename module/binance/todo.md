@@ -3,7 +3,7 @@
 > **read-only projection**：This file is a read-only projection, not an active closure SSOT. Closure SSOTs are Beads and GitHub Issues. 请勿在此编辑任务状态——状态变更请直接操作 GitHub Issues / Beads，本文件仅作快照投影。
 
 > **生成日期**：2026-07-02（10 轮深度分析后定稿）
-> **快照时间**：2026-07-03（GitHub #1540~#1592：Open 18 / Closed 35）
+> **快照时间**：2026-07-03（GitHub #1540~#1592：Open 17 / Closed 36）
 > **来源**：`plans/binance/011-runtime-gap-master-plan-20260702.md`（PLAN-011）
 > **同步目标**：[ZoneCNH/ZoneCNH 主仓](https://github.com/ZoneCNH/ZoneCNH/issues) issue #1540~#1592（共 53 个）
 > **beads 树**：`ZoneCNH-gg63` 系列（52 个 open）
@@ -117,7 +117,7 @@
 | 7.3 | [ ]  | P1     | GAP-E10: catalog diff NATS pub/sub                  | [#1576](https://github.com/ZoneCNH/ZoneCNH/issues/1576) | gg63.5.3 | server 订阅 catalog diff          |
 | 7.4 | [x]  | P1     | GAP-E12: AckWait 30s → 5min + backfill 小批次       | [#1577](https://github.com/ZoneCNH/ZoneCNH/issues/1577) | gg63.5.4 | AckWait = 5min                    |
 | 7.5 | [x]  | P1     | GAP-E17: server time.Now().UTC() 强制               | [#1578](https://github.com/ZoneCNH/ZoneCNH/issues/1578) | gg63.5.5 | 25+ 处 time.Now() 全部 UTC        |
-| 7.6 | [ ]  | P1     | GAP-E18: TDengine 部分成功捕获（不重投）            | [#1579](https://github.com/ZoneCNH/ZoneCNH/issues/1579) | gg63.5.6 | Partial=true 时记录 metric 不重投 |
+| 7.6 | [x]  | P1     | GAP-E18: TDengine 部分成功捕获（不重投）            | [#1579](https://github.com/ZoneCNH/ZoneCNH/issues/1579) | gg63.5.6 | Partial=true 时记录 metric 不重投 |
 | 7.7 | [x]  | P1     | GAP-E19: PayloadHash server 重算（漏洞链 #1 同 PR） | [#1580](https://github.com/ZoneCNH/ZoneCNH/issues/1580) | gg63.5.7 | server 端 hash 重算               |
 | 7.8 | [ ]  | P1     | GAP-E28: PG 事务管理（多步写入原子性）              | [#1581](https://github.com/ZoneCNH/ZoneCNH/issues/1581) | gg63.5.8 | WithTx 包装落地                   |
 
