@@ -39,5 +39,6 @@
 | 2026-06-12 | §4.4    | xlib_standard SPEC Release 状态同步      | v1.0.0 已发布（tag v1.0.0），更新 Lifecycle State             |
 | 2026-06-16 | §2.5    | 新增模块增殖约束（奥卡姆剃刀）           | 如无必要勿增实体；新增模块须满足必要性/唯一性/净收益三条件   |
 | 2026-06-21 | §20     | 新增第二十条：认识论标准                 | 将证据标签、置信度、FRAME→REALITY 禁止提升为宪法约束          |
+| 2026-07-03 | §5.5    | 新增 §5.5 Mock 契约一致性                | Mock/Fake 实现须过与生产实现相同的契约测试，支撑 P6 回测与实盘共享代码；源自 SOLID 规则适配分析（report/solid-adaptation-20260703.md），已先行落地于 docs/standards/go-coding-standards.md §11 |
 
 ---
