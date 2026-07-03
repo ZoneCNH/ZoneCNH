@@ -46,7 +46,7 @@
 
 - 安全相关 issue 状态与文档投影一致。
 - `module/binance/todo.md` 与 GitHub/Beads 状态一致。
-- `gate/SECURITY.md`、`SECURITY.md`、`CONTRIBUTING.md` 三者链接可达。
+- `gate/SECURITY.md`、`SECURITY.md`、`spec/CONTRIBUTING.md` 三者链接可达。
 
 ## 7. 联系与升级
 
