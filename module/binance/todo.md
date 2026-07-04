@@ -2,14 +2,13 @@
 
 ---
 
-## 后续工作 — 10 个 Open GitHub Issues（按 Phase 分批推进）
+## ✅ 全部 28 个 GitHub Issues 已关闭（2026-07-05）
 
-> **来源**：`gh issue list -R ZoneCNH/binance --state open`（2026-07-05 核实）
-> **统计**：P2×8 / P3×2 = 10 项
+> **来源**：`gh issue list -R ZoneCNH/binance --state open`（2026-07-05 核实 → 0 open）
 > **SSOT**：GitHub Issues 为追踪 SSOT，本节为本地只读投影
-> **已关闭**：Phase-1（4）+ Phase-5（3）+ Phase-6（4）+ Phase-7（7）= 18 项于 2026-07-05 关闭
+> **执行批次**：Phase-1 + Phase-5 + Phase-6 + Phase-7 + Phase-8 = 28 项全部关闭
 
-### ~~Phase-1 — 治理陷阱（4 项，2026-07-05 已关闭）~~
+### Phase-1 — 治理陷阱（4 项，已关闭）
 
 | #   | 标题                                                       | 关闭证据 |
 | --- | ---------------------------------------------------------- | -------- |
@@ -18,7 +17,7 @@
 | 400 | T4-1: Task 计数矛盾对齐                                    | 44/44 对齐 |
 | 402 | T8-3 修正: BR 数量缩减 vs CHANGELOG                        | CHANGELOG BR-009→BR-004 对齐 SPEC §8 |
 
-### ~~Phase-5 — 独立可上项（3 项，2026-07-05 已关闭）~~
+### Phase-5 — 独立可上项（3 项，已关闭）
 
 | #   | 标题                                          | 关闭证据 |
 | --- | --------------------------------------------- | -------- |
@@ -26,7 +25,7 @@
 | 377 | GAP-E36: ldflags 注入 buildinfo               | Makefile LDFLAGS 4 变量 + --version flag |
 | 378 | GAP-E29: 集成 golang-migrate migration runner | up/down/version/force 子命令，build PASS |
 
-### ~~Phase-6 — ExchangeInfo 分级体系（4 项，2026-07-05 已关闭）~~
+### Phase-6 — ExchangeInfo 分级体系（4 项，已关闭）
 
 | #   | 标题                                                             | 关闭证据 |
 | --- | ---------------------------------------------------------------- | -------- |
@@ -35,7 +34,7 @@
 | 381 | GAP-E24: CatalogEntry 动态分级                                   | QuoteVolumeUSD + TierConfig + applyCatalogClassification |
 | 382 | EXCHANGEINFO §8.1: options 独立维度                              | options_classification.go (距到期天数, moneyness) 分桶 |
 
-### ~~Phase-7 — 数据完整性（7 项，2026-07-05 已关闭）~~
+### Phase-7 — 数据完整性（7 项，已关闭）
 
 | #   | 标题                                          | 关闭证据 |
 | --- | --------------------------------------------- | -------- |
@@ -47,32 +46,25 @@
 | 388 | GAP-E18: TDengine 部分成功捕获（不重投）      | taos_writer.go Partial=true → metric 不重投 |
 | 389 | GAP-E28: PG 事务管理（多步写入原子性）        | pg_tx.go WithTx 通用事务包装 |
 
-### Phase-8 — 批量修复（10 项，按子阶段分批）
+### Phase-8 — 批量修复（10 项，已关闭）
 
-| 优先级 | #   | 标题         | 子阶段 | GAP-ID          |
-| ------ | --- | ------------ | ------ | --------------- |
-| P2     | 390 | 可观测性补强 | 8.1    | E9+E30+E35      |
-| P2     | 391 | 安全加固     | 8.2    | E37+E44+E45     |
-| P2     | 392 | 部署治理     | 8.3    | E41~E50         |
-| P2     | 393 | Schema 演进  | 8.4    | E8+E19+E23      |
-| P2     | 394 | 配置治理     | 8.5    | E31+E4          |
-| P2     | 395 | 容错与韧性   | 8.6    | E11+E16+E33     |
-| P2     | 396 | 优雅运行     | 8.7    | E14+E15+E20+E22 |
-| P2     | 397 | 测试与质量   | 8.8    | E21+E40         |
-| P3     | 398 | 长尾低优     | 8.9    | E38+E39         |
-| P3     | 399 | 治理文档批次 | 8.10   | E51~E58         |
-
-### 推荐执行顺序
-
-```
-Phase-8（批量修复，可按子阶段并行）← 下一批次
-  #390→#391→...→#399
-```
+| #   | 标题         | 关闭证据 |
+| --- | ------------ | -------- |
+| 390 | 可观测性补强 | client metrics 聚合 (events_published/errors/active_subscriptions) + pprof |
+| 391 | 安全加固     | CSRF 防护 + SECURITY.md + CONTRIBUTING.md |
+| 392 | 部署治理     | distroless + K8s strategy + securityContext + probes + Dockerfile fix |
+| 393 | Schema 演进  | SchemaVersion 配置化 + PayloadHash server 重算 + 精度校验 |
+| 394 | 配置治理     | NATS 拓扑配置化 + throttle 配置化 |
+| 395 | 容错与韧性   | resiliencx v1.0.2 + exchangeinfo fallback + retry 分类 |
+| 396 | 优雅运行     | graceful SIGTERM/SIGINT shutdown + retention cron + 背压 |
+| 397 | 测试与质量   | CI race 强制 + HTTP client timeout |
+| 398 | 长尾低优     | regexp 包级 var + 错误链 %w |
+| 399 | 治理文档批次 | SPEC 23 节 + BR-001~008 + STANDARD/FEATURES/ACCEPTANCE/TRACEABILITY/ADR-001 |
 
 ### 关键依赖链（来自 RUNTIME-GAP-MATRIX §4）
 
 ```
-E6 ✅ → E26 → E24 → E31 → E25 → E28 → E1/E7/E10/E20
+E6 ✅ → E26 ✅ → E24 ✅ → E31 ✅ → E25 ✅ → E28 ✅ → E1/E7/E10 ✅/E20 ✅
          ↓
-      E2/E3（完整性校验）→ E12/E17/E18（存储可靠性）
+      E2/E3 ✅（完整性校验）→ E12/E17/E18 ✅（存储可靠性）
 ```
