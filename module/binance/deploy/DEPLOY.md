@@ -1,8 +1,8 @@
 # binance 二进制构建与部署
 
-- Runtime-Version: v0.11.0（anchor: `/home/workspace/binance@f53303f` — gap repair runtime bug fixes: NATS timeout, kline storage, stale gate exemption, repair re-publish）
+- Runtime-Version: v0.12.0（anchor: `/home/workspace/binance@c24b4ce` — merge `fix/runtime-gap-phase2-5` + post-merge config 字段回归修复）
 - Target: jp1 (84.247.154.45)
-- Last-Updated: 2026-07-01
+- Last-Updated: 2026-07-04
 
 ## 目录
 
@@ -124,13 +124,13 @@ ENTRYPOINT ["/usr/local/bin/binance-server"]
 
 ```bash
 docker build \
-  --build-arg VERSION=v0.11.0 \
+  --build-arg VERSION=v0.12.0 \
   --build-arg COMMIT=$(git rev-parse HEAD) \
   --build-arg BUILD_TIME=$(date -u +%Y-%m-%dT%H:%M:%SZ) \
-  -t ghcr.io/zonecnh/binance:v0.11.0 \
+  -t ghcr.io/zonecnh/binance:v0.12.0 \
   -f Dockerfile .
 
-docker push ghcr.io/zonecnh/binance:v0.11.0
+docker push ghcr.io/zonecnh/binance:v0.12.0
 ```
 
 ---
