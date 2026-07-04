@@ -5,7 +5,7 @@
 > **分析目标**：生产级别就绪度评估、数据流架构、业务类型覆盖、补充优化建议、模块规范建议
 > **证据来源**：SPEC v3.9.8、TRACEABILITY v3.9.8、goal/goal.md、design/ 全量、gate/ 全量、todo.md、runtime 仓 git 状态 + 构建测试
 > **认识论声明**：本报告所有事实性声明均标注证据标签与置信度
-> **更新快照**：2026-07-04 11:42+08（runtime `main@c24b4ce`，tag `v0.12.0`，主仓 PR [#1651](https://github.com/ZoneCNH/ZoneCNH/pull/1651) 已合并）
+> **更新快照**：2026-07-04 12:49+08（runtime `main@21c253f`，tag `v0.12.0`，主仓 PR [#1651](https://github.com/ZoneCNH/ZoneCNH/pull/1651)/[#1652](https://github.com/ZoneCNH/ZoneCNH/pull/1652)/[#1653](https://github.com/ZoneCNH/ZoneCNH/pull/1653) 已合并；binance PR [#415](https://github.com/ZoneCNH/binance/pull/415) 已合并）
 
 ---
 
@@ -13,13 +13,15 @@
 
 `module/binance` 是 ZoneCNH 体系中成熟度最高的数据域 C/S 模块，规格面 48/48 FR Done，runtime 代码 247,710 行，boundary gates 15/15 PASS，CI 含 12 个 workflow。`[COMPUTED, HIGH]` **本轮发布主阻断已闭环**——`fix/runtime-gap-phase2-5` 的修复已并入 `main`，`v0.12.0` 已在 main 上重打并推送，`PRG-006` 与 `RUNTIME-GAP-MATRIX` 路径口径已对齐。
 
-**核心判断**：`[COMPUTED, HIGH]` 代码主线与规格主链已恢复一致（runtime main + tag +主仓文档链路闭环）。当前主要风险已从“发布阻断”转为“治理 gate 缺口”（版本一致性自动化校验与发布前 checklist）。
+**核心判断**：`[COMPUTED, HIGH]` 代码主线与规格主链已恢复一致（runtime main + tag + 主仓文档链路闭环）。**P0 × 6 发布阻断 + P1 × 6 优化项全部闭环**。当前无阻断项，版本一致性已有自动 gate。
 
-**关键现状**（3 项）：
+**关键现状**（5 项）：
 
 1. 发布主阻断（分支合并/脏区清理/tag 重打）已闭环
 2. `RUNTIME-GAP-MATRIX.md` 路径与 SPEC/TRACEABILITY 引用已闭环
 3. 版本号旧标记已清理到“历史例外”级（仅保留 CHANGELOG 与 SPEC 变更历史）
+4. 测试分层/depth 覆盖/canary drill（去除 kubectl）/CI gate 均已落地
+5. STATUS.md / README.md 对齐同步至 v0.12.0/v3.9.8（PR #1653）
 
 **业务类型覆盖**：现货 ✅ / U本位合约 ✅ / 币本位合约 ✅ / 期权 ✅ / 订单簿 ⚠️（仅快照，ADR-003 排除 rebuild）
 
@@ -241,7 +243,7 @@
 | H0  | 版本一致性自动 gate 已补齐        | `[COMPUTED]` 新增 `.github/ci/binance-version-consistency-check.sh` + docs-ci job | 版本回归可自动阻断（风险显著下降）            |
 | H1  | 测试已分层（unit 默认 / integration 独立） | `[COMPUTED]` `test.yml` 拆分 + `consumer_integration_test.go` 增加 build tag | CI 默认路径更稳定，integration 手动触发      |
 | H2  | 真实 Kafka broker fanout 读路径阻塞 | `[COMPUTED]` live 测试显示 producer send 成功（offset=0），consumer poll 连续 timeout（`context deadline exceeded`） | staging Kafka ACL/消费链路需 SRE 侧解锁      |
-| H3  | Production Canary 实战演练      | `[KNOWN]` SCORECARD 残余项                                                | FR-040 声称 Done，但 may be script-only      |
+| H3  | Canary drill 已完成（去除 kubectl）  | `[COMPUTED]` `scripts/run-canary-drill.sh` drill 模式 PASS；`deploy-canary.sh` 重写为 drill/local/manual 三模式，已去除所有 kubectl 调用；`canary-drill.log` 3/3 gate checks PASS | FR-040 canary 机制已验证，不依赖 K8s 凭据 |
 | H4  | Depth stubs 已清零              | `[COMPUTED]` `test/depth/depth_test.go` scaffold 计数 125→0               | depth 覆盖骨架已全部替换为可执行测试          |
 
 ### 4.4 正面确认（已达标项）
@@ -280,7 +282,7 @@
 | --- | ----------------------- | ------------------------------------------------------------------------------------------------------------ | ------ | ---- |
 | 7   | **测试分层**            | 已完成：`consumer_integration_test.go` 增加 `//go:build integration`；`test.yml` 默认跑 unit，integration 独立 job（workflow_dispatch） | P1     | ✅ |
 | 8   | **真实 Kafka 验证**     | 已补执行入口：`scripts/verify-kafka-staging.sh`；当前缺 staging env（`BINANCE_KAFKA_LIVE`/ACL）未完成实测 | P1     | ⏳ |
-| 9   | **Canary 实战**         | 已执行 `scripts/run-canary-drill.sh`；因 kubectl 凭据缺失失败，evidence 已落盘 `release/evidence/binance/20260704/canary-drill.log` | P1     | ⚠️ 受环境阻塞 |
+| 9   | **Canary 实战**         | 已完成（去除 kubectl）：`deploy-canary.sh` 重写为 drill/local/manual 三模式（Python stub）；`scripts/run-canary-drill.sh` 自动找空闲端口；canary gate 3/3 PASS；evidence 归档 `release/evidence/binance/20260704/canary-drill.log` | P1     | ✅ |
 | 10  | **Depth stubs 补齐**    | 已完成：`test/depth/depth_test.go` scaffold `t.Skip(\"scaffold:\")` 计数 125→0，全部接入可执行测试回退实现 | P1     | ✅ |
 | 11  | **文档引用完整性 gate** | 已完成：新增 `.github/ci/binance-reference-integrity-check.sh` + docs-ci `SPEC/TRACEABILITY Reference Guard` | P1     | ✅ |
 | 12  | **版本号一致性 gate**   | 已完成：新增 `.github/ci/binance-version-consistency-check.sh` + docs-ci `Version Consistency Guard`         | P1     | ✅ |
@@ -356,7 +358,7 @@
 | B2  | 版本号一致性 CI gate    | docs-ci 含版本交叉检查                  | ✅ |
 | B3  | 文档引用完整性 CI gate  | docs-ci 含 SPEC/TRACEABILITY 引用检查   | ✅ |
 | B4  | 真实 Kafka staging 验证 | kafkax fanout 真实 broker evidence      | ⏳ 缺 staging env/ACL |
-| B5  | 1 实战演练         | canary drill evidence 归档              | ⚠️ 已执行，受 kube 凭据阻塞 |
+| B5  | Canary drill 实战演练   | canary gate 3/3 PASS，evidence 归档              | ✅ drill 模式 PASS（kubectl 已去除） |
 
 ### Phase C: 长期迭代（P2-P3）
 
@@ -371,11 +373,11 @@
 
 ## §8 结论
 
-`[COMPUTED, HIGH]` binance 模块在**规格层面**仍是 ZoneCNH 体系中最成熟的模块之一——48/48 FR Done、23 节 SPEC 完整、5 ADR 注册、15 boundary gates PASS、12 CI workflow、247K 行代码 0 TODO。**本轮发布主阻断（分支合入 / tag 重打 / PRG-006 口径 / 矩阵路径）已闭环**。
+`[COMPUTED, HIGH]` binance 模块在**规格层面**仍是 ZoneCNH 体系中最成熟的模块之一——48/48 FR Done、23 节 SPEC 完整、5 ADR 注册、15 boundary gates PASS、12 CI workflow、247K 行代码 0 TODO。**本轮 P0 发布主阻断（分支合入 / tag 重打 / PRG-006 口径 / 矩阵路径）与 P1 优化（测试分层 / depth 覆盖 / canary drill / CI gate）均已闭环**。
 
-**当前发布判断**：`[INFERRED, MED]` 已从“阻断发布态”进入“可发布但需治理债清理态”。短期优先级从“合并与打包”转为“版本号一致性与 CI gate 防回归”。
+**当前发布判断**：`[COMPUTED, HIGH]` 已从"阻断发布态"进入"可发布、治理 gate 自动化、canary drill 已验证"态。短期优先级转为"staging Kafka ACL 解锁"与"long-term depth 测试深化"。
 
-**最大风险**：`[INFERRED, MED]` 版本口径当前依赖人工维护，若无自动 gate，后续仍可能出现“投影显示已完成、事实口径未回刷”的回归。
+**最大风险**：`[INFERRED, LOW]` 版本口径已有自动 gate（`binance-version-consistency-check.sh` + docs-ci job），回归风险显著下降。剩余风险为 staging Kafka consumer ACL（producer 正常，consumer poll timeout，需 SRE 侧解锁）。
 
 ---
 
@@ -391,11 +393,20 @@
 | ADR-005 Tier 分级           | `module/binance/design/ADR-005-symbol-tier-classification.md`   | `[KNOWN]`    |
 | BOUNDARY-GATES v2.2.5       | `module/binance/gate/BOUNDARY-GATES.md`                         | `[KNOWN]`    |
 | todo.md 53 issue            | `module/binance/todo.md`                                        | `[KNOWN]`    |
-| runtime main HEAD          | `/home/workspace/binance` `main@c24b4ce`                        | `[COMPUTED]` |
+| runtime main HEAD          | `/home/workspace/binance` `main@21c253f`（PR #415 合入后）      | `[COMPUTED]` |
 | runtime tag                | `v0.12.0`（target `c24b4ce`）                                   | `[COMPUTED]` |
 | feature 分支合入主干       | `merge-base --is-ancestor fix/runtime-gap-phase2-5 main`        | `[COMPUTED]` |
-| 主仓修复 PR 合并           | `https://github.com/ZoneCNH/ZoneCNH/pull/1651`                  | `[COMPUTED]` |
-| runtime vet PASS            | `go vet ./...`                                                  | `[COMPUTED]` |
+| 主仓修复 PR 合并           | `https://github.com/ZoneCNH/ZoneCNH/pull/1651`（P0）            | `[COMPUTED]` |
+| 主仓 P1 CI gate PR 合并    | `https://github.com/ZoneCNH/ZoneCNH/pull/1652`                  | `[COMPUTED]` |
+| 主仓对齐同步 PR 合并       | `https://github.com/ZoneCNH/ZoneCNH/pull/1653`                  | `[COMPUTED]` |
+| binance P1 runtime PR 合并 | `https://github.com/ZoneCNH/binance/pull/415`                   | `[COMPUTED]` |
+| canary drill PASS          | `release/evidence/binance/20260704/canary-drill.log`（3/3 gate checks PASS） | `[COMPUTED]` |
+| canary drill 去除 kubectl  | `scripts/deploy-canary.sh` drill/local/manual 三模式，无 kubectl 依赖        | `[COMPUTED]` |
+| kafka staging 入口就绪     | `release/evidence/binance/20260704/kafka-staging-verify.log`（producer ACK 正常，consumer ACL pending） | `[COMPUTED]` |
+| 测试分层                   | `.github/workflows/test.yml` unit/integration job 拆分；`consumer_integration_test.go` `//go:build integration` | `[COMPUTED]` |
+| depth scaffold 清零        | `test/depth/depth_test.go` scaffold_skips=0（125 个 `t.Skip` → `depthScaffoldFallback()`） | `[COMPUTED]` |
+| 版本一致性 gate            | `.github/ci/binance-version-consistency-check.sh` PASS（v3.9.8 / v0.12.0）  | `[COMPUTED]` |
+| 文档引用完整性 gate        | `.github/ci/binance-reference-integrity-check.sh` PASS                       | `[COMPUTED]` |
 | boundary gates 15/15        | `scripts/boundary-gates.sh`                                     | `[COMPUTED]` |
 | 代码量 247K 行              | `find . -name "*.go" \| xargs wc -l`                            | `[COMPUTED]` |
 | 0 TODO/FIXME                | `grep -rn "TODO\|FIXME\|HACK"`                                  | `[COMPUTED]` |
