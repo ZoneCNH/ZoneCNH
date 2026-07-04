@@ -443,7 +443,7 @@ forbidden_foundation_edges:
 #   - business_forbidden_edges 业务域间禁止依赖（基于 03-boundaries 守卫表）
 # ============================================================
 business_domain_modules:
-  # 数据域（10）
+  # 数据域（11）
   binance:           { domain: data, repo: github.com/ZoneCNH/binance, description: "币安行情采集" }
   okx:               { domain: data, repo: github.com/ZoneCNH/okx, description: "OKX 行情采集" }
   hyperliquid:       { domain: data, repo: github.com/ZoneCNH/hyperliquid, description: "Hyperliquid 行情采集" }
@@ -454,6 +454,7 @@ business_domain_modules:
   macro_data:        { domain: data, repo: github.com/ZoneCNH/macro_data, description: "宏观摄取与分发聚合层" }
   pe_data:           { domain: data, repo: github.com/ZoneCNH/pe_data, description: "另类数据摄取" }
   alternative_data:  { domain: data, repo: github.com/ZoneCNH/alternative_data, description: "链上数据、社交情绪、新闻 NLP" }
+  yahoo:             { domain: data, repo: github.com/ZoneCNH/yahoo, description: "Yahoo 市场与宏观数据采集" }
   # 分析域（8）
   factor_engine:     { domain: analytics, repo: github.com/ZoneCNH/factor_engine, description: "因子计算引擎" }
   feature_store:     { domain: analytics, repo: github.com/ZoneCNH/feature_store, description: "特征存储" }

@@ -16,7 +16,7 @@ ZoneCNH 的 `FoundationX` 量化交易基础设施文档枢纽，也是 `ZoneCNH
 - `AGENTS.md` / `CLAUDE.md`：自动化代理和贡献者工作指南
 - `docs/goal/`：Goal 驱动交付体系规范
 
-实际实现位于 `github.com/ZoneCNH` 下约 70 个独立仓库。本仓库只描述和链接模块，不承载源码。没有构建/lint/测试步骤。
+实际实现位于 `github.com/ZoneCNH` 下多个独立仓库（模块计数以 `module/registry.yaml` 为权威来源）。本仓库只描述和链接模块，不承载源码。没有构建/lint/测试步骤。
 开发规则：禁止 Kubernetes 与 Docker（含 `docker`、`docker compose`、`k8s` 相关配置与命令）。
 
 ## 文档同步

@@ -31,6 +31,16 @@
           }
         ],
         "description": "Link-check after markdown edits"
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/rsi-trigger.mjs"
+          }
+        ],
+        "description": "RSI auto-propose after audit FAIL (PostToolUse per script header)"
       }
     ],
     "PreCompact": [

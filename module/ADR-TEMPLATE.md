@@ -4,9 +4,10 @@
 > 日期：YYYY-MM-DD
 > 决策者：[姓名]
 > 关联：[相关 issue、spec 或文档链接]
+> 宪法条款：[涉及的 CONSTITUTION §N（如 §10.3 Breaking Change / §12 修正程序），无则填 N/A]
 > 仓库归属：[ZoneCNH 主仓 `module/{模块}/` | {runtime} 仓 docs/]
 
-> **归属规则**：架构决策记录（ADR）一律归 ZoneCNH 主仓 `module/{模块}/`。runtime 仓不得承载 ADR（由该仓 §15 boundary gate 强制）。模块专属 ADR 放 `module/{模块}/ADR-NNN-*.md`，跨模块治理类 ADR 放 `module/ADR-NNN-*.md`。
+> **归属规则**：架构决策记录（ADR）一律归 ZoneCNH 主仓 `module/{模块}/`。runtime 仓不得承载 ADR（由该仓 §15 boundary gate 强制）。模块专属 ADR 放 `module/{模块}/ADR-NNN-*.md`，跨模块治理类 ADR 放 `module/ADR-NNN-*.md`。MAJOR/Breaking 变更（§10.3）与宪法修正（§12）必须产出 ADR，并在"宪法条款"字段标注对应条款编号。
 
 ---
 
