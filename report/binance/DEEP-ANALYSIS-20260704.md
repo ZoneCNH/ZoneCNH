@@ -5,7 +5,7 @@
 > **分析目标**：生产级别就绪度评估、数据流架构、业务类型覆盖、补充优化建议、模块规范建议
 > **证据来源**：SPEC v3.9.8、TRACEABILITY v3.9.8、goal/goal.md、design/ 全量、gate/ 全量、todo.md、runtime 仓 git 状态 + 构建测试
 > **认识论声明**：本报告所有事实性声明均标注证据标签与置信度
-> **更新快照**：2026-07-04 14:50+08（runtime `main@610882f`（PR #420 合入后）；主仓 PR #1651-#1659 全部合入；C2 REST fallback 验证；make test-unit 40/40 PASS）
+> **更新快照**：2026-07-04 15:08+08（runtime `main@721c4a2`（PR #421 合入后）；主仓 PR #1651-#1661 全部合入；C1-C3 depth 深化完成；54/54 test PASS）
 
 ---
 
@@ -15,7 +15,7 @@
 
 **核心判断**：`[COMPUTED, HIGH]` 代码主线与规格主链已恢复一致（runtime main + tag + 主仓文档链路闭环）。**P0 × 6 发布阻断 + P1 × 6 优化项全部闭环**。当前无阻断项，版本一致性已有自动 gate。
 
-**关键现状**（8 项）：
+**关键现状**（10 项）：
 
 1. 发布主阻断（分支合并/脏区清理/tag 重打）已闭环
 2. `RUNTIME-GAP-MATRIX.md` 路径与 SPEC/TRACEABILITY 引用已闭环
@@ -27,6 +27,7 @@
 8. C1 depth 测试深化（PR #418）：FR-011/013/027/028/031/032 共 14 维度实现；scaffold 71→57
 9. C1 继续深化（PR #419）：FR-038/FR-039 各补齐 error_path/edge_case/integration/race_condition；scaffold 57→49
 10. C2 REST fallback 验证（PR #420）：FR-012 retry backoff + timeout + fallback 链路验证；40/40 PASS
+11. C3 深化 FR-040/041/042/043/044（PR #421）：canary deploy + capacity planning + chaos test；16 PASS + 8 SKIP（待基础设施）；scaffold 49→49
 
 **业务类型覆盖**：现货 ✅ / U本位合约 ✅ / 币本位合约 ✅ / 期权 ✅ / 订单簿 ⚠️（仅快照，ADR-003 排除 rebuild）
 
@@ -398,7 +399,7 @@
 | ADR-005 Tier 分级           | `module/binance/design/ADR-005-symbol-tier-classification.md`   | `[KNOWN]`    |
 | BOUNDARY-GATES v2.2.5       | `module/binance/gate/BOUNDARY-GATES.md`                         | `[KNOWN]`    |
 | todo.md 53 issue            | `module/binance/todo.md`                                        | `[KNOWN]`    |
-| runtime main HEAD          | `/home/workspace/binance` `main@2c1d29f`（PR #418 合入后）      | `[COMPUTED]` |
+| runtime main HEAD          | `/home/workspace/binance` `main@721c4a2`（PR #421 合入后）      | `[COMPUTED]` |
 | runtime tag                | `v0.12.0`（target `c24b4ce`）                                   | `[COMPUTED]` |
 | feature 分支合入主干       | `merge-base --is-ancestor fix/runtime-gap-phase2-5 main`        | `[COMPUTED]` |
 | 主仓修复 PR 合并           | `https://github.com/ZoneCNH/ZoneCNH/pull/1651`（P0）            | `[COMPUTED]` |
@@ -418,8 +419,10 @@
 | binance PR #418 合入       | `https://github.com/ZoneCNH/binance/pull/418`（C1 depth 深化：FR-011/013/027/028/031/032）| `[COMPUTED]` |
 | binance PR #419 合入       | `https://github.com/ZoneCNH/binance/pull/419`（C1 继续：FR-038/FR-039 完整 5D 覆盖）| `[COMPUTED]` |
 | binance PR #420 合入       | `https://github.com/ZoneCNH/binance/pull/420`（C2 REST fallback：FR-012 retry/timeout/fallback）| `[COMPUTED]` |
-| depth scaffold 进度        | scaffold 71 → 57 → 49（FR-038/FR-039 各补齐 4D，剩余 49 为 P2-P3 量级）      | `[COMPUTED]` |
-| make test-unit 全绿        | `make test-unit` 40/40 tests PASS，exit 0（含 depth 40/40, C1+C2）          | `[COMPUTED]` |
+| binance PR #421 合入       | `https://github.com/ZoneCNH/binance/pull/421`（C3 深化：FR-040/041/042/043/044 framework）| `[COMPUTED]` |
+| depth scaffold 进度        | scaffold 71 → 57 → 49 → 49（C1/C2/C3 完成，剩余 49 为 P2-P3 量级）      | `[COMPUTED]` |
+| make test-unit 全绿        | `make test-unit` 54/54 tests PASS，exit 0（含 depth 54, C1+C2+C3）          | `[COMPUTED]` |
+| C3 depth tests           | `test/depth/depth_test.go` 3179 行；16 PASS + 8 SKIP（FR-040/041/043/044 happy/edge；FR-042/044 edge pending） | `[COMPUTED]` |
 | 主仓 PR #1655 合入         | `https://github.com/ZoneCNH/ZoneCNH/pull/1655`（RELEASE-CHECKLIST + ADR-005） | `[COMPUTED]` |
 | boundary gates 15/15        | `scripts/boundary-gates.sh`                                     | `[COMPUTED]` |
 | 代码量 247K 行              | `find . -name "*.go" \| xargs wc -l`                            | `[COMPUTED]` |
