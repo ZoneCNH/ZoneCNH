@@ -5,7 +5,7 @@
 > **分析目标**：生产级别就绪度评估、数据流架构、业务类型覆盖、补充优化建议、模块规范建议
 > **证据来源**：SPEC v3.9.8、TRACEABILITY v3.9.8、goal/goal.md、design/ 全量、gate/ 全量、todo.md、runtime 仓 git 状态 + 构建测试
 > **认识论声明**：本报告所有事实性声明均标注证据标签与置信度
-> **更新快照**：2026-07-04 13:45+08（runtime `main@2c1d29f`（PR #418 合入后）；主仓 PR #1651-#1657 全部合入；C1 depth scaffold 71→57；make test-unit 24/24 PASS）
+> **更新快照**：2026-07-04 14:30+08（runtime `main@276d56f`（PR #419 合入后）；主仓 PR #1651-#1658 全部合入；C1 depth scaffold 57→49；make test-unit 32/32 PASS）
 
 ---
 
@@ -25,6 +25,7 @@
 6. §6.2 × 5 缺失规范全部闭环（RELEASE-CHECKLIST/e2e tag/gate/ADR-005）
 7. `DefaultStandaloneConfig()` SchemaVersion 补齐（PR #417）；`make test-unit` 24/24 PASS
 8. C1 depth 测试深化（PR #418）：FR-011/013/027/028/031/032 共 14 维度实现；scaffold 71→57
+9. C1 继续深化（PR #419）：FR-038/FR-039 各补齐 error_path/edge_case/integration/race_condition；scaffold 57→49
 
 **业务类型覆盖**：现货 ✅ / U本位合约 ✅ / 币本位合约 ✅ / 期权 ✅ / 订单簿 ⚠️（仅快照，ADR-003 排除 rebuild）
 
@@ -414,8 +415,9 @@
 | ADR-005 Accepted           | `module/binance/design/ADR-005-symbol-tier-classification.md` Status: Accepted；`catalog.go:44-366` 实现证据 | `[COMPUTED]` |
 | binance PR #416 合入       | `https://github.com/ZoneCNH/binance/pull/416`（e2e build tag 分层）          | `[COMPUTED]` |
 | binance PR #418 合入       | `https://github.com/ZoneCNH/binance/pull/418`（C1 depth 深化：FR-011/013/027/028/031/032）| `[COMPUTED]` |
-| depth scaffold 进度        | scaffold 71 → 57（FR-027 happy_path + 13 新维度），剩余 57 为 P2-P3 量级                  | `[COMPUTED]` |
-| make test-unit 全绿        | `make test-unit` 24/24 packages PASS，exit 0（含 `cmd/binance-client`）       | `[COMPUTED]` |
+| binance PR #419 合入       | `https://github.com/ZoneCNH/binance/pull/419`（C1 继续：FR-038/FR-039 完整 5D 覆盖）| `[COMPUTED]` |
+| depth scaffold 进度        | scaffold 71 → 57 → 49（FR-038/FR-039 各补齐 4D，剩余 49 为 P2-P3 量级）      | `[COMPUTED]` |
+| make test-unit 全绿        | `make test-unit` 32/32 tests PASS，exit 0（含 depth 32/32）                  | `[COMPUTED]` |
 | 主仓 PR #1655 合入         | `https://github.com/ZoneCNH/ZoneCNH/pull/1655`（RELEASE-CHECKLIST + ADR-005） | `[COMPUTED]` |
 | boundary gates 15/15        | `scripts/boundary-gates.sh`                                     | `[COMPUTED]` |
 | 代码量 247K 行              | `find . -name "*.go" \| xargs wc -l`                            | `[COMPUTED]` |
