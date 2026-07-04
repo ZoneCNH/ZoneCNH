@@ -7,6 +7,7 @@
 !.omc/state/outer-metrics/
 .omx/
 .claude/hooks/.omc/
+knowledge/
 .config/*
 .config/cache/
 !.config/goal/
