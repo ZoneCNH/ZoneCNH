@@ -1,7 +1,8 @@
 # ADR-005：Symbol 采集分级体系（CatalogEntry Tier/SymbolPriority/Collection）
 
-> **Status**: Proposed（设计已定，待 binance 仓实现）
+> **Status**: Accepted（2026-07-04 — runtime `catalog.go` 已实现 Tier/Collection 字段与 classifyTier 逻辑，见 `internal/client/catalog.go:44-366`）
 > **Date**: 2026-07-02
+> **Accepted**: 2026-07-04（runtime `main@7a989e7`）
 > **决策者**: binance 模块架构（基于用户架构指令 + EXCHANGEINFO 报告 §8 勘误）
 > **关联**: GAP-E6/GAP-E24/GAP-E25/GAP-E26（RUNTIME-GAP-MATRIX）；上位报告 `report/binance/EXCHANGEINFO-SYMBOL-TIER-ANALYSIS-20260702.md`；ADR-004（连接拓扑层，本 ADR 提供数据字段层 Tier 供其消费）
 > **仓库归属**: ZoneCNH 主仓 `module/binance/`
@@ -246,5 +247,7 @@ binance_symbols 表加列（Tier/SymbolPriority/Collection/QuoteVolumeUSD），�
 ---
 
 ## 修订记录
+
+- 2026-07-04：Status Proposed → Accepted。runtime `internal/client/catalog.go` 已实现 `CatalogEntry.Tier`/`Collection` 字段（L44/L48）、`classifyTier` 逻辑（L347-366）。CLIENT-015/016/017 MVP 任务已落地；CLIENT-018（GAP-E25 分片）保持可选，不阻断 Accepted 升级。
 
 - 2026-07-02：初版。基于 EXCHANGEINFO 报告 §8 勘误定稿，纳入 options 不归 T4（§6.1）、GAP-E25 改可选（§6.2）、白名单 MVP（§5/§6.3）三项修正。与 ADR-004 划清数据字段层 vs 连接拓扑层边界（§7）。
