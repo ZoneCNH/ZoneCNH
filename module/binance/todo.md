@@ -2,12 +2,12 @@
 
 ---
 
-## 后续工作 — 17 个 Open GitHub Issues（按 Phase 分批推进）
+## 后续工作 — 10 个 Open GitHub Issues（按 Phase 分批推进）
 
 > **来源**：`gh issue list -R ZoneCNH/binance --state open`（2026-07-05 核实）
-> **统计**：P1×6 / P2×8 / P3×3 = 17 项
+> **统计**：P2×8 / P3×2 = 10 项
 > **SSOT**：GitHub Issues 为追踪 SSOT，本节为本地只读投影
-> **已关闭**：Phase-1（4 项）+ Phase-5（3 项）+ Phase-6（4 项）= 11 项于 2026-07-05 关闭
+> **已关闭**：Phase-1（4）+ Phase-5（3）+ Phase-6（4）+ Phase-7（7）= 18 项于 2026-07-05 关闭
 
 ### ~~Phase-1 — 治理陷阱（4 项，2026-07-05 已关闭）~~
 
@@ -35,17 +35,17 @@
 | 381 | GAP-E24: CatalogEntry 动态分级                                   | QuoteVolumeUSD + TierConfig + applyCatalogClassification |
 | 382 | EXCHANGEINFO §8.1: options 独立维度                              | options_classification.go (距到期天数, moneyness) 分桶 |
 
-### Phase-7 — 数据完整性（7 项，server 侧核心）
+### ~~Phase-7 — 数据完整性（7 项，2026-07-05 已关闭）~~
 
-| 优先级 | #   | 标题                                          | GAP-ID |
-| ------ | --- | --------------------------------------------- | ------ |
-| P1     | 383 | GAP-E2: server CompletenessScanner            | E2     |
-| P1     | 384 | GAP-E3: E2E 二向对账 + OSS checksum           | E3     |
-| P1     | 385 | GAP-E10: catalog diff NATS pub/sub            | E10    |
-| P1     | 386 | GAP-E12: AckWait 30s → 5min + backfill 小批次 | E12    |
-| P1     | 387 | GAP-E17: server time.Now().UTC() 强制         | E17    |
-| P1     | 388 | GAP-E18: TDengine 部分成功捕获（不重投）      | E18    |
-| P1     | 389 | GAP-E28: PG 事务管理（多步写入原子性）        | E28    |
+| #   | 标题                                          | 关闭证据 |
+| --- | --------------------------------------------- | -------- |
+| 383 | GAP-E2: server CompletenessScanner            | completeness/scanner.go 周期扫描 coverage 缺口 |
+| 384 | GAP-E3: E2E 二向对账 + OSS checksum           | reconcile/reconciler.go + SHA256 OSS checksum |
+| 385 | GAP-E10: catalog diff NATS pub/sub            | catalogdiff/subscriber.go + catalog_publisher.go |
+| 386 | GAP-E12: AckWait 30s → 5min                   | consumer.go AckWait = 5 * time.Minute |
+| 387 | GAP-E17: server time.Now().UTC() 强制         | 0 处 time.Now() 无 UTC，26 处有 UTC |
+| 388 | GAP-E18: TDengine 部分成功捕获（不重投）      | taos_writer.go Partial=true → metric 不重投 |
+| 389 | GAP-E28: PG 事务管理（多步写入原子性）        | pg_tx.go WithTx 通用事务包装 |
 
 ### Phase-8 — 批量修复（10 项，按子阶段分批）
 
@@ -65,10 +65,7 @@
 ### 推荐执行顺序
 
 ```
-Phase-7（数据完整性核心）← 下一批次
-  #383 E2 → #384 E3 → #385 E10 → #386 E12 → #387 E17 → #388 E18 → #389 E28
-        ↓
-Phase-8（批量修复，可按子阶段并行）
+Phase-8（批量修复，可按子阶段并行）← 下一批次
   #390→#391→...→#399
 ```
 
