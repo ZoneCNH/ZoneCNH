@@ -4,7 +4,7 @@
 >
 > 数据来源：各 GitHub 仓库实际状态，定期更新
 >
-> 最后更新：2026-06-29（binance v0.8.0 deep-review 修复 ✅）
+> 最后更新：2026-07-04（binance v0.12.0 P0/P1 闭环 ✅）
 >
 > 同步基线：`module/` 为模块规格库 SSOT，`docs/governance/` 为 Spec 治理 SSOT，`docs/goal/` 为 Goal 规则 SSOT，`specs/` 已移除。
 > 机器事实源：`.foundationx/status/index.json` — 由 `xlibgate fleet-status` 生成，供 CI 和自动投影消费。多维成熟度以该文件为准，本文手工块为投影。
@@ -93,8 +93,8 @@
 
 - market_data 域：14 组件（13 C/S Module + 1 独立进程 dispatch）
 - dispatch（market_data）：独立进程，v1.0.0，Receiver + DualWriteSink，进度 30%
-- C/S Module（13）：binance 为规格参考实现（spec v3.9.6 ✅；v0.8.0 released；48/48 Done (100%)；release_closeable=YES 🎉；47/47 tasks Done）；其余 12 个 v0.1.1，待升级
-- **factory 升级路径**：binance 已达 factory-ready ✅（v0.8.0 released、48/48 Done、release_closeable=YES、deep-review 37/37 fixed）；其余 12 C/S Module 待 client/server 拆分 + bootstrap 接入 + dispatch 集成验证
+- C/S Module（13）：binance 为规格参考实现（spec v3.9.8 ✅；v0.12.0 released；48/48 Done (100%)；release_closeable=YES 🎉；47/47 tasks Done；P0×6 阻断闭环 + P1×6 CI gate 落地）；其余 12 个 v0.1.1，待升级
+- **factory 升级路径**：binance 已达 factory-ready ✅（v0.12.0 released、48/48 Done、release_closeable=YES、深度分析 37/37 fixed；测试分层/canary drill/depth 覆盖/版本一致性 gate 就绪）；其余 12 C/S Module 待 client/server 拆分 + bootstrap 接入 + dispatch 集成验证
 
 ### 🟡 数据域 · macro_data（注意）
 
