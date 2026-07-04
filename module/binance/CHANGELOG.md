@@ -3,9 +3,61 @@
 所有 notable 变更记录，按 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/) 格式维护。
 
 - Module-Version: v3.9.8
-- Last-Updated: 2026-07-02
+- Last-Updated: 2026-07-04
 - Spec-Reference: `module/binance/spec/SPEC.md` v3.9.8
 - 治理规则：`module/binance/gate/RULES.md` R9 文档存在性
+
+---
+
+## 2026-07-04 20 轮审查共识修复（N2/N4/N6/N7/ORDBK/TEST1 + 文档全量对齐）
+
+### PR
+
+- Runtime: https://github.com/ZoneCNH/binance/pull/425（commit `edd7805`，9 文件，+371/-40）
+- ZoneCNH: https://github.com/ZoneCNH/ZoneCNH/pull/1668（commit `59907845`，21 文件，+551/-79）
+
+### 来源
+
+- `report/binance/REVIEW-20260704-20ROUND-CONSENSUS.md`（20 轮独立复现，No-Go 判定）
+- `report/binance/DEEP-ANALYSIS-20260704.md`（N1-N7 新发现）
+- `plans/binance/FIX-PLAN-20260704.md`（修复计划）
+
+### Fixed — runtime 仓（`/home/workspace/binance`）
+
+- **N2**（Critical）：NATS consumer filter subject 从 4 段 `binance.market.*.*` 修正为 `binance.market.>`，匹配 publisher 5 段 subject `binance.market.{pl}.{et}.v1`。20/20 审查员确认的结构性消息丢失阻断项。
+- **N4**（Critical）：`runtime.go` 新增 UM/CM/Options connector 接入路径。`StandaloneConfig` 增加 `EnableUMPerp`/`EnableCMPerp`/`EnableOptions` 布尔字段（默认 false，向后兼容），启用时通过 fan-in 合并所有 connector 的 events channel。
+- **N6**（High）：`taos_writer.go` 新增 `funding_rate` 和 `mark_price` 事件类型支持。新增 `fundingRatePoint()` 写入 `st_funding_rate` 表，`markPricePoint()` 写入 `st_mark_price` 表，含 super table 定义和 stable 路由。
+- **ORDBK**（Critical）：`taos_writer.go` 新增 `depthPoint()` 方法，将完整档位数据（bids/asks 数组）以 JSON 序列化写入 `st_depth` 表，不再退化为 top-of-book tick。保留 `bid_price`/`bid_qty`/`ask_price`/`ask_qty` 向后兼容字段。
+- **N7**（Medium）：`storage.go` retention 调度器从硬编码 `ProductLine: "spot"` 改为遍历 `["spot", "um_perp", "cm_perp", "options"]` 全产品线。
+- **TEST1**（High）：`TestRunStandaloneExchangeInfoFetchError` 从 `context.Background()`（永不超时）改为 `context.WithTimeout(10s)`，修复 ExchangeInfo retry 3 分钟超时导致的测试挂起。
+- **SchemaVersion**：`DefaultStandaloneConfig()` 补齐 `SchemaVersion: wire.DefaultSchemaVersion`（"v1"），修复 `TestStandaloneConfigFromCfgUsesDefaults` 失败。
+
+### Fixed — 规格文档（`module/binance/`）
+
+- **T0**（Critical）：`TRACEABILITY.md` `release_closeable` 从 `YES` 修正为 `NO`（PRG-006=Partial + PRG-007=Partial 不满足公式全 PASS 前提）。同步修正 PRG-003 从 PASS → Partial、PRG-007 从 PASS → Partial（30 open issues）。
+- **SPEC-PRG**（Critical）：`SPEC.md` §5 "PRG-001~007 全 PASS" 修正为 "PRG-001~005、PRG-007 PASS；PRG-006 Partial"；§21 release gate verdict 从 YES → NO；§23 Stop Condition 同步更新。
+- **全量文档对齐**：12 个文件中的 `release_closeable=YES` 和 `PRG-001~007 全 PASS` 引用全量修正为 `NO`（README.md、goal/goal.md、plan/PLAN.md、spec/ACCEPTANCE.md、spec/FEATURES.md、matrix/TRACEABILITY.md、matrix/client/TRACEABILITY.md、matrix/server/TRACEABILITY.md、prompt/README.md、prompt/PROMPT-TASK-*/v1.md、gate/BOUNDARY-GATES.md、design/ARCHITECTURE-DRIFT-WATCHLIST.md）。
+
+### 验证结果
+
+- `go build ./...`：PASS
+- `go vet ./...`：PASS
+- `go test ./...`：24/24 packages PASS（0 FAIL）
+- `boundary-gates.sh`：15/15 PASS
+- `release_closeable=YES` 残留：0（排除 CHANGELOG/evidence/历史归档）
+
+### 认识论标签
+
+- 现状核实：[COMPUTED, HIGH]，全部基于现场 `go build`/`grep`/`go test` 命令输出
+
+### P2-P3 修复（同日追加）
+
+- **N3**：`gate/OBSERVABILITY.md` 新增 §6 ACK 时序语义声明（默认/严格模式时序表 + SLA 声明）
+- **N5**：`gate/OBSERVABILITY.md` 新增 §7 OLAP 聚合源口径声明（内存窗口模式限制 + 升级路径）；`olap_source.go` 补代码注释
+- **PRG7**：关闭 9 个已修复 GitHub issues（#365/#366/#367/#368/#372/#373/#375/#376/#401），open issue 降至 28
+- **DOC1**：确认 binance-market/binance-server 引用在 "Removed Legacy Module" 章节为废弃文档，无需修改
+- **REG1**：`module/registry.yaml` binance 条目修正：`maturity_ref` → `module/binance/goal/goal.md`（index.json 仅含 foundation 模块）；`spec_version` v3.9.6→v3.9.8；`latest_tag` v0.11.0→v0.12.0
+- **OPERATIONS.md**：Module-Version v3.9.0→v3.9.8，Last-Updated 2026-06-26→2026-07-04
 
 ---
 
@@ -598,7 +650,7 @@ binance v0.8.0 部署到 prod（`84.247.154.45`），通过 systemd 二进制直
 ## [v2.2.1] — 2026-06-22
 
 ### Changed
-- TRACEABILITY BR-001/002/003/005/006/007/008/009 → Implemented（boundary gate §2-§11 PASS）
+- TRACEABILITY BR-001/002/003/004/005/006/007/008 → Implemented（boundary gate §2-§11 PASS）
 - TRACEABILITY TC-020/021/022 → PASS（boundary gate 证据对齐）；TC-005 保持 Pending，等待 FR-003 独立进程 publish/consume 集成证据
 - 业务报告 `report/binance/business-types-coverage-20260622.md` §Runtime 核对建议 → §Runtime 核对结果（[INFERRED] → [COMPUTED][HIGH]）
 
@@ -732,6 +784,7 @@ binance v0.8.0 部署到 prod（`84.247.154.45`），通过 systemd 二进制直
 
 | 日期 | 版本 | 变更内容 | 作者 |
 |------|------|----------|------|
+| 2026-07-05 | v3.9.9 | Phase-1~8 全量修复：28 GitHub Issues 全部关闭（PRG-007 PASS）；interval SSOT/CatalogEntry 分级/migration runner/completeness scanner/E2E 对账/catalog diff NATS/PG 事务/可观测性/部署治理/容错韧性/优雅运行；BR 对齐（#402）；release_closeable=NO 仅因 PRG-006=Partial | ZoneCNH |
 | 2026-06-22 | v3.3.0 | root SPEC/TRACEABILITY/ACCEPTANCE/FEATURES/README/IMPLEMENTATION-PLAN/RUNTIME-MAPPING 同步到 v3.3.0 登记态 | ZoneCNH |
 | 2026-06-22 | v2.2.2 | 新建 CHANGELOG + ACCEPTANCE/FEATURES/IMPLEMENTATION-PLAN 版本号同步到 v2.2.2 | ZoneCNH |
 | 2026-06-22 | v2.2.1 | Boundary gate evidence 回填 + 5 个 v2.0.0 前 task 归档 | ZoneCNH |

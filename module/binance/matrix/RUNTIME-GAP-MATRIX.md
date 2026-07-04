@@ -13,13 +13,14 @@
 | 维度          | 数值                                  |
 | ------------- | ------------------------------------- |
 | 总缺口数      | 58                                    |
-| CRITICAL / P0 | 3（GAP-E1, GAP-E6, GAP-E25）          |
+| 已修复        | 4（GAP-E1, GAP-E6, +N2/N6/N7/ORDBK 2026-07-04 修复） |
+| CRITICAL / P0 | 1（GAP-E25，E1/E6 已修复）            |
 | HIGH / P1     | 13                                    |
 | MEDIUM / P2   | 22                                    |
 | LOW / P3      | 20                                    |
 | 总工时估算    | ~73.5 人天                            |
 | 漏洞链数      | 15                                    |
-| 自审轮次      | 27（v3.1~v3.9，含 200 维度矩阵核验）  |
+| 自审轮次      | 27（v3.1~v3.9，含 200 维度矩阵核验）+ 20 轮独立复现（2026-07-04） |
 | 源码核验方式  | grep + Read 双重验证，全部 [COMPUTED] |
 
 ### 严重度映射
@@ -42,8 +43,8 @@
 
 | GAP-ID  | 类别     | 一句话                                                                                                     | 关联 FR        | 关联 AC | 源码位置                                                                      | 工时 | 引入版本 | 依赖                               |
 | ------- | -------- | ---------------------------------------------------------------------------------------------------------- | -------------- | ------- | ----------------------------------------------------------------------------- | ---- | -------- | ---------------------------------- |
-| GAP-E1  | 边界合宪 | coverage 状态持久化违反 client/server 边界（SPEC §75/§166），v3.2 重构为 server 端 SSOT + client NATS 上报 | FR-026         | AC-001  | `cmd/binance-client/main.go:234`, `internal/client/history_state_postgres.go` | 2.5d | v3.2     | 前置 GAP-E7/E10/E28；同 PR GAP-E20 |
-| GAP-E6  | 目录覆盖 | UM/CM/Options 未装配 ExchangeInfoRefresher，catalog 仅 1 条示例 symbol                                     | FR-012, FR-031 | AC-001  | `internal/client/runtime.go:199-217`                                          | 0.5d | v3.1     | 独立可上，ROI 最高；task=CLIENT-015 |
+| GAP-E1  | 边界合宪 | ~~coverage 状态持久化违反 client/server 边界~~ **✅ Fixed（2026-07-04）**：`history_state_postgres.go` 已删除 | FR-026         | AC-001  | ~~`cmd/binance-client/main.go:234`, `internal/client/history_state_postgres.go`~~ 已删除 | 2.5d | v3.2     | 前置 GAP-E7/E10/E28；同 PR GAP-E20 |
+| GAP-E6  | 目录覆盖 | ~~UM/CM/Options 未装配 ExchangeInfoRefresher~~ **✅ Fixed（2026-07-04）**：`runtime.go` 新增 `EnableUMPerp`/`EnableCMPerp`/`EnableOptions` 配置 + connector 接入 | FR-012, FR-031 | AC-001  | `internal/client/runtime.go:348-369`                                          | 0.5d | v3.1     | 独立可上，ROI 最高；task=CLIENT-015 |
 | GAP-E25 | 水平扩展 | client 无 ClientID/分片机制，多副本重复采集相同 symbol 集                                                  | FR-004, FR-014 | AC-002  | `cmd/binance-client/main.go`（无 ClientID）                                   | 4d   | v3.5     | **可选扩容**（§8.2 勘误：分级后单副本 ~940 stream 通常足够，非 E24 下游依赖）；前置 GAP-E10/E31；task=CLIENT-018 |
 
 ### §2.2 P1 — HIGH（13 项）
@@ -371,8 +372,37 @@ GAP-E2 + GAP-E3                             ← 服务端完整性闭环
 | --- | ------------------------------------------------------------ | ---------- | --------------- |
 | 1   | 在 binance 仓库 feature branch 落地 MVP-M（GAP-E32/E34/E36） | 无         | runtime owner   |
 | 2   | 在 binance 仓库 feature branch 落地 MVP-J（GAP-E27/E29/E30） | 无         | runtime owner   |
-| 3   | 在 binance 仓库 feature branch 落地 GAP-E6                   | 无         | runtime owner   |
+| 3   | ~~在 binance 仓库 feature branch 落地 GAP-E6~~ **✅ 已完成（2026-07-04）** | 无 | runtime owner |
 | 4   | 更新 CI 脚本支持双口径                                       | 管理层裁决 | CI owner        |
-| 5   | 决定是否降级 release_closeable 为 NO                         | 管理层裁决 | release manager |
+| 5   | ~~决定是否降级 release_closeable 为 NO~~ **✅ 已完成（2026-07-04，release_closeable=NO）** | 管理层裁决 | release manager |
 | 6   | 为每个 P0/P1 缺口创建 GitHub Issue                           | 本文件合入 | project manager |
 | 7   | evidence/ 目录补 GAP-E 引用（修复 GAP-E57）                  | 本文件合入 | evidence owner  |
+
+---
+
+## §11 2026-07-04 20 轮审查修复记录
+
+> 来源：`report/binance/REVIEW-20260704-20ROUND-CONSENSUS.md`（20 轮独立复现）+ `plans/binance/FIX-PLAN-20260704.md`
+> PR：runtime https://github.com/ZoneCNH/binance/pull/425（commit `edd7805`）；docs https://github.com/ZoneCNH/ZoneCNH/pull/1668（commit `59907845`）
+
+### 已修复缺口
+
+| 编号 | 类别 | 修复内容 | 源码位置 | 验证 |
+|------|------|----------|----------|------|
+| N2 | 消息路由 | NATS consumer filter 从 4 段 `binance.market.*.*` 改为 `binance.market.>`，匹配 publisher 5 段 subject | `internal/server/consumer/consumer.go:22` | `go build` PASS |
+| N4 (=GAP-E6) | 产品线覆盖 | UM/CM/Options connector 接入主运行时启动路径，fan-in 合并 events | `internal/client/runtime.go:348-369` | 3 个 connector 引用 |
+| N6 | 存储覆盖 | TaosWriter 新增 funding_rate/mark_price 事件支持，写入 st_funding_rate/st_mark_price 表 | `internal/server/storage/taos_writer.go:227-232` | 17 处 grep 命中 |
+| ORDBK | 存储覆盖 | depth 事件完整档位存储（bids_json/asks_json），不再退化为 top-of-book tick | `internal/server/storage/taos_writer.go:231` | depthPoint() 方法 |
+| N7 | 运维覆盖 | retention 从硬编码 spot 改为遍历全产品线 ["spot","um_perp","cm_perp","options"] | `internal/server/assembly/storage.go:253` | 0 处硬编码 |
+| TEST1 | 测试 | TestRunStandaloneExchangeInfoFetchError 超时修复（context.WithTimeout 10s） | `internal/client/final_coverage_test.go:62` | 24/24 packages PASS |
+| SchemaVersion | 配置 | DefaultStandaloneConfig() 补齐 SchemaVersion: wire.DefaultSchemaVersion | `internal/client/runtime.go:112` | TestStandaloneConfigFromCfgUsesDefaults PASS |
+
+### 未修复项（P2-P3）
+
+| 编号 | 类别 | 说明 | 状态 |
+|------|------|------|------|
+| N3 | ACK 时序 | MarkDurable 先于 persist（默认非严格模式），需 SLA 文档声明 | ✅ Fixed（OBSERVABILITY.md §6 声明） |
+| N5 | OLAP 口径 | 10min 内存窗口需文档标注为 "内存窗口模式" | ✅ Fixed（OBSERVABILITY.md §7 + 代码注释） |
+| PRG7 | issue 同步 | GitHub open issue 关闭或如实反映 | ✅ Fixed（关闭 9 个已修复 issue，剩余 28 个 runtime-gap 待修复） |
+| DOC1 | 链接 | 404 链接引用 | ✅ Fixed（确认为废弃文档引用，无需修改） |
+| REG1 | 注册表 | registry.yaml maturity_ref 断链 | ✅ Fixed（maturity_ref→goal.md，spec_version→v3.9.8，latest_tag→v0.12.0） |

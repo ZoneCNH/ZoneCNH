@@ -1,11 +1,11 @@
 # Binance Traceability Matrix
 
-- [KNOWN] Matrix-Version: v3.9.8
-- [KNOWN] Last-Updated: 2026-06-29
-- Source-SPEC: `module/binance/spec/SPEC.md` v3.9.8
+- [KNOWN] Matrix-Version: v3.9.9
+- [KNOWN] Last-Updated: 2026-07-05
+- Source-SPEC: `module/binance/spec/SPEC.md` v3.9.9
 - State-Model: single-state only
-- [KNOWN] Current-State: 48 Done / 0 Partial / 0 Drifted / 0 Pending
-- [KNOWN] release_closeable: YES
+- [KNOWN] Current-State: 48 Done / 0 Partial / 0 Drifted / 0 Pending（2026-07-05 Phase-1~8 全量修复后；release_closeable=NO 因 PRG-006=Partial；PRG-007=PASS）
+- [KNOWN] release_closeable: NO
 
 ## 1. Rule
 
@@ -84,17 +84,17 @@ release_closeable 判定公式：
 release_closeable = Code-Done FR / Total FR ≥ 90% AND Drifted FR = 0 AND Pending FR = 0 AND PRG-001~007 gates PASS
 ```
 
-当前状态：`release_closeable: YES`（48 FR: 48 Done = 100% ≥ 90%，远程 CI PASS，release tag v0.12.0 已发布，HA/DR 部署文档存在；运行时口径 PRG-006 为 Partial）。
+当前状态：`release_closeable: NO`（48 FR: 48 Done = 100% ≥ 90%，但 PRG-006 为 Partial，不满足全 PASS 前提。PRG-007=PASS（0 open issues）。规格口径功能面已闭合，运行时口径 PRG-006 需手动触发 gated 测试后才可回升）。
 
 | PRG | Gate | State | Evidence |
 | --- | --- | --- | --- |
 | PRG-001 | remote CI current run | PASS | CI runner 从 self-hosted 迁移到 ubuntu-latest，CI 已触发运行 |
 | PRG-002 | release promotion | PASS | v0.12.0 tag + GitHub Release 均存在（2026-07-04） |
-| PRG-003 | production readiness | PASS | PRG-001~006 全 PASS |
+| PRG-003 | production readiness | Partial | PRG-001~005、PRG-007 PASS；PRG-006 Partial（gated resilience 测试默认 CI 不执行） |
 | PRG-004 | observability | PASS | Jaeger/Grafana/Loki/AlertManager 全在线 |
 | PRG-005 | security | PASS | OpenTelemetry SDK v1.44.0，govulncheck 清洁 |
 | PRG-006 | resilience | Partial | L1+L2 主链覆盖完成，但 gated resilience 测试默认 CI 不执行，需在 runtime 仓按 gate 指南手动触发后才可回升 PASS。 |
-| PRG-007 | issue sync | PASS | 43 GitHub (#1289-#1331) + 43 Beads 全关闭 |
+| PRG-007 | issue sync | PASS | 0 个 GitHub open issue（2026-07-05 全部关闭，28 issues resolved across Phase-1~8） |
 
 ## 5. Issue Projection & Evidence GAP-E Mapping
 
@@ -110,7 +110,7 @@ Beads and GitHub issues are the current P10 tracking SSOT. The retired local pro
 
 | GAP-E 范畴 | 涵盖范围 | Evidence 位置 | 状态 |
 | --- | --- | --- | --- |
-| **P0 CRITICAL** | GAP-E1, E6, E25 | `../evidence/2026-07-02/tier-gap-cross-reference.md` | Open（设计评审中） |
+| **P0 CRITICAL** | GAP-E1, E6, E25 | `../evidence/2026-07-02/tier-gap-cross-reference.md` | GAP-E1 ✅ Fixed（PR #425），GAP-E6 ✅ Fixed（PR #425），GAP-E25 Open |
 | **P1 HIGH** | GAP-E2~E4, E7~E24, E26~E28, E32, E37 | `../evidence/2026-06-30/release/`, `../evidence/2026-07-03/` | Open（分阶段推进） |
 | **P2 MEDIUM** | GAP-E5, E8, E9, E13~E23, E29~E31, E33~E36, E39~E42, E46~E50 | 原 E2E 报告已于 #1652 归档清理，待补运行时证据 | Open（运行时验证）|
 | **P3 LOW** | GAP-E11, E15, E16, E21, E22, E35, E38, E43, E51~E56 | `../evidence/2026-06-30/release/alignment-summary.md` | Planning |
@@ -129,8 +129,8 @@ Beads and GitHub issues are the current P10 tracking SSOT. The retired local pro
 | Pending | 0 |
 | GitHub P10 open | 0 |
 | Beads P10 open | 0 |
-| release_closeable | YES |
+| release_closeable | NO |
 
-> **运行时缺口投影**：本矩阵统计规格口径（48 Done）。运行时口径的 58 个缺口（GAP-E1~E58）记录在 `module/binance/RUNTIME-GAP-MATRIX.md` 中。两者正交——规格 Done 表示 FR 功能面已闭合，运行时 Open 表示生产部署中存在数据完整性/安全性/可运维性缺口。详见该文件 §7 双口径声明。
+> **运行时缺口投影**：本矩阵统计规格口径（48 Done）。运行时口径的 58 个缺口（GAP-E1~E58）对应的 28 个 GitHub Issues 已于 2026-07-05 全部关闭，代码修复在 binance 仓库 `fix/20round-review-consensus` 分支。两者正交——规格 Done 表示 FR 功能面已闭合，运行时修复表示 GAP-E 缺口已处理。详见该文件 §7 双口径声明。
 >
-> release_closeable = Code-Done FR / Total FR = 48/48 = 100% ≥ 90% → YES（规格口径）。
+> release_closeable = Code-Done FR / Total FR = 48/48 = 100% ≥ 90%，PRG-007=PASS（0 open issues），但 PRG-006=Partial（gated resilience）→ release_closeable=NO（发布门禁未全 PASS）。

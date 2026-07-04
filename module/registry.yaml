@@ -484,10 +484,10 @@ binance:
   registered: 2026-06-01
   spec_ref: module/binance/spec/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml  # forbidden_deps 黑名单成员
-  maturity_ref: .foundationx/status/index.json#binance
-  spec_version: v3.9.6
+  maturity_ref: module/binance/goal/goal.md  # index.json 仅含 foundation 模块，binance 用 goal.md 为 maturity 投影
+  spec_version: v3.9.8
   release:
-    latest_tag: v0.11.0
+    latest_tag: v0.12.0
     cadence: on-demand
 
 okx:
