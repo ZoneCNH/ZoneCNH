@@ -81,7 +81,7 @@ This matrix is the compact FR/BR/AC/TC projection. It intentionally does not dup
 release_closeable 判定公式：
 
 ```
-release_closeable = Code-Done FR / Total FR ≥ 90% AND Drifted FR = 0 AND Pending FR = 0
+release_closeable = Code-Done FR / Total FR ≥ 90% AND Drifted FR = 0 AND Pending FR = 0 AND PRG-001~007 gates PASS
 ```
 
 当前状态：`release_closeable: YES`（48 FR: 48 Done = 100% ≥ 90%，远程 CI PASS，release tag v0.12.0 已发布，HA/DR 部署文档存在；运行时口径 PRG-006 为 Partial）。
