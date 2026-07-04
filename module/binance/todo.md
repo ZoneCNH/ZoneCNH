@@ -2,12 +2,12 @@
 
 ---
 
-## 后续工作 — 21 个 Open GitHub Issues（按 Phase 分批推进）
+## 后续工作 — 17 个 Open GitHub Issues（按 Phase 分批推进）
 
 > **来源**：`gh issue list -R ZoneCNH/binance --state open`（2026-07-05 核实）
-> **统计**：P1×10 / P2×8 / P3×3 = 21 项
+> **统计**：P1×6 / P2×8 / P3×3 = 17 项
 > **SSOT**：GitHub Issues 为追踪 SSOT，本节为本地只读投影
-> **已关闭**：Phase-1（4 项）+ Phase-5（3 项）= 7 项于 2026-07-05 关闭
+> **已关闭**：Phase-1（4 项）+ Phase-5（3 项）+ Phase-6（4 项）= 11 项于 2026-07-05 关闭
 
 ### ~~Phase-1 — 治理陷阱（4 项，2026-07-05 已关闭）~~
 
@@ -26,14 +26,14 @@
 | 377 | GAP-E36: ldflags 注入 buildinfo               | Makefile LDFLAGS 4 变量 + --version flag |
 | 378 | GAP-E29: 集成 golang-migrate migration runner | up/down/version/force 子命令，build PASS |
 
-### Phase-6 — ExchangeInfo 分级体系（4 项，依赖链 E26→E24）
+### ~~Phase-6 — ExchangeInfo 分级体系（4 项，2026-07-05 已关闭）~~
 
-| 优先级 | #   | 标题                                                             | GAP-ID |
-| ------ | --- | ---------------------------------------------------------------- | ------ |
-| P1     | 379 | GAP-E26: interval SSOT（前置）                                   | E26    |
-| P1     | 380 | EXCHANGEINFO §8.3: 静态白名单 MVP（STREAM_SYMBOLS）              | —      |
-| P1     | 381 | GAP-E24: CatalogEntry 动态分级（Tier/SymbolPriority/Collection） | E24    |
-| P1     | 382 | EXCHANGEINFO §8.1: options 独立维度（不进 Tier）                 | —      |
+| #   | 标题                                                             | 关闭证据 |
+| --- | ---------------------------------------------------------------- | -------- |
+| 379 | GAP-E26: interval SSOT（前置）                                   | RequiredBarIntervals 7→9, eventTypeToInterval 解析后缀 |
+| 380 | EXCHANGEINFO §8.3: 静态白名单 MVP（STREAM_SYMBOLS）              | STREAM_SYMBOLS 配置+过滤+.env.example 文档 |
+| 381 | GAP-E24: CatalogEntry 动态分级                                   | QuoteVolumeUSD + TierConfig + applyCatalogClassification |
+| 382 | EXCHANGEINFO §8.1: options 独立维度                              | options_classification.go (距到期天数, moneyness) 分桶 |
 
 ### Phase-7 — 数据完整性（7 项，server 侧核心）
 
@@ -65,10 +65,7 @@
 ### 推荐执行顺序
 
 ```
-Phase-6（分级体系链）← 下一批次
-  #379 E26 → #380 白名单 → #381 E24 → #382 options
-        ↓
-Phase-7（数据完整性核心）
+Phase-7（数据完整性核心）← 下一批次
   #383 E2 → #384 E3 → #385 E10 → #386 E12 → #387 E17 → #388 E18 → #389 E28
         ↓
 Phase-8（批量修复，可按子阶段并行）
