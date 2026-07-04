@@ -2,6 +2,14 @@
 
 模块级交付证据。Gate 级 Evidence Bundle 归属 `.config/goal/evidence/`。
 
+## 📑 快速导航
+
+| 文档 | 用途 |
+|------|------|
+| **[README-GAP-E-INDEX.md](README-GAP-E-INDEX.md)** | 🔗 **运行时缺口（GAP-E1~E58）→ 证据双向映射**（修复 #369） |
+| [../matrix/RUNTIME-GAP-MATRIX.md](../matrix/RUNTIME-GAP-MATRIX.md) | GAP-E 权威定义与详细分析 |
+| [../matrix/TRACEABILITY.md](../matrix/TRACEABILITY.md) | 规格矩阵（与 GAP-E 正交） |
+
 ## 当前证据
 
 | Evidence | Task | Status | Date |

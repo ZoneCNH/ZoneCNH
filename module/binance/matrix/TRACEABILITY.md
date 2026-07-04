@@ -96,9 +96,27 @@ release_closeable = Code-Done FR / Total FR ≥ 90% AND Drifted FR = 0 AND Pendi
 | PRG-006 | resilience | Partial | L1+L2 主链覆盖完成，但 gated resilience 测试默认 CI 不执行，需在 runtime 仓按 gate 指南手动触发后才可回升 PASS。 |
 | PRG-007 | issue sync | PASS | 43 GitHub (#1289-#1331) + 43 Beads 全关闭 |
 
-## 5. Issue Projection
+## 5. Issue Projection & Evidence GAP-E Mapping
+
+### 5.1 Issue Tracking
 
 Beads and GitHub issues are the current P10 tracking SSOT. The retired local projection is archived at `module/binance/evidence/2026-06-28/todo-archived.md` and is not used for closure state.
+
+### 5.2 Evidence → GAP-E Bidirectional Reference（修复 #369）
+
+本矩阵与 `evidence/` 层实现**双向链接**：
+- **evidence/ 层** → 追踪运行时缺口修复进度（见 `evidence/README-GAP-E-INDEX.md`）
+- **本矩阵** → 展示规格口径的 FR 完成状态（与 GAP-E 正交）
+
+| GAP-E 范畴 | 涵盖范围 | Evidence 位置 | 状态 |
+| --- | --- | --- | --- |
+| **P0 CRITICAL** | GAP-E1, E6, E25 | `evidence/2026-07-02/tier-gap-cross-reference.md` | Open（设计评审中） |
+| **P1 HIGH** | GAP-E2~E4, E7~E24, E26~E28, E32, E37 | `evidence/2026-06-30/release/`, `evidence/2026-07-03/` | Open（分阶段推进） |
+| **P2 MEDIUM** | GAP-E5, E8, E9, E13~E23, E29~E31, E33~E36, E39~E42, E46~E50 | `report/binance/DATA-INTEGRITY-E2E-20260701.md` | Open（运行时验证）|
+| **P3 LOW** | GAP-E11, E15, E16, E21, E22, E35, E38, E43, E51~E56 | `evidence/2026-06-30/release/alignment-summary.md` | Planning |
+| **Meta** | GAP-E57（evidence 无引用）→ **Closed**；GAP-E58（issue≠修复） | `evidence/README-GAP-E-INDEX.md`（本文件新增） | Done |
+
+详见 `evidence/README-GAP-E-INDEX.md` 完整映射表。
 
 ## 6. Summary
 
