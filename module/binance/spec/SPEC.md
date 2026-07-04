@@ -2,9 +2,9 @@
 
 - Spec-Version: v3.9.8
 - Module: binance
-- Last-Updated: 2026-07-02
+- Last-Updated: 2026-07-04
 - Runtime-Repo: `/home/workspace/binance`
-- Runtime-Version: v0.11.0
+- Runtime-Version: v0.12.0
 - State-Model: single-state only
 - Current-State: 48 Done / 0 Partial / 0 Drifted / 0 Pending
 - release_closeable: YES
@@ -207,15 +207,15 @@ Canonical FR/BR/AC mapping is in `module/binance/matrix/TRACEABILITY.md`. This f
 
 ## 21. Release Gate
 
-Current release gate verdict: `release_closeable=YES`（48/48 Done = 100% ≥ 90%，PRG-001~007 全 PASS）。
+Current release gate verdict: `release_closeable=YES`（规格口径：48/48 Done = 100% ≥ 90%）；运行时口径 `PRG-006=Partial`（gated resilience 测试默认 CI 不执行）。
 
-PRG-001~007 全部 PASS：
+PRG-001~007 状态如下：
 - PRG-001：CI runner 从 self-hosted 迁移到 ubuntu-latest，CI 已触发运行 → PASS
-- PRG-002：v0.11.0 tag + GitHub Release 已存在（2026-07-02 创建，target=f53303f） → PASS
-- PRG-003：PRG-001~006 全 PASS → PASS
+- PRG-002：v0.12.0 tag + GitHub Release 已存在（2026-07-04 创建，target=c24b4ce） → PASS
+- PRG-003：PRG-001~005、PRG-007 PASS；PRG-006 Partial（gated resilience） → Partial
 - PRG-004：Jaeger/Grafana/Loki/AlertManager 全在线 → PASS
 - PRG-005：OpenTelemetry SDK v1.44.0，govulncheck 清洁 → PASS
-- PRG-006：soak test 2min PASS，chaos test 5/5 PASS → PASS
+- PRG-006：soak/chaos 测试为 gated resilience，默认 CI 不执行 → Partial
 - PRG-007：43 GitHub (#1289-#1331) + 43 Beads P10 issues 全部关闭 → PASS
 
 ## 22. Change History
@@ -236,6 +236,6 @@ PRG-001~007 全部 PASS：
 
 ## 23. Stop Condition
 
-All PRG gates are closed and remote CI/release/production/security/load/pentest artifacts are auditable. release_closeable=YES（PRG-001~007 全 PASS），功能面 48/48 FR Done（100%）已闭合，生产就绪面 PRG-001~007 全 PASS。
+规格口径 FR 48/48 Done（100%）已闭合，release_closeable=YES。运行时口径仍存在 PRG-006 Partial（gated resilience 测试需在 runtime 仓按 gate 指南手动触发后回升 PASS）。
 
-> **运行时缺口说明**：规格口径 release_closeable=YES 基于 FR 功能面闭合。运行时口径 58 个缺口（GAP-E1~E58）记录在 `module/binance/RUNTIME-GAP-MATRIX.md` 中，需在 binance 仓库 feature branch 上逐步修复。详见该文件 §7 双口径声明与 §10 后续行动。
+> **运行时缺口说明**：规格口径 release_closeable=YES 基于 FR 功能面闭合；运行时口径当前包含 PRG-006 Partial。58 个运行时缺口（GAP-E1~E58）记录在 `module/binance/RUNTIME-GAP-MATRIX.md` 中，需在 binance 仓库 feature branch 上逐步修复。详见该文件 §7 双口径声明与 §10 后续行动。

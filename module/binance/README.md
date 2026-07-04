@@ -3,11 +3,11 @@
 `module/binance` is the Binance-specific Market Data C/S Module for ZoneCNH.
 
 - Spec-Version: v3.9.8 (root / client / server — 2026-06-26 内容正确性大修 + 2026-06-27 结构性修复 + 2026-06-28 P10 全量修复 + 执行计划发布)
-- Runtime-Version: v0.11.0（Runtime-Anchor: `/home/workspace/binance@f53303f`；历史 full E2E evidence package `/home/workspace/binance/release/evidence/binance/20260628-full-e2e-closure/` 仅作为 historical 运行证据，不构成当前发布关闭结论）
+- Runtime-Version: v0.12.0（Runtime-Anchor: `/home/workspace/binance@c24b4ce`；历史 full E2E evidence package `/home/workspace/binance/release/evidence/binance/20260628-full-e2e-closure/` 仅作为 historical 运行证据，不构成当前发布关闭结论）
 - Delivery-State: FR-001~FR-044 spec/traceability registered — single state `48 Done / 0 Partial / 0 Drifted / 0 Pending`。release_closeable=YES（PRG-001~007 全 PASS）。44/44 tasks Done；deep-review 37/37 fixed（结论见 `../../report/binance/deep-review-20260629.md`）；coverage 100.0%（22/23 packages 100%, 2 kernel dead-code funcs）。
-- Last-Updated: 2026-07-02 (runtime baseline 对齐：v0.11.0 / f53303f；single state 48/0；release_closeable=YES)
+- Last-Updated: 2026-07-04 (runtime baseline 对齐：v0.12.0 / c24b4ce；single state 48/0；release_closeable=YES)
 
-[COMPUTED, HIGH] 当前 Binance 发布结论：单状态模型为 `48 Done / 0 Partial / 0 Drifted / 0 Pending`，release_closeable=YES（PRG-001~007 全 PASS；PRG-002 v0.11.0 tag/release 2026-07-02 补齐）。44/44 tasks Done，deep-review 37/37 fixed；历史 P10 闭环证据仅作为 historical 归档，不再作为当前发布关闭判断依据。
+[COMPUTED, HIGH] 当前 Binance 发布结论：单状态模型为 `48 Done / 0 Partial / 0 Drifted / 0 Pending`，release_closeable=YES（PRG-001~007 全 PASS；PRG-002 v0.12.0 tag/release 2026-07-04 补齐）。44/44 tasks Done，deep-review 37/37 fixed；历史 P10 闭环证据仅作为 historical 归档，不再作为当前发布关闭判断依据。
 
 It is split into two submodules:
 

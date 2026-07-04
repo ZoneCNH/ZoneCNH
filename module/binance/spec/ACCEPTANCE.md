@@ -72,11 +72,11 @@
 | Gate    | 来源              | 标准                                        | 当前状态 | Evidence                         |
 | ------- | ----------------- | ------------------------------------------- | -------- | ------------------------------------- |
 | PRG-001 | TRACEABILITY §4   | remote CI current run（ubuntu-latest runner） | PASS     | CI runner 从 self-hosted 迁移到 ubuntu-latest，CI 已触发运行 |
-| PRG-002 | TRACEABILITY §4   | release promotion（release tag + notes）    | PASS     | v0.8.0 tag + GitHub Release 均存在（2026-06-29） |
-| PRG-003 | TRACEABILITY §4   | production readiness（PRG 7/7 proof）       | PASS     | PRG-001~006 全 PASS                  |
+| PRG-002 | TRACEABILITY §4   | release promotion（release tag + notes）    | PASS     | v0.12.0 tag + GitHub Release 均存在（2026-07-04） |
+| PRG-003 | TRACEABILITY §4   | production readiness（PRG 7/7 proof）       | Partial  | PRG-001~005、PRG-007 PASS；PRG-006 Partial（gated resilience） |
 | PRG-004 | TRACEABILITY §4   | observability（metrics/OTel/dashboard）     | PASS     | Jaeger/Grafana/Loki/AlertManager 全在线 |
 | PRG-005 | TRACEABILITY §4   | security（scan/mTLS/pentest）               | PASS     | OpenTelemetry SDK v1.44.0，govulncheck 清洁 |
-| PRG-006 | TRACEABILITY §4   | resilience（soak/chaos/canary）             | PASS     | soak test 2min PASS，chaos test 5/5 PASS |
+| PRG-006 | TRACEABILITY §4   | resilience（soak/chaos/canary）             | Partial  | soak/chaos 测试为 gated resilience，默认 CI 不执行 |
 | PRG-007 | TRACEABILITY §4   | issue sync（GitHub + Beads closures）       | PASS     | 43 GitHub (#1289-#1331) + 43 Beads 全关闭 |
 
 ## 2. Acceptance Criteria 登记
@@ -128,7 +128,7 @@
 
 ### 2.1 运行时口径 AC（不计入规格口径 48 Done 统计）
 
-> **双口径声明**：下表为运行时口径验收标准，承接 `RUNTIME-GAP-MATRIX.md` 中 GAP-E24 等运行时缺口的 AC 映射。**不纳入上方规格口径 `48 Done` 统计**（规格口径与运行时口径正交，见 SPEC §22a）。编号使用 `AC-TIER-*` 前缀以与规格口径数字编号（AC-001~AC-104）区分。
+> **双口径声明**：下表为运行时口径验收标准，承接 `../RUNTIME-GAP-MATRIX.md` 中 GAP-E24 等运行时缺口的 AC 映射。**不纳入上方规格口径 `48 Done` 统计**（规格口径与运行时口径正交，见 SPEC §22a）。编号使用 `AC-TIER-*` 前缀以与规格口径数字编号（AC-001~AC-104）区分。
 
 | AC（运行时）   | 关联 GAP / ADR                          | 验证内容                                                                                                          | 对应 task              | 状态（运行时） |
 | -------------- | --------------------------------------- | ----------------------------------------------------------------------------------------------------------------- | ---------------------- | -------------- |

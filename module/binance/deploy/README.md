@@ -1,9 +1,9 @@
 # module/binance 部署文档
 
-- Spec-Version: v3.9.6
-- Runtime-Version: v0.11.0（anchor: `/home/workspace/binance@f53303f`）
+- Spec-Version: v3.9.8
+- Runtime-Version: v0.12.0（anchor: `/home/workspace/binance@c24b4ce`）
 - Target: jp1 (84.247.154.45)
-- Last-Updated: 2026-07-01
+- Last-Updated: 2026-07-04
 
 ## 文档索引
 
