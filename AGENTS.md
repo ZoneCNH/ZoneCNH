@@ -35,6 +35,7 @@
 
 本仓库仅包含文档，没有本地构建系统。提交前使用轻量检查：
 
+- 开发规则：禁止 Kubernetes 与 Docker（含 `docker`、`docker compose`、`k8s` 相关配置与命令）。
 - `rg "market_data|riskx" README.md docs/architecture/01-overview.md docs/architecture/05-foundation.md` 查找受影响的架构引用。
 - `git diff --check` 检查尾随空格和补丁格式问题。
 - `git status --short` 确认只修改了预期文档文件。
