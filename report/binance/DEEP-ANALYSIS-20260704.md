@@ -5,7 +5,7 @@
 > **分析目标**：生产级别就绪度评估、数据流架构、业务类型覆盖、补充优化建议、模块规范建议
 > **证据来源**：SPEC v3.9.8、TRACEABILITY v3.9.8、goal/goal.md、design/ 全量、gate/ 全量、todo.md、runtime 仓 git 状态 + 构建测试
 > **认识论声明**：本报告所有事实性声明均标注证据标签与置信度
-> **更新快照**：2026-07-04 13:03+08（runtime `main@7a989e7`（PR #416 合入后）；主仓 PR #1651-#1655 全部合入；§6.2 × 5 缺失规范闭环）
+> **更新快照**：2026-07-04 13:30+08（runtime `main@12de074`（PR #417 合入后）；主仓 PR #1651-#1656 全部合入；§6.2 × 5 缺失规范闭环；make test-unit 24/24 PASS）
 
 ---
 
@@ -15,7 +15,7 @@
 
 **核心判断**：`[COMPUTED, HIGH]` 代码主线与规格主链已恢复一致（runtime main + tag + 主仓文档链路闭环）。**P0 × 6 发布阻断 + P1 × 6 优化项全部闭环**。当前无阻断项，版本一致性已有自动 gate。
 
-**关键现状**（6 项）：
+**关键现状**（7 项）：
 
 1. 发布主阻断（分支合并/脏区清理/tag 重打）已闭环
 2. `RUNTIME-GAP-MATRIX.md` 路径与 SPEC/TRACEABILITY 引用已闭环
@@ -23,6 +23,7 @@
 4. 测试分层/depth 覆盖/canary drill（去除 kubectl）/CI gate 均已落地
 5. STATUS.md / README.md 对齐同步至 v0.12.0/v3.9.8（PR #1653）
 6. §6.2 × 5 缺失规范全部闭环（RELEASE-CHECKLIST/e2e tag/gate/ADR-005）
+7. `DefaultStandaloneConfig()` SchemaVersion 补齐（PR #417）；`make test-unit` 24/24 PASS
 
 **业务类型覆盖**：现货 ✅ / U本位合约 ✅ / 币本位合约 ✅ / 期权 ✅ / 订单簿 ⚠️（仅快照，ADR-003 排除 rebuild）
 
@@ -394,7 +395,7 @@
 | ADR-005 Tier 分级           | `module/binance/design/ADR-005-symbol-tier-classification.md`   | `[KNOWN]`    |
 | BOUNDARY-GATES v2.2.5       | `module/binance/gate/BOUNDARY-GATES.md`                         | `[KNOWN]`    |
 | todo.md 53 issue            | `module/binance/todo.md`                                        | `[KNOWN]`    |
-| runtime main HEAD          | `/home/workspace/binance` `main@21c253f`（PR #415 合入后）      | `[COMPUTED]` |
+| runtime main HEAD          | `/home/workspace/binance` `main@12de074`（PR #417 合入后）      | `[COMPUTED]` |
 | runtime tag                | `v0.12.0`（target `c24b4ce`）                                   | `[COMPUTED]` |
 | feature 分支合入主干       | `merge-base --is-ancestor fix/runtime-gap-phase2-5 main`        | `[COMPUTED]` |
 | 主仓修复 PR 合并           | `https://github.com/ZoneCNH/ZoneCNH/pull/1651`（P0）            | `[COMPUTED]` |
@@ -411,6 +412,8 @@
 | RELEASE-CHECKLIST 新建     | `module/binance/gate/RELEASE-CHECKLIST.md`（v1.0.0，7 节 C/B/S/I/D）        | `[COMPUTED]` |
 | ADR-005 Accepted           | `module/binance/design/ADR-005-symbol-tier-classification.md` Status: Accepted；`catalog.go:44-366` 实现证据 | `[COMPUTED]` |
 | binance PR #416 合入       | `https://github.com/ZoneCNH/binance/pull/416`（e2e build tag 分层）          | `[COMPUTED]` |
+| binance PR #417 合入       | `https://github.com/ZoneCNH/binance/pull/417`（DefaultStandaloneConfig SchemaVersion 补齐）| `[COMPUTED]` |
+| make test-unit 全绿        | `make test-unit` 24/24 packages PASS，exit 0（含 `cmd/binance-client`）       | `[COMPUTED]` |
 | 主仓 PR #1655 合入         | `https://github.com/ZoneCNH/ZoneCNH/pull/1655`（RELEASE-CHECKLIST + ADR-005） | `[COMPUTED]` |
 | boundary gates 15/15        | `scripts/boundary-gates.sh`                                     | `[COMPUTED]` |
 | 代码量 247K 行              | `find . -name "*.go" \| xargs wc -l`                            | `[COMPUTED]` |
