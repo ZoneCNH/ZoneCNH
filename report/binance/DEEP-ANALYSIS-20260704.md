@@ -6,6 +6,8 @@
 > **证据来源**：SPEC v3.9.8、TRACEABILITY v3.9.8、goal/goal.md、design/ 全量、gate/ 全量、todo.md、runtime 仓 git 状态 + 构建测试
 > **认识论声明**：本报告所有事实性声明均标注证据标签与置信度
 > **更新快照**：2026-07-04 15:08+08（runtime `main@721c4a2`（PR #421 合入后）；主仓 PR #1651-#1661 全部合入；C1-C3 depth 深化完成；54/54 test PASS）
+>
+> **⚠️ 2026-07-04 20 轮审查修正**：本报告声称"P0 × 6 + P1 × 6 全部闭环"被 20 轮独立复现审查（`REVIEW-20260704-20ROUND-CONSENSUS.md`）推翻——N2（NATS subject 不匹配）、T0（TRACEABILITY 矛盾）、N4（仅 Spot 启动）、N6/N7/ORDBK 等 7 项在审查时仍为 Open。20 轮审查加权综合分 52/100（No-Go）。修复已执行：PR [#425](https://github.com/ZoneCNH/binance/pull/425)（runtime）+ [#1668](https://github.com/ZoneCNH/ZoneCNH/pull/1668)（docs），修复计划见 `plans/binance/FIX-PLAN-20260704.md`。本报告 §1/§4/§10 中"已闭环"/"APPROVED FOR PRODUCTION"等表述在审查前不成立，保留原文作为历史快照。
 
 ---
 
@@ -498,6 +500,6 @@
 
 ---
 
-**状态**：🟢 APPROVED FOR PRODUCTION DEPLOYMENT  
-**更新**：2026-07-04T14:05Z  
-**发布候选**：v0.12.0 (v3.9.8)
+**状态**：⚠️ 本报告声称"🟢 APPROVED FOR PRODUCTION DEPLOYMENT"被 20 轮独立审查推翻（No-Go，52/100）。修复后（PR #425 + #1668）技术阻断已消除，但 release_closeable=NO（PRG-006/007=Partial）。  
+**更新**：2026-07-04T23:30Z  
+**发布候选**：v0.12.0 (v3.9.8) — 技术阻断已修复，PRG 门禁待回升

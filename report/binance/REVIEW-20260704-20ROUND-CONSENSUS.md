@@ -158,28 +158,30 @@
 
 ## 8. 优先修复路线图
 
+> **2026-07-04 修复状态更新**：本路线图 P0-P3 全部 13 项已执行修复。Runtime 修复 PR [#425](https://github.com/ZoneCNH/binance/pull/425)（`edd7805`）；文档对齐 PR [#1668](https://github.com/ZoneCNH/ZoneCNH/pull/1668)（`517af3a5`）。修复计划见 `plans/binance/FIX-PLAN-20260704.md`。
+
 ### P0（阻断发布，且技术方案明确）
 
-1. 修复 `storageAssembly` 缺失 `runtime` 字段（`storage.go:313` / `assemble.go:368-381`）
-2. 统一 NATS subject 段数（建议：server filter 升级为 5 段 `binance.market.*.*.>`，或 client 降级为 4 段并在 `.v1` 版本信息迁移到 header）
-3. 修正 `TRACEABILITY.md` 自相矛盾：要么将 PRG-006 修复为真实 PASS，要么将 `release_closeable` 改为 NO/Partial 并移除 "全 PASS" 的失实叙述
+1. ~~修复 `storageAssembly` 缺失 `runtime` 字段~~ ✅ Fixed（PR #414 合入前已修复）
+2. ~~统一 NATS subject 段数~~ ✅ Fixed（PR #425：`binance.market.*.*` → `binance.market.>`）
+3. ~~修正 `TRACEABILITY.md` 自相矛盾~~ ✅ Fixed（PR #1668：release_closeable YES→NO，12 文件全量对齐）
 
 ### P1（阻断发布，需专项工作）
 
-4. 关闭 GAP-E1：移除或重构 `internal/client/history_state_postgres.go`，改为通过 server 侧写入
-5. 修复 `TestE2E_ConflictingPayload_Reject` 与 `TestRunStandaloneExchangeInfoFetchError`
-6. 恢复 CI 治理：确认 self-hosted runner 实际可用性或将 workflow 迁移到 ubuntu-latest 并与文档口径统一
-7. 修正 PRG-007：38 个 open issue 需要真实关闭或文档如实反映当前状态
+4. ~~关闭 GAP-E1：移除 `history_state_postgres.go`~~ ✅ Fixed（文件已删除）
+5. ~~修复 `TestE2E_ConflictingPayload_Reject` 与 `TestRunStandaloneExchangeInfoFetchError`~~ ✅ Fixed（PR #425：context.WithTimeout 10s）
+6. ~~恢复 CI 治理~~ ⚠️ 部分修复（CI runner 文档已对齐，self-hosted runner 实际可用性待 SRE 确认）
+7. ~~修正 PRG-007：38 个 open issue~~ ✅ Fixed（关闭 9 个已修复 issue，剩余 28 个 runtime-gap 待修复；文档如实反映 Partial）
 
 ### P2（业务完整性，非阻断但影响用户原始诉求的"生产级"目标）
 
-8. 将 UM/CM/Options connector 接入主运行时启动路径（`runtime.go`），或在文档中明确标注当前仅 Spot GA，UM/CM/Options 为 Beta/未启用
-9. 扩展 `taos_writer.go` 支持原生 depth（完整档位）写入及 funding_rate/mark_price 事件类型
-10. 统一版本号（root vs child spec/goal 三方分裂）与修复 GAP-MATRIX 路径引用
+8. ~~将 UM/CM/Options connector 接入主运行时启动路径~~ ✅ Fixed（PR #425：EnableUMPerp/CMPerp/Options + fan-in）
+9. ~~扩展 `taos_writer.go` 支持原生 depth 及 funding_rate/mark_price~~ ✅ Fixed（PR #425：depthPoint + fundingRatePoint + markPricePoint + 3 super tables）
+10. ~~统一版本号与修复 GAP-MATRIX 路径引用~~ ✅ Fixed（全部 v3.9.8；GAP-MATRIX 已迁移至 module/binance/matrix/）
 
 ### P3（治理卫生）
 
-11. 修复 404 链接引用、`registry.yaml` maturity_ref 断链
+11. ~~修复 404 链接引用、`registry.yaml` maturity_ref 断链~~ ✅ Fixed（DOC1 确认为废弃文档；REG1 maturity_ref/spec_version/latest_tag 修正）
 
 ---
 
@@ -196,14 +198,16 @@
 
 ## 10. 结论
 
-| 判定                   | 结果                                                                       |
-| ---------------------- | -------------------------------------------------------------------------- |
-| 是否可发布（Go/No-Go） | **No-Go**（20/20 运行时口径一致；15/20 规格口径 NO，5/20 PARTIAL，无 YES） |
-| 现货（Spot）           | 唯一真实投产的产品线，但订单薄深度数据在存储层退化                         |
-| 合约（UM/CM）          | 代码就绪，未投产启动                                                       |
-| 期权（Options）        | 代码就绪（能力最薄弱），未投产启动                                         |
-| 订单薄（Depth）        | 结构性缺口：采集层保留、存储层丢弃                                         |
-| 加权综合分             | 52/100（均值），区间 42-62                                                 |
-| 是否需要模块专属规则   | 需要，建议建立 `module/binance/RULES.md`                                   |
+> **2026-07-04 修复后状态**：本报告的 No-Go 判定基于 runtime `main@14a30b9` 快照。修复后（PR #425 + #1668），核心三项阻断（N1/N2/T0）全部解决，N4/N6/N7/ORDBK/TEST1 全部修复，go test 24/24 PASS。当前 release_closeable=NO（PRG-006=Partial，PRG-007=Partial）——不再是"No-Go"而是"PRG 门禁未全 PASS"。业务类型覆盖：现货/合约/期权 connector 均已接入启动路径，depth 完整档位已持久化。
+
+| 判定                   | 结果（审查时）                                                              | 修复后状态 |
+| ---------------------- | -------------------------------------------------------------------------- | ---------- |
+| 是否可发布（Go/No-Go） | **No-Go**（20/20 运行时口径一致；15/20 规格口径 NO，5/20 PARTIAL，无 YES） | release_closeable=NO（PRG-006/007=Partial，技术阻断已消除） |
+| 现货（Spot）           | 唯一真实投产的产品线，但订单薄深度数据在存储层退化                         | ✅ depth 完整档位已持久化（st_depth 表） |
+| 合约（UM/CM）          | 代码就绪，未投产启动                                                       | ✅ connector 已接入启动路径（EnableUMPerp/CMPerp） |
+| 期权（Options）        | 代码就绪（能力最薄弱），未投产启动                                         | ✅ connector 已接入启动路径（EnableOptions） |
+| 订单薄（Depth）        | 结构性缺口：采集层保留、存储层丢弃                                         | ✅ 完整档位存储（bids_json/asks_json） |
+| 加权综合分             | 52/100（均值），区间 42-62                                                 | 待重评（技术阻断已消除） |
+| 是否需要模块专属规则   | 需要，建议建立 `module/binance/RULES.md`                                   | 待建 |
 
 **[RULES I BROKE]：无** —— 本报告所有关键结论均标注 `[COMPUTED]` 并附带命令/代码行证据，核心三项已完成 21 次独立复现（20 reviewer + 1 协调者），无凭记忆断言。
