@@ -222,6 +222,7 @@ PRG-001~007 状态如下：
 
 | Version | Date | Change |
 | --- | --- | --- |
+| v3.9.8 | 2026-07-04 | 20 轮审查共识修复：release_closeable=NO（PRG-006/007=Partial）；N2/N4/N6/N7/ORDBK runtime 修复（PR #425）；全量文档对齐（PR #1668） |
 | v3.9.6 | 2026-06-28 | compact SPEC, issue projection alignment, `.v1` subject enforcement |
 | v3.9.5 | 2026-06-28 | deprecated spec files physically deleted |
 | v3.9.4 | 2026-06-28 | structural score gate repair |

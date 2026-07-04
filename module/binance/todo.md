@@ -3,7 +3,8 @@
 > **更新日期**: 2026-07-04
 > **来源**: 20 轮独立复现审查共识 (`REVIEW-20260704-20ROUND-CONSENSUS.md`) + DEEP-ANALYSIS 增量
 > **修复计划**: `plans/binance/FIX-PLAN-20260704.md`
-> **基线**: runtime `main@77d34e1`（v0.12.0-4-g77d34e1）
+> **PR**: runtime [#425](https://github.com/ZoneCNH/binance/pull/425)（`edd7805`）+ docs [#1668](https://github.com/ZoneCNH/ZoneCNH/pull/1668)（`59907845`）
+> **基线**: runtime `main@edd7805`（fix/20round-review-consensus branch）
 
 ---
 

@@ -110,7 +110,7 @@ Beads and GitHub issues are the current P10 tracking SSOT. The retired local pro
 
 | GAP-E 范畴 | 涵盖范围 | Evidence 位置 | 状态 |
 | --- | --- | --- | --- |
-| **P0 CRITICAL** | GAP-E1, E6, E25 | `../evidence/2026-07-02/tier-gap-cross-reference.md` | Open（设计评审中） |
+| **P0 CRITICAL** | GAP-E1, E6, E25 | `../evidence/2026-07-02/tier-gap-cross-reference.md` | GAP-E1 ✅ Fixed（PR #425），GAP-E6 ✅ Fixed（PR #425），GAP-E25 Open |
 | **P1 HIGH** | GAP-E2~E4, E7~E24, E26~E28, E32, E37 | `../evidence/2026-06-30/release/`, `../evidence/2026-07-03/` | Open（分阶段推进） |
 | **P2 MEDIUM** | GAP-E5, E8, E9, E13~E23, E29~E31, E33~E36, E39~E42, E46~E50 | 原 E2E 报告已于 #1652 归档清理，待补运行时证据 | Open（运行时验证）|
 | **P3 LOW** | GAP-E11, E15, E16, E21, E22, E35, E38, E43, E51~E56 | `../evidence/2026-06-30/release/alignment-summary.md` | Planning |

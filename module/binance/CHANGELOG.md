@@ -11,6 +11,11 @@
 
 ## 2026-07-04 20 轮审查共识修复（N2/N4/N6/N7/ORDBK/TEST1 + 文档全量对齐）
 
+### PR
+
+- Runtime: https://github.com/ZoneCNH/binance/pull/425（commit `edd7805`，9 文件，+371/-40）
+- ZoneCNH: https://github.com/ZoneCNH/ZoneCNH/pull/1668（commit `59907845`，21 文件，+551/-79）
+
 ### 来源
 
 - `report/binance/REVIEW-20260704-20ROUND-CONSENSUS.md`（20 轮独立复现，No-Go 判定）
