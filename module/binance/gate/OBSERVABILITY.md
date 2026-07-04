@@ -5,8 +5,8 @@
 | Field | Value |
 | --- | --- |
 | Status | Active |
-| Module-Version | v3.9.0 |
-| Last-Updated | 2026-06-26 |
+| Module-Version | v3.9.8 |
+| Last-Updated | 2026-07-04 |
 | Scope | `module/binance` Prometheus metrics 语义、告警阈值、SLO 仪表盘 |
 | Spec-Impact | NFR-001~004（可观测性） |
 | Source | `internal/server/metrics/`、`cmd/binance-server/main.go` |
@@ -63,6 +63,38 @@
 | exposition | `GET /metrics` 返回 Prometheus 格式 |
 | SLO benchmark | `release/evidence/binance/20260625/slo-report.md` 24 bench PASS |
 
-## 6. Document Synchronization
+## 6. ACK 时序语义（N3 声明）
+
+`[COMPUTED, HIGH]` binance-server ingest 流程的 ACK/persist 时序如下（`internal/server/ingest.go:129-172`）：
+
+| 模式 | 时序 | 行为 | 适用场景 |
+| --- | --- | --- | --- |
+| 默认模式（`StrictStorageWrite=false`） | MarkDurable(3) → Dispatch(4) → Persist(5) | 落库失败仅记 dead-letter，ACK 已 durable（消息不会重投） | 高吞吐场景，容忍少量落库延迟 |
+| 严格模式（`StrictStorageWrite=true`） | MarkDurable(3) → Dispatch(4) → Persist(5)，persist 失败 → reject | 落库失败触发 reject，消息重投 | 数据完整性优先场景 |
+
+**SLA 声明**：
+- 默认模式下，落库失败的事件通过 dead-letter 队列补偿，不丢失消息但可能有短暂落库延迟
+- 严格模式下，落库失败触发 NATS 重投（MaxDeliver=5, NakDelay=5s），超过重试次数后进 dead-letter
+- `StrictDispatchHandoff=true` 时，dispatch 成功后才 MarkDurable，dispatch 失败返回 retryable reject
+- Dead-letter 率 SLO：≤ 0.1%（见 §3）
+
+## 7. OLAP 聚合源口径（N5 声明）
+
+`[COMPUTED, HIGH]` 当前 OLAP 聚合源为**进程内存窗口模式**（`internal/server/assembly/olap_source.go`）：
+
+| 属性 | 值 | 说明 |
+| --- | --- | --- |
+| 实现类型 | `memoryAggSource` | 进程内存聚合，非持久化物化视图 |
+| 窗口时长 | 10 分钟（默认） | 超过窗口的数据被淘汰 |
+| 最大点数 | 100,000 | 内存上限保护 |
+| 数据来源 | 实时 `AcceptedEvent` | 通过 `Add()` 方法写入 |
+| 查询接口 | `FetchRecent(since)` | 返回窗口内且晚于 `since` 的聚合点 |
+
+**限制声明**：
+- 进程重启后 OLAP 聚合数据丢失（非持久化）
+- 窗口外历史数据不可查（需从 TDengine/ClickHouse 查询原始数据）
+- 长期升级路径：迁移到 ClickHouse 物化视图（P2 优先级，非阻断）
+
+## 8. Document Synchronization
 
 [FRAME, HIGH] 本文档与 `SPEC.md` NFR-001~004、`ACCEPTANCE.md` 可观测性 AC 同步。

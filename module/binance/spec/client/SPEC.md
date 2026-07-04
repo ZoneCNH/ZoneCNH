@@ -363,7 +363,7 @@ type IdempotencyKeyer interface {
 | Collection | `string` | ❌ | **采集策略**：`full_stream` / `stream_no_depth` / `kline_only` / `rest_sample` / `rest_daily` / `disabled`。路由矩阵见 [ADR-005](../../design/ADR-005-symbol-tier-classification.md) §3.1 |
 | QuoteVolumeUSD | `float64` | ❌ | **流动性信号**（分级判定依据）。依赖 ExchangeInfo decode 保留 `quoteVolume`，见 [ADR-005](../../design/ADR-005-symbol-tier-classification.md) §4.2 |
 
-> **分级字段状态声明**：`Tier` / `SymbolPriority` / `Collection` / `QuoteVolumeUSD` 四字段为 **slot 预留**——当前 runtime（`/home/workspace/binance` `catalog.go:16-43`）尚未实现，对应运行时缺口 GAP-E24（`../../RUNTIME-GAP-MATRIX.md §2.2`）。落地实现需先完成 GAP-E6（catalog 全量化）+ GAP-E26（interval SSOT）前置。本 SPEC 开列字段槽位以提前锁定数据模型契约，避免落地时 CatalogEntry 二次重构。设计决策与三维度建模（Tier / Level / Priority 正交）权威来源为 [ADR-005](../../design/ADR-005-symbol-tier-classification.md)。
+> **分级字段状态声明**：`Tier` / `SymbolPriority` / `Collection` / `QuoteVolumeUSD` 四字段为 **slot 预留**——当前 runtime（`/home/workspace/binance` `catalog.go:16-43`）尚未实现，对应运行时缺口 GAP-E24（`../../matrix/RUNTIME-GAP-MATRIX.md §2.2`）。落地实现需先完成 GAP-E6（catalog 全量化）+ GAP-E26（interval SSOT）前置。本 SPEC 开列字段槽位以提前锁定数据模型契约，避免落地时 CatalogEntry 二次重构。设计决策与三维度建模（Tier / Level / Priority 正交）权威来源为 [ADR-005](../../design/ADR-005-symbol-tier-classification.md)。
 
 ### 10.2 NormalizedEvent
 
@@ -430,7 +430,7 @@ const (
 
 ### 11.1 Symbol 分级配置（tiers，slot 预留）
 
-> **状态**：本节为 **slot 预留**——当前 runtime `binanceFields`（`/home/workspace/binance` `pkg/binancecfg/config.go:249-269`）无任何 symbol 范围项，对应运行时缺口 GAP-E24（`../../RUNTIME-GAP-MATRIX.md §2.2`）。设计权威与完整 schema 见 [ADR-005](../../design/ADR-005-symbol-tier-classification.md) §4.4。
+> **状态**：本节为 **slot 预留**——当前 runtime `binanceFields`（`/home/workspace/binance` `pkg/binancecfg/config.go:249-269`）无任何 symbol 范围项，对应运行时缺口 GAP-E24（`../../matrix/RUNTIME-GAP-MATRIX.md §2.2`）。设计权威与完整 schema 见 [ADR-005](../../design/ADR-005-symbol-tier-classification.md) §4.4。
 
 分级配置通过 `binance.tiers` 嵌套结构声明 per-product-line × per-tier 的采集范围（Level 边界）与采集策略（Tier 决策）：
 
@@ -449,7 +449,7 @@ const (
 ## 11a. Symbol 分级体系（设计引用）
 
 > **设计权威**：[ADR-005 ExchangeInfo Symbol 采集分级体系架构裁决](../../design/ADR-005-symbol-tier-classification.md)
-> **运行时状态**：slot 预留，未实现（GAP-E24，`../../RUNTIME-GAP-MATRIX.md §2.2`）
+> **运行时状态**：slot 预留，未实现（GAP-E24，`../../matrix/RUNTIME-GAP-MATRIX.md §2.2`）
 
 **用户架构指令**："ExchangeInfo symbol 采集的币种要分级别、分层级、分优先级，不是所有币种都采集。" 当前 runtime 在这三个维度上均为零支撑——4 条产品线把所有 TRADING（或未过期）symbol 100% 灌入 catalog，下游采集以 `Status == "active"` 为唯一谓词全量采集，无数量上限、流动性筛选或优先级分级（源码核验证据见 `report/binance/DEEP-ANALYSIS-20260704.md` §4）。
 

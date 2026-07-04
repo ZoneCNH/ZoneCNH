@@ -9,7 +9,7 @@
 | 仓库 | <https://github.com/ZoneCNH/binance> |
 | 当前版本 | v0.12.0 |
 | Spec 版本 | v3.9.8 |
-| 状态 | L3 Production / Released — 48/48 FR Done，release_closeable=YES（PRG-001~007 全 PASS） |
+| 状态 | L2 Active — 48/48 FR Done，release_closeable=NO（PRG-006=Partial，PRG-007=Partial） |
 
 ## Purpose
 

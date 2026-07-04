@@ -101,7 +101,7 @@ Runtime `go.mod` 必须保留边界所需 direct dependencies，不得通过依�
 | BR-007 | Done：Gate §9 已由 runtime 13/13 PASS 证明 |
 | BR-008 | Done：Gate §8 已由 runtime 13/13 PASS 证明 |
 | BR-009 | Done：Gate §11 已由 runtime 13/13 PASS 证明 |
-| Release | Done：远端 CI PASS（ubuntu-latest runner）、release tag v0.12.0 已发布、7 个基础设施服务全部在线、运行时口径 PRG-006=Partial（gated resilience）。**G0 存储装配已闭合**：StorageWriter 已设置（非 nil）、buildStorage() 创建真实 Redis/taos/pg/clickhouse/oss 连接，memory idempotency 仅为 fallback。release_closeable=YES（规格口径）。 |
+| Release | Done：远端 CI PASS（ubuntu-latest runner）、release tag v0.12.0 已发布、7 个基础设施服务全部在线、运行时口径 PRG-006=Partial（gated resilience）。**G0 存储装配已闭合**：StorageWriter 已设置（非 nil）、buildStorage() 创建真实 Redis/taos/pg/clickhouse/oss 连接，memory idempotency 仅为 fallback。release_closeable=NO（PRG-006=Partial，PRG-007=Partial）。 |
 
 ---
 

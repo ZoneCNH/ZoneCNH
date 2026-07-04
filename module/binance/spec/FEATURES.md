@@ -7,18 +7,18 @@
 | Status | Generated from current module SSOT |
 | Last-Updated | 2026-06-30 |
 | Module-Version | v3.9.8 |
-| Module-State | v3.9.8 单一状态模型：**48 Done / 0 Partial / 0 Drifted / 0 Pending**。release_closeable=YES（规格口径）；运行时口径当前 PRG-006=Partial。P10 issues: GitHub #1289-#1331 / Beads 43 全部 closed（10 轮验证 ALL PASS）。 |
+| Module-State | v3.9.8 单一状态模型：**48 Done / 0 Partial / 0 Drifted / 0 Pending**。release_closeable=NO（PRG-006=Partial）；运行时口径当前 PRG-006=Partial。P10 issues: GitHub #1289-#1331 / Beads 43 全部 closed（10 轮验证 ALL PASS）。 |
 | Layer | 数据域 / Binance-specific market_data C/S module |
 | Runtime-Repo | `/home/workspace/binance` |
 | Source | `goal.md`, `SPEC.md`, `TRACEABILITY.md`, `STANDARD.md`, `BOUNDARY-GATES.md`, `RUNTIME-MAPPING.md`, `IMPLEMENTATION-PLAN.md`, `client/`, `server/`, `tasks/` |
 
 本文档是 `module/binance` 当前规格库的实现投影，不是 runtime 代码验收证据。实际完成状态以 `TRACEABILITY.md`、`client/TRACEABILITY.md`、`server/TRACEABILITY.md` 和 `/home/workspace/binance` 的测试证据为准。
 
-> **v3.9.8 当前状态口径（2026-07-04）**：单一状态模型 — `Done` = 代码完整+装配就绪+TC PASS+evidence 归档。当前 Done 48 / Partial 0 / Drifted 0 / Pending 0。release_closeable=YES（规格口径）；运行时口径当前 PRG-006=Partial。
+> **v3.9.8 当前状态口径（2026-07-04）**：单一状态模型 — `Done` = 代码完整+装配就绪+TC PASS+evidence 归档。当前 Done 48 / Partial 0 / Drifted 0 / Pending 0。release_closeable=NO（PRG-006=Partial）；运行时口径当前 PRG-006=Partial。
 >
 > **单一状态模型**：FEATURES.md 的「Done」均指单一状态模型的 Done（代码完整+装配就绪+TC PASS+evidence 归档）。Evidence 列的判定见 `ACCEPTANCE.md` §4 闭合矩阵（全部 Done）。
 >
-> [COMPUTED, HIGH] 2026-06-29 状态对齐：历史 7 个外部依赖 live PASS + 4 产品线 mainnet live PASS + 全量门禁 PASS 证据保留；43 个 P10 issue 已全部关闭（10 轮验证 ALL PASS）；**release_closeable=YES**（PRG-001~007 全 PASS）。
+> [COMPUTED, HIGH] 2026-06-29 状态对齐：历史 7 个外部依赖 live PASS + 4 产品线 mainnet live PASS + 全量门禁 PASS 证据保留；43 个 P10 issue 已全部关闭（10 轮验证 ALL PASS）；**release_closeable=NO**（PRG-006=Partial，PRG-007=Partial）。
 
 ## 1. 模块边界
 
@@ -37,7 +37,7 @@
 
 > v3.5.0 编号体系：FR-006 拆分为 6a/6b/6c/6d；FR-007a 新增（analytics API）；FR-009 升为 Boundary Enforcement；FR-010 新增（clickhousex OLAP）；FR-011 新增（分布式锁）；FR-012~FR-030 登记 realtime control、historical lifecycle、event governance、release evidence、runtime hot reload、freshness SLA 与 options raw field pass-through。
 
-> 状态口径（v3.9.8）：`Done` / `Partial` / `Drifted` / `Pending` 为四态单一模型；L1 boundary governance 不替代 L2 功能验收。`Drifted` = 无，`Partial` = 无，`Pending` = 无。全部 48 FR Done。release_closeable=YES（规格口径）；运行时口径当前 PRG-006=Partial。
+> 状态口径（v3.9.8）：`Done` / `Partial` / `Drifted` / `Pending` 为四态单一模型；L1 boundary governance 不替代 L2 功能验收。`Drifted` = 无，`Partial` = 无，`Pending` = 无。全部 48 FR Done。release_closeable=NO（PRG-006=Partial）；运行时口径当前 PRG-006=Partial。
 
 | FR | 功能 | 当前状态 | 已有证据 | 剩余实现面 |
 | --- | --- | --- | --- | --- |
@@ -184,7 +184,7 @@
 
 ## 7. 历史缺口登记（全部已关闭）
 
-> [COMPUTED, HIGH] 下表 #1104~#1118 / #1180~#1186 为历史 closed ledger；P10 issues（GitHub #1289~#1331 / Beads 43 条）已全部关闭。release_closeable=YES（PRG-001~007 全 PASS）。
+> [COMPUTED, HIGH] 下表 #1104~#1118 / #1180~#1186 为历史 closed ledger；P10 issues（GitHub #1289~#1331 / Beads 43 条）已全部关闭。release_closeable=NO（PRG-006=Partial，PRG-007=Partial）。
 
 | 缺口 | 影响 | 关闭条件 |
 | --- | --- | --- |
@@ -197,4 +197,4 @@
 | **#1114/#1116 runtime 增量状态机（P2，已关闭）** | order book rebuild 与 hot reload 曾需增量 diff/state machine 证据。 | 以能力边界文档化 Closed（#1114 明确排除，#1116 维持 Partial）。 |
 | **#1115 ClickHouse ETL 持久化（P2，已关闭）** | FR-007a 曾需持久化、多实例 source 与 live OLAP evidence。 | 以能力边界文档化 Closed。 |
 | **#1117/#1118 持久化进度与 DLQ（P2，已关闭）** | FR-017/026/027/028 曾缺持久化 progress/history/reconcile/rehydration 证据；DLQ 曾缺持久化 wiring/replay；Evidence 列仍为 Pending（Partial FR 代码缺口未闭合）。 | 以能力边界文档化 Closed。 |
-| **#1180-#1186 Plan008 剩余 P2 Task（P0/P1/P2 历史已关闭）** | FR-037~044（v3.7.0 新增）的 runtime 实现。 | 该行仅记录上一轮历史 closure；当前 P10 release gate（GitHub #1289~#1331 / Beads 43 条）已全部关闭，release_closeable=YES（PRG-001~007 全 PASS）。 |
+| **#1180-#1186 Plan008 剩余 P2 Task（P0/P1/P2 历史已关闭）** | FR-037~044（v3.7.0 新增）的 runtime 实现。 | 该行仅记录上一轮历史 closure；当前 P10 release gate（GitHub #1289~#1331 / Beads 43 条）已全部关闭，release_closeable=NO（PRG-006=Partial，PRG-007=Partial）。 |

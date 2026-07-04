@@ -2,7 +2,7 @@
 
 - Module-Version: v3.9.8
 - Last-Updated: 2026-06-30
-- Status: execution plan complete; release_closeable=YES
+- Status: execution plan complete; release_closeable=NO（PRG-006=Partial，PRG-007=Partial）
 - Runtime-Repo: `/home/workspace/binance`
 
 ## 1. 目标
@@ -105,17 +105,17 @@ github.com/ZoneCNH/binance/
 
 ## 8. 当前停止条件
 
-所有停止条件已满足，`module/binance` 声明 Release Done（release_closeable=YES）：
+所有停止条件未完全满足，`module/binance` 当前 release_closeable=NO（PRG-006=Partial，PRG-007=Partial）：
 
 release_closeable 判定公式：
 
 ```
-release_closeable = Code-Done FR / Total FR ≥ 90% AND Drifted=0 AND Pending=0 AND PRG-001~007 全 PASS AND 远程 CI PASS AND release tag 已发布 AND HA/DR 部署文档存在
+release_closeable = Code-Done FR / Total FR ≥ 90% AND Drifted=0 AND Pending=0 AND PRG-001~007 gates PASS AND 远程 CI PASS AND release tag 已发布 AND HA/DR 部署文档存在
 ```
 
-当前状态：48/48 FR Done（100% ≥ 90%），0 Partial，0 Drifted，0 Pending。PRG-001~007 全部 PASS，因此 release_closeable=YES。
+当前状态：48/48 FR Done（100% ≥ 90%），0 Partial，0 Drifted，0 Pending。但 PRG-006=Partial（gated resilience）+ PRG-007=Partial（30 open issues），因此 release_closeable=NO。
 
-停止条件（全部已满足，release_closeable 已翻转为 YES）：
+停止条件（PRG-006 和 PRG-007 未满足，release_closeable=NO）：
 
 - boundary gates 15/15 PASS（已满足）。
 - build/test/race/vet/lint/secret scan 全部 PASS（已满足）。

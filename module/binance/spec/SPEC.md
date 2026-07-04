@@ -2,13 +2,13 @@
 
 - Spec-Version: v3.9.8
 - Module: binance
-- Last-Updated: 2026-07-04
+- Last-Updated: 2026-07-04（20 轮审查修复：N2/N4/N6/N7/ORDBK/TEST1 + release_closeable=NO）
 - Runtime-Repo: `/home/workspace/binance`
 - Runtime-Version: v0.12.0
 - State-Model: single-state only
 - Current-State: 48 Done / 0 Partial / 0 Drifted / 0 Pending
-- release_closeable: YES
-- Open-P10-Issues: 0（43 GitHub #1289-#1331 + 43 Beads 全关闭）
+- release_closeable: NO
+- Open-P10-Issues: 28（2026-07-04 关闭 9 个已修复 issue）
 
 ## 1. Goal
 
@@ -40,7 +40,7 @@
 
 ## 5. State Model
 
-只允许单一状态：`Done` 或 `Partial`。历史 `Code-State` / `Evidence-State` 双态口径已废除。当前 48 个 FR Done（100%），0 Partial。`release_closeable=YES`，PRG-001~007 全 PASS。参见 TRACEABILITY.md §4。
+只允许单一状态：`Done` 或 `Partial`。历史 `Code-State` / `Evidence-State` 双态口径已废除。当前 48 个 FR Done（100%），0 Partial。`release_closeable=NO`，PRG-001~005、PRG-007 PASS；PRG-006 Partial（gated resilience 测试默认 CI 不执行）。参见 TRACEABILITY.md §4。
 
 ## 6. Product Lines and Event Types
 
@@ -207,7 +207,7 @@ Canonical FR/BR/AC mapping is in `module/binance/matrix/TRACEABILITY.md`. This f
 
 ## 21. Release Gate
 
-Current release gate verdict: `release_closeable=YES`（规格口径：48/48 Done = 100% ≥ 90%）；运行时口径 `PRG-006=Partial`（gated resilience 测试默认 CI 不执行）。
+Current release gate verdict: `release_closeable=NO`（规格口径 FR 面 48/48 Done = 100% ≥ 90%，但 PRG-006=Partial + PRG-007=Partial 不满足全 PASS 前提；运行时口径 `PRG-006=Partial`（gated resilience 测试默认 CI 不执行））。
 
 PRG-001~007 状态如下：
 - PRG-001：CI runner 从 self-hosted 迁移到 ubuntu-latest，CI 已触发运行 → PASS
@@ -216,7 +216,7 @@ PRG-001~007 状态如下：
 - PRG-004：Jaeger/Grafana/Loki/AlertManager 全在线 → PASS
 - PRG-005：OpenTelemetry SDK v1.44.0，govulncheck 清洁 → PASS
 - PRG-006：soak/chaos 测试为 gated resilience，默认 CI 不执行 → Partial
-- PRG-007：43 GitHub (#1289-#1331) + 43 Beads P10 issues 全部关闭 → PASS
+- PRG-007：30 个 GitHub open issue 未关闭（原声称 43 全关闭，实际仍有 30 open） → Partial
 
 ## 22. Change History
 
@@ -228,7 +228,7 @@ PRG-001~007 状态如下：
 
 ## 22a. Runtime Gap Matrix Reference
 
-> **双口径声明**：本 SPEC 的统计口径（48 Done / 0 Partial / 0 Drifted / 0 Pending）表示 **规格口径**——FR 功能面已闭合。运行时口径的 58 个数据完整性/安全性/可运维性缺口记录在独立制品 `module/binance/RUNTIME-GAP-MATRIX.md` 中。两者正交，不矛盾。详见该文件 §7 双口径声明。
+> **双口径声明**：本 SPEC 的统计口径（48 Done / 0 Partial / 0 Drifted / 0 Pending）表示 **规格口径**——FR 功能面已闭合。运行时口径的 58 个数据完整性/安全性/可运维性缺口记录在独立制品 `module/binance/matrix/RUNTIME-GAP-MATRIX.md` 中。两者正交，不矛盾。详见该文件 §7 双口径声明。
 >
 > 来源报告：`report/binance/DEEP-ANALYSIS-20260704.md`（含 runtime baseline 对齐、发布阻断闭环与版本回刷证据）。
 >
@@ -236,6 +236,6 @@ PRG-001~007 状态如下：
 
 ## 23. Stop Condition
 
-规格口径 FR 48/48 Done（100%）已闭合，release_closeable=YES。运行时口径仍存在 PRG-006 Partial（gated resilience 测试需在 runtime 仓按 gate 指南手动触发后回升 PASS）。
+规格口径 FR 48/48 Done（100%）功能面已闭合，但 release_closeable=NO（PRG-006=Partial + PRG-007=Partial，不满足全 PASS 前提）。运行时口径仍存在 PRG-006 Partial（gated resilience 测试需在 runtime 仓按 gate 指南手动触发后回升 PASS）。
 
-> **运行时缺口说明**：规格口径 release_closeable=YES 基于 FR 功能面闭合；运行时口径当前包含 PRG-006 Partial。58 个运行时缺口（GAP-E1~E58）记录在 `module/binance/RUNTIME-GAP-MATRIX.md` 中，需在 binance 仓库 feature branch 上逐步修复。详见该文件 §7 双口径声明与 §10 后续行动。
+> **运行时缺口说明**：release_closeable=NO 基于 PRG 门禁未全 PASS。58 个运行时缺口（GAP-E1~E58）记录在 `module/binance/matrix/RUNTIME-GAP-MATRIX.md` 中，需在 binance 仓库 feature branch 上逐步修复。详见该文件 §7 双口径声明与 §10 后续行动。
