@@ -1,7 +1,7 @@
 # Binance Config Schema
 
 - Last-Updated: 2026-06-28
-- Source-SPEC: `module/binance/spec/SPEC.md` v3.9.6 §11
+- Source-SPEC: `module/binance/spec/SPEC.md` v3.9.8 §11
 - Runtime examples: `/home/workspace/binance/configs/binance-client.env.example`, `/home/workspace/binance/configs/binance-server.env.example`
 
 ## Rule
@@ -55,4 +55,3 @@ bash -n scripts/spec-runtime-drift-check.sh
 scripts/spec-runtime-drift-check.sh
 go test ./...
 ```
-

@@ -1,6 +1,6 @@
 # binance 实施计划
 
-- Module-Version: v3.9.6
+- Module-Version: v3.9.8
 - Last-Updated: 2026-06-30
 - Status: execution plan complete; release_closeable=YES
 - Runtime-Repo: `/home/workspace/binance`
@@ -119,5 +119,5 @@ release_closeable = Code-Done FR / Total FR ≥ 90% AND Drifted=0 AND Pending=0 
 
 - boundary gates 15/15 PASS（已满足）。
 - build/test/race/vet/lint/secret scan 全部 PASS（已满足）。
-- PRG-001~007 全部 PASS（CI runner ubuntu-latest、release tag v0.8.0、production readiness、observability 全在线、security govulncheck 清洁、soak/chaos PASS、43+43 issues 全关闭）。
-- 远程 CI PASS、release tag v0.8.0 已发布、HA/DR 部署文档存在。
+- PRG-001~005、PRG-007 PASS；PRG-006 为 Partial（gated resilience）。（CI runner ubuntu-latest、release tag v0.12.0、production readiness、observability 全在线、security govulncheck 清洁、43+43 issues 全关闭）。
+- 远程 CI PASS、release tag v0.12.0 已发布、HA/DR 部署文档存在。

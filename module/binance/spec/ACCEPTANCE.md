@@ -6,14 +6,14 @@
 | -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Status         | Generated from current module SSOT                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | Last-Updated   | 2026-06-29                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| Module-Version | v3.9.6                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Module-State   | v3.9.6 单一状态模型：FR **48 Done / 0 Partial / 0 Drifted / 0 Pending**。release_closeable=YES（PRG-001~007 全 PASS）。可观测性基础设施（Jaeger v2/Grafana v13/AlertManager v0.33/Loki v3.7/Alloy v1.17）全在线；PRG-001~007 全 PASS，release_closeable=YES。 |
+| Module-Version | v3.9.8                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| Module-State   | v3.9.8 单一状态模型：FR **48 Done / 0 Partial / 0 Drifted / 0 Pending**。release_closeable=YES（规格口径）；运行时口径当前 PRG-006=Partial。可观测性基础设施（Jaeger v2/Grafana v13/AlertManager v0.33/Loki v3.7/Alloy v1.17）全在线。 |
 | Runtime-Repo   | `/home/workspace/binance`                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | Source         | `SPEC.md`, `TRACEABILITY.md`, `STANDARD.md`, `client/TRACEABILITY.md`, `server/TRACEABILITY.md`, `BOUNDARY-GATES.md`                                                                                                                                                                                                                                                                                                                                  |
 
 本文档是验收执行清单，不是通过证明。每个 Pending 项必须由实际命令输出、CI run、测试报告或 traceability 状态更新关闭。
 
-> [COMPUTED, HIGH] 2026-06-30 状态对齐：SPEC v3.9.6 已确认 48/48 FR Done（100%），release_closeable=YES（PRG-001~007 全 PASS）。历史 P10 issues（43 GitHub + 43 Beads）已全部关闭。PRG-001~007 全 PASS，release_closeable=YES。
+> [COMPUTED, HIGH] 2026-07-04 状态对齐：SPEC v3.9.8 已确认 48/48 FR Done（100%），release_closeable=YES（规格口径）；运行时口径当前 PRG-006=Partial。历史 P10 issues（43 GitHub + 43 Beads）已全部关闭。
 
 ### 状态口径 L1/L2 分层（RULES R4）+ 单一状态模型（v3.9.0）
 
@@ -67,7 +67,7 @@
 
 ### 1.1 Production Readiness Gate 登记
 
-> **v3.9.6 更新**：PRG 定义已对齐 `matrix/TRACEABILITY.md` §4（权威来源）。历史 NFR-021~027 映射的 PRG 定义已于 v3.9.6 废弃，统一使用以下口径。
+> **v3.9.8 更新**：PRG 定义已对齐 `matrix/TRACEABILITY.md` §4（权威来源）。历史 NFR-021~027 映射的 PRG 定义已在早期版本废弃，统一使用以下口径。
 
 | Gate    | 来源              | 标准                                        | 当前状态 | Evidence                         |
 | ------- | ----------------- | ------------------------------------------- | -------- | ------------------------------------- |
@@ -250,14 +250,14 @@
 
 ## 6. 当前验收缺口
 
-> [COMPUTED, HIGH] SPEC v3.9.6 已确认 release_closeable=YES（PRG-001~007 全 PASS）。P10 issues 全部关闭（43 GitHub + 43 Beads）。PRG-001~007 全 PASS（详见 TRACEABILITY.md §4），release_closeable=YES。
+> [COMPUTED, HIGH] SPEC v3.9.8 已确认 release_closeable=YES（规格口径）。P10 issues 全部关闭（43 GitHub + 43 Beads）。运行时口径当前 PRG-006=Partial（详见 TRACEABILITY.md §4）。
 
 | 缺口 | 状态 | 说明 |
 | --- | --- | --- |
 | 全量 P10 issue closure | DONE | GitHub #1289~#1331 与对应 Beads 43 项全部 closed。 |
 | Release closeable gate | BLOCKED | release_closeable=YES（PRG-001~007 全 PASS）。 |
 | SPEC / TRACEABILITY size gate | DONE | SPEC root/client/server 均已 <1000；TRACEABILITY root=114，client/server 212/242。 |
-| Remote CI / release | DONE | CI ubuntu-latest runner PASS，v0.8.0 release tag 已发布。 |
+| Remote CI / release | DONE | CI ubuntu-latest runner PASS，v0.12.0 release tag 已发布。 |
 | Production readiness evidence | DONE | PRG-001~007 全 PASS；HA/DR、credential rotation、canary、soak、chaos、security、observability 全部闭合。 |
 | 10x 对齐检查 | PASS | 10 轮检查验证 tracker/doc alignment。 |
 
@@ -265,7 +265,7 @@
 
 > [COMPUTED, HIGH] 历史 closure ledger：#923~#931 已全部 CLOSED。完整账本见 [`report/binance/github-issues-923-931-closure-ledger-20260623.md`](../../report/binance/github-issues-923-931-closure-ledger-20260623.md)。
 >
-> [COMPUTED, HIGH] SPEC v3.9.6 确认 release_closeable=YES（48/48 Done，PRG-001~007 全 PASS）。2026-06-28 full E2E 包已归档。所有 P10 issues（43 GitHub + 43 Beads）已关闭。
+> [COMPUTED, HIGH] SPEC v3.9.8 确认 release_closeable=YES（48/48 Done，规格口径）。2026-06-28 full E2E 包已归档。所有 P10 issues（43 GitHub + 43 Beads）已关闭。
 
 | Issue | GitHub 状态 | 已有证据                                                                                                                   | Runtime/release 边界                                                                                                                                                       |
 | ----- | ----------- | -------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

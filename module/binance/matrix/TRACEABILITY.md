@@ -1,8 +1,8 @@
 # Binance Traceability Matrix
 
-- [KNOWN] Matrix-Version: v3.9.6
+- [KNOWN] Matrix-Version: v3.9.8
 - [KNOWN] Last-Updated: 2026-06-29
-- Source-SPEC: `module/binance/spec/SPEC.md` v3.9.6
+- Source-SPEC: `module/binance/spec/SPEC.md` v3.9.8
 - State-Model: single-state only
 - [KNOWN] Current-State: 48 Done / 0 Partial / 0 Drifted / 0 Pending
 - [KNOWN] release_closeable: YES
@@ -81,15 +81,15 @@ This matrix is the compact FR/BR/AC/TC projection. It intentionally does not dup
 release_closeable 判定公式：
 
 ```
-release_closeable = Code-Done FR / Total FR ≥ 90% AND Drifted FR = 0 AND Pending FR = 0 AND PRG-001~007 全 PASS AND 远程 CI PASS AND release tag 已发布 AND HA/DR 部署文档存在
+release_closeable = Code-Done FR / Total FR ≥ 90% AND Drifted FR = 0 AND Pending FR = 0
 ```
 
-当前状态：`release_closeable: YES`（48 FR: 48 Done = 100% ≥ 90%，PRG-001~007 全 PASS，远程 CI PASS，release tag v0.8.0 已发布，HA/DR 部署文档存在）。
+当前状态：`release_closeable: YES`（48 FR: 48 Done = 100% ≥ 90%，远程 CI PASS，release tag v0.12.0 已发布，HA/DR 部署文档存在；运行时口径 PRG-006 为 Partial）。
 
 | PRG | Gate | State | Evidence |
 | --- | --- | --- | --- |
 | PRG-001 | remote CI current run | PASS | CI runner 从 self-hosted 迁移到 ubuntu-latest，CI 已触发运行 |
-| PRG-002 | release promotion | PASS | v0.8.0 tag + GitHub Release 均存在（2026-06-29） |
+| PRG-002 | release promotion | PASS | v0.12.0 tag + GitHub Release 均存在（2026-07-04） |
 | PRG-003 | production readiness | PASS | PRG-001~006 全 PASS |
 | PRG-004 | observability | PASS | Jaeger/Grafana/Loki/AlertManager 全在线 |
 | PRG-005 | security | PASS | OpenTelemetry SDK v1.44.0，govulncheck 清洁 |
@@ -115,4 +115,4 @@ Beads and GitHub issues are the current P10 tracking SSOT. The retired local pro
 
 > **运行时缺口投影**：本矩阵统计规格口径（48 Done）。运行时口径的 58 个缺口（GAP-E1~E58）记录在 `module/binance/RUNTIME-GAP-MATRIX.md` 中。两者正交——规格 Done 表示 FR 功能面已闭合，运行时 Open 表示生产部署中存在数据完整性/安全性/可运维性缺口。详见该文件 §7 双口径声明。
 >
-> release_closeable = Code-Done FR / Total FR = 48/48 = 100% ≥ 90% → YES（PRG-001~007 全 PASS）。
+> release_closeable = Code-Done FR / Total FR = 48/48 = 100% ≥ 90% → YES（规格口径）。

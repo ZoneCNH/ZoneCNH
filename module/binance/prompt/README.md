@@ -24,7 +24,7 @@ prompt/
 
 ## 当前状态
 
-**Pipeline State**：Spec→Code 管线的 S5-Prompt 层。v3.9.6 当前采用单状态模型：`48 Done / 0 Partial / 0 Drifted / 0 Pending`。release_closeable=YES（PRG-001~007 全 PASS）。43 个 Binance P10 issue 已全部关闭（GitHub #1289~#1331 + Beads 43 条，10 轮验证 ALL PASS），PRG-001~007 全 PASS，release 已可关闭。
+**Pipeline State**：Spec→Code 管线的 S5-Prompt 层。v3.9.8 当前采用单状态模型：`48 Done / 0 Partial / 0 Drifted / 0 Pending`。release_closeable=YES（规格口径）；运行时口径当前 PRG-006=Partial。43 个 Binance P10 issue 已全部关闭（GitHub #1289~#1331 + Beads 43 条，10 轮验证 ALL PASS）。
 
 > [COMPUTED, HIGH] 2026-06-28 full E2E 包仅作为历史运行证据，不构成发布关闭结论。后续生成新 Context Package 时，必须引用当前 P10 action plan、team fix context、Beads/GitHub issue 状态、[`../todo.md`](../todo.md) 只读投影与 [`../evidence/2026-06-28/todo-archived.md`](../evidence/2026-06-28/todo-archived.md) 的历史快照。
 

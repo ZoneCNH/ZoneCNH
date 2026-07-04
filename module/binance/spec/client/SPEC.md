@@ -9,10 +9,10 @@
 - Last-Updated: 2026-06-26 (v2.1.1→v3.8.0: 结构性修复 — 废除本地 FR/BR 编号，全部改为引用根 SPEC canonical FR/BR；§7 重构为根 FR 的 client 实现视图；端点策略合并为附录）
 - Owner: ZoneCNH
 - Layer: 数据域 · Binance 交易所接入
-- Runtime-Version: v0.8.0
+- Runtime-Version: v0.12.0
 - Repository: [github.com/ZoneCNH/binance](https://github.com/ZoneCNH/binance)（client 端通过 `cmd/binance-client` + `internal/client` 提供）
 - Go Module Path: `github.com/ZoneCNH/binance`（monorepo，client 端通过 `cmd/binance-client` + `internal/client` 提供）
-- Related: [CONSTITUTION.md](../../../CONSTITUTION.md), [ARCHITECTURE.md](../../../ARCHITECTURE.md), [module/binance/spec/SPEC.md](../SPEC.md), [module/domain_market](../../domain_market/), [module/natsx](../../natsx/)
+- Related: [CONSTITUTION.md](../../../../CONSTITUTION.md), [ARCHITECTURE.md](../../../../ARCHITECTURE.md), [module/binance/spec/SPEC.md](../SPEC.md), [module/domain_market](../../../domain_market/), [module/natsx](../../../natsx/)
 
 ---
 
@@ -451,7 +451,7 @@ const (
 > **设计权威**：[ADR-005 ExchangeInfo Symbol 采集分级体系架构裁决](../../design/ADR-005-symbol-tier-classification.md)
 > **运行时状态**：slot 预留，未实现（GAP-E24，`../../RUNTIME-GAP-MATRIX.md §2.2`）
 
-**用户架构指令**："ExchangeInfo symbol 采集的币种要分级别、分层级、分优先级，不是所有币种都采集。" 当前 runtime 在这三个维度上均为零支撑——4 条产品线把所有 TRADING（或未过期）symbol 100% 灌入 catalog，下游采集以 `Status == "active"` 为唯一谓词全量采集，无数量上限、流动性筛选或优先级分级（源码核验证据见 `report/binance/EXCHANGEINFO-SYMBOL-TIER-ANALYSIS-20260702.md` §1）。
+**用户架构指令**："ExchangeInfo symbol 采集的币种要分级别、分层级、分优先级，不是所有币种都采集。" 当前 runtime 在这三个维度上均为零支撑——4 条产品线把所有 TRADING（或未过期）symbol 100% 灌入 catalog，下游采集以 `Status == "active"` 为唯一谓词全量采集，无数量上限、流动性筛选或优先级分级（源码核验证据见 `report/binance/DEEP-ANALYSIS-20260704.md` §4）。
 
 分级体系定义三个正交维度（详见 [ADR-005 §1](../../design/ADR-005-symbol-tier-classification.md)）：
 

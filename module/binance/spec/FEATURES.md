@@ -6,15 +6,15 @@
 | --- | --- |
 | Status | Generated from current module SSOT |
 | Last-Updated | 2026-06-30 |
-| Module-Version | v3.9.6 |
-| Module-State | v3.9.6 单一状态模型：**48 Done / 0 Partial / 0 Drifted / 0 Pending**。release_closeable=YES（PRG-001~007 全 PASS）。P10 issues: GitHub #1289-#1331 / Beads 43 全部 closed（10 轮验证 ALL PASS）。 |
+| Module-Version | v3.9.8 |
+| Module-State | v3.9.8 单一状态模型：**48 Done / 0 Partial / 0 Drifted / 0 Pending**。release_closeable=YES（规格口径）；运行时口径当前 PRG-006=Partial。P10 issues: GitHub #1289-#1331 / Beads 43 全部 closed（10 轮验证 ALL PASS）。 |
 | Layer | 数据域 / Binance-specific market_data C/S module |
 | Runtime-Repo | `/home/workspace/binance` |
 | Source | `goal.md`, `SPEC.md`, `TRACEABILITY.md`, `STANDARD.md`, `BOUNDARY-GATES.md`, `RUNTIME-MAPPING.md`, `IMPLEMENTATION-PLAN.md`, `client/`, `server/`, `tasks/` |
 
 本文档是 `module/binance` 当前规格库的实现投影，不是 runtime 代码验收证据。实际完成状态以 `TRACEABILITY.md`、`client/TRACEABILITY.md`、`server/TRACEABILITY.md` 和 `/home/workspace/binance` 的测试证据为准。
 
-> **v3.9.6 当前状态口径（2026-06-30）**：单一状态模型 — `Done` = 代码完整+装配就绪+TC PASS+evidence 归档。当前 Done 48 / Partial 0 / Drifted 0 / Pending 0。release_closeable=YES（PRG-001~007 全 PASS）。
+> **v3.9.8 当前状态口径（2026-07-04）**：单一状态模型 — `Done` = 代码完整+装配就绪+TC PASS+evidence 归档。当前 Done 48 / Partial 0 / Drifted 0 / Pending 0。release_closeable=YES（规格口径）；运行时口径当前 PRG-006=Partial。
 >
 > **单一状态模型**：FEATURES.md 的「Done」均指单一状态模型的 Done（代码完整+装配就绪+TC PASS+evidence 归档）。Evidence 列的判定见 `ACCEPTANCE.md` §4 闭合矩阵（全部 Done）。
 >
@@ -37,7 +37,7 @@
 
 > v3.5.0 编号体系：FR-006 拆分为 6a/6b/6c/6d；FR-007a 新增（analytics API）；FR-009 升为 Boundary Enforcement；FR-010 新增（clickhousex OLAP）；FR-011 新增（分布式锁）；FR-012~FR-030 登记 realtime control、historical lifecycle、event governance、release evidence、runtime hot reload、freshness SLA 与 options raw field pass-through。
 
-> 状态口径（v3.9.6）：`Done` / `Partial` / `Drifted` / `Pending` 为四态单一模型；L1 boundary governance 不替代 L2 功能验收。`Drifted` = 无，`Partial` = 无，`Pending` = 无。全部 48 FR Done。release_closeable=YES（PRG-001~007 全 PASS）。
+> 状态口径（v3.9.8）：`Done` / `Partial` / `Drifted` / `Pending` 为四态单一模型；L1 boundary governance 不替代 L2 功能验收。`Drifted` = 无，`Partial` = 无，`Pending` = 无。全部 48 FR Done。release_closeable=YES（规格口径）；运行时口径当前 PRG-006=Partial。
 
 | FR | 功能 | 当前状态 | 已有证据 | 剩余实现面 |
 | --- | --- | --- | --- | --- |
@@ -157,7 +157,7 @@
 | --- | --- | --- |
 | `goal.md` | 业务目标与模块意图 | 作为实现清单的目标来源。 |
 | `SPEC.md` | v2.0.0 功能与边界规格 | 作为 FR/BR/NFR 语义来源。 |
-| `TRACEABILITY.md` | 根级 FR/AC/TC/Task 追溯 | 作为当前状态与验收编号来源；v3.9.6 当前口径，48 Done / 0 Partial / 0 Drifted / 0 Pending；Evidence 列 48 Done / 0 Pending。 |
+| `TRACEABILITY.md` | 根级 FR/AC/TC/Task 追溯 | 作为当前状态与验收编号来源；v3.9.8 当前口径，48 Done / 0 Partial / 0 Drifted / 0 Pending；Evidence 列 48 Done / 0 Pending。 |
 | `client/TRACEABILITY.md` | Client 子域追溯 | 作为 client active/pending 实现面来源。 |
 | `server/TRACEABILITY.md` | Server 子域追溯 | 作为 server active/pending 实现面来源。 |
 | `BOUNDARY-GATES.md` | 边界漂移防线 | 作为 FR-009 与 BR-001~BR-009 的文档和本地 runtime 证据入口。 |
@@ -169,8 +169,8 @@
 
 | 检查项 | 状态 | 依据 |
 | --- | --- | --- |
-| v2.0.0 根规格存在 | Done | `SPEC.md` v3.9.6。 |
-| 根级 traceability 存在 | Done | `TRACEABILITY.md` v3.9.6；48 Done / 0 Partial / 0 Drifted / 0 Pending；Evidence 列 48 Done / 0 Pending。 |
+| v2.0.0 根规格存在 | Done | `SPEC.md` v3.9.8。 |
+| 根级 traceability 存在 | Done | `TRACEABILITY.md` v3.9.8；48 Done / 0 Partial / 0 Drifted / 0 Pending；Evidence 列 48 Done / 0 Pending。 |
 | Client/Server 子域 traceability 存在 | Done | `client/TRACEABILITY.md`, `server/TRACEABILITY.md`。 |
 | C/S 独立进程边界已定义 | Done | `README.md`, `SPEC.md`, `BOUNDARY-GATES.md`。 |
 | Boundary gate 文档已形成 | Done | `BOUNDARY-GATES.md` v2.2.4；本地证据 `/home/workspace/binance/release/evidence/binance/20260623/`；13 gates PASS；证据提交 `71e2a6e8`（2026-06-23 round 2）。 |

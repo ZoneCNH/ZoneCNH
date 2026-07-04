@@ -12,15 +12,15 @@
 
 ## v3.0 相对 v2.0 的变更
 
-| 变更类型 | 内容 |
-| -------- | ---- |
-| 新增 Part | Part 16「DEEP-ANALYSIS-20260704 新发现核验」——核实 N1-N7 七项新缺口（编号建议 GAP-E59~E65）+ 3 处自审修正（NATS subject 确认性缺陷、token 文档覆盖缺口、TRACEABILITY 内部自相矛盾）是否仍然成立 |
-| 新增章节 | 「20 轮独立复现协议」——供 agent team 并行执行，固定双仓库快照 SHA，统一输出模板，禁止假设其他 reviewer 结论 |
-| 更新基线 | Runtime `origin/main@14a30b9`（PR #414 push，2026-07-03）；ZoneCNH main `cb7161cc`（含 PR #1648/#1649，2026-07-04）；PR #411（`fix/runtime-gap-phase2-5`）仍 **OPEN**，CI 未过（3 个文件未推送导致 undefined symbol） |
-| 更新检查 | release_closeable 矛盾专项：确认矛盾发生在 `matrix/TRACEABILITY.md` **文件内部**（顶部声明 YES vs §PRG 表 PRG-006 Partial），而非仅跨文档 |
-| 更新检查 | main 分支可编译性专项：`storageAssembly.runtime` 字段缺失导致 `go build ./...` 失败（`storage.go:313` vs `assemble.go:368-381`），需在干净 worktree 复现，不得只信 CI 转述 |
-| 更新检查 | NATS subject 段数专项：client 发布 `binance.market.{pl}.{et}.v1`（5 段）vs server `Subject="binance.market.*.*"`（4 段），NATS `*` 精确匹配 1 token，需在报告中给出明确 YES/NO 结论而非"需实测确认" |
-| 更新对比 | 上轮基准改为 `DEEP-ANALYSIS-20260704.md`（含 §9 十轮自审修正）+ `REVIEW-20260630`（综合 97 分）双基准对比 |
+| 变更类型  | 内容                                                                                                                                                                                                                  |
+| --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 新增 Part | Part 16「DEEP-ANALYSIS-20260704 新发现核验」——核实 N1-N7 七项新缺口（编号建议 GAP-E59~E65）+ 3 处自审修正（NATS subject 确认性缺陷、token 文档覆盖缺口、TRACEABILITY 内部自相矛盾）是否仍然成立                       |
+| 新增章节  | 「20 轮独立复现协议」——供 agent team 并行执行，固定双仓库快照 SHA，统一输出模板，禁止假设其他 reviewer 结论                                                                                                           |
+| 更新基线  | Runtime `origin/main@14a30b9`（PR #414 push，2026-07-03）；ZoneCNH main `cb7161cc`（含 PR #1648/#1649，2026-07-04）；PR #411（`fix/runtime-gap-phase2-5`）仍 **OPEN**，CI 未过（3 个文件未推送导致 undefined symbol） |
+| 更新检查  | release_closeable 矛盾专项：确认矛盾发生在 `matrix/TRACEABILITY.md` **文件内部**（顶部声明 YES vs §PRG 表 PRG-006 Partial），而非仅跨文档                                                                             |
+| 更新检查  | main 分支可编译性专项：`storageAssembly.runtime` 字段缺失导致 `go build ./...` 失败（`storage.go:313` vs `assemble.go:368-381`），需在干净 worktree 复现，不得只信 CI 转述                                            |
+| 更新检查  | NATS subject 段数专项：client 发布 `binance.market.{pl}.{et}.v1`（5 段）vs server `Subject="binance.market.*.*"`（4 段），NATS `*` 精确匹配 1 token，需在报告中给出明确 YES/NO 结论而非"需实测确认"                   |
+| 更新对比  | 上轮基准改为 `DEEP-ANALYSIS-20260704.md`（含 §9 十轮自审修正）+ `REVIEW-20260630`（综合 97 分）双基准对比                                                                                                             |
 
 ---
 
@@ -70,12 +70,12 @@ go version
 
 **已知陷阱验证 T0-1**（Runtime-Version 一致性）：以下四处声明的 Runtime-Version 必须一致，否则为 CRITICAL（状态分裂）：
 
-| 位置 | 字段 | 预期 |
-| ---- | ---- | ---- |
-| `module/binance/spec/SPEC.md` L7 | `Runtime-Version` | 与实际 HEAD 对应的 tag |
-| `module/binance/README.md` L6 | `Runtime-Version` | 同上 |
-| `module/binance/deploy/DEPLOY.md` §头部 | `Runtime-Version` + anchor | 同上 |
-| `/home/workspace/binance` 实际 | `git describe --tags` | 权威值 |
+| 位置                                    | 字段                       | 预期                   |
+| --------------------------------------- | -------------------------- | ---------------------- |
+| `module/binance/spec/SPEC.md` L7        | `Runtime-Version`          | 与实际 HEAD 对应的 tag |
+| `module/binance/README.md` L6           | `Runtime-Version`          | 同上                   |
+| `module/binance/deploy/DEPLOY.md` §头部 | `Runtime-Version` + anchor | 同上                   |
+| `/home/workspace/binance` 实际          | `git describe --tags`      | 权威值                 |
 
 > **审查者注意**：截至 v2.0 生成时，SPEC.md/README.md 写 v0.8.0，DEPLOY.md 写 v0.11.0（f53303f），实际 HEAD 为 f53303f。runtime 为 shallow clone，本地无任何 tag（含 v0.8.0）。审查时需确认此分裂是否已修复，并用 `gh release view` 验证 GitHub Release。
 >
@@ -105,18 +105,19 @@ find /home/workspace/ZoneCNH/module/binance/evidence/ -type d | sort
 
 阅读以下历史报告，提取上轮结论用于对比：
 
-| 报告 | 用途 |
-| ---- | ---- |
-| `report/binance/REVIEW-20260630.md` | 上轮完整审查报告（综合 97 分，L3 Go） |
-| `report/binance/SCORECARD.md` | 全模块评分卡（binance 92 分） |
-| `report/binance/DEEP-ANALYSIS-20260630.md` | 上轮深度分析 |
-| `report/binance/DATA-INTEGRITY-E2E-20260701.md` | 运行时数据完整性 58 缺口来源（v3.9，6358 行） |
-| `report/binance/EXCHANGEINFO-SYMBOL-TIER-ANALYSIS-20260702.md` | symbol 分级体系分析 |
-| `report/binance/TEST-ANALYSIS-20260630.md` | 测试体系分析（含 2026-07-02 免责声明） |
-| `report/binance/DEEP-ANALYSIS-20260704.md`【v3.0 新增】 | 2026-07-04 深度分析 + §9 十轮自审修正（N1-N7 新缺口、main 编译失败复现、NATS subject 段数不匹配确认、TRACEABILITY 内部自相矛盾） |
-| `plans/binance/RUNTIME-GAP-MATRIX.md`【v3.0 新增】 | 58 项已知运行时缺口权威矩阵（GAP-E1~E58），核验 N1-N7 建议编号 E59-E65 是否已并入 |
+| 报告                                                           | 用途                                                                                                                             |
+| -------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `report/binance/REVIEW-20260630.md`                            | 上轮完整审查报告（综合 97 分，L3 Go）                                                                                            |
+| `report/binance/SCORECARD.md`                                  | 全模块评分卡（binance 92 分）                                                                                                    |
+| `report/binance/DEEP-ANALYSIS-20260630.md`                     | 上轮深度分析                                                                                                                     |
+| `report/binance/DATA-INTEGRITY-E2E-20260701.md`                | 运行时数据完整性 58 缺口来源（v3.9，6358 行）                                                                                    |
+| `report/binance/EXCHANGEINFO-SYMBOL-TIER-ANALYSIS-20260702.md` | symbol 分级体系分析                                                                                                              |
+| `report/binance/TEST-ANALYSIS-20260630.md`                     | 测试体系分析（含 2026-07-02 免责声明）                                                                                           |
+| `report/binance/DEEP-ANALYSIS-20260704.md`【v3.0 新增】        | 2026-07-04 深度分析 + §9 十轮自审修正（N1-N7 新缺口、main 编译失败复现、NATS subject 段数不匹配确认、TRACEABILITY 内部自相矛盾） |
+| `plans/binance/RUNTIME-GAP-MATRIX.md`【v3.0 新增】             | 58 项已知运行时缺口权威矩阵（GAP-E1~E58），核验 N1-N7 建议编号 E59-E65 是否已并入                                                |
 
 必须标注：
+
 - 上次审查的 CRITICAL 问题是否已修复
 - 上次评分变化趋势（REVIEW-20260630 综合 97 vs SCORECARD 92，差异原因）
 - 07-01/07-02 新发现的增量问题（58 运行时缺口、双口径、EXCHANGEINFO 分级）
@@ -132,31 +133,31 @@ find /home/workspace/ZoneCNH/module/binance/evidence/ -type d | sort
 
 逐节核验下列 23 节是否存在、内容是否非空：
 
-| 节号 | 节名 | 检查要点 |
-| ---- | ---- | -------- |
-| §1 | Goal | 模块目标是否明确、可测量 |
-| §2 | Authority | 权威来源声明是否完整 |
-| §3 | Scope | 边界是否清楚（包含/不包含） |
-| §4 | Runtime Boundary | Client/Server/Wire/Config 四子系统职责与禁止项 |
-| §5 | State Model | 状态模型是否单一且无歧义（single-state only） |
-| §6 | Product Lines and Event Types | 4×6 矩阵是否完整 |
-| §7 | Functional Requirements | FR 表：ID / Scope / Requirement / State / Closure evidence |
-| §8 | Business Requirements | BR 表：ID / Rule / Verification |
-| §9 | Acceptance Criteria | AC 编号 + Requirement + State |
-| §10 | NATS and Kafka Contracts | subject/topic 定义 |
-| §11 | Configuration | 配置项引用 CONFIG-SCHEMA.md |
-| §12 | API Boundary | REST/gRPC 路由定义 |
-| §13 | Persistence Boundary | 存储约束 |
-| §14 | Error Model | 错误码/错误分类/恢复策略 |
-| §15 | Observability | metrics/logs/traces 三件套 |
-| §16 | Security | 认证/授权/加密/凭证管理 |
-| §17 | Deployment | 部署拓扑/HA/DR |
-| §18 | Testing Strategy | 测试分层/覆盖率目标 |
-| §19 | Migration | 架构迁移路径 |
-| §20 | Dependencies | 外部依赖清单 |
-| §21 | Changelog | 版本变更记录引用 |
-| §22 | Release DoD + §22a Runtime Gap Matrix Reference | DoD 清单 + 双口径引用 |
-| §23 | References | 交叉引用文档列表 |
+| 节号 | 节名                                            | 检查要点                                                   |
+| ---- | ----------------------------------------------- | ---------------------------------------------------------- |
+| §1   | Goal                                            | 模块目标是否明确、可测量                                   |
+| §2   | Authority                                       | 权威来源声明是否完整                                       |
+| §3   | Scope                                           | 边界是否清楚（包含/不包含）                                |
+| §4   | Runtime Boundary                                | Client/Server/Wire/Config 四子系统职责与禁止项             |
+| §5   | State Model                                     | 状态模型是否单一且无歧义（single-state only）              |
+| §6   | Product Lines and Event Types                   | 4×6 矩阵是否完整                                           |
+| §7   | Functional Requirements                         | FR 表：ID / Scope / Requirement / State / Closure evidence |
+| §8   | Business Requirements                           | BR 表：ID / Rule / Verification                            |
+| §9   | Acceptance Criteria                             | AC 编号 + Requirement + State                              |
+| §10  | NATS and Kafka Contracts                        | subject/topic 定义                                         |
+| §11  | Configuration                                   | 配置项引用 CONFIG-SCHEMA.md                                |
+| §12  | API Boundary                                    | REST/gRPC 路由定义                                         |
+| §13  | Persistence Boundary                            | 存储约束                                                   |
+| §14  | Error Model                                     | 错误码/错误分类/恢复策略                                   |
+| §15  | Observability                                   | metrics/logs/traces 三件套                                 |
+| §16  | Security                                        | 认证/授权/加密/凭证管理                                    |
+| §17  | Deployment                                      | 部署拓扑/HA/DR                                             |
+| §18  | Testing Strategy                                | 测试分层/覆盖率目标                                        |
+| §19  | Migration                                       | 架构迁移路径                                               |
+| §20  | Dependencies                                    | 外部依赖清单                                               |
+| §21  | Changelog                                       | 版本变更记录引用                                           |
+| §22  | Release DoD + §22a Runtime Gap Matrix Reference | DoD 清单 + 双口径引用                                      |
+| §23  | References                                      | 交叉引用文档列表                                           |
 
 **产出**：23 节完整性表（✅/⚠️/❌）+ 每节详细问题描述
 
@@ -241,15 +242,15 @@ grep -m1 'Spec-Version' /home/workspace/ZoneCNH/module/binance/spec/SPEC.md
 
 **入口文件**: `module/binance/matrix/TRACEABILITY.md`
 
-| 节号 | 内容 | 检查要点 |
-| ---- | ---- | -------- |
-| §1 | Rule | 矩阵规则声明 |
-| §2 | FR Matrix | FR → BR → AC → TC/Evidence → State 映射 |
-| §3 | Acceptance Criteria | AC 编号 + Requirement + State |
-| §4 | Production Readiness Gates | PRG-001~007 定义与状态 |
-| §5 | TC→FR Reverse Trace | 测试用例 → FR 反向追溯 |
-| §6 | Coverage Dashboard | FR/BR/NFR/AC/TC 总数/Done/覆盖率 |
-| §7 | Change History | 变更记录 |
+| 节号 | 内容                       | 检查要点                                |
+| ---- | -------------------------- | --------------------------------------- |
+| §1   | Rule                       | 矩阵规则声明                            |
+| §2   | FR Matrix                  | FR → BR → AC → TC/Evidence → State 映射 |
+| §3   | Acceptance Criteria        | AC 编号 + Requirement + State           |
+| §4   | Production Readiness Gates | PRG-001~007 定义与状态                  |
+| §5   | TC→FR Reverse Trace        | 测试用例 → FR 反向追溯                  |
+| §6   | Coverage Dashboard         | FR/BR/NFR/AC/TC 总数/Done/覆盖率        |
+| §7   | Change History             | 变更记录                                |
 
 ### 2.2 追溯链闭合验证（R1 跨表走查）
 
@@ -343,6 +344,7 @@ ls -1 /home/workspace/ZoneCNH/module/binance/design/ADR-*.md 2>/dev/null
 按 `design/ARCHITECTURE-DRIFT-WATCHLIST.md` 的监控点 (D1-D11) 逐项执行检测命令，输出 PASS/FAIL。
 
 特别关注：
+
 - D9（限流模型漂移）
 - D10（缺口检测策略漂移）
 - D11（双态分歧 / release_closeable 分裂）
@@ -367,11 +369,11 @@ grep -rn "panic(" /home/workspace/binance/internal/ --include="*.go" | grep -v "
 
 核验以下三个维度的运行时支撑：
 
-| 维度 | 检查命令 | 预期（当前为零支撑） |
-| ---- | -------- | -------------------- |
-| Tier（分级） | `grep -rn "tier\|Tier" /home/workspace/binance/internal/client/catalog.go` | 零命中 |
+| 维度               | 检查命令                                                                           | 预期（当前为零支撑）                                        |
+| ------------------ | ---------------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| Tier（分级）       | `grep -rn "tier\|Tier" /home/workspace/binance/internal/client/catalog.go`         | 零命中                                                      |
 | Priority（优先级） | `grep -rn "priority\|Priority" /home/workspace/binance/internal/client/catalog.go` | 零命中（lifecycle.go 的 priority 是任务排序非 symbol 分级） |
-| 分层级 | `grep -rn "level\|Level" /home/workspace/binance/internal/client/catalog.go` | 零命中 |
+| 分层级             | `grep -rn "level\|Level" /home/workspace/binance/internal/client/catalog.go`       | 零命中                                                      |
 
 ```bash
 echo "=== CatalogEntry 结构 ==="
@@ -517,16 +519,16 @@ grep -rn 'fmt.Errorf.*%s' /home/workspace/binance/internal/client/ --include="*.
 
 从 58 个运行时缺口中抽取以下高风险项，逐一源码验证（核对报告声称的文件+行号是否属实）：
 
-| GAP-ID | 验证命令 | 预期（若缺口仍 Open） |
-| ------ | -------- | --------------------- |
-| GAP-E1 | `grep -rn "history_state_postgres\|coverage" /home/workspace/binance/internal/client/ --include="*.go"` | client 端存在 coverage 持久化（违宪） |
-| GAP-E6 | `grep -n "ExchangeInfoRefresher\|ProductLine" /home/workspace/binance/internal/client/runtime.go` | 仅 spot 装配（L201 `ProductLine: ProductLineSpot`），UM/CM/Options 未装配 |
-| GAP-E18 | `grep -n "Partial" /home/workspace/binance/internal/server/storage/taos_writer.go` | 部分成功被 `_` 忽略 |
-| GAP-E25 | `grep -rn "ClientID\|clientID\|ShardKey" /home/workspace/binance/cmd/binance-client/ --include="*.go"` | 零命中（无分片机制） |
-| GAP-E27 | `grep -n "SetReadLimit" /home/workspace/binance/internal/client/spot.go` | 零命中（无 OOM 保护） |
-| GAP-E28 | `grep -rn "pgx\.Tx\|BeginTx\|\.Commit(" /home/workspace/binance/internal/server/storage/ --include="*.go"` | 零命中（PG 无事务） |
-| GAP-E32 | `grep -rn "go func" /home/workspace/binance/internal/client/runtime.go /home/workspace/binance/internal/client/history_lifecycle.go` | 7 处 goroutine 无 recover |
-| GAP-E37 | `grep -rn "csrf\|CSRF" /home/workspace/binance/internal/client/admin.go /home/workspace/binance/internal/server/admin.go` | 零命中（无 CSRF 防护） |
+| GAP-ID  | 验证命令                                                                                                                             | 预期（若缺口仍 Open）                                                     |
+| ------- | ------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------- |
+| GAP-E1  | `grep -rn "history_state_postgres\|coverage" /home/workspace/binance/internal/client/ --include="*.go"`                              | client 端存在 coverage 持久化（违宪）                                     |
+| GAP-E6  | `grep -n "ExchangeInfoRefresher\|ProductLine" /home/workspace/binance/internal/client/runtime.go`                                    | 仅 spot 装配（L201 `ProductLine: ProductLineSpot`），UM/CM/Options 未装配 |
+| GAP-E18 | `grep -n "Partial" /home/workspace/binance/internal/server/storage/taos_writer.go`                                                   | 部分成功被 `_` 忽略                                                       |
+| GAP-E25 | `grep -rn "ClientID\|clientID\|ShardKey" /home/workspace/binance/cmd/binance-client/ --include="*.go"`                               | 零命中（无分片机制）                                                      |
+| GAP-E27 | `grep -n "SetReadLimit" /home/workspace/binance/internal/client/spot.go`                                                             | 零命中（无 OOM 保护）                                                     |
+| GAP-E28 | `grep -rn "pgx\.Tx\|BeginTx\|\.Commit(" /home/workspace/binance/internal/server/storage/ --include="*.go"`                           | 零命中（PG 无事务）                                                       |
+| GAP-E32 | `grep -rn "go func" /home/workspace/binance/internal/client/runtime.go /home/workspace/binance/internal/client/history_lifecycle.go` | 7 处 goroutine 无 recover                                                 |
+| GAP-E37 | `grep -rn "csrf\|CSRF" /home/workspace/binance/internal/client/admin.go /home/workspace/binance/internal/server/admin.go`            | 零命中（无 CSRF 防护）                                                    |
 
 > **核验纪律**：每项必须记录 `[COMPUTED]` 实际 grep 结果，不得直接采信报告结论。若源码已修复，标注 GAP 状态从 Open → Fixed 并附证据。
 
@@ -538,26 +540,26 @@ grep -rn 'fmt.Errorf.*%s' /home/workspace/binance/internal/client/ --include="*.
 
 按 `matrix/TRACEABILITY.md §4`（权威来源），逐项核验 PRG-001~007：
 
-| Gate | 检查内容 | 验证命令 |
-| ---- | -------- | -------- |
-| PRG-001 | CI runner 为 ubuntu-latest | 检查 CI workflow 文件 |
+| Gate    | 检查内容                          | 验证命令                                                         |
+| ------- | --------------------------------- | ---------------------------------------------------------------- |
+| PRG-001 | CI runner 为 ubuntu-latest        | 检查 CI workflow 文件                                            |
 | PRG-002 | Release tag + GitHub Release 存在 | `git -C /home/workspace/binance tag -l 'v*'` + `gh release view` |
-| PRG-003 | PRG 7/7 全 PASS | 逐项确认 |
-| PRG-004 | Observability 全在线 | 确认 Jaeger/Grafana/Loki/AlertManager 可访问 |
-| PRG-005 | Security 扫描清洁 | gitleaks + govulncheck PASS |
-| PRG-006 | soak/chaos/canary 测试 PASS | 检查 evidence + 测试代码 gated 状态 |
-| PRG-007 | GitHub + Beads issue 全关闭 | `gh issue list --state open` |
+| PRG-003 | PRG 7/7 全 PASS                   | 逐项确认                                                         |
+| PRG-004 | Observability 全在线              | 确认 Jaeger/Grafana/Loki/AlertManager 可访问                     |
+| PRG-005 | Security 扫描清洁                 | gitleaks + govulncheck PASS                                      |
+| PRG-006 | soak/chaos/canary 测试 PASS       | 检查 evidence + 测试代码 gated 状态                              |
+| PRG-007 | GitHub + Beads issue 全关闭       | `gh issue list --state open`                                     |
 
 ### 7.2 PRG-006 状态矛盾专项【v2.0 新增 · 已知陷阱 T7-1】
 
 **已知陷阱验证 T7-1**：PRG-006 在不同文档中状态矛盾。
 
-| 位置 | 声明 | 来源 |
-| ---- | ---- | ---- |
+| 位置               | 声明                                            | 来源         |
+| ------------------ | ----------------------------------------------- | ------------ |
 | `spec/SPEC.md` L10 | `release_closeable: YES`（PRG-001~007 全 PASS） | `[COMPUTED]` |
-| `README.md` L7 | `release_closeable=YES（PRG-001~007 全 PASS）` | `[COMPUTED]` |
-| `goal/goal.md` L12 | `PRG-001~007 全 PASS` | `[COMPUTED]` |
-| `todo.md` L23 | `PRG-006 = Partial`（gated 测试默认 CI 跑不到） | `[COMPUTED]` |
+| `README.md` L7     | `release_closeable=YES（PRG-001~007 全 PASS）`  | `[COMPUTED]` |
+| `goal/goal.md` L12 | `PRG-001~007 全 PASS`                           | `[COMPUTED]` |
+| `todo.md` L23      | `PRG-006 = Partial`（gated 测试默认 CI 跑不到） | `[COMPUTED]` |
 
 ```bash
 echo "=== 各文档 PRG-006 声明 ==="
@@ -574,6 +576,7 @@ grep -i "PRG-006\|PRG.*006\|PRG-001~007" /home/workspace/ZoneCNH/module/binance/
 ```
 
 **判定规则**：
+
 - 若 todo.md 标 Partial 而 SPEC/README/goal 标"全 PASS" → **CRITICAL（状态分裂）**
 - 审查者需独立核实 PRG-006 真实状态：soak/chaos/canary 测试是否 gated、默认 CI 是否覆盖
 - 参考 `todo.md` L26-32 的 2026-07-02 复核修正（测试描述与代码不符的免责声明）
@@ -582,14 +585,14 @@ grep -i "PRG-006\|PRG.*006\|PRG-001~007" /home/workspace/ZoneCNH/module/binance/
 
 在以下至少 6 处检查 `release_closeable` 状态：
 
-| 位置 | 预期状态 |
-| ---- | -------- |
-| `spec/SPEC.md` header | release_closeable: YES |
-| `matrix/TRACEABILITY.md` header | release_closeable: YES |
-| `README.md` Delivery-State | release_closeable=YES |
-| `spec/ACCEPTANCE.md` Module-State | release_closeable=YES |
-| `todo.md` | release_closeable=YES |
-| `goal/goal.md` 状态 | L3 Production / Released |
+| 位置                              | 预期状态                 |
+| --------------------------------- | ------------------------ |
+| `spec/SPEC.md` header             | release_closeable: YES   |
+| `matrix/TRACEABILITY.md` header   | release_closeable: YES   |
+| `README.md` Delivery-State        | release_closeable=YES    |
+| `spec/ACCEPTANCE.md` Module-State | release_closeable=YES    |
+| `todo.md`                         | release_closeable=YES    |
+| `goal/goal.md` 状态               | L3 Production / Released |
 
 如果任意两处不一致 → CRITICAL（状态分裂）
 
@@ -614,14 +617,15 @@ gh release list -R ZoneCNH/binance 2>/dev/null | head -5 || echo "gh not availab
 
 ### 7.5 双口径发布判定【v2.0 新增】
 
-| 口径 | SSOT | 当前声称 | 含义 |
-| ---- | ---- | -------- | ---- |
-| 规格口径 | `spec/SPEC.md` | 48 Done / release_closeable=YES | FR 功能面已闭合 |
-| 运行时口径 | `RUNTIME-GAP-MATRIX.md` | 58 Fixed（≥80%） | 进入维护态，需持续对账防回退 |
+| 口径       | SSOT                    | 当前声称                        | 含义                         |
+| ---------- | ----------------------- | ------------------------------- | ---------------------------- |
+| 规格口径   | `spec/SPEC.md`          | 48 Done / release_closeable=YES | FR 功能面已闭合              |
+| 运行时口径 | `RUNTIME-GAP-MATRIX.md` | 58 Fixed（≥80%）                | 进入维护态，需持续对账防回退 |
 
 **GAP-E58 元缺口**：issue 已 close ≠ 运行时缺口天然已修复。当前已回刷至 58 Fixed（≥80%），但仍需持续对账以防回退。
 
 **审查者须回答**：
+
 1. 规格口径 release_closeable=YES 是否合理（FR 功能面确实闭合）
 2. 运行时口径 58 Fixed（≥80%）是否足以维持 L3 Production 维护态
 3. todo.md L32 建议"补齐默认 CI 覆盖前不应标记为 L3 Production"是否应被采纳
@@ -629,10 +633,10 @@ gh release list -R ZoneCNH/binance 2>/dev/null | head -5 || echo "gh not availab
 
 ### 7.6 治理等级判定
 
-| 等级 | 条件 |
-| ---- | ---- |
-| L1 Prototype | goal + SPEC 骨架 + 边界声明 + 命名 |
-| L2 Active | L1 + matrix + boundary gates + plan/tasks + runtime 编译与本地测试 |
+| 等级          | 条件                                                                           |
+| ------------- | ------------------------------------------------------------------------------ |
+| L1 Prototype  | goal + SPEC 骨架 + 边界声明 + 命名                                             |
+| L2 Active     | L1 + matrix + boundary gates + plan/tasks + runtime 编译与本地测试             |
 | L3 Production | L2 + PRG 全 PASS + live_integration ≥ 15 + 外部 E2E/soak/release/rollback 证据 |
 
 > **审查者注意**：当前 goal.md 声称 L3 Production / Released。结合 PRG-006 矛盾 + 58 运行时缺口，审查时须独立判定 L3 是否成立。
@@ -643,22 +647,22 @@ gh release list -R ZoneCNH/binance 2>/dev/null | head -5 || echo "gh not availab
 
 ### 8.1 核心文档版本一致性
 
-| 文档 | Spec-Version / Module-Version | Runtime-Version | last-updated |
-| ---- | ----------------------------- | --------------- | ------------ |
-| `spec/SPEC.md` | | | |
-| `spec/ACCEPTANCE.md` | | | |
-| `spec/FEATURES.md` | | | |
-| `matrix/TRACEABILITY.md` | | | |
-| `spec/client/SPEC.md` | | | |
-| `spec/server/SPEC.md` | | | |
-| `matrix/client/TRACEABILITY.md` | | | |
-| `matrix/server/TRACEABILITY.md` | | | |
-| `README.md` | | | |
-| `goal/goal.md` | | | |
-| `gate/BOUNDARY-GATES.md` | | | |
-| `design/DESIGN.md` | | | |
-| `CHANGELOG.md` | | | |
-| `deploy/DEPLOY.md` | | | |
+| 文档                            | Spec-Version / Module-Version | Runtime-Version | last-updated |
+| ------------------------------- | ----------------------------- | --------------- | ------------ |
+| `spec/SPEC.md`                  |                               |                 |              |
+| `spec/ACCEPTANCE.md`            |                               |                 |              |
+| `spec/FEATURES.md`              |                               |                 |              |
+| `matrix/TRACEABILITY.md`        |                               |                 |              |
+| `spec/client/SPEC.md`           |                               |                 |              |
+| `spec/server/SPEC.md`           |                               |                 |              |
+| `matrix/client/TRACEABILITY.md` |                               |                 |              |
+| `matrix/server/TRACEABILITY.md` |                               |                 |              |
+| `README.md`                     |                               |                 |              |
+| `goal/goal.md`                  |                               |                 |              |
+| `gate/BOUNDARY-GATES.md`        |                               |                 |              |
+| `design/DESIGN.md`              |                               |                 |              |
+| `CHANGELOG.md`                  |                               |                 |              |
+| `deploy/DEPLOY.md`              |                               |                 |              |
 
 ### 8.2 Runtime-Version 分裂专项【v2.0 新增 · 已知陷阱 T8-1】
 
@@ -710,6 +714,7 @@ grep -oPh 'github\.com/ZoneCNH/[a-zA-Z0-9_.-]+' /home/workspace/ZoneCNH/module/b
 ### 8.5 文档同步检查表
 
 交叉验证 `README.md` / `ARCHITECTURE.md` / `STATUS.md` 中 binance 模块的：
+
 - 组件数量
 - 版本号
 - 状态描述
@@ -755,6 +760,7 @@ find /home/workspace/ZoneCNH/module/binance/evidence/ -type f | sort
 ```
 
 按日期目录检查（截至 v2.0 生成时实际存在的目录）：
+
 - `2026-06-26/`: release / retrospective / review / test
 - `2026-06-27/`: review / test
 - `2026-06-28/`: review / release / p10-alignment
@@ -763,15 +769,15 @@ find /home/workspace/ZoneCNH/module/binance/evidence/ -type f | sort
 
 ### 9.2 每条 PRG 的 Evidence 闭环
 
-| PRG | Evidence 文件 | 证据充分性 |
-| --- | ------------- | ---------- |
-| PRG-001 | evidence/2026-06-30/release/ | |
-| PRG-002 | evidence/2026-06-30/release/ | |
-| PRG-003 | evidence/2026-06-30/release/ | |
-| PRG-004 | evidence/2026-06-30/release/ | |
-| PRG-005 | evidence/2026-06-30/release/ | |
+| PRG     | Evidence 文件                | 证据充分性                |
+| ------- | ---------------------------- | ------------------------- |
+| PRG-001 | evidence/2026-06-30/release/ |                           |
+| PRG-002 | evidence/2026-06-30/release/ |                           |
+| PRG-003 | evidence/2026-06-30/release/ |                           |
+| PRG-004 | evidence/2026-06-30/release/ |                           |
+| PRG-005 | evidence/2026-06-30/release/ |                           |
 | PRG-006 | evidence/2026-06-30/release/ | ⚠️ 重点核验（gated 测试） |
-| PRG-007 | evidence/2026-06-30/release/ | ⚠️ 结合 GAP-E58 元缺口 |
+| PRG-007 | evidence/2026-06-30/release/ | ⚠️ 结合 GAP-E58 元缺口    |
 
 ### 9.3 测试报告可信度核实【v2.0 新增 · 已知陷阱 T9-1】
 
@@ -814,20 +820,20 @@ grep -rl "RUNTIME-GAP-MATRIX" /home/workspace/ZoneCNH/module/binance/evidence/ 2
 
 按 FoundationX Pipeline（Goal→Spec→Plan→Matrix→Tasks→Prompt→Code→Evidence）逐阶段评分：
 
-| 阶段 | 产物 | 状态 | 得分 |
-| ---- | ---- | ---- | ---- |
-| S0-Goal | `goal/goal.md` | | |
-| S1-Spec | `spec/SPEC.md` 23 节 | | |
-| S2-Matrix | `matrix/TRACEABILITY.md` §1-§7 | | |
-| S3-Design | `design/DESIGN.md` | | |
-| S4-Tasks | `tasks/*.md` | | |
-| S5-Plan | `plan/PLAN.md` | | |
-| S6-Prompt | `prompt/*.md` | | |
-| S7-Code | Runtime 代码 | | |
-| S8-Test | 测试覆盖率 | | |
-| S9-Review | Evidence 归档 | | |
-| S10-Release | PRG 全 PASS | | |
-| S11-Retrospective | `evidence/*/retrospective/` | | |
+| 阶段              | 产物                           | 状态 | 得分 |
+| ----------------- | ------------------------------ | ---- | ---- |
+| S0-Goal           | `goal/goal.md`                 |      |      |
+| S1-Spec           | `spec/SPEC.md` 23 节           |      |      |
+| S2-Matrix         | `matrix/TRACEABILITY.md` §1-§7 |      |      |
+| S3-Design         | `design/DESIGN.md`             |      |      |
+| S4-Tasks          | `tasks/*.md`                   |      |      |
+| S5-Plan           | `plan/PLAN.md`                 |      |      |
+| S6-Prompt         | `prompt/*.md`                  |      |      |
+| S7-Code           | Runtime 代码                   |      |      |
+| S8-Test           | 测试覆盖率                     |      |      |
+| S9-Review         | Evidence 归档                  |      |      |
+| S10-Release       | PRG 全 PASS                    |      |      |
+| S11-Retrospective | `evidence/*/retrospective/`    |      |      |
 
 composite = min(S0...S11)，门禁为 98 分。
 
@@ -898,36 +904,36 @@ grep -oE 'GAP-E[0-9]+' /home/workspace/ZoneCNH/module/binance/RUNTIME-GAP-MATRIX
 
 确认以下统计是否准确：
 
-| 维度 | 声称值 | 核验结果 |
-| ---- | ------ | -------- |
-| 总缺口数 | 58 | |
-| P0 (CRITICAL) | 3（GAP-E1, E6, E25） | |
-| P1 (HIGH) | 13 | |
-| P2 (MEDIUM) | 22 | |
-| P3 (LOW) | 20 | |
-| 漏洞链 | 15 | |
-| 总工时 | ~73.5 人天 | |
+| 维度          | 声称值               | 核验结果 |
+| ------------- | -------------------- | -------- |
+| 总缺口数      | 58                   |          |
+| P0 (CRITICAL) | 3（GAP-E1, E6, E25） |          |
+| P1 (HIGH)     | 13                   |          |
+| P2 (MEDIUM)   | 22                   |          |
+| P3 (LOW)      | 20                   |          |
+| 漏洞链        | 15                   |          |
+| 总工时        | ~73.5 人天           |          |
 
 ### 11.2 P0 缺口源码验证
 
 对 3 个 CRITICAL 缺口逐一源码核验（详见 Part 6.7）：
 
-| GAP-ID | 类别 | 一句话 | 核验结果 |
-| ------ | ---- | ------ | -------- |
-| GAP-E1 | 边界合宪 | coverage 状态持久化违反 client/server 边界 | |
-| GAP-E6 | 目录覆盖 | UM/CM/Options 未装配 ExchangeInfoRefresher | |
-| GAP-E25 | 水平扩展 | client 无 ClientID/分片机制 | |
+| GAP-ID  | 类别     | 一句话                                     | 核验结果 |
+| ------- | -------- | ------------------------------------------ | -------- |
+| GAP-E1  | 边界合宪 | coverage 状态持久化违反 client/server 边界 |          |
+| GAP-E6  | 目录覆盖 | UM/CM/Options 未装配 ExchangeInfoRefresher |          |
+| GAP-E25 | 水平扩展 | client 无 ClientID/分片机制                |          |
 
 ### 11.3 漏洞链确认
 
 核验 15 条漏洞链是否仍然成立（多缺口协同放大效应）：
 
-| # | 链路名称 | 组成 | 是否仍成立 |
-| - | -------- | ---- | ---------- |
-| 1 | TDengine 数据双写漏洞链 | E12 + E18 + E19 | |
-| 2 | catalog/coverage SSOT 链 | E1 + E10 + E20 | |
-| 3 | schema 演进链 | E8 + E19 + E23 | |
-| ... | （其余 12 条见 RUNTIME-GAP-MATRIX §3） | | |
+| #   | 链路名称                               | 组成            | 是否仍成立 |
+| --- | -------------------------------------- | --------------- | ---------- |
+| 1   | TDengine 数据双写漏洞链                | E12 + E18 + E19 |            |
+| 2   | catalog/coverage SSOT 链               | E1 + E10 + E20  |            |
+| 3   | schema 演进链                          | E8 + E19 + E23  |            |
+| ... | （其余 12 条见 RUNTIME-GAP-MATRIX §3） |                 |            |
 
 > 审查者须至少抽样验证 3 条漏洞链的源码锚点是否仍存在。
 
@@ -945,6 +951,7 @@ MVP-M（工程基线）→ MVP-J（安全运维）→ MVP-A+（单机加速）�
 ### 11.5 双口径正交性验证
 
 确认以下声明是否成立：
+
 - 规格口径 48 Done 与运行时口径 58 Fixed（≥80%）正交（不矛盾）
 - 规格 Done 是必要条件，不是充分条件
 - CI 脚本 `binance-status-consistency-check.sh` 校验规格口径，运行时缺口在独立制品追踪
@@ -981,19 +988,19 @@ MVP-M（工程基线）→ MVP-J（安全运维）→ MVP-A+（单机加速）�
 
 汇总所有已知陷阱验证点，逐一确认状态：
 
-| 陷阱 ID | 描述 | 验证方法 | 结果 |
-| ------- | ---- | -------- | ---- |
-| T0-1 | Runtime-Version 四处不一致（SPEC/README=v0.8.0 vs DEPLOY.md=v0.11.0 vs HEAD=f53303f） | Part 0.1 / Part 8.2 | |
-| T1-1 | CHANGELOG v3.9.7 比 SPEC v3.9.6 提前一版（GAP-E52） | Part 1.7 | |
-| T2-1 | evidence 无 GAP-E 引用（GAP-E57，0 文件） | Part 2.5 / Part 9.4 | |
-| T4-1 | Task 计数矛盾：实际 39 文件 vs README 声称 47/47 | Part 4.2.1 | |
-| T7-1 | PRG-006 "全 PASS"（SPEC/README/goal）vs todo.md "Partial" | Part 7.2 | |
-| T7-2 | shallow clone 本地无任何 tag（含 v0.8.0）；DEPLOY.md 声称 v0.11.0 | Part 7.4 | |
-| T8-1 | Runtime-Version 分裂（SPEC/README vs DEPLOY.md） | Part 8.2 | |
-| T8-2 | 根 SECURITY.md / CONTRIBUTING.md 缺失（GAP-E44/E45） | Part 8.6 | |
-| T8-3 | BR 数量缩减：历史 9 个（BR-001~009）现仅 5 个（GAP-E53） | Part 8.7 | |
-| T9-1 | TEST-ANALYSIS 报告含 2026-07-02 免责声明（部分描述与代码不符） | Part 9.3 | |
-| T10-1 | registry.yaml lifecycle/maturity（自审验证：已存在，假阳性，审查时复核值） | Part 10.3 | |
+| 陷阱 ID | 描述                                                                                  | 验证方法            | 结果 |
+| ------- | ------------------------------------------------------------------------------------- | ------------------- | ---- |
+| T0-1    | Runtime-Version 四处不一致（SPEC/README=v0.8.0 vs DEPLOY.md=v0.11.0 vs HEAD=f53303f） | Part 0.1 / Part 8.2 |      |
+| T1-1    | CHANGELOG v3.9.7 比 SPEC v3.9.6 提前一版（GAP-E52）                                   | Part 1.7            |      |
+| T2-1    | evidence 无 GAP-E 引用（GAP-E57，0 文件）                                             | Part 2.5 / Part 9.4 |      |
+| T4-1    | Task 计数矛盾：实际 39 文件 vs README 声称 47/47                                      | Part 4.2.1          |      |
+| T7-1    | PRG-006 "全 PASS"（SPEC/README/goal）vs todo.md "Partial"                             | Part 7.2            |      |
+| T7-2    | shallow clone 本地无任何 tag（含 v0.8.0）；DEPLOY.md 声称 v0.11.0                     | Part 7.4            |      |
+| T8-1    | Runtime-Version 分裂（SPEC/README vs DEPLOY.md）                                      | Part 8.2            |      |
+| T8-2    | 根 SECURITY.md / CONTRIBUTING.md 缺失（GAP-E44/E45）                                  | Part 8.6            |      |
+| T8-3    | BR 数量缩减：历史 9 个（BR-001~009）现仅 5 个（GAP-E53）                              | Part 8.7            |      |
+| T9-1    | TEST-ANALYSIS 报告含 2026-07-02 免责声明（部分描述与代码不符）                        | Part 9.3            |      |
+| T10-1   | registry.yaml lifecycle/maturity（自审验证：已存在，假阳性，审查时复核值）            | Part 10.3           |      |
 
 ### 12.5 反向验收（Code → Spec）
 
@@ -1011,12 +1018,12 @@ Code → Prompt → Plan → Tasks → Matrix → Spec
 
 四个最危险转换点：
 
-| 转换点 | 检查 |
-| ------ | ---- |
-| Spec → Matrix | 48 FR 是否全部进入 Matrix，有无信息丢失 |
-| Matrix → Tasks | 每个 FR 是否有 Task 覆盖，有无新假设注入 |
-| Prompt → Code | （prompt 空壳，标注为已越过） |
-| Code → Spec | runtime 代码是否真的满足 Spec，58 缺口是否说明不满足 |
+| 转换点         | 检查                                                 |
+| -------------- | ---------------------------------------------------- |
+| Spec → Matrix  | 48 FR 是否全部进入 Matrix，有无信息丢失              |
+| Matrix → Tasks | 每个 FR 是否有 Task 覆盖，有无新假设注入             |
+| Prompt → Code  | （prompt 空壳，标注为已越过）                        |
+| Code → Spec    | runtime 代码是否真的满足 Spec，58 缺口是否说明不满足 |
 
 ---
 
@@ -1026,15 +1033,15 @@ Code → Prompt → Plan → Tasks → Matrix → Spec
 
 ### 16.1 N1-N7 逐项复现
 
-| # | 一句话 | 复现方法 | 判定要求 |
-| --- | --- | --- | --- |
-| N1 | main 编译失败（`storageAssembly` 缺 `runtime` 字段） | 干净 `git worktree` 执行 `go build ./...`（见 T0-2） | 仍失败/已修复，附 PR 号 |
-| N2 | NATS subject 段数不匹配（client 5 段 vs server 4 段） | 见 T0-3；额外核实是否有其他兼容层（如 subject 重写中间件） | 给出 YES/NO 明确结论，不得含糊 |
-| N3 | ACK 时序缺陷（`MarkDurable()` 先于 storage 落库） | 读取 `internal/server/ingest.go:129-219` 确认调用顺序；检查 `StrictStorageWrite` 配置默认值 | 缺陷是否仍存在；若已修复标注修复 commit |
-| N4 | 运行时仅 Spot 启动（UM/CM/Options 未接线） | 读取 `internal/client/runtime.go` 中 connector 实例化逻辑 | 是否仍只有 `NewSpotConnector` 一处；有无新增其他产品线启动代码 |
-| N5 | OLAP 数据源为内存窗口而非 taos→clickhouse ETL | 读取 `internal/server/assembly/olap_source.go` | 数据源实现是否已改为持久化 ETL |
-| N6 | TaosWriter 不支持 funding_rate/mark_price | 读取 `internal/server/storage/taos_writer.go:215-226` | 是否仍返回 `ErrUnsupportedEventType` |
-| N7 | Retention 仅覆盖 spot | 读取 `internal/server/assembly/storage.go:253-274` | 是否仍硬编码 `ProductLine:"spot"` |
+| #   | 一句话                                                | 复现方法                                                                                    | 判定要求                                                       |
+| --- | ----------------------------------------------------- | ------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| N1  | main 编译失败（`storageAssembly` 缺 `runtime` 字段）  | 干净 `git worktree` 执行 `go build ./...`（见 T0-2）                                        | 仍失败/已修复，附 PR 号                                        |
+| N2  | NATS subject 段数不匹配（client 5 段 vs server 4 段） | 见 T0-3；额外核实是否有其他兼容层（如 subject 重写中间件）                                  | 给出 YES/NO 明确结论，不得含糊                                 |
+| N3  | ACK 时序缺陷（`MarkDurable()` 先于 storage 落库）     | 读取 `internal/server/ingest.go:129-219` 确认调用顺序；检查 `StrictStorageWrite` 配置默认值 | 缺陷是否仍存在；若已修复标注修复 commit                        |
+| N4  | 运行时仅 Spot 启动（UM/CM/Options 未接线）            | 读取 `internal/client/runtime.go` 中 connector 实例化逻辑                                   | 是否仍只有 `NewSpotConnector` 一处；有无新增其他产品线启动代码 |
+| N5  | OLAP 数据源为内存窗口而非 taos→clickhouse ETL         | 读取 `internal/server/assembly/olap_source.go`                                              | 数据源实现是否已改为持久化 ETL                                 |
+| N6  | TaosWriter 不支持 funding_rate/mark_price             | 读取 `internal/server/storage/taos_writer.go:215-226`                                       | 是否仍返回 `ErrUnsupportedEventType`                           |
+| N7  | Retention 仅覆盖 spot                                 | 读取 `internal/server/assembly/storage.go:253-274`                                          | 是否仍硬编码 `ProductLine:"spot"`                              |
 
 ### 16.2 GAP 矩阵编号去重复核
 
@@ -1047,11 +1054,11 @@ grep -n "runtime.*field\|storageAssembly\|subject.*不匹配\|MarkDurable\|ErrUn
 
 ### 16.3 自审 3 处修正的时效性复核
 
-| 修正项 | 原判断 | 复核方法 | 要求 |
-| --- | --- | --- | --- |
-| Token 命名"漂移"改判 | `FOUNDATIONX_BINANCE_API_TOKEN`/`ADMIN_TOKEN` 是两个合法令牌，非命名漂移 | `grep -n "ADMIN_TOKEN\|API_TOKEN" module/binance/gate/SECURITY.md pkg/binancecfg/config.go`（runtime 仓路径） | 确认 `gate/SECURITY.md` 是否仍未记录 client admin 令牌认证机制 |
-| release_closeable 矛盾定性 | 矛盾发生在 `TRACEABILITY.md` 文件内部，非仅跨文档 | 见 T0-4 | 确认矛盾是否仍存在于同一文件内 |
-| NATS subject 判定升级 | 由"风险"升级为"已确认" | 见 16.1 N2 | 独立复现后给出自己的判定，可与前序报告不同 |
+| 修正项                     | 原判断                                                                   | 复核方法                                                                                                      | 要求                                                           |
+| -------------------------- | ------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| Token 命名"漂移"改判       | `FOUNDATIONX_BINANCE_API_TOKEN`/`ADMIN_TOKEN` 是两个合法令牌，非命名漂移 | `grep -n "ADMIN_TOKEN\|API_TOKEN" module/binance/gate/SECURITY.md pkg/binancecfg/config.go`（runtime 仓路径） | 确认 `gate/SECURITY.md` 是否仍未记录 client admin 令牌认证机制 |
+| release_closeable 矛盾定性 | 矛盾发生在 `TRACEABILITY.md` 文件内部，非仅跨文档                        | 见 T0-4                                                                                                       | 确认矛盾是否仍存在于同一文件内                                 |
+| NATS subject 判定升级      | 由"风险"升级为"已确认"                                                   | 见 16.1 N2                                                                                                    | 独立复现后给出自己的判定，可与前序报告不同                     |
 
 **输出要求**：本 Part 结论须体现在 Part 13 评分矩阵新增维度「P. 新发现核验完整性」，以及 Part 14 问题汇总中标注哪些 N1-N7 项已被你独立确认 / 哪些你认为原判断有误。
 
@@ -1063,33 +1070,33 @@ grep -n "runtime.*field\|storageAssembly\|subject.*不匹配\|MarkDurable\|ErrUn
 
 对下列 **16** 个维度按 0-100 评分，输出得分 + 等级 + 扣分原因：
 
-| 维度 | 满分 | 上轮（REVIEW-20260630） | 本轮 | Δ | 扣分项 |
-| ---- | ---- | ----------------------- | ---- | - | ------ |
-| A. Spec 结构完整性 | 100 | 96 | | | |
-| B. 追溯矩阵闭合 | 100 | 98 | | | |
-| C. Design 架构质量 | 100 | 95 | | | |
-| D. Runtime 代码质量 | 100 | 100 | | | |
-| E. Client/Server 边界 | 100 | 97 | | | |
-| F. 测试与验证 | 100 | 98 | | | |
-| G. CI/CD 管线 | 100 | 98 | | | |
-| H. 安全与合规 | 100 | 96 | | | |
-| I. 可观测性 | 100 | 95 | | | |
-| J. 生产就绪 (L3) | 100 | 95 | | | |
-| K. 文档一致性 | 100 | 96 | | | |
-| L. 运行时缺口覆盖 | 100 | N/A | | | |
-| M. EXCHANGEINFO 分级 | 100 | N/A | | | |
-| N. 双口径治理 | 100 | N/A | | | |
-| O. 证据可信度 | 100 | N/A | | | |
-| P. 新发现核验完整性【v3.0 新增，对应 Part 16】 | 100 | N/A | | | |
-| **加权综合** | 100 | **97** | | | |
+| 维度                                           | 满分 | 上轮（REVIEW-20260630） | 本轮 | Δ   | 扣分项 |
+| ---------------------------------------------- | ---- | ----------------------- | ---- | --- | ------ |
+| A. Spec 结构完整性                             | 100  | 96                      |      |     |        |
+| B. 追溯矩阵闭合                                | 100  | 98                      |      |     |        |
+| C. Design 架构质量                             | 100  | 95                      |      |     |        |
+| D. Runtime 代码质量                            | 100  | 100                     |      |     |        |
+| E. Client/Server 边界                          | 100  | 97                      |      |     |        |
+| F. 测试与验证                                  | 100  | 98                      |      |     |        |
+| G. CI/CD 管线                                  | 100  | 98                      |      |     |        |
+| H. 安全与合规                                  | 100  | 96                      |      |     |        |
+| I. 可观测性                                    | 100  | 95                      |      |     |        |
+| J. 生产就绪 (L3)                               | 100  | 95                      |      |     |        |
+| K. 文档一致性                                  | 100  | 96                      |      |     |        |
+| L. 运行时缺口覆盖                              | 100  | N/A                     |      |     |        |
+| M. EXCHANGEINFO 分级                           | 100  | N/A                     |      |     |        |
+| N. 双口径治理                                  | 100  | N/A                     |      |     |        |
+| O. 证据可信度                                  | 100  | N/A                     |      |     |        |
+| P. 新发现核验完整性【v3.0 新增，对应 Part 16】 | 100  | N/A                     |      |     |        |
+| **加权综合**                                   | 100  | **97**                  |      |     |        |
 
 ### 13.2 双口径评分【v2.0 新增】
 
-| 口径 | 得分 | 含义 |
-| ---- | ---- | ---- |
-| 规格口径综合分 | | FR 功能面闭合度 |
-| 运行时口径综合分 | | 生产部署实际健康度（受 58 缺口影响） |
-| **发布判定分** | min(规格, 运行时) | 保守取低值 |
+| 口径             | 得分              | 含义                                 |
+| ---------------- | ----------------- | ------------------------------------ |
+| 规格口径综合分   |                   | FR 功能面闭合度                      |
+| 运行时口径综合分 |                   | 生产部署实际健康度（受 58 缺口影响） |
+| **发布判定分**   | min(规格, 运行时) | 保守取低值                           |
 
 ### 13.3 评分纪律
 
@@ -1106,16 +1113,17 @@ grep -n "runtime.*field\|storageAssembly\|subject.*不匹配\|MarkDurable\|ErrUn
 
 ### 14.1 按严重度分类
 
-| 严重度 | 数量 | 描述 |
-| ------ | ---- | ---- |
-| 🔴 CRITICAL | | 阻碍发布或安全漏洞 |
-| 🟠 HIGH | | 影响治理可信度 |
-| 🟡 MEDIUM | | 建议修复 |
-| 🟢 LOW | | 优化建议 |
+| 严重度      | 数量 | 描述               |
+| ----------- | ---- | ------------------ |
+| 🔴 CRITICAL |      | 阻碍发布或安全漏洞 |
+| 🟠 HIGH     |      | 影响治理可信度     |
+| 🟡 MEDIUM   |      | 建议修复           |
+| 🟢 LOW      |      | 优化建议           |
 
 ### 14.2 CRITICAL 问题详情
 
 对每个 CRITICAL 问题，记录：
+
 - 位置（文件 + 行号）
 - 严重性评估
 - 影响范围
@@ -1125,25 +1133,25 @@ grep -n "runtime.*field\|storageAssembly\|subject.*不匹配\|MarkDurable\|ErrUn
 
 ### 14.3 运行时缺口状态汇总【v2.0 新增】
 
-| GAP 严重度 | 声称 Open 数 | 源码验证后实际 Open 数 | 已修复数 |
-| ---------- | ------------ | ---------------------- | -------- |
-| P0 (CRITICAL) | 3 | | |
-| P1 (HIGH) | 13 | | |
-| P2 (MEDIUM) | 22 | | |
-| P3 (LOW) | 20 | | |
-| **合计** | **58** | | |
+| GAP 严重度    | 声称 Open 数 | 源码验证后实际 Open 数 | 已修复数 |
+| ------------- | ------------ | ---------------------- | -------- |
+| P0 (CRITICAL) | 3            |                        |          |
+| P1 (HIGH)     | 13           |                        |          |
+| P2 (MEDIUM)   | 22           |                        |          |
+| P3 (LOW)      | 20           |                        |          |
+| **合计**      | **58**       |                        |          |
 
 ### 14.4 对比上轮审查
 
-| 指标 | 上轮（REVIEW-20260630） | 本轮 | Δ |
-| ---- | ----------------------- | ---- | - |
-| 综合得分 | 97 | | |
-| CRITICAL 数量 | 0 | | |
-| PRG 通过数 | 7/7 | | |
-| release_closeable（规格口径） | YES | | |
-| 运行时缺口数 | N/A（未审查） | | |
-| Runtime HEAD | 8d11b0a | | |
-| 治理等级 | L3 Production | | |
+| 指标                          | 上轮（REVIEW-20260630） | 本轮 | Δ   |
+| ----------------------------- | ----------------------- | ---- | --- |
+| 综合得分                      | 97                      |      |     |
+| CRITICAL 数量                 | 0                       |      |     |
+| PRG 通过数                    | 7/7                     |      |     |
+| release_closeable（规格口径） | YES                     |      |     |
+| 运行时缺口数                  | N/A（未审查）           |      |     |
+| Runtime HEAD                  | 8d11b0a                 |      |     |
+| 治理等级                      | L3 Production           |      |     |
 
 ---
 
@@ -1152,11 +1160,13 @@ grep -n "runtime.*field\|storageAssembly\|subject.*不匹配\|MarkDurable\|ErrUn
 ### 15.1 双口径 Go/No-Go 判定【v2.0 升级】
 
 **规格口径**：
+
 - **Go**: 综合 ≥ 85 + 0 CRITICAL + 全部 PRG PASS
 - **Conditional Go**: 综合 ≥ 75 + 0 CRITICAL + ≥5/7 PRG PASS
 - **No-Go**: 综合 < 75 或 存在 CRITICAL 或 <5/7 PRG PASS
 
 **运行时口径**：
+
 - **Go**: 0 P0 Open + 0 P1 Open
 - **Conditional Go**: 0 P0 Open + ≤3 P1 Open（附修复计划）
 - **No-Go**: 任何 P0 Open 或 >3 P1 Open
@@ -1167,7 +1177,7 @@ grep -n "runtime.*field\|storageAssembly\|subject.*不匹配\|MarkDurable\|ErrUn
 
 | 阻塞项 | 严重度 | 口径 | 预计修复时间 | 阻塞什么 |
 | ------ | ------ | ---- | ------------ | -------- |
-| | | | | |
+|        |        |      |              |          |
 
 ### 15.3 修复路线图
 
@@ -1207,28 +1217,44 @@ grep -n "runtime.*field\|storageAssembly\|subject.*不匹配\|MarkDurable\|ErrUn
 ## 基线确认
 
 ## 1. Spec Hub 审查
+
 ## 2. 追溯矩阵审查
+
 ## 3. 架构与设计审查
+
 ## 4. 实现计划与任务审查
+
 ## 5. Prompt 审查
+
 ## 6. 代码质量审查（Runtime）
+
 ## 7. 发布就绪审查
+
 ## 8. 文档一致性审查
+
 ## 9. 证据体系审查
+
 ## 10. 治理合规审查
+
 ## 11. 运行时缺口矩阵审查
+
 ## 12. 对抗性反审查
+
 ## 13. 评分
+
 ## 14. 问题汇总
+
 ## 15. 发布建议
 
 ## 附录 A: 已知陷阱验证总表
+
 ## 附录 B: 对比上轮审查
 ```
 
 ### 证据要求
 
 所有判定必须附带：
+
 - 证据标签: `[KNOWN]` / `[COMPUTED]` / `[INFERRED]` / `[COMMON]` / `[FRAME]` / `[GUESS]`
 - 置信度: `HIGH` / `MED` / `LOW` / `VERY LOW` / `UNKNOWN`
 - `[FRAME]` 和 `[GUESS]` 置信度上限为 `LOW`
@@ -1249,6 +1275,7 @@ grep -n "runtime.*field\|storageAssembly\|subject.*不匹配\|MarkDurable\|ErrUn
 ### 协议目标
 
 由 20 个相互隔离、互不知情的独立 reviewer（agent 或人类）各自完整执行本 Prompt 的 Part 0-16，产出 20 份独立报告，供后续聚合方（非本节执行者）构建一致性矩阵，识别：
+
 1. 20 份报告的共识结论（高置信度）
 2. 仅被少数 reviewer 发现的问题（潜在遗漏风险，值得复核）
 3. 评分方差过大的维度（说明该维度存在解释空间或证据不充分）
@@ -1310,18 +1337,18 @@ new_findings_not_in_n1_n7:
 
 本 Prompt 设计为可由 AI agent 或其他审查者按顺序执行。预期执行时间：
 
-| 阶段 | 预计时间 |
-| ---- | -------- |
-| Part 0-1 (Spec Hub) | ~30 min |
-| Part 2 (Traceability) | ~45 min |
-| Part 3-5 (Design/Plan/Prompt) | ~40 min |
-| Part 6 (Code Quality + 缺口抽样) | ~90 min |
-| Part 7-8 (Release/Docs + 状态分裂专项) | ~60 min |
-| Part 9-10 (Evidence/Governance) | ~45 min |
-| Part 11 (运行时缺口矩阵) | ~60 min |
-| Part 12 (对抗性反审查) | ~45 min |
-| Part 13-15 (Scoring/Issues/Verdict) | ~45 min |
-| **总计** | **~7 hours** |
+| 阶段                                   | 预计时间     |
+| -------------------------------------- | ------------ |
+| Part 0-1 (Spec Hub)                    | ~30 min      |
+| Part 2 (Traceability)                  | ~45 min      |
+| Part 3-5 (Design/Plan/Prompt)          | ~40 min      |
+| Part 6 (Code Quality + 缺口抽样)       | ~90 min      |
+| Part 7-8 (Release/Docs + 状态分裂专项) | ~60 min      |
+| Part 9-10 (Evidence/Governance)        | ~45 min      |
+| Part 11 (运行时缺口矩阵)               | ~60 min      |
+| Part 12 (对抗性反审查)                 | ~45 min      |
+| Part 13-15 (Scoring/Issues/Verdict)    | ~45 min      |
+| **总计**                               | **~7 hours** |
 
 如果 Runtime 仓不可访问，Part 6/7.4/11.2/11.3 和部分 Part 3.4 标记为 `[FRAME, LOW] Runtime not accessible`。
 
