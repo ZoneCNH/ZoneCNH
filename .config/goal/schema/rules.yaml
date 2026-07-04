@@ -54,7 +54,7 @@ module_goal_document:
     - "module/{module}/goal/**/[0-9]*.md"
     - "goal/1.md"
     - "goal/*.md"
-  module_count: 64
+  module_count: 71
 
 module_code_location:
   canonical_path_pattern: "/home/workspace/{module}"
@@ -128,6 +128,10 @@ module_code_location:
     - "UPGRADE-ROADMAP.md"
     - "*-EXECUTION-PLAN.md"
     - "analysis-records/"
+    - "RUNTIME-GAP-MATRIX.md"
+    - "release/"
+    - "scripts/"
+    - "deploy/"
     - "_template/"
     - "_exchange-template/"
     - "deploy/"
