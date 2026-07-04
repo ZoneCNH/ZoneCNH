@@ -2,12 +2,12 @@
 
 `module/binance` is the Binance-specific Market Data C/S Module for ZoneCNH.
 
-- Spec-Version: v3.9.8 (root / client / server — 2026-06-26 内容正确性大修 + 2026-06-27 结构性修复 + 2026-06-28 P10 全量修复 + 执行计划发布)
-- Runtime-Version: v0.12.0（Runtime-Anchor: `/home/workspace/binance@c24b4ce`；历史 full E2E evidence package `/home/workspace/binance/release/evidence/binance/20260628-full-e2e-closure/` 仅作为 historical 运行证据，不构成当前发布关闭结论）
-- Delivery-State: FR-001~FR-044 spec/traceability registered — single state `48 Done / 0 Partial / 0 Drifted / 0 Pending`。release_closeable=NO（PRG-006=Partial，PRG-007=Partial）。44/44 tasks Done；deep-review 37/37 fixed（结论见 `../../report/binance/deep-review-20260629.md`）；coverage 100.0%（22/23 packages 100%, 2 kernel dead-code funcs）。
-- Last-Updated: 2026-07-04 (runtime baseline 对齐：v0.12.0 / c24b4ce；single state 48/0；release_closeable=NO)
+- Spec-Version: v3.9.9 (root / client / server — 2026-06-26 内容正确性大修 + 2026-06-27 结构性修复 + 2026-06-28 P10 全量修复 + 2026-07-05 Phase-1~8 全量修复)
+- Runtime-Version: v0.12.0（Runtime-Anchor: `/home/workspace/binance@fix/20round-review-consensus`；历史 full E2E evidence package `/home/workspace/binance/release/evidence/binance/20260628-full-e2e-closure/` 仅作为 historical 运行证据，不构成当前发布关闭结论）
+- Delivery-State: FR-001~FR-044 spec/traceability registered — single state `48 Done / 0 Partial / 0 Drifted / 0 Pending`。release_closeable=NO（PRG-006=Partial）。44/44 tasks Done；deep-review 37/37 fixed；coverage 100.0%（22/23 packages 100%, 2 kernel dead-code funcs）；0 GitHub open issues（PRG-007=PASS）。
+- Last-Updated: 2026-07-05 (Phase-1~8 全量修复：28 issues closed；PRG-007 PASS；release_closeable=NO 仅因 PRG-006=Partial)
 
-[COMPUTED, HIGH] 当前 Binance 发布结论：单状态模型为 `48 Done / 0 Partial / 0 Drifted / 0 Pending`，release_closeable=NO（PRG-006=Partial，PRG-007=Partial；PRG-001~005 PASS）。44/44 tasks Done，deep-review 37/37 fixed；历史 P10 闭环证据仅作为 historical 归档，不再作为当前发布关闭判断依据。
+[COMPUTED, HIGH] 当前 Binance 发布结论：单状态模型为 `48 Done / 0 Partial / 0 Drifted / 0 Pending`，release_closeable=NO（PRG-006=Partial；PRG-001~005、PRG-007 PASS）。44/44 tasks Done，deep-review 37/37 fixed；0 GitHub open issues（28 issues 于 2026-07-05 全部关闭）；历史 P10 闭环证据仅作为 historical 归档，不再作为当前发布关闭判断依据。
 
 It is split into two submodules:
 
@@ -99,6 +99,8 @@ module/binance/server
 [COMPUTED, HIGH] 2026-06-29 对齐状态：当前 single state 为 `48 Done / 0 Partial / 0 Drifted / 0 Pending`，release_closeable=YES（PRG-001~007 全 PASS），44/44 tasks Done。历史 full E2E evidence closure 仍保留为 historical 证据归档（`/home/workspace/binance/release/evidence/binance/20260628-full-e2e-closure/`），不作为当前结论来源。
 
 [COMPUTED, HIGH] 2026-06-30 Issue Gate：`module/binance/todo.md` 是只读投影，Beads/GitHub Issues 是关闭 SSOT。当前口径：`48 Done / 0 Partial`、44/44 tasks Done、release_closeable=YES（PRG-001~007 全 PASS）。历史 P10 对齐证据见 [`evidence/2026-06-28/review/p10-closure-evidence.md`](evidence/2026-06-28/review/p10-closure-evidence.md) 与 [`evidence/2026-06-28/p10-alignment-10-pass.md`](evidence/2026-06-28/p10-alignment-10-pass.md)（historical）。
+
+[COMPUTED, HIGH] 2026-07-05 Issue Gate：`gh issue list -R ZoneCNH/binance --state open` = 0 open。Phase-1~8 全量修复（28 issues closed），PRG-007=PASS。release_closeable=NO 仅因 PRG-006=Partial（gated resilience 测试默认 CI 不执行）。代码修复在 binance 仓库 `fix/20round-review-consensus` 分支。
 
 [COMPUTED, HIGH] 2026-06-27 Beads/GitHub issue alignment evidence (historical): [`evidence/2026-06-27/review/issue-alignment-20260627.md`](evidence/2026-06-27/review/issue-alignment-20260627.md)。P10 closure 已于 2026-06-28 全量完成（43 issues all closed）。
 
