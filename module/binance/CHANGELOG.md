@@ -784,6 +784,7 @@ binance v0.8.0 部署到 prod（`84.247.154.45`），通过 systemd 二进制直
 
 | 日期 | 版本 | 变更内容 | 作者 |
 |------|------|----------|------|
+| 2026-07-05 | v3.10.0 | PRG-006 PASS：gated resilience 测试 CI-runnable（chaos t.Skip + test-gated target + CI job）；release_closeable=YES（PRG-001~007 全 PASS） | ZoneCNH |
 | 2026-07-05 | v3.9.9 | Phase-1~8 全量修复：28 GitHub Issues 全部关闭（PRG-007 PASS）；interval SSOT/CatalogEntry 分级/migration runner/completeness scanner/E2E 对账/catalog diff NATS/PG 事务/可观测性/部署治理/容错韧性/优雅运行；BR 对齐（#402）；release_closeable=NO 仅因 PRG-006=Partial | ZoneCNH |
 | 2026-06-22 | v3.3.0 | root SPEC/TRACEABILITY/ACCEPTANCE/FEATURES/README/IMPLEMENTATION-PLAN/RUNTIME-MAPPING 同步到 v3.3.0 登记态 | ZoneCNH |
 | 2026-06-22 | v2.2.2 | 新建 CHANGELOG + ACCEPTANCE/FEATURES/IMPLEMENTATION-PLAN 版本号同步到 v2.2.2 | ZoneCNH |
