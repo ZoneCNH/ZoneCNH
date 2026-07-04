@@ -18,7 +18,7 @@
 
 | 层级 | 权威 |
 | --- | --- |
-| 最高治理 | `CONSTITUTION.md`（§4 规格结构、§10 变更管理、§15 交付管线、§20 认识论标准） |
+| 最高治理 | `../../../CONSTITUTION.md`（§4 规格结构、§10 变更管理、§15 交付管线、§20 认识论标准） |
 | 模块规格 | 本文件 |
 | 追溯矩阵 | `module/binance/matrix/TRACEABILITY.md` |
 | issue 投影 | Beads 与 GitHub issue 为当前 SSOT；历史本地投影归档于 `module/binance/evidence/2026-06-28/todo-archived.md` |
@@ -125,7 +125,7 @@
 | AC-003 | active docs use only `binance.market.{product_line}.{event_type}.v1` for market subjects |
 | AC-004 | production `/ingest` is disabled or 404 |
 | AC-005 | `SPEC.md` remains compact; detailed parameter tables live in design docs |
-| AC-006 | `TRACEABILITY.md` remains compact and references history instead of duplicating it |
+| AC-006 | `module/binance/matrix/TRACEABILITY.md` remains compact and references history instead of duplicating it |
 | AC-007 | issue closeability requires issue-level evidence, not local inference |
 
 ## 10. NATS and Kafka Contracts
@@ -230,9 +230,9 @@ PRG-001~007 状态如下：
 
 > **双口径声明**：本 SPEC 的统计口径（48 Done / 0 Partial / 0 Drifted / 0 Pending）表示 **规格口径**——FR 功能面已闭合。运行时口径的 58 个数据完整性/安全性/可运维性缺口记录在独立制品 `module/binance/RUNTIME-GAP-MATRIX.md` 中。两者正交，不矛盾。详见该文件 §7 双口径声明。
 >
-> 来源报告：`report/binance/DATA-INTEGRITY-E2E-20260701.md`（v3.9，6358 行，27 轮对抗性自审，200+ 维度矩阵核验）。
+> 来源报告：`report/binance/DEEP-ANALYSIS-20260704.md`（含 runtime baseline 对齐、发布阻断闭环与版本回刷证据）。
 >
-> **分级体系设计制品**：GAP-E6/E24/E25/E26（分级与水平扩展链）的系统设计沉淀于 [`design/ADR-005-symbol-tier-classification.md`](../design/ADR-005-symbol-tier-classification.md)，来源 `report/binance/EXCHANGEINFO-SYMBOL-TIER-ANALYSIS-20260702.md`。client SPEC §10.1 CatalogEntry 与 §11.1 tiers 配置已开列分级字段槽位（slot 预留，落地不触发规格口径变更）。
+> **分级体系设计制品**：GAP-E6/E24/E25/E26（分级与水平扩展链）的系统设计沉淀于 [`design/ADR-005-symbol-tier-classification.md`](../design/ADR-005-symbol-tier-classification.md)，来源 `report/binance/DEEP-ANALYSIS-20260704.md`。client SPEC §10.1 CatalogEntry 与 §11.1 tiers 配置已开列分级字段槽位（slot 预留，落地不触发规格口径变更）。
 
 ## 23. Stop Condition
 

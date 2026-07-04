@@ -7,17 +7,17 @@
 | Module | `module/binance/server` |
 | Status | Approved |
 | Spec-Version | v3.9.8 |
-| Last-Updated | 2026-06-30 (Phase 2-3 文档修复：Runtime-Version v0.8.0 对齐，Last-Updated 同步) |
+| Last-Updated | 2026-07-04 (版本口径回刷：Runtime-Version v0.12.0 对齐) |
 | Last-Updated | 2026-06-26 (v2.2.0→v3.8.0: 结构性修复 — 废除本地 FR/BR 编号，全部改为引用根 SPEC canonical FR/BR；§7 重构为根 FR 的 server 实现视图；删除内嵌 FR-025~028 改为根引用；SC→TC 测试编号统一) |
 | Owner | ZoneCNH |
 | Layer | 数据域 · 行情接入层 |
 | Role | Binance 行情数据的处理 + 存储服务端（natsx 消费 + redisx + postgresx + taosx + clickhousex + kafkax + ossx + Gin REST API） |
 | Port Interface | natsx JetStream subscription filter `binance.market.>`；实际消息 subject `binance.market.*.*.v1`；Gin REST HTTP `:8080` (提供给 market_data) |
 | Language | Go |
-| Runtime-Version | v0.8.0 |
+| Runtime-Version | v0.12.0 |
 | Repository | [github.com/ZoneCNH/binance](https://github.com/ZoneCNH/binance)（server/ 子目录） |
 | Go Module Path | `github.com/ZoneCNH/binance`（monorepo，server 端通过 `cmd/binance-server` + `internal/server` 提供） |
-| Related | [CONSTITUTION.md](../../../CONSTITUTION.md), [ARCHITECTURE.md](../../../ARCHITECTURE.md), [module/binance/spec/SPEC.md](../SPEC.md), [module/domain_market](../../domain_market/), [module/natsx](../../natsx/), [module/redisx](../../redisx/), [module/taosx](../../taosx/), [module/clickhousex](../../clickhousex/), [module/kafkax](../../kafkax/), [module/ossx](../../ossx/), [module/postgresx](../../postgresx/) |
+| Related | [CONSTITUTION.md](../../../../CONSTITUTION.md), [ARCHITECTURE.md](../../../../ARCHITECTURE.md), [module/binance/spec/SPEC.md](../SPEC.md), [module/domain_market](../../../domain_market/), [module/natsx](../../../natsx/), [module/redisx](../../../redisx/), [module/taosx](../../../taosx/), [module/clickhousex](../../../clickhousex/), [module/kafkax](../../../kafkax/), [module/ossx](../../../ossx/), [module/postgresx](../../../postgresx/) |
 
 ---
 
@@ -486,7 +486,7 @@ server 不反向依赖 client，二者通过 `natsx` subject + `domain_market` e
 
 ### 16.1 测试矩阵
 
-> 正式 TC 编号以 `TRACEABILITY.md` §4 为准；本表使用 SPEC 场景 ID，避免与追溯矩阵的详细 TC ID 冲突。
+> 正式 TC 编号以 `../../matrix/server/TRACEABILITY.md` §4 为准；本表使用 SPEC 场景 ID，避免与追溯矩阵的详细 TC ID 冲突。
 
 | 场景 ID | 对应 FR/BR | 测试类型 | 场景 | 预期结果 |
 |---------|------------|----------|------|----------|
@@ -637,7 +637,7 @@ server 必须通过 consumer contract tests：
 - [ ] durable acceptance 正确：Ack 仅在 storage + `kafkax` handoff 后发送
 - [ ] storage/API/`kafkax` surfaces 全部实现
 - [ ] Gin admin/API endpoints 全部可用（/healthz, /readyz, /admin/*, /api/v1/market/*）
-- [ ] `TRACEABILITY.md` §4 的正式 TC 全部编写并通过
+- [ ] `../../matrix/server/TRACEABILITY.md` §4 的正式 TC 全部编写并通过
 - [ ] 覆盖率 ≥ 80%
 - [ ] CI Gate 全部通过
 - [ ] Performance Budget 达标

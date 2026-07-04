@@ -4,7 +4,7 @@
 
 - Module-Version: v3.9.8
 - Last-Updated: 2026-07-02
-- Spec-Reference: `module/binance/spec/SPEC.md` v3.9.6
+- Spec-Reference: `module/binance/spec/SPEC.md` v3.9.8
 - 治理规则：`module/binance/gate/RULES.md` R9 文档存在性
 
 ---

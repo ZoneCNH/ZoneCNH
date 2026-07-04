@@ -24,8 +24,8 @@
 
 ## 活跃文档入口
 
-- **规格（权威 SSOT）**：`module/binance/spec/SPEC.md` v3.9.6
-- **追溯矩阵**：`module/binance/matrix/TRACEABILITY.md` v3.9.6
+- **规格（权威 SSOT）**：`module/binance/spec/SPEC.md` v3.9.8
+- **追溯矩阵**：`module/binance/matrix/TRACEABILITY.md` v3.9.8
 - **分布式约束**：`module/binance/spec/SPEC.md` §4.1
 - **Runtime 映射**：`module/binance/design/RUNTIME-MAPPING.md`
 - **边界门禁**：`module/binance/gate/BOUNDARY-GATES.md`
