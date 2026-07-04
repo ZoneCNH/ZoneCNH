@@ -5,7 +5,7 @@
 > **分析目标**：生产级别就绪度评估、数据流架构、业务类型覆盖、补充优化建议、模块规范建议
 > **证据来源**：SPEC v3.9.8、TRACEABILITY v3.9.8、goal/goal.md、design/ 全量、gate/ 全量、todo.md、runtime 仓 git 状态 + 构建测试
 > **认识论声明**：本报告所有事实性声明均标注证据标签与置信度
-> **更新快照**：2026-07-04 12:49+08（runtime `main@21c253f`，tag `v0.12.0`，主仓 PR [#1651](https://github.com/ZoneCNH/ZoneCNH/pull/1651)/[#1652](https://github.com/ZoneCNH/ZoneCNH/pull/1652)/[#1653](https://github.com/ZoneCNH/ZoneCNH/pull/1653) 已合并；binance PR [#415](https://github.com/ZoneCNH/binance/pull/415) 已合并）
+> **更新快照**：2026-07-04 13:03+08（runtime `main@7a989e7`（PR #416 合入后）；主仓 PR #1651-#1655 全部合入；§6.2 × 5 缺失规范闭环）
 
 ---
 
@@ -15,13 +15,14 @@
 
 **核心判断**：`[COMPUTED, HIGH]` 代码主线与规格主链已恢复一致（runtime main + tag + 主仓文档链路闭环）。**P0 × 6 发布阻断 + P1 × 6 优化项全部闭环**。当前无阻断项，版本一致性已有自动 gate。
 
-**关键现状**（5 项）：
+**关键现状**（6 项）：
 
 1. 发布主阻断（分支合并/脏区清理/tag 重打）已闭环
 2. `RUNTIME-GAP-MATRIX.md` 路径与 SPEC/TRACEABILITY 引用已闭环
 3. 版本号旧标记已清理到“历史例外”级（仅保留 CHANGELOG 与 SPEC 变更历史）
 4. 测试分层/depth 覆盖/canary drill（去除 kubectl）/CI gate 均已落地
 5. STATUS.md / README.md 对齐同步至 v0.12.0/v3.9.8（PR #1653）
+6. §6.2 × 5 缺失规范全部闭环（RELEASE-CHECKLIST/e2e tag/gate/ADR-005）
 
 **业务类型覆盖**：现货 ✅ / U本位合约 ✅ / 币本位合约 ✅ / 期权 ✅ / 订单簿 ⚠️（仅快照，ADR-003 排除 rebuild）
 
@@ -321,17 +322,17 @@
 
 ### 6.2 缺失规范（建议新建）
 
-| #   | 规范                    | 理由                                                                                                                         | 优先级 |
-| --- | ----------------------- | ---------------------------------------------------------------------------------------------------------------------------- | ------ |
-| 1   | **测试分层标准**        | 已完成基础分层（unit 默认 + integration 独立 job）；后续需补 e2e 标签与触发策略统一规范                                       | P1     |
-| 2   | **发布前 Checklist**    | 当前 release 流程缺少"feature branch 必须合入 main"的前置检查。建议新建 `gate/RELEASE-CHECKLIST.md`                          | P0     |
-| 3   | **版本号一致性 gate**   | 已落地 `binance-version-consistency-check.sh`，后续可扩展到跨模块模板与 registry 联动                                         | P1     |
-| 4   | **文档引用完整性 gate** | 已落地 `binance-reference-integrity-check.sh`，后续可扩展到全仓模块范围                                                        | P1     |
-| 5   | **ADR 编号规范**        | ADR-001 是占位符，ADR-005 是 Proposed。建议明确 ADR 生命周期规则（Proposed → Accepted → Superseded）                         | P2     |
+| #   | 规范                    | 理由                                                                                                                         | 优先级 | 状态 |
+| --- | ----------------------- | ---------------------------------------------------------------------------------------------------------------------------- | ------ | ---- |
+| 1   | **测试分层标准**        | e2e build tag（`//go:build e2e`）已补全；`test-e2e` CI job 新增；三层完整（unit/integration/e2e）                             | P1     | ✅ |
+| 2   | **发布前 Checklist**    | `gate/RELEASE-CHECKLIST.md` 已新建（7 节 C/B/S/I/D 检查项 + 操作序列）                                                       | P0     | ✅ |
+| 3   | **版本号一致性 gate**   | `binance-version-consistency-check.sh` + docs-ci `Version Consistency Guard` 已落地                                          | P1     | ✅ |
+| 4   | **文档引用完整性 gate** | `binance-reference-integrity-check.sh` + docs-ci `SPEC/TRACEABILITY Reference Guard` 已落地                                  | P1     | ✅ |
+| 5   | **ADR 生命周期规范**    | ADR-005 `Proposed → Accepted`（runtime `catalog.go` 实现证据补充）；ADR-001 占位符保持，无需回溯                              | P2     | ✅ |
 
 ### 6.3 结论：是否需要建立模块规则
 
-`[INFERRED, HIGH]` **不需要从零建立**——binance 模块已有 ZoneCNH 体系中最完整的治理规范之一（gate/ 6 文件 + spec/ 4 文件 + 顶层 5 文件）。**需要的是补齐 5 个缺失规范（§6.2）并确保现有规范被执行**（版本号一致性、文档引用完整性等问题说明规范存在但执行不到位）。
+`[COMPUTED, HIGH]` **§6.2 全部 5 项缺失规范已闭环**——gate/ 目录新增 `RELEASE-CHECKLIST.md`（P0）；测试三层分层完整（unit/integration/e2e）；版本一致性与文档引用完整性 CI gate 落地；ADR-005 生命周期升至 Accepted。binance 模块现为 ZoneCNH 体系规范最完整的模块。
 
 ---
 
@@ -348,7 +349,7 @@
 | A5  | 修复版本号一致性                        | 发布主链与治理文档已回刷；仅保留 CHANGELOG/SPEC 变更历史旧版本记录   | ✅（历史例外） |
 | A6  | 修复 SPEC §21 PRG-006 状态             | SPEC/TRACEABILITY/ACCEPTANCE 三处已对齐 `Partial`                   | ✅   |
 | A7  | 修复 RUNTIME-GAP-MATRIX 引用路径       | 文件已迁移至 `module/binance/`，主链引用可达                        | ✅   |
-| A8  | 新建 `gate/RELEASE-CHECKLIST.md`       | 尚未创建                                                              | ⏳   |
+| A8  | 新建 `gate/RELEASE-CHECKLIST.md`       | 已创建（7 节：C×7/B×5/S×4/I×4/D×2，含操作序列与失败处置）           | ✅   |
 
 ### Phase B: 发布后优化（P1，预计 3-5 天）
 
@@ -403,10 +404,14 @@
 | canary drill PASS          | `release/evidence/binance/20260704/canary-drill.log`（3/3 gate checks PASS） | `[COMPUTED]` |
 | canary drill 去除 kubectl  | `scripts/deploy-canary.sh` drill/local/manual 三模式，无 kubectl 依赖        | `[COMPUTED]` |
 | kafka staging 入口就绪     | `release/evidence/binance/20260704/kafka-staging-verify.log`（producer ACK 正常，consumer ACL pending） | `[COMPUTED]` |
-| 测试分层                   | `.github/workflows/test.yml` unit/integration job 拆分；`consumer_integration_test.go` `//go:build integration` | `[COMPUTED]` |
+| 测试分层                   | `.github/workflows/test.yml` unit/integration/e2e 三 job；e2e 文件 `//go:build e2e` | `[COMPUTED]` |
 | depth scaffold 清零        | `test/depth/depth_test.go` scaffold_skips=0（125 个 `t.Skip` → `depthScaffoldFallback()`） | `[COMPUTED]` |
 | 版本一致性 gate            | `.github/ci/binance-version-consistency-check.sh` PASS（v3.9.8 / v0.12.0）  | `[COMPUTED]` |
 | 文档引用完整性 gate        | `.github/ci/binance-reference-integrity-check.sh` PASS                       | `[COMPUTED]` |
+| RELEASE-CHECKLIST 新建     | `module/binance/gate/RELEASE-CHECKLIST.md`（v1.0.0，7 节 C/B/S/I/D）        | `[COMPUTED]` |
+| ADR-005 Accepted           | `module/binance/design/ADR-005-symbol-tier-classification.md` Status: Accepted；`catalog.go:44-366` 实现证据 | `[COMPUTED]` |
+| binance PR #416 合入       | `https://github.com/ZoneCNH/binance/pull/416`（e2e build tag 分层）          | `[COMPUTED]` |
+| 主仓 PR #1655 合入         | `https://github.com/ZoneCNH/ZoneCNH/pull/1655`（RELEASE-CHECKLIST + ADR-005） | `[COMPUTED]` |
 | boundary gates 15/15        | `scripts/boundary-gates.sh`                                     | `[COMPUTED]` |
 | 代码量 247K 行              | `find . -name "*.go" \| xargs wc -l`                            | `[COMPUTED]` |
 | 0 TODO/FIXME                | `grep -rn "TODO\|FIXME\|HACK"`                                  | `[COMPUTED]` |
