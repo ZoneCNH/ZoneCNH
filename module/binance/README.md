@@ -3,7 +3,7 @@
 `module/binance` is the Binance-specific Market Data C/S Module for ZoneCNH.
 
 - Spec-Version: v3.10.0 (root / client / server — 2026-06-26 内容正确性大修 + 2026-06-27 结构性修复 + 2026-06-28 P10 全量修复 + 2026-07-05 Phase-1~8 全量修复 + PRG-006 PASS)
-- Runtime-Version: v0.12.0（Runtime-Anchor: `/home/workspace/binance@main`）
+- Runtime-Version: v0.13.0（Runtime-Anchor: `/home/workspace/binance@main`）
 - Delivery-State: FR-001~FR-044 spec/traceability registered — single state `48 Done / 0 Partial / 0 Drifted / 0 Pending`。release_closeable=YES（PRG-001~007 全 PASS）。44/44 tasks Done；deep-review 37/37 fixed；coverage 100.0%；0 GitHub open issues。
 - Last-Updated: 2026-07-05 (PRG-006 PASS: gated resilience tests CI-runnable; release_closeable=YES)
 

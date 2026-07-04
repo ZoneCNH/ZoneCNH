@@ -4,7 +4,7 @@
 - Module: binance
 - Last-Updated: 2026-07-05（PRG-006 PASS：gated resilience 测试 CI-runnable；release_closeable=YES）
 - Runtime-Repo: `/home/workspace/binance`
-- Runtime-Version: v0.12.0
+- Runtime-Version: v0.13.0
 - State-Model: single-state only
 - Current-State: 48 Done / 0 Partial / 0 Drifted / 0 Pending
 - release_closeable: YES
@@ -211,7 +211,7 @@ Current release gate verdict: `release_closeable=YES`（规格口径 FR 面 48/4
 
 PRG-001~007 状态如下：
 - PRG-001：CI runner 从 self-hosted 迁移到 ubuntu-latest，CI 已触发运行 → PASS
-- PRG-002：v0.12.0 tag + GitHub Release 已存在（2026-07-04 创建，target=c24b4ce） → PASS
+- PRG-002：v0.13.0 tag + GitHub Release 已存在（2026-07-05 创建） → PASS
 - PRG-003：PRG-001~007 全 PASS → PASS
 - PRG-004：Jaeger/Grafana/Loki/AlertManager 全在线 → PASS
 - PRG-005：OpenTelemetry SDK v1.44.0，govulncheck 清洁 → PASS

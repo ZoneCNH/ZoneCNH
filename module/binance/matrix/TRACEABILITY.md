@@ -89,7 +89,7 @@ release_closeable = Code-Done FR / Total FR ≥ 90% AND Drifted FR = 0 AND Pendi
 | PRG | Gate | State | Evidence |
 | --- | --- | --- | --- |
 | PRG-001 | remote CI current run | PASS | CI runner 从 self-hosted 迁移到 ubuntu-latest，CI 已触发运行 |
-| PRG-002 | release promotion | PASS | v0.12.0 tag + GitHub Release 均存在（2026-07-04） |
+| PRG-002 | release promotion | PASS | v0.13.0 tag + GitHub Release 均存在（2026-07-05） |
 | PRG-003 | production readiness | PASS | PRG-001~007 全 PASS |
 | PRG-004 | observability | PASS | Jaeger/Grafana/Loki/AlertManager 全在线 |
 | PRG-005 | security | PASS | OpenTelemetry SDK v1.44.0，govulncheck 清洁 |
