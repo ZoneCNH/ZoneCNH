@@ -2,10 +2,42 @@
 
 所有 notable 变更记录，按 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/) 格式维护。
 
-- Module-Version: v3.13.0
+- Module-Version: v3.14.0
 - Last-Updated: 2026-07-05
-- Spec-Reference: `module/binance/spec/SPEC.md` v3.13.0
+- Spec-Reference: `module/binance/spec/SPEC.md` v3.14.0
 - 治理规则：`module/binance/gate/RULES.md` R9 文档存在性性
+
+---
+
+## 2026-07-05 白名单策略统一为四类市场各 top 20（v3.14.0）
+
+### 决策
+
+四类市场（spot / um_perp / cm_perp / options）统一按 24h quoteVolume 流动性 top 20 准入，详见 [ADR-008](design/ADR-008-whitelist-top20-unify.md)。
+
+### Changed
+
+- FR-051 重写：spot / um_perp(PERPETUAL) / um_perp(TRADIFI_PERPETUAL) / cm_perp / options 各取 top 20，统一 core 准入。原策略为 spot top 20 + um_perp 加密 top 20 + 币股 top 50（90 symbols）。
+- 币股(TRADIFI_PERPETUAL) 配额 top 50 → top 20。
+- §5.4.1 自动准入规则：移除"options 全部默认走审核"，market_type 列表加入 options；options top 20 改为自动放行。
+
+### Added
+
+- cm_perp 自动准入（原先无自动规则，全人工审核）。
+- options 自动准入 top 20（原先全部强制人工审核）。
+- ADR-008：四类市场 top 20 统一 + options 准入层与采集分桶层解耦（与 ADR-005 §6.1 正交）。
+- EXCHANGEINFO-WHITELIST-DESIGN.md v0.4：§5.4.1/§5.4.1a 更新，新增 ticker 24hr 数据源说明。
+
+### 风险
+
+- R1 [HIGH]：exchangeInfo 不返回 24h quoteVolume，运维 SQL 需拉 ticker 24hr（spot/fapi/dapi/eapi）；eapi per-contract quoteVolume 需实现前验证。
+- R2 [MED]：options TRADING 过滤前置（`exchangeinfo_option.go`，ADR-005 §6.1）需在 runtime 落地前确认已修。
+- R3 [LOW]：币股 top 50→top 20 触发 ~30 symbol 下架，走 §5.4.2 流程。
+
+### 影响
+
+- 白名单总量 90 → 100（20 spot + 20 um_perp 加密 + 20 币股 + 20 cm_perp + 20 options）。
+- Runtime rules.go 移除 options 硬编码审核；运维 SQL 分配脚本更新；ListCandidates 需支持 quoteVolume 排序（跨仓 PR）。
 
 ---
 

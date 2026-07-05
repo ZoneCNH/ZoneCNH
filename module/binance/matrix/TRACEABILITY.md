@@ -69,7 +69,7 @@ This matrix is the compact FR/BR/AC/TC projection. It intentionally does not dup
 | FR-048 | BR-009 | AC-001 | NATS binance.whitelist.version 推送（独立 NATS 连接 + publish 非致命） | Done |
 | FR-049 | BR-009 | AC-001 | 下游消费方 SDK（Bearer token 鉴权） | Done |
 | FR-050 | BR-009 | AC-001 | catalog_symbols 扩展字段（ApplyDiff COALESCE 保留 tier + TRADIFI_PERPETUAL 区分币股 + ListCandidates COALESCE） | Done |
-| FR-051 | BR-009 | AC-001 | Tier 分配策略（现货 top 20 + 合约加密 top 20 + 币股 top 50） | Done |
+| FR-051 | BR-009 | AC-001 | Tier 分配策略：spot/um_perp(PERPETUAL)/um_perp(TRADIFI)/cm_perp/options 各 24h quoteVolume top 20（ADR-008 统一） | Done |
 
 ## 3. Acceptance Criteria
 

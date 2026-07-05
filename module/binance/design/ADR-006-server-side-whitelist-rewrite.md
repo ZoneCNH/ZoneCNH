@@ -65,4 +65,5 @@ binance 模块当前 Catalog 架构是**进程内内存结构**：
 | 代码 | Whitelist Sync Job、Whitelist Service API、下游消费方 SDK 为新增代码；`catalogdiff` pipeline 扩展：subscribeCatalogDiff 直接调用 ApplyDiff |
 | tier 保留 | ApplyDiff upsert 用 `COALESCE(NULLIF(EXCLUDED.x, ''), catalog_symbols.x)` 保留手动分配的 tier/collection，不被 diff-sync 覆盖 |
 | 币股识别 | `contract_type='TRADIFI_PERPETUAL'` 自动区分币股，`collection='tradifi'` |
+| FR-051 统一 | v0.4 起四类市场（spot/um_perp 加密/币股/cm_perp/options）各取 24h quoteVolume top 20，统一 core 准入；options 准入层与采集分桶层解耦（ADR-008）。cm_perp/options 从人工审核改为自动准入，币股配额 top 50→top 20 |
 | 兼容性 | 旧 `StreamSymbols` 配置保留为降级兜底，不影响现有部署 |

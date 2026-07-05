@@ -3,12 +3,20 @@
 | 项目     | 内容                                                                   |
 | -------- | ---------------------------------------------------------------------- |
 | 文档状态 | Draft（已纳入 Spec→Code 管线，ADR-006 裁决：重写）                     |
-| 版本     | v0.3                                                                   |
+| 版本     | v0.4                                                                   |
 | 更新日期 | 2026-07-05                                                             |
 | 覆盖范围 | Binance Spot / USDⓈ-M 永续 (um_perp) / COIN-M 永续 (cm_perp) / Options |
 | 模块归属 | `module/binance`（ZoneCNH 主仓 spec + binance runtime 仓代码）         |
 | 关联 ADR | [ADR-006](ADR-006-server-side-whitelist-rewrite.md)（重写裁决）        |
 | 关联 ADR | [ADR-005](ADR-005-symbol-tier-classification.md)（Tier 分级，白名单准入依据） |
+| 关联 ADR | [ADR-008](ADR-008-whitelist-top20-unify.md)（四类市场 top 20 统一 + options 层间解耦） |
+
+> **v0.3 → v0.4 变更摘要**（白名单策略统一）：
+> 1. FR-051 重写：spot / um_perp(PERPETUAL) / um_perp(TRADIFI_PERPETUAL) / cm_perp / options **各取 24h quoteVolume 流动性 top 20**，统一 core 准入。
+> 2. cm_perp 新增自动准入（原先无自动规则，全人工审核）。
+> 3. options 从"全部强制人工审核"改为"top 20 自动放行"；与 ADR-005 §6.1 采集分桶层解耦（白名单决定采不采，options_classification 决定怎么采），见 ADR-008。
+> 4. 币股(TRADIFI_PERPETUAL) 配额 top 50 → top 20。
+> 5. 白名单总量 90 → 100（20 spot + 20 um_perp 加密 + 20 币股 + 20 cm_perp + 20 options）。
 
 > **v0.2 → v0.3 变更摘要**（实盘验证六项细化）：
 > 1. FR-048：publisher 改用独立 NATS 连接（不依赖 ingest transport），解决 kafkax 模式下 SetNATSConn 不执行的问题。
@@ -335,22 +343,29 @@ COMMIT;
 
 建议分层处理，不做"全自动"或"全人工"的极端。准入依据复用 ADR-005 的 Tier 分级：
 
-- **自动放行**：`exchange_status = TRADING` 且计价资产在主流白名单内（USDT/USDC/BTC/ETH，具体清单由业务定）且市场类型为 spot/um_perp/cm_perp 且 `Tier ∈ {core, standard}`（ADR-005 Tier 0-1）。
-- **强制人工审核**：options 全部默认走审核；`Tier ∈ {long_tail, monitor}`（ADR-005 Tier 3-4）同样进审核队列；冷门 quote_asset、新合约类型进审核队列。
+- **自动放行**：`exchange_status = TRADING` 且计价资产在主流白名单内（USDT/USDC/BTC/ETH，具体清单由业务定）且市场类型为 spot/um_perp/cm_perp/options 且 `Tier ∈ {core, standard}`（ADR-005 Tier 0-1）。options 不再整体强制审核，改由 FR-051 top 20 准入规则覆盖（详见 ADR-008 层间解耦）。
+- **强制人工审核**：`Tier ∈ {long_tail, monitor}`（ADR-005 Tier 3-4）进审核队列；冷门 quote_asset、新合约类型进审核队列；options top 20 以外的合约进审核队列。
 - **观察期**：即使命中自动放行规则，新 symbol 先进入"观察中"状态（如 3 天），期满后才真正 `enabled=true`，避免刚上线的极端行情/流动性问题波及下游。
 
 #### 5.4.1a Tier 分配策略（FR-051）
 
-Tier 分配是独立的运维流程，不依赖 Binance exchangeInfo（API 不提供 tier 信息）。当前策略按 24h `quoteVolume` 排序：
+Tier 分配是独立的运维流程，不依赖 Binance exchangeInfo（API 不提供 tier 信息）。当前策略按 24h `quoteVolume` 排序，**四类市场各取 top 20**（ADR-008 统一）：
 
 | 业务线 | contract_type | 分配条件 | tier | collection | 预估数量 |
 |--------|---------------|----------|------|------------|----------|
 | spot | — | 流动性 top 20 | core | full_stream | 20 |
 | um_perp | PERPETUAL | 流动性 top 20 | core | full_stream | 20 |
-| um_perp | TRADIFI_PERPETUAL | 流动性 top 50 | core | tradifi | 50 |
-| um_perp | PERPETUAL | top 20 以外 | (空) | — | needs review |
-| um_perp | TRADIFI_PERPETUAL | top 50 以外 | (空) | — | needs review |
-| 其余 | — | — | (空) | — | needs review |
+| um_perp | TRADIFI_PERPETUAL | 流动性 top 20 | core | tradifi | 20 |
+| cm_perp | — | 流动性 top 20 | core | full_stream | 20 |
+| options | — | 流动性 top 20（按 option contract 24h quoteVolume） | core | full_stream | 20 |
+| spot/um_perp(PERPETUAL) | — | top 20 以外 | (空) | — | needs review |
+| um_perp(TRADIFI_PERPETUAL) | — | top 20 以外 | (空) | — | needs review |
+| cm_perp | — | top 20 以外 | (空) | — | needs review |
+| options | — | top 20 以外 | (空) | — | needs review |
+
+**口径统一**：所有市场类型均按 24h `quoteVolume` 排序取 top 20。spot/um_perp/cm_perp 用 USDT 计价 quoteVolume；options 按 option contract（如 `BTC-240105-50000-C`）的 24h quoteVolume 排序，预期集中在 BTC/ETH 近月 ATM 合约（语义见 ADR-008）。
+
+**数据源**：Binance exchangeInfo 不返回 24h quoteVolume，需额外拉 ticker 24hr 接口（spot `/api/v3/ticker/24hr`、um_perp `/fapi/v1/ticker/24hr`、cm_perp `/dapi/v1/ticker/24hr`、options `/eapi/v1/ticker`）。运维 SQL 批量分配时拉取 ticker 数据后写入 `catalog_symbols.tier`。
 
 **币股识别**：Binance API 在 `contract_type` 字段返回 `TRADIFI_PERPETUAL` 标识传统金融永续合约（如 TSLAUSDT、NVDAUSDT）。白名单通过此字段自动区分币与币股，`collection='tradifi'`。
 
