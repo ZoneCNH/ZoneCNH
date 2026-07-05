@@ -36,12 +36,12 @@
 
 基于 Binance 公共接口实时抓取并按当前代码口径计算：
 
-| Product Line | 总符号数 | active 判定后 | 备注 |
-| --- | ---: | ---: | --- |
-| spot | 3625 | 1356 | `status=="TRADING"` |
-| um_perp | 820 | 695 | `status=="TRADING"` |
-| cm_perp | 30 | 0 | 返回体 `status=None`，现逻辑全部非 active |
-| options | 1578 | 1578 | `expiryDate > now` |
+| Product Line | 总符号数 | active 判定后 | 备注                                      |
+| ------------ | -------: | ------------: | ----------------------------------------- |
+| spot         |     3625 |          1356 | `status=="TRADING"`                       |
+| um_perp      |      820 |           695 | `status=="TRADING"`                       |
+| cm_perp      |       30 |             0 | 返回体 `status=None`，现逻辑全部非 active |
+| options      |     1578 |          1578 | `expiryDate > now`                        |
 
 补充：
 
@@ -72,4 +72,3 @@
 - `/home/workspace/binance/internal/client/exchangeinfo_option.go`
 - `/home/workspace/binance/pkg/binancecfg/config.go`
 - `/home/workspace/binance/cmd/binance-client/main.go`
-
