@@ -285,7 +285,7 @@
 
 | P10 | GitHub | Beads | State | 关闭证据摘要 |
 | --- | --- | --- | --- | --- |
-| P10-A1 | #1293 | `ZoneCNH-5k4j` | CLOSED | `internal/wire` 角色明确化、SPEC/gate evidence。 |
+| P10-A1 | #1293 | `ZoneCNH-5k4j` | CLOSED | `internal/wire` 角色明确化、SPEC/gate evidence（已由 ADR-007 闭环，wire 删除，契约迁入 contracts canonical）。 |
 | P10-A2 | #1291 | `ZoneCNH-lk5q` | CLOSED | `main.go` 配置收敛、DI 边界、启动回归测试。 |
 | P10-A3 | #1294 | `ZoneCNH-z31g` | CLOSED | HTTP `/ingest` smoke-only gate 与生产 404。 |
 | P10-A4 | #1303 | `ZoneCNH-5cv5` | CLOSED | Subject `.v1` 版本化 + contract gate。 |

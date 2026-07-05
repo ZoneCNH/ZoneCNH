@@ -1,5 +1,7 @@
 # Binance 模块深度分析报告
 
+> **归档说明（2026-07-05）**：本报告中 `internal/wire/` 相关引用（如 `go test ./internal/wire/...`）已由 [ADR-007](../../module/binance/design/ADR-007-wire-to-contracts-migration.md) 闭环——`internal/wire` 已删除，C/S 契约迁入 `contracts` canonical（v0.5.0），对应测试迁至 `contracts` 仓 `pkg/contracts/ingestion_test.go`。下文相关描述为原报告时点状态，保留作历史追溯，不作为当前事实。
+
 > **分析日期**：2026-07-04（UTC）
 > **分析范围**：`module/binance/` 治理制品 + `/home/workspace/binance` runtime 仓
 > **分析目标**：生产级别就绪度评估、数据流架构、业务类型覆盖、补充优化建议、模块规范建议

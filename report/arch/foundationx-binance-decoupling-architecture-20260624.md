@@ -1,5 +1,7 @@
 # FoundationX 基座 + 领域共享层 + module/binance 彻底解耦架构报告
 
+> **归档说明（2026-07-05）**：本报告中"binance internal/wire 未迁移 contracts"相关条目（ADR-002 过渡态）已由 [ADR-007](../../module/binance/design/ADR-007-wire-to-contracts-migration.md) 闭环——`internal/wire` 已删除，C/S 契约迁入 `contracts` canonical（v0.5.0），binance 经 `internal/ingestcodec` boundary 引用。下文相关描述为 2026-06-24 时点状态，保留作历史追溯，不作为当前事实。
+
 - Date: 2026-06-24
 - Scope: 20 个基座模块 + 5 个领域共享层模块 + `module/binance`
 - Output: 模块边界定义、配置与生命周期解耦规则、禁止多层实现清单、最终依赖关系图
