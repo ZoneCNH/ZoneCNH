@@ -1,12 +1,12 @@
 # Binance SPEC
 
-- Spec-Version: v3.12.0
+- Spec-Version: v3.13.0
 - Module: binance
-- Last-Updated: 2026-07-05（FR-045~050 白名单系统实现完成 + assembly 装配）
+- Last-Updated: 2026-07-05（白名单系统实盘验证 + 六项细化：FR-048 独立 NATS 连接 / FR-051 tier 分配策略 / TRADIFI_PERPETUAL 分类 / ApplyDiff COALESCE 保留 / AfterDiffSync 非致命 / ListCandidates COALESCE）
 - Runtime-Repo: `/home/workspace/binance`
 - Runtime-Version: v0.13.0
 - State-Model: single-state only
-- Current-State: 54 Done / 0 Partial / 0 Drifted / 0 Pending
+- Current-State: 55 Done / 0 Partial / 0 Drifted / 0 Pending
 - release_closeable: YES
 - Open-P10-Issues: 0（2026-07-05 全部关闭）
 
@@ -105,9 +105,10 @@
 | FR-045 | whitelist | Whitelist Sync Job（事件驱动 + 定时兜底 + PG advisory lock 单写者） | Done | whitelist/sync_job.go + rules.go |
 | FR-046 | whitelist | whitelist 表 + whitelist_meta version SSOT + whitelist_sync_log 审计 | Done | pg_whitelist.go + migrations/011_whitelist.sql |
 | FR-047 | API | GET /internal/whitelist（全量 + 增量，200 统一响应） | Done | whitelist/service.go + api/whitelist_handler.go |
-| FR-048 | notify | NATS subject `binance.whitelist.version` 推送（core NATS fire-and-forget） | Done | whitelist/publisher.go + assembly NATS 注入 |
-| FR-049 | consumer | 下游消费方 SDK（缓存 3h TTL + NATS 订阅 + 增量刷新 + 容灾降级） | Done | pkg/whitelistclient/cache.go + client.go |
-| FR-050 | catalog | catalog_symbols 扩展字段（exchange_status/last_seen_at/tier/collection/raw_extra） | Done | migrations/011_whitelist.sql + pg_catalog.go ApplyDiff |
+| FR-048 | notify | NATS subject `binance.whitelist.version` 推送（core NATS fire-and-forget，publisher 使用独立 NATS 连接，不依赖 ingest transport；publish 失败非致命） | Done | whitelist/publisher.go + assembly 独立 NATS 连接注入 |
+| FR-049 | consumer | 下游消费方 SDK（缓存 3h TTL + NATS 订阅 + 增量刷新 + 容灾降级 + Bearer token 鉴权） | Done | pkg/whitelistclient/cache.go + client.go |
+| FR-050 | catalog | catalog_symbols 扩展字段（exchange_status/last_seen_at/tier/collection/raw_extra）；ApplyDiff upsert 用 COALESCE 保留手动分配的 tier/collection；contract_type=TRADIFI_PERPETUAL 区分币股 | Done | migrations/011_whitelist.sql + pg_catalog.go ApplyDiff |
+| FR-051 | tier | Tier 分配策略：现货流动性 top 20 + 合约加密 top 20 + 币股(TRADIFI_PERPETUAL) top 50，按 24h quoteVolume 排序 | Done | whitelist/rules.go + 运维 SQL 批量分配 |
 
 ## 8. Business Requirements
 
@@ -121,7 +122,7 @@
 | BR-006 | runtime-gap issue closure must be backed by merged runtime evidence | FR-023, FR-037~044 |
 | BR-007 | issue status projection docs must match GitHub issue snapshot | FR-030, FR-037 |
 | BR-008 | issue close workflow must run runtime-gap closure gate script | FR-037, FR-040, FR-043 |
-| BR-009 | downstream consumers obtain business-approved symbol subset from server, not from exchange directly | FR-045~050 |
+| BR-009 | downstream consumers obtain business-approved symbol subset from server, not from exchange directly | FR-045~051 |
 
 ## 9. Acceptance Criteria
 
