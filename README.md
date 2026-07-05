@@ -2,7 +2,7 @@
 
 **量化交易基础设施工程师** | 构建高性能、高可靠的金融数据与交易系统
 
-> 本仓库是 FoundationX 治理体系仓——定义 Goal 驱动交付管线、模块治理规则、Spec→Code 工作流和四源评分体系，同时承载个人架构索引。治理对象覆盖 21 个基座模块仓和 59 个 module 规格目录；模块实现统一在 `/home/workspace/{module}` 对应 GitHub 仓库中完成。
+> 本仓库是 FoundationX 治理体系仓——定义 Goal 驱动交付管线、模块治理规则、Spec→Code 工作流和四源评分体系，同时承载个人架构索引。治理对象覆盖 20 个基座模块仓和 63 个 module 规格目录；模块实现统一在 `/home/workspace/{module}` 对应 GitHub 仓库中完成。
 
 ## 🔧 技术栈
 
@@ -22,7 +22,7 @@ Go 🐹 (主要) · Rust 🦀 (底层) · Python 🐍 (脚本/数据) · TypeScr
 >
 > 🧱 Foundation 公开规格、依赖矩阵、执行跟踪与 ADR → **[module/](./module/)**
 >
-> 📋 19 个基座 Foundation 模块规格，另含 5 个 L2.5 领域共享规划/基线规格（L2.5 不作整体 release/factory 声明） → **[module/](./module/)**
+> 📋 20 个基座 Foundation 模块规格，另含 5 个 L2.5 领域共享规划/基线规格（L2.5 不作整体 release/factory 声明） → **[module/](./module/)**
 >
 > 🧭 Spec 治理模板、生命周期、追溯与评分规则 → **[docs/governance/](./docs/governance/)**
 >
@@ -74,7 +74,7 @@ L2.5: domainx / decimalx / domain_market / domain_macro / domain_exchange (5/5 �
 
 依赖顺序：`decimalx` -> `domainx` -> `domain_market` / `domain_macro` -> `domain_exchange`。v1.0.0 是各模块的发布版本，GitHub Release/tag 已观测并对账。5/5 factory grade；live/soak N/A（纯值对象库）。
 
-`domainx` 已归入 L2.5 领域共享层；机器事实层将其作为 L2.5 模块单独计入 20-module projection，不并入 19 个基座组件数。
+`domainx` 已归入 L2.5 领域共享层；机器事实层将其作为 L2.5 模块单独计入 20-module projection，不并入 20 个基座组件数。
 
 ## 📦 核心项目
 
