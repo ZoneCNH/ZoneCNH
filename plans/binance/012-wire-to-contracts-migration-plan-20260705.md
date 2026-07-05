@@ -31,9 +31,9 @@
 - `test/**`：8 文件（e2e/soak/chaos/depth/restart）
 - `internal/wire/**`：1 文件
 
-### 0.3 contracts 仓现状
+### 0.3 contracts 仓现状（迁移后）
 
-`/home/workspace/contracts/pkg/contracts/ingestion.go`（120 行）已定义 canonical 类型，但与 wire 存在**三处结构性差异**（见 §1）。
+`/home/workspace/contracts/pkg/contracts/ingestion.go` 已富化为 canonical 单一权威（v0.5.0），吸收原 wire 跨域语义字段。原 binance `internal/wire` 已删除，`internal/ingestcodec` boundary 层负责 `domainmarket.InstrumentKey ↔ json.RawMessage` 序列化与 BNC 码映射。
 
 ### 0.4 架构约束（不可违背）
 
@@ -75,7 +75,7 @@
 | 字段          | wire               | contracts            | 处置                                                                                                 |
 | ------------- | ------------------ | -------------------- | ---------------------------------------------------------------------------------------------------- |
 | StreamID      | ✅                 | ✅                   | 对齐                                                                                                 |
-| RequestID     | ❌（在 Result 层） | ✅                   | contracts 放 Ack 内，wire 放 Result —— 统一放 Result                                                 |
+| RequestID     | ❌（在 Result 层） | ✅                   | 计划：统一放 Result；**实际偏差**：RequestID 保留在 IngestAck 内（未移除），因 Ack 内 RequestID 用于幂等键回执匹配，移至 Result 会破坏 ack→request 关联语义 |
 | AcceptedKey   | ✅                 | ❌                   | **canonical 缺** → 补入                                                                              |
 | AcceptedCount | ❌                 | ✅                   | wire 用 AcceptedKey 单键，contracts 用计数 —— 保留 contracts，wire 的 AcceptedKey 视为单条场景       |
 | Duplicate     | bool               | DuplicateCount int32 | **语义重叠**，类型不同 → 保留 contracts `DuplicateCount`，wire `Duplicate` 映射为 `DuplicateCount>0` |
@@ -123,7 +123,7 @@
 
 - **contracts canonical 富化**：把 wire 的跨域语义字段（Symbol/PayloadHash/TraceContext/Quality/Gap/SLA/AcceptedKey/AcceptedAt）补入 contracts.IngestRequest/IngestAck，InstrumentKey 保持 `json.RawMessage`
 - **binance 保留极薄 boundary 包**（重命名 `internal/wire` → `internal/ingestcodec`，仅做 `domainmarket.InstrumentKey ↔ json.RawMessage` 序列化 + BNC 码映射 helper，**不再定义任何 DTO**）
-- **61 个 import 站点**改 import `contracts` 类型，DTO 字段访问改 canonical 名
+- **61 个 import 站点**（62 文件减去 wire 自身 1 个）改 import `contracts` 类型，DTO 字段访问改 canonical 名
 - 优点：contracts 零依赖保持；canonical 单一权威；binance 私有逻辑下沉到 codec；强类型在 binance 内部 boundary 处保留
 - 缺点：61 处 import 改动量大；contracts 需 breaking change（字段补入 + RequestID 命名统一）
 
