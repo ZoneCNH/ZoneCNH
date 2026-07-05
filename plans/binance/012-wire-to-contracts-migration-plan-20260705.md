@@ -75,7 +75,7 @@
 | 字段          | wire               | contracts            | 处置                                                                                                 |
 | ------------- | ------------------ | -------------------- | ---------------------------------------------------------------------------------------------------- |
 | StreamID      | ✅                 | ✅                   | 对齐                                                                                                 |
-| RequestID     | ❌（在 Result 层） | ✅                   | 计划：统一放 Result；**实际偏差**：RequestID 保留在 IngestAck 内（未移除），因 Ack 内 RequestID 用于幂等键回执匹配，移至 Result 会破坏 ack→request 关联语义 |
+| RequestID     | ❌（在 Result 层） | ✅                   | 计划：统一放 Result；**实际偏差**：RequestID 保留在 IngestAck 内（未移除），因 Ack 内 RequestID 用于幂等键回执匹配，移至 Result 会破坏 ack→request 关联语义 → **后续修正（v0.5.1）**：核实发现 IngestAck.RequestID 从未被任何代码填充，权威载体为 IngestResult.RequestID + IngestAck.AcceptedKey，该字段为死字段，已从 contracts 移除（PR #21） |
 | AcceptedKey   | ✅                 | ❌                   | **canonical 缺** → 已补入                                                                              |
 | AcceptedCount | ❌                 | ✅                   | wire 用 AcceptedKey 单键，contracts 用计数 —— 保留 contracts，wire 的 AcceptedKey 视为单条场景       |
 | Duplicate     | bool               | DuplicateCount int32 | **语义重叠**，类型不同 → 已保留 contracts `DuplicateCount`，wire `Duplicate` 映射为 `DuplicateCount>0` |
