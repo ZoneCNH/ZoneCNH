@@ -2,10 +2,10 @@
 
 - Module-Version: v3.11.0
 - Last-Updated: 2026-07-05
-- Status: planning（FR-045~050，6 tasks，待 S5 Prompt → S6 Code）
+- Status: planning（FR-045~050，6 tasks，待 S5 Prompt → S6 Code）；FR-051 top 20 统一为 v3.14.0 增量（ADR-008，runtime 待落地）
 - Runtime-Repo: `/home/workspace/binance`
-- Source-Design: `module/binance/design/EXCHANGEINFO-WHITELIST-DESIGN.md` v0.2
-- Source-ADR: `module/binance/design/ADR-006-server-side-whitelist-rewrite.md`
+- Source-Design: `module/binance/design/EXCHANGEINFO-WHITELIST-DESIGN.md` v0.4
+- Source-ADR: `module/binance/design/ADR-006-server-side-whitelist-rewrite.md` + `ADR-008-whitelist-top20-unify.md`
 
 ## 1. 目标
 
@@ -66,7 +66,7 @@ WL-004          WL-005
 | advisory lock 在 PG 连接池下行为异常 | SyncJob 并发互斥失效 | 使用 `pg_try_advisory_xact_lock`（事务级锁），连接池需保证同一事务在同一连接 |
 | 现有 `buildSymbolWhitelist` 降级路径与 DB SSOT 冲突 | 启动时 DB 不可用仍用旧配置 | 保留旧路径作为 fallback，监控告警区分 "DB 模式" vs "降级模式" |
 | NATS 推送丢失导致下游消费方延迟感知 | 下游白名单过期 | 3h 定时刷新兜底，丢失推送最多导致 3h 延迟 |
-| options 准入规则过于宽松 | 高风险标的自动上线 | options 全部强制人工审核（§5.4.1） |
+| options 准入规则过于宽松 | 高风险标的自动上线 | options 按 24h quoteVolume top 20 自动放行（ADR-008），top 20 以外进人工审核队列；TRADING 过滤前置（ADR-005 §6.1） |
 | catalog_symbols 扩展字段影响现有查询 | 现有功能回归 | 新字段均允许 NULL/默认值，不破坏现有 SELECT |
 
 ## 6. 验收标准

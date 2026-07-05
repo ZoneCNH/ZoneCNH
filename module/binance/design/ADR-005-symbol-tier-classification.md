@@ -142,6 +142,10 @@ EXCHANGEINFO 报告 §8 的对抗性复核产出三项修正，本 ADR 显式纳
   - 远月或深虚值（OTM）→ REST 采样或不采
 - §3.1 Tier 表的"T4（监控）其他产品线"行应拆分：cm_perp 可按 Tier 分（有 volume），options 不在此列
 
+**与白名单准入层的关系（ADR-008 层间解耦）**：本节"options 不进 Tier 模型"指**采集分桶层**——决定 options 进入系统后如何采样（实时 stream vs REST 采样）。白名单准入层（哪些 options contract 进入系统）自 v0.4 起改用 24h quoteVolume top 20 自动准入（FR-051 / ADR-008），与本节采集分桶正交、不替代。即"采不采"由白名单 top 20 决定，"怎么采"由 options_classification 决定。
+
+**与白名单准入层的关系（ADR-008 层间解耦）**：本节"options 不进 Tier 模型"指**采集分桶层**——决定 options 进入系统后如何采样（实时 stream vs REST 采样）。白名单准入层（哪些 options contract 进入系统）自 v0.4 起改用 24h quoteVolume top 20 自动准入（FR-051 / ADR-008），与本节采集分桶正交、不替代。即"采不采"由白名单 top 20 决定，"怎么采"由 options_classification 决定。
+
 **前置必修**：[COMPUTED, HIGH] `exchangeinfo_option.go:30-36` 的 `optionsExchangeSymbol` 结构体无 status 字段，`DecodeOptionsExchangeInfo`（L74-84）仅按 `expiryDate > now` 判 active，**不做 TRADING 过滤**（spot/um/cm 都做了）。所有未过期合约——含大量远月、深度虚值的低流动性合约——全部以 `status="active"` 灌入 catalog。**分级落地前必须先修 options 的 TRADING 过滤，否则 options 分桶会塞满无效合约**。
 
 ### 6.2 GAP-E25 改为可选扩容，非 E24 下游依赖

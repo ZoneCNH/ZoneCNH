@@ -1,8 +1,8 @@
 # Binance SPEC
 
-- Spec-Version: v3.13.0
+- Spec-Version: v3.14.0
 - Module: binance
-- Last-Updated: 2026-07-05（白名单系统实盘验证 + 六项细化：FR-048 独立 NATS 连接 / FR-051 tier 分配策略 / TRADIFI_PERPETUAL 分类 / ApplyDiff COALESCE 保留 / AfterDiffSync 非致命 / ListCandidates COALESCE）
+- Last-Updated: 2026-07-05（白名单策略统一为四类市场各 top 20：FR-051 重写，cm_perp/options 新增自动准入，币股 top 50→top 20；options 准入层与采集分桶层解耦，见 ADR-008）
 - Runtime-Repo: `/home/workspace/binance`
 - Runtime-Version: v0.13.0
 - State-Model: single-state only
@@ -110,7 +110,7 @@
 | FR-048 | notify | NATS subject `binance.whitelist.version` 推送（core NATS fire-and-forget，publisher 使用独立 NATS 连接，不依赖 ingest transport；publish 失败非致命） | Done | whitelist/publisher.go + assembly 独立 NATS 连接注入 |
 | FR-049 | consumer | 下游消费方 SDK（缓存 3h TTL + NATS 订阅 + 增量刷新 + 容灾降级 + Bearer token 鉴权） | Done | pkg/whitelistclient/cache.go + client.go |
 | FR-050 | catalog | catalog_symbols 扩展字段（exchange_status/last_seen_at/tier/collection/raw_extra）；ApplyDiff upsert 用 COALESCE 保留手动分配的 tier/collection；contract_type=TRADIFI_PERPETUAL 区分币股 | Done | migrations/011_whitelist.sql + pg_catalog.go ApplyDiff |
-| FR-051 | tier | Tier 分配策略：现货流动性 top 20 + 合约加密 top 20 + 币股(TRADIFI_PERPETUAL) top 50，按 24h quoteVolume 排序 | Done | whitelist/rules.go + 运维 SQL 批量分配 |
+| FR-051 | tier | Tier 分配策略：spot / um_perp(PERPETUAL) / um_perp(TRADIFI_PERPETUAL) / cm_perp / options 各取 24h quoteVolume 流动性 top 20，统一 core 准入；options 准入层与采集分桶层解耦（ADR-008） | Done | whitelist/rules.go + 运维 SQL 批量分配 |
 
 ## 8. Business Requirements
 
