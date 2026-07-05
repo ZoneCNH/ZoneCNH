@@ -214,7 +214,7 @@ Foundation 目录内的执行域共享值对象规格，用于订单、成交、
 | pe_data | 独立进程 | [SPEC.md](./pe_data/SPEC.md) | 另类数据（PE 相关）摄取 |
 | alternative_data | 独立进程 | — | 链上数据、社交情绪、新闻 NLP |
 
-C/S Module 标准化索引见 [`data_cs_module/README.md`](./data_cs_module/README.md)；独立进程模板见 [`data_independent_process/README.md`](./data_independent_process/README.md)。
+模板体系统一入口见 [`_template/README.md`](./_template/README.md)（索引 cex-cs-module / data_cs_module / data_independent_process / _exchange-template 四个模板）；模板体系统一入口见 [`_template/README.md`](./_template/README.md)（索引 cex-cs-module / data_cs_module / data_independent_process / _exchange-template 四个模板）；C/S Module 标准化索引见 [`data_cs_module/README.md`](./data_cs_module/README.md)；独立进程模板见 [`data_independent_process/README.md`](./data_independent_process/README.md)。
 
 ## 分析域（8 个）
 
