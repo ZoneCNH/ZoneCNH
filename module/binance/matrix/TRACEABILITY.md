@@ -1,11 +1,11 @@
 # Binance Traceability Matrix
 
-- [KNOWN] Matrix-Version: v3.12.0
+- [KNOWN] Matrix-Version: v3.13.0
 - [KNOWN] Last-Updated: 2026-07-05
-- Source-SPEC: `module/binance/spec/SPEC.md` v3.12.0
+- Source-SPEC: `module/binance/spec/SPEC.md` v3.13.0
 - State-Model: single-state only
-- [KNOWN] Current-State: 54 Done / 0 Partial / 0 Drifted / 0 Pending（FR-045~050 白名单系统实现完成 + assembly 装配）
-- [KNOWN] release_closeable: YES（54/54 = 100% ≥ 90%）
+- [KNOWN] Current-State: 55 Done / 0 Partial / 0 Drifted / 0 Pending（FR-045~051 白名单系统实盘验证六项细化）
+- [KNOWN] release_closeable: YES（55/55 = 100% ≥ 90%）
 
 ## 1. Rule
 
@@ -66,9 +66,10 @@ This matrix is the compact FR/BR/AC/TC projection. It intentionally does not dup
 | FR-045 | BR-009 | AC-001 | Whitelist Sync Job（ADR-006 rewrite） | Done |
 | FR-046 | BR-009 | AC-001 | whitelist 表 + version SSOT + sync_log | Done |
 | FR-047 | BR-009 | AC-001 | GET /internal/whitelist API | Done |
-| FR-048 | BR-009 | AC-001 | NATS binance.whitelist.version 推送 | Done |
-| FR-049 | BR-009 | AC-001 | 下游消费方 SDK | Done |
-| FR-050 | BR-009 | AC-001 | catalog_symbols 扩展字段 | Done |
+| FR-048 | BR-009 | AC-001 | NATS binance.whitelist.version 推送（独立 NATS 连接 + publish 非致命） | Done |
+| FR-049 | BR-009 | AC-001 | 下游消费方 SDK（Bearer token 鉴权） | Done |
+| FR-050 | BR-009 | AC-001 | catalog_symbols 扩展字段（ApplyDiff COALESCE 保留 tier + TRADIFI_PERPETUAL 区分币股 + ListCandidates COALESCE） | Done |
+| FR-051 | BR-009 | AC-001 | Tier 分配策略（现货 top 20 + 合约加密 top 20 + 币股 top 50） | Done |
 
 ## 3. Acceptance Criteria
 
@@ -128,8 +129,8 @@ Beads and GitHub issues are the current P10 tracking SSOT. The retired local pro
 
 | Metric | Value |
 | --- | --- |
-| FR total | 54 |
-| Done | 54 |
+| FR total | 55 |
+| Done | 55 |
 | Partial | 0 |
 | Drifted | 0 |
 | Pending | 0 |
@@ -137,6 +138,6 @@ Beads and GitHub issues are the current P10 tracking SSOT. The retired local pro
 | Beads P10 open | 0 |
 | release_closeable | YES |
 
-> **运行时缺口投影**：本矩阵统计规格口径（48 Done）。运行时口径的 58 个缺口（GAP-E1~E58）对应的 28 个 GitHub Issues 已于 2026-07-05 全部关闭。PRG-006 gated resilience 测试已 CI-runnable。两者正交——规格 Done 表示 FR 功能面已闭合，运行时修复表示 GAP-E 缺口已处理。详见该文件 §7 双口径声明。
+> **运行时缺口投影**：本矩阵统计规格口径（55 Done）。运行时口径的 58 个缺口（GAP-E1~E58）对应的 28 个 GitHub Issues 已于 2026-07-05 全部关闭。PRG-006 gated resilience 测试已 CI-runnable。两者正交——规格 Done 表示 FR 功能面已闭合，运行时修复表示 GAP-E 缺口已处理。详见该文件 §7 双口径声明。
 >
-> release_closeable = Code-Done FR / Total FR = 54/54 = 100% ≥ 90%，PRG-001~007 全 PASS → release_closeable=YES。
+> release_closeable = Code-Done FR / Total FR = 55/55 = 100% ≥ 90%，PRG-001~007 全 PASS → release_closeable=YES。

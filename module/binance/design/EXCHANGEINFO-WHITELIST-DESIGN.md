@@ -3,12 +3,20 @@
 | 项目     | 内容                                                                   |
 | -------- | ---------------------------------------------------------------------- |
 | 文档状态 | Draft（已纳入 Spec→Code 管线，ADR-006 裁决：重写）                     |
-| 版本     | v0.2                                                                   |
+| 版本     | v0.3                                                                   |
 | 更新日期 | 2026-07-05                                                             |
 | 覆盖范围 | Binance Spot / USDⓈ-M 永续 (um_perp) / COIN-M 永续 (cm_perp) / Options |
 | 模块归属 | `module/binance`（ZoneCNH 主仓 spec + binance runtime 仓代码）         |
 | 关联 ADR | [ADR-006](ADR-006-server-side-whitelist-rewrite.md)（重写裁决）        |
 | 关联 ADR | [ADR-005](ADR-005-symbol-tier-classification.md)（Tier 分级，白名单准入依据） |
+
+> **v0.2 → v0.3 变更摘要**（实盘验证六项细化）：
+> 1. FR-048：publisher 改用独立 NATS 连接（不依赖 ingest transport），解决 kafkax 模式下 SetNATSConn 不执行的问题。
+> 2. FR-050：ApplyDiff upsert 用 `COALESCE(NULLIF(EXCLUDED.x, ''), catalog_symbols.x)` 保留手动分配的 tier/collection。
+> 3. FR-050：`contract_type='TRADIFI_PERPETUAL'` 区分币股（stock tokens）与加密合约。
+> 4. AfterDiffSync publish 失败改为非致命（log + continue），避免阻塞 um_perp/cm_perp/options discovery。
+> 5. ListCandidates 查询用 `COALESCE(..., '')` 处理 NULL tier/base_asset/quote_asset。
+> 6. 新增 FR-051：tier 分配策略（现货 top 20 + 合约加密 top 20 + 币股 top 50，按 24h quoteVolume 排序）。
 
 > **v0.1 → v0.2 变更摘要**：
 > 1. 架构决策：演进现有 Catalog 为服务端白名单（**重写**，非叠加），见 ADR-006。
@@ -331,6 +339,25 @@ COMMIT;
 - **强制人工审核**：options 全部默认走审核；`Tier ∈ {long_tail, monitor}`（ADR-005 Tier 3-4）同样进审核队列；冷门 quote_asset、新合约类型进审核队列。
 - **观察期**：即使命中自动放行规则，新 symbol 先进入"观察中"状态（如 3 天），期满后才真正 `enabled=true`，避免刚上线的极端行情/流动性问题波及下游。
 
+#### 5.4.1a Tier 分配策略（FR-051）
+
+Tier 分配是独立的运维流程，不依赖 Binance exchangeInfo（API 不提供 tier 信息）。当前策略按 24h `quoteVolume` 排序：
+
+| 业务线 | contract_type | 分配条件 | tier | collection | 预估数量 |
+|--------|---------------|----------|------|------------|----------|
+| spot | — | 流动性 top 20 | core | full_stream | 20 |
+| um_perp | PERPETUAL | 流动性 top 20 | core | full_stream | 20 |
+| um_perp | TRADIFI_PERPETUAL | 流动性 top 50 | core | tradifi | 50 |
+| um_perp | PERPETUAL | top 20 以外 | (空) | — | needs review |
+| um_perp | TRADIFI_PERPETUAL | top 50 以外 | (空) | — | needs review |
+| 其余 | — | — | (空) | — | needs review |
+
+**币股识别**：Binance API 在 `contract_type` 字段返回 `TRADIFI_PERPETUAL` 标识传统金融永续合约（如 TSLAUSDT、NVDAUSDT）。白名单通过此字段自动区分币与币股，`collection='tradifi'`。
+
+**ApplyDiff tier 保留**：client diff-sync 每次从 Binance API 拉取数据时，tier/collection 字段为空（API 不提供）。ApplyDiff 的 `ON CONFLICT` 使用 `COALESCE(NULLIF(EXCLUDED.tier, ''), catalog_symbols.tier)` 保留手动分配的值不被覆盖。
+
+**ListCandidates NULL 处理**：候选查询使用 `COALESCE(base_asset, ''), COALESCE(quote_asset, ''), COALESCE(exchange_status, ''), COALESCE(tier, '')` 处理 NULL 字段，避免 Go string scan 失败。
+
 #### 5.4.2 下架/摘牌处理（区分两类"消失"）
 
 - **交易所明确返回状态变更**（如 `status=BREAK/HALT`，FR-033 已实现）→ 下一轮同步即可直接置 `enabled=false`，置信度高。
@@ -403,7 +430,7 @@ POST /internal/whitelist/refresh     # 管理端手动触发一次同步（需�
 
 ### 5.6 NATS 推送——version 变更通知（新增）
 
-复用 binance 现有 NATS 连接（`catalog_publisher.go` 已有 `nats.Conn`），新增 subject：
+publisher 使用**独立 NATS 连接**（不依赖 ingest transport），在 assembly `Run()` 中创建。这样即使生产环境用 kafkax 传输模式（不走 NATS ingest 路径），白名单 version 推送仍能正常工作。
 
 ```
 Subject: binance.whitelist.version
@@ -411,6 +438,8 @@ Payload: { "version": 10246, "changed_at": "2026-07-05T08:30:00Z" }
 传输: core NATS pub/sub（fire-and-forget，与 binance.catalog.diff 一致）
 ```
 
+- **独立连接**：`natsx.New` 创建名为 `binance-whitelist-publisher` 的专用连接，在 `assembly.Run()` 中注入 `SetNATSConn`。连接生命周期跟随 assembly，在 `closeFn` 中关闭。
+- **publish 失败非致命**：SyncJob 的 PostSyncHook 调用 `Publish` 时，失败仅 log warn，不返回错误，不回滚已提交的白名单事务。
 - **下游消费方订阅**：下游消费方 SDK 启动时订阅 `binance.whitelist.version`，收到 version 变更通知后立即触发一次增量刷新（带上本地 version），不必等 3 小时 TTL 到期。
 - **可靠性**：core NATS 是 fire-and-forget，消息可能丢失。下游消费方仍有 3 小时定时刷新兜底，丢失推送只会导致最多 3 小时延迟，不会永久不一致。
 - **不使用 JetStream**：与 `binance.catalog.diff` 一致，version 通知是 best-effort；JetStream 的持久化开销对"version 号变更通知"这种可由定时刷新补偿的场景不必要。
