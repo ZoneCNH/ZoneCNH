@@ -14,6 +14,8 @@ ADR-002 过渡态闭环。`internal/wire` 删除，C/S 共享契约迁入 `contr
 - `pkg/contracts/ingestion.go`：`IngestRequest` 补 Symbol/PayloadHash/TraceContext/Quality；`IngestAck` 补 AcceptedKey/AcceptedAt/Quality/Gap/SLA；新增 `TraceContext`/`QualityVerdict`/`GapStatus`/`SLAStatus` 导出类型；`IngestResult` 新增 `IsAck`/`IsReject`/`Validate()`/`ErrAckRejectMutuallyExclusive`。
 - `pkg/contracts/ingestion_test.go`：新字段 JSON round-trip + 不变量方法覆盖。
 - `pkg/contracts/alert_test.go`：修复 `mockRuleStore.Load` 返回类型笔误（预存编译错误）。
+- `scripts/check_boundary_test.go`：fixture 从真实 import 改为注释形式，避免 `go list -deps` 编译失败导致 grep 检查不可达。
+- 版本常量 `v0.4.6` → `v0.5.0` 全仓同步（governance.go / templatex/version.go / releasemanifest / template.json / README / release.md / harness.yaml / AGENTS.md / main_test.go）。
 - `CHANGELOG.md`：v0.5.0 breaking 条目。
 
 ## 3. binance 仓变更
@@ -28,39 +30,40 @@ ADR-002 过渡态闭环。`internal/wire` 删除，C/S 共享契约迁入 `contr
 ### 4.1 contracts 仓
 
 ```
-go build ./pkg/contracts/...        → PASS
-go vet ./pkg/contracts/...          → PASS
-golangci-lint run ./pkg/contracts/  → 0 issues
-go test ./pkg/contracts/...         → PASS
-go test -race ./pkg/contracts/...   → PASS
-make boundary                       → PASS
-make contracts                      → PASS
+go build ./...                     → PASS
+go vet ./...                       → PASS
+go test ./...                      → PASS（15 packages）
+go test -race ./...                → PASS（15 packages）
+bash scripts/check_boundary.sh     → boundary check passed
 ```
 
 ### 4.2 binance 仓
 
 ```
-go build ./...                      → PASS
-go vet ./...                        → PASS
-go test ./... -short                → 全 PASS（含 test/ 集成目录 -short）
-go test -race ./internal/... ./cmd/... -short  → 全 PASS
-bash scripts/boundary-gates.sh      → 15/15 PASS（§3/§4 client↔server 互不 import 由 contracts 类型隔离保证）
-rg "internal/wire" --type go        → 0 命中
+go build ./...                     → PASS
+go vet ./...                       → PASS
+go test ./...                      → PASS（28 packages）
+go test -race ./internal/... ./cmd/... ./pkg/...  → PASS（28 packages）
+go test -race ./test/...           → PASS
+bash scripts/boundary-gates.sh     → 15/15 PASS
+rg "internal/wire" --type go       → 0 命中
 rg "github.com/ZoneCNH/contracts" --type go → ≥1 命中
 ```
 
 ## 5. DoD 核对
 
 - [x] `rg "internal/wire"` → 0 命中
-- [x] binance `go build/test/race/vet` PASS
+- [x] binance `go build/test/race/vet` PASS（含 `./test/...` race）
 - [x] `boundary-gates.sh` 15/15 PASS
-- [x] contracts `go test -race` PASS
+- [x] contracts `go test -race ./...` PASS（含 scripts stale test fix）
+- [x] contracts 版本常量 `v0.5.0` 全仓同步
 - [x] ADR-007 Accepted，ADR-002 Superseded
 - [x] Evidence 归档（本文件）
 
 ## 6. 待办（发布后）
 
-- [ ] contracts PR 合入 main 并打 `v0.5.0` tag
+- [ ] contracts PR #19 合入 main 并打 `v0.5.0` tag（CI 因 GitHub Actions billing 锁定暂不可用，本地全量验证通过）
 - [ ] binance `go.mod` 移除 `replace` 指令，`go get github.com/ZoneCNH/contracts@v0.5.0`
-- [ ] binance PR 合入
+- [ ] binance PR #432 合入
+- [ ] ZoneCNH PR #1679 合入
 - [ ] ZoneCNH 主仓 `report/arch/` 五份分析报告的"wire 未迁移"条目标记 Resolved（归档说明，不重写）
