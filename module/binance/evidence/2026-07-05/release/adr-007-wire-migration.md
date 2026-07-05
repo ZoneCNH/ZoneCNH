@@ -66,4 +66,4 @@ rg "github.com/ZoneCNH/contracts" --type go → ≥1 命中
 - [ ] binance `go.mod` 移除 `replace` 指令，`go get github.com/ZoneCNH/contracts@v0.5.0`
 - [ ] binance PR #432 合入
 - [ ] ZoneCNH PR #1679 合入
-- [ ] ZoneCNH 主仓 `report/arch/` 五份分析报告的"wire 未迁移"条目标记 Resolved（归档说明，不重写）
+- [x] ZoneCNH 主仓 `report/arch/` + `report/binance/` 报告的"wire 未迁移"条目标记 Resolved（Phase 5 已完成，扫描确认 0 残留 wire 引用）

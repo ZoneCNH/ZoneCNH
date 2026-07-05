@@ -277,7 +277,7 @@ P2/P3/P4 合并为 binance 单 PR #432；P1 为 contracts 独立 PR #19。实际
 - [ ] binance `go.mod` 移除 `replace` 指令 → `go get github.com/ZoneCNH/contracts@v0.5.0`
 - [ ] binance PR #432 合入
 - [ ] ZoneCNH PR #1679 合入
-- [ ] ZoneCNH 主仓 `report/arch/` 五份分析报告的"wire 未迁移"条目标记 Resolved（归档说明，不重写）
+- [x] ZoneCNH 主仓 `report/arch/` + `report/binance/` 报告的"wire 未迁移"条目标记 Resolved（Phase 5 已完成，0 残留）
 
 详见 `module/binance/evidence/2026-07-05/release/adr-007-wire-migration.md` §6 待办。
 
