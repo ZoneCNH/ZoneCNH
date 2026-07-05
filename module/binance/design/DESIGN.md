@@ -62,10 +62,11 @@ Binance Exchange (WS/REST)
 | ADR | Decision | Status |
 |-----|----------|--------|
 | ADR-001 | 占位声明：早期架构决策已并入 SPEC §1-§6（wire 边界/产品线/catalog 基础模型），编号保留不回溯（见 [ADR-001-placeholder.md](ADR-001-placeholder.md)） | Accepted（占位） |
-| ADR-002 | Wire boundary: natsx subject + domain_market envelope JSON; no local proto/gRPC ingest schema | Accepted |
+| ADR-002 | Wire boundary: natsx subject + domain_market envelope JSON; no local proto/gRPC ingest schema | Superseded by ADR-007 |
 | ADR-003 | Order book rebuild exclusion | Accepted |
 | ADR-004 | FR-024 vs FR-036 architecture decision | Accepted |
 | ADR-005 | Symbol 采集分级体系：CatalogEntry 加 Tier/SymbolPriority/Collection/QuoteVolumeUSD 字段 + classifyTier 三层降级 + 白名单 MVP（见 [ADR-005](ADR-005-symbol-tier-classification.md)、[TIER-DESIGN-DETAILS](TIER-DESIGN-DETAILS.md)） | Proposed |
+| ADR-007 | internal/wire 迁移到 contracts canonical（方案 C：canonical 富化 + boundary codec），删除 internal/wire，新增 internal/ingestcodec（见 [ADR-007](ADR-007-wire-to-contracts-migration.md)） | Accepted |
 
 ## 6. Risks
 

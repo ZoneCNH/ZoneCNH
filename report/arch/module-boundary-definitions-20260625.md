@@ -1,5 +1,7 @@
 # 模块边界定义 — 彻底解耦架构报告（2026-06-25 更新验证）
 
+> **归档说明（2026-07-05）**：本报告中"binance internal/wire 未迁移 contracts"相关条目（ADR-002 过渡态）已由 [ADR-007](../../module/binance/design/ADR-007-wire-to-contracts-migration.md) 闭环——`internal/wire` 已删除，C/S 契约迁入 `contracts` canonical（v0.5.0），binance 经 `internal/ingestcodec` boundary 引用。下文相关描述为 2026-06-25 时点状态，保留作历史追溯，不作为当前事实。
+
 - **Date**: 2026-06-25（更新验证）
 - **Scope**: 20 个基座模块 + 5 个领域共享层模块 + `module/binance`
 - **Evidence base**: go.mod require + `.go` import 代码级扫描（2026-06-25 实时证据线）

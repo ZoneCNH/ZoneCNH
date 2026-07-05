@@ -410,7 +410,7 @@ FoundationX 运行模块分为两种架构类型。详见 [`ARCHITECTURE.md`](..
 ├── cmd/{module}-server/main.go    # bootstrap.Build() 独立进程
 ├── internal/client/               # 数据采集
 ├── internal/server/               # 数据服务
-├── internal/wire/                 # 进程间 wire contract（禁止运行时共享包回流）
+├── internal/ingestcodec/            # boundary：contracts canonical ↔ binance 强类型转换（ADR-007）
 ├── pkg/{module}x/                 # 公开 adapter
 └── go.mod
 ```

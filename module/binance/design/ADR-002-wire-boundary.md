@@ -1,10 +1,11 @@
 # ADR-002: internal/wire 保留为内部自包含契约
 
-> 状态：Accepted
+> 状态：Superseded by ADR-007（2026-07-05）
 > 日期：2026-06-24（2026-06-25 订正事实层并迁回主仓）
 > 决策者：ZoneCNH architecture
 > 来源：Plan006 Task 8.4, §11.11
 > 仓库归属：ZoneCNH 主仓 `module/binance/`
+> Supersede：本 ADR 的"待 contracts InstrumentKey 泛化后迁移"状态由 `ADR-007-wire-to-contracts-migration.md` 闭环。执行计划见 `plans/binance/012-wire-to-contracts-migration-plan-20260705.md`。
 
 ## 背景
 

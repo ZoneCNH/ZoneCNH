@@ -1,6 +1,7 @@
 # binance 模块修复执行计划
 
 > **创建日期**：2026-06-30
+> **归档说明（2026-07-05）**：本计划 §4.4.1 关于 `internal/wire/doc.go` 的 contracts 迁移修正条目已由 [ADR-007](../../module/binance/design/ADR-007-wire-to-contracts-migration.md) 闭环——`internal/wire` 已删除，C/S 契约迁入 `contracts` canonical（v0.5.0）。下文相关描述为 2026-06-30 时点状态，保留作历史追溯。
 > **基于报告**：`report/binance/DEEP-ANALYSIS-20260630.md`
 > **目标**：从 L2 Active 推进到 L3 Production，达到可发布状态
 > **验证轮次**：10 轮逐条交叉验证（含报告勘误）+ 5 轮执行后复验

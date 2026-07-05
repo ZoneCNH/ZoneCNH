@@ -25,7 +25,7 @@
 | 验证面 | 命令 | 通过条件 |
 | --- | --- | --- |
 | 脚本语法 | `cd /home/workspace/binance && bash -n scripts/boundary-gates.sh` | shell 语法通过 |
-| 边界门禁 | `cd /home/workspace/binance && ./scripts/boundary-gates.sh` | 13/13 PASS |
+| 边界门禁 | `cd /home/workspace/binance && ./scripts/boundary-gates.sh` | 15/15 PASS |
 | 证据包 | `cd /home/workspace/binance && sed -n '1,160p' release/evidence/binance/20260623/SUMMARY.md` | 记录 evidence commit、verified source commit、测试命令与已知缺口 |
 
 ## 2. Gate: No Legacy binance-market
@@ -48,7 +48,7 @@
 
 ## 5. Gate: No `cs` Package as Runtime Dependency
 
-`internal/cs` 曾代表同进程 C/S 桥接；当前 runtime 禁止任何 client/server/cmd 运行时代码导入该包。合法共享 C/S contract 是 `internal/wire` 的外部化消息结构。
+`internal/cs` 曾代表同进程 C/S 桥接；当前 runtime 禁止任何 client/server/cmd 运行时代码导入该包。合法共享 C/S contract 是 `contracts` canonical（`pkg/contracts/ingestion.go`，ADR-007），binance 经 `internal/ingestcodec` boundary 引用。
 
 关闭规则：runtime gate 必须证明没有 `github.com/ZoneCNH/binance/internal/cs` import。
 
@@ -66,7 +66,7 @@ Server 可以拥有 Binance-specific 的时序、元数据、热缓存、归档�
 
 ## 8. Gate: Wire Contract Externality
 
-Binance 模块不定义本地 `.proto` / gRPC ingest schema，也不拥有 canonical market domain。当前 runtime skeleton 允许 `internal/wire` 保存 HTTP JSON `/ingest` 与后续 natsx/domain envelope 适配所需的本模块消息边界；canonical 语义仍来自 `domain_market`。
+Binance 模块不定义本地 `.proto` / gRPC ingest schema，也不拥有 canonical market domain。C/S 共享契约由 `contracts` canonical 承载（`pkg/contracts/ingestion.go`，ADR-007）；binance 在 `internal/ingestcodec` 仅保留 boundary 序列化与私有码映射，不定义 DTO。canonical 语义仍来自 `domain_market`。
 
 关闭规则：runtime gate 必须证明没有本地 ingest proto/gRPC schema，wire contract 不回退为同进程 cs。
 
