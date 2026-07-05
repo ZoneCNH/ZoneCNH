@@ -18,7 +18,7 @@
 ### 12.2 修正流程
 
 ```text
-1. 提出修正案 → 修改本文件
+1. 提出修正案 + 产出 ADR（记录修正决策与影响分析，归 module/ADR-NNN-*.md）→ 修改本文件
 2. 更新受影响的 module/*/spec/SPEC.md
 3. 更新 ARCHITECTURE.md（如涉及拓扑变更）
 4. 更新 FOUNDATION-DEPS.yaml（如涉及依赖变更）
@@ -40,5 +40,6 @@
 | 2026-06-16 | §2.5    | 新增模块增殖约束（奥卡姆剃刀）           | 如无必要勿增实体；新增模块须满足必要性/唯一性/净收益三条件   |
 | 2026-06-21 | §20     | 新增第二十条：认识论标准                 | 将证据标签、置信度、FRAME→REALITY 禁止提升为宪法约束          |
 | 2026-07-03 | §5.5    | 新增 §5.5 Mock 契约一致性                | Mock/Fake 实现须过与生产实现相同的契约测试，支撑 P6 回测与实盘共享代码；源自 SOLID 规则适配分析（report/solid-adaptation-20260703.md），已先行落地于 docs/standards/go-coding-standards.md §11 |
+| 2026-07-05 | §10.3/§12.2/§13.1 | 强制 ADR + goal 定位 | R2 决策可追溯性断链（71 模块仅 3 有 ADR，违反 C-7）；R1 goal canonical 定位悬空（bd ZoneCNH-3sej）|
 
 ---

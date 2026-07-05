@@ -30,11 +30,14 @@
 ### 10.3 Breaking Change 流程
 
 ```text
+0. 产出 ADR（架构决策记录，归 module/{模块}/ADR-NNN-*.md 或 module/ADR-NNN-*.md）记录 breaking change 决策与替代方案
 1. 在 SPEC.md 中标记为 DEPRECATED
 2. 提供迁移指南
 3. 保留至少一个 MINOR 版本周期
 4. 下一个 MAJOR 版本中移除
-```text
+```
+
+> MAJOR 变更必须关联 ADR；ADR 模板见 `module/ADR-TEMPLATE.md`，归属规则见模板内说明。
 
 ### 10.4 版本号规则
 

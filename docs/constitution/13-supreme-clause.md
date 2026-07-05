@@ -14,6 +14,8 @@
 ```text
 本宪法 (CONSTITUTION.md)
   ↓
+交付管线 canonical 规范 (docs/goal/：pipeline / edge model / DoD / ID 体系 / lint 规则)
+  ↓
 模块规格 (module/*/spec/SPEC.md)
   ↓
 交付治理文档 (docs/governance/DEVELOPMENT-WORKFLOW.md, TRACEABILITY.md, LIFECYCLE.md 等)
@@ -24,6 +26,8 @@
   ↓
 其他文档
 ```
+
+> goal 文档（`docs/goal/`）定义交付管线的 canonical schema：制品层级、canonical edge model（§9）、状态机、DoD、ID 体系与 lint 规则。governance 文档与 SPEC 的 schema 均投影自 goal。当 governance 与 goal 冲突时，以 goal 为 canonical 源；当 goal 与宪法冲突时，以宪法为准。goal 文档自身的修订走 §12 修正程序。
 
 ### 13.2 适用范围
 

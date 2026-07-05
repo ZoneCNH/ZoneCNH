@@ -5,21 +5,21 @@
   "metadata_refreshed_at": "2026-07-02T00:00:00Z",
   "metadata_refresh_note": "manual metadata refresh 2026-07-02: 13-module version aligned to GitHub Release latest (published release, tag-only excluded); 8-module note corrected to reflect BLK-001~011 all resolved (blockers.json confirmed); removed stale 'BLK open / factory=false / release=false' text that contradicted factory=true/release=true fields and trust_hardening empty arrays",
   "source": ".foundationx/status/index.json",
-  "total_modules": 21,
+  "total_modules": 25,
   "verified_against": {
     "STATUS.md": "2026-06-24",
-    "FOUNDATION-DEPS.yaml": "v1.2.2 (2026-06-17)",
+    "FOUNDATION-DEPS.yaml": "v1.3.0 (2026-07-03)",
     "ROADMAP.md": "PR #364 merged",
     "EXT_CI": "gh api batch check (2026-06-14)",
     "ADOPT": "FOUNDATION-DEPS.yaml reverse deps (2026-06-14)",
     "SOAK": "STATUS.md + .repo-contract.yaml evidence (2026-06-14)"
   },
   "summary": {
-    "spec_complete": 21,
-    "impl_complete": 21,
-    "release_published": 21,
+    "spec_complete": 25,
+    "impl_complete": 25,
+    "release_published": 25,
     "live_integration": 7,
-    "factory_grade": 20,
+    "factory_grade": 24,
     "open_blockers": 0
   },
   "modules": {
@@ -295,6 +295,58 @@
       "soak": "N/A",
       "factory": true,
       "note": "L2.5 领域共享层；factory grade；v1.0.1 已发布；live/soak N/A（纯值对象库）"
+    },
+    "decimalx": {
+      "layer": "L2.5",
+      "version": "v1.0.0",
+      "spec": true,
+      "impl": true,
+      "release": true,
+      "live": "N/A",
+      "ci": true,
+      "adopt": "N/A",
+      "soak": "N/A",
+      "factory": true,
+      "note": "L2.5 decimal 精度库；factory grade；v1.0.0 已发布；live/soak N/A（纯计算库）"
+    },
+    "domain_market": {
+      "layer": "L2.5",
+      "version": "v1.1.0",
+      "spec": true,
+      "impl": true,
+      "release": true,
+      "live": "N/A",
+      "ci": true,
+      "adopt": "N/A",
+      "soak": "N/A",
+      "factory": true,
+      "note": "L2.5 行情领域语义层；factory grade；v1.1.0 已发布；live/soak N/A（纯值对象库）"
+    },
+    "domain_macro": {
+      "layer": "L2.5",
+      "version": "v1.0.1",
+      "spec": true,
+      "impl": true,
+      "release": true,
+      "live": "N/A",
+      "ci": true,
+      "adopt": "N/A",
+      "soak": "N/A",
+      "factory": true,
+      "note": "L2.5 宏观领域语义层；factory grade；v1.0.1 已发布；live/soak N/A（纯值对象库）"
+    },
+    "domain_exchange": {
+      "layer": "L2.5",
+      "version": "v1.0.0",
+      "spec": true,
+      "impl": true,
+      "release": true,
+      "live": "N/A",
+      "ci": true,
+      "adopt": "N/A",
+      "soak": "N/A",
+      "factory": true,
+      "note": "L2.5 交易所领域语义层；factory grade；v1.0.0 已发布；live/soak N/A（纯值对象库）"
     }
   },
   "trust_hardening": {
