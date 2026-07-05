@@ -3,13 +3,13 @@
 > 日期：2026-07-05
 > 关联：`module/binance/design/ADR-007-wire-to-contracts-migration.md`（Accepted）
 > 执行计划：`plans/binance/012-wire-to-contracts-migration-plan-20260705.md`（Phase 0-5）
-> 仓库：`contracts`（v0.5.0 → v0.5.1）、`binance`（feat/wire-to-contracts-migration）
+> 仓库：`contracts`（v0.5.0 → v0.5.1 → v0.5.2）、`binance`（feat/wire-to-contracts-migration）
 
 ## 1. 实施摘要
 
-ADR-002 过渡态闭环。`internal/wire` 删除，C/S 共享契约迁入 `contracts` canonical（v0.5.0 富化，v0.5.1 移除 `IngestAck.RequestID` 死字段）。binance 新增 `internal/ingestcodec` boundary 层承载 `domainmarket.InstrumentKey ↔ json.RawMessage` 序列化与 BNC 私有码→canonical 码映射。
+ADR-002 过渡态闭环。`internal/wire` 删除，C/S 共享契约迁入 `contracts` canonical（v0.5.0 富化，v0.5.1 移除 `IngestAck.RequestID` 死字段，v0.5.2 移除 `IngestReject.RequestID` 死字段）。binance 新增 `internal/ingestcodec` boundary 层承载 `domainmarket.InstrumentKey ↔ json.RawMessage` 序列化与 BNC 私有码→canonical 码映射。
 
-## 2. contracts 仓变更（v0.5.0 breaking + v0.5.1 patch）
+## 2. contracts 仓变更（v0.5.0 breaking + v0.5.1/v0.5.2 patch）
 
 - `pkg/contracts/ingestion.go`：`IngestRequest` 补 Symbol/PayloadHash/TraceContext/Quality；`IngestAck` 补 AcceptedKey/AcceptedAt/Quality/Gap/SLA；新增 `TraceContext`/`QualityVerdict`/`GapStatus`/`SLAStatus` 导出类型；`IngestResult` 新增 `IsAck`/`IsReject`/`Validate()`/`ErrAckRejectMutuallyExclusive`。
 - `pkg/contracts/ingestion_test.go`：新字段 JSON round-trip + 不变量方法覆盖。
@@ -22,7 +22,7 @@ ADR-002 过渡态闭环。`internal/wire` 删除，C/S 共享契约迁入 `contr
 
 - 新增 `internal/ingestcodec/`：doc.go / aliases.go（contracts DTO 类型别名 + `IngestEndpoint` + 构造器 + `BoolToInt32`）/ bnc_code.go（BNC-001..019 + `BNCCodeToCanonical` 映射 + canonical 常量重导出）/ instrumentkey.go（Marshal/Unmarshal/MustMarshal）/ codec_test.go。
 - 删除 `internal/wire/`（5 文件）。
-- `go.mod`：新增 `github.com/ZoneCNH/contracts v0.5.1` direct 依赖（v0.5.0 → v0.5.1，移除 `replace` 指令）。
+- `go.mod`：新增 `github.com/ZoneCNH/contracts v0.5.2` direct 依赖（v0.5.0 → v0.5.1 → v0.5.2，移除 `replace` 指令）。
 - 69 文件改动（+1076/−1662）：62 个 import 站点迁移，字段重命名（`IdempotencyKey`→`RequestID`、`Duplicate`(bool)→`DuplicateCount`(int)）、`IngestReject.Code`(BNC)→`RejectCode`(canonical)、InstrumentKey boundary 序列化。
 
 ## 4. 验证证据
