@@ -35,6 +35,7 @@ ZoneCNH 的 `FoundationX` 量化交易基础设施文档枢纽，也是 `ZoneCNH
 - **全量 404 扫描**：`grep -oPh 'github\.com/ZoneCNH/[a-zA-Z0-9_.-]+' STATUS.md README.md ARCHITECTURE.md | sort -u | while read u; do repo=${u#ZoneCNH/}; gh api "repos/ZoneCNH/$repo" >/dev/null 2>&1 || echo "404: $repo"; done`
 - CI 检查 `repo-existence-check.sh` 验证 HTTP 200
 - 例外：`contracts` / `transportx` / `xlib_harness` / `xlib_evidence` 共享 `xlib_standard` Go module，但各自拥有独立仓库
+- **创建授权门禁（宪法 §2.6）**：未经双闸门授权（治理层 §12 修正程序审批 + 执行层人工会话显式授权，缺一不可），禁止创建 `module/{模块名}/` 目录和对应仓库 `https://github.com/ZoneCNH/{模块名}`。AI agent 遇此类创建请求时必须拒绝并提示须先获双闸门授权，不得以"必要性已论证""命名已合规"等理由绕过
 
 ## 当前架构模型
 
@@ -294,7 +295,7 @@ spec_ver=$(grep -oP 'Spec-Version:\s*v\d+\.\d+\.\d+' module/{module}/spec/SPEC.m
 
 **Go module 路径同步规则**：新建或重命名仓库时，`go.mod` 中的 `module` 声明必须与仓库名保持一致，即 `module github.com/ZoneCNH/{snake_case_name}`。
 
-**新建仓库时**：命名必须符合 snake_case，否则 AI agent 应拒绝创建并提示修正。
+**新建仓库时**：命名必须符合 snake_case，否则 AI agent 应拒绝创建并提示修正。创建动作另须满足宪法 [§2.6 模块与仓库创建授权](docs/constitution/02-module-boundaries.md) 的双闸门授权，缺一不可。
 
 # Harness 自动化
 

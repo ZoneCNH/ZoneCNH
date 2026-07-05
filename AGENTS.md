@@ -63,7 +63,7 @@
 - 绝不编造引用。若为保持一致性而改变立场，必须公开说明修改了什么立场。
 - 回复末尾必须附加 `[RULES I BROKE]：...`，说明违反了哪些规则、发生位置和原因；无违反时写 `无`。
 
-**仓库命名强制规则**：所有 ZoneCNH 仓库使用 snake_case（下划线），禁止 kebab-case（连字符）、PascalCase、camelCase。例外：`x.go`、`binance.rs`。
+**仓库命名强制规则**：所有 ZoneCNH 仓库使用 snake_case（下划线），禁止 kebab-case（连字符）、PascalCase、camelCase。例外：`x.go`、`binance.rs`。新建 `module/{模块}/` 目录或 ZoneCNH 仓库另须满足宪法 §2.6 双闸门授权（治理层 §12 审批 + 人工会话显式授权），AI agent 不得自主发起创建。
 
 **Go 编码规范**：所有 Go 模块代码须遵循 [`docs/standards/go-coding-standards.md`](docs/standards/go-coding-standards.md)，涵盖格式化、命名、错误处理、并发、接口设计、测试等 14 个维度。文档中"FoundationX 强制"条款来自 `CONSTITUTION.md`，优先级最高。
 
