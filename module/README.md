@@ -188,7 +188,7 @@ Foundation 目录内的执行域共享值对象规格，用于订单、成交、
 
 ---
 
-## 数据域（14 个）
+## 数据域（17 个）
 
 数据采集与分发。C/S Module（交易所采集器）与独立进程（聚合层）混合。registry `domain=data`。
 
@@ -206,6 +206,9 @@ Foundation 目录内的执行域共享值对象规格，用于订单、成交、
 | japan_cb | C/S | [SPEC.md](./japan_cb/spec/SPEC.md) | BoJ 日本央行宏观与政策数据采集 |
 | yahoo | C/S | [SPEC.md](./yahoo/spec/SPEC.md) | Yahoo Finance 宏观代理与多资产数据采集 |
 | treasury | C/S | — | 美国国债/财政数据采集 |
+| bea | C/S | [SPEC.md](./bea/spec/SPEC.md) | BEA 美国经济分析局宏观数据采集 |
+| eastmoney | C/S | [SPEC.md](./eastmoney/spec/SPEC.md) | 东方财富宏观与市场数据采集 |
+| yield_curve | C/S | [SPEC.md](./yield_curve/spec/SPEC.md) | 收益率曲线数据采集 |
 | market_data | 独立进程 | [SPEC.md](./market_data/SPEC.md) | 行情摄取与分发聚合层（14 子模块） |
 | macro_data | 独立进程 | [SPEC.md](./macro_data/SPEC.md) | 宏观摄取与分发聚合层（12/12 子模块） |
 | pe_data | 独立进程 | [SPEC.md](./pe_data/SPEC.md) | 另类数据（PE 相关）摄取 |

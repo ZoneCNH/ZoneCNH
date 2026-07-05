@@ -574,6 +574,90 @@ treasury:
   release:
     cadence: irregular
 
+bea:
+  repo: github.com/ZoneCNH/bea
+  local_path: /home/workspace/bea
+  domain: data
+  layer: business
+  arch_type: cs_module
+  lifecycle: proposed
+  owner: ZoneCNH
+  registered: 2026-07-04
+  spec_ref: module/bea/spec/SPEC.md
+  spec_version: v0.2.0
+  release:
+    cadence: irregular
+
+eastmoney:
+  repo: github.com/ZoneCNH/eastmoney
+  local_path: /home/workspace/eastmoney
+  domain: data
+  layer: business
+  arch_type: cs_module
+  lifecycle: proposed
+  owner: ZoneCNH
+  registered: 2026-07-04
+  spec_ref: module/eastmoney/spec/SPEC.md
+  spec_version: v0.1.0
+  release:
+    cadence: irregular
+
+ecb:
+  repo: github.com/ZoneCNH/ecb
+  local_path: /home/workspace/ecb
+  domain: data
+  layer: business
+  arch_type: cs_module
+  lifecycle: proposed
+  owner: ZoneCNH
+  registered: 2026-07-04
+  spec_ref: module/ecb/spec/SPEC.md
+  spec_version: v1.0.0
+  release:
+    cadence: irregular
+
+japan_cb:
+  repo: github.com/ZoneCNH/japan_cb
+  local_path: /home/workspace/japan_cb
+  domain: data
+  layer: business
+  arch_type: cs_module
+  lifecycle: proposed
+  owner: ZoneCNH
+  registered: 2026-07-04
+  spec_ref: module/japan_cb/spec/SPEC.md
+  spec_version: v1.0.0
+  release:
+    cadence: irregular
+
+uk_cb:
+  repo: github.com/ZoneCNH/uk_cb
+  local_path: /home/workspace/uk_cb
+  domain: data
+  layer: business
+  arch_type: cs_module
+  lifecycle: proposed
+  owner: ZoneCNH
+  registered: 2026-07-04
+  spec_ref: module/uk_cb/spec/SPEC.md
+  spec_version: v1.0.0
+  release:
+    cadence: irregular
+
+yield_curve:
+  repo: github.com/ZoneCNH/yield_curve
+  local_path: /home/workspace/yield_curve
+  domain: data
+  layer: business
+  arch_type: cs_module
+  lifecycle: proposed
+  owner: ZoneCNH
+  registered: 2026-07-04
+  spec_ref: module/yield_curve/spec/SPEC.md
+  spec_version: v0.1.0
+  release:
+    cadence: irregular
+
 # --- 独立进程聚合层 ---
 market_data:
   repo: github.com/ZoneCNH/market_data
