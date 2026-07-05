@@ -17,7 +17,7 @@
 # 强制级别：本文件字段变更须遵循 01-module-registry.md §4 登记变更规则。
 
 schema_version: module-registry/v1
-updated: 2026-07-05
+updated: 2026-07-06
 
 # ============================================================================
 # 基座层（Foundation）— 20 模块
@@ -1103,3 +1103,5 @@ portfolio_engine:
 # data_independent_process: 模板目录 — 独立进程 SPEC 模板，非运行时模块
 # _exchange-template: 模板目录 — 交易所 C/S 模块骨架模板
 # _template: 模板目录 — C/S 模块通用模板（含 cex-cs-module/ 子目录）
+# 模板体系统一入口：module/_template/README.md（索引上述四个模板，消除碎片化）
+# 模板体系统一入口：module/_template/README.md（索引上述四个模板，消除碎片化）
