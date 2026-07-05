@@ -56,7 +56,7 @@ rg "github.com/ZoneCNH/contracts" --type go → ≥1 命中
 - [x] binance `go build/test/race/vet` PASS（含 `./test/...` race）
 - [x] `boundary-gates.sh` 15/15 PASS
 - [x] contracts `go test -race ./...` PASS（含 scripts stale test fix）
-- [x] contracts 版本常量 `v0.5.0` 全仓同步；v0.5.1 移除 `IngestAck.RequestID` 死字段
+- [x] contracts 版本常量 `v0.5.0` 全仓同步；v0.5.1 移除 `IngestAck.RequestID` 死字段；v0.5.2 移除 `IngestReject.RequestID` 死字段
 - [x] ADR-007 Accepted，ADR-002 Superseded
 - [x] Evidence 归档（本文件）
 
@@ -76,9 +76,11 @@ rg "github.com/ZoneCNH/contracts" --type go → ≥1 命中
 |------|-----|------|
 | contracts | [#20](https://github.com/ZoneCNH/contracts/pull/20) | `AllRejectCodes()` 漏收 `RejectUnsupportedChannel`（9→10） |
 | contracts | [#21](https://github.com/ZoneCNH/contracts/pull/21) | 移除 `IngestAck.RequestID` 死字段（v0.5.1 tag） |
+| contracts | [#22](https://github.com/ZoneCNH/contracts/pull/22) | 移除 `IngestReject.RequestID` 死字段（v0.5.2 tag） |
 | binance | [#434](https://github.com/ZoneCNH/binance/pull/434) | 升级 v0.5.1 + `boolToInt32` DRY 收敛 |
 | binance | [#435](https://github.com/ZoneCNH/binance/pull/435) | consumer JSON payload 字段名 + `Code`→`RejectCode` + BNC 码→canonical |
 | binance | [#436](https://github.com/ZoneCNH/binance/pull/436) | `live_assembly_test.go` config 字段漂移修复 |
 | binance | [#437](https://github.com/ZoneCNH/binance/pull/437) | `depth_test.go` RejectCode 类型不匹配 + `http_ingest_endpoint_test` canonical 语义 + go.sum tidy |
+| binance | [#438](https://github.com/ZoneCNH/binance/pull/438) | 升级 v0.5.2 + 移除 4 处 `IngestReject.RequestID` 冗余写入 |
 
-验证：7 个 build tag 全部 0 FAIL；全局 RejectCode 类型不匹配/BNC 字符串残留 0 命中。
+验证：7 个 build tag 全部 0 FAIL；全局 RejectCode 类型不匹配/BNC 字符串残留 0 命中；`IngestAck.RequestID` + `IngestReject.RequestID` 死字段均已移除。
