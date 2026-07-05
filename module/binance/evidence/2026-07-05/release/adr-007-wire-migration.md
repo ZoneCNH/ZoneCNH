@@ -3,13 +3,13 @@
 > 日期：2026-07-05
 > 关联：`module/binance/design/ADR-007-wire-to-contracts-migration.md`（Accepted）
 > 执行计划：`plans/binance/012-wire-to-contracts-migration-plan-20260705.md`（Phase 0-5）
-> 仓库：`contracts`（v0.5.0 → v0.5.1）、`binance`（feat/wire-to-contracts-migration）
+> 仓库：`contracts`（v0.5.0 → v0.5.1 → v0.5.2）、`binance`（feat/wire-to-contracts-migration）
 
 ## 1. 实施摘要
 
-ADR-002 过渡态闭环。`internal/wire` 删除，C/S 共享契约迁入 `contracts` canonical（v0.5.0 富化，v0.5.1 移除 `IngestAck.RequestID` 死字段）。binance 新增 `internal/ingestcodec` boundary 层承载 `domainmarket.InstrumentKey ↔ json.RawMessage` 序列化与 BNC 私有码→canonical 码映射。
+ADR-002 过渡态闭环。`internal/wire` 删除，C/S 共享契约迁入 `contracts` canonical（v0.5.0 富化，v0.5.1 移除 `IngestAck.RequestID` 死字段，v0.5.2 移除 `IngestReject.RequestID` 死字段）。binance 新增 `internal/ingestcodec` boundary 层承载 `domainmarket.InstrumentKey ↔ json.RawMessage` 序列化与 BNC 私有码→canonical 码映射。
 
-## 2. contracts 仓变更（v0.5.0 breaking + v0.5.1 patch）
+## 2. contracts 仓变更（v0.5.0 breaking + v0.5.1/v0.5.2 patch）
 
 - `pkg/contracts/ingestion.go`：`IngestRequest` 补 Symbol/PayloadHash/TraceContext/Quality；`IngestAck` 补 AcceptedKey/AcceptedAt/Quality/Gap/SLA；新增 `TraceContext`/`QualityVerdict`/`GapStatus`/`SLAStatus` 导出类型；`IngestResult` 新增 `IsAck`/`IsReject`/`Validate()`/`ErrAckRejectMutuallyExclusive`。
 - `pkg/contracts/ingestion_test.go`：新字段 JSON round-trip + 不变量方法覆盖。
@@ -22,7 +22,7 @@ ADR-002 过渡态闭环。`internal/wire` 删除，C/S 共享契约迁入 `contr
 
 - 新增 `internal/ingestcodec/`：doc.go / aliases.go（contracts DTO 类型别名 + `IngestEndpoint` + 构造器 + `BoolToInt32`）/ bnc_code.go（BNC-001..019 + `BNCCodeToCanonical` 映射 + canonical 常量重导出）/ instrumentkey.go（Marshal/Unmarshal/MustMarshal）/ codec_test.go。
 - 删除 `internal/wire/`（5 文件）。
-- `go.mod`：新增 `github.com/ZoneCNH/contracts v0.5.1` direct 依赖（v0.5.0 → v0.5.1，移除 `replace` 指令）。
+- `go.mod`：新增 `github.com/ZoneCNH/contracts v0.5.2` direct 依赖（v0.5.0 → v0.5.1 → v0.5.2，移除 `replace` 指令）。
 - 69 文件改动（+1076/−1662）：62 个 import 站点迁移，字段重命名（`IdempotencyKey`→`RequestID`、`Duplicate`(bool)→`DuplicateCount`(int)）、`IngestReject.Code`(BNC)→`RejectCode`(canonical)、InstrumentKey boundary 序列化。
 
 ## 4. 验证证据
@@ -56,7 +56,7 @@ rg "github.com/ZoneCNH/contracts" --type go → ≥1 命中
 - [x] binance `go build/test/race/vet` PASS（含 `./test/...` race）
 - [x] `boundary-gates.sh` 15/15 PASS
 - [x] contracts `go test -race ./...` PASS（含 scripts stale test fix）
-- [x] contracts 版本常量 `v0.5.0` 全仓同步；v0.5.1 移除 `IngestAck.RequestID` 死字段
+- [x] contracts 版本常量 `v0.5.0` 全仓同步；v0.5.1 移除 `IngestAck.RequestID` 死字段；v0.5.2 移除 `IngestReject.RequestID` 死字段
 - [x] ADR-007 Accepted，ADR-002 Superseded
 - [x] Evidence 归档（本文件）
 
@@ -76,9 +76,11 @@ rg "github.com/ZoneCNH/contracts" --type go → ≥1 命中
 |------|-----|------|
 | contracts | [#20](https://github.com/ZoneCNH/contracts/pull/20) | `AllRejectCodes()` 漏收 `RejectUnsupportedChannel`（9→10） |
 | contracts | [#21](https://github.com/ZoneCNH/contracts/pull/21) | 移除 `IngestAck.RequestID` 死字段（v0.5.1 tag） |
+| contracts | [#22](https://github.com/ZoneCNH/contracts/pull/22) | 移除 `IngestReject.RequestID` 死字段（v0.5.2 tag） |
 | binance | [#434](https://github.com/ZoneCNH/binance/pull/434) | 升级 v0.5.1 + `boolToInt32` DRY 收敛 |
 | binance | [#435](https://github.com/ZoneCNH/binance/pull/435) | consumer JSON payload 字段名 + `Code`→`RejectCode` + BNC 码→canonical |
 | binance | [#436](https://github.com/ZoneCNH/binance/pull/436) | `live_assembly_test.go` config 字段漂移修复 |
 | binance | [#437](https://github.com/ZoneCNH/binance/pull/437) | `depth_test.go` RejectCode 类型不匹配 + `http_ingest_endpoint_test` canonical 语义 + go.sum tidy |
+| binance | [#438](https://github.com/ZoneCNH/binance/pull/438) | 升级 v0.5.2 + 移除 4 处 `IngestReject.RequestID` 冗余写入 |
 
-验证：7 个 build tag 全部 0 FAIL；全局 RejectCode 类型不匹配/BNC 字符串残留 0 命中。
+验证：7 个 build tag 全部 0 FAIL；全局 RejectCode 类型不匹配/BNC 字符串残留 0 命中；`IngestAck.RequestID` + `IngestReject.RequestID` 死字段均已移除。

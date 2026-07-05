@@ -112,7 +112,7 @@ contracts 是 ZoneCNH 跨域接口契约模块，定义 `Event`/`Command`/`Query
 - `IngestRequest` 字段：`RequestID`、`Source`、`ProductLine`、`Symbol`、`InstrumentKey`（`json.RawMessage`）、`EventType`、`EventTime`、`ReceivedAt`、`SchemaVersion`、`Payload`（`json.RawMessage`）、`PayloadHash`、`Sequence`、`OrderingKey`、`SourceMetadata`、`TraceContext`、`Quality`
 - `IngestResult` 只携带一个结果分支：`Ack` 或 `Reject`
 - `IngestAck` 字段：`StreamID`、`AcceptedKey`、`AcceptedCount`、`DuplicateCount`、`Durable`、`AcceptedAt`、`Quality`、`Gap`、`SLA`
-- `IngestReject` 字段：`RequestID`、`RejectCode`、`Reason`、`Retryable`
+- `IngestReject` 字段：`RejectCode`、`Reason`、`Retryable`
 - 跨域语义辅助类型（contracts 导出）：`TraceContext`（W3C traceparent/tracestate/baggage）、`QualityVerdict`（cleansing verdict）、`GapStatus`（event-time gap）、`SLAStatus`（freshness/processing latency）
 - `RejectCode` 的 canonical 集合由 `AllRejectCodes()` 给出，共 10 个：`RejectRetryable`、`RejectTerminalValidation`、`RejectTerminalConflict`、`RejectUnauthorized`、`RejectRateLimited`、`RejectServerUnavailable`、`RejectContractViolation`、`RejectQualityRejected`、`RejectOrderingViolation`、`RejectUnsupportedChannel`
 - `RejectUnsupportedChannel` 仍然导出，并且属于 canonical 集合

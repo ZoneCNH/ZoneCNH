@@ -135,7 +135,7 @@
 | BR-005 No Runtime Shared Package | Done | `/home/workspace/binance/BOUNDARY-GATES.md` §5/§6 与 2026-06-23 本地证据已声明并验证禁止运行时共享包回流。 |
 | BR-006 Server Owns Binance Storage | Done | `/home/workspace/binance/BOUNDARY-GATES.md` §7 证明 Server 只拥有 Binance-specific storage，不上移为通用 market_data。 |
 | BR-007 No Domain Ownership | Done | `/home/workspace/binance/BOUNDARY-GATES.md` §9 证明 Binance 只消费 `domain_market` 语义，不能定义 canonical domain。 |
-| BR-008 Wire Contract Externality | Done | `/home/workspace/binance/BOUNDARY-GATES.md` §8 证明无本地 `.proto`/gRPC ingest schema；runtime 使用 natsx subject + `contracts` canonical 契约（v0.5.1，ADR-007 闭环），binance 经 `internal/ingestcodec` boundary 序列化，canonical 语义外置。 |
+| BR-008 Wire Contract Externality | Done | `/home/workspace/binance/BOUNDARY-GATES.md` §8 证明无本地 `.proto`/gRPC ingest schema；runtime 使用 natsx subject + `contracts` canonical 契约（v0.5.2，ADR-007 闭环），binance 经 `internal/ingestcodec` boundary 序列化，canonical 语义外置。 |
 | BR-009 go.mod Dependency Compliance | Done | `/home/workspace/binance/BOUNDARY-GATES.md` §11 证明 runtime `go.mod` 与边界依赖合规。 |
 | NFR-001~004 Performance | Done | SLO benchmark 24 项全 PASS（Normalize 3.4μs / Ingest 2.8μs / API 2.6μs）。 |
 | NFR-005~009 Storage/API | Done | 存储/API runtime 装配闭合；数据一致性、查询 SLA、归档安全已验证。 |
