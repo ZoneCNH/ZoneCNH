@@ -1,11 +1,11 @@
 # 计划：internal/wire → contracts 迁移（ADR-002 闭环）
 
-> 状态：**Shipped**（Phase 0-5 实施 + 三仓 PR 全部合入 + contracts v0.5.0 tag 发布，2026-07-05）
+> 状态：**Shipped**（Phase 0-5 实施 + 三仓 PR 合入 + contracts v0.5.0/v0.5.1 tag 发布 + 迁移残留全量清理，2026-07-05）
 > 日期：2026-07-05
 > 仓库归属：ZoneCNH 主仓 `plans/binance/`（治理计划）；代码改动分布在 `binance` 与 `contracts` 两个 runtime 仓
 > 关联：`module/binance/design/ADR-007-wire-to-contracts-migration.md`（本计划闭环 ADR-002 的"待迁移"状态）
 > 权威：CONSTITUTION.md §4 接口契约 + `module/FOUNDATION-DEPS.yaml` 依赖矩阵
-> PR：contracts [#19](https://github.com/ZoneCNH/contracts/pull/19)（v0.5.0）、binance [#432](https://github.com/ZoneCNH/binance/pull/432)、ZoneCNH [#1679](https://github.com/ZoneCNH/ZoneCNH/pull/1679)
+> PR：contracts [#19](https://github.com/ZoneCNH/contracts/pull/19)（v0.5.0）、[#20](https://github.com/ZoneCNH/contracts/pull/20)（AllRejectCodes 修复）、[#21](https://github.com/ZoneCNH/contracts/pull/21)（IngestAck.RequestID 移除，v0.5.1）；binance [#432](https://github.com/ZoneCNH/binance/pull/432)、[#434](https://github.com/ZoneCNH/binance/pull/434)、[#435](https://github.com/ZoneCNH/binance/pull/435)、[#436](https://github.com/ZoneCNH/binance/pull/436)、[#437](https://github.com/ZoneCNH/binance/pull/437)；ZoneCNH [#1679](https://github.com/ZoneCNH/ZoneCNH/pull/1679)、[#1680](https://github.com/ZoneCNH/ZoneCNH/pull/1680)、[#1681](https://github.com/ZoneCNH/ZoneCNH/pull/1681)
 
 ## 0. 背景与现状（事实基线）
 
@@ -281,7 +281,34 @@ P2/P3/P4 合并为 binance 单 PR #432；P1 为 contracts 独立 PR #19。实际
 
 详见 `module/binance/evidence/2026-07-05/release/adr-007-wire-migration.md` §6 待办。
 
-## 7. 不在本计划范围（Non-goals）
+## 8. Post-ship 修复日志（2026-07-05，迁移残留全量清理）
+
+> 发布后对三仓做了 26 轮深度排查，发现并修复 11 处迁移残留。根因均为迁移时测试代码未同步对齐 canonical 语义。
+
+### contracts 仓
+
+| PR | 修复 | tag |
+|----|------|-----|
+| [#20](https://github.com/ZoneCNH/contracts/pull/20) | `AllRejectCodes()` 漏收 `RejectUnsupportedChannel`（9→10） | — |
+| [#21](https://github.com/ZoneCNH/contracts/pull/21) | 移除 `IngestAck.RequestID` 死字段（从未被填充，权威载体为 `IngestResult.RequestID`） | v0.5.1 |
+
+### binance 仓
+
+| PR | 修复 | 根因分类 |
+|----|------|----------|
+| [#434](https://github.com/ZoneCNH/binance/pull/434) | 升级 contracts v0.5.1 + 删除本地 `boolToInt32` 改用 `ingestcodec.BoolToInt32` | DRY 收敛 |
+| [#435](https://github.com/ZoneCNH/binance/pull/435) | consumer 测试 JSON payload `IdempotencyKey`/`ProductLine`/`EventType` → `request_id`/`product_line`/`event_type`（PascalCase 不匹配 snake_case tag，反序列化全零值）；`consumer_integration_test.go` `Code` 字段不存在 → `RejectCode` + `BNCCodeToCanonical`（integration tag 编译失败）；`main_test.go` `RejectCode: "BNC-001"` → `BNCCodeToCanonical` | JSON tag 对齐 + 字段名对齐 + canonical 语义对齐 |
+| [#436](https://github.com/ZoneCNH/binance/pull/436) | `live_assembly_test.go` `NATS.Username` → `User`（字段重命名）；`IngestTransport`/`AdminAddr`/`AdminToken` 从 struct literal 移至构造后赋值（promoted 字段语法限制） | config 字段漂移（非迁移引入，同期修复） |
+| [#437](https://github.com/ZoneCNH/binance/pull/437) | `depth_test.go` 4 处 `RejectCode != CodeDuplicateConflict` 类型不匹配（`contracts.RejectCode` vs `ingestcodec.RejectCode`，depth tag 编译失败）；`http_ingest_endpoint_test.go` `RejectCode: "BNC-007"` BNC 字符串塞入 canonical 字段；`go.sum` tidy 清理 v0.5.0 残留 | 类型不匹配 + canonical 语义对齐 |
+
+### 验证
+
+- 7 个 build tag（integration/security/chaos/depth/e2e/e2e_live/tools）全部 0 FAIL
+- 全局 `RejectCode` 类型不匹配排查：0 残留
+- 全局 BNC 字符串塞入 canonical 字段排查：0 残留
+- `go build/vet/test -short -race` 全绿；`boundary-gates.sh` 15/15 PASS
+
+## 9. 不在本计划范围（Non-goals）
 
 - 不重构 binance client/server 业务逻辑（仅切换契约类型来源）
 - 不引入 transportx（Envelope 迁移是独立 ADR，见 `docs/production-standards/transportx.md`）
