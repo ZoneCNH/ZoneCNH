@@ -1,11 +1,11 @@
 # Binance Traceability Matrix
 
-- [KNOWN] Matrix-Version: v3.10.0
+- [KNOWN] Matrix-Version: v3.12.0
 - [KNOWN] Last-Updated: 2026-07-05
-- Source-SPEC: `module/binance/spec/SPEC.md` v3.10.0
+- Source-SPEC: `module/binance/spec/SPEC.md` v3.12.0
 - State-Model: single-state only
-- [KNOWN] Current-State: 48 Done / 0 Partial / 0 Drifted / 0 Pending（2026-07-05 PRG-006 PASS；release_closeable=YES）
-- [KNOWN] release_closeable: YES
+- [KNOWN] Current-State: 54 Done / 0 Partial / 0 Drifted / 0 Pending（FR-045~050 白名单系统实现完成 + assembly 装配）
+- [KNOWN] release_closeable: YES（54/54 = 100% ≥ 90%）
 
 ## 1. Rule
 
@@ -63,6 +63,12 @@ This matrix is the compact FR/BR/AC/TC projection. It intentionally does not dup
 | FR-042 | BR-005 | AC-007 | soak evidence needed | Done（Soak L1+L2 全覆盖：`TestSoak_ServerStability` CI PASS + `TestSoak_BinancePipeline` 全管线 WS→TDengine 已实现） |
 | FR-043 | BR-005 | AC-007 | chaos evidence needed | Done（Chaos L1+L2 全覆盖：4 项故障注入 CI PASS + `TestChaos_{NATSStop,RedisStop,ProcessKill}Recovery` 真实故障注入已实现） |
 | FR-044 | BR-005 | AC-007 | security hardening evidence needed | Done（Security L2 全覆盖：6 项安全测试 CI PASS，gitleaks + govulncheck + admin auth 全 PASS） |
+| FR-045 | BR-009 | AC-001 | Whitelist Sync Job（ADR-006 rewrite） | Done |
+| FR-046 | BR-009 | AC-001 | whitelist 表 + version SSOT + sync_log | Done |
+| FR-047 | BR-009 | AC-001 | GET /internal/whitelist API | Done |
+| FR-048 | BR-009 | AC-001 | NATS binance.whitelist.version 推送 | Done |
+| FR-049 | BR-009 | AC-001 | 下游消费方 SDK | Done |
+| FR-050 | BR-009 | AC-001 | catalog_symbols 扩展字段 | Done |
 
 ## 3. Acceptance Criteria
 
@@ -84,7 +90,7 @@ release_closeable 判定公式：
 release_closeable = Code-Done FR / Total FR ≥ 90% AND Drifted FR = 0 AND Pending FR = 0 AND PRG-001~007 gates PASS
 ```
 
-当前状态：`release_closeable: YES`（48 FR: 48 Done = 100% ≥ 90%，PRG-001~007 全 PASS）。
+当前状态：`release_closeable: YES`（54 FR: 54 Done = 100% ≥ 90%，PRG-001~007 全 PASS）。
 
 | PRG | Gate | State | Evidence |
 | --- | --- | --- | --- |
@@ -122,8 +128,8 @@ Beads and GitHub issues are the current P10 tracking SSOT. The retired local pro
 
 | Metric | Value |
 | --- | --- |
-| FR total | 48 |
-| Done | 48 |
+| FR total | 54 |
+| Done | 54 |
 | Partial | 0 |
 | Drifted | 0 |
 | Pending | 0 |
@@ -133,4 +139,4 @@ Beads and GitHub issues are the current P10 tracking SSOT. The retired local pro
 
 > **运行时缺口投影**：本矩阵统计规格口径（48 Done）。运行时口径的 58 个缺口（GAP-E1~E58）对应的 28 个 GitHub Issues 已于 2026-07-05 全部关闭。PRG-006 gated resilience 测试已 CI-runnable。两者正交——规格 Done 表示 FR 功能面已闭合，运行时修复表示 GAP-E 缺口已处理。详见该文件 §7 双口径声明。
 >
-> release_closeable = Code-Done FR / Total FR = 48/48 = 100% ≥ 90%，PRG-001~007 全 PASS → release_closeable=YES。
+> release_closeable = Code-Done FR / Total FR = 54/54 = 100% ≥ 90%，PRG-001~007 全 PASS → release_closeable=YES。

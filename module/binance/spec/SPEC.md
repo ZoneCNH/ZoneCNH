@@ -1,12 +1,12 @@
 # Binance SPEC
 
-- Spec-Version: v3.10.0
+- Spec-Version: v3.12.0
 - Module: binance
-- Last-Updated: 2026-07-05（PRG-006 PASS：gated resilience 测试 CI-runnable；release_closeable=YES）
+- Last-Updated: 2026-07-05（FR-045~050 白名单系统实现完成 + assembly 装配）
 - Runtime-Repo: `/home/workspace/binance`
 - Runtime-Version: v0.13.0
 - State-Model: single-state only
-- Current-State: 48 Done / 0 Partial / 0 Drifted / 0 Pending
+- Current-State: 54 Done / 0 Partial / 0 Drifted / 0 Pending
 - release_closeable: YES
 - Open-P10-Issues: 0（2026-07-05 全部关闭）
 
@@ -102,6 +102,12 @@
 | FR-042 | quality | soak test | Done | soak test scripts + test/e2e suite PASS |
 | FR-043 | quality | chaos test | Done | chaos test scripts + go test -race PASS (0 races) |
 | FR-044 | security | admin auth, mTLS, scan gates, pentest readiness | Done | gitleaks scan + govulncheck + admin auth Bearer token |
+| FR-045 | whitelist | Whitelist Sync Job（事件驱动 + 定时兜底 + PG advisory lock 单写者） | Done | whitelist/sync_job.go + rules.go |
+| FR-046 | whitelist | whitelist 表 + whitelist_meta version SSOT + whitelist_sync_log 审计 | Done | pg_whitelist.go + migrations/011_whitelist.sql |
+| FR-047 | API | GET /internal/whitelist（全量 + 增量，200 统一响应） | Done | whitelist/service.go + api/whitelist_handler.go |
+| FR-048 | notify | NATS subject `binance.whitelist.version` 推送（core NATS fire-and-forget） | Done | whitelist/publisher.go + assembly NATS 注入 |
+| FR-049 | consumer | 下游消费方 SDK（缓存 3h TTL + NATS 订阅 + 增量刷新 + 容灾降级） | Done | pkg/whitelistclient/cache.go + client.go |
+| FR-050 | catalog | catalog_symbols 扩展字段（exchange_status/last_seen_at/tier/collection/raw_extra） | Done | migrations/011_whitelist.sql + pg_catalog.go ApplyDiff |
 
 ## 8. Business Requirements
 
@@ -115,6 +121,7 @@
 | BR-006 | runtime-gap issue closure must be backed by merged runtime evidence | FR-023, FR-037~044 |
 | BR-007 | issue status projection docs must match GitHub issue snapshot | FR-030, FR-037 |
 | BR-008 | issue close workflow must run runtime-gap closure gate script | FR-037, FR-040, FR-043 |
+| BR-009 | downstream consumers obtain business-approved symbol subset from server, not from exchange directly | FR-045~050 |
 
 ## 9. Acceptance Criteria
 
@@ -135,6 +142,7 @@
 | NATS JetStream | `binance.market.{product_line}.{event_type}.v1` | stream `BINANCE_MARKET`; version suffix mandatory |
 | Kafka optional bridge | `binance.{product_line}.{event_type}.v1` | bridge-only; not a replacement for NATS contract |
 | Control | `binance.control.instruments.changed`, `binance.control.symbols.changed` | no market payloads |
+| Whitelist version | `binance.whitelist.version` | core NATS pub/sub (fire-and-forget); version bump notification for downstream consumers |
 
 ## 11. Configuration
 
@@ -150,6 +158,8 @@ Configuration parameters are owned by `module/binance/design/CONFIG-SCHEMA.md` a
 | `GET /api/v1/market/funding-rate/:symbol` | query funding rate | Done |
 | `GET /api/v1/market/mark-price/:symbol` | query mark price | Done |
 | `POST /ingest` | local smoke only; production must return 404 | Done |
+| `GET /internal/whitelist` | whitelist query (full + incremental) for downstream consumers | Done (FR-047) |
+| `POST /internal/whitelist/refresh` | admin manual trigger whitelist sync | Done (FR-047) |
 
 ## 13. Persistence Boundary
 
@@ -231,7 +241,7 @@ PRG-001~007 状态如下：
 
 ## 22a. Runtime Gap Matrix Reference
 
-> **双口径声明**：本 SPEC 的统计口径（48 Done / 0 Partial / 0 Drifted / 0 Pending）表示 **规格口径**——FR 功能面已闭合。运行时口径的 58 个数据完整性/安全性/可运维性缺口记录在独立制品 `module/binance/matrix/RUNTIME-GAP-MATRIX.md` 中。两者正交，不矛盾。详见该文件 §7 双口径声明。
+> **双口径声明**：本 SPEC 的统计口径（54 Done / 0 Partial / 0 Drifted / 0 Pending）表示 **规格口径**——FR 功能面已闭合。运行时口径的 58 个数据完整性/安全性/可运维性缺口记录在独立制品 `module/binance/matrix/RUNTIME-GAP-MATRIX.md` 中。两者正交，不矛盾。详见该文件 §7 双口径声明。
 >
 > 来源报告：`report/binance/DEEP-ANALYSIS-20260704.md`（含 runtime baseline 对齐、发布阻断闭环与版本回刷证据）。
 >

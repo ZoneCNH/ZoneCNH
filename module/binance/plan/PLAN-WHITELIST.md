@@ -1,0 +1,79 @@
+# binance 白名单系统实施计划
+
+- Module-Version: v3.11.0
+- Last-Updated: 2026-07-05
+- Status: planning（FR-045~050，6 tasks，待 S5 Prompt → S6 Code）
+- Runtime-Repo: `/home/workspace/binance`
+- Source-Design: `module/binance/design/EXCHANGEINFO-WHITELIST-DESIGN.md` v0.2
+- Source-ADR: `module/binance/design/ADR-006-server-side-whitelist-rewrite.md`
+
+## 1. 目标
+
+将 binance 模块的白名单能力从"配置驱动本地过滤"升级为"服务端 DB SSOT + NATS 推送 + 下游消费方 SDK"，覆盖 FR-045~050 / BR-009。
+
+## 2. 依赖图
+
+```
+WL-001 (catalog_symbols 扩展)
+  │
+  ▼
+WL-002 (whitelist 三表 + version SSOT)
+  │
+  ▼
+WL-003 (SyncJob + 准入规则)        ← 核心 task
+  │
+  ├──────────────┐
+  ▼              ▼
+WL-004          WL-005
+(API)        (NATS push)
+  │              │
+  └──────┬───────┘
+         ▼
+      WL-006
+   (Consumer SDK)
+```
+
+## 3. 实现顺序
+
+| 序号 | Task | FR | 优先级 | 预估 | 前置 | 验证命令 |
+|------|------|----|--------|------|------|----------|
+| 1 | WL-001 catalog_symbols 扩展 | FR-050 | P0 | 3h | — | `go test ./internal/server/storage/...` |
+| 2 | WL-002 whitelist 三表 + version | FR-046 | P0 | 4h | WL-001 | `go test ./internal/server/storage/...` |
+| 3 | WL-003 SyncJob + 准入规则 | FR-045 | P1 | 6h | WL-002 | `go test ./internal/server/whitelist/...` |
+| 4 | WL-004 Whitelist API | FR-047 | P1 | 4h | WL-003 | `go test ./internal/server/api/...` |
+| 5 | WL-005 NATS version 推送 | FR-048 | P1 | 2h | WL-003 | `go test ./internal/server/whitelist/...` |
+| 6 | WL-006 Consumer SDK | FR-049 | P2 | 6h | WL-004, WL-005 | `go test ./pkg/whitelistclient/...` |
+
+> WL-004 与 WL-005 可并行（均只依赖 WL-003）。
+
+## 4. 阶段门禁
+
+| Gate | 条件 | 状态 |
+|------|------|------|
+| G-WL-0 | migration 011_whitelist.sql 幂等可执行 | Pending |
+| G-WL-1 | catalog_symbols 扩展字段 + ApplyDiff 改造测试 PASS | Pending |
+| G-WL-2 | whitelist 三表 + advisory lock 事务测试 PASS | Pending |
+| G-WL-3 | SyncJob 准入/下架/观察期规则测试 PASS | Pending |
+| G-WL-4 | API 全量/增量/无变化响应测试 PASS | Pending |
+| G-WL-5 | NATS version 推送集成测试 PASS | Pending |
+| G-WL-6 | Consumer SDK 缓存/容灾/重启恢复测试 PASS | Pending |
+| G-WL-7 | `go test ./...` 全量 PASS + `go vet ./...` 无 warning | Pending |
+
+## 5. 风险
+
+| 风险 | 影响 | 缓解 |
+|------|------|------|
+| advisory lock 在 PG 连接池下行为异常 | SyncJob 并发互斥失效 | 使用 `pg_try_advisory_xact_lock`（事务级锁），连接池需保证同一事务在同一连接 |
+| 现有 `buildSymbolWhitelist` 降级路径与 DB SSOT 冲突 | 启动时 DB 不可用仍用旧配置 | 保留旧路径作为 fallback，监控告警区分 "DB 模式" vs "降级模式" |
+| NATS 推送丢失导致下游消费方延迟感知 | 下游白名单过期 | 3h 定时刷新兜底，丢失推送最多导致 3h 延迟 |
+| options 准入规则过于宽松 | 高风险标的自动上线 | options 全部强制人工审核（§5.4.1） |
+| catalog_symbols 扩展字段影响现有查询 | 现有功能回归 | 新字段均允许 NULL/默认值，不破坏现有 SELECT |
+
+## 6. 验收标准
+
+- [ ] FR-045~050 全部标记 Done
+- [ ] `module/binance/spec/SPEC.md` Current-State: 54 Done / 0 Pending
+- [ ] `module/binance/matrix/TRACEABILITY.md` FR-045~050 行 State=Done
+- [ ] `go test ./...` PASS in `/home/workspace/binance`
+- [ ] migration `011_whitelist.sql` 幂等执行
+- [ ] release_closeable 重新判定为 YES
