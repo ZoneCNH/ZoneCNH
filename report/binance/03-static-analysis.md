@@ -20,9 +20,11 @@
 
 ## 1. 异常处理
 
-### [高] StreamExecutions 阻塞读不响应 ctx 取消
+### [高] ~~StreamExecutions 阻塞读不响应 ctx 取消~~ ✅ 已移除
 
-**位置**：`pkg/binancex/adapter.go:317-340`
+> **已修复**：adapter.go 整体移除（ADR-009），此问题自动消解。
+
+**位置**：~~`pkg/binancex/adapter.go:317-340`~~
 
 ```go
 for {
@@ -36,9 +38,11 @@ for {
 
 `conn.ReadMessage()` 阻塞直到下一条消息或连接错误。若 ctx 在 `ReadMessage` 阻塞期间取消，goroutine 不会退出，直到 Binance 端推下一条消息或 pong 超时（最长 60s）。对比 `internal/client/spot.go:99-128` 的 `gorillaConn.ReadMessage(ctx)` 用 goroutine+select 正确实现了 ctx 可取消读取。**此处是 goroutine 泄漏 / 关闭延迟风险**。
 
-### [中] ListExecutions 静默吞掉单品种错误
+### [中] ~~ListExecutions 静默吞掉单品种错误~~ ✅ 已移除
 
-**位置**：`pkg/binancex/adapter.go:259-264`
+> **已修复**：adapter.go 整体移除（ADR-009），此问题自动消解。
+
+**位置**：~~`pkg/binancex/adapter.go:259-264`~~
 
 ```go
 trades, err := svc.Do(ctx)
@@ -55,9 +59,11 @@ if err != nil {
 
 History 状态快照落盘失败被忽略。若磁盘满或权限问题，运行时状态与磁盘不一致，重启后丢失 backfill 进度。建议至少 `slog.Error`。
 
-### [中] history_rest 429 退避忽略 Retry-After
+### [中] ~~history_rest 429 退避忽略 Retry-After~~ ✅ 已修复（TODO-04）
 
-**位置**：`internal/client/history_rest.go:226-229`
+> **已修复**：解析 `Retry-After` 头优先 sleep；418 新增 `ErrIPBanned` 哨兵错误 + slog.Error + 不重试（TODO-05）。
+
+**位置**：~~`internal/client/history_rest.go:226-229`~~
 
 ```go
 if resp.StatusCode == http.StatusTooManyRequests {
@@ -67,7 +73,9 @@ if resp.StatusCode == http.StatusTooManyRequests {
 
 Binance 429 响应带 `Retry-After`，应优先尊重；固定退避可能加重限频封禁。同样问题在 `exchangeinfo_fetch.go:129`。
 
-### [低] parseBinanceTrade 构造 Trade 的 error 被忽略
+### [低] ~~parseBinanceTrade 构造 Trade 的 error 被忽略~~ ✅ 已移除
+
+> **已修复**：adapter.go 整体移除（ADR-009）。
 
 **位置**：`pkg/binancex/adapter.go:420-428`
 
@@ -95,9 +103,11 @@ _ = json.NewEncoder(&body).Encode(req)
 
 ## 2. 边界条件
 
-### [严重] SubmitOrder 无任何客户端下单量/价格校验
+### [严重] ~~SubmitOrder 无任何客户端下单量/价格校验~~ ✅ 已移除
 
-**位置**：`pkg/binancex/adapter.go:135-172`
+> **已修复**：adapter.go 整体移除（ADR-009），此问题自动消解。
+
+**位置**：~~`pkg/binancex/adapter.go:135-172`~~
 
 ```go
 qty, err := safeFloat64(req.Qty.String())   // 仅解析，不检查 >0、minQty、stepSize
@@ -112,13 +122,17 @@ svc.Quantity(qty)
 
 虽然 Binance 服务端会拒绝非法参数，但交易路径客户端零校验属于高风险，会浪费 weight 配额、放大限频风险，且 local/testnet 行为不一致。**建议**：从 exchangeInfo 加载 symbol 过滤器，下单前本地校验。
 
-### [高] decimalx.MustFromString 在生产路径上 panic
+### [高] ~~decimalx.MustFromString 在生产路径上 panic~~ ✅ 已移除
 
-**位置**：`pkg/binancex/adapter.go:109,110,386,387,392,415,416,417,461,464`（共 10 处）
+> **已修复**：adapter.go 整体移除（ADR-009），此问题自动消解。
+
+**位置**：~~`pkg/binancex/adapter.go:109,110,386,387,392,415,416,417,461,464`（共 10 处）~~
 
 `MustFromString` 解析失败直接 `panic`。这些调用位于 `GetBalances`、`parseExecutionReport`（WebSocket 实时回调）、`parseBinanceTrade` 等生产路径。若 Binance 返回异常字段（空字符串、非数字），进程 panic。`parseBinanceOrderResponse:494` 已对 `exQty` 做了空值保护，但其余 9 处没有。
 
-### [中] exchangeinfo_option strike 解析失败默认 0
+### [中] ~~exchangeinfo_option strike 解析失败默认 0~~ ✅ 已修复（TODO-07）
+
+> **已修复**：解析失败时 slog.Warn + continue 跳过该 symbol。
 
 **位置**：`internal/client/exchangeinfo_option.go:78`
 
@@ -128,7 +142,9 @@ strike, _ := strconv.ParseFloat(sym.StrikePrice, 64)
 
 失败时 strike=0，会写入错误的 InstrumentKey，影响期权品种识别。
 
-### [中] kline 数组解析 `len(row) < 12` 静默跳过
+### [中] ~~kline 数组解析 `len(row) < 12` 静默跳过~~ ✅ 已修复（TODO-08）
+
+> **已修复**：slog.Warn 记录跳过的坏行 + 字段数。
 
 **位置**：`internal/client/history_rest.go:336`
 
@@ -146,7 +162,9 @@ strike, _ := strconv.ParseFloat(sym.StrikePrice, 64)
 
 channel 满时 `default: drop`，有 `noteBackpressureDrop()` 计数，但无实时告警阈值。
 
-### [低] WebSocket 重连退避无抖动
+### [低] ~~WebSocket 重连退避无抖动~~ ✅ 已修复（TODO-06）
+
+> **已修复**：`jittered := backoff * (0.8 + 0.4*rand.Float64())` 加 ±20% 随机抖动。
 
 **位置**：`internal/client/spot.go:372-378`
 
@@ -161,9 +179,11 @@ if backoff > sc.policy.MaxBackoff { backoff = sc.policy.MaxBackoff }
 
 ## 3. 限频 (rate limit) 处理
 
-### [高] ThrottleManager 已实现但从未在真实请求路径上调用
+### [高] ~~ThrottleManager 已实现但从未在真实请求路径上调用~~ ✅ 已修复（TODO-01）
 
-**位置**：`internal/client/throttle.go` + `internal/client/runtime.go:229`
+> **已修复**：新增 `awaitThrottle` 辅助函数，接入 `history_rest.fetchPage` 和 `exchangeinfo_fetch`；RecordSuccess/RecordBackoff 在请求后调用。
+
+**位置**：~~`internal/client/throttle.go` + `internal/client/runtime.go:229`~~
 
 ```go
 throttle, err := NewThrottleManager(ThrottleConfig{...})  // runtime.go:229 创建
@@ -171,9 +191,11 @@ throttle, err := NewThrottleManager(ThrottleConfig{...})  // runtime.go:229 创�
 
 全仓 grep `\.Allow\(|RecordSuccess|RecordBackoff` 在非测试代码中**零命中**。`ThrottleManager` 被创建并注入 admin server 供快照展示，但 `history_rest.go` 的 `fetchPage` 和 `exchangeinfo_fetch.go` 的请求路径**完全没有调用 `throttle.Allow()`**。即：限频预算系统在 admin UI 上"有数"，但实际不阻断任何请求。
 
-### [高] WeightGate / RetryBudget / ClockSkewDetector 同样未接线
+### [高] ~~WeightGate / RetryBudget / ClockSkewDetector 同样未接线~~ ✅ 已修复（TODO-02）
 
-**位置**：`internal/server/controlplane_binding.go:32` + `internal/server/assembly/assemble.go:133-137`
+> **已修复**：`assemble.go` 构造 NewRetryBudget/NewWeightGate/NewClockSkewDetector 并注入 ControlPlaneBindings。
+
+**位置**：~~`internal/server/controlplane_binding.go:32` + `internal/server/assembly/assemble.go:133-137`~~
 
 ```go
 serverConfig.ControlPlane = &server.ControlPlaneBindings{
@@ -185,13 +207,17 @@ serverConfig.ControlPlane = &server.ControlPlaneBindings{
 
 `ControlPlaneBindings` 只装配了 Registry 和 Lifecycle，`Weight *WeightGate`、`Retry *RetryBudget`、`Skew *ClockSkewDetector` 均为 nil。`WeightGate.Admit()` 在非测试代码中零调用。
 
-### [中] 429 / 418 处理不完整
+### [中] ~~429 / 418 处理不完整~~ ✅ 已修复（TODO-04/05）
+
+> **已修复**：429 读 Retry-After 头；418 新增 ErrIPBanned + slog.Error + 不重试。
 
 - `history_rest.go:227` 处理 429 但不读 `Retry-After`（见 §1）。
 - **418（IP 自动封禁）全仓零处理** — grep `418|StatusIAmATeapot` 无命中。Binance 在持续违反限频后会返回 418 长期封禁，当前代码会把它当普通非 2xx 错误重试 3 次后放弃，不会触发 AIMD backoff 或告警。
 - `exchangeinfo_fetch.go:129` 把 429 分类为 retryable 但不重试。
 
-### [中] AIMD 退避无上限恢复时间
+### [中] ~~AIMD 退避无上限恢复时间~~ ✅ 已修复（TODO-03）
+
+> **已修复**：新增 `maybeTimeRecover` + `lastBackoffAt` + `aimdRecoveryWindow=60s`，超窗口后按 10% 比例向 targetRate 回升。
 
 **位置**：`internal/client/throttle.go:243-260`
 

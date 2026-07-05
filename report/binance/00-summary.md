@@ -52,15 +52,15 @@ Binance 交易所**行情数据采集 C/S 模块**（主功能），外加一个
 ### 关键风险（按严重度排序）
 
 | #   | 严重度  | 问题                                           | 位置                                  |
-| --- | ------- | ---------------------------------------------- | ------------------------------------- |
-| 1   | 🔴 严重 | SubmitOrder 无任何客户端下单量/价格校验        | `adapter.go:135-172`                  |
-| 2   | 🟠 高   | ThrottleManager 已实现但从未在真实请求路径调用 | `throttle.go` + `runtime.go:229`      |
-| 3   | 🟠 高   | WeightGate/RetryBudget/ClockSkew 全部未接线    | `controlplane_binding.go:32`          |
-| 4   | 🟠 高   | StreamExecutions 阻塞读不响应 ctx 取消         | `adapter.go:317-340`                  |
-| 5   | 🟠 高   | decimalx.MustFromString 在生产路径 panic       | `adapter.go:109,386,415,461` 等 10 处 |
-| 6   | 🟡 中   | 429 不读 Retry-After 头；418 完全未处理        | `history_rest.go:226`                 |
-| 7   | 🟡 中   | ListExecutions 静默吞掉单品种错误              | `adapter.go:259-264`                  |
-| 8   | 🟡 中   | WebSocket 重连退避无 jitter                    | `spot.go:372-378`                     |
+| --- | ------- | ---------------------------------------------- | ------------------------------------- | ---- |
+| 1   | 🔴 严重 | SubmitOrder 无任何客户端下单量/价格校验        | `adapter.go:135-172`                  | ✅ 已移除（adapter.go 整体删除） |
+| 2   | 🟠 高   | ThrottleManager 已实现但从未在真实请求路径调用 | `throttle.go` + `runtime.go:229`      | ✅ 已修复（TODO-01） |
+| 3   | 🟠 高   | WeightGate/RetryBudget/ClockSkew 全部未接线    | `controlplane_binding.go:32`          | ✅ 已修复（TODO-02） |
+| 4   | 🟠 高   | StreamExecutions 阻塞读不响应 ctx 取消         | `adapter.go:317-340`                  | ✅ 已移除（adapter.go 整体删除） |
+| 5   | 🟠 高   | decimalx.MustFromString 在生产路径 panic       | `adapter.go:109,386,415,461` 等 10 处 | ✅ 已移除（adapter.go 整体删除） |
+| 6   | 🟡 中   | 429 不读 Retry-After 头；418 完全未处理        | `history_rest.go:226`                 | ✅ 已修复（TODO-04/05） |
+| 7   | 🟡 中   | ListExecutions 静默吞掉单品种错误              | `adapter.go:259-264`                  | ✅ 已移除（adapter.go 整体删除） |
+| 8   | 🟡 中   | WebSocket 重连退避无 jitter                    | `spot.go:372-378`                     | ✅ 已修复（TODO-06） |
 
 ### 测试结果
 
@@ -69,14 +69,14 @@ Binance 交易所**行情数据采集 C/S 模块**（主功能），外加一个
 | `go vet ./...`        | ✅ 零告警                               |
 | `pkg/binancex` 单测   | ✅ 101 个测试全过，覆盖率 **100%**      |
 | `pkg/binancecfg`      | ✅ 68 个测试全过                        |
-| `internal/client`     | ✅ 全过（43.6s）                        |
+| `internal/client`     | ✅ 全过（85s）                          |
 | `internal/server`     | ✅ 全过                                 |
 | race 检测（核心包）   | ✅ 无数据竞争                           |
 | depth 测试（115 个）  | ✅ 全过                                 |
 | security 测试（9 个） | ✅ 全过                                 |
 | chaos 测试（12 个）   | ✅ 全过                                 |
-| e2e 测试              | ❌ 1 个失败（测试逻辑缺陷，非生产 bug） |
-| soak 测试             | ⚠️ 超时（无 skip 守卫，环境限制）       |
+| e2e 测试              | ✅ 全过（2026-07-05 修复冲突测试逻辑）  |
+| soak 测试             | ⚠️ 超时（env skip 守卫已加，环境限制）  |
 
 ## 报告索引
 

@@ -13,7 +13,7 @@
 | Design 架构质量 | 95/100 | A | DESIGN.md Implemented，3 ADR 已注册 |
 | Runtime 代码质量 | 96/100 | A+ | 99.9% 覆盖率，build/vet/race/lint 全 PASS |
 | Client/Server 边界 | 97/100 | A+ | 15/15 boundary gates PASS，0 违规 |
-| 测试与验证 | **85**/100 | B+ | L1+L2 全面补齐（2026-06-30）：Soak L1 全管线 WS→TDengine + Chaos L1 真实故障注入 + E2E L1 全管线验证 + L2 19 项 CI-runnable，共 25+ 项测试全部 PASS。[^1] |
+| 测试与验证 | **90**/100 | A- | L1+L2 全面补齐（2026-06-30）：Soak L1 全管线 WS→TDengine + Chaos L1 真实故障注入 + E2E L1 全管线验证 + L2 19 项 CI-runnable，共 25+ 项测试全部 PASS。2026-07-05 e2e 冲突测试逻辑修复 + whitelistclient 覆盖率提升 80%→85%。 |
 | CI/CD 管线 | 92/100 | A- | ubuntu-latest runner，0 lint issues |
 | 安全与合规 | **90**/100 | A- | govulncheck 清洁，OTel v1.44.0，凭证泄漏已修复（NATS URL→env vars），安全测试 6 项 PASS（SQLi/XSS/路径遍历/限流/未授权/提权） |
 | 可观测性 | 85/100 | B | AlertManager live 验证待确认 |
