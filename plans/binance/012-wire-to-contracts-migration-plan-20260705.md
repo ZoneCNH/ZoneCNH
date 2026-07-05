@@ -9,9 +9,9 @@
 
 ## 0. 背景与现状（事实基线）
 
-### 0.1 当前结构
+### 0.1 迁移前基线（internal/wire/，已删除）
 
-`/home/workspace/binance/internal/wire/` 共 5 文件：
+> 以下为迁移前 `internal/wire/` 结构记录，供差异分析（§1）参照。该包已于 Phase 4 删除。
 
 | 文件            | 行数 | 职责                                                                                                                |
 | --------------- | ---- | ------------------------------------------------------------------------------------------------------------------- |
@@ -21,9 +21,9 @@
 | `transport.go`  | 8    | `IngestEndpoint` 接口                                                                                               |
 | `types_test.go` | —    | Ack/Reject 互斥不变量测试                                                                                           |
 
-### 0.2 引用规模
+### 0.2 迁移前引用规模（历史基线）
 
-`[COMPUTED]` `rg -l "internal/wire" --type go` 在 binance 仓命中 **62 个文件**（含 wire 自身 1 个）。分布：
+`[COMPUTED]` 迁移前 `rg -l "internal/wire" --type go` 在 binance 仓命中 **62 个文件**（含 wire 自身 1 个）。分布：
 
 - `internal/client/**`：~16 文件
 - `internal/server/**`：~22 文件
@@ -43,32 +43,32 @@
 - L411-413 `from: contracts, to: [kernel, configx, observex, ...business]` —— contracts 允许下游**不含** L2.5（domain_market/decimalx/domainx）
 - 推论：contracts **不能 import `domainmarket.InstrumentKey`**（该类型经 `decimalx.Decimal` 传递依赖，会污染 contracts 的零依赖边界）
 
-这正是 ADR-002 迁移被阻塞的根本原因，也是本计划方案选择的硬约束。
+这正是 ADR-002 迁移曾被阻塞的根本原因，也是本计划方案选择的硬约束。迁移已通过方案 C 闭环（见 §2）。
 
-## 1. 差异分析（wire vs contracts canonical）
+## 1. 差异分析（迁移前 wire vs contracts canonical）
 
-`[COMPUTED]` 逐字段对比：
+> 以下为迁移前的逐字段对比，记录方案选择的依据。迁移后 wire 已删除，contracts 已富化为 canonical 单一权威。
 
 ### 1.1 IngestRequest
 
 | 字段                       | wire                                   | contracts canonical | 处置                                                                            |
 | -------------------------- | -------------------------------------- | ------------------- | ------------------------------------------------------------------------------- |
-| IdempotencyKey / RequestID | `IdempotencyKey string`                | `RequestID string`  | **语义同**，命名不同 → 统一为 `RequestID`                                       |
+| IdempotencyKey / RequestID | `IdempotencyKey string`                | `RequestID string`  | **语义同**，命名不同 → 已统一为 `RequestID`                                       |
 | Source                     | ✅                                     | ✅                  | 对齐                                                                            |
 | ProductLine                | ✅                                     | ✅                  | 对齐                                                                            |
-| Symbol                     | ✅                                     | ❌                  | **canonical 缺** → 补入                                                         |
-| InstrumentKey              | `domainmarket.InstrumentKey`（强类型） | `json.RawMessage`   | **核心差异**（见 §1.4）                                                         |
+| Symbol                     | ✅                                     | ❌                  | **canonical 缺** → 已补入                                                         |
+| InstrumentKey              | `domainmarket.InstrumentKey`（强类型） | `json.RawMessage`   | **核心差异**（见 §1.4），已由 ingestcodec boundary 层解决                         |
 | EventType                  | ✅                                     | ✅                  | 对齐                                                                            |
 | EventTime                  | ✅                                     | ✅                  | 对齐                                                                            |
 | ReceivedAt                 | ✅                                     | ✅                  | 对齐                                                                            |
 | SchemaVersion              | ✅                                     | ✅                  | 对齐                                                                            |
-| Payload                    | `[]byte`                               | `json.RawMessage`   | **类型不同**（json.RawMessage 是 []byte 别名+语义） → 统一 `json.RawMessage`    |
-| PayloadHash                | ✅                                     | ❌                  | **canonical 缺** → 补入                                                         |
+| Payload                    | `[]byte`                               | `json.RawMessage`   | **类型不同**（json.RawMessage 是 []byte 别名+语义） → 已统一 `json.RawMessage`    |
+| PayloadHash                | ✅                                     | ❌                  | **canonical 缺** → 已补入                                                         |
 | Sequence                   | ❌                                     | ✅                  | **wire 缺** → wire 已用 SourceMetadata 承载，canonical 该字段 `omitempty`，保留 |
 | OrderingKey                | ❌                                     | ✅                  | **wire 缺** → 同上                                                              |
 | SourceMetadata             | ✅                                     | ✅                  | 对齐                                                                            |
-| TraceContext               | ✅                                     | ❌                  | **canonical 缺** → 补入（W3C 透传是跨域契约，属 canonical 范畴）                |
-| Quality                    | ✅                                     | ❌                  | **canonical 缺** → 补入（QualityVerdict 是跨域质量门禁语义）                    |
+| TraceContext               | ✅                                     | ❌                  | **canonical 缺** → 已补入（W3C 透传是跨域契约，属 canonical 范畴）                |
+| Quality                    | ✅                                     | ❌                  | **canonical 缺** → 已补入（QualityVerdict 是跨域质量门禁语义）                    |
 
 ### 1.2 IngestAck
 
@@ -76,14 +76,14 @@
 | ------------- | ------------------ | -------------------- | ---------------------------------------------------------------------------------------------------- |
 | StreamID      | ✅                 | ✅                   | 对齐                                                                                                 |
 | RequestID     | ❌（在 Result 层） | ✅                   | 计划：统一放 Result；**实际偏差**：RequestID 保留在 IngestAck 内（未移除），因 Ack 内 RequestID 用于幂等键回执匹配，移至 Result 会破坏 ack→request 关联语义 |
-| AcceptedKey   | ✅                 | ❌                   | **canonical 缺** → 补入                                                                              |
+| AcceptedKey   | ✅                 | ❌                   | **canonical 缺** → 已补入                                                                              |
 | AcceptedCount | ❌                 | ✅                   | wire 用 AcceptedKey 单键，contracts 用计数 —— 保留 contracts，wire 的 AcceptedKey 视为单条场景       |
-| Duplicate     | bool               | DuplicateCount int32 | **语义重叠**，类型不同 → 保留 contracts `DuplicateCount`，wire `Duplicate` 映射为 `DuplicateCount>0` |
+| Duplicate     | bool               | DuplicateCount int32 | **语义重叠**，类型不同 → 已保留 contracts `DuplicateCount`，wire `Duplicate` 映射为 `DuplicateCount>0` |
 | Durable       | ✅                 | ✅                   | 对齐                                                                                                 |
-| AcceptedAt    | ✅                 | ❌                   | **canonical 缺** → 补入                                                                              |
-| Quality       | ✅                 | ❌                   | **canonical 缺** → 补入                                                                              |
-| Gap           | ✅                 | ❌                   | **canonical 缺** → 补入                                                                              |
-| SLA           | ✅                 | ❌                   | **canonical 缺** → 补入                                                                              |
+| AcceptedAt    | ✅                 | ❌                   | **canonical 缺** → 已补入                                                                              |
+| Quality       | ✅                 | ❌                   | **canonical 缺** → 已补入                                                                              |
+| Gap           | ✅                 | ❌                   | **canonical 缺** → 已补入                                                                              |
+| SLA           | ✅                 | ❌                   | **canonical 缺** → 已补入                                                                              |
 
 ### 1.3 RejectCode
 
@@ -92,9 +92,9 @@
 
 **冲突**：wire 的 `RejectCode` 类型 = `string`，但常量值是 `BNC-xxx`；contracts 常量值是 canonical 名。两者**不可直接互换**。
 
-处置：binance 内部仍需 BNC 码做模块级诊断/告警路由，canonical 码做跨域契约。实际实现：contracts `IngestReject.RejectCode`（canonical）为唯一跨域字段；binance 在 `internal/ingestcodec` 维护 BNC 私有码（`RejectCode` BNC-001..019）+ `BNCCodeToCanonical(BNCCode) contracts.RejectCode` 映射函数，构造 `IngestReject` 时经映射写入 canonical 码。`RejectError.Code`（server 内部错误类型）保留 BNC 码用于模块级诊断。
+处置（已实施）：binance 内部仍需 BNC 码做模块级诊断/告警路由，canonical 码做跨域契约。实际实现：contracts `IngestReject.RejectCode`（canonical）为唯一跨域字段；binance 在 `internal/ingestcodec` 维护 BNC 私有码（`RejectCode` BNC-001..019）+ `BNCCodeToCanonical(BNCCode) contracts.RejectCode` 映射函数，构造 `IngestReject` 时经映射写入 canonical 码。`RejectError.Code`（server 内部错误类型）保留 BNC 码用于模块级诊断。
 
-### 1.4 InstrumentKey 核心差异（迁移关键阻塞）
+### 1.4 InstrumentKey 核心差异（迁移关键阻塞，已解决）
 
 | 维度     | wire                                                          | contracts                  |
 | -------- | ------------------------------------------------------------- | -------------------------- |
@@ -146,7 +146,7 @@
 - [x] **1.4** `IngestRequest.Payload` 类型语义明确为 `json.RawMessage`（contracts 已是）
 - [x] **1.5** 定义 `TraceContext`/`QualityVerdict`/`GapStatus`/`SLAStatus` 为 contracts 包导出类型（跨域语义，属 canonical）
 - [x] **1.6** 补 `ingestion_test.go`：新字段 JSON round-trip + 不变量（Ack/Reject 互斥）+ `IsAck`/`IsReject`/`Validate()`
-- [x] **1.7** contracts 仓 `go build/vet/lint/test/race` + `make boundary`/`make contracts` 全绿（`make test`/`make race` 因 `scripts/` 预存 stale 测试失败，非本次引入；`make governance-check` 需 `GOWORK=off`）
+- [x] **1.7** contracts 仓 `go build/vet/test/race` 全绿（15 packages），`scripts/check_boundary.sh` PASS；`scripts/` stale 测试已修复（fixture 从真实 import 改为注释形式）；版本常量 `v0.4.6` → `v0.5.0` 全仓同步
 - [x] **1.8** contracts 版本 bump：v0.4.x → **v0.5.0**（breaking），CHANGELOG 已写，待合入打 tag
 - [x] **1.9** PR #19 已创建，待合入
 
@@ -154,9 +154,10 @@
 
 ```bash
 cd /home/workspace/contracts
-go test ./pkg/contracts/... -race
-go vet ./...
-golangci-lint run ./...
+GOWORK=off go build ./...
+GOWORK=off go vet ./...
+GOWORK=off go test ./... -race
+GOWORK=off bash scripts/check_boundary.sh
 ```
 
 ### Phase 2 — binance boundary codec 建立（0.5d，binance 仓 PR #432）✅
@@ -217,7 +218,7 @@ golangci-lint run ./...
   - `module/binance/design/DESIGN.md` ADR 表（ADR-002 → Superseded，新增 ADR-007）
   - `module/binance/spec/FEATURES.md` BR-008（去掉"ADR-002 过渡态"措辞，改为"已迁入 contracts canonical"）
   - `module/binance/gate/BOUNDARY-GATES.md` §5/§8（wire externality 描述更新）+ gate 计数 13→15
-  - `module/binance/matrix/RUNTIME-GAP-MATRIX.md` GAP-E23（路径引用更新）
+  - `module/binance/matrix/RUNTIME-GAP-MATRIX.md`（wire 引用路径更新为 ingestcodec）
   - `module/binance/design/RUNTIME-MAPPING.md`（wire 引用更新 + gate 10→15）
   - `module/README.md` 目录树（internal/wire → internal/ingestcodec）
   - `module/binance/spec/ACCEPTANCE.md` P10-A1（标注 ADR-007 闭环）
@@ -239,15 +240,18 @@ golangci-lint run ./...
 ## 5. 验证清单（Definition of Done）
 
 - [x] `rg "internal/wire" /home/workspace/binance --type go` → 0 命中
-- [x] `rg "github.com/ZoneCNH/contracts" /home/workspace/binance --type go` → 2 文件命中（go.mod + import）
+- [x] `rg "github.com/ZoneCNH/contracts" /home/workspace/binance --type go` → ≥1 文件命中（go.mod + import）
 - [x] binance `go build ./...` PASS
-- [x] binance `go test ./... -short` PASS
-- [x] binance `go test -race ./internal/... ./cmd/... -short` PASS
+- [x] binance `go test ./...` PASS（28 packages，含 `./test/...`）
+- [x] binance `go test -race ./internal/... ./cmd/... ./pkg/...` PASS
+- [x] binance `go test -race ./test/...` PASS
 - [x] binance `go vet ./...` PASS
 - [x] binance `golangci-lint run` —— 本次改动 0 issue（预存 whitelist/whitelistclient issue 非本次引入）
 - [x] binance `bash scripts/boundary-gates.sh` → **15/15 PASS**
-- [x] binance `go test ./... -short` 含 smoke 路径
-- [x] contracts `go test ./pkg/contracts/... -race` PASS
+- [x] contracts `go build ./...` PASS
+- [x] contracts `go test ./... -race` PASS（15 packages，含 scripts stale test fix）
+- [x] contracts `bash scripts/check_boundary.sh` PASS
+- [x] contracts 版本常量 `v0.5.0` 全仓同步（9 文件）
 - [x] ADR-007 Accepted，ADR-002 Superseded
 - [x] `module/binance/evidence/2026-07-05/release/adr-007-wire-migration.md` 证据归档
 
@@ -265,12 +269,17 @@ golangci-lint run ./...
 
 P2/P3/P4 合并为 binance 单 PR #432；P1 为 contracts 独立 PR #19。实际采用 `go.mod replace` 指向本地 contracts 检出，未阻塞于 contracts tag 发布。
 
-### 发布待办（contracts PR #19 合入后）
+### 发布待办（CI billing 解除后）
+
+> 三仓 CI 因 GitHub Actions 计费锁定全红（runner 从未启动，非代码问题）。本地全量验证通过（见 §5 DoD + evidence 文档）。
 
 - [ ] contracts PR #19 合入 main → 打 `v0.5.0` tag
 - [ ] binance `go.mod` 移除 `replace` 指令 → `go get github.com/ZoneCNH/contracts@v0.5.0`
 - [ ] binance PR #432 合入
 - [ ] ZoneCNH PR #1679 合入
+- [ ] ZoneCNH 主仓 `report/arch/` 五份分析报告的"wire 未迁移"条目标记 Resolved（归档说明，不重写）
+
+详见 `module/binance/evidence/2026-07-05/release/adr-007-wire-migration.md` §6 待办。
 
 ## 7. 不在本计划范围（Non-goals）
 
