@@ -2,10 +2,47 @@
 
 所有 notable 变更记录，按 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/) 格式维护。
 
-- Module-Version: v3.9.8
-- Last-Updated: 2026-07-04
-- Spec-Reference: `module/binance/spec/SPEC.md` v3.9.8
-- 治理规则：`module/binance/gate/RULES.md` R9 文档存在性
+- Module-Version: v3.13.0
+- Last-Updated: 2026-07-05
+- Spec-Reference: `module/binance/spec/SPEC.md` v3.13.0
+- 治理规则：`module/binance/gate/RULES.md` R9 文档存在性性
+
+---
+
+## 2026-07-05 白名单系统实盘验证六项细化（v3.13.0）
+
+### PR
+
+- natsx: https://github.com/ZoneCNH/natsx/pull/22（UpdateStream + DeleteConsumer）
+- Runtime: https://github.com/ZoneCNH/binance/pull/429（独立 NATS 连接 + SDK auth token）
+- Runtime: https://github.com/ZoneCNH/binance/pull/430（catalog 全量数据同步 + tier 保留 + NATS stream 冲突）
+- Runtime: https://github.com/ZoneCNH/binance/pull/431（NULL tier + publish context timeout）
+- ZoneCNH: 本 PR（文档对齐）
+
+### 变更
+
+#### Changed
+
+- **FR-048**：publisher 改用独立 NATS 连接（`binance-whitelist-publisher`），不依赖 ingest transport。修复 kafkax 传输模式下 SetNATSConn 不执行导致 version 推送失效。
+- **FR-048**：AfterDiffSync publish 失败改为非致命（log + continue），避免阻塞 um_perp/cm_perp/options discovery。
+- **FR-049**：whitelistclient SDK 新增 `Token` 字段，HTTP 请求携带 Bearer token 鉴权。
+- **FR-050**：ApplyDiff upsert 用 `COALESCE(NULLIF(EXCLUDED.tier, ''), catalog_symbols.tier)` 保留手动分配的 tier/collection，不被 diff-sync 覆盖。
+- **FR-050**：`contract_type='TRADIFI_PERPETUAL'` 自动区分币股（stock tokens），`collection='tradifi'`。
+- **FR-050**：ListCandidates 查询用 `COALESCE(..., '')` 处理 NULL tier/base_asset/quote_asset。
+- **catalog diff**：client 改用 `PublishCatalogDiff`（完整 entry 数据）替代 `publishCatalogDiff`（仅摘要），server `subscribeCatalogDiff` 直接调用 `ApplyDiff` 更新 catalog_symbols。
+- **NATS stream 冲突**：`EnsureTopologyWithConfig` AddStream 失败时 fallback 到 UpdateStream；AddConsumer 失败时 DeleteConsumer + 重建。需要 natsx v1.0.5。
+- **client publish context**：AfterDiffSync 添加 15s timeout context，修复 `natsx.Publish: context requires a deadline`。
+
+#### Added
+
+- **FR-051**：Tier 分配策略——现货流动性 top 20 + 合约加密 top 20 + 币股 top 50，按 24h quoteVolume 排序分配 `tier=core`。
+
+### 验证
+
+- catalog_symbols: spot 3625 + um_perp 820 + cm_perp 30 + options 1600
+- 白名单: 90 symbols（20 spot + 20 um_perp crypto + 50 tradifi），version=1
+- NATS `binance.whitelist.version` 推送验证通过
+- 下游 SDK 集成验证通过
 
 ---
 

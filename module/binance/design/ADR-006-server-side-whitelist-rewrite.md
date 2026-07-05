@@ -59,8 +59,10 @@ binance 模块当前 Catalog 架构是**进程内内存结构**：
 | 影响面 | 说明 |
 |--------|------|
 | 现有 FR | FR-013（whitelist/blacklist hot reload）从"配置热加载"升级为"DB SSOT + NATS 推送"，需更新 SPEC evidence 指向 |
-| 新增 FR | 需新增 FR-045~050（见设计文档 §8），进入 Spec→Code 管线 |
+| 新增 FR | 需新增 FR-045~051（见设计文档 §8），进入 Spec→Code 管线 |
 | DB migration | 新增 `migrations/011_whitelist.sql`（whitelist + whitelist_meta + whitelist_sync_log + catalog_symbols 字段扩展） |
-| NATS | 新增 subject `binance.whitelist.version`，复用现有 NATS 连接，不新增基础设施 |
-| 代码 | Whitelist Sync Job、Whitelist Service API、下游消费方 SDK 为新增代码；`catalogdiff` pipeline 不变 |
+| NATS | 新增 subject `binance.whitelist.version`，publisher 使用**独立 NATS 连接**（不依赖 ingest transport），不新增基础设施；publish 失败非致命 |
+| 代码 | Whitelist Sync Job、Whitelist Service API、下游消费方 SDK 为新增代码；`catalogdiff` pipeline 扩展：subscribeCatalogDiff 直接调用 ApplyDiff |
+| tier 保留 | ApplyDiff upsert 用 `COALESCE(NULLIF(EXCLUDED.x, ''), catalog_symbols.x)` 保留手动分配的 tier/collection，不被 diff-sync 覆盖 |
+| 币股识别 | `contract_type='TRADIFI_PERPETUAL'` 自动区分币股，`collection='tradifi'` |
 | 兼容性 | 旧 `StreamSymbols` 配置保留为降级兜底，不影响现有部署 |
