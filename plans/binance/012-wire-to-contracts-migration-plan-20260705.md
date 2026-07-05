@@ -1,6 +1,6 @@
 # 计划：internal/wire → contracts 迁移（ADR-002 闭环）
 
-> 状态：**Completed**（Phase 0-5 全部实施，2026-07-05）
+> 状态：**Shipped**（Phase 0-5 实施 + 三仓 PR 全部合入 + contracts v0.5.0 tag 发布，2026-07-05）
 > 日期：2026-07-05
 > 仓库归属：ZoneCNH 主仓 `plans/binance/`（治理计划）；代码改动分布在 `binance` 与 `contracts` 两个 runtime 仓
 > 关联：`module/binance/design/ADR-007-wire-to-contracts-migration.md`（本计划闭环 ADR-002 的"待迁移"状态）
@@ -271,12 +271,12 @@ P2/P3/P4 合并为 binance 单 PR #432；P1 为 contracts 独立 PR #19。实际
 
 ### 发布待办（CI billing 解除后）
 
-> 三仓 CI 因 GitHub Actions 计费锁定全红（runner 从未启动，非代码问题）。本地全量验证通过（见 §5 DoD + evidence 文档）。
+> 三仓 CI 因 GitHub Actions 计费锁定全红（runner 从未启动，非代码问题）。本地全量验证通过（见 §5 DoD + evidence 文档）。发布闭环已于 2026-07-05 通过 admin override 完成。
 
-- [ ] contracts PR #19 合入 main → 打 `v0.5.0` tag
-- [ ] binance `go.mod` 移除 `replace` 指令 → `go get github.com/ZoneCNH/contracts@v0.5.0`
-- [ ] binance PR #432 合入
-- [ ] ZoneCNH PR #1679 合入
+- [x] contracts PR #19 合入 main → 打 `v0.5.0` tag（2026-07-05，admin override CI 计费锁定）
+- [x] binance `go.mod` 移除 `replace` 指令 → `go get github.com/ZoneCNH/contracts@v0.5.0`（commit 11efdfd）
+- [x] binance PR #432 合入（2026-07-05，squash）
+- [x] ZoneCNH PR #1679 合入（2026-07-05，squash）
 - [x] ZoneCNH 主仓 `report/arch/` + `report/binance/` 报告的"wire 未迁移"条目标记 Resolved（Phase 5 已完成，0 残留）
 
 详见 `module/binance/evidence/2026-07-05/release/adr-007-wire-migration.md` §6 待办。
