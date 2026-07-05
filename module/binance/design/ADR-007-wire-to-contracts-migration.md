@@ -1,11 +1,11 @@
 # ADR-007: internal/wire 迁移到 contracts canonical（Supersede ADR-002）
 
-> **Status**: Accepted（2026-07-05 — Phase 0-4 已实施 + post-ship 残留全量清理：contracts v0.5.0/v0.5.1 canonical 富化 + binance `internal/wire` 删除 + `internal/ingestcodec` boundary 建立，7 build tag 0 FAIL，boundary-gates 15/15 全绿）
+> **Status**: Accepted（2026-07-05 — Phase 0-4 已实施 + post-ship 残留全量清理：contracts v0.5.0/v0.5.1/v0.5.2 canonical 富化 + 死字段移除 + binance `internal/wire` 删除 + `internal/ingestcodec` boundary 建立，7 build tag 0 FAIL，boundary-gates 15/15 全绿）
 > **Date**: 2026-07-05
 > **Accepted**: 2026-07-05
 > **决策者**: ZoneCNH architecture
 > **关联**: Supersede `ADR-002-wire-boundary.md`；执行计划 `plans/binance/012-wire-to-contracts-migration-plan-20260705.md`；`module/FOUNDATION-DEPS.yaml`（contracts 依赖边界）；`module/contracts/spec/SPEC.md` FR-006/BR-011
-> **仓库归属**: ZoneCNH 主仓 `module/binance/`；代码实施在 `contracts`（v0.5.0 → v0.5.1）与 `binance`（feat branch）runtime 仓
+> **仓库归属**: ZoneCNH 主仓 `module/binance/`；代码实施在 `contracts`（v0.5.0 → v0.5.1 → v0.5.2）与 `binance`（feat branch）runtime 仓
 
 ---
 

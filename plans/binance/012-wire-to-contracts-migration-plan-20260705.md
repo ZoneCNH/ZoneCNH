@@ -1,6 +1,6 @@
 # 计划：internal/wire → contracts 迁移（ADR-002 闭环）
 
-> 状态：**Shipped**（Phase 0-5 实施 + 三仓 PR 合入 + contracts v0.5.0/v0.5.1 tag 发布 + 迁移残留全量清理，2026-07-05）
+> 状态：**Shipped**（Phase 0-5 实施 + 三仓 PR 合入 + contracts v0.5.0/v0.5.1/v0.5.2 tag 发布 + 迁移残留全量清理，2026-07-05）
 > 日期：2026-07-05
 > 仓库归属：ZoneCNH 主仓 `plans/binance/`（治理计划）；代码改动分布在 `binance` 与 `contracts` 两个 runtime 仓
 > 关联：`module/binance/design/ADR-007-wire-to-contracts-migration.md`（本计划闭环 ADR-002 的"待迁移"状态）

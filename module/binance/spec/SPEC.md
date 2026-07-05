@@ -37,7 +37,7 @@
 | `internal/server` | 消费 NATS、校验、持久化、查询 API | 连接 Binance WS、持有 client-only 配置 |
 | `internal/ingestcodec` | `domainmarket.InstrumentKey ↔ json.RawMessage` 序列化、BNC 私有码→canonical 码映射 | 定义跨域 DTO（DTO 由 `contracts` canonical 承载）、承载业务流程、持久化、生产入口 |
 
-> C/S 共享契约层自 ADR-007 迁入 `contracts` canonical（`pkg/contracts/ingestion.go`，v0.5.1）。原 `internal/wire` 已删除，DTO 字段定义以 `module/contracts/spec/SPEC.md` FR-006 为单一权威。binance 在 `internal/ingestcodec` 仅保留 boundary 序列化与私有码映射，不定义任何 DTO。
+> C/S 共享契约层自 ADR-007 迁入 `contracts` canonical（`pkg/contracts/ingestion.go`，v0.5.2）。原 `internal/wire` 已删除，DTO 字段定义以 `module/contracts/spec/SPEC.md` FR-006 为单一权威。binance 在 `internal/ingestcodec` 仅保留 boundary 序列化与私有码映射，不定义任何 DTO。
 | `configs/*.env.example` | 参数示例与默认边界 | 写入真实凭证 |
 
 ## 5. State Model
