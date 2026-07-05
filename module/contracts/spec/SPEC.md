@@ -107,12 +107,16 @@ contracts 是 ZoneCNH 跨域接口契约模块，定义 `Event`/`Command`/`Query
 
 `MarketDataService.Ingest(in IngestRequest) (IngestResult, error)` 是当前摄入入口，签名是单次请求/响应，不是双向流。
 
-- `IngestRequest` 字段：`RequestID`、`Source`、`ProductLine`、`InstrumentKey`、`EventType`、`EventTime`、`ReceivedAt`、`SchemaVersion`、`Payload`、`Sequence`、`OrderingKey`、`SourceMetadata`
+> 字段集自 ADR-007（`module/binance/design/ADR-007-wire-to-contracts-migration.md`）富化，吸收原 binance `internal/wire` 的跨域语义字段。InstrumentKey 保持 `json.RawMessage`，由各 ingestor 在 boundary 序列化（见 BR-011）。本次为 breaking change（字段补入 + Payload 类型统一 + 命名对齐），版本 bump 由 release 流程裁定。
+
+- `IngestRequest` 字段：`RequestID`、`Source`、`ProductLine`、`Symbol`、`InstrumentKey`（`json.RawMessage`）、`EventType`、`EventTime`、`ReceivedAt`、`SchemaVersion`、`Payload`（`json.RawMessage`）、`PayloadHash`、`Sequence`、`OrderingKey`、`SourceMetadata`、`TraceContext`、`Quality`
 - `IngestResult` 只携带一个结果分支：`Ack` 或 `Reject`
-- `IngestAck` 字段：`RequestID`、`StreamID`、`AcceptedCount`、`DuplicateCount`、`Durable`
+- `IngestAck` 字段：`StreamID`、`AcceptedKey`、`AcceptedCount`、`DuplicateCount`、`Durable`、`AcceptedAt`、`Quality`、`Gap`、`SLA`
 - `IngestReject` 字段：`RequestID`、`RejectCode`、`Reason`、`Retryable`
+- 跨域语义辅助类型（contracts 导出）：`TraceContext`（W3C traceparent/tracestate/baggage）、`QualityVerdict`（cleansing verdict）、`GapStatus`（event-time gap）、`SLAStatus`（freshness/processing latency）
 - `RejectCode` 的 canonical 集合由 `AllRejectCodes()` 给出，共 10 个：`RejectRetryable`、`RejectTerminalValidation`、`RejectTerminalConflict`、`RejectUnauthorized`、`RejectRateLimited`、`RejectServerUnavailable`、`RejectContractViolation`、`RejectQualityRejected`、`RejectOrderingViolation`、`RejectUnsupportedChannel`
 - `RejectUnsupportedChannel` 仍然导出，并且属于 canonical 集合
+- 模块私有拒绝码（如 binance `BNC-001..019`）不得进入 canonical 集合；各 ingestor 在 boundary 维护私有码→canonical 码映射（见 BR-011）
 
 ### FR-007: 兼容别名
 
@@ -200,6 +204,10 @@ contracts 是 ZoneCNH 跨域接口契约模块，定义 `Event`/`Command`/`Query
 ### BR-010: 公开 API 变更治理
 
 公开 rename/removal 视为破坏性变更，必须先完成兼容层与追溯文档更新，再进入发布决策。
+
+### BR-011: InstrumentKey 序列化边界
+
+`IngestRequest.InstrumentKey` 保持 `json.RawMessage`，contracts 不持有任何强类型 InstrumentKey（避免经 L2.5 层污染零依赖边界）。各 ingestor 在自身 boundary 包内维护 `domainmarket.InstrumentKey ↔ json.RawMessage` 序列化与反序列化，类型安全在 ingestor 内部保留。模块私有拒绝码（如 BNC-xxx）同样不得进入 canonical，由 ingestor boundary 维护私有码→canonical 码映射。
 
 ## 8. 非功能需求
 
