@@ -213,19 +213,6 @@ Foundation 目录内的执行域共享值对象规格，用于订单、成交、
 
 C/S Module 标准化索引见 [`data_cs_module/README.md`](./data_cs_module/README.md)；独立进程模板见 [`data_independent_process/README.md`](./data_independent_process/README.md)。
 
-### binance runtime-patches 子模块（4 个，proposed）
-
-从 binance Go 源码反向提取的 4 个内部架构层模块，repo 统一在 `github.com/ZoneCNH/runtime-patches/` 下。
-
-| 模块 | 架构类型 | 规格 | 核心职责 |
-| --- | --- | --- | --- |
-| assembly | library | [SPEC.md](./assembly/SPEC.md) | binance ingest pipeline 中间件注入与装配层 |
-| binancecfg | library | [SPEC.md](./binancecfg/SPEC.md) | binance ingest pipeline 配置加载层 |
-| binancex | library | [SPEC.md](./binancex/SPEC.md) | binance ingest pipeline SDK 抽象层 |
-| cmd | cli | [SPEC.md](./cmd/SPEC.md) | binance ingest pipeline 组合根入口 |
-
----
-
 ## 分析域（8 个）
 
 数据流管线与计算引擎。**分析域全部模块为独立进程（非 C/S）**，bootstrap 接入，无 client/server 拆分。

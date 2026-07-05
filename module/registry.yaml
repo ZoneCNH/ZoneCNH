@@ -17,7 +17,7 @@
 # 强制级别：本文件字段变更须遵循 01-module-registry.md §4 登记变更规则。
 
 schema_version: module-registry/v1
-updated: 2026-07-03
+updated: 2026-07-05
 
 # ============================================================================
 # 基座层（Foundation）— 20 模块
@@ -917,72 +917,6 @@ frontend:
     latest_tag: v1.0.0
     cadence: on-demand
   note: "ZoneCNH 统一前端平台 — React 19 + TypeScript + Vite + Tailwind CSS 4；展示层，非组合根"
-
-# ============================================================================
-# binance runtime-patches 子模块（L3 内部架构层）
-# 来源：从 binance Go 源码反向提取的 4 个内部模块，repo 统一在 runtime-patches 下
-# 治理状态：proposed，SPEC 待创建；与 binance 模块关联但不归属 binance 目录
-# ============================================================================
-
-assembly:
-  repo: github.com/ZoneCNH/assembly
-  local_path: /home/workspace/assembly
-  domain: data
-  layer: business
-  arch_type: library
-  lifecycle: proposed
-  owner: ZoneCNH
-  registered: 2026-07-03
-  spec_ref: module/assembly/spec/SPEC.md
-  spec_version: v0.1.0-draft
-  release:
-    cadence: irregular
-  note: "binance ingest pipeline 中间件注入与装配层；runtime-patches 子模块"
-
-binancecfg:
-  repo: github.com/ZoneCNH/binancecfg
-  local_path: /home/workspace/binancecfg
-  domain: data
-  layer: business
-  arch_type: library
-  lifecycle: proposed
-  owner: ZoneCNH
-  registered: 2026-07-03
-  spec_ref: module/binancecfg/spec/SPEC.md
-  spec_version: v0.1.0-draft
-  release:
-    cadence: irregular
-  note: "binance ingest pipeline 配置加载层；runtime-patches 子模块"
-
-binancex:
-  repo: github.com/ZoneCNH/binancex
-  local_path: /home/workspace/binancex
-  domain: data
-  layer: business
-  arch_type: library
-  lifecycle: proposed
-  owner: ZoneCNH
-  registered: 2026-07-03
-  spec_ref: module/binancex/spec/SPEC.md
-  spec_version: v0.1.0-draft
-  release:
-    cadence: irregular
-  note: "binance ingest pipeline SDK 抽象层；runtime-patches 子模块"
-
-cmd:
-  repo: github.com/ZoneCNH/cmd
-  local_path: /home/workspace/cmd
-  domain: data
-  layer: business
-  arch_type: cli
-  lifecycle: proposed
-  owner: ZoneCNH
-  registered: 2026-07-03
-  spec_ref: module/cmd/spec/SPEC.md
-  spec_version: v0.1.0-draft
-  release:
-    cadence: irregular
-  note: "binance ingest pipeline 组合根入口；runtime-patches 子模块；命名为例外（非 snake_case 单词）"
 
 # ============================================================================
 # 横切（Crosscut）
