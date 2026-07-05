@@ -32,7 +32,7 @@
 |------|-----------|-----------|------|
 | 单元测试 | （无） | ~1740 | ✅ 全部 PASS |
 | 集成测试 | （无） | 12 | ✅ PASS |
-| e2e 测试 | `e2e` | 18 | ❌ 1 FAIL |
+| e2e 测试      | `e2e`      | 18         | ✅ 全部 PASS（2026-07-05 修复冲突测试逻辑） |
 | depth 测试 | `depth` | 115 | ✅ PASS |
 | chaos 测试 | `chaos` | 12 | ✅ PASS |
 | security 测试 | `security` | 9 | ✅ PASS |
@@ -61,7 +61,7 @@
 | `test/depth` (`-tags=depth`) | ✅ PASS | 1.066s | 115 个测试全过 |
 | `test/security` (`-tags=security`) | ✅ PASS | 0.013s | 9 个测试全过 |
 | `test/chaos` (`-tags=chaos`) | ✅ PASS | 0.459s | 12 个测试全过 |
-| `test/e2e` (`-tags=e2e`) | ❌ FAIL | 0.324s | 1 个失败 |
+| `test/e2e` (`-tags=e2e`)           | ✅ PASS    | 0.322s  | 全部通过（2026-07-05 修复） |
 | `test/soak` (`-tags=soak`) | ⚠️ TIMEOUT | 60.023s | 长跑测试，60s 超时 |
 
 ### 2.3 race 检测（核心包）
@@ -77,7 +77,9 @@
 
 ## 3. 失败用例详情
 
-### 3.1 TestE2E_ConflictingPayload_Reject（test/e2e）
+### 3.1 ~~TestE2E_ConflictingPayload_Reject~~ ✅ 已修复（2026-07-05）
+
+> **已修复**：修改 `req2.Payload` 内容（而非仅改 PayloadHash 字段），使 server 重算后 hash 不同 → 触发 terminal_conflict。测试 PASS。
 
 ```
 --- FAIL: TestE2E_ConflictingPayload_Reject (0.00s)
@@ -201,7 +203,7 @@ FAIL    github.com/ZoneCNH/binance/test/soak    60.023s
 
 | 风险项 | 等级 | 说明 |
 |--------|------|------|
-| e2e 测试 `TestE2E_ConflictingPayload_Reject` 失败 | 🟡 低 | 测试逻辑缺陷（未考虑 GAP-E19），非生产 bug |
+| e2e 测试 `TestE2E_ConflictingPayload_Reject` | ✅ 已修复 | 2026-07-05 修复测试逻辑（改 req2.Payload 而非 PayloadHash） |
 | soak 测试无 skip 守卫 | 🟡 低 | CI 会 timeout，建议加 `testing.Short()` |
 | whitelistclient 覆盖率 69-78% | 🟡 低 | HTTP 重试/退避错误分支未完全覆盖 |
 | adapter.go 边界校验前置不足 | 🟡 中 | 空 symbol、负数量等未在 adapter 层前置校验 |

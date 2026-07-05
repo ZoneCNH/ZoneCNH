@@ -9,6 +9,63 @@
 
 ---
 
+## 2026-07-05 报告深度分析 16 项修复（fix/report-followup）
+
+### 来源
+
+- `report/binance/00-summary.md` ~ `04-test-report.md` 深度分析
+- `module/binance/todo.md` 16 项未修复问题清单
+- 4 agent team 并行修复 + 20 轮交叉检查
+
+### Fixed — runtime 仓（`/home/workspace/binance`，分支 `fix/report-followup`）
+
+**P1 高优先级（限频/控制面接线）**
+
+- **TODO-01**：ThrottleManager.Allow() 接入实际请求路径。新增 `awaitThrottle` nil-safe 辅助函数；`history_rest.fetchPage` 调用 `awaitThrottle(ColdStart)` + `RecordSuccess`/`RecordBackoff`；`exchangeinfo_fetch` 调用 `awaitThrottle(Repair)`；`runtime.go` 通过 `ThrottleInjector` 接口注入 throttle 到 HistoryFetcher。文件：`throttle.go`、`history_rest.go`、`exchangeinfo_fetch.go`、`exchangeinfo.go`、`history_fetcher.go`、`runtime.go`
+- **TODO-02**：WeightGate/RetryBudget/ClockSkewDetector 装配。`assemble.go` 构造三个可靠性组件并注入 `ControlPlaneBindings`（Retry/Weight/Skew 非 nil）。文件：`assemble.go`
+- **TODO-03**：AIMD 退避增加时间维度自动恢复。新增 `aimdRecoveryWindow=60s` + `lastBackoffAt` + `maybeTimeRecover` 方法，超窗口后按 10% 比例向 targetRate 回升。文件：`throttle.go`
+
+**P2 中优先级（HTTP 限频/重连/解析）**
+
+- **TODO-04**：429 读 `Retry-After` 头，优先按该值 sleep。文件：`history_rest.go`
+- **TODO-05**：418 IP 封禁处理，新增 `ErrIPBanned` 哨兵错误 + `slog.Error` + 不重试。文件：`history_rest.go`
+- **TODO-06**：WebSocket 重连退避加 ±20% jitter。文件：`spot.go`
+- **TODO-07**：exchangeinfo_option strike 解析失败时 `slog.Warn` + skip。文件：`exchangeinfo_option.go`
+- **TODO-08**：kline `len(row)<12` 静默跳过改为 `slog.Warn`。文件：`history_rest.go`
+- **TODO-09**：`wsActiveConns` 从全局变量改为 `SpotConnector` per-instance 字段。文件：`spot.go`、`stream_control.go`
+- **TODO-10**：fan-in goroutine 增加 `context.AfterFunc` 5s grace period 强制 close 兜底 + `sync.Once` 保护。文件：`runtime.go`
+
+**P3 低优先级（错误忽略/告警）**
+
+- **TODO-11**：`http_ingest_endpoint` Encode 错误不再忽略。文件：`http_ingest_endpoint.go`
+- **TODO-12**：`catalog.go` Add 错误不再忽略，`slog.Warn` 记录。文件：`catalog.go`
+- **TODO-13**：背压 drop 累计每 1000 倍数触发 `slog.Error` 告警。文件：`stream_control.go`
+
+**测试修复**
+
+- **TODO-15**：e2e `TestE2E_ConflictingPayload_Reject` 测试逻辑修复——改 `req2.Payload` 内容而非仅改 PayloadHash 字段，适配 GAP-E19 server 重算逻辑。文件：`test/e2e/e2e_test.go`
+- **TODO-16**：whitelistclient 新增 11 个单测覆盖 refreshFull/refreshIncremental 错误分支，覆盖率 80.2%→85.4%（refreshFull 77.8%→100%，refreshIncremental 69.6%→95.7%）。文件：`pkg/whitelistclient/client_test.go`
+
+### Accepted Risk
+
+- **TODO-14**：CSRF token 与 Admin token 同值——machine-to-machine admin 场景，已用 `subtle.ConstantTimeCompare` 防时序攻击，标记为 accepted risk。
+
+### 验证结果
+
+- `go build ./...`：PASS
+- `go vet ./...`：PASS（零告警）
+- `go test ./...`：全部 PASS（含 client 85s）
+- `go test -tags=e2e`：PASS（原失败已修复）
+- `go test -tags=depth/chaos/security`：全部 PASS
+- `go test -race`（核心包）：PASS（无数据竞争）
+- 20 轮交叉检查：16/16 TODO 逐项验证通过
+
+### 认识论标签
+
+- 现状核实：[COMPUTED, HIGH]，全部基于现场 `go build`/`go test`/`rg` 命令输出
+
+---
+
 ## 2026-07-05 白名单策略统一为四类市场各 top 20（v3.14.0）
 
 ### 决策
