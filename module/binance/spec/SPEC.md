@@ -254,4 +254,4 @@ PRG-001~007 状态如下：
 
 规格口径 FR 48/48 Done（100%）功能面已闭合，release_closeable=YES（PRG-001~007 全 PASS）。
 
-> **运行时缺口说明**：58 个运行时缺口（GAP-E1~E58）对应的 28 个 GitHub Issues 已于 2026-07-05 全部关闭。PRG-006 gated resilience 测试已 CI-runnable（Level 2 测试默认 CI 通过/跳过，Level 1 测试可通过 `make test-gated` 或 CI `run_gated` 手动触发）。详见 `module/binance/matrix/RUNTIME-GAP-MATRIX.md` §7 双口径声明。
+> **运行时缺口说明**：58 个运行时缺口（GAP-E1~E58）对应的 28 个 GitHub Issues 已于 2026-07-05 全部关闭。2026-07-06 新增并修复 GAP-E59（数据血缘/版本控制：新增 `internal/server/lineage/` 包 + migration 012 `data_lineage` append-only 表 + ingest 三阶段接线）。PRG-006 gated resilience 测试已 CI-runnable（Level 2 测试默认 CI 通过/跳过，Level 1 测试可通过 `make test-gated` 或 CI `run_gated` 手动触发）。详见 `module/binance/matrix/RUNTIME-GAP-MATRIX.md` §7 双口径声明。

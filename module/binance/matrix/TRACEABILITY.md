@@ -138,6 +138,6 @@ Beads and GitHub issues are the current P10 tracking SSOT. The retired local pro
 | Beads P10 open | 0 |
 | release_closeable | YES |
 
-> **运行时缺口投影**：本矩阵统计规格口径（55 Done）。运行时口径的 58 个缺口（GAP-E1~E58）对应的 28 个 GitHub Issues 已于 2026-07-05 全部关闭。PRG-006 gated resilience 测试已 CI-runnable。两者正交——规格 Done 表示 FR 功能面已闭合，运行时修复表示 GAP-E 缺口已处理。详见该文件 §7 双口径声明。
+> **运行时缺口投影**：本矩阵统计规格口径（55 Done）。运行时口径的 58 个缺口（GAP-E1~E58）对应的 28 个 GitHub Issues 已于 2026-07-05 全部关闭；2026-07-06 新增并修复 GAP-E59（数据血缘/版本控制：`internal/server/lineage/` + migration 012）。PRG-006 gated resilience 测试已 CI-runnable。两者正交——规格 Done 表示 FR 功能面已闭合，运行时修复表示 GAP-E 缺口已处理。详见该文件 §7 双口径声明。
 >
 > release_closeable = Code-Done FR / Total FR = 55/55 = 100% ≥ 90%，PRG-001~007 全 PASS → release_closeable=YES。
