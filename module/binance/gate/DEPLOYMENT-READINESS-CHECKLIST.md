@@ -1,28 +1,31 @@
-# Deployment Readiness Checklist v0.12.0
+# Deployment Readiness Checklist v0.14.0
 
-**Status:** 🟢 READY FOR PRODUCTION DEPLOYMENT  
-**Date:** 2026-07-04T14:05Z  
-**Version:** v3.9.8 (runtime) / v0.12.0 (spec)  
-**Prepared by:** Copilot CLI / ZoneCNH  
+**Status:** 🟡 READY — pending CI billing restoration  
+**Date:** 2026-07-06  
+**Version:** v3.14.0 (spec) / v0.13.0+ (runtime, main HEAD `db76b2d`)  
+**Prepared by:** opencode acceptance / ZoneCNH  
+
+> [COMPUTED, HIGH] 2026-07-06 验收更新：本地 build/vet/test/race/boundary-gates/govulncheck 全 PASS（覆盖率 89.3%）。CI workflow 已修复（self-hosted→ubuntu-latest），但 GitHub Actions 远端执行因账户级配额/计费问题暂不可用（startup_failure）。需恢复 Actions 分钟配额后方可远端验证。
 
 ## Pre-Deployment Validation
 
 ### Code Quality ✅
-- Unit tests: 54/54 PASS
-- Integration tests: 8/8 PASS
-- E2E tests: 6/6 PASS
-- Depth tests: All frameworks validated
-- CI gates: 15/15 PASS
+- Unit tests: 28 packages all PASS (2026-07-06 local)
+- Integration tests: PASS
+- E2E tests: PASS (2026-06-28 mainnet live closure)
+- CI gates: 15/15 boundary-gates PASS (local)
 - Boundary gates: 15/15 PASS
-- Code coverage: >80%
-- Zero critical vulns: ✅
+- Code coverage: 89.3%
+- Zero critical vulns: ✅ (govulncheck clean)
+- gofmt: 0 unformatted files
+- golangci-lint: 14 pre-existing warnings (0 errors)
 
-### Version Consistency ✅
-- Runtime version: v3.9.8
-- Spec version: v0.12.0
-- Git tag: v0.12.0 (main@721c4a2)
-- Consistency gate: PASS
-- All documentation synchronized
+### Version Consistency ⚠️
+- Spec version: v3.14.0
+- Runtime main HEAD: `db76b2d` (GAP-E59 lineage)
+- Latest git tag: v0.13.0 (`42e2f7b`, 落后 main 9 commits)
+- Consistency gate: 需在 main HEAD 打 v0.14.0 tag 后 PASS
+- Documentation: ACCEPTANCE.md/DEPLOYMENT-CHECKLIST 已对齐 v3.14.0
 
 ### Documentation Integrity ✅
 - SPEC.md references: Valid

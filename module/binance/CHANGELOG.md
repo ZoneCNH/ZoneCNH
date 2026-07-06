@@ -2,10 +2,57 @@
 
 所有 notable 变更记录，按 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/) 格式维护。
 
-- Module-Version: v3.14.0
-- Last-Updated: 2026-07-05
-- Spec-Reference: `module/binance/spec/SPEC.md` v3.14.0
+- Module-Version: v3.15.0
+- Last-Updated: 2026-07-06
+- Spec-Reference: `module/binance/spec/SPEC.md` v3.15.0
 - 治理规则：`module/binance/gate/RULES.md` R9 文档存在性性
+
+---
+
+## 2026-07-06 数据完整性修复 R1-R5（fix/data-integrity）
+
+### 来源
+
+- `report/binance/DATA-INTEGRITY-DEEP-ANALYSIS-20260706.md`（深度分析报告）
+- `plans/binance/DATA-INTEGRITY-FIX-PLAN-20260706.md`（修复计划）
+- 20 轮交叉检查验证（15 PASS / 5 FAIL→修复后全 PASS）
+
+### Fixed — runtime 仓（`/home/workspace/binance`）
+
+**P0 数据完整性阻断**
+
+- **R1**：`taos_writer.go` TDengine Partial 写入不再静默返回 nil，改为返回 `ErrPartialWrite` error。两处 Partial 分支（err!=nil 和 err==nil）均改为 `return fmt.Errorf(...)`。同步更新 `TestWritePartialErrorNoRequeue` 断言。GAP-E18 漏洞链核心修复。
+- **R3**：`config.go` NATS_SUBJECT default 从 `binance.market.*.*`（3 段不匹配）改为 `binance.market.>`（单段通配，覆盖 4 段 publisher subject）。
+
+**P1 采集完整性**
+
+- **R2**：`product_line.go` 新增 `DefaultMarketStreamsForProductLine(pl)` 函数，um_perp/cm_perp 追加 `@markPrice` + `@fundingRate` 独立流订阅。原 `DefaultMarketStreams()` 保持不变。
+- **R2a**：`reconciler.go` DefaultEventTypes 从 Binance 原始流名 `[trade, depth, kline, aggTrade, bookTicker]` 改为归一化名 `[trade, tick, bar, depth, funding_rate, mark_price]`。
+
+### Fixed — 主仓文档（`/home/workspace/ZoneCNH`）
+
+**P2 治理卫生**
+
+- **R4**：`gate/OBSERVABILITY.md` 新增 §8 完整性扫描范围声明（depth 排除原因 + 替代保障机制）；Module-Version 回刷 v3.14.0。
+- **R5a**：`goal/goal.md` 版本回刷 v3.14.0/v0.13.0；状态更新 55/55 Done, release_closeable=YES。
+- **R5b**：`module/registry.yaml` spec_version v3.14.0, latest_tag v0.13.0。
+- **R5c**：`docs/architecture/05-foundation.md` 版本 v3.14.0/v0.13.0, 55 Done。
+- **R5d**：`matrix/TRACEABILITY.md` Source-SPEC v3.14.0；§4 release_closeable 54→55 Done。
+- **R5e**：`STATUS.md` runtime v0.13.0；55/55 Done；数据完整性修复标注。
+- **R5f**：`README.md` Spec-Version v3.14.0；Delivery-State 55 Done。
+- **R5g**：`spec/SPEC.md` §5 State Model 48→55 Done；§22a 54→55 Done；§23 Stop Condition 48/48→55/55 Done。
+
+### 验证结果
+
+- `go build ./...`：PASS
+- `go vet ./...`：PASS
+- `go test ./internal/server/storage/... ./internal/client/... ./internal/server/reconcile/... ./pkg/binancecfg/...`：全 PASS
+- 20 轮交叉检查：11/11 修复点全 PASS（修复阻断项后）
+- 版本残留扫描：目标文件 0 命中旧版本号
+
+### 认识论标签
+
+- 现状核实：[COMPUTED, HIGH]，全部基于现场 `go build`/`go test`/`rg` 命令输出
 
 ---
 

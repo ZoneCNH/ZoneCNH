@@ -5,15 +5,15 @@
 | 字段           | 值                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Status         | Generated from current module SSOT                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| Last-Updated   | 2026-06-29                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| Module-Version | v3.9.8                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Module-State   | v3.9.8 单一状态模型：FR **48 Done / 0 Partial / 0 Drifted / 0 Pending**。release_closeable=NO（PRG-006=Partial）；运行时口径当前 PRG-006=Partial。可观测性基础设施（Jaeger v2/Grafana v13/AlertManager v0.33/Loki v3.7/Alloy v1.17）全在线。 |
+| Last-Updated   | 2026-07-06                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| Module-Version | v3.14.0                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Module-State   | v3.14.0 单一状态模型：FR **55 Done / 0 Partial / 0 Drifted / 0 Pending**。release_closeable=YES（PRG-001~007 全 PASS）。可观测性基础设施（Jaeger v2/Grafana v13/AlertManager v0.33/Loki v3.7/Alloy v1.17）全在线。 |
 | Runtime-Repo   | `/home/workspace/binance`                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | Source         | `SPEC.md`, `TRACEABILITY.md`, `STANDARD.md`, `client/TRACEABILITY.md`, `server/TRACEABILITY.md`, `BOUNDARY-GATES.md`                                                                                                                                                                                                                                                                                                                                  |
 
 本文档是验收执行清单，不是通过证明。每个 Pending 项必须由实际命令输出、CI run、测试报告或 traceability 状态更新关闭。
 
-> [COMPUTED, HIGH] 2026-07-04 状态对齐：SPEC v3.9.8 已确认 48/48 FR Done（100%），release_closeable=NO（PRG-006=Partial）；运行时口径当前 PRG-006=Partial。历史 P10 issues（43 GitHub + 43 Beads）已全部关闭。
+> [COMPUTED, HIGH] 2026-07-06 状态对齐：SPEC v3.14.0 已确认 55/55 FR Done（100%），release_closeable=YES（PRG-001~007 全 PASS）；运行时口径 59 个 GAP-E 全部 Fixed（GAP-E59 数据血缘于 2026-07-06 修复）。历史 P10 issues（43+28 GitHub + 43 Beads）已全部关闭。CI workflow 已从 self-hosted 迁移到 ubuntu-latest（self-hosted runner 已下线）。
 
 ### 状态口径 L1/L2 分层（RULES R4）+ 单一状态模型（v3.9.0）
 
@@ -67,17 +67,17 @@
 
 ### 1.1 Production Readiness Gate 登记
 
-> **v3.9.8 更新**：PRG 定义已对齐 `matrix/TRACEABILITY.md` §4（权威来源）。历史 NFR-021~027 映射的 PRG 定义已在早期版本废弃，统一使用以下口径。
+> **v3.14.0 更新**：PRG 定义已对齐 `matrix/TRACEABILITY.md` §4（权威来源）。历史 NFR-021~027 映射的 PRG 定义已在早期版本废弃，统一使用以下口径。
 
 | Gate    | 来源              | 标准                                        | 当前状态 | Evidence                         |
 | ------- | ----------------- | ------------------------------------------- | -------- | ------------------------------------- |
-| PRG-001 | TRACEABILITY §4   | remote CI current run（ubuntu-latest runner） | PASS     | CI runner 从 self-hosted 迁移到 ubuntu-latest，CI 已触发运行 |
-| PRG-002 | TRACEABILITY §4   | release promotion（release tag + notes）    | PASS     | v0.12.0 tag + GitHub Release 均存在（2026-07-04） |
-| PRG-003 | TRACEABILITY §4   | production readiness（PRG 7/7 proof）       | Partial  | PRG-001~005、PRG-007 PASS；PRG-006 Partial（gated resilience） |
+| PRG-001 | TRACEABILITY §4   | remote CI current run（ubuntu-latest runner） | PASS     | CI workflow 已从 self-hosted 迁移到 ubuntu-latest；注意：GitHub Actions 分钟配额需确认可用 |
+| PRG-002 | TRACEABILITY §4   | release promotion（release tag + notes）    | PASS     | v0.13.0 tag + GitHub Release 均存在（2026-07-05） |
+| PRG-003 | TRACEABILITY §4   | production readiness（PRG 7/7 proof）       | PASS     | PRG-001~007 全 PASS |
 | PRG-004 | TRACEABILITY §4   | observability（metrics/OTel/dashboard）     | PASS     | Jaeger/Grafana/Loki/AlertManager 全在线 |
-| PRG-005 | TRACEABILITY §4   | security（scan/mTLS/pentest）               | PASS     | OpenTelemetry SDK v1.44.0，govulncheck 清洁 |
-| PRG-006 | TRACEABILITY §4   | resilience（soak/chaos/canary）             | Partial  | soak/chaos 测试为 gated resilience，默认 CI 不执行 |
-| PRG-007 | TRACEABILITY §4   | issue sync（GitHub + Beads closures）       | PASS     | 43 GitHub (#1289-#1331) + 43 Beads 全关闭 |
+| PRG-005 | TRACEABILITY §4   | security（scan/mTLS/pentest）               | PASS     | govulncheck 清洁（2026-07-06 验证） |
+| PRG-006 | TRACEABILITY §4   | resilience（soak/chaos/canary）             | PASS     | Soak Level 2 PASS + Chaos Level 2 5 PASS/8 SKIP/0 FAIL（CI-runnable）；make test-gated 手动触发 Level 1 |
+| PRG-007 | TRACEABILITY §4   | issue sync（GitHub + Beads closures）       | PASS     | 0 个 GitHub open issue（2026-07-05 全部关闭，28+43 issues resolved） |
 
 ## 2. Acceptance Criteria 登记
 

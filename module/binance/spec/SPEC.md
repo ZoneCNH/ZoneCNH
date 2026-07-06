@@ -1,8 +1,8 @@
 # Binance SPEC
 
-- Spec-Version: v3.14.0
+- Spec-Version: v3.15.0
 - Module: binance
-- Last-Updated: 2026-07-05（白名单策略统一为四类市场各 top 20：FR-051 重写，cm_perp/options 新增自动准入，币股 top 50→top 20；options 准入层与采集分桶层解耦，见 ADR-008）
+- Last-Updated: 2026-07-06（数据完整性修复 R1-R5：TDengine Partial 不再静默、fundingRate 独立流订阅、Reconciler 归一化名、NATS config 修正、版本投影回刷、depth 扫描声明）
 - Runtime-Repo: `/home/workspace/binance`
 - Runtime-Version: v0.13.0
 - State-Model: single-state only
@@ -42,7 +42,7 @@
 
 ## 5. State Model
 
-只允许单一状态：`Done` 或 `Partial`。历史 `Code-State` / `Evidence-State` 双态口径已废除。当前 48 个 FR Done（100%），0 Partial。`release_closeable=YES`，PRG-001~007 全 PASS。参见 TRACEABILITY.md §4。
+只允许单一状态：`Done` 或 `Partial`。历史 `Code-State` / `Evidence-State` 双态口径已废除。当前 55 个 FR Done（100%），0 Partial。`release_closeable=YES`，PRG-001~007 全 PASS。参见 TRACEABILITY.md §4。
 
 ## 6. Product Lines and Event Types
 
@@ -235,6 +235,7 @@ PRG-001~007 状态如下：
 
 | Version | Date | Change |
 | --- | --- | --- |
+| v3.15.0 | 2026-07-06 | 数据完整性修复 R1-R5：R1 TDengine Partial 不再静默返回 nil 改为返回 ErrPartialWrite；R2 um_perp/cm_perp 追加 @fundingRate+@markPrice 独立流订阅；R2a Reconciler DefaultEventTypes 改归一化名；R3 NATS_SUBJECT default 改 binance.market.>；R4 OBSERVABILITY.md 新增 depth 排除声明；R5 版本投影全量回刷（goal/registry/05-foundation/STATUS/README/TRACEABILITY/OBSERVABILITY） |
 | v3.10.0 | 2026-07-05 | PRG-006 PASS：gated resilience 测试 CI-runnable（chaos t.Skip for infra deps + test-gated target + CI job）；release_closeable=YES（PRG-001~007 全 PASS） |
 | v3.9.9 | 2026-07-05 | Phase-1~8 全量修复：28 GitHub Issues 全部关闭（PRG-007 PASS）；interval SSOT/CatalogEntry 分级/migration runner/completeness scanner/E2E 对账/catalog diff NATS/PG 事务/可观测性/部署治理/容错韧性/优雅运行；release_closeable=NO（仅 PRG-006=Partial） |
 | v3.9.8 | 2026-07-04 | 20 轮审查共识修复：release_closeable=NO（PRG-006/007=Partial）；N2/N4/N6/N7/ORDBK runtime 修复（PR #425）；全量文档对齐（PR #1668） |
@@ -244,7 +245,7 @@ PRG-001~007 状态如下：
 
 ## 22a. Runtime Gap Matrix Reference
 
-> **双口径声明**：本 SPEC 的统计口径（54 Done / 0 Partial / 0 Drifted / 0 Pending）表示 **规格口径**——FR 功能面已闭合。运行时口径的 58 个数据完整性/安全性/可运维性缺口记录在独立制品 `module/binance/matrix/RUNTIME-GAP-MATRIX.md` 中。两者正交，不矛盾。详见该文件 §7 双口径声明。
+> **双口径声明**：本 SPEC 的统计口径（55 Done / 0 Partial / 0 Drifted / 0 Pending）表示 **规格口径**——FR 功能面已闭合。运行时口径的 58 个数据完整性/安全性/可运维性缺口记录在独立制品 `module/binance/matrix/RUNTIME-GAP-MATRIX.md` 中。两者正交，不矛盾。详见该文件 §7 双口径声明。
 >
 > 来源报告：`report/binance/DEEP-ANALYSIS-20260704.md`（含 runtime baseline 对齐、发布阻断闭环与版本回刷证据）。
 >
@@ -252,6 +253,6 @@ PRG-001~007 状态如下：
 
 ## 23. Stop Condition
 
-规格口径 FR 48/48 Done（100%）功能面已闭合，release_closeable=YES（PRG-001~007 全 PASS）。
+规格口径 FR 55/55 Done（100%）功能面已闭合，release_closeable=YES（PRG-001~007 全 PASS）。
 
 > **运行时缺口说明**：58 个运行时缺口（GAP-E1~E58）对应的 28 个 GitHub Issues 已于 2026-07-05 全部关闭。2026-07-06 新增并修复 GAP-E59（数据血缘/版本控制：新增 `internal/server/lineage/` 包 + migration 012 `data_lineage` append-only 表 + ingest 三阶段接线）。PRG-006 gated resilience 测试已 CI-runnable（Level 2 测试默认 CI 通过/跳过，Level 1 测试可通过 `make test-gated` 或 CI `run_gated` 手动触发）。详见 `module/binance/matrix/RUNTIME-GAP-MATRIX.md` §7 双口径声明。
