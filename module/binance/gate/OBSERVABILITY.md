@@ -5,7 +5,7 @@
 | Field | Value |
 | --- | --- |
 | Status | Active |
-| Module-Version | v3.9.8 |
+| Module-Version | v3.14.0 |
 | Last-Updated | 2026-07-04 |
 | Scope | `module/binance` Prometheus metrics 语义、告警阈值、SLO 仪表盘 |
 | Spec-Impact | NFR-001~004（可观测性） |
@@ -95,6 +95,15 @@
 - 窗口外历史数据不可查（需从 TDengine/ClickHouse 查询原始数据）
 - 长期升级路径：迁移到 ClickHouse 物化视图（P2 优先级，非阻断）
 
-## 8. Document Synchronization
+## 8. 完整性扫描范围声明
+
+`[COMPUTED, HIGH]` CompletenessScanner 默认覆盖 5 类 event_type：trade, tick, bar, funding_rate, mark_price。
+
+**depth 排除原因**：depth 是快照型数据（非事件流），不适用 heartbeat 间隔检测模式。depth 数据完整性通过以下替代机制保障：
+1. E2E Reconciler 双向 count 对账（含 depth）
+2. REST API `GET /api/v1/market/depth/:symbol` 可用性检查
+3. 未来增强：DepthSnapshotScanner（独立扫描器，检查最新 depth 快照时效性）
+
+## 9. Document Synchronization
 
 [FRAME, HIGH] 本文档与 `SPEC.md` NFR-001~004、`ACCEPTANCE.md` 可观测性 AC 同步。

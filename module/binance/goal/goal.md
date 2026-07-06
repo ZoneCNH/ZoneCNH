@@ -7,9 +7,9 @@
 | 模块 | `binance` |
 | 层级 | 数据域 · 行情（C/S Module 参考实现） |
 | 仓库 | <https://github.com/ZoneCNH/binance> |
-| 当前版本 | v0.12.0 |
-| Spec 版本 | v3.9.8 |
-| 状态 | L2 Active — 48/48 FR Done，release_closeable=NO（PRG-006=Partial，PRG-007=Partial） |
+| 当前版本 | v0.13.0 |
+| Spec 版本 | v3.14.0 |
+| 状态 | L3 Production — 55/55 FR Done，release_closeable=YES（PRG-001~007 全 PASS） |
 
 ## Purpose
 

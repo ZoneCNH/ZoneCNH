@@ -2,12 +2,12 @@
 
 `module/binance` is the Binance-specific Market Data C/S Module for ZoneCNH.
 
-- Spec-Version: v3.10.0 (root / client / server — 2026-06-26 内容正确性大修 + 2026-06-27 结构性修复 + 2026-06-28 P10 全量修复 + 2026-07-05 Phase-1~8 全量修复 + PRG-006 PASS)
+- Spec-Version: v3.14.0 (root / client / server — 2026-06-26 内容正确性大修 + 2026-06-27 结构性修复 + 2026-06-28 P10 全量修复 + 2026-07-05 Phase-1~8 全量修复 + PRG-006 PASS + 2026-07-06 数据完整性修复)
 - Runtime-Version: v0.13.0（Runtime-Anchor: `/home/workspace/binance@main`）
-- Delivery-State: FR-001~FR-044 spec/traceability registered — single state `48 Done / 0 Partial / 0 Drifted / 0 Pending`。release_closeable=YES（PRG-001~007 全 PASS）。44/44 tasks Done；deep-review 37/37 fixed；coverage 100.0%；0 GitHub open issues。
+- Delivery-State: FR-001~FR-055 spec/traceability registered — single state `55 Done / 0 Partial / 0 Drifted / 0 Pending`。release_closeable=YES（PRG-001~007 全 PASS）。47/47 tasks Done；deep-review 37/37 fixed；coverage 100.0%；0 GitHub open issues。
 - Last-Updated: 2026-07-05 (PRG-006 PASS: gated resilience tests CI-runnable; release_closeable=YES)
 
-[COMPUTED, HIGH] 当前 Binance 发布结论：单状态模型为 `48 Done / 0 Partial / 0 Drifted / 0 Pending`，release_closeable=YES（PRG-001~007 全 PASS）。44/44 tasks Done，deep-review 37/37 fixed；0 GitHub open issues（28 issues 于 2026-07-05 全部关闭）；PRG-006 gated resilience 测试 CI-runnable（soak L2 PASS + chaos L2 5 PASS/8 SKIP/0 FAIL）。
+[COMPUTED, HIGH] 当前 Binance 发布结论：单状态模型为 `55 Done / 0 Partial / 0 Drifted / 0 Pending`，release_closeable=YES（PRG-001~007 全 PASS）。47/47 tasks Done，deep-review 37/37 fixed；0 GitHub open issues（28 issues 于 2026-07-05 全部关闭）；PRG-006 gated resilience 测试 CI-runnable（soak L2 PASS + chaos L2 5 PASS/8 SKIP/0 FAIL）。
 
 It is split into two submodules:
 

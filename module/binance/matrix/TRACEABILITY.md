@@ -2,7 +2,7 @@
 
 - [KNOWN] Matrix-Version: v3.13.0
 - [KNOWN] Last-Updated: 2026-07-05
-- Source-SPEC: `module/binance/spec/SPEC.md` v3.13.0
+- Source-SPEC: `module/binance/spec/SPEC.md` v3.14.0
 - State-Model: single-state only
 - [KNOWN] Current-State: 55 Done / 0 Partial / 0 Drifted / 0 Pending（FR-045~051 白名单系统实盘验证六项细化）
 - [KNOWN] release_closeable: YES（55/55 = 100% ≥ 90%）
@@ -91,7 +91,7 @@ release_closeable 判定公式：
 release_closeable = Code-Done FR / Total FR ≥ 90% AND Drifted FR = 0 AND Pending FR = 0 AND PRG-001~007 gates PASS
 ```
 
-当前状态：`release_closeable: YES`（54 FR: 54 Done = 100% ≥ 90%，PRG-001~007 全 PASS）。
+当前状态：`release_closeable: YES`（55 FR: 55 Done = 100% ≥ 90%，PRG-001~007 全 PASS）。
 
 | PRG | Gate | State | Evidence |
 | --- | --- | --- | --- |
