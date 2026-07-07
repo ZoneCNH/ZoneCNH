@@ -18,7 +18,7 @@
 | 手动白名单 / 审核队列（gap #3） | **已闭环** | 手动写入路径（`source='manual'` 的 `AddEntry/RemoveEntry` + `POST /internal/whitelist`）与审核队列（`whitelist_review` 表 + `DecisionNeedsReview` 落库 + `GET/approve/reject` API）均已落地；GC-1 全部 Done |
 | core Tier 接入 quote volume（gap #4） | **已闭环（GC-2）** | `Catalog` 持有 `TierConfig`（显式 `CoreSymbols` + `CoreQuoteVolume`）；`applyCatalogClassification` 改为"显式列表 > QuoteVolumeUSD≥阈值 > BTC/ETH 前缀兜底"；新增 24h ticker 量能 fetcher 并在刷新路径 enrich `QuoteVolumeUSD`，使量能阈值运行时生效 |
 | 观察期生效（gap #5） | **已闭环（PR #447，commit `4d00d38`）** | `SyncJob.Run` 新符号经观察态（`enabled=false`+`first_seen_at`）进入，`InObservationPeriod` 判定期满自动启用；`storage` 新增 `first_seen_at` 列（migration 016） |
-| Collection 路由联动（gap #6） | **仍待办（低优先）** | `whitelist` 表/规则未引用 Collection |
+| Collection 路由联动（gap #6） | **已评审 → 明确 deferred（低优先）** | 见 §3 GC-4：ADR-005 策略枚举未落地、运行时 `Collection`=产品线 与 `market_type` 冗余，联动价值不足 |
 
 ## 1. 目标
 
@@ -68,9 +68,13 @@
 - 验证：单测模拟观察期内/外行为 + `convertToStorageEntries` epoch↔time 转换；`go test ./internal/server/whitelist/... ./internal/server/assembly/...` PASS。
 - 收尾：已提交 `feat/whitelist-observation`（commit `4d00d38`，2026-07-08），PR #447 待合 main 以关闭 gap #5。
 
-### GC-4 — Collection 路由联动（P3）
-- 评估 ADR-005 Collection 概念与 `whitelist` 表/规则的联动价值；若采纳，扩展 `whitelist` 表 `collection` 列并在 `rules.go` 消费。
-- 验证：设计评审通过后再编码。
+### GC-4 — Collection 路由联动（P3）— 设计评审结论：**明确 deferred**
+- 评审问题：ADR-005 将 `Collection` 定义为 6 值**采集策略枚举**（`full_stream`/`stream_no_depth`/`kline_only`/`rest_sample`/`rest_daily`/`disabled`），与 `Tier` 正交；但当前运行时**未落地该枚举**（全仓零引用）。运行时 `catalog.go` 的 `Collection` 字段实为**产品线分组**（`spot`/`um_perp`/`cm_perp`/`options`），与 `whitelist.market_type` 语义等价。
+- 联动价值评估：
+  1. 若按"产品线"理解，whitelist 已有 `market_type`，新增 `collection` 列属**冗余复制**，无增量价值；
+  2. 若按 ADR-005"策略枚举"理解，需先在 catalog / stream_control 落地该枚举（独立特性，超出本计划低优先范围）后才能谈联动，属前置未完成。
+- 结论：**deferred**。不新增 whitelist 表列、不在 rules.go 消费 Collection。若未来 ADR-005 策略枚举真正落地，再单独立项评估与 whitelist 的联动（届时 GC-4 可重新开启）。
+- 收尾：设计评审结论于 2026-07-08 记录，GC-4 标记 deferred，G-C4 达成。
 
 ### GC-5 — bug 修复
 - **GC-5a**：`SyncJob` update 分支除 `enabled` 外，纳入 Tier / base/quote 资产变更触发更新（[COMPUTED] 当前 `WhitelistExisting` 仅含 `market_type/symbol/enabled`）。— **已闭环（审计确认）**。
