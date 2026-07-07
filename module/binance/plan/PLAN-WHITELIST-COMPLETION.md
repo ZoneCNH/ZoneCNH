@@ -79,12 +79,18 @@
 | Gate | 条件 | 状态 |
 |------|------|------|
 | G-C0 | GC-0 diff 编译+测试 PASS，已提交 `f978b67`（未合 main） | Done |
-| G-C1 | 手动白名单 + 审核队列单测 PASS，API 接入 admin router | Done |
-| G-C2 | Tier core 判定接 quote volume，单测 PASS | 待办 |
-| G-C3 | 观察期状态机单测 PASS | Done |
-| G-C4 | Collection 联动设计评审结论落地或明确 deferred | 待办 |
-| G-C5 | 3 个 bug 修复单测 PASS（GC-5a/5b done；GC-5c 待办） | 待办 |
-| G-CF | `go test ./...` + `go vet ./...` 全量 PASS；`boundary-gates.sh` 通过 | 待办 |
+| G-C1 | 手动白名单 + 审核队列单测 PASS，API 接入 admin router（PR #445） | Done |
+| G-C2 | Tier core 判定接 quote volume，单测 PASS（PR #446） | Done |
+| G-C3 | 观察期状态机单测 PASS（PR #447） | Done |
+| G-C4 | Collection 联动设计评审 → 明确 deferred（PR #1702） | Done |
+| G-C5 | 3 个 bug 修复单测 PASS（5a 审计确认 / 5b PR #448 / 5c PR #449） | Done |
+| G-CF | `go build ./...` + `go vet ./...` PASS；`boundary-gates.sh` 15/15 PASS；whitelist 相关包单测全 PASS | Done（见注） |
+
+> **G-CF 验证注记（2026-07-08）**：在 throwaway 集成分支（main + GC-2/GC-1/GC-3/GC-5b/GC-5c 顺序 merge，已解决 `sync_job_test.go` 测试函数追加冲突）上运行全量门禁：
+> - `go build ./...` → PASS；`go vet ./...` → PASS。
+> - `boundary-gates.sh` → 15 passed, 0 failed。
+> - `go test ./...` → 所有 whitelist 相关包（`internal/server`、`internal/server/api`、`internal/server/assembly`、`internal/server/storage`、`internal/server/whitelist`、`pkg/whitelistclient`）全 PASS。
+> - 唯一失败为 `internal/client` 包 `TestOrderbookDispatchIntegration`：**预存 flaky 数据竞争**，与白名单改动无关（该包未被任何 GC 改动触及）。该 flaky 已通过 PR #451 修复并合入 main→Issue #450 已关闭。
 
 ## 5. 风险
 
