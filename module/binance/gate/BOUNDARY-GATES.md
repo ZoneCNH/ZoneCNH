@@ -1,8 +1,8 @@
 # module/binance BOUNDARY GATES
 
 > 版本：v2.2.5
-> Module-Version: v3.9.8
-> 更新日期：2026-06-30
+> Module-Version: v4.0.0
+> 更新日期：2026-07-07
 > Runtime 仓库：`/home/workspace/binance`
 > Runtime 契约：`/home/workspace/binance/BOUNDARY-GATES.md`
 > Runtime 脚本：`/home/workspace/binance/scripts/boundary-gates.sh`
@@ -101,7 +101,7 @@ Runtime `go.mod` 必须保留边界所需 direct dependencies，不得通过依�
 | BR-007 | Done：Gate §9 已由 runtime 13/13 PASS 证明 |
 | BR-008 | Done：Gate §8 已由 runtime 13/13 PASS 证明 |
 | BR-009 | Done：Gate §11 已由 runtime 13/13 PASS 证明 |
-| Release | Done：远端 CI PASS（ubuntu-latest runner）、release tag v0.12.0 已发布、7 个基础设施服务全部在线、运行时口径 PRG-006=Partial（gated resilience）。**G0 存储装配已闭合**：StorageWriter 已设置（非 nil）、buildStorage() 创建真实 Redis/taos/pg/clickhouse/oss 连接，memory idempotency 仅为 fallback。release_closeable=NO（PRG-006=Partial，PRG-007=Partial）。 |
+| Release | Done：远端 CI PASS（ubuntu-latest runner）、release tag 已发布、7 个基础设施服务全部在线、PRG-001~007 全 PASS。**G0 存储装配已闭合**：StorageWriter 已设置（非 nil）、buildStorage() 创建真实 Redis/taos/pg/clickhouse/oss 连接，memory idempotency 仅为 fallback。release_closeable=YES（PRG-001~007 全 PASS）。 |
 
 ---
 

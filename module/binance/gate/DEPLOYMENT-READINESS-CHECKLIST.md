@@ -106,7 +106,7 @@
 - [x] Depth tests: 54/54 PASS (C1/C2/C3)
 
 ### Infrastructure (§5)
-- [x] Docker image: v3.9.8 built
+- [x] Docker image: v0.14.0 built
 - [x] Health endpoints: Verified
 - [x] Monitoring: Configured
 - [x] Alerting: Thresholds set

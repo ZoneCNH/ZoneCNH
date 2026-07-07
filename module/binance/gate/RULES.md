@@ -1,7 +1,7 @@
 # module/binance RULES.md — 模块治理规则
 
-- Module-Version: v3.9.0
-- Last-Updated: 2026-06-26
+- Module-Version: v4.0.0
+- Last-Updated: 2026-07-06
 - 适用范围：`module/binance/` 全部规格文档 + `github.com/ZoneCNH/binance` runtime 仓
 - 优先级：本文 > 子规格 > task；与 `CONSTITUTION.md` §0-§20 冲突时以 `CONSTITUTION.md` 为准
 - 强制级别：每条规则标注【硬】（违反即治理违规）/【软】（推荐）/【开】（仅验证存在性）
@@ -12,11 +12,11 @@
 
 ## R1【硬】命名一致性 — Naming SSOT 不可漂移
 
-**规则**：`module/binance/` 全部文档与 runtime 代码的 `product_line`、`event_type`、natsx subject、Kafka topic、TDengine stable/tag、Redis key、ossx 路径、Gin API、Go 文件名、环境变量必须 100% 匹配 `module/binance/NAMING.md` §1-§10。
+**规则**：`module/binance/` 全部文档与 runtime 代码的 `product_line`、`event_type`、natsx subject、Kafka topic、TDengine stable/tag、Redis key、ossx 路径、Gin API、Go 文件名、环境变量必须 100% 匹配 `module/binance/NAMING.md` §1-§13。
 
 **违规**：使用 `usdm_futures`、`coinm_futures`、`futures_usdt`、`futures_coin`、`option`、`opts` 等历史别名
 
-**检测**：`NAMING.md` §11 给出 4 条 grep 命令，期望全部 0 行命中
+**检测**：`NAMING.md` §12 给出 drift detection grep 命令，期望全部 0 行命中
 
 **例外**：以下文件允许引用历史别名（仅作为漂移证据保留）：
 - `NAMING.md`（"历史别名" 列）
@@ -33,7 +33,7 @@
 
 ## R2【硬】4 × 6 对称矩阵无缺口
 
-**规则**：`module/binance/` 的 product_line（spot/um_perp/cm_perp/options）× event_type（tick/trade/bar/depth/funding_rate/mark_price）构成 24 个组合，全部组合必须在以下 5 个层面对称存在：
+**规则**：`module/binance/` 的 product_line（spot/um_perp/cm_perp/options）× event_type（book_ticker/trade/kline/depth_update/funding_rate/mark_price_update）构成 24 个组合，全部组合必须在以下 5 个层面对称存在：
 
 1. natsx subject（`SPEC.md` §9 + `RUNTIME-MAPPING.md`）
 2. Kafka topic（`binance.{product_line}.{event_type}.v1`；`TASK-BINANCE-SERVER-014-kafkax-dispatch.md`）
@@ -43,7 +43,7 @@
 
 **交割合约承载**：`um_perp` / `cm_perp` product_line 下永续与交割合约通过 `instrument_subtype`（perpetual/delivery）维度区分（NAMING §1.1、SPEC §9 identity 矩阵、FR-002a），**不拆分 product_line、不扩矩阵**。subject/topic/path 仍只含 product_line + event_type；`instrument_subtype` 只进入 InstrumentKey identity 与 TDengine tag / Redis key identity 段。
 
-**违规**：缺失任一组合（例如缺 `binance.market.options.depth.v1`）；或把交割合约拆为独立 product_line（如 `um_delivery`）破坏 4×6 矩阵
+**违规**：缺失任一组合（例如缺 `binance.market.options.depth_update.v1`）；或把交割合约拆为独立 product_line（如 `um_delivery`）破坏 4×6 矩阵
 
 **检测**：
 ```bash
@@ -272,13 +272,13 @@ rg "backfill_weight_budget_per_minute" module/binance/spec/SPEC.md | head -1
 ### R12: Gap Detection Strategy Per Event Type
 
 **级别**：Hard
-**内容**：缺口检测必须按事件类型选择策略（trade→trade_id 序列、bar→open_time 序列、depth→updateId 序列、tick→事件驱动不告警），禁止使用统一时间间隔法。代码实现中若发现 `gap > 2*interval` 通用逻辑即违规。
+**内容**：缺口检测必须按事件类型选择策略（trade→trade_id 序列、kline→open_time 序列、depth_update→updateId 序列、book_ticker→事件驱动不告警），禁止使用统一时间间隔法。代码实现中若发现 `gap > 2*interval` 通用逻辑即违规。
 **检测命令**：
 ```bash
 # 检查代码中是否存在通用的时间间隔 gap 检测（禁止）
 rg "2\s*\*\s*(interval|expected)" /home/workspace/binance/internal/ --include='*.go' && echo "FAIL: 使用统一时间间隔法" || echo "PASS"
 ```
-**违反时**：低流动性 symbol 产生海量假缺口（trade/tick），depth updateId 跳跃漏检。必须在实现层按 FR-017 v3.9.0 分类型策略。
+**违反时**：低流动性 symbol 产生海量假缺口（trade/book_ticker），depth updateId 跳跃漏检。必须在实现层按 FR-017 v3.9.0 分类型策略。
 **来源**：深度分析 v3.9.0 P0-2。
 
 ---
