@@ -79,7 +79,7 @@ while IFS= read -r -d '' module_dir; do
   if grep -nE '(^|[[:space:]])(ssh|scp|rsync|kubectl|helm|systemctl)([[:space:]]|$)|docker compose' "$file" >/dev/null; then
     report_failure "$module" "inline remote deployment command is forbidden"
   fi
-done < <(find module -mindepth 1 -maxdepth 1 -type d ! -name '_template' -print0 | sort -z)
+done < <(find module -mindepth 1 -maxdepth 1 -type d ! -name '_template' ! -name '.*' -print0 | sort -z)
 
 if [[ "$failures" -gt 0 ]]; then
   printf 'module-cicd-check: %d failure(s)\n' "$failures" >&2
