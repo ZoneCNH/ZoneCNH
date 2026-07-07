@@ -171,7 +171,7 @@
 |------|--------|--------|
 | `GET /api/v1/market/spot/BTCUSDT/latest` | `BNC_BACKEND_DOWN` | `{"bid_price":"59491.99","ask_price":"59492.00","symbol":"BTCUSDT",...}` ✅ |
 | `GET /api/v1/market/spot/ETHUSDT/latest` | `BNC_BACKEND_DOWN` | `{"bid_price":"1591.29","ask_price":"1591.30","symbol":"ETHUSDT",...}` ✅ |
-| `GET /api/v1/market/spot/BTCUSDT/ticks/range` | `[]` (空) | 3 条真实行情数据 ✅ |
+| `GET /api/v1/market/spot/BTCUSDT/ticks/range` (legacy: book_ticker) | `[]` (空) | 3 条真实行情数据 ✅ |
 | `GET /api/v1/stats` | `BNC_SERVICE_NOT_CONFIGURED` | `{"accepted":80,"ingested":12922,"rejected":12843}` ✅ |
 | TDengine tag 正确性 | `symbol="binance"` (错位) | `symbol="BTCUSDT", product_line="spot", source="binance"` ✅ |
 | Client admin 端口 | 8081 (冲突) | 8082 ✅ |

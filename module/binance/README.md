@@ -2,10 +2,10 @@
 
 `module/binance` is the Binance-specific Market Data C/S Module for ZoneCNH.
 
-- Spec-Version: v3.14.0 (root / client / server — 2026-06-26 内容正确性大修 + 2026-06-27 结构性修复 + 2026-06-28 P10 全量修复 + 2026-07-05 Phase-1~8 全量修复 + PRG-006 PASS + 2026-07-06 数据完整性修复)
+- Spec-Version: v4.0.0 (root / client / server — v3.18.0 canonical 命名对齐 + v4.0.0 order book rebuild 纳入 ADR-011)
 - Runtime-Version: v0.13.0（Runtime-Anchor: `/home/workspace/binance@main`）
 - Delivery-State: FR-001~FR-055 spec/traceability registered — single state `55 Done / 0 Partial / 0 Drifted / 0 Pending`。release_closeable=YES（PRG-001~007 全 PASS）。47/47 tasks Done；deep-review 37/37 fixed；coverage 100.0%；0 GitHub open issues。
-- Last-Updated: 2026-07-05 (PRG-006 PASS: gated resilience tests CI-runnable; release_closeable=YES)
+- Last-Updated: 2026-07-06 (canonical 命名对齐 Binance 原生事件名)
 
 [COMPUTED, HIGH] 当前 Binance 发布结论：单状态模型为 `55 Done / 0 Partial / 0 Drifted / 0 Pending`，release_closeable=YES（PRG-001~007 全 PASS）。47/47 tasks Done，deep-review 37/37 fixed；0 GitHub open issues（28 issues 于 2026-07-05 全部关闭）；PRG-006 gated resilience 测试 CI-runnable（soak L2 PASS + chaos L2 5 PASS/8 SKIP/0 FAIL）。
 
@@ -96,9 +96,9 @@ module/binance/server
 
 [COMPUTED, HIGH] GitHub #1104~#1118 and #1123 remain historical 2026-06-25 sync evidence. Current stop condition is the single state ledger plus production evidence/live/CI/dashboard/credentials/multi-tenant/destruction gates listed in the 2026-06-28 P10 issues.
 
-[COMPUTED, HIGH] 2026-06-29 对齐状态：当前 single state 为 `48 Done / 0 Partial / 0 Drifted / 0 Pending`，release_closeable=YES（PRG-001~007 全 PASS），44/44 tasks Done。历史 full E2E evidence closure 仍保留为 historical 证据归档（`/home/workspace/binance/release/evidence/binance/20260628-full-e2e-closure/`），不作为当前结论来源。
+[COMPUTED, HIGH] 2026-07-07 对齐状态：当前 single state 为 `55 Done / 0 Partial / 0 Drifted / 10 Pending`（FR-052~061 order book rebuild），release_closeable=YES（PRG-001~007 全 PASS）。历史 full E2E evidence closure 仍保留为 historical 证据归档（`/home/workspace/binance/release/evidence/binance/20260628-full-e2e-closure/`），不作为当前结论来源。
 
-[COMPUTED, HIGH] 2026-06-30 Issue Gate：`module/binance/todo.md` 是只读投影，Beads/GitHub Issues 是关闭 SSOT。当前口径：`48 Done / 0 Partial`、44/44 tasks Done、release_closeable=YES（PRG-001~007 全 PASS）。历史 P10 对齐证据见 [`evidence/2026-06-28/review/p10-closure-evidence.md`](evidence/2026-06-28/review/p10-closure-evidence.md) 与 [`evidence/2026-06-28/p10-alignment-10-pass.md`](evidence/2026-06-28/p10-alignment-10-pass.md)（historical）。
+[COMPUTED, HIGH] 2026-07-07 Issue Gate：`module/binance/todo.md` 是只读投影，Beads/GitHub Issues 是关闭 SSOT。当前口径：`55 Done / 10 Pending`、release_closeable=YES（PRG-001~007 全 PASS）。历史 P10 对齐证据见 [`evidence/2026-06-28/review/p10-closure-evidence.md`](evidence/2026-06-28/review/p10-closure-evidence.md) 与 [`evidence/2026-06-28/p10-alignment-10-pass.md`](evidence/2026-06-28/p10-alignment-10-pass.md)（historical）。
 
 [COMPUTED, HIGH] 2026-07-05 Issue Gate：`gh issue list -R ZoneCNH/binance --state open` = 0 open。Phase-1~8 全量修复（28 issues closed），PRG-001~007 全 PASS，release_closeable=YES。PRG-006 gated resilience 测试 CI-runnable（PR #426）。
 
@@ -109,6 +109,11 @@ module/binance/server
 - `spec/SPEC.md`
 - `goal/goal.md`
 - `design/DESIGN.md`
+- `design/EVENT-TYPE-MAPPING.md` — Binance 原生事件类型 → canonical 映射 + 四产品线覆盖矩阵
+- `design/SEQUENCE-CONTINUITY-STRATEGY.md` — 序号连续性校验策略
+- `design/HISTORICAL-DATA-SYNC-STRATEGY.md` — 历史数据同步起始时间策略
+- `design/ADR-009-user-data-stream-scope.md` — 用户数据流排除决策
+- `design/ADR-010-platform-change-risks.md` — 平台变更风险登记
 - `deploy/README.md`
 - `gate/BOUNDARY-GATES.md`
 - `matrix/TRACEABILITY.md`
