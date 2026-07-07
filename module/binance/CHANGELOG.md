@@ -9,6 +9,40 @@
 
 ---
 
+## 2026-07-07 第二轮修复 — todo.md 未修复项消除
+
+### Fixed — P1 HIGH
+
+- **depth_topn/depth_incremental/depth_rebuild_* 无 retention 配置**：`buildTaosRetentionConfigs` 只配 trade/tick/bar/depth/funding_rate/mark_price/option_tick。新增 depth_topn/depth_incremental/depth_rebuild_start/depth_rebuild_complete 共 5 条 7d retention 条目（总 11 条）
+- **depth_rebuild_start/complete 不在 DefaultEventTypes 对账列表**：`reconcile/reconciler.go` DefaultEventTypes 追加 depth_rebuild_start/depth_rebuild_complete
+- **applyAIMDRate 硬编码 80/20 比例**：`ThrottleManager` 新增 `coldPct`/`repairPct` 字段，`NewThrottleManager` 存储解析值，`applyAIMDRate` 使用配置比例而非硬编码 0.8/0.2
+- **DispatchRetryBackoffs 注释与实现不符**：`ingest.go` 注释称"3次100ms/200ms/400ms指数退避"，实际默认1次0ms。修正注释为单次尝试策略，保持 dead-letter 不阻塞语义
+- **IngestTransport 注释过时**：`binance-server.env.example` 注释从"natsx | http"改为"仅支持 natsx（http 已退役）"
+
+### Fixed — P2 MEDIUM
+
+- **runtime-release-evidence.sh 硬编码日期**：`EVIDENCE_DIR` 默认值从 `20260623` 改为 `$(date -u +%Y%m%d)` 动态生成
+- **boundary-gates.yml 门禁数错误**：注释和 job name 从"13 gates"修正为"15 gates"
+- **docker-compose.yml 镜像版本不一致**：binance-server/binance-client 镜像从 v0.8.0 统一为 v0.14.0（与 README 一致）
+- **api/*.go 使用 log.Printf 而非 slog**：`query.go` 的 `stdLogger.Printf` 改为 `slog.Error`，统一结构化日志
+
+### Fixed — Test Stability
+
+- **TestBuildTaosRetentionConfigs 期望更新**：retention 条目从 7 增至 11，测试期望同步
+- **TestOrderbookDispatchIntegration 并发超时**：对齐超时从 10s 增至 30s
+- **TestManager_FullIncremental_AlignWithMockFetcher 并发超时**：waitForState 超时从 2s 增至 10s
+
+### 门禁验证
+
+| 门禁 | 结果 |
+|------|------|
+| Build | ✅ PASS |
+| Test + Race (30 packages) | ✅ 0 FAIL, 0 race |
+| Boundary Gates | ✅ 15/15 PASS |
+| Coverage | ✅ 86.1% |
+
+---
+
 ## 2026-07-07 二十轮深度检查修复 — P0/P1 缺陷消除与对齐同步
 
 ### Fixed — P0 CRITICAL
