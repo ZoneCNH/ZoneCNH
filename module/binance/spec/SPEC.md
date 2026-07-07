@@ -1,10 +1,10 @@
 # Binance SPEC
 
-- Spec-Version: v4.0.0
+- Spec-Version: v4.0.1
 - Module: binance
-- Last-Updated: 2026-07-07（Phase 1 实现 FR-052~061 spot/um_perp/cm_perp 部分；options 待 Phase 2）
+- Last-Updated: 2026-07-08（白名单补齐 GC-0~GC-5 全合入 main）
 - Runtime-Repo: `/home/workspace/binance`
-- Runtime-Version: v0.14.0（order book FR-052~061 spot/um/cm 实现）
+- Runtime-Version: v0.14.0（order book FR-052~061 spot/um/cm 实现；白名单 GC-0~GC-5 补齐）
 - State-Model: single-state only
 - Current-State: 65 Done / 0 Partial / 0 Drifted / 0 Pending
 - release_closeable: YES（规格口径 65 Done；FR-052~061 spot/um/cm 已实现，options 待 Phase 2）
@@ -107,13 +107,13 @@
 | FR-042 | quality | soak test | Done | soak test scripts + test/e2e suite PASS |
 | FR-043 | quality | chaos test | Done | chaos test scripts + go test -race PASS (0 races) |
 | FR-044 | security | admin auth, mTLS, scan gates, pentest readiness | Done | gitleaks scan + govulncheck + admin auth Bearer token |
-| FR-045 | whitelist | Whitelist Sync Job（事件驱动 + 定时兜底 + PG advisory lock 单写者） | Done | whitelist/sync_job.go + rules.go |
-| FR-046 | whitelist | whitelist 表 + whitelist_meta version SSOT + whitelist_sync_log 审计 | Done | pg_whitelist.go + migrations/011_whitelist.sql |
-| FR-047 | API | GET /internal/whitelist（全量 + 增量，200 统一响应） | Done | whitelist/service.go + api/whitelist_handler.go |
+| FR-045 | whitelist | Whitelist Sync Job（事件驱动 + 定时兜底 + PG advisory lock 单写者；GC-0 server→client 回灌；GC-1 手动写入路径 `source='manual'`；GC-3 观察期生效 `first_seen_at` + `InObservationPeriod`）；manual 白名单审核队列（`whitelist_review` 表 + approve/reject API） | Done | whitelist/sync_job.go + rules.go + review_store.go |
+| FR-046 | whitelist | whitelist 表 + whitelist_meta version SSOT + whitelist_sync_log 审计 + `first_seen_at` 观察期列（migration 016） | Done | pg_whitelist.go + migrations/011_whitelist.sql + 016_whitelist_observation.sql |
+| FR-047 | API | GET /internal/whitelist（全量 + 增量，200 统一响应）；POST /internal/whitelist/refresh（GC-5b 审核态反馈 `needs_review` / `status`） | Done | whitelist/service.go + api/whitelist_handler.go |
 | FR-048 | notify | NATS subject `binance.whitelist.version` 推送（core NATS fire-and-forget，publisher 使用独立 NATS 连接，不依赖 ingest transport；publish 失败非致命） | Done | whitelist/publisher.go + assembly 独立 NATS 连接注入 |
-| FR-049 | consumer | 下游消费方 SDK（缓存 3h TTL + NATS 订阅 + 增量刷新 + 容灾降级 + Bearer token 鉴权） | Done | pkg/whitelistclient/cache.go + client.go |
+| FR-049 | consumer | 下游消费方 SDK（缓存 3h TTL + NATS 订阅 + 增量刷新 + GC-5c 真正的 fail-open 降级：`degraded` 态 + `OnDegraded` 回调 + `IsFailOpen()` 信号；Bearer token 鉴权） | Done | pkg/whitelistclient/cache.go + client.go + failopen_test.go |
 | FR-050 | catalog | catalog_symbols 扩展字段（exchange_status/last_seen_at/tier/collection/raw_extra）；ApplyDiff upsert 用 COALESCE 保留手动分配的 tier/collection；contract_type=TRADIFI_PERPETUAL 区分币股 | Done | migrations/011_whitelist.sql + pg_catalog.go ApplyDiff |
-| FR-051 | tier | Tier 分配策略：spot / um_perp(PERPETUAL) / um_perp(TRADIFI_PERPETUAL) / cm_perp / options 各取 24h quoteVolume 流动性 top 20，统一 core 准入；options 准入层与采集分桶层解耦（ADR-008） | Done | whitelist/rules.go + 运维 SQL 批量分配 |
+| FR-051 | tier | Tier 分配策略：spot / um_perp(PERPETUAL) / um_perp(TRADIFI_PERPETUAL) / cm_perp / options 各取 24h quoteVolume 流动性 top 20，统一 core 准入（GC-2 core tier 三级优先级：显式列表 > 量能阈值 > BTC/ETH 兜底）；options 准入层与采集分桶层解耦（ADR-008） | Done | whitelist/rules.go + ticker_volume.go + catalog.go 三级判定 |
 | FR-052 | orderbook | Order Book Manager — `full_incremental` 模式：per-symbol 本地 book 状态机（UNINITIALIZED→BUFFERING→ALIGNED→REBUILDING），per-symbol 独立 goroutine 无全局锁 | Done | `internal/client/orderbook/manager.go` + `state.go` + `runtime.go` 接入主路径；options 待 Phase 2 |
 | FR-053 | orderbook | Order Book Manager — `snapshot_topn` 模式：无状态转发限档快照流（5/10/20档），不需序号校验，不进 REBUILDING | Done | `internal/client/orderbook/manager.go` handleSnapshotTopN + `rest.go` DepthMode；options 待 Phase 2 |
 | FR-054 | orderbook | Order Book Initial Alignment + Sequence Validation：REST 快照对齐（9步算法）+ spot U/u 连续性 + futures U/u/pu 连续性 + qty=="0" 删除价位 + 定点数价格对齐 | Done | `internal/client/orderbook/align.go` alignAlgorithm + validateSequence + `book.go` ApplyLevel qty=="0" 删除；options 待 Phase 2 |
@@ -248,6 +248,7 @@ PRG-001~007 状态如下：
 
 | Version | Date | Change |
 | --- | --- | --- |
+| v4.0.1 | 2026-07-08 | 白名单补齐 GC-0~GC-5 全合入 main：GC-0 收口 server→client 回灌（#444）+ GC-1 手动白名单审核队列（#445）+ GC-2 core tier 24h quote volume 三级分级（#446）+ GC-3 观察期生效 first_seen_at（#447）+ GC-5b 审核态 refresh 反馈（#452）+ GC-5c whitelistclient 真正 fail-open 降级（#449）；GC-4 Collection 明确 deferred；FR-045~051 证据锚点更新 |
 | v4.0.0 | 2026-07-07 | Phase 1 实现 FR-052~061 spot/um/cm 部分：order book 状态机（4 状态 + per-symbol goroutine）、对齐算法（9 步 + 序号校验）、auto-rebuild、快照持久化 + fast recovery、staleness API、TopN 推送、增量转发、on-demand snapshot + health query、rebuild 告警 + checksum 抽样；代码位于 `internal/client/orderbook/`（8 文件 + 5 测试文件），接入主路径（runtime.go + admin.go + config.go）；options 待 Phase 2 |
 | v3.18.0 | 2026-07-06 | canonical event_type 命名对齐 Binance 原生事件名（camelCase→snake_case）：§6 implemented 4 个 rename（tick→book_ticker, bar→kline, depth→depth_update, mark_price→mark_price_update）+ planned 2 个 rename（liquidation→force_order, contract_meta→contract_info）；新增 §2.0 命名规则（1:1映射/多事件聚合/派生类型/语义分组）；legacy alias 保留用于 runtime migration 追溯 |
 | v3.17.0 | 2026-07-06 | 事件类型语义分类框架：§6 新增 5 个 planned canonical event_type（ticker/liquidation/open_interest/index_reference/contract_meta）；EVENT-TYPE-MAPPING.md 重写为四问分类判据驱动的语义归类（Q1 ID/Q2 快照/Q3 传输层/Q4 非权威），14 个未覆盖事件逐个归类并登记误映射后果 |
