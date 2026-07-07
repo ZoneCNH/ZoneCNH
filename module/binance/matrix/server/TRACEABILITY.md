@@ -1,12 +1,12 @@
 # module/binance/server TRACEABILITY
 
 > 追溯矩阵 §1–§7，符合 `../../../../docs/governance/TRACEABILITY.md` 标准格式。
-> 数据来源：`module/binance/spec/server/SPEC.md` v3.9.8（FR/BR 使用 root canonical 编号）。
+> 数据来源：`module/binance/spec/server/SPEC.md` v4.0.0（FR/BR 使用 root canonical 编号）。
 > **SC 编号说明**：本文件的 SC-001~SC-026 为子模块本地场景 ID（Scenario），不与 root TRACEABILITY 的 canonical TC-001~TC-083 冲突。正式 TC 编号以 `module/binance/matrix/TRACEABILITY.md` §4 为准。
 
-- Module-Version: v3.9.8（FR/BR 编号统一为 root canonical；与 root SPEC v3.9.8 一致）
-- Last-Updated: 2026-07-04（全局 single state 为 48 Done / 0 Partial / 0 Drifted / 0 Pending，release_closeable=NO）
-- Spec-Reference: `module/binance/spec/server/SPEC.md` v3.9.8
+- Module-Version: v4.0.0（FR/BR 编号统一为 root canonical；与 root SPEC v4.0.0 一致）
+- Last-Updated: 2026-07-07（全局 single state 为 55 Done / 0 Partial / 0 Drifted / 10 Pending，release_closeable=YES）
+- Spec-Reference: `module/binance/spec/server/SPEC.md` v4.0.0
 
 > **v2.1.1 变更摘要**：元数据对齐 server SPEC v2.1.0；保留 v2.1.0 的 FR/TC/AC 追溯结构；
 > SC-020/021 覆盖；FR-002→FR-005 编号修正（v2.0.0 漏收 Consumer Lifecycle 导致整体偏移）；
@@ -222,9 +222,9 @@
 | BR→验证映射率 | 9 / 9 | 100% |
 | SC→FR 回溯率 | 26 / 26 | 100% |
 | AC→验证映射率 | 40 / 40 | 100% |
-| 实现完成率 | 12 Done / 0 Partial / 12 FR | 100% Done（全局发布以 root single state `48 Done / 0 Partial / 0 Drifted / 0 Pending` 与 release_closeable=NO 为准） |
+| 实现完成率 | 12 Done / 0 Partial / 12 FR | 100% Done（全局发布以 root single state `55 Done / 10 Pending` 与 release_closeable=YES 为准） |
 
-	> **v2.2.2 状态同步更正 (2026-07-04)**：2026-06-28 full E2E 包仅作为历史运行证据，不构成发布关闭结论。当前采用 single state；root 当前为 `48 Done / 0 Partial / 0 Drifted / 0 Pending`，release_closeable=NO（PRG-006=Partial，PRG-007=Partial）。
+	> **v2.2.2 状态同步更正 (2026-07-07)**：2026-06-28 full E2E 包仅作为历史运行证据，不构成发布关闭结论。当前采用 single state；root 当前为 `55 Done / 10 Pending`，release_closeable=YES（PRG-001~007 全 PASS）。
 
 ---
 
