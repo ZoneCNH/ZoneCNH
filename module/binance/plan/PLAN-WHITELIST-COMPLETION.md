@@ -110,11 +110,11 @@
 
 ## 6. 验收标准
 
-- [ ] GC-0~GC-5 全部合入 main，`go test ./...` PASS。
-- [ ] `module/binance/spec/SPEC.md` 标注 manual 白名单 / 审核队列 / 观察期 / quote-volume Tier 为 Done。
-- [ ] `module/binance/matrix/TRACEABILITY.md` 对应 FR/BR 行 State=Done。
-- [ ] `boundary-gates.sh` §15（运行时仓无 spec 制品）与导入边界 gate 通过。
-- [ ] CHANGELOG 追加一条"白名单机制补齐（GC-0~GC-5）"。
+- [x] GC-0~GC-5 全部合入 main（PR #444/#445/#446/#447/#449/#452），`go test ./...` PASS（G-CF 验证注记）。
+- [ ] `module/binance/spec/SPEC.md` 标注 manual 白名单 / 审核队列 / 观察期 / quote-volume Tier 为 Done — 待独立 PR。
+- [ ] `module/binance/matrix/TRACEABILITY.md` 对应 FR/BR 行 State=Done — 待独立 PR。
+- [x] `boundary-gates.sh` 15/15 PASS。
+- [x] CHANGELOG 追加一条"白名单机制补齐（GC-0~GC-5）"。
 
 ## 7. 关键文件锚点（绝对路径，来自缺口报告）
 
