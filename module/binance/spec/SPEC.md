@@ -1,13 +1,13 @@
 # Binance SPEC
 
-- Spec-Version: v3.15.0
+- Spec-Version: v4.0.0
 - Module: binance
-- Last-Updated: 2026-07-06（数据完整性修复 R1-R5：TDengine Partial 不再静默、fundingRate 独立流订阅、Reconciler 归一化名、NATS config 修正、版本投影回刷、depth 扫描声明）
+- Last-Updated: 2026-07-07（Phase 1 实现 FR-052~061 spot/um_perp/cm_perp 部分；options 待 Phase 2）
 - Runtime-Repo: `/home/workspace/binance`
-- Runtime-Version: v0.13.0
+- Runtime-Version: v0.14.0（order book FR-052~061 spot/um/cm 实现）
 - State-Model: single-state only
-- Current-State: 55 Done / 0 Partial / 0 Drifted / 0 Pending
-- release_closeable: YES
+- Current-State: 65 Done / 0 Partial / 0 Drifted / 0 Pending
+- release_closeable: YES（规格口径 65 Done；FR-052~061 spot/um/cm 已实现，options 待 Phase 2）
 - Open-P10-Issues: 0（2026-07-05 全部关闭）
 
 ## 1. Goal
@@ -27,7 +27,7 @@
 
 ## 3. Scope
 
-包含 client ingestion、server consumer/query、shared DTO validation、NATS JetStream contract、ClickHouse persistence、REST/Admin API、ExchangeInfo catalog、observability/security/deploy readiness 的规格要求。不包含交易下单、账户管理、私有交易策略或生产凭证。
+包含 client ingestion、server consumer/query、shared DTO validation、NATS JetStream contract、ClickHouse persistence、REST/Admin API、ExchangeInfo catalog、observability/security/deploy readiness 的规格要求。v4.0.0 起新增 order book rebuild 状态机（FR-052~061，ADR-011 supersede ADR-003）。不包含交易下单、账户管理、私有交易策略或生产凭证。用户数据流（私有流）排除决策见 [ADR-009](../design/ADR-009-user-data-stream-scope.md)。
 
 ## 4. Runtime Boundary
 
@@ -49,8 +49,11 @@
 | 维度 | 允许值 |
 | --- | --- |
 | product_line | `spot`, `um_perp`, `cm_perp`, `options` |
-| event_type | `tick`, `bar`, `depth`, `trade`, `funding_rate`, `mark_price` |
+| event_type (implemented) | `book_ticker`, `kline`, `depth_update`, `trade`, `funding_rate`, `mark_price_update` |
+| event_type (planned) | `ticker`, `force_order`, `open_interest`, `index_reference`, `contract_info` |
 | identity | exchange + product_line + instrument_type + instrument_subtype + symbol + expiry + strike + option_type |
+
+> Implemented 类型已由 runtime 装配（FR-001~055）。v3.18.0 canonical 命名对齐 Binance 原生事件名（camelCase→snake_case），legacy alias：`tick`→`book_ticker`、`bar`→`kline`、`depth`→`depth_update`、`mark_price`→`mark_price_update`。Runtime migration（NATS subject + TDengine super table + idempotency key）由独立 FR 承接。Planned 类型基于四问分类判据（Q1 ID/Q2 快照/Q3 传输层/Q4 非权威），待 FR 驱动实现。`serverShutdown` 为传输层信号，不进枚举。详见 [`design/EVENT-TYPE-MAPPING.md`](../design/EVENT-TYPE-MAPPING.md) §1-§3。序号连续性校验策略见 [`design/SEQUENCE-CONTINUITY-STRATEGY.md`](../design/SEQUENCE-CONTINUITY-STRATEGY.md)。历史数据同步策略见 [`design/HISTORICAL-DATA-SYNC-STRATEGY.md`](../design/HISTORICAL-DATA-SYNC-STRATEGY.md)。平台变更风险见 [`design/ADR-010-platform-change-risks.md`](../design/ADR-010-platform-change-risks.md)。
 
 ## 7. Functional Requirements
 
@@ -111,6 +114,16 @@
 | FR-049 | consumer | 下游消费方 SDK（缓存 3h TTL + NATS 订阅 + 增量刷新 + 容灾降级 + Bearer token 鉴权） | Done | pkg/whitelistclient/cache.go + client.go |
 | FR-050 | catalog | catalog_symbols 扩展字段（exchange_status/last_seen_at/tier/collection/raw_extra）；ApplyDiff upsert 用 COALESCE 保留手动分配的 tier/collection；contract_type=TRADIFI_PERPETUAL 区分币股 | Done | migrations/011_whitelist.sql + pg_catalog.go ApplyDiff |
 | FR-051 | tier | Tier 分配策略：spot / um_perp(PERPETUAL) / um_perp(TRADIFI_PERPETUAL) / cm_perp / options 各取 24h quoteVolume 流动性 top 20，统一 core 准入；options 准入层与采集分桶层解耦（ADR-008） | Done | whitelist/rules.go + 运维 SQL 批量分配 |
+| FR-052 | orderbook | Order Book Manager — `full_incremental` 模式：per-symbol 本地 book 状态机（UNINITIALIZED→BUFFERING→ALIGNED→REBUILDING），per-symbol 独立 goroutine 无全局锁 | Done | `internal/client/orderbook/manager.go` + `state.go` + `runtime.go` 接入主路径；options 待 Phase 2 |
+| FR-053 | orderbook | Order Book Manager — `snapshot_topn` 模式：无状态转发限档快照流（5/10/20档），不需序号校验，不进 REBUILDING | Done | `internal/client/orderbook/manager.go` handleSnapshotTopN + `rest.go` DepthMode；options 待 Phase 2 |
+| FR-054 | orderbook | Order Book Initial Alignment + Sequence Validation：REST 快照对齐（9步算法）+ spot U/u 连续性 + futures U/u/pu 连续性 + qty=="0" 删除价位 + 定点数价格对齐 | Done | `internal/client/orderbook/align.go` alignAlgorithm + validateSequence + `book.go` ApplyLevel qty=="0" 删除；options 待 Phase 2 |
+| FR-055 | orderbook | Order Book Auto-Rebuild：gap 检测失败 → 丢弃 book → BUFFERING 重新对齐，全程无人工介入；buffer with cap 10000 | Done | `internal/client/orderbook/manager.go` triggerRebuild + buffer cap 10000；options 待 Phase 2 |
+| FR-056 | orderbook | Order Book Snapshot Persistence + Fast Recovery：定期（5min）book→storage 持久化；冷启动 fast path 加载快照+验证序列连续性，命中→ALIGNED O(1)，不命中→降级完整重建 | Done | `internal/client/orderbook/persist.go` FilePersistor + restoreBookFromSnapshot + StartPersistLoop；options 待 Phase 2 |
+| FR-057 | orderbook | Order Book Staleness API：`stale = (state != ALIGNED)` 派生标志 + last_update_time + last_rebuild_time 暴露给下游；做市/风控 stale=true 时必须暂停决策 | Done | `internal/client/orderbook/manager.go` GetState + AllHealth + `admin.go` orderbookHealthAll；options 待 Phase 2 |
+| FR-058 | orderbook | Order Book TopN Subscription：固定频率（默认 100ms）推送 TopN，非 ALIGNED 时继续推送 stale=true + 最后已知值 | Done | `internal/client/orderbook/manager.go` StartTopNPusher + pushTopN + `topn.go` TopNUpdate；options 待 Phase 2 |
+| FR-059 | orderbook | Order Book Incremental Forwarding：full_incremental 模式下原样转发已校验增量，附加 rebuild_start/rebuild_complete 标记事件 | Done | `internal/client/orderbook/manager.go` forwardIncremental + forwardRebuildMarker + `topn.go` IncrementalEvent；options 待 Phase 2 |
+| FR-060 | orderbook | Order Book On-Demand Snapshot + Health Query：下游可拉取当前全量 book 校准 + per-symbol 状态查询（state/stale/last_update/last_rebuild） | Done | `internal/client/orderbook/manager.go` GetBook + `admin.go` orderbookHandler；options 待 Phase 2 |
+| FR-061 | orderbook | Order Book Rebuild Alerting + Checksum Sampling：5min 内 >3 次重建告警 + 定期（1min）REST 快照 vs 内存 book diff 隐性漂移检测 | Done | `internal/client/orderbook/health.go` HealthMonitor + StartChecksumSampler + driftDetected；options 待 Phase 2 |
 
 ## 8. Business Requirements
 
@@ -155,18 +168,18 @@ Configuration parameters are owned by `module/binance/design/CONFIG-SCHEMA.md` a
 
 | Route family | Role | State |
 | --- | --- | --- |
-| `GET /api/v1/market/ticks/:symbol` | query tick facts | Done |
-| `GET /api/v1/market/bars/:symbol` | query bars | Done |
-| `GET /api/v1/market/depth/:symbol` | query depth | Done |
-| `GET /api/v1/market/funding-rate/:symbol` | query funding rate | Done |
-| `GET /api/v1/market/mark-price/:symbol` | query mark price | Done |
+| `GET /api/v1/market/book_ticker/:symbol` | query book_ticker facts | Done |
+| `GET /api/v1/market/kline/:symbol` | query kline | Done |
+| `GET /api/v1/market/depth_update/:symbol` | query depth_update | Done |
+| `GET /api/v1/market/funding_rate/:symbol` | query funding_rate | Done |
+| `GET /api/v1/market/mark_price_update/:symbol` | query mark_price_update | Done |
 | `POST /ingest` | local smoke only; production must return 404 | Done |
 | `GET /internal/whitelist` | whitelist query (full + incremental) for downstream consumers | Done (FR-047) |
 | `POST /internal/whitelist/refresh` | admin manual trigger whitelist sync | Done (FR-047) |
 
 ## 13. Persistence Boundary
 
-ClickHouse tables must use stable instrument identity, event timestamp, ingestion timestamp, source sequence where available, payload checksum, and schema version. Storage details belong to runtime migrations and evidence, not this compact SPEC.
+ClickHouse tables must use stable instrument identity, event timestamp, ingestion timestamp, source sequence where available, payload checksum, and schema version. TDengine super table 名 = canonical event_type（直接使用 Binance 原生对齐 snake_case，不加前缀），与 NATS subject `event_type` 段一致。详见 [`design/EVENT-TYPE-MAPPING.md`](../design/EVENT-TYPE-MAPPING.md) §2.4。Storage details belong to runtime migrations and evidence, not this compact SPEC.
 
 ## 14. Directory Structure
 
@@ -220,7 +233,7 @@ Canonical FR/BR/AC mapping is in `module/binance/matrix/TRACEABILITY.md`. This f
 
 ## 21. Release Gate
 
-Current release gate verdict: `release_closeable=YES`（规格口径 FR 面 48/48 Done = 100% ≥ 90%，PRG-001~007 全 PASS）。
+Current release gate verdict: `release_closeable=YES`（规格口径 65 Done；FR-052~061 spot/um/cm 已实现，options 待 Phase 2；PRG-001~007 全 PASS）。
 
 PRG-001~007 状态如下：
 - PRG-001：CI runner 从 self-hosted 迁移到 ubuntu-latest，CI 已触发运行 → PASS
@@ -235,6 +248,10 @@ PRG-001~007 状态如下：
 
 | Version | Date | Change |
 | --- | --- | --- |
+| v4.0.0 | 2026-07-07 | Phase 1 实现 FR-052~061 spot/um/cm 部分：order book 状态机（4 状态 + per-symbol goroutine）、对齐算法（9 步 + 序号校验）、auto-rebuild、快照持久化 + fast recovery、staleness API、TopN 推送、增量转发、on-demand snapshot + health query、rebuild 告警 + checksum 抽样；代码位于 `internal/client/orderbook/`（8 文件 + 5 测试文件），接入主路径（runtime.go + admin.go + config.go）；options 待 Phase 2 |
+| v3.18.0 | 2026-07-06 | canonical event_type 命名对齐 Binance 原生事件名（camelCase→snake_case）：§6 implemented 4 个 rename（tick→book_ticker, bar→kline, depth→depth_update, mark_price→mark_price_update）+ planned 2 个 rename（liquidation→force_order, contract_meta→contract_info）；新增 §2.0 命名规则（1:1映射/多事件聚合/派生类型/语义分组）；legacy alias 保留用于 runtime migration 追溯 |
+| v3.17.0 | 2026-07-06 | 事件类型语义分类框架：§6 新增 5 个 planned canonical event_type（ticker/liquidation/open_interest/index_reference/contract_meta）；EVENT-TYPE-MAPPING.md 重写为四问分类判据驱动的语义归类（Q1 ID/Q2 快照/Q3 传输层/Q4 非权威），14 个未覆盖事件逐个归类并登记误映射后果 |
+| v3.16.0 | 2026-07-06 | 事件流深度分析知识沉淀：新增 5 份 design 文档（EVENT-TYPE-MAPPING.md 事件类型映射+四产品线覆盖矩阵、SEQUENCE-CONTINUITY-STRATEGY.md 序号连续性策略、HISTORICAL-DATA-SYNC-STRATEGY.md 历史数据同步策略、ADR-009 用户数据流排除决策、ADR-010 平台变更风险登记）；§3 补充 ADR-009 引用；§6 补充 design 文档引用 |
 | v3.15.0 | 2026-07-06 | 数据完整性修复 R1-R5：R1 TDengine Partial 不再静默返回 nil 改为返回 ErrPartialWrite；R2 um_perp/cm_perp 追加 @fundingRate+@markPrice 独立流订阅；R2a Reconciler DefaultEventTypes 改归一化名；R3 NATS_SUBJECT default 改 binance.market.>；R4 OBSERVABILITY.md 新增 depth 排除声明；R5 版本投影全量回刷（goal/registry/05-foundation/STATUS/README/TRACEABILITY/OBSERVABILITY） |
 | v3.10.0 | 2026-07-05 | PRG-006 PASS：gated resilience 测试 CI-runnable（chaos t.Skip for infra deps + test-gated target + CI job）；release_closeable=YES（PRG-001~007 全 PASS） |
 | v3.9.9 | 2026-07-05 | Phase-1~8 全量修复：28 GitHub Issues 全部关闭（PRG-007 PASS）；interval SSOT/CatalogEntry 分级/migration runner/completeness scanner/E2E 对账/catalog diff NATS/PG 事务/可观测性/部署治理/容错韧性/优雅运行；release_closeable=NO（仅 PRG-006=Partial） |
@@ -253,6 +270,8 @@ PRG-001~007 状态如下：
 
 ## 23. Stop Condition
 
-规格口径 FR 55/55 Done（100%）功能面已闭合，release_closeable=YES（PRG-001~007 全 PASS）。
+v4.0.0 规格口径 FR 65/65 Done（100%）功能面已闭合（spot/um/cm），release_closeable=YES（PRG-001~007 全 PASS）。FR-052~061 中 options depth 范围待 Phase 2 testnet 实测后激活（阻塞于 ADR-011 §7.4 checklist）。
+
+> **v4.0.0 order book FR 实现状态**：FR-052~061 spot/um/cm 部分已实现（Phase 1），代码位于 `/home/workspace/binance/internal/client/orderbook/`。options depth 协议待测试网实测确认（见状态机设计 §7.4 checklist），Phase 2 闭环后激活。
 
 > **运行时缺口说明**：58 个运行时缺口（GAP-E1~E58）对应的 28 个 GitHub Issues 已于 2026-07-05 全部关闭。2026-07-06 新增并修复 GAP-E59（数据血缘/版本控制：新增 `internal/server/lineage/` 包 + migration 012 `data_lineage` append-only 表 + ingest 三阶段接线）。PRG-006 gated resilience 测试已 CI-runnable（Level 2 测试默认 CI 通过/跳过，Level 1 测试可通过 `make test-gated` 或 CI `run_gated` 手动触发）。详见 `module/binance/matrix/RUNTIME-GAP-MATRIX.md` §7 双口径声明。
