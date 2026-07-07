@@ -6,9 +6,15 @@
 name: Docs CI
 
 # Self-hosted runner decommissioned 2026-06-18. Migrated to ubuntu-latest.
-# 仅保留 workflow_call/workflow_dispatch（被 release.yml 与 foundation-release.yml 引用）。
-# 重装 runner 后恢复 pull_request/push/schedule trigger。
+# 质量门禁检查（status-consistency / module-cicd / spec guards 等）此前仅经
+# release.yml / foundation-release.yml 的 workflow_call 执行，PR/push 触发器被禁用，
+# 导致这些检查不会直接作用于 PR 分支、无法反映分支修复（见 PR #1700 / issue #1698）。
+# 现恢复 pull_request / push 触发器，使质量门禁直接在 PR 分支上运行并可转绿。
 on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
   workflow_call:
   workflow_dispatch:
 
