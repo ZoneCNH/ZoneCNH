@@ -2,10 +2,257 @@
 
 所有 notable 变更记录，按 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/) 格式维护。
 
-- Module-Version: v3.15.0
-- Last-Updated: 2026-07-06
-- Spec-Reference: `module/binance/spec/SPEC.md` v3.15.0
+- Module-Version: v4.0.0
+- Last-Updated: 2026-07-07
+- Spec-Reference: `module/binance/spec/SPEC.md` v4.0.0
 - 治理规则：`module/binance/gate/RULES.md` R9 文档存在性性
+
+---
+
+## 2026-07-07 二十轮深度检查修复 — P0/P1 缺陷消除与对齐同步
+
+### Fixed — P0 CRITICAL
+
+- **`depth_topn` 序列号 gap 检测失效**：`extractSequenceInfo` 仅设 `firstUpdate` 不设 `finalUpdate`，导致 `observe()` 永不更新 `lastSequence`，序列号 gap 永不触发。修复为同时设置 `finalUpdate`，新增单测 `TestQualityTracker_DepthTopNGapDetection` 验证
+- **`ORDERBOOK_PERSIST_DIR` 三源不一致**：`config.go` default `/tmp/binance-orderbook-snapshots/` 与 env.example `/tmp/orderbook` 不符，运行时路径与文档引导路径分裂。统一为 `/tmp/orderbook`
+- **CI Go 版本漂移**：`Dockerfile`/`.golangci.yml` 硬编码 1.25，与 CI 工作流 1.26.4 不一致。升级到 1.26 对齐
+
+### Fixed — P1 HIGH
+
+- **OrderBook `sb.book` 并发竞态**：`checksumSample` goroutine 直接 `triggerRebuild` 修改 `sb.book`（nil），与 event loop 的 `applyEvent`/`handleAligned` 并发访问无同步。新增 `bookMu sync.RWMutex` 保护所有 `sb.book` 读写（manager.go/health.go/persist.go 共 11 处）
+- **`runtime.go` 关键错误静默丢弃**：`connector.Start`/`admin.Start`/`SubscribeWithMode` 错误被 `_ =` 吞掉。改为 `slog.Error` + 错误返回/记录
+- **`InFlightTracker.Drain` goroutine 泄漏**：ctx 取消后 `cond.Wait()` 永久阻塞。循环条件增加 `ctx.Err() == nil` 使 goroutine 退出
+- **CI `make build-all` 缺失**：`release-cd.yml` 引用 `make build-all` 但 Makefile 无此目标。新增 `build-all: build-linux-amd64 build-linux-arm64`
+- **`drift-check.sh` 引用已删除的 `internal/wire`**：更新为 `internal/ingestcodec`（当前 C/S 契约层）
+- **`README.md` 目录结构过时**：补充 `ingestcodec`/`orderbook`/`pkg/binancecfg`/`pkg/whitelistclient`/`cmd/binance-http-probe` 等缺失条目
+- **`TestOrderbookDispatchIntegration` flaky**：3s 对齐超时在并发测试时偏紧，增至 10s
+
+### Fixed — P2
+
+- **`lifecycle.go:396` `fmt.Printf` 应为结构化日志**：改为 `slog.Error`
+
+### 门禁验证
+
+| 门禁 | 结果 |
+|------|------|
+| Build | ✅ PASS |
+| Test + Race (30 packages) | ✅ 0 FAIL, 0 race |
+| Boundary Gates | ✅ 15/15 PASS |
+| Coverage | ✅ 86.1% |
+
+---
+
+## 2026-07-07 深度检查修复 — 功能链路断点消除
+
+### Fixed — P0 CRITICAL（生产环境致命断点）
+
+- **cmd 配置桥接断裂**：`standaloneConfigFromCfg` 未映射 `EnableUMPerp/EnableCMPerp/EnableOptions` + `OrderBook*` 12 个配置项 → 生产二进制只有 spot 运行。binancecfg 新增 `ENABLE_UM_PERP/ENABLE_CM_PERP/ENABLE_OPTIONS/ENABLE_SHARDING/CLIENT_ID` 5 个字段 + standaloneConfigFromCfg 桥接全部配置
+- **option_tick 无 TDengine 落库**：`TaosWriter.toPoint` 无 `option_tick` 分支 → `ErrUnsupportedEventType` + duplicate 短路导致永不落库。新增 `st_option_tick` stable spec（含 strike/Greeks 字段）+ `optionTickPoint` 函数 + `taosDeleteStable` 分支
+- **orderbook 永不启动**：`standaloneConfigFromCfg` 不读 `bc.OrderBook*` 7 个字段 → `OrderBookEnable` 恒 false。同 P0 桥接修复
+
+### Fixed — P1 HIGH（功能缺陷）
+
+- **depth20+diff 混流致持续重建**：默认同时订阅 `@depth20@100ms`（无序号）和 `@depth@1000ms`（有序号），full_incremental 下 depth20 `U=0` 必触发 rebuild。新增 `filterDepthStreams()` 按 depth_mode 过滤：full_incremental 只留 diff，snapshot_topn 只留 depthN
+- **TopN/Incremental 输出死链**：`TopNChannel()`/`IncrementalChannel()` 在 runtime 中无消费者。新增 2 个消费 goroutine 转发到 NATS（`topnUpdateToEvent`/`incrementalToEvent`）
+- **4 类数据无 retention**：`buildTaosRetentionConfigs` 只配 trade/tick/bar。新增 depth(7d)/funding_rate(90d)/mark_price(90d)/option_tick(30d)
+- **options backfill 注释与实现不符**：注释写 `ErrNotConnected`，实际返回 `unsupported product_line`。修正注释与 `OPTIONS-HISTORY-FALLBACK.md` 对齐
+
+### Added — 集成测试
+
+- `orderbook_integration_test.go`：9 个测试覆盖 AdaptDepthEvent 字段映射 + filterDepthStreams 模式过滤 + isPartial/isDiff 判断 + NormalizedEvent→Dispatch→对齐完整链路
+
+### 门禁验证
+
+| 门禁 | 结果 |
+|------|------|
+| Build | ✅ PASS |
+| Test + Race (30 packages) | ✅ 0 FAIL, 0 race |
+| Coverage | ✅ 86.4% |
+| Vet | ✅ PASS |
+| Boundary Gates | ✅ 15/15 PASS |
+| Govulncheck | ✅ No vulnerabilities |
+| Gofmt | ✅ Clean |
+
+---
+
+## 2026-07-07 深度优化 — 生产就绪全量交付
+
+### Added — Order Book 状态机实现（FR-052~061 spot/um/cm）
+
+- **FR-052~061 从 Pending → Done**（spot/um/cm，options 待协议实测激活）
+  - `internal/client/orderbook/align.go`：9 步对齐算法 + spot U/u 连续性 + futures pu 连续性
+  - `internal/client/orderbook/persist.go`：FilePersistor 5min 定期落盘 + 冷启动 Fast Recovery O(1)
+  - `internal/client/orderbook/health.go`：5min >3 次重建告警 + 1min REST vs memory diff checksum
+  - `internal/client/orderbook/topn.go`：TopN 推送 + 增量转发 + rebuild 标记事件
+  - `internal/client/orderbook/rest.go`：SnapshotFetcher 接口 + DepthMode 枚举
+  - `internal/client/orderbook_adapter.go`：NormalizedEvent → DepthEvent 适配器
+  - `internal/client/orderbook_rest.go`：HTTP SnapshotFetcher（spot/um/cm REST depth 端点）
+  - `internal/client/orderbook/manager.go`：接入主路径（runtime.go + admin.go + config.go）
+
+### Fixed — 行情数据流关键 bug
+
+- **[CRITICAL] um_perp/cm_perp 未订阅 @markPrice/@fundingRate**：`DefaultProductLineConfig` 调用 `DefaultMarketStreams()` 而非 `DefaultMarketStreamsForProductLine()`，导致合约 funding rate + mark price 数据完全缺失
+- **[HIGH] options 未订阅 @optionTicker**：`DefaultMarketStreamsForProductLine` 未为 options 追加 `@optionTicker`，导致期权 Greeks/IV 数据完全缺失（解析器已实现但无数据源）
+- **[CRITICAL] OptionsStreamBaseURL 指向错误端点**：`wss://fstream.binance.com/public`（futures 端点）→ 修正为 `wss://data-stream.binance.com`（统一 WS 端点）。options symbol 在原端点无数据推送
+
+### Fixed — 文档漂移（9 处 + 15 处额外）
+
+- runtime README.md 从 v0.1.0"未生产就绪"重写为 v0.14.0/L3 Production
+- spec/FEATURES.md, spec/ACCEPTANCE.md, plan/PLAN.md, gate/BOUNDARY-GATES.md 从 v3.9.8/48 Done/NO 回刷到 v4.0.0/65 Done/YES
+- matrix/TRACEABILITY.md Pending 计数修正
+- plan/PLAN-WHITELIST.md gates G-WL-0~7 Pending → Done
+- spec/SPEC.md L236 旧口径残留清理
+- spec/client/SPEC.md, spec/server/SPEC.md 版本同步
+
+### Fixed — GAP-E 运行时缺口（59 项逐项核实 + 12 项代码修复）
+
+- GAP-E25：EnableSharding/ClientID 配置开关（可选扩容，默认关）
+- GAP-E32：6 处 goroutine 补 recover()
+- GAP-E26：history_rest.go interval 参数化，不再硬编码 "1m"
+- GAP-E4：throttle 默认 120 → 600 req/min
+- GAP-E20：ctx.Done 时 graceful drain
+- GAP-E5'/E15：ResourceGovernor 接入 backfill 路径
+- GAP-E8：schema 版本校验
+- GAP-E33：retry.Do 接入 Health() 探活
+- GAP-E22：自适应背压
+- GAP-E11：REST fallback URLs
+- 矩阵 §1/§7/L309 三处计数统一（56 Fixed / 2 Partial / 1 Open）
+
+### Fixed — Flaky test + Lint 清理
+
+- orderbook `TestManager_FullIncremental_AlignWithMockFetcher` 固定 Sleep → 轮询等待（修复高负载时序竞争）
+- staticcheck 5 项清零（QF1001 De Morgan / ST1021/ST1022 注释格式 / S1016 struct literal）
+- gofmt 9 项清零
+
+### Added — Options 协议实测 + 历史 fallback
+
+- `design/OPTIONS-HISTORY-FALLBACK.md`：options 无公开 REST 历史 → 方案 A 持续落库
+- `design/ORDER-BOOK-STATE-MACHINE.md §7.4`：6 项 checklist 实测更新（2 项确认，4 项仍 UNVERIFIED）
+- Phase 2 mainnet WS 实测确认：REST lastUpdateId 语义 ✅、限档流 depth20 ✅
+
+### 门禁验证
+
+| 门禁 | 结果 |
+|------|------|
+| Build | ✅ PASS |
+| Test (30 packages) | ✅ ALL PASS |
+| Race | ✅ 0 race |
+| Coverage | ✅ 86.7% |
+| Vet | ✅ PASS |
+| Boundary Gates | ✅ 15/15 PASS |
+| Govulncheck | ✅ No vulnerabilities |
+| Staticcheck | ✅ 0 issues |
+| 文档一致性 | ✅ 4 文档统一 65 Done / 0 Pending |
+
+---
+
+## 2026-07-06 Order Book Rebuild 纳入 SPEC v4.0.0（MAJOR）
+
+### Added — SPEC FR + Matrix + Plan
+
+- **SPEC v3.18.0 → v4.0.0**：新增 10 个 order book FR（FR-052~061，全部 Pending）
+  - FR-052: full_incremental 模式（本地 book 状态机）
+  - FR-053: snapshot_topn 模式（无状态转发限档快照）
+  - FR-054: Initial Alignment + Sequence Validation（9步对齐 + U/u/pu 校验 + qty=="0" 删除 + 定点数对齐）
+  - FR-055: Auto-Rebuild（gap → 丢弃 → 重新对齐，buffer cap 10000）
+  - FR-056: Snapshot Persistence + Fast Recovery（5min 持久化 + 冷启动 fast path）
+  - FR-057: Staleness API（stale 派生标志 + 下游消费方契约）
+  - FR-058: TopN Subscription（100ms 推送 + stale 标记）
+  - FR-059: Incremental Forwarding（校验增量转发 + rebuild 标记事件）
+  - FR-060: On-Demand Snapshot + Health Query
+  - FR-061: Rebuild Alerting + Checksum Sampling
+- **RUNTIME-MAPPING.md**：新增 `internal/client/orderbook/` 组件路径（manager/full_incremental/snapshot_topn/snapshot_store/health）
+- **FEATURES.md**：新增 §3.5 Order Book FR-052~061 条目（10 Pending）
+- **ACCEPTANCE.md**：新增 AC-OB-001~012 + TC-OB-001~011（Order Book 验收标准 + 测试用例）
+- **TRACEABILITY.md**：新增 FR-052~061 追溯行（FR→BR→AC→Evidence→Pending）
+- **plan/ORDER-BOOK-IMPLEMENTATION-PLAN.md**：11 个 task 分解 + 依赖图 + 3 phase 实现顺序 + 前置条件 + 风险登记
+- **prompt/PROMPT-TASK-OB-001/context.md**：TASK-OB-001 状态机核心 Context Packet（types + 转换矩阵 + 并发模型 + 约束 + AC/TC + 验证命令）
+
+### Changed
+
+- SPEC §3 Scope：新增 order book rebuild 范围声明
+- SPEC §23 Stop Condition：更新为双口径（v3.18.0 55 Done + v4.0.0 10 Pending）
+- registry.yaml：spec_version v3.18.0 → v4.0.0
+- v3.18.0 release 口径不变（55 Done / release_closeable=YES）
+
+---
+
+## 2026-07-06 Order Book Rebuild 纳入设计（ADR-011 Proposed）
+
+### Added — Design 文档
+
+- **ADR-011**：正式 supersede ADR-003，启动 v4.0.0 MAJOR 升级。记录"为什么现在做"（下游需求 materialized）、范围、版本影响、待确认项（options depth 协议）
+- **ORDER-BOOK-STATE-MACHINE.md**：完整状态机设计
+  - 4 状态（UNINITIALIZED / BUFFERING / ALIGNED / REBUILDING）+ 转换矩阵 + per-state invariant
+  - 对齐算法（BUFFERING → ALIGNED 核心转换，9 步伪代码）
+  - 序号校验（spot U/u vs futures U/u/pu 差异）
+  - 档位删除规则（qty=="0" = 删除价位）
+  - 快照持久化与恢复（混合模式：fast path O(1) + 降级完整重建）
+  - 并发模型（per-symbol 独立 goroutine，无全局锁）
+  - staleness 语义（`stale = state != ALIGNED`，4 种 stale 场景）
+  - 市场差异表（spot/um/cm/options，options 标 `[UNVERIFIED]` + 实测 checklist）
+  - 容灾（自动重建 + 重建频率告警 + checksum 抽样校验）
+  - 对外接口（TopN 推送 + 全量增量转发 + 按需快照 + 健康查询）
+  - 双活去重（扩展路径，当前不实现）
+  - 4 个开放问题决议
+
+### Changed
+
+- **ADR-003**：状态从 Accepted → Superseded by ADR-011
+- **DESIGN.md §5**：ADR 表更新（ADR-003 Superseded + ADR-011 Proposed）
+- **DESIGN.md §7**：Reference Docs 新增 ORDER-BOOK-STATE-MACHINE.md
+
+---
+
+## 2026-07-06 canonical 命名对齐 Binance 原生事件名（v3.18.0）
+
+### Changed — SPEC + Design 文档
+
+- **SPEC §6**：canonical event_type 命名从自创名对齐到 Binance 原生事件名（camelCase→snake_case）
+  - implemented 4 个 rename：`tick`→`book_ticker`、`bar`→`kline`、`depth`→`depth_update`、`mark_price`→`mark_price_update`
+  - planned 2 个 rename：`liquidation`→`force_order`、`contract_meta`→`contract_info`
+  - legacy alias 保留用于 runtime migration 追溯
+- **SPEC §13**：Persistence Boundary 新增 TDengine super table 命名规则（= canonical event_type，不加前缀）
+- **EVENT-TYPE-MAPPING.md §2.0**：新增命名规则四条（1:1映射 / 多事件聚合 / 派生类型 / 语义分组）
+- **EVENT-TYPE-MAPPING.md §2.4**：新增 TDengine super table 命名表（6 implemented + 5 planned），含 `ALTER STABLE` migration 语句
+- **DESIGN.md §7**：Reference Docs 描述更新
+- **全量旧表名引用加注**：DEPLOY.md、NGINX-REVERSE-PROXY.md、CHANGELOG.md、RUNTIME-GAP-MATRIX.md、DATA-INTEGRITY 报告中的 `st_tick`/`st_bar`/`st_depth`/`st_mark_price` 均标注 `(legacy: ...)` 或 v3.18.0 新名
+
+### Changed — 命名 SSOT 全链路对齐（NAMING.md + RUNTIME-MAPPING.md + gate/）
+
+- **NAMING.md v3.9.0 → v3.18.0**：命名 SSOT 从 v3.9.0 全面升级到 v3.18.0 canonical 命名
+  - §2 Canonical Event Type：6 旧名 → 11 新名（6 implemented + 5 planned）
+  - §3 NATS Subject Matrix：全量更新 event_type（`tick`→`book_ticker`、`bar`→`kline`、`depth`→`depth_update`、`mark_price`→`mark_price_update`）
+  - §4 Kafka Topic Matrix：同上全量更新
+  - §5 TDengine Naming：supertable 去掉 `binance_` 前缀，= canonical event_type（1:1）
+  - §6 Redis Key：event_type 段更新
+  - §7 REST Endpoint：路径段 = event_type（singular snake_case），旧路径标注 legacy
+  - §8 OSS Path：event_type 段更新
+  - 新增 §9 PostgreSQL Table Naming（操作性表，不使用 event_type）
+  - 新增 §10 ClickHouse Table Naming（派生分析表，不使用 event_type）
+  - §12 Drift Detection：更新 grep 模式覆盖新旧名
+  - §13 Change History：新增 v3.18.0 条目
+- **RUNTIME-MAPPING.md v3.9.0 → v3.18.0**：§7 NATS subjects + §8 Kafka topics + §9 Gin REST API 全量更新，旧名标注 legacy
+- **gate/RULES.md**：Module-Version v3.18.0；R1 NAMING 引用从 §1-§10 更新为 §1-§13；R2 event_type 枚举更新；R12 gap detection 策略 event_type 更新
+- **gate/STANDARD.md + SECURITY.md**：Module-Version v3.18.0
+- **spec/SPEC.md §12**：API Boundary 表 REST endpoint 更新
+- **spec/server/SPEC.md**：kafkax topic 示例更新
+- **tasks/server/TASK-BINANCE-SERVER-013**：TDengine DDL + Go 接口更新（`binance_tick`→`book_ticker`、`binance_depth`→`depth_update`）
+- **tasks/server/TASK-BINANCE-SERVER-014**：Kafka topic 表全量更新（24→19 个有效组合）
+- **tasks/server/TASK-BINANCE-SERVER-015**：Gin REST API 端点更新
+- **ARCHITECTURE-DRIFT-WATCHLIST.md**：D2 Options depth 检测命令更新
+- **DEEP-ANALYSIS-ARCHIVE-integration.md / -operations.md**：归档文档旧名标注 legacy
+
+### Migration Impact
+
+| 层 | 变更 | 迁移方式 |
+| --- | --- | --- |
+| NATS subject | `binance.market.{pl}.{et}.v1` 中 `et` 段改名 | 双发过渡（新旧名同时发布） |
+| TDengine super table | 6 个表 rename（4 个 canonical rename + 全部去掉 st_ 前缀） | `ALTER STABLE ... RENAME TO ...` |
+| taos_writer.go | 表名常量 + toPoint 路由 | 双匹配过渡（legacy + new） |
+| idempotency key | 格式中 event_type 段改名 | 新旧 key 兼容（TTL 过期后自然收敛） |
+
+> Runtime migration 由独立 FR + migration plan 承接，不在本文档仓执行。
 
 ---
 
@@ -199,8 +446,8 @@
 
 - **N2**（Critical）：NATS consumer filter subject 从 4 段 `binance.market.*.*` 修正为 `binance.market.>`，匹配 publisher 5 段 subject `binance.market.{pl}.{et}.v1`。20/20 审查员确认的结构性消息丢失阻断项。
 - **N4**（Critical）：`runtime.go` 新增 UM/CM/Options connector 接入路径。`StandaloneConfig` 增加 `EnableUMPerp`/`EnableCMPerp`/`EnableOptions` 布尔字段（默认 false，向后兼容），启用时通过 fan-in 合并所有 connector 的 events channel。
-- **N6**（High）：`taos_writer.go` 新增 `funding_rate` 和 `mark_price` 事件类型支持。新增 `fundingRatePoint()` 写入 `st_funding_rate` 表，`markPricePoint()` 写入 `st_mark_price` 表，含 super table 定义和 stable 路由。
-- **ORDBK**（Critical）：`taos_writer.go` 新增 `depthPoint()` 方法，将完整档位数据（bids/asks 数组）以 JSON 序列化写入 `st_depth` 表，不再退化为 top-of-book tick。保留 `bid_price`/`bid_qty`/`ask_price`/`ask_qty` 向后兼容字段。
+- **N6**（High）：`taos_writer.go` 新增 `funding_rate` 和 `mark_price` 事件类型支持。新增 `fundingRatePoint()` 写入 `funding_rate` 表，`markPricePoint()` 写入 `mark_price_update` 表（v3.18.0 命名对齐去掉 st_ 前缀，legacy: st_funding_rate/st_mark_price），含 super table 定义和 stable 路由。
+- **ORDBK**（Critical）：`taos_writer.go` 新增 `depthPoint()` 方法，将完整档位数据（bids/asks 数组）以 JSON 序列化写入 `depth_update` 表（v3.18.0 命名对齐去掉 st_ 前缀，legacy: st_depth），不再退化为 top-of-book tick。保留 `bid_price`/`bid_qty`/`ask_price`/`ask_qty` 向后兼容字段。
 - **N7**（Medium）：`storage.go` retention 调度器从硬编码 `ProductLine: "spot"` 改为遍历 `["spot", "um_perp", "cm_perp", "options"]` 全产品线。
 - **TEST1**（High）：`TestRunStandaloneExchangeInfoFetchError` 从 `context.Background()`（永不超时）改为 `context.WithTimeout(10s)`，修复 ExchangeInfo retry 3 分钟超时导致的测试挂起。
 - **SchemaVersion**：`DefaultStandaloneConfig()` 补齐 `SchemaVersion: wire.DefaultSchemaVersion`（"v1"），修复 `TestStandaloneConfigFromCfgUsesDefaults` 失败。
