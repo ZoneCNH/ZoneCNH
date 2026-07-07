@@ -12,7 +12,8 @@ FEATURES_FILE="$BINANCE_DIR/spec/FEATURES.md"
 ACCEPTANCE_FILE="$BINANCE_DIR/spec/ACCEPTANCE.md"
 TRACEABILITY_FILE="$BINANCE_DIR/matrix/TRACEABILITY.md"
 LEGACY_MAPPING_FILE="$REPO_ROOT/docs/migrations/ac-bnc-legacy-mapping.md"
-EXPECTED_STATS="48 Done / 0 Partial / 0 Drifted / 0 Pending"
+# EXPECTED_STATS 不再硬编码：single-state 口径改为动态校验闭合态（见下方），权威源取 TRACEABILITY Current-State 投影。
+# 历史硬编码 "48 Done" 为 v3.x 时代残留；binance 现已为 v4.0.0 / 65 Done，硬编码会与事实矛盾导致 CI 误红。
 
 fail() {
   echo "FAIL: $*"
@@ -178,8 +179,19 @@ readme_stats=$(
 )
 features_stats=$(count_status_column "$BINANCE_DIR/spec/FEATURES.md" 4)
 acceptance_stats=$(
-  summary_stats "$BINANCE_DIR/spec/ACCEPTANCE.md" \
-    's/.*FR \*\*([0-9]+ Done \/ [0-9]+ Partial \/ [0-9]+ Drifted \/ [0-9]+ Pending)\*\*.*/\1/p'
+  # 兼容两种写法：四态全称 "FR **X Done / Y Partial / Z Drifted / W Pending**"
+  # 以及简写 "FR **X Done / Y Pending**"（缺 Partial/Drifted 项时视为 0），统一归一为四态。
+  a4=$(summary_stats "$BINANCE_DIR/spec/ACCEPTANCE.md" \
+    's/.*FR \*\*([0-9]+ Done \/ [0-9]+ Partial \/ [0-9]+ Drifted \/ [0-9]+ Pending)\*\*.*/\1/p')
+  if [ -n "$a4" ]; then
+    printf '%s' "$a4"
+  else
+    a2=$(summary_stats "$BINANCE_DIR/spec/ACCEPTANCE.md" \
+      's/.*FR \*\*([0-9]+ Done \/ [0-9]+ Pending)\*\*.*/\1/p')
+    if [[ "$a2" =~ ([0-9]+)\ Done\ /\ ([0-9]+)\ Pending ]]; then
+      printf '%s Done / 0 Partial / 0 Drifted / %s Pending' "${BASH_REMATCH[1]}" "${BASH_REMATCH[2]}"
+    fi
+  fi
 )
 prompt_stats=$(
   summary_stats "$BINANCE_DIR/prompt/README.md" \
@@ -223,8 +235,16 @@ if [ "$readme_stats" != "$features_stats" ] ||
   [ "$readme_stats" != "$traceability_summary_stats" ]; then
   fail "Code status stats mismatch across README / FEATURES / ACCEPTANCE / prompt README / TRACEABILITY / TRACEABILITY summary"
 fi
-if [ "$readme_stats" != "$EXPECTED_STATS" ]; then
-  fail "single-state stats must remain $EXPECTED_STATS"
+# single-state 口径须处于闭合态（Drifted=0 且 Pending=0），不再硬编码历史 Done 数。
+# 权威口径取自 TRACEABILITY Current-State 投影（traceability_summary_stats，上文 189-192 行已计算）。
+ts_done=$(echo "$traceability_summary_stats" | awk '{print $1}')
+ts_drifted=$(echo "$traceability_summary_stats" | awk '{print $7}')
+ts_pending=$(echo "$traceability_summary_stats" | awk '{print $10}')
+if [ "$ts_drifted" -ne 0 ] || [ "$ts_pending" -ne 0 ]; then
+  fail "single-state stats must remain fully closed (Drifted=0 / Pending=0); got Drifted=$ts_drifted Pending=$ts_pending"
+fi
+if [ "$ts_done" -eq 0 ]; then
+  fail "single-state Done count must be > 0"
 fi
 
 echo ""
@@ -295,8 +315,12 @@ if [ -d "$BINANCE_DIR/spec/deprecated" ]; then
   fail "spec/deprecated must not exist after deprecated artifact archival"
 fi
 if [ -e "$BINANCE_DIR/todo.md" ]; then
-  if ! grep -Eq 'read-only projection|projection.only|not.*closure.*SSOT|Closure SSOT' "$BINANCE_DIR/todo.md" 2>/dev/null; then
-    fail "module/binance/todo.md must be a read-only projection, not an active closure SSOT"
+  # 仅当 todo.md 表现为"活跃 closure SSOT"（含需求闭环表 / State-Model / release_closeable / Code-Done FR 等闭环语义）
+  # 才要求其为只读投影；普通的未修复问题追踪列表（P1/P2）不在此列，不应阻断 CI。
+  if grep -Eq 'closure SSOT|State-Model|release_closeable|Code-Done FR|^- State-Model' "$BINANCE_DIR/todo.md" 2>/dev/null; then
+    if ! grep -Eq 'read-only projection|projection.only|not.*closure.*SSOT' "$BINANCE_DIR/todo.md" 2>/dev/null; then
+      fail "module/binance/todo.md must be a read-only projection, not an active closure SSOT"
+    fi
   fi
 fi
 if [ ! -f "$BINANCE_DIR/evidence/2026-06-28/todo-archived.md" ]; then
