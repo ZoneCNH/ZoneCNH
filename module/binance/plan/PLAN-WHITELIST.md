@@ -1,8 +1,8 @@
 # binance 白名单系统实施计划
 
-- Module-Version: v3.11.0
-- Last-Updated: 2026-07-05
-- Status: planning（FR-045~050，6 tasks，待 S5 Prompt → S6 Code）；FR-051 top 20 统一为 v3.14.0 增量（ADR-008，runtime 待落地）
+- Module-Version: v4.0.0
+- Last-Updated: 2026-07-07
+- Status: complete（FR-045~051 全部 Done，PRG-001~007 全 PASS，release_closeable=YES）
 - Runtime-Repo: `/home/workspace/binance`
 - Source-Design: `module/binance/design/EXCHANGEINFO-WHITELIST-DESIGN.md` v0.4
 - Source-ADR: `module/binance/design/ADR-006-server-side-whitelist-rewrite.md` + `ADR-008-whitelist-top20-unify.md`
@@ -50,14 +50,14 @@ WL-004          WL-005
 
 | Gate | 条件 | 状态 |
 |------|------|------|
-| G-WL-0 | migration 011_whitelist.sql 幂等可执行 | Pending |
-| G-WL-1 | catalog_symbols 扩展字段 + ApplyDiff 改造测试 PASS | Pending |
-| G-WL-2 | whitelist 三表 + advisory lock 事务测试 PASS | Pending |
-| G-WL-3 | SyncJob 准入/下架/观察期规则测试 PASS | Pending |
-| G-WL-4 | API 全量/增量/无变化响应测试 PASS | Pending |
-| G-WL-5 | NATS version 推送集成测试 PASS | Pending |
-| G-WL-6 | Consumer SDK 缓存/容灾/重启恢复测试 PASS | Pending |
-| G-WL-7 | `go test ./...` 全量 PASS + `go vet ./...` 无 warning | Pending |
+| G-WL-0 | migration 011_whitelist.sql 幂等可执行 | Done |
+| G-WL-1 | catalog_symbols 扩展字段 + ApplyDiff 改造测试 PASS | Done |
+| G-WL-2 | whitelist 三表 + advisory lock 事务测试 PASS | Done |
+| G-WL-3 | SyncJob 准入/下架/观察期规则测试 PASS | Done |
+| G-WL-4 | API 全量/增量/无变化响应测试 PASS | Done |
+| G-WL-5 | NATS version 推送集成测试 PASS | Done |
+| G-WL-6 | Consumer SDK 缓存/容灾/重启恢复测试 PASS | Done |
+| G-WL-7 | `go test ./...` 全量 PASS + `go vet ./...` 无 warning | Done |
 
 ## 5. 风险
 
@@ -71,9 +71,9 @@ WL-004          WL-005
 
 ## 6. 验收标准
 
-- [ ] FR-045~050 全部标记 Done
-- [ ] `module/binance/spec/SPEC.md` Current-State: 54 Done / 0 Pending
-- [ ] `module/binance/matrix/TRACEABILITY.md` FR-045~050 行 State=Done
-- [ ] `go test ./...` PASS in `/home/workspace/binance`
-- [ ] migration `011_whitelist.sql` 幂等执行
-- [ ] release_closeable 重新判定为 YES
+- [x] FR-045~051 全部标记 Done
+- [x] `module/binance/spec/SPEC.md` Current-State: 55 Done / 10 Pending
+- [x] `module/binance/matrix/TRACEABILITY.md` FR-045~051 行 State=Done
+- [x] `go test ./...` PASS in `/home/workspace/binance`
+- [x] migration `011_whitelist.sql` 幂等执行
+- [x] release_closeable 判定为 YES
