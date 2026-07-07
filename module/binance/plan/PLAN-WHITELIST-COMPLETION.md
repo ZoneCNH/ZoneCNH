@@ -79,7 +79,7 @@
 ### GC-5 — bug 修复
 - **GC-5a**：`SyncJob` update 分支除 `enabled` 外，纳入 Tier / base/quote 资产变更触发更新（[COMPUTED] 当前 `WhitelistExisting` 仅含 `market_type/symbol/enabled`）。— **已闭环（审计确认）**。
 - **GC-5b**：`POST /internal/whitelist/refresh` 对 `NeedsReview` 符号给出明确"等待审核"响应，避免重复空跑噪音。— **已闭环（PR #448）**：`WhitelistSyncResult` 增 `NeedsReview []string`，`SyncJob.Run` 收集需审核 symbol；`handleRefresh` 响应新增 `needs_review` / `needs_review_count` 与 `status=needs_review`。依赖 GC-1（PR #445）的 `ReviewEnqueuer` 接线。
-- **GC-5c**：`whitelistclient` 超龄（> `MaxCacheAge`）实现真正的 fail-open 降级（如告警并切换全量/放行），而非仅 Error 日志。— 待办。
+- **GC-5c**：`whitelistclient` 超龄（> `MaxCacheAge`）实现真正的 fail-open 降级（如告警并切换全量/放行），而非仅 Error 日志。— **已闭环（PR #449）**：`Client` 新增 `degraded` 降级态 + `OnDegraded` 告警回调（进入时触发一次，去噪）；`checkStalenessAfterFailure` 在刷新失败且超龄时进入 fail-open，`clearFailOpen` 成功刷新后自动解除；`IsFailOpen()`/`FailOpenReason()` 暴露降级信号供消费方切换"放行全量"，`IsHealthy()` 纳入降级判定。
 
 ## 4. 阶段门禁
 
