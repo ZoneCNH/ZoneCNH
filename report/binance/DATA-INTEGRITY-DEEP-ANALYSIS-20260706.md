@@ -53,7 +53,7 @@
 
 **TDengine super table 覆盖** `[COMPUTED, HIGH]`：
 
-6 类 event_type 全部有对应 super table：`st_trade, st_tick, st_bar, st_funding_rate, st_mark_price, st_depth`。`taos_writer.go:219-234` 的 `toPoint()` 方法完整路由，未知类型返回 `ErrUnsupportedEventType`。
+6 类 event_type 全部有对应 super table：`trade, book_ticker (legacy: st_tick), kline (legacy: st_bar), funding_rate, mark_price_update (legacy: st_mark_price), depth_update (legacy: st_depth)`。`taos_writer.go:219-234` 的 `toPoint()` 方法完整路由，未知类型返回 `ErrUnsupportedEventType`。v3.18.0 命名对齐 Binance 原生事件名 + 去掉 st_ 前缀，runtime 待 migration。
 
 ### 2.3 TDengine Partial 写入风险（关键发现）
 

@@ -6,7 +6,7 @@
 |------|-----|
 | Module | `module/binance/server` |
 | Status | Approved |
-| Spec-Version | v3.9.8 |
+| Spec-Version | v4.0.0 |
 | Last-Updated | 2026-07-04 (版本口径回刷：Runtime-Version v0.12.0 对齐) |
 | Last-Updated | 2026-06-26 (v2.2.0→v3.8.0: 结构性修复 — 废除本地 FR/BR 编号，全部改为引用根 SPEC canonical FR/BR；§7 重构为根 FR 的 server 实现视图；删除内嵌 FR-025~028 改为根引用；SC→TC 测试编号统一) |
 | Owner | ZoneCNH |
@@ -101,7 +101,7 @@ client 和 server **互不感知彼此的进程位置**。server 只知道 NATS 
 |--------|----------|
 | natsx JetStream | server 消费 subject `binance.market.>` 接收 client 发布的行情事件 |
 | `module/market_data` | 通过 Gin REST `GET /api/v1/market/*` 主动拉取，或消费 kafkax topic `binance.{product_line}.{event_type}.v1` |
-| 下游分析域 | 通过 kafkax consumer group 消费 `binance.spot.tick.v1` 等 topic |
+| 下游分析域 | 通过 kafkax consumer group 消费 `binance.spot.book_ticker.v1` 等 topic |
 | `SRE / 运维` | 通过 Gin admin HTTP 端点查询流状态、触发排水 |
 
 ---

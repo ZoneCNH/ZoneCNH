@@ -5,20 +5,20 @@
 | 字段 | 值 |
 | --- | --- |
 | Status | Generated from current module SSOT |
-| Last-Updated | 2026-06-30 |
-| Module-Version | v3.9.8 |
-| Module-State | v3.9.8 单一状态模型：**48 Done / 0 Partial / 0 Drifted / 0 Pending**。release_closeable=NO（PRG-006=Partial）；运行时口径当前 PRG-006=Partial。P10 issues: GitHub #1289-#1331 / Beads 43 全部 closed（10 轮验证 ALL PASS）。 |
+| Last-Updated | 2026-07-07 |
+| Module-Version | v4.0.0 |
+| Module-State | v4.0.0 单一状态模型：**65 Done / 0 Partial / 0 Drifted / 0 Pending**（FR-052~061 order book rebuild spot/um/cm 已实现；options depth 协议待 Phase 2 实测激活）。release_closeable=YES（PRG-001~007 全 PASS）。 |
 | Layer | 数据域 / Binance-specific market_data C/S module |
 | Runtime-Repo | `/home/workspace/binance` |
 | Source | `goal.md`, `SPEC.md`, `TRACEABILITY.md`, `STANDARD.md`, `BOUNDARY-GATES.md`, `RUNTIME-MAPPING.md`, `IMPLEMENTATION-PLAN.md`, `client/`, `server/`, `tasks/` |
 
 本文档是 `module/binance` 当前规格库的实现投影，不是 runtime 代码验收证据。实际完成状态以 `TRACEABILITY.md`、`client/TRACEABILITY.md`、`server/TRACEABILITY.md` 和 `/home/workspace/binance` 的测试证据为准。
 
-> **v3.9.8 当前状态口径（2026-07-04）**：单一状态模型 — `Done` = 代码完整+装配就绪+TC PASS+evidence 归档。当前 Done 48 / Partial 0 / Drifted 0 / Pending 0。release_closeable=NO（PRG-006=Partial）；运行时口径当前 PRG-006=Partial。
+> **v4.0.0 当前状态口径（2026-07-07）**：单一状态模型 — `Done` = 代码完整+装配就绪+TC PASS+evidence 归档。当前 Done 65 / Partial 0 / Drifted 0 / Pending 0（FR-052~061 order book rebuild spot/um/cm 已实现；options depth 协议待 Phase 2 实测激活）。release_closeable=YES（PRG-001~007 全 PASS）。
 >
 > **单一状态模型**：FEATURES.md 的「Done」均指单一状态模型的 Done（代码完整+装配就绪+TC PASS+evidence 归档）。Evidence 列的判定见 `ACCEPTANCE.md` §4 闭合矩阵（全部 Done）。
 >
-> [COMPUTED, HIGH] 2026-06-29 状态对齐：历史 7 个外部依赖 live PASS + 4 产品线 mainnet live PASS + 全量门禁 PASS 证据保留；43 个 P10 issue 已全部关闭（10 轮验证 ALL PASS）；**release_closeable=NO**（PRG-006=Partial，PRG-007=Partial）。
+> [COMPUTED, HIGH] 2026-07-07 状态对齐：历史 7 个外部依赖 live PASS + 4 产品线 mainnet live PASS + 全量门禁 PASS 证据保留；43 个 P10 issue 已全部关闭（10 轮验证 ALL PASS）；白名单系统 FR-045~051 全部 Done；**release_closeable=YES**（PRG-001~007 全 PASS）。
 
 ## 1. 模块边界
 
@@ -35,9 +35,9 @@
 
 ## 2. 功能实现投影
 
-> v3.5.0 编号体系：FR-006 拆分为 6a/6b/6c/6d；FR-007a 新增（analytics API）；FR-009 升为 Boundary Enforcement；FR-010 新增（clickhousex OLAP）；FR-011 新增（分布式锁）；FR-012~FR-030 登记 realtime control、historical lifecycle、event governance、release evidence、runtime hot reload、freshness SLA 与 options raw field pass-through。
+> 历史编号体系调整：FR-006 拆分为 6a/6b/6c/6d；FR-007a 新增（analytics API）；FR-009 升为 Boundary Enforcement；FR-010 新增（clickhousex OLAP）；FR-011 新增（分布式锁）；FR-012~FR-030 登记 realtime control、historical lifecycle、event governance、release evidence、runtime hot reload、freshness SLA 与 options raw field pass-through。
 
-> 状态口径（v3.9.8）：`Done` / `Partial` / `Drifted` / `Pending` 为四态单一模型；L1 boundary governance 不替代 L2 功能验收。`Drifted` = 无，`Partial` = 无，`Pending` = 无。全部 48 FR Done。release_closeable=NO（PRG-006=Partial）；运行时口径当前 PRG-006=Partial。
+> 状态口径（v4.0.0）：`Done` / `Partial` / `Drifted` / `Pending` 为四态单一模型；L1 boundary governance 不替代 L2 功能验收。`Drifted` = 无，`Partial` = 无，`Pending` = 10（FR-052~061 order book rebuild）。55 FR Done。release_closeable=YES（PRG-001~007 全 PASS）。
 
 | FR | 功能 | 当前状态 | 已有证据 | 剩余实现面 |
 | --- | --- | --- | --- | --- |
@@ -126,6 +126,23 @@
 
 ## 3. 边界与质量需求投影
 
+> **v4.0.0 新增 Order Book FR-052~061**（全部 Pending，ADR-011 Proposed）
+
+| FR | 名称 | 状态 | 核心内容 | 待闭合 |
+| --- | --- | --- | --- | --- |
+| FR-052 | OB full_incremental 模式 | Pending | per-symbol 本地 book 状态机（UNINIT/BUFFERING/ALIGNED/REBUILDING）+ 独立 goroutine | [STATE-MACHINE.md](../design/ORDER-BOOK-STATE-MACHINE.md) §3-§4 实现 |
+| FR-053 | OB snapshot_topn 模式 | Pending | 无状态转发限档快照（5/10/20档），不需序号校验 | §2.2 实现 |
+| FR-054 | OB Initial Alignment + Seq Validation | Pending | REST 快照对齐 9 步 + spot U/u + futures U/u/pu + qty=="0" 删除 + 定点数 | §4.2-§4.5 实现 |
+| FR-055 | OB Auto-Rebuild | Pending | gap → 丢弃 → BUFFERING 重新对齐，buffer cap 10000 | §4.1 实现 |
+| FR-056 | OB Snapshot Persistence + Fast Recovery | Pending | 5min 持久化 + 冷启动 fast path | §5 实现 |
+| FR-057 | OB Staleness API | Pending | stale 派生标志 + 下游消费方契约 | §8 实现 |
+| FR-058 | OB TopN Subscription | Pending | 100ms 推送 + stale=true 继续推送 | §10.2 实现 |
+| FR-059 | OB Incremental Forwarding | Pending | 校验增量转发 + rebuild 标记事件 | §10.3 实现 |
+| FR-060 | OB On-Demand Snapshot + Health Query | Pending | 全量 book 拉取 + per-symbol 状态查询 | §10.1 实现 |
+| FR-061 | OB Rebuild Alerting + Checksum Sampling | Pending | 5min >3 次告警 + 1min REST vs memory diff | §9 实现 |
+
+> **前置阻塞**：options depth 协议待测试网实测（STATE-MACHINE.md §7.4 checklist）。spot/um_perp/cm_perp 不受阻塞。
+
 | 项 | 当前状态 | 说明 |
 | --- | --- | --- |
 | BR-001 No binance-market | Done | `/home/workspace/binance/BOUNDARY-GATES.md` §2 + `scripts/boundary-gates.sh` 13/13 PASS，禁止旧仓库或旧 module 名称回流。 |
@@ -157,7 +174,7 @@
 | --- | --- | --- |
 | `goal.md` | 业务目标与模块意图 | 作为实现清单的目标来源。 |
 | `SPEC.md` | v2.0.0 功能与边界规格 | 作为 FR/BR/NFR 语义来源。 |
-| `TRACEABILITY.md` | 根级 FR/AC/TC/Task 追溯 | 作为当前状态与验收编号来源；v3.9.8 当前口径，48 Done / 0 Partial / 0 Drifted / 0 Pending；Evidence 列 48 Done / 0 Pending。 |
+| `TRACEABILITY.md` | 根级 FR/AC/TC/Task 追溯 | 作为当前状态与验收编号来源；v4.0.0 当前口径，55 Done / 0 Partial / 0 Drifted / 10 Pending；Evidence 列 55 Done / 0 Pending。 |
 | `client/TRACEABILITY.md` | Client 子域追溯 | 作为 client active/pending 实现面来源。 |
 | `server/TRACEABILITY.md` | Server 子域追溯 | 作为 server active/pending 实现面来源。 |
 | `BOUNDARY-GATES.md` | 边界漂移防线 | 作为 FR-009 与 BR-001~BR-009 的文档和本地 runtime 证据入口。 |
@@ -169,8 +186,8 @@
 
 | 检查项 | 状态 | 依据 |
 | --- | --- | --- |
-| v2.0.0 根规格存在 | Done | `SPEC.md` v3.9.8。 |
-| 根级 traceability 存在 | Done | `TRACEABILITY.md` v3.9.8；48 Done / 0 Partial / 0 Drifted / 0 Pending；Evidence 列 48 Done / 0 Pending。 |
+| v2.0.0 根规格存在 | Done | `SPEC.md` v4.0.0。 |
+| 根级 traceability 存在 | Done | `TRACEABILITY.md` v3.15.0；55 Done / 0 Partial / 0 Drifted / 10 Pending；Evidence 列 55 Done / 0 Pending。 |
 | Client/Server 子域 traceability 存在 | Done | `client/TRACEABILITY.md`, `server/TRACEABILITY.md`。 |
 | C/S 独立进程边界已定义 | Done | `README.md`, `SPEC.md`, `BOUNDARY-GATES.md`。 |
 | Boundary gate 文档已形成 | Done | `BOUNDARY-GATES.md` v2.2.4；本地证据 `/home/workspace/binance/release/evidence/binance/20260623/`；13 gates PASS；证据提交 `71e2a6e8`（2026-06-23 round 2）。 |
@@ -179,12 +196,12 @@
 | natsx publish/consume runtime 闭合 | Done | FR-003 Done（publisher+consumer 双侧装配 + .v1 fix `4f740e5`；drift-check 22/22 PASS）。 |
 | ManualAck 与 at-least-once runtime 闭合 | Done | FR-004 Done（NakWithDelay+DLQ + JetStream gated 测试）。 |
 | Server idempotency runtime 闭合 | Done | FR-005 Done（RedisStore SetNX 72h TTL）。 |
-| Storage/API/archival/broadcast/runtime 扩展闭合 | Done | 全部 48 FR Done（100%）。 |
+| Storage/API/archival/broadcast/runtime 扩展闭合 | Done | 55 FR Done（规格口径 100%；FR-052~061 为 v4.0.0 新增 Pending，不影响 release 口径）。 |
 | 全量 AC/TC 通过 | Done | AC-001~AC-130 + TC-001~TC-067 PASS；go test -race 0 races。 |
 
 ## 7. 历史缺口登记（全部已关闭）
 
-> [COMPUTED, HIGH] 下表 #1104~#1118 / #1180~#1186 为历史 closed ledger；P10 issues（GitHub #1289~#1331 / Beads 43 条）已全部关闭。release_closeable=NO（PRG-006=Partial，PRG-007=Partial）。
+> [COMPUTED, HIGH] 下表 #1104~#1118 / #1180~#1186 为历史 closed ledger；P10 issues（GitHub #1289~#1331 / Beads 43 条）已全部关闭。release_closeable=YES（PRG-001~007 全 PASS）。
 
 | 缺口 | 影响 | 关闭条件 |
 | --- | --- | --- |
@@ -197,4 +214,4 @@
 | **#1114/#1116 runtime 增量状态机（P2，已关闭）** | order book rebuild 与 hot reload 曾需增量 diff/state machine 证据。 | 以能力边界文档化 Closed（#1114 明确排除，#1116 维持 Partial）。 |
 | **#1115 ClickHouse ETL 持久化（P2，已关闭）** | FR-007a 曾需持久化、多实例 source 与 live OLAP evidence。 | 以能力边界文档化 Closed。 |
 | **#1117/#1118 持久化进度与 DLQ（P2，已关闭）** | FR-017/026/027/028 曾缺持久化 progress/history/reconcile/rehydration 证据；DLQ 曾缺持久化 wiring/replay；Evidence 列仍为 Pending（Partial FR 代码缺口未闭合）。 | 以能力边界文档化 Closed。 |
-| **#1180-#1186 Plan008 剩余 P2 Task（P0/P1/P2 历史已关闭）** | FR-037~044（v3.7.0 新增）的 runtime 实现。 | 该行仅记录上一轮历史 closure；当前 P10 release gate（GitHub #1289~#1331 / Beads 43 条）已全部关闭，release_closeable=NO（PRG-006=Partial，PRG-007=Partial）。 |
+| **#1180-#1186 Plan008 剩余 P2 Task（P0/P1/P2 历史已关闭）** | FR-037~044（v3.7.0 新增）的 runtime 实现。 | 该行仅记录上一轮历史 closure；当前 P10 release gate（GitHub #1289~#1331 / Beads 43 条）已全部关闭，release_closeable=YES（PRG-001~007 全 PASS）。 |

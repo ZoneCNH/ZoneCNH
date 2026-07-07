@@ -3,7 +3,7 @@
 ## 1. Metadata
 
 - Status: Approved
-- Spec-Version: v3.9.8
+- Spec-Version: v4.0.0
 - Last-Updated: 2026-06-28 (§14 目录结构修正 — 删除独立 go.mod/go.sum，改为 monorepo internal/client/ 布局，与 server/SPEC §14 对称)
 - Last-Updated: 2026-06-26 (v3.9.0: 幂等键策略修正 — 按事件类型强制维度；depth key 固定 U/u updateId；trade key 强制 trade_id；bar key 强制 open_time+interval；tick key 使用 event_time+bid+ask。§17 性能预算扩展 — WS 吞吐、内存预算、延迟分解)
 - Last-Updated: 2026-06-26 (v2.1.1→v3.8.0: 结构性修复 — 废除本地 FR/BR 编号，全部改为引用根 SPEC canonical FR/BR；§7 重构为根 FR 的 client 实现视图；端点策略合并为附录）

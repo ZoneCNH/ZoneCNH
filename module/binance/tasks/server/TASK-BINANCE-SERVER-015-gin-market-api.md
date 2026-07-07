@@ -28,14 +28,14 @@ internal/server/api/
 ## REST API 端点
 
 ```
-GET  /api/v1/market/ticks           查询最新 tick（最近 N 条或时间范围）
-GET  /api/v1/market/ticks/{symbol}  查询指定 symbol 最新 tick
-GET  /api/v1/market/bars            查询 K 线 / bar
-GET  /api/v1/market/depth/{symbol}  查询当前深度快照（来自 redisx 缓存）
-GET  /readyz                        健康检查（taosx/redis/postgres 连通性）
+GET  /api/v1/market/book_ticker           查询最新 book_ticker（最近 N 条或时间范围）
+GET  /api/v1/market/book_ticker/{symbol}  查询指定 symbol 最新 book_ticker
+GET  /api/v1/market/kline                 查询 K 线
+GET  /api/v1/market/depth_update/{symbol}  查询当前深度快照（来自 redisx 缓存）
+GET  /readyz                               健康检查（taosx/redis/postgres 连通性）
 ```
 
-### 请求参数（GET /api/v1/market/ticks）
+### 请求参数（GET /api/v1/market/book_ticker）
 
 | 参数 | 类型 | 说明 |
 |------|------|------|
@@ -79,10 +79,10 @@ func (s *Server) RegisterRoutes() {
     v1.Use(middleware.APIKey(s.cfg.APIKeys))
     v1.Use(middleware.RateLimit(s.cache, 1000))  // 1000 req/min per key
     {
-        v1.GET("/market/ticks",         s.queryTicks)
-        v1.GET("/market/ticks/:symbol", s.latestTick)
-        v1.GET("/market/bars",          s.queryBars)
-        v1.GET("/market/depth/:symbol", s.depthSnapshot)
+        v1.GET("/market/book_ticker",         s.queryBookTicker)
+        v1.GET("/market/book_ticker/:symbol", s.latestBookTicker)
+        v1.GET("/market/kline",               s.queryKline)
+        v1.GET("/market/depth_update/:symbol", s.depthSnapshot)
     }
 
     s.engine.GET("/readyz", s.health)

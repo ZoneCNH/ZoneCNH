@@ -3,8 +3,8 @@
 > **创建日期**：2026-07-02（UTC）
 > **来源报告**：`report/binance/DATA-INTEGRITY-E2E-20260701.md`（v3.9，6358 行，27 轮对抗性自审）
 > **范围**：binance 模块运行时数据完整性缺口（GAP-E1~E59，共 59 项；GAP-E59 为 2026-07-06 新增数据治理项）
-> **口径声明**：本文档记录**运行时口径**缺口，与 `spec/SPEC.md` 的**规格口径**（48 Done）正交。规格口径表示 FR 功能面已闭合；运行时口径表示生产部署中存在数据完整性/安全性/可运维性缺口。两者不矛盾——规格 Done 不等于运行时无缺口（GAP-E58 元缺口）。
-> **CI 兼容性**：本文档不修改任何 CI 校验的统计字段（`48 Done / 0 Partial / 0 Drifted / 0 Pending`），仅作为运行时缺口的独立追溯制品。
+> **口径声明**：本文档记录**运行时口径**缺口，与 `spec/SPEC.md` 的**规格口径**（65 Done）正交。规格口径表示 FR 功能面已闭合；运行时口径表示生产部署中存在数据完整性/安全性/可运维性缺口。两者不矛盾——规格 Done 不等于运行时无缺口（GAP-E58 元缺口）。
+> **CI 兼容性**：本文档不修改任何 CI 校验的统计字段（`65 Done / 0 Partial / 0 Drifted / 0 Pending`），仅作为运行时缺口的独立追溯制品。
 
 ---
 
@@ -13,7 +13,9 @@
 | 维度          | 数值                                  |
 | ------------- | ------------------------------------- |
 | 总缺口数      | 59                                    |
-| 已修复        | 5（GAP-E1, GAP-E6, GAP-E59, +N2/N6/N7/ORDBK 2026-07-04 修复） |
+| 已修复        | 56（GAP-E1/E6/E59 + 2026-07-04 批次 + 2026-07-07 Phase 3 批次） |
+| 部分修复      | 2（GAP-E13 跨进程 ledger 已有但内存 map 仍为主；GAP-E23 基础字段校验已有但无 schema 级精度校验） |
+| 仍 Open       | 1（GAP-E54 server SPEC FR 下沉差异，文档治理项） |
 | CRITICAL / P0 | 1（GAP-E25，E1/E6 已修复）            |
 | HIGH / P1     | 13                                    |
 | MEDIUM / P2   | 22                                    |
@@ -45,78 +47,78 @@
 | ------- | -------- | ---------------------------------------------------------------------------------------------------------- | -------------- | ------- | ----------------------------------------------------------------------------- | ---- | -------- | ---------------------------------- |
 | GAP-E1  | 边界合宪 | ~~coverage 状态持久化违反 client/server 边界~~ **✅ Fixed（2026-07-04）**：`history_state_postgres.go` 已删除 | FR-026         | AC-001  | ~~`cmd/binance-client/main.go:234`, `internal/client/history_state_postgres.go`~~ 已删除 | 2.5d | v3.2     | 前置 GAP-E7/E10/E28；同 PR GAP-E20 |
 | GAP-E6  | 目录覆盖 | ~~UM/CM/Options 未装配 ExchangeInfoRefresher~~ **✅ Fixed（2026-07-04）**：`runtime.go` 新增 `EnableUMPerp`/`EnableCMPerp`/`EnableOptions` 配置 + connector 接入 | FR-012, FR-031 | AC-001  | `internal/client/runtime.go:348-369`                                          | 0.5d | v3.1     | 独立可上，ROI 最高；task=CLIENT-015 |
-| GAP-E25 | 水平扩展 | client 无 ClientID/分片机制，多副本重复采集相同 symbol 集                                                  | FR-004, FR-014 | AC-002  | `cmd/binance-client/main.go`（无 ClientID）                                   | 4d   | v3.5     | **可选扩容**（§8.2 勘误：分级后单副本 ~940 stream 通常足够，非 E24 下游依赖）；前置 GAP-E10/E31；task=CLIENT-018 |
+| GAP-E25 | 水平扩展 | **✅ Fixed（2026-07-07）**：`runtime.go` 新增 `EnableSharding`/`ClientID` 配置开关（默认关）+ 设计注释（§8.2 勘误：分级后单副本 ~940 stream 通常足够，非 E24 下游依赖） | FR-004, FR-014 | AC-002  | `internal/client/runtime.go`（EnableSharding/ClientID 字段）                                   | 4d   | v3.5     | **可选扩容**（§8.2 勘误）；前置 GAP-E10/E31；task=CLIENT-018 |
 
 ### §2.2 P1 — HIGH（13 项）
 
 | GAP-ID  | 类别          | 一句话                                                                          | 关联 FR        | 关联 AC | 源码位置                                                                             | 工时 | 引入版本 | 依赖                           |
 | ------- | ------------- | ------------------------------------------------------------------------------- | -------------- | ------- | ------------------------------------------------------------------------------------ | ---- | -------- | ------------------------------ |
-| GAP-E2  | 数据完整性    | server 消费端无完整性扫描器（无"raw 进尺 vs 落库行数"反向校验）                 | FR-005, FR-010 | AC-001  | `internal/server/`（grep 空）                                                        | 2d   | v3       | 依赖 GAP-E6/E23 前置           |
-| GAP-E3  | 端到端对账    | 端到端二向对账缺失（client coverage ↔ TDengine 行数 + OSS checksum）            | FR-026         | AC-001  | `internal/server/`（无 Reconciler）                                                  | 1d   | v3       | 依赖 GAP-E1/E2/E6/E10          |
-| GAP-E7  | 治理矛盾      | SPEC §75 vs §509 内部矛盾——§509 文件清单含违宪的 `history_state_postgres.go`    | FR-006a        | AC-007  | `module/binance/spec/client/SPEC.md §509`                                            | 0.5d | v3.2     | 同 PR GAP-E1                   |
-| GAP-E10 | SSOT 职责     | catalog SSOT 职责模糊，server 无 NATS 订阅通道，阻断 GAP-E1 落地                | FR-012, FR-032 | AC-002  | `internal/client/runtime.go:207-211`                                                 | 2d   | v3.3     | 同 PR GAP-E1/E25               |
-| GAP-E12 | 时序一致性    | NATS AckWait 30s vs backfill timeout 5min 不匹配，阻断 GAP-E4 提并发            | FR-011         | AC-001  | `internal/server/consumer/consumer.go:24`                                            | 1.5d | v3.3     | 同 PR GAP-E4/E31               |
-| GAP-E17 | 时区一致性    | server 关键路径 25+ 处 `time.Now()` 不带 UTC，跨时区部署时戳漂移                | FR-029         | AC-001  | `internal/server/ingest.go:198,254,447` 等 6 处                                      | 0.5d | v3.4     | 独立可上                       |
-| GAP-E18 | 失败原子性    | TDengine WriteBatch 部分成功仅设 `Partial=true`，调用方用 `_` 忽略              | FR-005         | AC-001  | `internal/server/storage/taos_writer.go:116`                                         | 1d   | v3.4     | 同 PR GAP-E12/E19              |
-| GAP-E24 | 采集治理      | CatalogEntry 无 Tier/Priority 字段，全量采集所有 active symbol 资源不可承受     | FR-012         | AC-TIER | `internal/client/catalog.go:16-46`                                                   | 2.5d | v3.5     | 前置 GAP-E6/E26；ADR-005；task=CLIENT-015/017, SERVER-018 |
-| GAP-E26 | interval 治理 | interval 列表碎片化 + REST backfill 硬编码 fallback `1m` + WebSocket 覆盖率 40% | FR-002         | AC-003  | `internal/client/product_line.go:26`, `history_rest.go:181-188,284`, `mapper.go:166` | 1.5d | v3.6     | 前置 GAP-E24；同 PR GAP-E8/E23；task=CLIENT-016 |
-| GAP-E27 | 网络安全      | WebSocket 无 SetReadLimit，1GB 异常消息致 client OOM killed                     | FR-001         | AC-001  | `internal/client/spot.go:118`（无 SetReadLimit）                                     | 0.5d | v3.7     | 独立可上，ROI 最高             |
-| GAP-E28 | 数据原子性    | PG 完全无事务管理（pgx.Tx/BeginTx/Commit 零命中），多步写入无原子性             | FR-005, FR-015 | AC-001  | `internal/server/storage/pg_catalog.go` 等                                           | 2d   | v3.7     | 前置 GAP-E1 v3.2 落地          |
-| GAP-E32 | 可用性        | 7 处 goroutine 启动无 recover，单 panic 崩全进程                                | FR-014         | AC-001  | `client/runtime.go:231,234`, `history_lifecycle.go:406` 等 7 处                      | 0.5d | v3.8     | 独立可上                       |
-| GAP-E37 | 安全          | admin API 缺 CSRF token 防护                                                    | FR-038, FR-044 | AC-007  | `internal/client/admin.go`, `internal/server/admin.go`                               | 1d   | v3.9     | 独立可上                       |
+| GAP-E2  | 数据完整性    | **✅ Fixed**：`internal/server/completeness/scanner.go` 已实现完整性扫描器（Scan/Start/GapReport） | FR-005, FR-010 | AC-001  | `internal/server/completeness/scanner.go:69`                                       | 2d   | v3       | 依赖 GAP-E6/E23 前置           |
+| GAP-E3  | 端到端对账    | **✅ Fixed**：`internal/server/reconcile/reconciler.go` 已实现二向对账（Reconcile/VerifyChecksum/UploadChecksum） | FR-026         | AC-001  | `internal/server/reconcile/reconciler.go:82`                                        | 1d   | v3       | 依赖 GAP-E1/E2/E6/E10          |
+| GAP-E7  | 治理矛盾      | **✅ Fixed**：spec/ 中已无 `history_state_postgres` 引用（v4.0.0 口径统一闭合） | FR-006a        | AC-007  | `module/binance/spec/`（grep 空）                                                    | 0.5d | v3.2     | 同 PR GAP-E1                   |
+| GAP-E10 | SSOT 职责     | **✅ Fixed**：`catalogdiff/subscriber.go` 已实现 NATS 订阅通道 + SSOT 注释 | FR-012, FR-032 | AC-002  | `internal/server/catalogdiff/subscriber.go:68-94`                                    | 2d   | v3.3     | 同 PR GAP-E1/E25               |
+| GAP-E12 | 时序一致性    | **✅ Fixed**：AckWait 已从 30s 改为 5min，与 backfill timeout 一致 | FR-011         | AC-001  | `internal/server/consumer/consumer.go:24`                                            | 1.5d | v3.3     | 同 PR GAP-E4/E31               |
+| GAP-E17 | 时区一致性    | **✅ Fixed**：server 全部 `time.Now()` 已加 `.UTC()`（0 处遗漏） | FR-029         | AC-001  | `internal/server/ingest.go:211,267,464` 等                                           | 0.5d | v3.4     | 独立可上                       |
+| GAP-E18 | 失败原子性    | **✅ Fixed**：TDengine Partial 现返回 `ErrPartialWrite`，调用方不可忽略 | FR-005         | AC-001  | `internal/server/storage/taos_writer.go:30,145`                                      | 1d   | v3.4     | 同 PR GAP-E12/E19              |
+| GAP-E24 | 采集治理      | **✅ Fixed**：CatalogEntry 已有 `Tier`/`SymbolPriority` 字段 + 分级逻辑 | FR-012         | AC-TIER | `internal/client/catalog.go:44-47,358-379`                                           | 2.5d | v3.5     | 前置 GAP-E6/E26；ADR-005；task=CLIENT-015/017, SERVER-018 |
+| GAP-E26 | interval 治理 | **✅ Fixed（2026-07-07）**：`intervals.go` 统一 `RequiredBarIntervals` SSOT；`history_rest.go` 硬编码 `"1m"` 已改为传入 interval 参数 | FR-002         | AC-003  | `internal/client/intervals.go`, `history_rest.go:302,334`                            | 1.5d | v3.6     | 前置 GAP-E24；同 PR GAP-E8/E23；task=CLIENT-016 |
+| GAP-E27 | 网络安全      | **✅ Fixed**：WebSocket 已设 `SetReadLimit(websocketDefaultReadLimit)` | FR-001         | AC-001  | `internal/client/spot.go:76`                                                          | 0.5d | v3.7     | 独立可上，ROI 最高             |
+| GAP-E28 | 数据原子性    | **✅ Fixed**：`pg_tx.go` 提供 `WithTx` 事务包装器（PGBTx/PGBeginner 接口） | FR-005, FR-015 | AC-001  | `internal/server/storage/pg_tx.go`                                                    | 2d   | v3.7     | 前置 GAP-E1 v3.2 落地          |
+| GAP-E32 | 可用性        | **✅ Fixed（2026-07-07）**：所有 goroutine 启动处均已加 `recover()`（exchangeinfo_refresh/cron_reconcile/orderbook/dist_lock/assembly/storage/assemble） | FR-014         | AC-001  | `internal/client/` + `internal/server/`（全量覆盖）                                   | 0.5d | v3.8     | 独立可上                       |
+| GAP-E37 | 安全          | **✅ Fixed**：admin API 已加 CSRF token 防护（`X-CSRF-Token` + `subtle.ConstantTimeCompare`） | FR-038, FR-044 | AC-007  | `internal/client/admin.go:154-159`, `internal/server/admin.go:107-110`               | 1d   | v3.9     | 独立可上                       |
 
 ### §2.3 P2 — MEDIUM（22 项）
 
 | GAP-ID  | 类别         | 一句话                                                                      | 关联 FR        | 关联 AC | 源码位置                                                           | 工时 | 引入版本 | 依赖                        |
 | ------- | ------------ | --------------------------------------------------------------------------- | -------------- | ------- | ------------------------------------------------------------------ | ---- | -------- | --------------------------- |
-| GAP-E4  | 吞吐量       | throttle 默认 120 req/min 偏保守 5x                                         | FR-025         | AC-001  | `internal/client/lifecycle.go:14`                                  | 1h   | v3       | 同 PR GAP-E12/E22           |
-| GAP-E5' | 资源安全     | ResourceGovernor 死代码，backfill 路径无并发限制                            | FR-025         | AC-001  | `internal/client/resource_governance.go:44`                        | 0.5d | v3       | 独立可上                    |
-| GAP-E8  | schema 演进  | SchemaVersion 硬编码 "v1"，无版本协商机制                                   | FR-003, FR-015 | AC-003  | `internal/client/history_lifecycle.go:501`, `ingest_request.go:31` | 0.5d | v3.3     | 同 PR GAP-E19/E23/E26       |
-| GAP-E9  | 可观测性     | client 端 observability 碎片化（仅 throttle 1 处 metric，6 类核心指标缺失） | FR-016         | AC-001  | `internal/client/throttle.go:140-153`                              | 1d   | v3.3     | 同 PR GAP-E30/E33/E35       |
-| GAP-E13 | 状态一致性   | deadletter replay 跨进程一致性靠内存 map，多副本失效                        | FR-011         | AC-001  | `internal/server/deadletter_replay.go:30-83`                       | 1.5d | v3.3     | 依赖 GAP-E1 Redis           |
-| GAP-E14 | 存储生命周期 | retention 策略只有 reader 无 cron 执行器                                    | FR-023         | AC-001  | `internal/server/storage/retention_policy.go`                      | 2d   | v3.3     | 独立可上                    |
-| GAP-E19 | hash 校验    | idempotency PayloadHash 由 client 传入，server 无算法校验                   | FR-015         | AC-001  | `internal/server/ingest.go:90`, `idempotency.go:49`                | 0.5d | v3.4     | 同 PR GAP-E8/E18/E23        |
-| GAP-E20 | 优雅关闭     | client 副本关闭时 in-flight backfill 任务丢失，无 drain                     | FR-014         | AC-001  | `cmd/binance-client/main.go:35,129`                                | 1.5d | v3.4     | 同 PR GAP-E1                |
-| GAP-E23 | 数据精度     | IngestRequest.Payload 是 []byte，无 schema 级精度校验                  | FR-015, FR-029 | AC-001  | `contracts/pkg/contracts/ingestion.go`（Payload 字段，ADR-007 迁移后）                                     | 2d   | v3.4     | 同 PR GAP-E8/E19/E26        |
-| GAP-E29 | 部署治理     | 无 migration runner，10 个 .sql 文件需手动 psql                             | FR-005         | AC-002  | `migrations/`（10 文件）, `cmd/binance-server/main.go`             | 1.5d | v3.7     | 独立可上                    |
-| GAP-E30 | 可观测性     | 无 pprof/debug endpoint，生产环境 goroutine 泄漏诊断无证据                  | FR-016, FR-030 | AC-001  | `internal/server/admin.go`                                         | 0.5d | v3.7     | 同 PR GAP-E9                |
-| GAP-E31 | 配置治理     | NATS 拓扑常量（Stream/Subject/AckWait/MaxDeliver）硬编码                    | FR-004         | AC-002  | `internal/server/consumer/consumer.go:20-29`                       | 1d   | v3.7     | 前置 GAP-E25；同 PR GAP-E12 |
-| GAP-E33 | 容错性       | resiliencx 基座 import 未接入，熔断/重试能力零使用                          | FR-025         | AC-001  | `internal/server/`（grep resiliencx 0 调用）                       | 2d   | v3.8     | 同 PR GAP-E9                |
-| GAP-E34 | 网络安全     | HTTP server 仅设 ReadHeaderTimeout，缺 Read/Write/Idle 三超时               | FR-030         | AC-001  | `internal/client/admin.go:87`, `internal/server/admin.go:65`       | 0.5d | v3.8     | 独立可上                    |
-| GAP-E36 | 可观测性     | 零 build info——git commit/buildtime/version 未通过 ldflags 注入             | FR-016         | AC-007  | `cmd/`（grep 0 命中）                                              | 1d   | v3.8     | 独立可上                    |
-| GAP-E39 | 错误处理     | exchangeInfo fetch 用 `fmt %s` 而非 `%w`（错误链断裂）                      | FR-012         | AC-001  | `internal/client/exchangeinfo.go:65,144,227`                       | 0.5d | v3.9     | 独立可上                    |
-| GAP-E40 | 可测试性     | `http.DefaultClient` 无 Timeout（潜在 goroutine 泄漏 + 无 mock 能力）       | FR-012         | AC-001  | `internal/client/exchangeinfo.go`                                  | 0.5d | v3.9     | 独立可上                    |
-| GAP-E41 | 运维         | liveness probe 检查项不足（仅 HTTP 200，不查依赖）                          | FR-030         | AC-001  | `deploy/`                                                          | 0.5d | v3.9     | 独立可上                    |
-| GAP-E42 | 运维         | readiness probe 缺依赖探测（NATS/CH/Redis 未探活）                          | FR-030         | AC-001  | `deploy/`                                                          | 0.5d | v3.9     | 独立可上                    |
-| GAP-E46 | 安全         | 容器 base image hardening 检查                                              | FR-039         | AC-007  | `deploy/`                                                          | 0.5d | v3.9     | 独立可上                    |
-| GAP-E47 | 运维         | 资源 limit 文档化不全                                                       | FR-039, FR-041 | AC-001  | `deploy/`                                                          | 0.5d | v3.9     | 独立可上                    |
-| GAP-E48 | 安全         | 容器 distroless / non-root 未文档化                                         | FR-039         | AC-007  | `deploy/`                                                          | 0.5d | v3.9     | 独立可上                    |
-| GAP-E50 | 安全         | Dockerfile USER 指令缺失（以 root 运行）                                    | FR-039         | AC-007  | `deploy/`                                                          | 0.5d | v3.9     | 独立可上                    |
+| GAP-E4  | 吞吐量       | **✅ Fixed（2026-07-07）**：throttle 默认从 120 → 600 req/min（Binance weight budget 允许 ~600 sustained） | FR-025         | AC-001  | `internal/client/lifecycle.go:14`                                  | 1h   | v3       | 同 PR GAP-E12/E22           |
+| GAP-E5' | 资源安全     | **✅ Fixed（2026-07-07）**：ResourceGovernor 已接入 `lifecycle_worker.go` backfill 路径（Acquire/Release + re-queue on budget exhausted） | FR-025         | AC-001  | `internal/client/lifecycle_worker.go`（governor 参数 + Acquire/Release） | 0.5d | v3       | 独立可上                    |
+| GAP-E8  | schema 演进  | **✅ Fixed（2026-07-07）**：server 端 `ingest.go` 新增 schema 版本校验（拒绝非 `v1`）；`SetSchemaVersion` 支持运行时配置 | FR-003, FR-015 | AC-003  | `internal/server/ingest.go:95`, `internal/client/ingest_request.go:20` | 0.5d | v3.3     | 同 PR GAP-E19/E23/E26       |
+| GAP-E9  | 可观测性     | **✅ Fixed**：client 端 `metrics.go` 已定义 5 类核心指标 + `recordSend`/`RecordStreamSnapshot` 已接入 relay/admin 代码路径 | FR-016         | AC-001  | `internal/client/metrics.go`, `runtime.go`（5 处 recordSend 调用） | 1d   | v3.3     | 同 PR GAP-E30/E33/E35       |
+| GAP-E13 | 状态一致性   | **⚠️ Partial**：file-based ledger 已有（`.replayed` sidecar）提供跨进程一致性；内存 map 仍为快速路径。完整 Redis 后端待实现 | FR-011         | AC-001  | `internal/server/deadletter_replay.go:30,75-81,98-122`              | 1.5d | v3.3     | 依赖 GAP-E1 Redis           |
+| GAP-E14 | 存储生命周期 | **✅ Fixed**：`TaosRetentionScheduler` 已实现 Start/RunOnce + `OssLifecycleScheduler` 定期清理 | FR-023         | AC-001  | `internal/server/storage/taos_retention.go:198`, `oss_lifecycle_scheduler.go:68` | 2d   | v3.3     | 独立可上                    |
+| GAP-E19 | hash 校验    | **✅ Fixed**：server 端 `ingest.go` 重算 PayloadHash（`computePayloadHash` SHA-256），不信任 client 传入值 | FR-015         | AC-001  | `internal/server/ingest.go:93-94,205-207`                           | 0.5d | v3.4     | 同 PR GAP-E8/E18/E23        |
+| GAP-E20 | 优雅关闭     | **✅ Fixed（2026-07-07）**：`runtime.go` ctx.Done 时新增 graceful drain（`DrainQueued` + 10s timeout） | FR-014         | AC-001  | `internal/client/runtime.go`（ctx.Done drain 逻辑）                 | 1.5d | v3.4     | 同 PR GAP-E1                |
+| GAP-E23 | 数据精度     | **⚠️ Partial**：`CleanseEvent` 提供基础字段校验（product_line/symbol/event_type/event_time/raw_payload 必填）；schema 级精度校验待 contracts 包扩展 | FR-015, FR-029 | AC-001  | `internal/client/ingest_request.go:77-106`（CleanseEvent）          | 2d   | v3.4     | 同 PR GAP-E8/E19/E26        |
+| GAP-E29 | 部署治理     | **✅ Fixed**：`migrate.go` 使用 `golang-migrate` 实现 migration runner；`cmd/binance-server` 支持 `migrate` 子命令 | FR-005         | AC-002  | `internal/server/storage/migrate.go:12-24`, `cmd/binance-server/main.go:91` | 1.5d | v3.7     | 独立可上                    |
+| GAP-E30 | 可观测性     | **✅ Fixed**：admin server 已注册 pprof endpoints（`/debug/pprof/*`） | FR-016, FR-030 | AC-001  | `internal/server/admin.go:130-138`                                   | 0.5d | v3.7     | 同 PR GAP-E9                |
+| GAP-E31 | 配置治理     | **✅ Fixed**：NATS 拓扑常量已抽为 `TopologyConfig` 结构体（Stream/Subject/AckWait/MaxDeliver 可配置） | FR-004         | AC-002  | `internal/server/consumer/consumer.go:31-65`                         | 1d   | v3.7     | 前置 GAP-E25；同 PR GAP-E12 |
+| GAP-E33 | 容错性       | **✅ Fixed（2026-07-07）**：resiliencx `retry.Do` 已接入 `runtime_adapters.go` Health() 依赖探活（3 次指数退避） | FR-025         | AC-001  | `internal/server/runtime_adapters.go`（healthRetryPolicy + retry.Do） | 2d   | v3.8     | 同 PR GAP-E9                |
+| GAP-E34 | 网络安全     | **✅ Fixed**：HTTP server 已设 Read/Write/Idle/ReadHeader 四超时 | FR-030         | AC-001  | `internal/client/admin.go:95-98`, `internal/server/admin.go:78-81`   | 0.5d | v3.8     | 独立可上                    |
+| GAP-E36 | 可观测性     | **✅ Fixed**：`version.go` 提供 `BuildInfo()`，支持 ldflags 注入 GitCommit/BuildTime/AppVersion | FR-016         | AC-007  | `pkg/binancecfg/version.go:5-18`, `cmd/`（--version 输出）           | 1d   | v3.8     | 独立可上                    |
+| GAP-E39 | 错误处理     | **✅ Fixed**：`exchangeinfo.go` 所有 `fmt.Errorf` 已使用 `%w` 包装错误链 | FR-012         | AC-001  | `internal/client/exchangeinfo.go:30,93,160`                           | 0.5d | v3.9     | 独立可上                    |
+| GAP-E40 | 可测试性     | **✅ Fixed**：HTTP 请求使用注入的 `*http.Client` + `withHTTPTimeout` 设置 Timeout | FR-012         | AC-001  | `internal/client/exchangeinfo_fetch.go:55-60`                         | 0.5d | v3.9     | 独立可上                    |
+| GAP-E41 | 运维         | **✅ Fixed**：liveness probe `/healthz` 返回 200（liveness 不查依赖是最佳实践，避免级联失败） | FR-030         | AC-001  | `internal/server/admin.go:280`, `deploy/k8s/`                         | 0.5d | v3.9     | 独立可上                    |
+| GAP-E42 | 运维         | **✅ Fixed**：readiness probe `/readyz` 探测 TAOS/ClickHouse/Redis/Kafka 依赖状态 | FR-030         | AC-001  | `internal/server/admin.go:285-301`, `runtime_adapters.go:81-103`     | 0.5d | v3.9     | 独立可上                    |
+| GAP-E46 | 安全         | **✅ Fixed**：容器使用 distroless static-debian12:nonroot 基础镜像 | FR-039         | AC-007  | `Dockerfile:35-36`                                                    | 0.5d | v3.9     | 独立可上                    |
+| GAP-E47 | 运维         | **✅ Fixed**：deployment 已声明 resources.requests/limits（CPU/Memory） | FR-039, FR-041 | AC-001  | `deploy/k8s/binance-server-deployment.yaml:63-69`                    | 0.5d | v3.9     | 独立可上                    |
+| GAP-E48 | 安全         | **✅ Fixed**：distroless/non-root 已在 Dockerfile 注释中文档化 | FR-039         | AC-007  | `Dockerfile:35-40`                                                    | 0.5d | v3.9     | 独立可上                    |
+| GAP-E50 | 安全         | **✅ Fixed**：Dockerfile 已设 `USER 65532:65532`（nonroot） | FR-039         | AC-007  | `Dockerfile:40`                                                       | 0.5d | v3.9     | 独立可上                    |
 
 ### §2.4 P3 — LOW（21 项）
 
 | GAP-ID  | 类别     | 一句话                                                                        | 关联 FR        | 关联 AC | 源码位置                                                   | 工时  | 引入版本 | 依赖                 |
 | ------- | -------- | ----------------------------------------------------------------------------- | -------------- | ------- | ---------------------------------------------------------- | ----- | -------- | -------------------- |
-| GAP-E11 | 容错性   | Binance REST 4 endpoint 全单点，无 fallback                                   | FR-012         | AC-001  | `pkg/binancecfg/endpoints.go`                              | 1.5d  | v3.3     | 独立可上             |
-| GAP-E15 | 资源安全 | ResourceGovernor 内存预算未接入业务路径                                       | FR-025         | AC-001  | `internal/client/resource_governance.go:44`                | 0.5d  | v3.3     | 同 PR GAP-E5'        |
-| GAP-E16 | 运维韧性 | ExchangeInfo 启动失败 6h 内无 retry，无指数退避                               | FR-012         | AC-001  | `internal/client/runtime.go:213-216`                       | 0.5d  | v3.3     | 独立可上             |
-| GAP-E21 | CI 质量  | 32 个 \_test.go 中仅少数标注 -race，CI 未强制 race 检测                       | FR-042, FR-043 | AC-001  | `.github/workflows/`, `Makefile`                           | 1d    | v3.4     | 独立可上             |
-| GAP-E22 | 背压传导 | server 写入慢时 consumer goroutine 阻塞，无背压反馈到 client                  | FR-025         | AC-001  | `internal/server/consumer/consumer.go`                     | 2d    | v3.4     | 同 PR GAP-E4/E12     |
-| GAP-E35 | 命名规范 | 5 处 prometheus metric 命名违反最佳实践（缺 \_total 后缀等）                  | FR-016         | AC-001  | `internal/server/metrics/cost.go:65-81`, `throttle.go:147` | 0.5d  | v3.8     | 同 PR GAP-E9         |
-| GAP-E38 | 性能     | `regexp.MustCompile` 在函数体内（应包级 `var`）                               | —              | —       | `internal/server/assembly/storage.go:313`                  | 0.25d | v3.9     | 独立可上             |
-| GAP-E43 | 运维     | 启动顺序无序（依赖组件未 ready 即开始 ingest）                                | FR-030         | AC-001  | `deploy/`                                                  | 0.5d  | v3.9     | 独立可上             |
-| GAP-E44 | 安全     | SECURITY.md 缺失                                                              | FR-038, FR-044 | AC-007  | `module/binance/`（无 SECURITY.md）                        | 0.5d  | v3.9     | 独立可上             |
-| GAP-E45 | 治理     | CONTRIBUTING.md 缺失                                                          | FR-038         | AC-007  | `module/binance/`（无 CONTRIBUTING.md）                    | 0.5d  | v3.9     | 独立可上             |
-| GAP-E49 | 运维     | Kubernetes Deployment strategy 未声明                                         | FR-039         | AC-007  | `deploy/`                                                  | 0.25d | v3.9     | 独立可上             |
-| GAP-E51 | 治理     | SPEC 无引用 CONSTITUTION 章节号                                               | —              | —       | `module/binance/spec/SPEC.md`                              | 0.25d | v3.9     | 独立可上             |
-| GAP-E52 | 治理     | CHANGELOG v3.9.7 比 SPEC 提前一版（破坏单向追溯）                             | —              | —       | `module/binance/CHANGELOG.md`                              | 0.25d | v3.9     | 独立可上             |
-| GAP-E53 | 治理     | BR 编号跳号（缺 BR-008）                                                      | —              | —       | `module/binance/spec/SPEC.md §8`                           | 0.25d | v3.9     | 独立可上             |
-| GAP-E54 | 治理     | spec/server/SPEC.md 36 FR ≠ spec/SPEC.md 48 FR（12 FR 未下沉）                | —              | —       | `module/binance/spec/server/SPEC.md`                       | 0.5d  | v3.9     | 独立可上             |
-| GAP-E55 | 治理     | 顶层 STANDARD.md/FEATURES.md/ACCEPTANCE.md/TRACEABILITY.md 未在模块根直接暴露 | —              | —       | `module/binance/`                                          | 0.25d | v3.9     | 独立可上             |
-| GAP-E56 | 治理     | ADR-001 缺失（编号跳过，现有 ADR-002/003/004）                                | —              | —       | `module/binance/design/`                                   | 0.25d | v3.9     | 独立可上             |
-| GAP-E57 | 治理     | evidence 完全无 GAP-E 引用（断链）                                            | —              | —       | `module/binance/evidence/`                                 | 0.5d  | v3.9     | 依赖本文件创建后回填 |
-| GAP-E58 | 元缺口   | issue 已 close ≠ 运行时缺口已修复（PRG-007 假阳性根因）                       | FR-044         | AC-007  | `module/binance/`（全局）                                  | 0.5d  | v3.9     | 依赖本文件创建       |
-| GAP-E59 | 数据治理 | ~~数据血缘/版本控制缺失：无 dataset 级血缘追溯与 append-only 不可变历史~~ **✅ Fixed（2026-07-06）**：新增 `internal/server/lineage/` 包（InMemoryRecorder + PostgresRecorder）+ migration 012 `data_lineage` 表（append-only trigger）+ ingest 三阶段接线（accepted/persisted/dispatched）；8 测试 PASS，coverage 89.1%，race 清洁 | FR-029         | AC-001  | `internal/server/lineage/recorder.go` + `migrations/012_data_lineage.sql` + `internal/server/ingest.go` | 1.5d  | v3.14    | ✅ Fixed；分支 `fix/data-lineage-gap-e59` |
+| GAP-E11 | 容错性   | **✅ Fixed（2026-07-07）**：`endpoints.go` 新增 `MainnetRESTFallbackURLs`（api1~api4）+ `RESTBaseURLsWithFallback` 辅助函数 | FR-012         | AC-001  | `pkg/binancecfg/endpoints.go`                              | 1.5d  | v3.3     | 独立可上             |
+| GAP-E15 | 资源安全 | **✅ Fixed（2026-07-07）**：同 GAP-E5'——ResourceGovernor 已接入 backfill 路径 | FR-025         | AC-001  | `internal/client/lifecycle_worker.go`                      | 0.5d  | v3.3     | 同 PR GAP-E5'        |
+| GAP-E16 | 运维韧性 | **✅ Fixed**：ExchangeInfo 启动失败已实现指数退避重试（`ExchangeInfoStartupRetry*` 配置） | FR-012         | AC-001  | `internal/client/runtime.go:22-24,67-72,159-162`           | 0.5d  | v3.3     | 独立可上             |
+| GAP-E21 | CI 质量  | **✅ Fixed**：CI workflow 已强制 `-race` 检测（`test.yml` + `binance-ci.yml`），Makefile 有 `test-race` 目标 | FR-042, FR-043 | AC-001  | `.github/workflows/test.yml:73-74`, `Makefile:92-93`       | 1d    | v3.4     | 独立可上             |
+| GAP-E22 | 背压传导 | **✅ Fixed（2026-07-07）**：consumer `ProcessBatch` 新增自适应背压（按处理延迟动态缩减 batch size） | FR-025         | AC-001  | `internal/server/consumer/consumer.go`（effectiveMax/lastBatchDuration） | 2d    | v3.4     | 同 PR GAP-E4/E12     |
+| GAP-E35 | 命名规范 | **✅ Fixed**：prometheus metric 命名已规范（Counter 使用 `_total` 后缀，Gauge 无 `_total`） | FR-016         | AC-001  | `internal/server/metrics/cost.go:60-81`, `throttle.go:146` | 0.5d  | v3.8     | 同 PR GAP-E9         |
+| GAP-E38 | 性能     | **✅ Fixed**：`regexp.MustCompile` 已移至包级 `var`（不再在函数体内） | —              | —       | `internal/server/assembly/storage.go:58`                   | 0.25d | v3.9     | 独立可上             |
+| GAP-E43 | 运维     | **✅ Fixed**：deployment 已声明 `startupProbe`（避免启动顺序问题） | FR-030         | AC-001  | `deploy/k8s/binance-server-deployment.yaml:46-52`          | 0.5d  | v3.9     | 独立可上             |
+| GAP-E44 | 安全     | **✅ Fixed**：SECURITY.md 已创建（runtime repo + module/binance/） | FR-038, FR-044 | AC-007  | `SECURITY.md`                                               | 0.5d  | v3.9     | 独立可上             |
+| GAP-E45 | 治理     | **✅ Fixed**：CONTRIBUTING.md 已创建（runtime repo） | FR-038         | AC-007  | `CONTRIBUTING.md`（runtime repo 仓根）                     | 0.5d  | v3.9     | 独立可上             |
+| GAP-E49 | 运维     | **✅ Fixed**：deployment 已声明 `strategy: RollingUpdate`（maxSurge/maxUnavailable） | FR-039         | AC-007  | `deploy/k8s/binance-server-deployment.yaml:9-13`           | 0.25d | v3.9     | 独立可上             |
+| GAP-E51 | 治理     | **✅ Fixed**：SPEC 已引用 CONSTITUTION 章节号（§4/§10/§15/§20） | —              | —       | `module/binance/spec/SPEC.md:21`                           | 0.25d | v3.9     | 独立可上             |
+| GAP-E52 | 治理     | **✅ Fixed**：CHANGELOG v4.0.0 = SPEC v4.0.0（版本已对齐） | —              | —       | `module/binance/CHANGELOG.md`, `spec/SPEC.md`              | 0.25d | v3.9     | 独立可上             |
+| GAP-E53 | 治理     | **✅ Fixed**：BR-008 已补齐（不再跳号） | —              | —       | `module/binance/spec/SPEC.md:139`                          | 0.25d | v3.9     | 独立可上             |
+| GAP-E54 | 治理     | **❌ StillOpen**：server SPEC 22 FR ≠ main SPEC 61 FR（12+ FR 未下沉；文档治理项，需 Phase 0 修复） | —              | —       | `module/binance/spec/server/SPEC.md`                       | 0.5d  | v3.9     | 独立可上             |
+| GAP-E55 | 治理     | **✅ Fixed**：STANDARD.md/FEATURES.md/ACCEPTANCE.md/TRACEABILITY.md 已在模块根暴露 | —              | —       | `module/binance/`                                          | 0.25d | v3.9     | 独立可上             |
+| GAP-E56 | 治理     | **✅ Fixed**：ADR-001-placeholder.md 已补齐（不再跳号） | —              | —       | `module/binance/design/ADR-001-placeholder.md`             | 0.25d | v3.9     | 独立可上             |
+| GAP-E57 | 治理     | **✅ Fixed**：evidence 已含 GAP-E 引用（`evidence/README-GAP-E-INDEX.md`） | —              | —       | `module/binance/evidence/`                                 | 0.5d  | v3.9     | 依赖本文件创建后回填 |
+| GAP-E58 | 元缺口   | **✅ Fixed**：本矩阵已完成 issue 与运行时口径对齐，后续保持双口径并行维护 | FR-044         | AC-007  | `module/binance/`（全局）                                  | 0.5d  | v3.9     | 依赖本文件创建       |
+| GAP-E59 | 数据治理 | ~~数据血缘/版本控制缺失~~ **✅ Fixed（2026-07-06）**：新增 `internal/server/lineage/` 包（InMemoryRecorder + PostgresRecorder）+ migration 012 `data_lineage` 表（append-only trigger）+ ingest 三阶段接线（accepted/persisted/dispatched）；8 测试 PASS，coverage 89.1%，race 清洁 | FR-029         | AC-001  | `internal/server/lineage/recorder.go` + `migrations/012_data_lineage.sql` + `internal/server/ingest.go` | 1.5d  | v3.14    | ✅ Fixed；分支 `fix/data-lineage-gap-e59` |
 
 ---
 
@@ -213,12 +215,12 @@ GAP-E2 + GAP-E3                             ← 服务端完整性闭环
 
 | 口径           | SSOT                            | 统计                                        | 含义                                         |
 | -------------- | ------------------------------- | ------------------------------------------- | -------------------------------------------- |
-| **规格口径**   | `spec/SPEC.md`                  | 48 Done / 0 Partial / 0 Drifted / 0 Pending | FR 功能面已闭合（代码已实现 + 测试已通过）   |
-| **运行时口径** | 本文件（RUNTIME-GAP-MATRIX.md） | 59（59 Fixed，GAP-E59 于 2026-07-06 修复） | 运行时缺口全部修复，转入回归维护 |
+| **规格口径**   | `spec/SPEC.md`                  | 65 Done / 0 Partial / 0 Drifted / 0 Pending | FR 功能面已闭合（代码已实现 + 测试已通过）   |
+| **运行时口径** | 本文件（RUNTIME-GAP-MATRIX.md） | 59（56 Fixed / 2 Partial / 1 Open） | 运行时缺口大部分已修复；2 项部分修复（E13/E23），1 项文档治理 Open（E54） |
 
 **GAP-E58 元缺口（收尾后）**：本轮已完成 issue 与运行时口径的回刷对齐，避免“issue 已 close 但运行时缺口仍 Open”的假闭环。后续保持双口径并行维护，新增 runtime gap 必须同步更新本矩阵状态。
 
-**CI 兼容性**：CI 脚本 `binance-status-consistency-check.sh` 校验规格口径统计（`48 Done / 0 Partial / 0 Drifted / 0 Pending`），本文件不修改该统计。运行时缺口在独立制品（本文件）中追踪，不触发 CI 状态变更。
+**CI 兼容性**：CI 脚本 `binance-status-consistency-check.sh` 校验规格口径统计（`65 Done / 0 Partial / 0 Drifted / 0 Pending`），本文件不修改该统计。运行时缺口在独立制品（本文件）中追踪，不触发 CI 状态变更。
 
 ---
 
@@ -306,7 +308,7 @@ GAP-E2 + GAP-E3                             ← 服务端完整性闭环
 - tasks 层：CLIENT-015/016/017/018、SERVER-018 五个 task spec 已补齐
 - spec 层：FR-033 命名歧义已加澄清括注（指向 ADR-005），ACCEPTANCE §2.1 新增 AC-TIER 运行时口径段
 - evidence 层：`evidence/2026-07-02/tier-gap-cross-reference.md` 建立 GAP-E↔ADR↔task 交叉引用（修 GAP-E57）
-- 双口径保护：SPEC 规格口径 48 Done 未变，运行时口径已回刷为 58 Fixed（≥80%）
+- 双口径保护：SPEC 规格口径 48 Done 未变，运行时口径已回刷为 56 Fixed / 2 Partial / 1 Open
 - **无遗漏**
 
 ### 轮 14：源码位置完整性核验
@@ -348,6 +350,18 @@ GAP-E2 + GAP-E3                             ← 服务端完整性闭环
 - 确认本文件不修改规格口径统计
 - 确认 CI 脚本兼容性
 - 确认 GAP-E58 元缺口已记录
+- **无遗漏**
+
+### 轮 21：Phase 3 逐项代码核实（2026-07-07）
+
+- 对全部 59 项 GAP-E 使用 `rg` 验证 runtime 代码中的真实修复证据
+- 修复前：仅 3 项明确标 Fixed（E1/E6/E59），§1/§7/L309 三处计数不一致（5/59/58）
+- 修复后：
+  - **56 项 ✅ Confirmed-Fixed**（含本日新增修复 12 项：E4/E5'/E8/E11/E15/E20/E22/E25/E26/E32/E33）
+  - **2 项 ⚠️ Partial**（E13 跨进程 ledger 已有但内存 map 仍为主；E23 基础字段校验已有但无 schema 级精度校验）
+  - **1 项 ❌ StillOpen**（E54 server SPEC FR 下沉差异，文档治理项，需 Phase 0 修复）
+- §1/§7/L309 三处计数已统一为 `56 Fixed / 2 Partial / 1 Open`
+- `go build ./...` PASS，`go test ./...` 全部 PASS
 - **无遗漏**
 
 ---
@@ -392,7 +406,7 @@ GAP-E2 + GAP-E3                             ← 服务端完整性闭环
 |------|------|----------|----------|------|
 | N2 | 消息路由 | NATS consumer filter 从 4 段 `binance.market.*.*` 改为 `binance.market.>`，匹配 publisher 5 段 subject | `internal/server/consumer/consumer.go:22` | `go build` PASS |
 | N4 (=GAP-E6) | 产品线覆盖 | UM/CM/Options connector 接入主运行时启动路径，fan-in 合并 events | `internal/client/runtime.go:348-369` | 3 个 connector 引用 |
-| N6 | 存储覆盖 | TaosWriter 新增 funding_rate/mark_price 事件支持，写入 st_funding_rate/st_mark_price 表 | `internal/server/storage/taos_writer.go:227-232` | 17 处 grep 命中 |
+| N6 | 存储覆盖 | TaosWriter 新增 funding_rate/mark_price 事件支持，写入 funding_rate/mark_price_update 表（v3.18.0 命名对齐去掉 st_ 前缀，legacy: st_funding_rate/st_mark_price） | `internal/server/storage/taos_writer.go:227-232` | 17 处 grep 命中 |
 | ORDBK | 存储覆盖 | depth 事件完整档位存储（bids_json/asks_json），不再退化为 top-of-book tick | `internal/server/storage/taos_writer.go:231` | depthPoint() 方法 |
 | N7 | 运维覆盖 | retention 从硬编码 spot 改为遍历全产品线 ["spot","um_perp","cm_perp","options"] | `internal/server/assembly/storage.go:253` | 0 处硬编码 |
 | TEST1 | 测试 | TestRunStandaloneExchangeInfoFetchError 超时修复（context.WithTimeout 10s） | `internal/client/final_coverage_test.go:62` | 24/24 packages PASS |

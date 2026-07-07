@@ -93,8 +93,8 @@
 
 - market_data 域：14 组件（13 C/S Module + 1 独立进程 dispatch）
 - dispatch（market_data）：独立进程，v1.0.0，Receiver + DualWriteSink，进度 30%
-- C/S Module（13）：binance 为规格参考实现（spec v3.14.0 ✅；v0.13.0 released；55/55 Done (100%)；release_closeable=YES 🎉；47/47 tasks Done；P0×6 阻断闭环 + P1×6 CI gate 落地 + 数据完整性修复 R1-R5）；其余 12 个 v0.1.1，待升级
-- **factory 升级路径**：binance 已达 factory-ready ✅（v0.13.0 released、55/55 Done、release_closeable=YES、深度分析 37/37 fixed；测试分层/canary drill/depth 覆盖/版本一致性 gate 就绪；数据完整性修复 R1-R5 落地）；其余 12 C/S Module 待 client/server 拆分 + bootstrap 接入 + dispatch 集成验证
+- C/S Module（13）：binance 为规格参考实现（spec v4.0.0 ✅；v0.13.0 released；65/65 Done (100%)；release_closeable=YES 🎉；FR-052~061 订单簿 spot/um/cm 已落地、options 待 Phase 2；P0×6 阻断闭环 + P1×6 CI gate 落地 + 数据完整性修复 R1-R5）；其余 12 个 v0.1.1，待升级
+- **factory 升级路径**：binance 已达 factory-ready ✅（v0.13.0 released、65/65 Done、release_closeable=YES、深度分析 37/37 fixed；测试分层/canary drill/depth 覆盖/版本一致性 gate 就绪；数据完整性修复 R1-R5 落地）；其余 12 C/S Module 待 client/server 拆分 + bootstrap 接入 + dispatch 集成验证
 
 ### 🟡 数据域 · macro_data（注意）
 

@@ -1,6 +1,6 @@
 # ADR-003: Order Book Rebuild 排除决策
 
-> 状态：Accepted
+> 状态：Superseded by [ADR-011](ADR-011-order-book-rebuild-inclusion.md)
 > 日期：2026-06-27
 > 决策者：ZoneCNH architecture
 > 来源：#1114 降级闭合 · spec-structural-analysis-20260627 MO-4

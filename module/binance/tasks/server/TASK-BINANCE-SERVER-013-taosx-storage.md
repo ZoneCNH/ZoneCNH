@@ -16,9 +16,11 @@ internal/server/storage/timeseries/
 
 ## 数据模型（TDengine 超表）
 
+> v3.18.0 canonical 命名：supertable = event_type（无前缀）。详见 [NAMING.md](../../spec/NAMING.md) §5。
+
 ```sql
 -- 行情主表（超表）
-CREATE STABLE IF NOT EXISTS binance_tick (
+CREATE STABLE IF NOT EXISTS book_ticker (
     ts          TIMESTAMP,           -- exchange_time（毫秒精度）
     price       DOUBLE,
     quantity    DOUBLE,
@@ -27,11 +29,11 @@ CREATE STABLE IF NOT EXISTS binance_tick (
 ) TAGS (
     symbol      BINARY(32),
     product_line BINARY(16),         -- 'spot' / 'um_perp' / 'cm_perp' / 'options'
-    event_type  BINARY(16)           -- 'tick' / 'trade' / 'bar' / 'depth' / 'funding_rate' / 'mark_price'
+    event_type  BINARY(16)           -- 'book_ticker' / 'trade' / 'kline' / 'depth_update' / 'funding_rate' / 'mark_price_update'
 );
 
 -- 订单簿快照（超表）
-CREATE STABLE IF NOT EXISTS binance_depth (
+CREATE STABLE IF NOT EXISTS depth_update (
     ts          TIMESTAMP,
     side        BINARY(4),
     price       DOUBLE,
@@ -40,7 +42,7 @@ CREATE STABLE IF NOT EXISTS binance_depth (
 ) TAGS (
     symbol      BINARY(32),
     product_line BINARY(16),
-    event_type  BINARY(16)           -- 'depth'
+    event_type  BINARY(16)           -- 'depth_update'
 );
 ```
 
@@ -54,11 +56,11 @@ type TimeSeriesStore struct {
     db taosx.Client
 }
 
-// WriteTick 将单条 MarketFactEnvelope 写入对应的子表。
-// 子表名规则：binance_{event_type}_{product_line}_{symbol_slug}（见 NAMING.md §5）
-func (s *TimeSeriesStore) WriteTick(ctx context.Context, env *domainmarket.MarketFactEnvelope) error {
+// WriteBookTicker 将单条 MarketFactEnvelope 写入对应的子表。
+// 子表名规则：{event_type}_{product_line}_{symbol_slug}（见 NAMING.md §5）
+func (s *TimeSeriesStore) WriteBookTicker(ctx context.Context, env *domainmarket.MarketFactEnvelope) error {
     child := s.childTable(env)
-    return s.db.WriteWithAutoCreate(ctx, "binance_tick", child, env.ToTDRow(), env.Tags())
+    return s.db.WriteWithAutoCreate(ctx, "book_ticker", child, env.ToTDRow(), env.Tags())
 }
 
 // WriteBatch 批量写入，提升写入吞吐。
@@ -66,10 +68,10 @@ func (s *TimeSeriesStore) WriteBatch(ctx context.Context, envs []*domainmarket.M
     // taosx.Client.WriteBatch 支持批量参数绑定
     rows := make([]taosx.Row, len(envs))
     for i, e := range envs { rows[i] = e.ToTDRow() }
-    return s.db.WriteBatch(ctx, "binance_tick", rows)
+    return s.db.WriteBatch(ctx, "book_ticker", rows)
 }
 
-// QueryRange 按时间范围和 symbol 查询 tick 数据，供 Gin API 调用。
+// QueryRange 按时间范围和 symbol 查询 book_ticker 数据，供 Gin API 调用。
 func (s *TimeSeriesStore) QueryRange(ctx context.Context, params QueryParams) ([]*domainmarket.MarketFactEnvelope, error)
 ```
 
@@ -87,7 +89,7 @@ func (s *TimeSeriesStore) QueryRange(ctx context.Context, params QueryParams) ([
 
 | AC | 验证方式 |
 |----|---------|
-| WriteTick 写入正确超表 | mock 验证 WriteWithAutoCreate 参数 |
+| WriteBookTicker 写入正确超表 | mock 验证 WriteWithAutoCreate 参数 |
 | WriteBatch 合并写入 | mock 验证 WriteBatch 被调用（非循环 WriteTick）|
 | QueryRange 时间过滤 | mock 验证 SQL WHERE 包含 start/end 参数 |
 | 不可达返回 error | mock 注入连接失败，验证 error 传播 |

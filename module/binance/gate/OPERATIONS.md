@@ -5,7 +5,7 @@
 | Field | Value |
 | --- | --- |
 | Status | Active |
-| Module-Version | v3.9.8 |
+| Module-Version | v4.0.0 |
 | Last-Updated | 2026-07-04 |
 | Scope | `module/binance` 部署、扩缩容、故障注入、灾恢复 Runbook |
 | Spec-Impact | 生产运维 SRE 指引 |

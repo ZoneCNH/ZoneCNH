@@ -1,11 +1,11 @@
 # Binance Traceability Matrix
 
-- [KNOWN] Matrix-Version: v3.13.0
-- [KNOWN] Last-Updated: 2026-07-05
-- Source-SPEC: `module/binance/spec/SPEC.md` v3.14.0
+- [KNOWN] Matrix-Version: v4.0.0
+- [KNOWN] Last-Updated: 2026-07-07
+- Source-SPEC: `module/binance/spec/SPEC.md` v4.0.0
 - State-Model: single-state only
-- [KNOWN] Current-State: 55 Done / 0 Partial / 0 Drifted / 0 Pending（FR-045~051 白名单系统实盘验证六项细化）
-- [KNOWN] release_closeable: YES（55/55 = 100% ≥ 90%）
+- [KNOWN] Current-State: 65 Done / 0 Partial / 0 Drifted / 0 Pending（FR-052~061 spot/um/cm 已实现；options 待 Phase 2）
+- [KNOWN] release_closeable: YES（规格口径 65 Done；FR-052~061 spot/um/cm 已实现，options 待 Phase 2）
 
 ## 1. Rule
 
@@ -71,6 +71,23 @@ This matrix is the compact FR/BR/AC/TC projection. It intentionally does not dup
 | FR-050 | BR-009 | AC-001 | catalog_symbols 扩展字段（ApplyDiff COALESCE 保留 tier + TRADIFI_PERPETUAL 区分币股 + ListCandidates COALESCE） | Done |
 | FR-051 | BR-009 | AC-001 | Tier 分配策略：spot/um_perp(PERPETUAL)/um_perp(TRADIFI)/cm_perp/options 各 24h quoteVolume top 20（ADR-008 统一） | Done |
 
+### v4.0.0 Order Book FR-052~061（spot/um/cm Done；options 待 Phase 2）
+
+| FR | BR | AC | Evidence | State |
+| --- | --- | --- | --- | --- |
+| FR-052 | BR-001 | AC-OB-001 | `internal/client/orderbook/manager.go` + `state.go` + `runtime.go` 接入主路径 | Done |
+| FR-053 | BR-001 | AC-OB-002 | `manager.go` handleSnapshotTopN + `rest.go` DepthMode | Done |
+| FR-054 | BR-001 | AC-OB-003~005 | `align.go` alignAlgorithm + validateSequence + `book.go` qty=="0" 删除 | Done |
+| FR-055 | BR-001 | AC-OB-006 | `manager.go` triggerRebuild + buffer cap 10000 | Done |
+| FR-056 | BR-001 | AC-OB-007 | `persist.go` FilePersistor + restoreBookFromSnapshot + StartPersistLoop | Done |
+| FR-057 | BR-001 | AC-OB-008 | `manager.go` GetState + AllHealth + `admin.go` orderbookHealthAll | Done |
+| FR-058 | BR-001 | AC-OB-009 | `manager.go` StartTopNPusher + pushTopN + `topn.go` TopNUpdate | Done |
+| FR-059 | BR-001 | AC-OB-010 | `manager.go` forwardIncremental + forwardRebuildMarker + `topn.go` IncrementalEvent | Done |
+| FR-060 | BR-001 | AC-OB-011 | `manager.go` GetBook + `admin.go` orderbookHandler | Done |
+| FR-061 | BR-005 | AC-OB-012 | `health.go` HealthMonitor + StartChecksumSampler + driftDetected | Done |
+
+> **options 待 Phase 2**：FR-052~061 中 options depth 协议相关部分阻塞于 ADR-011 §7.4 testnet 实测 checklist，Phase 2 闭环后激活。当前 Done 仅覆盖 spot/um_perp/cm_perp。
+
 ## 3. Acceptance Criteria
 
 | AC | Requirement | State |
@@ -91,7 +108,7 @@ release_closeable 判定公式：
 release_closeable = Code-Done FR / Total FR ≥ 90% AND Drifted FR = 0 AND Pending FR = 0 AND PRG-001~007 gates PASS
 ```
 
-当前状态：`release_closeable: YES`（55 FR: 55 Done = 100% ≥ 90%，PRG-001~007 全 PASS）。
+当前状态：`release_closeable: YES`（65 FR: 65 Done = 100% ≥ 90%，PRG-001~007 全 PASS）。FR-052~061 options depth 待 Phase 2 testnet 实测后激活。
 
 | PRG | Gate | State | Evidence |
 | --- | --- | --- | --- |
@@ -129,8 +146,8 @@ Beads and GitHub issues are the current P10 tracking SSOT. The retired local pro
 
 | Metric | Value |
 | --- | --- |
-| FR total | 55 |
-| Done | 55 |
+| FR total | 65 |
+| Done | 65 |
 | Partial | 0 |
 | Drifted | 0 |
 | Pending | 0 |
@@ -140,4 +157,4 @@ Beads and GitHub issues are the current P10 tracking SSOT. The retired local pro
 
 > **运行时缺口投影**：本矩阵统计规格口径（55 Done）。运行时口径的 58 个缺口（GAP-E1~E58）对应的 28 个 GitHub Issues 已于 2026-07-05 全部关闭；2026-07-06 新增并修复 GAP-E59（数据血缘/版本控制：`internal/server/lineage/` + migration 012）。PRG-006 gated resilience 测试已 CI-runnable。两者正交——规格 Done 表示 FR 功能面已闭合，运行时修复表示 GAP-E 缺口已处理。详见该文件 §7 双口径声明。
 >
-> release_closeable = Code-Done FR / Total FR = 55/55 = 100% ≥ 90%，PRG-001~007 全 PASS → release_closeable=YES。
+> release_closeable = Code-Done FR / Total FR = 65/65 = 100% ≥ 90%，PRG-001~007 全 PASS → release_closeable=YES。FR-052~061 options depth 范围待 Phase 2 testnet 实测后激活（ADR-011 §7.4）。

@@ -299,11 +299,11 @@ kafkax.Producer.Send()             kafkax.Consumer.Poll()
        │                                    │
        ▼                                    ▼
 ┌────────────────── Kafka ──────────────────────┐
-│  Topics:                                      │
-│    binance.spot.tick.v1       (现货逐笔)       │
-│    binance.spot.bar.v1        (现货K线)        │
-│    binance.spot.depth.v1      (现货深度)       │
-│    binance.um_perp.trade.v1   (U本位成交)      │
+│  Topics (legacy v3.9.0 names, see NAMING.md §4 for v3.18.0):  │
+│    binance.spot.tick.v1       (legacy: book_ticker)           │
+│    binance.spot.bar.v1        (legacy: kline)                  │
+│    binance.spot.depth.v1      (legacy: depth_update)           │
+│    binance.um_perp.trade.v1   (U本位成交)                      │
 │                                                │
 │  Partitions: 按 symbol hash 分区               │
 │  Retention: 7 days                             │

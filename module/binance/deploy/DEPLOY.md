@@ -820,7 +820,7 @@ taosx [PR #21](https://github.com/ZoneCNH/taosx/pull/21)（tag v1.0.3）修复�
 | durable historical fetch/replay | ✅ HistoryRuntime.RequestBackfill + RepairIngestor | `history_lifecycle.go` — HistoryFetcher async REST fetch → republishBackfill |
 | Kline 存储路由                  | ✅ bar/kline 双匹配           | `taos_writer.go` — `toPoint`/`taosDeleteStable` 匹配 `"bar"` 和 `"kline"` |
 
-**结论：38272 gap 为历史遗留。** gap 检测是纯观测性的，不阻塞处理（`quality.go:63-80` 在 `observe()` 内，事件仍正常接受/持久化/ACK）。server→client 自动联动已完整闭环：replay worker 30s drain → 发布到 `binance.replay.requests` → client 订阅 → 自动 `QueueGapFill` → lifecycle worker 30s drain（跳过零时长任务）→ `HistoryRuntime.RequestBackfill` → `HistoryFetcher.FetchHistorical` (REST，aggTrades 不传 interval 参数) → `RepairIngestor.Ingest`（`repair=verified` 元数据）→ server stale gate 豁免 → TDengine 存储持久化（kline→st_bar）。
+**结论：38272 gap 为历史遗留。** gap 检测是纯观测性的，不阻塞处理（`quality.go:63-80` 在 `observe()` 内，事件仍正常接受/持久化/ACK）。server→client 自动联动已完整闭环：replay worker 30s drain → 发布到 `binance.replay.requests` → client 订阅 → 自动 `QueueGapFill` → lifecycle worker 30s drain（跳过零时长任务）→ `HistoryRuntime.RequestBackfill` → `HistoryFetcher.FetchHistorical` (REST，aggTrades 不传 interval 参数) → `RepairIngestor.Ingest`（`repair=verified` 元数据）→ server stale gate 豁免 → TDengine 存储持久化（kline→kline, legacy: st_bar）。
 
 **手动操作**：
 
@@ -844,7 +844,7 @@ taosx [PR #21](https://github.com/ZoneCNH/taosx/pull/21)（tag v1.0.3）修复�
 | G4  | aggTrades JSON 解析失败                     | `history_rest` 用 `parseKlineArray` 解析 aggTrades 的 `[]object` 格式 | 新增 `parseAggTradeArray` 解析 aggTrades 响应                               |
 | G5  | 回填事件未进入存储                         | `HistoryRuntime` fetch 完成后未重新发布到 ingest pipeline             | 新增 `RepairIngestor` 接口 + `republishBackfill` 以 `repair=verified` 发布 |
 | G6  | Stale gate 误拒回填事件                    | `server.go` stale gate 对所有事件统一检查 `now.Sub(EventTime)`        | `SourceMetadata["repair"]=="verified"` 豁免 stale 检查                     |
-| G7  | Kline 事件未写入 TDengine                  | `taos_writer.toPoint`/`taosDeleteStable` 仅匹配 `"bar"` 不匹配 `"kline"` | `"bar"` 和 `"kline"` 双匹配，路由到 `st_bar`                                |
+| G7  | Kline 事件未写入 TDengine                  | `taos_writer.toPoint`/`taosDeleteStable` 仅匹配 `"bar"` 不匹配 `"kline"` | `"bar"` 和 `"kline"` 双匹配，路由到 `kline` (legacy: `st_bar`)             |
 | G8  | REST kline 数组未转换为事件对象             | `parseKlineArray` 直接 marshal 数组行，缺少 `e`/`E`/`k` 字段          | 转换为 `{e:"kline", E:openTime, k:{...}}` 对象格式                          |
 | G9  | 无效 gap-fill（endTime <= startTime）      | `runtime.go` gap alert handler 未校验时间区间有效性                  | `startTime.Before(endTime)` 校验，无效区间跳过                              |
 | G10 | KafkaConfig struct 字段未对齐（gofmt）      | `SASLMechanism` 字段对齐不一致                                        | gofmt 统一对齐                                                               |
