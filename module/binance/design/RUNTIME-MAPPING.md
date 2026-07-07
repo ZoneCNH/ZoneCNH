@@ -1,8 +1,8 @@
-# module/binance RUNTIME MAPPING v3.9.0
+# module/binance RUNTIME MAPPING v4.0.0
 
-> 版本：v3.9.0
-> Module-Version: v3.9.0
-> 更新日期：2026-06-26
+> 版本：v4.0.0
+> Module-Version: v4.0.0
+> 更新日期：2026-07-06
 > 替代：v1.0.0（gRPC + SQLite spool 架构）
 > 参见：`DEEP-ANALYSIS.md`（架构决策全文）
 
@@ -64,6 +64,13 @@ github.com/ZoneCNH/binance/
         connector.go         ← 接口定义
       normalize/             ← 原生事件 → NormalizedEvent
       mapper/                ← NormalizedEvent → domain_market.MarketFactEnvelope
+      orderbook/             ← v4.0.0 Order Book Manager（ADR-011）
+        manager.go           ← per-symbol 状态机管理（UNINIT/BUFFERING/ALIGNED/REBUILDING）
+        full_incremental.go  ← full_incremental 模式：本地 book + REST 对齐 + 序号校验
+        snapshot_topn.go     ← snapshot_topn 模式：无状态转发限档快照
+        snapshot_store.go    ← 快照持久化与恢复（TDengine/OSS）
+        health.go            ← staleness 标记 + 健康状态查询
+        manager_test.go
       # publisher 由 natsx FR-009 IngestPublisher 提供（域适配契约），binance 不自实现 JetStream 发布逻辑
       # 装配点：cmd/binance-client 注入 natsx.IngestPublisher 作为 wire.IngestEndpoint，替换 HTTP sender
       admin/                 ← Gin admin :8081（/healthz /readyz）
@@ -89,12 +96,12 @@ github.com/ZoneCNH/binance/
         processor.go         ← validate→idempotency→enrich→store+cache+dispatch
         enricher.go
       storage/               ← 存储层（新增）
-        taos_writer.go       ← 时序行情写入（tick/bar/depth）
+        taos_writer.go       ← 时序行情写入（book_ticker/kline/depth_update）
         pg_catalog.go        ← 合约元数据 CRUD
         oss_archiver.go      ← 定时归档 taosx→ossx
         storage_test.go
       cache/                 ← redisx 缓存层（新增）
-        hot_cache.go         ← tick/bar 热缓存 60s TTL
+        hot_cache.go         ← book_ticker/kline 热缓存 60s TTL
         rate_limiter.go      ← 100 req/s per endpoint
         dist_lock.go         ← coordinator 分布式锁 30s lease
         cache_test.go
@@ -104,7 +111,7 @@ github.com/ZoneCNH/binance/
       api/                   ← Gin REST API（新增，面向 market_data）
         router.go
         handler/
-          market.go          ← /api/v1/market/ticks、bars、depth、trades
+          market.go          ← /api/v1/market/book_ticker、kline、depth_update、trade
           instrument.go      ← /api/v1/instruments
           stats.go           ← /api/v1/stats/streams、daily
           admin.go           ← /api/v1/admin/symbols/reload、stream
@@ -168,6 +175,7 @@ github.com/ZoneCNH/binance/
 | 事件规范化 | `internal/client/normalize/` | 保留 |
 | 规范映射 | `internal/client/mapper/` | 保留 |
 | 幂等键生成 | 移入 `mapper/`（放入 envelope.Header） | 迁移 |
+| Order Book Manager | `internal/client/orderbook/` | ✨ v4.0.0 新增 |
 | natsx 发布器 | 由 natsx FR-009 IngestPublisher 提供（域适配契约） | 引用 natsx |
 | Gin admin | `internal/client/admin/` | 保留精简 |
 | ❌ SQLite spool | `internal/client/spool/` | **删除** |
@@ -218,19 +226,23 @@ github.com/ZoneCNH/binance/
 Stream: BINANCE_MARKET
 Retention: 7d  Storage: file  Replicas: 1 (生产升 3)
 
-Subjects:
-  binance.market.spot.tick.v1         binance.market.spot.trade.v1
-  binance.market.spot.bar.v1          binance.market.spot.depth.v1
-  binance.market.spot.funding_rate.v1 binance.market.spot.mark_price.v1
-  binance.market.um_perp.tick.v1      binance.market.um_perp.trade.v1
-  binance.market.um_perp.bar.v1       binance.market.um_perp.depth.v1
-  binance.market.um_perp.funding_rate.v1  binance.market.um_perp.mark_price.v1
-  binance.market.cm_perp.tick.v1      binance.market.cm_perp.trade.v1
-  binance.market.cm_perp.bar.v1       binance.market.cm_perp.depth.v1
-  binance.market.cm_perp.funding_rate.v1  binance.market.cm_perp.mark_price.v1
-  binance.market.options.tick.v1      binance.market.options.trade.v1
-  binance.market.options.bar.v1       binance.market.options.depth.v1
-  binance.market.options.funding_rate.v1  binance.market.options.mark_price.v1
+Subjects (v3.18.0 canonical, aligned to Binance native event names):
+  binance.market.spot.book_ticker.v1         binance.market.spot.trade.v1
+  binance.market.spot.kline.v1               binance.market.spot.depth_update.v1
+  binance.market.um_perp.book_ticker.v1      binance.market.um_perp.trade.v1
+  binance.market.um_perp.kline.v1            binance.market.um_perp.depth_update.v1
+  binance.market.um_perp.funding_rate.v1     binance.market.um_perp.mark_price_update.v1
+  binance.market.cm_perp.book_ticker.v1      binance.market.cm_perp.trade.v1
+  binance.market.cm_perp.kline.v1            binance.market.cm_perp.depth_update.v1
+  binance.market.cm_perp.funding_rate.v1     binance.market.cm_perp.mark_price_update.v1
+  binance.market.options.trade.v1            binance.market.options.kline.v1
+  binance.market.options.depth_update.v1
+
+# Legacy subjects (v3.9.0, runtime migration via dual-publish transition):
+#   binance.market.{pl}.tick.v1        → book_ticker
+#   binance.market.{pl}.bar.v1         → kline
+#   binance.market.{pl}.depth.v1       → depth_update
+#   binance.market.{pl}.mark_price.v1  → mark_price_update
 
 Server Consumer:
   Durable: binance-server  AckPolicy: explicit  AckWait: 30s  MaxDeliver: 5
@@ -241,31 +253,32 @@ Server Consumer:
 ## 8. kafkax Topic 规范
 
 ```
-Topics:
-  binance.spot.tick.v1         现货 tick
-  binance.spot.trade.v1        现货逐笔成交
-  binance.spot.bar.v1          现货 K 线
-  binance.spot.depth.v1        现货深度
-  binance.spot.funding_rate.v1 现货资金费率（占位，runtime 不采集）
-  binance.spot.mark_price.v1   现货标记价格（占位，runtime 不采集）
-  binance.um_perp.tick.v1      U 本位合约 tick
-  binance.um_perp.trade.v1     U 本位合约逐笔成交
-  binance.um_perp.bar.v1       U 本位合约 K 线
-  binance.um_perp.depth.v1     U 本位合约深度
-  binance.um_perp.funding_rate.v1  U 本位合约资金费率
-  binance.um_perp.mark_price.v1    U 本位合约标记价格
-  binance.cm_perp.tick.v1      币本位合约 tick
-  binance.cm_perp.trade.v1     币本位合约逐笔成交
-  binance.cm_perp.bar.v1       币本位合约 K 线
-  binance.cm_perp.depth.v1     币本位合约深度
-  binance.cm_perp.funding_rate.v1  币本位合约资金费率
-  binance.cm_perp.mark_price.v1    币本位合约标记价格
-  binance.options.tick.v1      期权 tick
-  binance.options.trade.v1     期权逐笔成交
-  binance.options.bar.v1       期权 K 线
-  binance.options.depth.v1     期权深度
-  binance.options.funding_rate.v1  期权资金费率（占位，runtime 不采集）
-  binance.options.mark_price.v1    期权标记价格 / option mark
+Topics (v3.18.0 canonical, aligned to Binance native event names):
+  binance.spot.book_ticker.v1         现货最优买卖价
+  binance.spot.trade.v1               现货逐笔成交
+  binance.spot.kline.v1               现货 K 线
+  binance.spot.depth_update.v1        现货深度增量
+  binance.um_perp.book_ticker.v1      U 本位合约最优买卖价
+  binance.um_perp.trade.v1            U 本位合约逐笔成交
+  binance.um_perp.kline.v1            U 本位合约 K 线
+  binance.um_perp.depth_update.v1     U 本位合约深度增量
+  binance.um_perp.funding_rate.v1     U 本位合约资金费率
+  binance.um_perp.mark_price_update.v1  U 本位合约标记价格
+  binance.cm_perp.book_ticker.v1      币本位合约最优买卖价
+  binance.cm_perp.trade.v1            币本位合约逐笔成交
+  binance.cm_perp.kline.v1            币本位合约 K 线
+  binance.cm_perp.depth_update.v1     币本位合约深度增量
+  binance.cm_perp.funding_rate.v1     币本位合约资金费率
+  binance.cm_perp.mark_price_update.v1  币本位合约标记价格
+  binance.options.trade.v1            期权逐笔成交
+  binance.options.kline.v1            期权 K 线
+  binance.options.depth_update.v1     期权深度增量
+
+# Legacy topics (v3.9.0, runtime migration via dual-publish transition):
+#   binance.{pl}.tick.v1        → book_ticker
+#   binance.{pl}.bar.v1         → kline
+#   binance.{pl}.depth.v1       → depth_update
+#   binance.{pl}.mark_price.v1  → mark_price_update
 
 Consumer Groups:
   signal_engine  risk_engine  backtestx  market_regime
@@ -280,14 +293,14 @@ Base: http://{server}:8080
 
 GET  /health                              健康（无 auth）
 GET  /health/readiness                    就绪（无 auth）
-GET  /api/v1/market/ticks/:symbol         最新 Tick（redisx 热缓存）
-GET  /api/v1/market/ticks/:symbol/range   历史 Tick（taosx 查询）
-GET  /api/v1/market/bars/:symbol          最新 Bar
-GET  /api/v1/market/bars/:symbol/range    历史 Bar（taosx）
-GET  /api/v1/market/depth/:symbol         最新深度（redisx 5s TTL）
-GET  /api/v1/market/trades/:symbol        最新成交
-GET  /api/v1/market/funding-rate/:symbol  最新资金费率（redisx 热缓存）
-GET  /api/v1/market/mark-price/:symbol    最新标记价格（redisx 热缓存）
+GET  /api/v1/market/book_ticker/:symbol         最新 BookTicker（redisx 热缓存）
+GET  /api/v1/market/book_ticker/:symbol/range   历史 BookTicker（taosx 查询）
+GET  /api/v1/market/kline/:symbol               最新 Kline
+GET  /api/v1/market/kline/:symbol/range         历史 Kline（taosx）
+GET  /api/v1/market/depth_update/:symbol        最新深度增量（redisx 5s TTL）
+GET  /api/v1/market/trade/:symbol               最新成交
+GET  /api/v1/market/funding_rate/:symbol        最新资金费率（redisx 热缓存）
+GET  /api/v1/market/mark_price_update/:symbol   最新标记价格（redisx 热缓存）
 GET  /api/v1/instruments                  合约列表（postgresx）
 GET  /api/v1/instruments/:symbol          单个合约详情
 GET  /api/v1/stats/streams                流统计
@@ -296,6 +309,13 @@ POST /api/v1/admin/symbols/reload         重载目录并应用 stream diff
 POST /api/v1/admin/stream/pause/:line     暂停产品线
 POST /api/v1/admin/stream/resume/:line    恢复产品线
 GET  /api/v1/admin/config                 查看配置
+
+# Legacy paths (v3.9.0, runtime migration via API versioning or redirect):
+#   /ticks/:symbol        → /book_ticker/:symbol
+#   /bars/:symbol         → /kline/:symbol
+#   /depth/:symbol        → /depth_update/:symbol
+#   /funding-rate/:symbol → /funding_rate/:symbol
+#   /mark-price/:symbol   → /mark_price_update/:symbol
 ```
 
 ---
@@ -331,7 +351,7 @@ Server 禁止:  client/*
 - `binance-server` 独立启动，无 client 内部依赖
 - client 发布 natsx → server 消费 → taosx 写入 → redisx 缓存 → kafkax 发布
 - redisx `idem:{key}` SET NX 确保重复消息仅处理一次
-- `GET /api/v1/market/ticks/BTCUSDT` 返回 redisx 缓存数据（< 5ms）
+- `GET /api/v1/market/book_ticker/BTCUSDT` 返回 redisx 缓存数据（< 5ms）
 - market_data HTTP 客户端可通过 `/api/v1/instruments` 发现全部合约
 - go.mod 无 infra 模块 `// indirect` 污染
 - 边界门禁脚本 CI 通过（无跨边界导入）

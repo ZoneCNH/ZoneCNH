@@ -11,13 +11,13 @@
 ```
 Base URL: http://{host}:8080/api/v1
 
-Market Data Query:
-  GET /market/ticks/:symbol        最新 Tick
-  GET /market/ticks/:symbol/range  历史 Tick
-  GET /market/bars/:symbol         最新 Bar
-  GET /market/bars/:symbol/range   历史 Bar
-  GET /market/depth/:symbol        最新深度
-  GET /market/depth/:symbol/history 深度历史
+Market Data Query (legacy v3.9.0 paths, see NAMING.md §7 for v3.18.0):
+  GET /market/ticks/:symbol        最新 Tick (legacy: book_ticker)
+  GET /market/ticks/:symbol/range  历史 Tick (legacy: book_ticker)
+  GET /market/bars/:symbol         最新 Bar (legacy: kline)
+  GET /market/bars/:symbol/range   历史 Bar (legacy: kline)
+  GET /market/depth/:symbol        最新深度 (legacy: depth_update)
+  GET /market/depth/:symbol/history 深度历史 (legacy: depth_update)
   GET /market/trades/:symbol       最新成交
 
 Instrument Query:

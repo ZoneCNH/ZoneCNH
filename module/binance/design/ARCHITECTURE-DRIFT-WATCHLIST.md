@@ -1,6 +1,6 @@
 # module/binance ARCHITECTURE-DRIFT-WATCHLIST.md — 漂移监控点
 
-- Module-Version: v3.9.8
+- Module-Version: v4.0.0
 - Last-Updated: 2026-06-26
 - 用途：列举 `module/binance/` 最易漂移的位置（违反 NAMING/RULES 的高发区），供 PR review / GC agent 逐项检查
 
@@ -21,16 +21,16 @@ grep -rnE "(usdm_futures|coinm_futures|futures_usdt|futures_coin)" module/binanc
 ## D2. Options depth subject / topic 缺失
 
 **风险级别**：HIGH
-**历史**：2026-06-22 审计发现 `binance.market.options.depth.v1` 在 natsx subject 表缺失（PR #858 修复；当时未显式记录 `.v1` 后缀）
+**历史**：2026-06-22 审计发现 `binance.market.options.depth_update.v1`（legacy: `options.depth.v1`）在 natsx subject 表缺失（PR #858 修复；当时未显式记录 `.v1` 后缀）
 **违反规则**：R2
 **检测命令**：
 ```bash
 # natsx subject
-grep -rn "options\.depth" module/binance/ --include="*.md"
+grep -rn "options\.depth_update" module/binance/ --include="*.md"
 # Kafka topic
-grep -rn "options\.depth\.v1" module/binance/ --include="*.md"
+grep -rn "options\.depth_update\.v1" module/binance/ --include="*.md"
 # ossx 路径
-grep -rnE "options/depth" module/binance/ --include="*.md"
+grep -rnE "options/depth_update" module/binance/ --include="*.md"
 ```
 
 ---
@@ -149,7 +149,7 @@ rg "2\s*\*\s*interval|2\s*\*\s*expected" /home/workspace/binance/internal/ -l --
 ## D11. 状态模型回归（禁止代码/证据双状态）
 
 **风险级别**：HIGH
-**历史**：v3.8.0 及之前 FEATURES.md/ACCEPTANCE.md/TRACEABILITY.md 三份文档对同一 FR 的「Done」状态定义互相矛盾，导致无法从单一文档判断真实完成状态。v3.9.0 曾引入代码完成/证据完成分层；P10 D-1 已撤销该结论，当前只能使用单一 Done/Partial/Drifted/Pending 状态。当前 root 状态为 48 Done / 0 Partial / 0 Drifted / 0 Pending，release_closeable=NO（PRG-006=Partial，PRG-007=Partial）。
+**历史**：v3.8.0 及之前 FEATURES.md/ACCEPTANCE.md/TRACEABILITY.md 三份文档对同一 FR 的「Done」状态定义互相矛盾，导致无法从单一文档判断真实完成状态。v3.9.0 曾引入代码完成/证据完成分层；P10 D-1 已撤销该结论，当前只能使用单一 Done/Partial/Drifted/Pending 状态。当前 root 状态为 55 Done / 0 Partial / 0 Drifted / 10 Pending，release_closeable=YES（PRG-001~007 全 PASS）。
 **违反规则**：R4
 **检测命令**：
 ```bash
