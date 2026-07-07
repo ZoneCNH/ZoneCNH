@@ -3,11 +3,37 @@
 所有 notable 变更记录，按 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/) 格式维护。
 
 - Module-Version: v4.0.0
-- Last-Updated: 2026-07-07
+- Last-Updated: 2026-07-08
 - Spec-Reference: `module/binance/spec/SPEC.md` v4.0.0
 - 治理规则：`module/binance/gate/RULES.md` R9 文档存在性性
 
 ---
+
+---
+
+## 2026-07-08 白名单机制补齐（GC-0~GC-5）
+
+### Added — P1 HIGH
+
+- **GC-0 收口 server→client 回灌**（PR #444）：`WhitelistProvider` 降级链 server→env→全量；`RefreshNow()` 触发态驱动拉取；`OnCacheUpdate` 主动推送回调
+- **GC-1 手动白名单 + 审核队列**（PR #445）：`source='manual'` 写入路径（`POST /internal/whitelist`）；`whitelist_review` 审核队列（`DecisionNeedsReview` 落库 + approve/reject API）；`ReviewService`/`ReviewStore`/`ReviewEnqueuer` 接口 + `postgresx` 实现
+- **GC-2 core tier 依据真实 24h quote volume 分级**（PR #446）：`Catalog` 持有 `TierConfig`；`applyCatalogClassification` 三级优先级（显式列表 > 量能阈值 > BTC/ETH 前缀兜底）；新增 24h ticker volume fetcher 三端点（spot/um/cm）
+- **GC-3 观察期生效**（PR #447）：`SyncJob.Run` 新符号经观察态（`enabled=false`+`first_seen_at`）进入；`InObservationPeriod` 判定期满自动启用；`storage` 新增 `first_seen_at` 列（migration 016）
+- **GC-4 Collection 路由联动**：设计评审 → 明确 deferred（不新增表列；ADR-005 策略枚举未落地、运行时 Collection=产品线与 market_type 冗余）
+
+### Fixed — P1 HIGH
+
+- **GC-5a 元数据变更触发更新**（审计确认）：`WhitelistExisting` 结构已含 Tier/QuoteAsset/ExchangeStatus/BaseAsset，update 分支纳入
+- **GC-5b 审核态收敛**（PR #452）：`WhitelistSyncResult` 增 `NeedsReview []string`；refresh 响应返回 `needs_review` / `needs_review_count` / `status=needs_review`
+- **GC-5c whitelistclient 真正的 fail-open**（PR #449）：`Client` 新增 `degraded` 降级态 + `OnDegraded` 告警回调；`checkStalenessAfterFailure` 超龄进入 fail-open；`IsFailOpen()`/`FailOpenReason()` 暴露信号供消费方切换全量放行
+
+### Fixed — P2 MEDIUM
+
+- **orderbook 对齐触发丢失**（PR #451）：`startAlignment` 重试循环修复并发窗口吞触发导致的 flaky（Issue #450）
+
+### Infrastructure
+
+- G-CF 门禁：`go build` / `go vet` / `go test` / `boundary-gates.sh` 全 PASS；相关统计见 `module/binance/plan/PLAN-WHITELIST-COMPLETION.md` §4
 
 ## 2026-07-07 第二轮修复 — todo.md 未修复项消除
 
