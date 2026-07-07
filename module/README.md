@@ -10,13 +10,13 @@
 
 > 说明：下表以 `snake_case` 作为模块名显示；链接目标继续指向当前目录投影 `domain_market/`、`domain_macro/`、`domain_exchange/`，便于在目录未重命名前保持可用。
 
-| 模块 | 当前版本 | 目标版本 | 职责 | 文档 |
-| --- | --- | --- | --- | --- |
-| `decimalx` | v0.2.0 | v1.0.0 | 高精度 Decimal / Money / Currency 数值基础 | [Goal](decimalx/goal.md) / [Spec](decimalx/SPEC.md) / [Traceability](decimalx/TRACEABILITY.md) / [Plan](decimalx/IMPLEMENTATION-PLAN.md) |
-| `domainx` | v1.0.0 | v1.0.0 | 执行域共享值对象：Order / Position / Trade / Portfolio / ExecutionReport | [Goal](domainx/goal.md) / [Spec](domainx/SPEC.md) / [Traceability](domainx/TRACEABILITY.md) / [Plan](domainx/IMPLEMENTATION-PLAN.md) |
-| `domain_market` | v1.1.0 | v1.1.0 | ProductLine/InstrumentKey/MarketFactEnvelope + Tick/Quote/Bar/OrderBook 市场语义 + Binance C/S ingestion canonical types | [Goal](domain_market/goal.md) / [Spec](domain_market/SPEC.md) / [Traceability](domain_market/TRACEABILITY.md) / [Plan](domain_market/IMPLEMENTATION-PLAN.md) |
-| `domain_macro` | v0.1.0 | v1.0.0 | MacroPoint / MacroInformationSet / no-lookahead 宏观语义 | [Goal](domain_macro/goal.md) / [Spec](domain_macro/SPEC.md) / [Traceability](domain_macro/TRACEABILITY.md) / [Plan](domain_macro/IMPLEMENTATION-PLAN.md) |
-| `domain_exchange` | v0.1.0 | v1.0.0 | Exchange SPI / VenueCapability / RateLimitPolicy / ExchangeError | [Goal](domain_exchange/goal.md) / [Spec](domain_exchange/SPEC.md) / [Traceability](domain_exchange/TRACEABILITY.md) / [Plan](domain_exchange/IMPLEMENTATION-PLAN.md) |
+| 模块              | 当前版本 | 目标版本 | 职责                                                                                                                     | 文档                                                                                                                                                                 |
+| ----------------- | -------- | -------- | ------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `decimalx`        | v0.2.0   | v1.0.0   | 高精度 Decimal / Money / Currency 数值基础                                                                               | [Goal](decimalx/goal.md) / [Spec](decimalx/SPEC.md) / [Traceability](decimalx/TRACEABILITY.md) / [Plan](decimalx/IMPLEMENTATION-PLAN.md)                             |
+| `domainx`         | v1.0.0   | v1.0.0   | 执行域共享值对象：Order / Position / Trade / Portfolio / ExecutionReport                                                 | [Goal](domainx/goal.md) / [Spec](domainx/SPEC.md) / [Traceability](domainx/TRACEABILITY.md) / [Plan](domainx/IMPLEMENTATION-PLAN.md)                                 |
+| `domain_market`   | v1.1.0   | v1.1.0   | ProductLine/InstrumentKey/MarketFactEnvelope + Tick/Quote/Bar/OrderBook 市场语义 + Binance C/S ingestion canonical types | [Goal](domain_market/goal.md) / [Spec](domain_market/SPEC.md) / [Traceability](domain_market/TRACEABILITY.md) / [Plan](domain_market/IMPLEMENTATION-PLAN.md)         |
+| `domain_macro`    | v0.1.0   | v1.0.0   | MacroPoint / MacroInformationSet / no-lookahead 宏观语义                                                                 | [Goal](domain_macro/goal.md) / [Spec](domain_macro/SPEC.md) / [Traceability](domain_macro/TRACEABILITY.md) / [Plan](domain_macro/IMPLEMENTATION-PLAN.md)             |
+| `domain_exchange` | v0.1.0   | v1.0.0   | Exchange SPI / VenueCapability / RateLimitPolicy / ExchangeError                                                         | [Goal](domain_exchange/goal.md) / [Spec](domain_exchange/SPEC.md) / [Traceability](domain_exchange/TRACEABILITY.md) / [Plan](domain_exchange/IMPLEMENTATION-PLAN.md) |
 
 依赖顺序：`decimalx` -> `domainx` -> `domain_market` / `domain_macro` -> `domain_exchange`。上述目标版本表示文档 / 执行计划基线，用于对齐目标范围与依赖顺序；不代表对应模块仓库已经完成 API freeze、CI release gate、v1.0.0 git tag 或 GitHub Release。`domainx` 已归入 L2.5 领域共享层，不计入基座模块统计。
 
@@ -57,29 +57,29 @@
 
 以下 `goal.md` 来自 `/home/workspace/zone/Downloads/xlib-v1.0-module-goals-md/xlib-v1.0-module-goals/` 的 1.0 发布基线，用于定义模块发布定位、边界、契约、测试证据和 DoD；`SPEC.md` 仍是模块功能规格 SSOT。
 
-| 模块          | 1.0 Goal                           |
-| ------------- | ---------------------------------- |
+| 模块          | 1.0 Goal                                |
+| ------------- | --------------------------------------- |
 | xlib_standard | [goal.md](./xlib_standard/goal/goal.md) |
 | xlib_harness  | [goal.md](./xlib_harness/goal/goal.md)  |
 | xlib_evidence | [goal.md](./xlib_evidence/goal/goal.md) |
-| kernel        | [goal.md](./kernel/goal.md)        |
-| configx       | [goal.md](./configx/goal.md)       |
-| observex      | [goal.md](./observex/goal.md)      |
-| testkitx      | [goal.md](./testkitx/goal.md)      |
-| resiliencx    | [goal.md](./resiliencx/goal.md)    |
-| schedulex     | [goal.md](./schedulex/goal.md)     |
+| kernel        | [goal.md](./kernel/goal.md)             |
+| configx       | [goal.md](./configx/goal.md)            |
+| observex      | [goal.md](./observex/goal.md)           |
+| testkitx      | [goal.md](./testkitx/goal.md)           |
+| resiliencx    | [goal.md](./resiliencx/goal.md)         |
+| schedulex     | [goal.md](./schedulex/goal.md)          |
 | xlibgate      | [goal.md](./xlibgate/goal/goal.md)      |
-| redisx        | [goal.md](./redisx/goal.md)        |
-| kafkax        | [goal.md](./kafkax/goal.md)        |
-| natsx         | [goal.md](./natsx/goal.md)         |
-| postgresx     | [goal.md](./postgresx/goal.md)     |
-| taosx         | [goal.md](./taosx/goal.md)         |
-| ossx          | [goal.md](./ossx/goal.md)          |
-| clickhousex   | [goal.md](./clickhousex/goal.md)   |
-| contracts     | [goal.md](./contracts/goal.md)     |
-| transportx    | [goal.md](./transportx/goal.md)    |
-| domainx       | [goal.md](./domainx/goal.md)       |
-| frontend      | [goal.md](./frontend/goal/goal.md)  |
+| redisx        | [goal.md](./redisx/goal.md)             |
+| kafkax        | [goal.md](./kafkax/goal.md)             |
+| natsx         | [goal.md](./natsx/goal.md)              |
+| postgresx     | [goal.md](./postgresx/goal.md)          |
+| taosx         | [goal.md](./taosx/goal.md)              |
+| ossx          | [goal.md](./ossx/goal.md)               |
+| clickhousex   | [goal.md](./clickhousex/goal.md)        |
+| contracts     | [goal.md](./contracts/goal.md)          |
+| transportx    | [goal.md](./transportx/goal.md)         |
+| domainx       | [goal.md](./domainx/goal.md)            |
+| frontend      | [goal.md](./frontend/goal/goal.md)      |
 
 ---
 
@@ -87,8 +87,8 @@
 
 ZoneCNH 统一可视化平台 — 单页应用，提供监控仪表盘、行情浏览、健康状态、告警管理和 Admin 控制台。
 
-| 模块 | 规格 | 核心职责 |
-| --- | --- | --- |
+| 模块     | 规格                                                                                                                 | 核心职责                                                                                                                                                                     |
+| -------- | -------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | frontend | [SPEC.md](./frontend/spec/SPEC.md) · [goal.md](./frontend/goal/goal.md) · [FEATURES.md](./frontend/spec/FEATURES.md) | ZoneCNH 统一前端平台 — React 19 + TypeScript + Vite + Tailwind CSS 4 + Recharts；多模块路由架构；binance 模块 5 页面 39 功能全部 Done；<https://github.com/ZoneCNH/frontend> |
 
 ---
@@ -111,7 +111,7 @@ stdlib-only 基础原语。所有上层模块的根依赖。
 | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | configx    | [SPEC.md](./configx/SPEC.md) · [DESIGN.md](./configx/DESIGN.md) · [TRACEABILITY.md](./configx/TRACEABILITY.md) · [tasks/](./configx/tasks/)         | Client/Loader/Source 模式、多源合并（YAML/TOML/JSON/.env/Env/Map）、StrictDecode、SecretString 脱敏、SecretPolicy、Provenance、Hash、HealthCheck、Metrics（13 FR，11 BR，97.1% 覆盖） |
 | observex   | [SPEC.md](./observex/SPEC.md) · [tasks/](./observex/tasks/)                                                                                         | Logger/Meter/Tracer/Exporter、Redaction、Label Policy、Health（7 FR，11 tasks）                                                                                                       |
-| resiliencx | [SPEC.md](./resiliencx/SPEC.md) · [goal.md](./resiliencx/goal.md) · [TRACEABILITY.md](./resiliencx/TRACEABILITY.md) · [tasks/](./resiliencx/tasks/) | Timeout/Retry/CircuitBreaker/Bulkhead/RateLimiter/Fallback、Compose、InstrumentStrategy、recovered panic（6 FR，8 BR，10 tasks，v1.0.2 已发布）                                      |
+| resiliencx | [SPEC.md](./resiliencx/SPEC.md) · [goal.md](./resiliencx/goal.md) · [TRACEABILITY.md](./resiliencx/TRACEABILITY.md) · [tasks/](./resiliencx/tasks/) | Timeout/Retry/CircuitBreaker/Bulkhead/RateLimiter/Fallback、Compose、InstrumentStrategy、recovered panic（6 FR，8 BR，10 tasks，v1.0.2 已发布）                                       |
 | schedulex  | [SPEC.md](./schedulex/SPEC.md) · [tasks/](./schedulex/tasks/)                                                                                       | Scheduler/Trigger/OverlapPolicy/MisfirePolicy/EventSink/Locker/Clock（9 FR，12 tasks，v1.0.1）                                                                                        |
 
 ---
@@ -120,8 +120,8 @@ stdlib-only 基础原语。所有上层模块的根依赖。
 
 位于 L1 primitives 之上、具体入口 `x.go` 之下的进程组装层。它可向下组合 L0/L1 primitives 与受控 L2 adapter，只做启动、生命周期和可选 adapter 构造，不承载业务语义、service listener、领域模型或具体业务拓扑。
 
-| 模块 | 规格 | 核心职责 |
-| --- | --- | --- |
+| 模块      | 规格                           | 核心职责                                                                                                                                                       |
+| --------- | ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | bootstrap | [SPEC.md](./bootstrap/SPEC.md) | configx/observex/resiliencx + lifecycx 统一组装；StoreSet 位掩码可选构造 storage adapter；signal / shutdown 标准化；adapter 默认 Stores=None，聚合层按需启用。 |
 
 ---
@@ -140,12 +140,12 @@ test-only，不参与生产运行时。
 
 标准源、生成器、证据运行时和机器门禁，不参与运行时。
 
-| 模块          | 规格                                                                  | 核心职责                                                                                                                                      |
-| ------------- | --------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| xlib_standard | [SPEC.md](./xlib_standard/spec/SPEC.md) · [goal.md](./xlib_standard/goal/goal.md) · [tasks/](./xlib_standard/tasks/) | 标准事实源、Go Reference Template（声明式标准定义，15 FR + goalcli，12 tasks；v1.0.1 已发布，release-preflight 通过）                          |
-| xlib_harness  | [SPEC.md](./xlib_harness/spec/SPEC.md) · [goal.md](./xlib_harness/goal/goal.md) · [TRACEABILITY.md](./xlib_harness/matrix/TRACEABILITY.md) · [tasks/](./xlib_harness/tasks/) | 模块生成器与门禁执行器：generate/scaffold、spec-lint、boundary-check、format-check、traceability-gate、template-validate（6 FR，6 TC） |
-| xlib_evidence | [SPEC.md](./xlib_evidence/spec/SPEC.md) · [goal.md](./xlib_evidence/goal/goal.md) · [TRACEABILITY.md](./xlib_evidence/matrix/TRACEABILITY.md) · [tasks/](./xlib_evidence/tasks/) | 证据收集与发布运行时：collect-coverage、generate-manifest、validate-manifest、remote-evidence、report；v0.2.4 已发布，100.0% 覆盖率与 release evidence assets 已归档 |
-| xlibgate      | [SPEC.md](./xlibgate/spec/SPEC.md) · [goal.md](./xlibgate/goal/goal.md) · [design/](./xlibgate/design/) · [tasks/](./xlibgate/tasks/) | check imports/gomod/baseline/release/all、l2 validate-manifest/plan/check-contracts/check-evidence/release-check、trust identity/template-residue/release-consistency/maturity/import-boundary/testkit-prod-import/secret-redaction（19 FR，20 tasks；v1.0.0 已发布） |
+| 模块          | 规格                                                                                                                                                                             | 核心职责                                                                                                                                                                                                                                                              |
+| ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| xlib_standard | [SPEC.md](./xlib_standard/spec/SPEC.md) · [goal.md](./xlib_standard/goal/goal.md) · [tasks/](./xlib_standard/tasks/)                                                             | 标准事实源、Go Reference Template（声明式标准定义，15 FR + goalcli，12 tasks；v1.0.1 已发布，release-preflight 通过）                                                                                                                                                 |
+| xlib_harness  | [SPEC.md](./xlib_harness/spec/SPEC.md) · [goal.md](./xlib_harness/goal/goal.md) · [TRACEABILITY.md](./xlib_harness/matrix/TRACEABILITY.md) · [tasks/](./xlib_harness/tasks/)     | 模块生成器与门禁执行器：generate/scaffold、spec-lint、boundary-check、format-check、traceability-gate、template-validate（6 FR，6 TC）                                                                                                                                |
+| xlib_evidence | [SPEC.md](./xlib_evidence/spec/SPEC.md) · [goal.md](./xlib_evidence/goal/goal.md) · [TRACEABILITY.md](./xlib_evidence/matrix/TRACEABILITY.md) · [tasks/](./xlib_evidence/tasks/) | 证据收集与发布运行时：collect-coverage、generate-manifest、validate-manifest、remote-evidence、report；v0.2.4 已发布，100.0% 覆盖率与 release evidence assets 已归档                                                                                                  |
+| xlibgate      | [SPEC.md](./xlibgate/spec/SPEC.md) · [goal.md](./xlibgate/goal/goal.md) · [design/](./xlibgate/design/) · [tasks/](./xlibgate/tasks/)                                            | check imports/gomod/baseline/release/all、l2 validate-manifest/plan/check-contracts/check-evidence/release-check、trust identity/template-residue/release-consistency/maturity/import-boundary/testkit-prod-import/secret-redaction（19 FR，20 tasks；v1.0.0 已发布） |
 
 ---
 
@@ -155,15 +155,15 @@ test-only，不参与生产运行时。
 
 > **投影口径**：`module/` 是规格 SSOT；release/factory 公共成熟度由 `.foundationx/status/index.json` + `.foundationx/blockers.json` 投影。存在公开 release 缺口或 BLK-001/002/003/006/007/008 open 时，不声明 Foundation 单一 100% 或 factory-grade。
 
-| 模块        | 规格                                                    | 封装目标                                                                                             |
-| ----------- | ------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| redisx      | [SPEC.md](./redisx/SPEC.md) · [goal.md](./redisx/goal.md) · [TRACEABILITY.md](./redisx/TRACEABILITY.md) · [tasks/](./redisx/tasks/) | Redis KeyBuilder/Options/KV/TTL/Cache/Hash/List/PubSub/Pipeline/Locker/Counter/RateLimit/Codec/Health；直接生产依赖限定为 kernel + Redis 客户端库，configx/observex/resiliencx/contracts 仅作为外部投影或 adapter 边界（12 FR，10 BR，4 NFR，10 tasks）；v1.1.0 已发布，release-preflight、release workflow 与 dev Redis 集成验证通过 |
-| kafkax      | [SPEC.md](./kafkax/SPEC.md) · [TRACEABILITY.md](./kafkax/TRACEABILITY.md) · [goal.md](./kafkax/goal.md) | Kafka — 消息队列、事件流                                                                             |
-| natsx       | [SPEC.md](./natsx/SPEC.md) · [TRACEABILITY.md](./natsx/TRACEABILITY.md) | NATS — 内部通信、JetStream（v1.0.3 tag / Spec v1.2.0；真实 dev auth live gate 已验证；FR-009/010 JetStream IngestAdapter 域适配契约 pkg/natsx/ingest 解耦 binance PR-007c/d；非 factory） |
-| postgresx   | [SPEC.md](./postgresx/SPEC.md) · [TRACEABILITY.md](./postgresx/TRACEABILITY.md) · [goal.md](./postgresx/goal.md) · [tasks/](./postgresx/tasks/) | PostgreSQL — 关系型存储、事务、迁移（v1.0.0 已发布，release-final-check + live integration 通过；单元测试 52.4% + Docker integration skip，BLK-006 open；非 factory） |
-| taosx       | [SPEC.md](./taosx/SPEC.md) · [TRACEABILITY.md](./taosx/TRACEABILITY.md) · [goal.md](./taosx/goal.md) | TDengine L2 adapter contract（pkg/taosx v1.0.5 本地发布候选；CI/release 已加入 taosx-coverage-check，pkg/taosx 100.0% 覆盖；TDengine dev live gate 已通过且保持显式 opt-in；未执行外部 tag/GitHub Release；非 factory） |
-| ossx        | [SPEC.md](./ossx/SPEC.md) · [TRACEABILITY.md](./ossx/TRACEABILITY.md) · [goal.md](./ossx/goal.md) · [FEATURES.md](./ossx/FEATURES.md) · [ACCEPTANCE.md](./ossx/ACCEPTANCE.md) · [IMPLEMENTATION-PLAN.md](./ossx/IMPLEMENTATION-PLAN.md) · [tasks/](./ossx/tasks/) · [prompt/](./ossx/prompt/) | Aliyun OSS 专用 adapter（v1.2.0 已发布：真实 adapters/aliyun + 流式 SPI + 完整 multipart + 真实 presign + 策略 + retry/circuit + observex hooks；本地单元 + 5 集成测试真 bucket x-go 全过；pkg/ossx 100.0% 覆盖；非 factory：BLK-008 evidence archive/external CI/downstream/soak 待归档） |
-| clickhousex | [SPEC.md](./clickhousex/SPEC.md) · [TRACEABILITY.md](./clickhousex/TRACEABILITY.md) · [goal.md](./clickhousex/goal.md) · [FEATURES.md](./clickhousex/FEATURES.md) · [ACCEPTANCE.md](./clickhousex/ACCEPTANCE.md) · [tasks/](./clickhousex/tasks/) | ClickHouse — OLAP 查询、批量写入（v1.0.10 本地 release evidence 已闭合；Exec/Query/Rows/InsertBatch、metrics/tracing/logger/retry/error mapping 与 100.0% 覆盖率门禁已对齐；真实 ClickHouse live 集成与 60s soak 已验证；远端 push / GitHub Release / Actions 待触发；BLK-003 resolved；非 factory）                                                                     |
+| 模块        | 规格                                                                                                                                                                                                                                                                                          | 封装目标                                                                                                                                                                                                                                                                                                                              |
+| ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| redisx      | [SPEC.md](./redisx/SPEC.md) · [goal.md](./redisx/goal.md) · [TRACEABILITY.md](./redisx/TRACEABILITY.md) · [tasks/](./redisx/tasks/)                                                                                                                                                           | Redis KeyBuilder/Options/KV/TTL/Cache/Hash/List/PubSub/Pipeline/Locker/Counter/RateLimit/Codec/Health；直接生产依赖限定为 kernel + Redis 客户端库，configx/observex/resiliencx/contracts 仅作为外部投影或 adapter 边界（12 FR，10 BR，4 NFR，10 tasks）；v1.1.0 已发布，release-preflight、release workflow 与 dev Redis 集成验证通过 |
+| kafkax      | [SPEC.md](./kafkax/SPEC.md) · [TRACEABILITY.md](./kafkax/TRACEABILITY.md) · [goal.md](./kafkax/goal.md)                                                                                                                                                                                       | Kafka — 消息队列、事件流                                                                                                                                                                                                                                                                                                              |
+| natsx       | [SPEC.md](./natsx/SPEC.md) · [TRACEABILITY.md](./natsx/TRACEABILITY.md)                                                                                                                                                                                                                       | NATS — 内部通信、JetStream（v1.0.3 tag / Spec v1.2.0；真实 dev auth live gate 已验证；FR-009/010 JetStream IngestAdapter 域适配契约 pkg/natsx/ingest 解耦 binance PR-007c/d；非 factory）                                                                                                                                             |
+| postgresx   | [SPEC.md](./postgresx/SPEC.md) · [TRACEABILITY.md](./postgresx/TRACEABILITY.md) · [goal.md](./postgresx/goal.md) · [tasks/](./postgresx/tasks/)                                                                                                                                               | PostgreSQL — 关系型存储、事务、迁移（v1.0.0 已发布，release-final-check + live integration 通过；单元测试 52.4% + Docker integration skip，BLK-006 open；非 factory）                                                                                                                                                                 |
+| taosx       | [SPEC.md](./taosx/SPEC.md) · [TRACEABILITY.md](./taosx/TRACEABILITY.md) · [goal.md](./taosx/goal.md)                                                                                                                                                                                          | TDengine L2 adapter contract（pkg/taosx v1.0.5 本地发布候选；CI/release 已加入 taosx-coverage-check，pkg/taosx 100.0% 覆盖；TDengine dev live gate 已通过且保持显式 opt-in；未执行外部 tag/GitHub Release；非 factory）                                                                                                               |
+| ossx        | [SPEC.md](./ossx/SPEC.md) · [TRACEABILITY.md](./ossx/TRACEABILITY.md) · [goal.md](./ossx/goal.md) · [FEATURES.md](./ossx/FEATURES.md) · [ACCEPTANCE.md](./ossx/ACCEPTANCE.md) · [IMPLEMENTATION-PLAN.md](./ossx/IMPLEMENTATION-PLAN.md) · [tasks/](./ossx/tasks/) · [prompt/](./ossx/prompt/) | Aliyun OSS 专用 adapter（v1.2.0 已发布：真实 adapters/aliyun + 流式 SPI + 完整 multipart + 真实 presign + 策略 + retry/circuit + observex hooks；本地单元 + 5 集成测试真 bucket x-go 全过；pkg/ossx 100.0% 覆盖；非 factory：BLK-008 evidence archive/external CI/downstream/soak 待归档）                                            |
+| clickhousex | [SPEC.md](./clickhousex/SPEC.md) · [TRACEABILITY.md](./clickhousex/TRACEABILITY.md) · [goal.md](./clickhousex/goal.md) · [FEATURES.md](./clickhousex/FEATURES.md) · [ACCEPTANCE.md](./clickhousex/ACCEPTANCE.md) · [tasks/](./clickhousex/tasks/)                                             | ClickHouse — OLAP 查询、批量写入（v1.0.10 本地 release evidence 已闭合；Exec/Query/Rows/InsertBatch、metrics/tracing/logger/retry/error mapping 与 100.0% 覆盖率门禁已对齐；真实 ClickHouse live 集成与 60s soak 已验证；远端 push / GitHub Release / Actions 待触发；BLK-003 resolved；非 factory）                                  |
 
 ---
 
@@ -171,10 +171,10 @@ test-only，不参与生产运行时。
 
 跨域稳定端口、事件协议与跨 runtime / adapter 传输契约。
 
-| 模块       | 规格                                                                                                                | 核心职责                                                                                                                       |
-| ---------- | ------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| contracts  | [SPEC.md](./contracts/SPEC.md) · [goal.md](./contracts/goal.md) · [TRACEABILITY.md](./contracts/TRACEABILITY.md) · [tasks/](./contracts/tasks/) | MarketDataProvider/MacroDataProvider、Event、Topic、DTO、Breaking Change（6 FR，10 BR，8 NFR，16 AC，7 TC，5 tasks；GitHub Release v1.2.0 已发布；spec-only；非 factory）                                      |
-| transportx | [SPEC.md](./transportx/SPEC.md) · [TRACEABILITY.md](./transportx/TRACEABILITY.md) · [goal.md](./transportx/goal.md) | 应用通信底座规格基线；Envelope/Endpoint、ServiceIdentity、QoS、Codec、RPC、EventBus、Stream、Outbox/Inbox、Audit Plane、Data Classification、SchemaRegistry 与 conformance gates（25 FR，18 BR，25 TC；spec-only，无公开 GitHub Release / git tag 对齐；production_import_allowed=false；非 factory until release） |
+| 模块       | 规格                                                                                                                                            | 核心职责                                                                                                                                                                                                                                                                                                            |
+| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| contracts  | [SPEC.md](./contracts/SPEC.md) · [goal.md](./contracts/goal.md) · [TRACEABILITY.md](./contracts/TRACEABILITY.md) · [tasks/](./contracts/tasks/) | MarketDataProvider/MacroDataProvider、Event、Topic、DTO、Breaking Change（6 FR，10 BR，8 NFR，16 AC，7 TC，5 tasks；GitHub Release v1.2.0 已发布；spec-only；非 factory）                                                                                                                                           |
+| transportx | [SPEC.md](./transportx/SPEC.md) · [TRACEABILITY.md](./transportx/TRACEABILITY.md) · [goal.md](./transportx/goal.md)                             | 应用通信底座规格基线；Envelope/Endpoint、ServiceIdentity、QoS、Codec、RPC、EventBus、Stream、Outbox/Inbox、Audit Plane、Data Classification、SchemaRegistry 与 conformance gates（25 FR，18 BR，25 TC；spec-only，无公开 GitHub Release / git tag 对齐；production_import_allowed=false；非 factory until release） |
 
 ---
 
@@ -182,54 +182,72 @@ test-only，不参与生产运行时。
 
 Foundation 目录内的执行域共享值对象规格，用于订单、成交、持仓和组合语义；归入 L2.5 统计，业务域仍通过 `contracts` / `transportx` 保持跨域边界。
 
-| 模块    | 规格                                                                                                                | 核心职责                                                                                                                    |
-| ------- | ------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| 模块    | 规格                                                                                                                                    | 核心职责                                                                                                           |
+| ------- | --------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
 | domainx | [SPEC.md](./domainx/SPEC.md) · [TRACEABILITY.md](./domainx/TRACEABILITY.md) · [goal.md](./domainx/goal.md) · [tasks/](./domainx/tasks/) | Order/Position/Trade/Portfolio/ExecutionReport 值对象与 OrderState/OrderType/OrderSide 枚举（8 FR，8 TC，6 tasks） |
 
 ---
 
 ## 数据域（17 个）
 
-数据采集与分发。C/S Module（交易所采集器）与独立进程（聚合层）混合。registry `domain=data`。
+数据采集与分发。C/S 采集器 + 独立进程聚合层。registry `domain=data`。
 
 > 域归属投影：见 [`module/registry.yaml`](./registry.yaml)；成熟度事实以 `.foundationx/status/index.json` 为准。
 
+### 市场数据 C/S 采集器（4 个）
+
 | 模块 | 架构类型 | 规格 | 核心职责 |
-| --- | --- | --- | --- |
-| binance | C/S | [SPEC.md](./binance/SPEC.md) | 币安行情采集（spot/um_perp/cm_perp/options）；coverage 100.0%（21/23 包 100%） |
-| okx | C/S | [SPEC.md](./okx/SPEC.md) | OKX 行情采集 |
-| hyperliquid | C/S | [SPEC.md](./hyperliquid/SPEC.md) | Hyperliquid 行情采集 |
-| coinglass | C/S | [SPEC.md](./coinglass/SPEC.md) | Coinglass 衍生品数据采集 |
-| fred | C/S | [SPEC.md](./fred/SPEC.md) | FRED 宏观经济数据采集 |
+|------|----------|------|----------|
+| binance | C/S | [SPEC.md](./binance/spec/SPEC.md) | 币安行情采集（spot/um_perp/cm_perp/options）；coverage 100.0%（21/23 包 100%） |
+| okx | C/S | [SPEC.md](./okx/spec/SPEC.md) | OKX 行情采集 |
+| hyperliquid | C/S | [SPEC.md](./hyperliquid/spec/SPEC.md) | Hyperliquid 行情采集 |
+| coinglass | C/S | [SPEC.md](./coinglass/spec/SPEC.md) | Coinglass 衍生品数据采集 |
+
+### 宏观数据 C/S 采集器（9 个）
+
+| 模块 | 架构类型 | 规格 | 核心职责 |
+|------|----------|------|----------|
+| fred | C/S | [SPEC.md](./fred/spec/SPEC.md) | FRED 宏观经济数据采集 |
 | ecb | C/S | [SPEC.md](./ecb/spec/SPEC.md) | ECB 欧元区宏观与央行数据采集 |
 | uk_cb | C/S | [SPEC.md](./uk_cb/spec/SPEC.md) | BoE 英国央行宏观与政策数据采集 |
 | japan_cb | C/S | [SPEC.md](./japan_cb/spec/SPEC.md) | BoJ 日本央行宏观与政策数据采集 |
 | yahoo | C/S | [SPEC.md](./yahoo/spec/SPEC.md) | Yahoo Finance 宏观代理与多资产数据采集 |
-| treasury | C/S | — | 美国国债/财政数据采集 |
+| treasury | C/S | [SPEC.md](./treasury/spec/SPEC.md) | 美国国债/财政数据采集 |
 | bea | C/S | [SPEC.md](./bea/spec/SPEC.md) | BEA 美国经济分析局宏观数据采集 |
 | eastmoney | C/S | [SPEC.md](./eastmoney/spec/SPEC.md) | 东方财富宏观与市场数据采集 |
 | yield_curve | C/S | [SPEC.md](./yield_curve/spec/SPEC.md) | 收益率曲线数据采集 |
-| market_data | 独立进程 | [SPEC.md](./market_data/SPEC.md) | 行情摄取与分发聚合层（14 子模块） |
-| macro_data | 独立进程 | [SPEC.md](./macro_data/SPEC.md) | 宏观摄取与分发聚合层（12/12 子模块） |
-| pe_data | 独立进程 | [SPEC.md](./pe_data/SPEC.md) | 另类数据（PE 相关）摄取 |
-| alternative_data | 独立进程 | — | 链上数据、社交情绪、新闻 NLP |
 
-模板体系统一入口见 [`_template/README.md`](./_template/README.md)（索引 cex-cs-module / data_cs_module / data_independent_process / _exchange-template 四个模板）；模板体系统一入口见 [`_template/README.md`](./_template/README.md)（索引 cex-cs-module / data_cs_module / data_independent_process / _exchange-template 四个模板）；C/S Module 标准化索引见 [`data_cs_module/README.md`](./data_cs_module/README.md)；独立进程模板见 [`data_independent_process/README.md`](./data_independent_process/README.md)。
+### 独立进程聚合层（2 个）
+
+| 模块 | 架构类型 | 规格 | 核心职责 |
+|------|----------|------|----------|
+| market_data | 独立进程 | [SPEC.md](./market_data/spec/SPEC.md) | 行情摄取与分发聚合层（14 子模块） |
+| macro_data | 独立进程 | [SPEC.md](./macro_data/spec/SPEC.md) | 宏观摄取与分发聚合层（12/12 子模块） |
+
+### 其他数据模块（2 个）
+
+| 模块 | 架构类型 | 规格 | 核心职责 |
+|------|----------|------|----------|
+| pe_data | 独立进程 | [SPEC.md](./pe_data/spec/SPEC.md) | 另类数据（PE 相关）摄取 |
+| alternative_data | 独立进程 | [SPEC.md](./alternative_data/spec/SPEC.md) | 链上数据、社交情绪、新闻 NLP |
+
+模板体系统一入口见 [`_template/README.md`](./_template/README.md)（索引 cex-cs-module / data_cs_module / data_independent_process / \_exchange-template 四个模板）；
+C/S Module 标准化索引见 [`data_cs_module/README.md`](./data_cs_module/README.md)；独立进程模板见 [`data_independent_process/README.md`](./data_independent_process/README.md)。
 
 ## 分析域（8 个）
 
 数据流管线与计算引擎。**分析域全部模块为独立进程（非 C/S）**，bootstrap 接入，无 client/server 拆分。
 
-| 模块 | 规格 | 核心职责 |
-| --- | --- | --- |
-| factor_engine | [SPEC.md](./factor_engine/SPEC.md) | 因子计算引擎 |
-| feature_store | [SPEC.md](./feature_store/SPEC.md) | 特征存储 |
-| factor_eval | [SPEC.md](./factor_eval/SPEC.md) | 因子评估 |
-| market_regime | [SPEC.md](./market_regime/SPEC.md) | 市场状态（S 引擎） |
-| macro_regime | [SPEC.md](./macro_regime/SPEC.md) | 宏观体制（M 引擎） |
-| regime_engine | [SPEC.md](./regime_engine/SPEC.md) | M×S 联合决策引擎 |
-| ms_brain | [SPEC.md](./ms_brain/SPEC.md) | M×S 架构分析 |
-| flowx | [SPEC.md](./flowx/SPEC.md) | 数据流管线引擎 — 流式 ETL、窗口聚合、背压控制（7 FR，Spec Approved / Tasks Pending） |
+| 模块          | 规格                               | 核心职责                                                                             |
+| ------------- | ---------------------------------- | ------------------------------------------------------------------------------------ |
+| factor_engine | [SPEC.md](./factor_engine/SPEC.md) | 因子计算引擎                                                                         |
+| feature_store | [SPEC.md](./feature_store/SPEC.md) | 特征存储                                                                             |
+| factor_eval   | [SPEC.md](./factor_eval/SPEC.md)   | 因子评估                                                                             |
+| market_regime | [SPEC.md](./market_regime/SPEC.md) | 市场状态（S 引擎）                                                                   |
+| macro_regime  | [SPEC.md](./macro_regime/SPEC.md)  | 宏观体制（M 引擎）                                                                   |
+| regime_engine | [SPEC.md](./regime_engine/SPEC.md) | M×S 联合决策引擎                                                                     |
+| ms_brain      | [SPEC.md](./ms_brain/SPEC.md)      | M×S 架构分析                                                                         |
+| flowx         | [SPEC.md](./flowx/SPEC.md)         | 数据流管线引擎 — 流式 ETL、窗口聚合、背压控制（7 FR，Spec Approved / Tasks Pending） |
 
 ---
 
@@ -237,13 +255,13 @@ Foundation 目录内的执行域共享值对象规格，用于订单、成交、
 
 策略工厂、回测引擎与工作流编排。
 
-| 模块 | 规格 | 核心职责 |
-| --- | --- | --- |
-| signal_factory | [SPEC.md](./signal_factory/SPEC.md) | 信号生成工厂 |
-| optimizer | [SPEC.md](./optimizer/SPEC.md) | 参数优化 |
-| strategyx | [SPEC.md](./strategyx/SPEC.md) | 策略工厂 — 策略注册、参数管理、信号组合（7 FR，Spec Approved / Tasks Pending） |
-| backtestx | [SPEC.md](./backtestx/SPEC.md) | 回测引擎 — 事件驱动回测、Walk-Forward、蒙特卡洛（7 FR，Spec Approved / Tasks Pending） |
-| maestro | [SPEC.md](./maestro/SPEC.md) | 工作流编排引擎 — DAG 工作流、状态机、错误恢复（9 FR，Spec Approved / Tasks Pending） |
+| 模块           | 规格                                | 核心职责                                                                               |
+| -------------- | ----------------------------------- | -------------------------------------------------------------------------------------- |
+| signal_factory | [SPEC.md](./signal_factory/SPEC.md) | 信号生成工厂                                                                           |
+| optimizer      | [SPEC.md](./optimizer/SPEC.md)      | 参数优化                                                                               |
+| strategyx      | [SPEC.md](./strategyx/SPEC.md)      | 策略工厂 — 策略注册、参数管理、信号组合（7 FR，Spec Approved / Tasks Pending）         |
+| backtestx      | [SPEC.md](./backtestx/SPEC.md)      | 回测引擎 — 事件驱动回测、Walk-Forward、蒙特卡洛（7 FR，Spec Approved / Tasks Pending） |
+| maestro        | [SPEC.md](./maestro/SPEC.md)        | 工作流编排引擎 — DAG 工作流、状态机、错误恢复（9 FR，Spec Approved / Tasks Pending）   |
 
 ---
 
@@ -251,12 +269,12 @@ Foundation 目录内的执行域共享值对象规格，用于订单、成交、
 
 风控引擎、订单管理器与仓位管理器。
 
-| 模块 | 规格 | 核心职责 |
-| --- | --- | --- |
-| riskx | [SPEC.md](./riskx/SPEC.md) | 风控引擎 — 事前风控、回撤控制、熔断机制（7 FR，Spec Approved / Tasks Pending；最小实现 v0.1.0 7 tests PASS） |
-| orderx | [SPEC.md](./orderx/SPEC.md) | 订单管理器 — 订单生命周期、SOR、状态机（7 FR，Spec Approved / Tasks Pending） |
-| positionx | [SPEC.md](./positionx/SPEC.md) | 仓位管理器 — 实时仓位追踪、PnL、敞口监控（7 FR，Spec Approved / Tasks Pending） |
-| settlement | [SPEC.md](./settlement/SPEC.md) | 结算对账 |
+| 模块       | 规格                            | 核心职责                                                                                                     |
+| ---------- | ------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| riskx      | [SPEC.md](./riskx/SPEC.md)      | 风控引擎 — 事前风控、回撤控制、熔断机制（7 FR，Spec Approved / Tasks Pending；最小实现 v0.1.0 7 tests PASS） |
+| orderx     | [SPEC.md](./orderx/SPEC.md)     | 订单管理器 — 订单生命周期、SOR、状态机（7 FR，Spec Approved / Tasks Pending）                                |
+| positionx  | [SPEC.md](./positionx/SPEC.md)  | 仓位管理器 — 实时仓位追踪、PnL、敞口监控（7 FR，Spec Approved / Tasks Pending）                              |
+| settlement | [SPEC.md](./settlement/SPEC.md) | 结算对账                                                                                                     |
 
 ---
 
@@ -433,19 +451,19 @@ FoundationX 运行模块分为两种架构类型。详见 [`ARCHITECTURE.md`](..
 
 ## 相关文档
 
-| 文档                                                                | 定位                                       |
-| ------------------------------------------------------------------- | ------------------------------------------ |
-| [`ARCHITECTURE.md`](../ARCHITECTURE.md)                             | 系统全局架构、依赖拓扑、设计原则           |
-| [`CONSTITUTION.md`](../CONSTITUTION.md)                             | 系统宪法 — 最高治理条款                    |
-| [`docs/product/product-spec.md`](../docs/product/product-spec.md)   | 产品规格 — Vision、Users、Goals、MVP Scope |
-| [`docs/testing/test-strategy.md`](../docs/testing/test-strategy.md) | 测试策略 — 覆盖率、格式、工具、CI 集成     |
-| [`docs/ai/agent-rules.md`](../docs/ai/agent-rules.md)               | AI 代理规则 — 编码、测试、安全、禁止事项   |
-| [`docs/ai/prompt-templates.md`](../docs/ai/prompt-templates.md)     | Prompt 模板 — 审查、拆分、实现、自查、修复 |
-| [`module/foundation-modules.md`](./foundation-modules.md)           | Why & What — 模块定位和能力需求            |
-| [`module/FOUNDATION-SPEC.md`](./FOUNDATION-SPEC.md)                 | How & Check — 接口签名和 CI gate           |
-| [`module/FOUNDATION-DEPS.yaml`](./FOUNDATION-DEPS.yaml)             | 机器可读依赖矩阵                           |
-| [`module/FOUNDATION-V1.md`](./FOUNDATION-V1.md)                     | v1 路线图                                  |
-| [`docs/sre/foundation-cicd-plan.md`](../docs/sre/foundation-cicd-plan.md) | SRE CI/CD — 基座层 19 模块 + L2.5 领域共享 5 模块部署执行方案                              |
+| 文档                                                                      | 定位                                                          |
+| ------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| [`ARCHITECTURE.md`](../ARCHITECTURE.md)                                   | 系统全局架构、依赖拓扑、设计原则                              |
+| [`CONSTITUTION.md`](../CONSTITUTION.md)                                   | 系统宪法 — 最高治理条款                                       |
+| [`docs/product/product-spec.md`](../docs/product/product-spec.md)         | 产品规格 — Vision、Users、Goals、MVP Scope                    |
+| [`docs/testing/test-strategy.md`](../docs/testing/test-strategy.md)       | 测试策略 — 覆盖率、格式、工具、CI 集成                        |
+| [`docs/ai/agent-rules.md`](../docs/ai/agent-rules.md)                     | AI 代理规则 — 编码、测试、安全、禁止事项                      |
+| [`docs/ai/prompt-templates.md`](../docs/ai/prompt-templates.md)           | Prompt 模板 — 审查、拆分、实现、自查、修复                    |
+| [`module/foundation-modules.md`](./foundation-modules.md)                 | Why & What — 模块定位和能力需求                               |
+| [`module/FOUNDATION-SPEC.md`](./FOUNDATION-SPEC.md)                       | How & Check — 接口签名和 CI gate                              |
+| [`module/FOUNDATION-DEPS.yaml`](./FOUNDATION-DEPS.yaml)                   | 机器可读依赖矩阵                                              |
+| [`module/FOUNDATION-V1.md`](./FOUNDATION-V1.md)                           | v1 路线图                                                     |
+| [`docs/sre/foundation-cicd-plan.md`](../docs/sre/foundation-cicd-plan.md) | SRE CI/CD — 基座层 19 模块 + L2.5 领域共享 5 模块部署执行方案 |
 
 ---
 
