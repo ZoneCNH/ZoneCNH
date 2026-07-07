@@ -1,8 +1,8 @@
 # binance 白名单机制补齐计划（Completion Plan）
 
-- Module-Version: v4.0.0（接续 `PLAN-WHITELIST.md`）
+- Module-Version: v4.0.1（接续 `PLAN-WHITELIST.md`；SPEC/TRACEABILITY 已 bump 至 v4.0.1，见 PR #1710）
 - Last-Updated: 2026-07-08
-- Status: **draft / 待评审**（基线已通过 #443 落地，本计划只覆盖"尚未闭环"的缺口）
+- Status: **Done / 已闭环**（GC-0~GC-5 全部合入、门禁全 PASS、SPEC/TRACEABILITY/CHANGELOG 已记录；收尾清理见 §8）
 - Runtime-Repo: `/home/workspace/binance`（当前分支 `feat/whitelist-manual`，基于 main；GC-0 已于 `feat/whitelist-phase2` 提交 `f978b67`）
 - Source-Gap-Report: opencode session `ses_0c3ec8a2cffewnk15SrGbvtMg1`（子任务缺口报告，已导出全文）
 - Source-Stat: opencode session `ses_0c3f9b4e0ffeqxymErmLMD7nrP`（白名单币种数量统计，DB 实测 90 条：spot 20 / um_perp 70 / cm_perp 0 / options 0）
@@ -78,7 +78,7 @@
 
 ### GC-5 — bug 修复
 - **GC-5a**：`SyncJob` update 分支除 `enabled` 外，纳入 Tier / base/quote 资产变更触发更新（[COMPUTED] 当前 `WhitelistExisting` 仅含 `market_type/symbol/enabled`）。— **已闭环（审计确认）**。
-- **GC-5b**：`POST /internal/whitelist/refresh` 对 `NeedsReview` 符号给出明确"等待审核"响应，避免重复空跑噪音。— **已闭环（PR #448）**：`WhitelistSyncResult` 增 `NeedsReview []string`，`SyncJob.Run` 收集需审核 symbol；`handleRefresh` 响应新增 `needs_review` / `needs_review_count` 与 `status=needs_review`。依赖 GC-1（PR #445）的 `ReviewEnqueuer` 接线。
+- **GC-5b**：`POST /internal/whitelist/refresh` 对 `NeedsReview` 符号给出明确"等待审核"响应，避免重复空跑噪音。— **已闭环（PR #452）**：`WhitelistSyncResult` 增 `NeedsReview []string`，`SyncJob.Run` 收集需审核 symbol；`handleRefresh` 响应新增 `needs_review` / `needs_review_count` 与 `status=needs_review`。依赖 GC-1（PR #445）的 `ReviewEnqueuer` 接线。（注：原 PR #448 因 base 分支 `feat/whitelist-manual` 被 #445 合入删除而自动关闭，以 rebase 后的 #452 替代。）
 - **GC-5c**：`whitelistclient` 超龄（> `MaxCacheAge`）实现真正的 fail-open 降级（如告警并切换全量/放行），而非仅 Error 日志。— **已闭环（PR #449）**：`Client` 新增 `degraded` 降级态 + `OnDegraded` 告警回调（进入时触发一次，去噪）；`checkStalenessAfterFailure` 在刷新失败且超龄时进入 fail-open，`clearFailOpen` 成功刷新后自动解除；`IsFailOpen()`/`FailOpenReason()` 暴露降级信号供消费方切换"放行全量"，`IsHealthy()` 纳入降级判定。
 
 ## 4. 阶段门禁
@@ -90,7 +90,7 @@
 | G-C2 | Tier core 判定接 quote volume，单测 PASS（PR #446） | Done |
 | G-C3 | 观察期状态机单测 PASS（PR #447） | Done |
 | G-C4 | Collection 联动设计评审 → 明确 deferred（PR #1702） | Done |
-| G-C5 | 3 个 bug 修复单测 PASS（5a 审计确认 / 5b PR #448 / 5c PR #449） | Done |
+| G-C5 | 3 个 bug 修复单测 PASS（5a 审计确认 / 5b PR #452 / 5c PR #449） | Done |
 | G-CF | `go build ./...` + `go vet ./...` PASS；`boundary-gates.sh` 15/15 PASS；whitelist 相关包单测全 PASS | Done（见注） |
 
 > **G-CF 验证注记（2026-07-08）**：在 throwaway 集成分支（main + GC-2/GC-1/GC-3/GC-5b/GC-5c 顺序 merge，已解决 `sync_job_test.go` 测试函数追加冲突）上运行全量门禁：
@@ -125,4 +125,49 @@
 
 ---
 
-[RULES I BROKE]：无（仅生成规划文档，未改动任何代码；状态判定均来自 `git`/代码核查，推断已显式标注）。
+## 8. 收尾与清理状态（2026-07-08）
+
+本计划覆盖的全部缺口已合入两仓，规格/追溯/变更日志已闭环。本节记录 v4.0.1 收尾的 PR 合并与清理动作，作为本次工作的结案追踪。
+
+### 8.1 binance runtime 仓（代码）
+
+| PR | 标题 | 状态 |
+|----|------|------|
+| #444 | feat: 收口白名单 server→client 回灌（GC-0） | MERGED |
+| #445 | feat: 白名单人工审核队列（GC-1 Part B） | MERGED |
+| #446 | feat: GC-2 core tier 依据真实 24h quote volume 分级 | MERGED |
+| #447 | feat: GC-3 接入 SyncJob 观察期逻辑 | MERGED |
+| #449 | feat: GC-5c whitelistclient 真正的 fail-open 降级 | MERGED |
+| #451 | fix: 订单簿对齐触发丢失导致偶发无法 ALIGNED（flaky，Issue #450） | MERGED |
+| #452 | feat: GC-5b refresh 响应明确反馈需审核符号（审核态收敛） | MERGED |
+| #448 | feat: GC-5b（原 PR，base 分支删除后自动关闭） | CLOSED（被 #452 取代） |
+
+- binance 当前开放 PR：**无**（全部已合/已关）。
+- Issue #450（`TestOrderbookDispatchIntegration` 偶发卡 BUFFERING）：**CLOSED**，由 PR #451 修复合入后手动关闭（中文提交说明不触发 GitHub 自动关闭）。
+
+### 8.2 ZoneCNH 治理仓（文档/规格）
+
+| PR | 标题 | 状态 |
+|----|------|------|
+| #1697 | docs: 白名单补齐计划 — GC-1 审核队列已闭环 | MERGED |
+| #1699 | docs: GC-2 core tier 依据 quote volume 已闭环 | MERGED |
+| #1701 | docs: 白名单补齐计划 GC-3 / G-C3 已闭环 | MERGED |
+| #1702 | docs: 白名单补齐计划 GC-4 Collection 路由联动明确 deferred | MERGED |
+| #1703 | docs: 白名单补齐计划 GC-5b 已闭环 | MERGED |
+| #1704 | docs: 白名单补齐计划 GC-5c 已闭环、G-C5 Done | MERGED |
+| #1707 | docs: 白名单收口计划 G-CF 门禁结果与阶段状态 | MERGED |
+| #1709 | docs: 白名单收口闭合 — PLAN 验收打钩 + CHANGELOG 记录 | MERGED |
+| #1710 | docs: 白名单收口 SPEC v4.0.1 + TRACEABILITY v4.0.1 证据锚点更新 | MERGED |
+| #1706 | docs:（v4.0.1 前的冗余收尾草稿，被 #1709/#1710 覆盖） | CLOSED |
+| #1705 | ci: 修复 module-cicd-check.sh 系统性误红（排除 .omc/ 隐藏目录） | OPEN（**保留**，独立于白名单收尾，CI 脚本修复） |
+
+- 规格/追溯/变更日志版本：SPEC.md v4.0.1（PR #1710）、TRACEABILITY.md v4.0.1（PR #1710）、CHANGELOG.md 追加「2026-07-08 白名单机制补齐（GC-0~GC-5）」（PR #1709）。
+- ZoneCNH 当前开放 PR：仅 #1705（保留，不属本次白名单收尾范围）。
+
+### 8.3 结论
+
+白名单机制补齐（GC-0~GC-5 + flaky 修复）**全部合入、门禁全 PASS、规格闭环**，本计划状态置为 **Done / 已闭环**。无遗留开放任务（#1705 为独立 CI 修复项，单独跟踪）。
+
+---
+
+[RULES I BROKE]：无（仅生成/更新规划文档，未改动任何代码；状态判定均来自 `git`/`gh` 核查，推断已显式标注）。
