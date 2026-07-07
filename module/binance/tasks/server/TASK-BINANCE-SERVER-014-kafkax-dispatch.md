@@ -21,34 +21,31 @@ internal/server/dispatch/
 
 ## Topic 规范
 
+> v3.18.0 canonical 命名对齐 Binance 原生事件名。详见 [NAMING.md](../../spec/NAMING.md) §4。
+
 | Topic | Key | 用途 |
 |-------|-----|------|
-| `binance.spot.tick.v1` | symbol | 现货成交 |
-| `binance.spot.bar.v1` | symbol | 现货 K 线 / bar |
-| `binance.spot.depth.v1` | symbol | 现货深度 |
+| `binance.spot.book_ticker.v1` | symbol | 现货最优买卖价 |
+| `binance.spot.kline.v1` | symbol | 现货 K 线 |
+| `binance.spot.depth_update.v1` | symbol | 现货深度增量 |
 | `binance.spot.trade.v1` | symbol | 现货逐笔成交 |
-| `binance.um_perp.tick.v1` | symbol | USDⓈ-M 成交 |
-| `binance.um_perp.bar.v1` | symbol | USDⓈ-M K 线 / bar |
-| `binance.um_perp.depth.v1` | symbol | USDⓈ-M 深度 |
+| `binance.um_perp.book_ticker.v1` | symbol | USDⓈ-M 最优买卖价 |
+| `binance.um_perp.kline.v1` | symbol | USDⓈ-M K 线 |
+| `binance.um_perp.depth_update.v1` | symbol | USDⓈ-M 深度增量 |
 | `binance.um_perp.trade.v1` | symbol | USDⓈ-M 逐笔成交 |
-| `binance.cm_perp.tick.v1` | symbol | COIN-M 成交 |
-| `binance.cm_perp.bar.v1` | symbol | COIN-M K 线 / bar |
-| `binance.cm_perp.depth.v1` | symbol | COIN-M 深度 |
-| `binance.cm_perp.trade.v1` | symbol | COIN-M 逐笔成交 |
-| `binance.options.tick.v1` | symbol | Options 成交 |
-| `binance.options.bar.v1` | symbol | Options K 线 / bar |
-| `binance.options.depth.v1` | symbol | Options 深度 |
-| `binance.options.trade.v1` | symbol | Options 逐笔成交 |
-| `binance.spot.funding_rate.v1` | symbol | 现货资金费率（占位，runtime 不采集） |
-| `binance.spot.mark_price.v1` | symbol | 现货标记价格（占位，runtime 不采集） |
 | `binance.um_perp.funding_rate.v1` | symbol | USDⓈ-M 资金费率 |
-| `binance.um_perp.mark_price.v1` | symbol | USDⓈ-M 标记价格 |
+| `binance.um_perp.mark_price_update.v1` | symbol | USDⓈ-M 标记价格 |
+| `binance.cm_perp.book_ticker.v1` | symbol | COIN-M 最优买卖价 |
+| `binance.cm_perp.kline.v1` | symbol | COIN-M K 线 |
+| `binance.cm_perp.depth_update.v1` | symbol | COIN-M 深度增量 |
+| `binance.cm_perp.trade.v1` | symbol | COIN-M 逐笔成交 |
 | `binance.cm_perp.funding_rate.v1` | symbol | COIN-M 资金费率 |
-| `binance.cm_perp.mark_price.v1` | symbol | COIN-M 标记价格 |
-| `binance.options.funding_rate.v1` | symbol | Options 资金费率（占位，runtime 不采集） |
-| `binance.options.mark_price.v1` | symbol | Options 标记价格 / option mark |
+| `binance.cm_perp.mark_price_update.v1` | symbol | COIN-M 标记价格 |
+| `binance.options.trade.v1` | symbol | Options 逐笔成交 |
+| `binance.options.kline.v1` | symbol | Options K 线 |
+| `binance.options.depth_update.v1` | symbol | Options 深度增量 |
 
-格式规律：`binance.{product_line}.{event_type}.v1`（与 natsx subject 明确分离；spot/options 的 funding_rate/mark_price 为命名矩阵占位，runtime 暂不产出，capability 标记 `disabled`）
+格式规律：`binance.{product_line}.{event_type}.v1`（与 natsx subject 明确分离；spot/options 不适用的 event_type 不列）
 
 ## 接口设计
 
@@ -90,7 +87,7 @@ func (d *MarketDispatcher) Dispatch(ctx context.Context, env *domainmarket.Marke
 
 | AC | 验证方式 |
 |----|---------|
-| topic 名称正确 | mock 验证 `topic = binance.spot.tick.v1` |
+| topic 名称正确 | mock 验证 `topic = binance.spot.book_ticker.v1` |
 | partition key = symbol | mock 验证 `Key = []byte(env.Symbol)` |
 | Kafka 不可达返回 error | mock 注入错误，验证 error 传播 |
 | 异步发送（不阻塞消费端）| 单测验证 Dispatch 不等待消费者 offset |
