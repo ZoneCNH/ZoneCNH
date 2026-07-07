@@ -17,7 +17,7 @@
 | 订单簿白名单（orderbook_whitelist 表 + adapter + handler） | **已闭环（#443）** | `internal/client/orderbook/*`、`internal/server/api/orderbook_whitelist_handler.go`、`internal/server/assembly/orderbook_whitelist_adapter.go` |
 | 手动白名单 / 审核队列（gap #3） | **仍待办** | 代码搜索无 `source='manual'` 写入路径；`DecisionNeedsReview` 仅打日志 |
 | core Tier 接入 quote volume（gap #4） | **仍待办** | 无 `CoreQuoteVolume` 被 `isCoreCatalogSymbol` 引用 |
-| 观察期生效（gap #5） | **仍待办** | 无 `InObservationPeriod` 调用方 |
+| 观察期生效（gap #5） | **已闭环（PR #447，commit `4d00d38`）** | `SyncJob.Run` 新符号经观察态（`enabled=false`+`first_seen_at`）进入，`InObservationPeriod` 判定期满自动启用；`storage` 新增 `first_seen_at` 列（migration 016） |
 | Collection 路由联动（gap #6） | **仍待办（低优先）** | `whitelist` 表/规则未引用 Collection |
 
 ## 1. 目标
@@ -56,8 +56,10 @@
 - 验证：单测覆盖阈值边界；回归 `applyCatalogClassification`。
 
 ### GC-3 — 观察期生效（P2）
-- `Rules.InObservationPeriod`（`rules.go`）接入 `SyncJob` 同步路径：新符号先 `DecisionObserve`（观察期 `ObservationDays=3`），期满且无异常再 `DecisionAutoAdmit`。
-- 验证：单测模拟观察期内/外行为。
+- `Rules.InObservationPeriod`（`rules.go`）接入 `SyncJob` 同步路径：新符号先以 `enabled=false` + `first_seen_at` 进入观察态（不向客户端推送），观察期（`ObservationDays=3`）结束后下一轮同步自动启用并保留首见时间；历史已准入行（`first_seen_at` 为 NULL/epoch）保持原有重新启用路径，不参与观察期。
+- 实现要点：`WhitelistEntry`/`WhitelistExisting` 增 `FirstSeenAt`（Unix 秒）；`SyncJob` 注入可测试 `nowFn`；`storage` 新增 `first_seen_at` 列（migration 016），upsert 用 `COALESCE` 保留首见时间；`assembly.ListWhitelist` 读取并转换。
+- 验证：单测模拟观察期内/外行为 + `convertToStorageEntries` epoch↔time 转换；`go test ./internal/server/whitelist/... ./internal/server/assembly/...` PASS。
+- 收尾：已提交 `feat/whitelist-observation`（commit `4d00d38`，2026-07-08），PR #447 待合 main 以关闭 gap #5。
 
 ### GC-4 — Collection 路由联动（P3）
 - 评估 ADR-005 Collection 概念与 `whitelist` 表/规则的联动价值；若采纳，扩展 `whitelist` 表 `collection` 列并在 `rules.go` 消费。
@@ -75,7 +77,7 @@
 | G-C0 | GC-0 diff 编译+测试 PASS，已提交 `f978b67`（未合 main） | Done |
 | G-C1 | 手动白名单 + 审核队列单测 PASS，API 接入 admin router | 待办 |
 | G-C2 | Tier core 判定接 quote volume，单测 PASS | 待办 |
-| G-C3 | 观察期状态机单测 PASS | 待办 |
+| G-C3 | 观察期状态机单测 PASS | Done |
 | G-C4 | Collection 联动设计评审结论落地或明确 deferred | 待办 |
 | G-C5 | 3 个 bug 修复单测 PASS | 待办 |
 | G-CF | `go test ./...` + `go vet ./...` 全量 PASS；`boundary-gates.sh` 通过 | 待办 |
