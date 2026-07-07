@@ -14,7 +14,8 @@
 1. Query API 支持 as-of/no-lookahead 查询。
 2. Admin API 具备鉴权、审计和 NATS control 联动。
 3. `ms_brain` fixture 可消费初始序列锚点与发布/修订事件。
-4. 覆盖审计 API 可返回六域覆盖率与缺口分片。
+4. 覆盖审计 API 可返回六域覆盖率与缺口分片；外部路由序列（`ECBASSETSW`/`JPNASSETS`）单列 `external_routed_count`，不混入 FRED 完整性分母。
+5. `GetSeries`/`QueryObservations` 对 `source_component != "FRED"` 的序列显式返回路由标记，外部序列拒绝 FRED vintage 断言。
 
 ## Dependencies
 

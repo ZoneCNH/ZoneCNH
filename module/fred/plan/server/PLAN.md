@@ -10,8 +10,8 @@
 2. **P2 持久化主链**：postgres checkpoint/ledger + category/tag/source 图谱 + taos observation 写入。
 3. **P3 派生层与缓存**：Redis 热缓存、ClickHouse 读模型。
 4. **P4 事件输出**：Kafka durable events + outbox/idempotency。
-5. **P5 查询与管理接口**：Query/Admin API、coverage audit API、鉴权、审计、no-lookahead 查询。
-6. **P6 集成闭合**：端到端回放、失败注入、全量覆盖审计、边界门禁。
+5. **P5 查询与管理接口**：Query/Admin API、coverage audit API（含 `external_routed_count`）、鉴权、审计、no-lookahead 查询、外部路由 API（`source_component`/`external_source_url`）。
+6. **P6 集成闭合**：端到端回放、失败注入、全量覆盖审计、边界门禁（含 BG-013 外部路由断言拦截）。
 
 ## 关键命令
 

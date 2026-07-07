@@ -18,7 +18,9 @@ Source: [spec/SPEC.md](../spec/SPEC.md) | Goal: GOAL-FRED-001 | Status: Planned 
 | G-SC-005 下游稳定契约 | FR-010, FR-013, FR-014, FR-015 | BR-001, BR-004, BR-008, BR-009 | AC-005, AC-007, AC-009 | TC-006, TC-008, TC-009 |
 | G-SC-006 回放与 no-lookahead | FR-004, FR-005, FR-006, FR-008 | BR-002, BR-003, BR-007 | AC-003, AC-006 | TC-003, TC-005, TC-007 |
 | G-SC-007 NATS/Kafka 分层 | FR-011, FR-010 | BR-004 | AC-005 | TC-006 |
-| G-SC-008 FRED 全量信息采集 | FR-003, FR-004, FR-016 | BR-010 | AC-010 | TC-010 |
+| G-SC-008 FRED 全量信息采集 | FR-003, FR-004, FR-016 | BR-010 | AC-010 | TC-010, TC-011 |
+
+> 审计目标全集：见 `spec/SERIES-CATALOG.md`（源自 `.beads/1.md`，12 类 90 序列（含 2 个模块扩展锚点），含 FR-016 覆盖审计目标表 §10 与 endpoint→领域映射 §9）。覆盖率分母 = FRED-native 序列数（外部路由序列 `ECBASSETSW`/`JPNASSETS` 不计入），分子 = 已采集且校验通过的序列。
 
 ---
 
@@ -38,10 +40,10 @@ Source: [spec/SPEC.md](../spec/SPEC.md) | Goal: GOAL-FRED-001 | Status: Planned 
 | FR-010 | Kafka durable event stream | AC-003, AC-005 | TC-004, TC-006 | TASK-FRED-SERVER-001 | Planned |
 | FR-011 | NATS ingest handoff + control plane | AC-001, AC-005 | TC-006 | TASK-FRED-CLIENT-001, TASK-FRED-SERVER-001 | Planned |
 | FR-012 | ClickHouse analysis read model | AC-003 | TC-004 | TASK-FRED-SERVER-001 | Planned |
-| FR-013 | 服务 API | AC-001, AC-003 | TC-001 | TASK-FRED-SERVER-002 | Planned |
+| FR-013 | 服务 API | AC-001, AC-003 | TC-001, TC-011 | TASK-FRED-SERVER-002 | Planned |
 | FR-014 | 边界门禁允许目标存储、禁止绕过基座 | AC-007 | TC-008 | TASK-FRED-001 | Planned |
 | FR-015 | `ms_brain` 下游消费画像、初始序列锚点、PIT/as-of、发布/修订事件和 freshness/degrade 契约 | AC-009 | TC-009 | TASK-FRED-SERVER-002 | Planned |
-| FR-016 | 全量采集覆盖审计与缺口重采闭环（含默认 `1990-01-01` 全量起点、最近 3 个月修订回拉和 `realtime_start/realtime_end` 版本闭合） | AC-010 | TC-010 | TASK-FRED-CLIENT-001, TASK-FRED-SERVER-001 | Planned |
+| FR-016 | 全量采集覆盖审计与缺口重采闭环（含默认 `1990-01-01` 全量起点、最近 3 个月修订回拉和 `realtime_start/realtime_end` 版本闭合；审计目标全集见 `spec/SERIES-CATALOG.md` §10） | AC-010 | TC-010, TC-011 | TASK-FRED-CLIENT-001, TASK-FRED-SERVER-001 | Planned |
 
 ---
 
@@ -82,6 +84,7 @@ Source: [spec/SPEC.md](../spec/SPEC.md) | Goal: GOAL-FRED-001 | Status: Planned 
 | TC-008 | FR-014, BR-001, BR-008 | `bash scripts/boundary-gates.sh` |
 | TC-009 | FR-015, BR-009 | `go test ./internal/integration/... -run MsBrainContract` |
 | TC-010 | FR-016, BR-010 | `go test ./internal/integration/... -run FullCoverageAudit` |
+| TC-011 | FR-013, FR-016, BR-001, BR-010 | `FRED_DEV_CONFIG=sre/secrets/env/dev.md go test ./internal/... -run ExternalRouting` |
 
 ---
 
@@ -118,7 +121,7 @@ Source: [spec/SPEC.md](../spec/SPEC.md) | Goal: GOAL-FRED-001 | Status: Planned 
 | FR | 16 | 0 | 0% |
 | BR | 10 | 0 | 0% |
 | AC | 10 | 0 | 0% |
-| TC | 10 | 0 | 0% |
-| **合计** | **46** | **0** | **0%** |
+| TC | 11 | 0 | 0% |
+| **合计** | **47** | **0** | **0%** |
 
 > 说明：fred 当前是 production target 规格态，全部需求初始为 Planned。

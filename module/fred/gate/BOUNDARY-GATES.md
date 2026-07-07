@@ -20,6 +20,7 @@
 | BG-010 | Redis/ClickHouse 标记为可重建派生层 | 把 Redis/ClickHouse 当唯一权威源 |
 | BG-011 | admin API 强鉴权与审计 | 未鉴权 admin 入口或无 request id 审计 |
 | BG-012 | secret 不落盘 | 代码、文档、fixture 出现明文密钥 |
+| BG-013 | 外部路由序列不混入 FRED 完整性断言 | 外部路由序列（`ECBASSETSW`/`JPNASSETS` 等）被计入 FRED 完整采集覆盖分母或断言 |
 
 ## 建议校验命令
 

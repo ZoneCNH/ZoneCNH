@@ -98,6 +98,16 @@
 | 发布日程 | 经济数据发布日历与发布日触发采集 |
 | 数据版本管理 | ALFRED vintage（`realtime_start`/`realtime_end`）与 `vintage_at` 联合保存 |
 
+### 5.4 权威系列分类目录（源自 `.beads/1.md`）
+
+`spec/SERIES-CATALOG.md` 是 `fred` 采集范围的**权威系列分类目录**，由 `.beads/1.md`《FRED 宏观数据采集完整清单》深度分析得到，覆盖 12 个经济领域共 90 个命名序列（含 2 个 `module/fred` 扩展锚点），逐行标注领先/同步/滞后属性、频率、采集节奏、修订敏感度与 `domain_macro` 落点，并与 §5.2 初始包做差异对账与优先级分层（P0/P1/P2）。
+
+- §5.2 的 27 个初始锚点作为 **P0（首期）** 优先级。
+- 衰退/领先核心组合（USREC、SAHMREALTIME、T10Y2Y、T10Y3M、ICSA、UMCSENT、HOUST、PERMIT、SP500、VIXCLS、BAMLH0A0HYM2、CPI/PCE 全族、GDPC1 增速族、JOLTS）作为 **P1**。
+- 目录其余序列作为 **P2（完整覆盖）**，用于闭合 FR-016 六域覆盖审计。
+- 别名统一建议：`WDTGAL→WTREGEN`、`VXVCLS→VIXCLS`（见 `spec/SERIES-CATALOG.md` §6.1）；`DFEDTARU`、`NROU` 补入对应类别（§6.2）；`ECBASSETSW`/`JPNASSETS` 标注 `source_component` 外部路由（§6.2、§9.2）。
+- 派生序列（`T10Y2Y`、`T10Y3M`）不进原始采集，由 `MacroObservation` 利率原始值在计算/物化层派生。
+
 ## 6. 业务规则
 
 | ID | 规则 |
@@ -181,6 +191,12 @@
 | Credit / cycle | `BAMLH0A0HYM2`、`T10Y2Y`、`ICSA` | 支持 revision scan、release lag、missing value 语义和 `MacroRevisionObserved`。 |
 | Fiscal | `FYFSGDA188S`、`FDHBFRBN` | 支持月度/季度发布延迟；`FDHBFRBN` 如需 Treasury.gov 组合输入，必须显式标记 `source_component`。 |
 | Event/replay | release calendar、revision delta、data_version | 支持 Kafka durable event、ClickHouse 读模型和 no-lookahead replay。 |
+
+### 9.3 外部路由接口（source_component）
+
+`ECBASSETSW`/`JPNASSETS` 等序列的真实权威来源不是 FRED，fred 必须标记 `source_component` 并交上游数据域路由。具体路由判定规则、API 接口（`GetSeries`/`GetCatalogCoverage`/`QueryObservations`）、authority registry 配置、错误码与集成测试用例见 `spec/SERIES-API.md`；受影响的目录序列与 FRED-native 边界见 `spec/SERIES-CATALOG.md` §11。
+
+> 本小节为 §7 公共 API 与 §9 领域模型的路由语义细化，不新增 FR/BR/AC/TC 编号。
 
 ## 10. 持久化模型
 
@@ -375,3 +391,4 @@
 | OPEN-007 | 旧单进程路径与双服务切分并存，可能引入重复采集或状态漂移 | 以 NATS ingest envelope 为唯一 handoff，移除单进程直连路径 |
 | OPEN-008 | FRED 全量采集规模大，首次全量窗口可能超出常规作业 SLA | 引入分片回补与覆盖率审计阈值，分批推进 full sync |
 | OPEN-009 | 宏观扩展维度（领先指标/金融条件/地产/全球政策）在不同数据源间的采集边界仍需细化 | 形成“FRED 内锚点 + 外部数据源路由”的正式清单并纳入 release calendar 调度 |
+| OPEN-010 | `spec/SERIES-CATALOG.md`（源自 `.beads/1.md`）已建立 12 类 90 序列（含 2 个扩展锚点）的权威目录与 P0/P1/P2 分层，需将其纳入 FR-016 覆盖审计的目标全集，并执行别名统一（`WDTGAL→WTREGEN`、`VXVCLS→VIXCLS`）与 `DFEDTARU`/`NROU` 补类 | 数据域 owner 确认目录为采集权威集，client 采集清单与 `domain_macro` 锚点同步 |

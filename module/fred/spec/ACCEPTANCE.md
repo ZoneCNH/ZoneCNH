@@ -37,6 +37,7 @@
 | V-014 | `rg -n "category/related|release/related_tags|release/sources|releases/dates|series/categories|series/release|series/tags|series/search/tags|series/search/related_tags|sources" module/fred/spec/SPEC.md module/fred/README.md` | FRED v1 全端点矩阵在模块规格与索引文档中可定位。 | Ready |
 | V-015 | `rg -n "1990-01-01|最近 3 个月|30 req/min|120 req/min|2 req/s|发布后 24h" module/fred/spec/SPEC.md module/fred/README.md module/fred/plan/PLAN.md` | 默认回溯窗口、修订回拉、限流策略与同步周期在规格/索引/计划中可定位。 | Ready |
 | V-016 | `rg -n "批量采集|频率聚合|D->M|M->Q|realtime_start|realtime_end|ALFRED" module/fred/spec/SPEC.md module/fred/README.md` | 批量采集、频率聚合和版本维度策略在规格与索引文档中可定位。 | Ready |
+| V-017 | `cd /home/workspace/fred && FRED_DEV_CONFIG=/home/workspace/ZoneCNH/sre/secrets/env/dev.md go test ./internal/... -run ExternalRouting` | 外部路由集成测试 IT-ROUTING-001..006 通过：source_component 正确标记、覆盖分母排除外部序列、外部序列无 vintage 断言、registry reload 生效、事件透传、边界 gate 拦截误断言。 | Pending |
 
 ## Acceptance Criteria
 
@@ -67,6 +68,7 @@
 | TC-008 | 边界 gate 阻止绕过共享基座的直接 infra connection。 | FR-014、BR-001、BR-008 | `cd /home/workspace/fred && bash scripts/boundary-gates.sh` | Pending |
 | TC-009 | `ms_brain` integration profile 和 contract fixture。 | FR-015、BR-009 | `cd /home/workspace/fred && go test ./internal/integration/... -run MsBrainContract` | Pending |
 | TC-010 | 全量采集覆盖审计、默认 `1990-01-01` 全量起点与最近 3 个月修订回拉、`realtime_start/realtime_end` 版本闭合、缺口回补。 | FR-016、BR-010 | `cd /home/workspace/fred && go test ./internal/integration/... -run FullCoverageAudit` | Pending |
+| TC-011 | 外部路由集成测试：`source_component` 正确标记（IT-ROUTING-001）、覆盖审计分母排除外部序列（IT-ROUTING-002）、外部序列无 FRED vintage 断言（IT-ROUTING-003）、authority registry reload 可热切换路由（IT-ROUTING-004）、Kafka event 透传 source（IT-ROUTING-005）、边界 gate 拦截外部序列误写入 FRED 完整性断言（IT-ROUTING-006）。 | FR-013、FR-016、BR-001、BR-010 | `cd /home/workspace/fred && FRED_DEV_CONFIG=/home/workspace/ZoneCNH/sre/secrets/env/dev.md go test ./internal/... -run ExternalRouting` | Pending |
 
 ## Definition of Done
 
@@ -77,3 +79,4 @@
 5. `sre/secrets/env/dev.md` 只作为配置来源，不向仓库复制 secret 值。
 6. `scripts/boundary-gates.sh` 已从旧 `Stores=None` 口径迁移为完整目标边界。
 7. AC-001..AC-010 全部通过，并在发布说明或报告中登记证据路径。
+8. TC-011 外部路由集成测试（IT-ROUTING-001..006）通过，且 `spec/SERIES-API.md`、`spec/SERIES-CATALOG.md` §11 路由语义与运行时映射一致。
