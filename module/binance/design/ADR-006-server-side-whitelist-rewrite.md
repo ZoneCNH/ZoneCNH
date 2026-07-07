@@ -1,6 +1,6 @@
 # ADR-006：服务端白名单重写——Catalog 从内存演进为 DB SSOT
 
-> 状态：Proposed
+> 状态：Accepted
 > 日期：2026-07-05
 > 决策者：binance 模块架构
 > 关联：ADR-005（symbol tier classification，本 ADR 复用其 Tier 字段作为白名单准入依据）；`module/binance/spec/SPEC.md` FR-012~036；`report/binance/EXCHANGEINFO-WHITELIST-DESIGN-DEEP-ANALYSIS-20260705.md`
