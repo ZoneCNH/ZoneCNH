@@ -80,6 +80,32 @@
 | `spec/FEATURES.md` | 功能投影和剩余实现面 | Present |
 | `spec/ACCEPTANCE.md` | 验收标准、命令和证据闭合 | Present |
 
+## 系列目录与外部路由能力投影
+
+| 能力 | 依赖文档 | 当前状态 | 验收路径 |
+| --- | --- | --- | --- |
+| 系列分类目录 | `spec/SERIES-CATALOG.md` | Present | V-014、V-015、TC-010 |
+| 覆盖审计目标表（P0/P1/P2） | `spec/SERIES-CATALOG.md` §10 | Present | TC-010、TC-011 |
+| 外部路由（source_component） | `spec/SERIES-API.md`、`spec/SERIES-CATALOG.md` §11 | Present | V-017、TC-011 |
+| authority registry | `spec/SERIES-API.md` §4 | Planned | TC-011 |
+| 外部路由 boundary gate | `gate/BOUNDARY-GATES.md` BG-013 | Planned | TC-008、TC-011 |
+| 派生序列不写入原始 observation | `spec/SERIES-CATALOG.md` §5.4、`design/RUNTIME-MAPPING.md` §5.1 | Planned | TC-010 |
+
+## 文档资产
+
+| 文件 | 用途 | 当前状态 |
+| --- | --- | --- |
+| `goal/goal.md` | 模块目标与业务价值 | Present |
+| `spec/SPEC.md` | 23 节规格、FR/BR/AC/TC 源头 | Present |
+| `spec/SERIES-CATALOG.md` | 12 类 90 序列权威分类目录与 FR-016 审计目标 | Present |
+| `spec/SERIES-API.md` | 外部路由接口与集成测试用例 | Present |
+| `spec/client/SPEC.md` | client 子模块规格 | Present |
+| `spec/server/SPEC.md` | server 子模块规格 | Present |
+| `matrix/TRACEABILITY.md` | Goal、FR、BR、AC、TC 追溯矩阵 | Present |
+| `plan/PLAN.md` | 实施顺序、依赖、风险和验证命令 | Present |
+| `spec/FEATURES.md` | 功能投影和剩余实现面 | Present |
+| `spec/ACCEPTANCE.md` | 验收标准、命令和证据闭合 | Present |
+
 ## 当前缺口
 
 1. `/home/workspace/fred` 旧边界脚本仍需从 `Stores=None` 迁移到 `taos`、`kafka`、`postgres`、`Redis`、`oss`、`nats`、`clickhouse` 完整目标。

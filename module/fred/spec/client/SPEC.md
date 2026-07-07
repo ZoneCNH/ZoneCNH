@@ -28,7 +28,7 @@
 
 | ID      | WHEN                       | THEN                                                                                 |
 | ------- | -------------------------- | ------------------------------------------------------------------------------------ |
-| FR-C001 | WHEN 周期任务触发采集      | THEN 支持 root SPEC §5.1 定义的 FRED v1 全端点矩阵与核心指标包拉取、分页和批量采集 |
+| FR-C001 | WHEN 周期任务触发采集      | THEN 支持 root SPEC §5.1 定义的 FRED v1 全端点矩阵与 `spec/SERIES-CATALOG.md` 的 P0/P1/P2 分层采集（P0=核心指标包 27 锚点、P1=领先/衰退核心、P2=完整 90 序列），含分页与批量采集 |
 | FR-C002 | WHEN provider 限流或抖动   | THEN 使用共享韧性组件执行退避重试                                                    |
 | FR-C003 | WHEN 收到 provider payload | THEN 先写 `oss` raw，再进入归一化流程                                                |
 | FR-C004 | WHEN 归一化完成            | THEN 生成 `domain_macro` 语义 envelope                                               |

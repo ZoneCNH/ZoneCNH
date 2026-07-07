@@ -14,7 +14,7 @@
 1. collector 能覆盖 root SPEC §5.1 的 FRED v1 全端点矩阵。
 2. raw-first 流程严格执行：先写 OSS raw，再发布 NATS envelope。
 3. NATS 发布失败可重试且可追溯。
-4. full sync 以默认 `1990-01-01` 为起点分片回补，并可输出覆盖快照与缺口分片。
+4. full sync 以默认 `1990-01-01` 为起点分片回补，并可输出覆盖快照与缺口分片；采集范围以 `spec/SERIES-CATALOG.md` 为权威全集，按 P0→P1→P2 顺序推进，覆盖率分母=目录 FRED-native 序列。
 5. 增量同步按游标执行，且每次回拉最近 3 个月覆盖修订数据。
 6. 采集结果保留 `realtime_start/realtime_end` 版本维度，并支持批量采集与 D->M/M->Q 聚合视图。
 
