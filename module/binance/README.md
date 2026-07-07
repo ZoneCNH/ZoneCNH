@@ -114,6 +114,7 @@ module/binance/server
 - `design/HISTORICAL-DATA-SYNC-STRATEGY.md` — 历史数据同步起始时间策略
 - `design/ADR-009-user-data-stream-scope.md` — 用户数据流排除决策
 - `design/ADR-010-platform-change-risks.md` — 平台变更风险登记
+- `design/ADR-011-order-book-rebuild-inclusion.md` — 订单簿重建纳入决策（supersede ADR-003，v4.0.0 MAJOR 升级）
 - `deploy/README.md`
 - `gate/BOUNDARY-GATES.md`
 - `matrix/TRACEABILITY.md`

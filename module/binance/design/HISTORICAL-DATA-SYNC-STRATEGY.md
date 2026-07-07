@@ -2,7 +2,7 @@
 
 > 状态：Reference
 > 来源：report/binance/20260704.md + SPEC FR-016/FR-026/FR-027
-> Last-Updated: 2026-07-06
+> Last-Updated: 2026-07-07
 
 ## 1. Overview
 
@@ -69,10 +69,10 @@
 
 **depth（订单簿）没有官方历史可回溯** `[KNOWN]`——Binance 不存档逐档快照，只能自己跑 WS 从"你开始运行的那一刻"起持续落库 + 定期打 REST 快照兜底（即订单簿重建逻辑），起始时间 = 你系统上线时间，这个没法后补。
 
-**与 ADR-003 交叉引用**：[`design/ADR-003-order-book-rebuild-exclusion.md`](ADR-003-order-book-rebuild-exclusion.md) 已 Accepted，当前版本（v0.2.0）排除 order book rebuild 状态机，depth 数据以快照形式落库，不做本地增量重放。这意味着：
-- depth 历史既无法从官方回溯，也无法通过本地重建补齐
-- depth 数据的起始时间严格等于系统上线运行时间
-- 未来若启用 order book rebuild，起始时间仍受限于"开始维护本地订单簿的那一刻"
+**与 ADR-003 / ADR-011 交叉引用**：[`design/ADR-003-order-book-rebuild-exclusion.md`](ADR-003-order-book-rebuild-exclusion.md) 原决策（v0.2.0）排除 order book rebuild 状态机、depth 以快照形式落库——**该决策已被 ADR-011（v4.0.0）supersede**。v4.0.0 经 FR-052~061 在 spot/um/cm 实现本地 order book 状态机 + 增量 diff 重放（options 待 Phase 2）。这意味着：
+- depth 历史仍无法从官方回溯（币安不存档逐档快照）
+- depth 数据的起始时间严格等于"开始维护本地订单簿的那一刻"（即系统上线运行时间）；本地重建仅能补齐上线后的序列，无法回填上线前
+- 未来若扩展 options，起始时间仍受限于"开始维护 options 本地订单簿的那一刻"
 
 ### 5.3 Symbol Launch Time Variance
 

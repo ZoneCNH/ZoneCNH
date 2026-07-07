@@ -1,8 +1,8 @@
 # Sequence Continuity Strategy
 
 > 状态：Reference
-> 来源：report/binance/20260704.md + ADR-003
-> Last-Updated: 2026-07-06
+> 来源：report/binance/20260704.md + ADR-011（supersede ADR-003）
+> Last-Updated: 2026-07-07
 
 ## 1. Overview
 
@@ -53,7 +53,7 @@ Binance 各事件流（行情公开流 / 用户私有流）对序号连续性的
 
 ## 4. depthUpdate Reconstruction Algorithm
 
-> 下文为 `report/binance/20260704.md` §三中的 8 步 depthUpdate 订单簿重建流程原文。这是 ADR-003「未来升级路径」的技术参考，**当前 runtime 未实现此算法**（见 §6）。来源标注 `[KNOWN]`（币安官方文档定义的 diff depth 对齐算法）。
+> 下文为 `report/binance/20260704.md` §三中的 8 步 depthUpdate 订单簿重建流程原文。该算法在 **v4.0.0（ADR-011 supersede ADR-003）已通过 FR-054 实现为 9 步对齐 + 序号校验**（spot/um/cm；options 待 Phase 2）。来源标注 `[KNOWN]`（币安官方文档定义的 diff depth 对齐算法）。
 
 ```
 1. 建立 WS 连接，订阅 <symbol>@depth，开始缓冲收到的事件
@@ -70,7 +70,7 @@ Binance 各事件流（行情公开流 / 用户私有流）对序号连续性的
 
 **关键点**：步骤 8 明确禁止"跳过"或"插值"——gap 出现时唯一的正确动作是整体重建（回到步骤 1），任何"近似恢复"都会导致本地订单簿与币安服务端永久不一致。
 
-**与 ADR-003 的关系**：ADR-003（`ADR-003-order-book-rebuild-exclusion.md`）的「未来升级路径」第 1 步「client 侧增加 order book manager（维护本地 book 状态 + REST snapshot + 增量 diff）」即对应本节算法。当前 v0.2.0 选择快照级落库而非维护本地 order book 状态机，因此本算法为**未实施的参考实现**。
+**与 ADR-011 的关系**：ADR-003（`ADR-003-order-book-rebuild-exclusion.md`）原「未来升级路径」第 1 步「client 侧增加 order book manager（维护本地 book 状态 + REST snapshot + 增量 diff）」即对应本节算法。**ADR-003 已被 ADR-011（v4.0.0）supersede**，该路径已在 spot/um/cm 经 FR-052~061 实现（本地 book 状态机 + REST 快照对齐 + 增量 diff 重放），options 待 Phase 2。本节算法为其技术参考而非"未实施"。
 
 ## 5. Order Trade Cumulative Cross-Check
 
@@ -100,20 +100,21 @@ Binance 各事件流（行情公开流 / 用户私有流）对序号连续性的
 
 | 维度 | 当前实现 | 决策依据 |
 | ---- | -------- | -------- |
-| depth 处理 | **快照级落库**，不维护本地 order book 状态机，不做增量 diff 重放 | ADR-003 |
-| depth 缺口检测 | `updateId` 跳跃 → 触发快照刷新（`GET /api/v3/depth`），不生成 gap replay job | FR-017（v3.9.0 spec） |
-| depthUpdate 8 步重建算法 | **未实现**（ADR-003 标注为 v4.0.0 MAJOR 升级路径） | ADR-003 §未来升级路径 |
-| 用户数据流落库 | **未实现**（SPEC §3 排除 user data stream） | SPEC §3 |
-| 订单成交累计量交叉校验 | **未实现**（依赖用户数据流落库，当前排除） | SPEC §3 |
+| depth 处理 | **维护本地 order book 状态机**（per-symbol goroutine，FR-052），做增量 diff 重放 | ADR-011（supersede ADR-003）/ FR-052~061 |
+| depth 缺口检测 | `updateId` 跳跃 → 触发 auto-rebuild（丢弃 book → 重新对齐，FR-055），不人工介入 | ADR-011 / FR-055 |
+| depthUpdate 对齐 + 序号校验 | **已实现**（FR-054：REST 快照 9 步对齐 + spot U/u / futures U/u/pu 连续性 + qty=="0" 删除，spot/um/cm；options 待 Phase 2） | ADR-011 / FR-054 |
+| 用户数据流落库 | **未实现**（SPEC §3 排除 user data stream，ADR-009） | SPEC §3 / ADR-009 |
+| 订单成交累计量交叉校验 | **未实现**（依赖用户数据流落库，当前排除） | SPEC §3 / ADR-009 |
 
-**ADR-003 交叉引用**：
+**ADR-003 / ADR-011 交叉引用**：
 
-- ADR-003 决策：当前版本（v0.2.0）排除 order book rebuild 状态机，depth 数据以快照形式落库。
-- ADR-003 未来升级路径：若下游需完整 order book 序列（做市策略、微观结构分析），升级路径为 client 侧 order book manager + 新增 FR 定义 rebuild 状态机 + 存储层扩展 + MAJOR 版本升级（v4.0.0）。
-- 本文件 §4 的 8 步重建算法即为该升级路径的技术参考实现。
-- ADR-003 路径：`module/binance/design/ADR-003-order-book-rebuild-exclusion.md`
+- ADR-003 原决策（v0.2.0）：排除 order book rebuild 状态机，depth 数据以快照形式落库——**该决策已被 ADR-011（v4.0.0）supersede**。
+- ADR-003 未来升级路径：若下游需完整 order book 序列（做市策略、微观结构分析），升级路径为 client 侧 order book manager + 新增 FR 定义 rebuild 状态机 + 存储层扩展 + MAJOR 版本升级（v4.0.0）——**该路径已在 v4.0.0 经 ADR-011 实现（FR-052~061，spot/um/cm；options 待 Phase 2）**。
+- 本文件 §4 的重建算法即为该升级路径的技术参考实现，现已落地为 FR-054 对齐 + 序号校验。
+- ADR-003 路径：`module/binance/design/ADR-003-order-book-rebuild-exclusion.md`（状态：Superseded by ADR-011）
+- ADR-011 路径：`module/binance/design/ADR-011-order-book-rebuild-inclusion.md`
 
-**与 FR-017 的关系**：FR-017（Gap Detection and Replay）的 depth 策略在 v3.9.0 spec 中定义为「updateId 序列跳跃 → 快照刷新」，而非 replay job。本文件 §4 的完整重建算法是 FR-017 depth 策略的"完整版"——当前 runtime 只做"检测到 gap 就刷新快照"，不做"维护本地 book + 增量 diff 重放"。
+**与 FR-017 的关系**：FR-017（Gap Detection and Replay）的 depth 策略在 v3.9.0 spec 中定义为「updateId 序列跳跃 → 快照刷新」。本文件 §4 的完整重建算法是 FR-017 depth 策略的"完整版"——**v4.0.0 经 ADR-011/FR-055 已实现 auto-rebuild（gap 检测 → 丢弃 book → 重新对齐），维护本地 book + 增量 diff 重放**，不再仅限于"检测到 gap 就刷新快照"。
 
 ---
 

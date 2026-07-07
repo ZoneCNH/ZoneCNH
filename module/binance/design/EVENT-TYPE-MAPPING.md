@@ -1,8 +1,8 @@
 # Binance Event Type Mapping
 
 > 状态：Reference
-> 来源：report/binance/20260704.md + SPEC v3.17.0 §6 + client SPEC §FR-005
-> Last-Updated: 2026-07-06
+> 来源：report/binance/20260704.md + SPEC v4.0.0 §6 + client SPEC §FR-005
+> Last-Updated: 2026-07-07
 
 ## 1. Classification Criteria
 
