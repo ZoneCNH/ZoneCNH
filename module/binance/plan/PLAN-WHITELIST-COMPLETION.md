@@ -64,9 +64,9 @@
 - 验证：设计评审通过后再编码。
 
 ### GC-5 — bug 修复
-- **GC-5a**：`SyncJob` update 分支除 `enabled` 外，纳入 Tier / base/quote 资产变更触发更新（[COMPUTED] 当前 `WhitelistExisting` 仅含 `market_type/symbol/enabled`）。
-- **GC-5b**：`POST /internal/whitelist/refresh` 对 `NeedsReview` 符号给出明确"等待审核"响应，避免重复空跑噪音。
-- **GC-5c**：`whitelistclient` 超龄（> `MaxCacheAge`）实现真正的 fail-open 降级（如告警并切换全量/放行），而非仅 Error 日志。
+- **GC-5a**：`SyncJob` update 分支除 `enabled` 外，纳入 Tier / base/quote 资产变更触发更新（[COMPUTED] 当前 `WhitelistExisting` 仅含 `market_type/symbol/enabled`）。— **已闭环（审计确认）**。
+- **GC-5b**：`POST /internal/whitelist/refresh` 对 `NeedsReview` 符号给出明确"等待审核"响应，避免重复空跑噪音。— **已闭环（PR #448）**：`WhitelistSyncResult` 增 `NeedsReview []string`，`SyncJob.Run` 收集需审核 symbol；`handleRefresh` 响应新增 `needs_review` / `needs_review_count` 与 `status=needs_review`。依赖 GC-1（PR #445）的 `ReviewEnqueuer` 接线。
+- **GC-5c**：`whitelistclient` 超龄（> `MaxCacheAge`）实现真正的 fail-open 降级（如告警并切换全量/放行），而非仅 Error 日志。— 待办。
 
 ## 4. 阶段门禁
 
@@ -77,7 +77,7 @@
 | G-C2 | Tier core 判定接 quote volume，单测 PASS | 待办 |
 | G-C3 | 观察期状态机单测 PASS | 待办 |
 | G-C4 | Collection 联动设计评审结论落地或明确 deferred | 待办 |
-| G-C5 | 3 个 bug 修复单测 PASS | 待办 |
+| G-C5 | 3 个 bug 修复单测 PASS（GC-5a/5b done；GC-5c 待办） | 待办 |
 | G-CF | `go test ./...` + `go vet ./...` 全量 PASS；`boundary-gates.sh` 通过 | 待办 |
 
 ## 5. 风险
