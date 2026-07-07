@@ -16,7 +16,7 @@
 | 行情流 server→client 回灌（gap #1） | **已闭环（commit `f978b67`）** | `runtime.go` 引入 `WhitelistProvider` 降级链 server→env→全量；`ExchangeInfoRefresher.RefreshNow()`；`whitelistclient.OnCacheUpdate` 回调。3 文件已提交 `feat/whitelist-phase2`（commit `f978b67`，2026-07-08），未推送/未合 main |
 | 订单簿白名单（orderbook_whitelist 表 + adapter + handler） | **已闭环（#443）** | `internal/client/orderbook/*`、`internal/server/api/orderbook_whitelist_handler.go`、`internal/server/assembly/orderbook_whitelist_adapter.go` |
 | 手动白名单 / 审核队列（gap #3） | **已闭环** | 手动写入路径（`source='manual'` 的 `AddEntry/RemoveEntry` + `POST /internal/whitelist`）与审核队列（`whitelist_review` 表 + `DecisionNeedsReview` 落库 + `GET/approve/reject` API）均已落地；GC-1 全部 Done |
-| core Tier 接入 quote volume（gap #4） | **仍待办** | 无 `CoreQuoteVolume` 被 `isCoreCatalogSymbol` 引用 |
+| core Tier 接入 quote volume（gap #4） | **已闭环（GC-2）** | `Catalog` 持有 `TierConfig`（显式 `CoreSymbols` + `CoreQuoteVolume`）；`applyCatalogClassification` 改为"显式列表 > QuoteVolumeUSD≥阈值 > BTC/ETH 前缀兜底"；新增 24h ticker 量能 fetcher 并在刷新路径 enrich `QuoteVolumeUSD`，使量能阈值运行时生效 |
 | 观察期生效（gap #5） | **已闭环（PR #447，commit `4d00d38`）** | `SyncJob.Run` 新符号经观察态（`enabled=false`+`first_seen_at`）进入，`InObservationPeriod` 判定期满自动启用；`storage` 新增 `first_seen_at` 列（migration 016） |
 | Collection 路由联动（gap #6） | **仍待办（低优先）** | `whitelist` 表/规则未引用 Collection |
 
@@ -55,9 +55,12 @@
   - API：`GET /internal/whitelist/review?status=pending`、`POST /internal/whitelist/review/:id/approve`、`POST /internal/whitelist/review/:id/reject`（均挂载 admin router，受 Bearer + CSRF 保护）。
 - 验证：单测覆盖 `EnqueueReview` 幂等、`Approve/Reject` 状态机、handler 路由；`go test ./internal/server/whitelist/... ./internal/server/storage/... ./internal/server/api/...`。
 
-### GC-2 — Tier core 判定依据真实成交量（P2）
-- `isCoreCatalogSymbol`（`internal/client/catalog.go`）改用 `TierConfig.CoreQuoteVolume`（`config.go` 已解析未使用），替换仅 BTC/ETH 前缀逻辑；client 上报 `quote_volume` 入 `catalog_symbols`。
-- 验证：单测覆盖阈值边界；回归 `applyCatalogClassification`。
+### GC-2 — Tier core 判定依据真实成交量（P2）✅ 已闭环
+- `Catalog` 新增 `coreSymbols` / `coreQuoteVolume` 字段 + `NewCatalogWithTiers(t binancecfg.TierConfig)`；`applyCatalogClassification` / `isCoreCatalogEntry`（原 `isCoreCatalogSymbol`）改为三级优先级：**显式 `CoreSymbols` 列表 > `QuoteVolumeUSD ≥ CoreQuoteVolume`（量能数据存在时）> BTC/ETH 前缀兜底**（兜底保留以避免量能数据缺失时主流对误降级）。
+- 新增 `internal/client/ticker_volume.go`：`TickerVolumeFetcher` 接口 + `httpTickerVolumeFetcher`，覆盖 spot `/api/v3/ticker/24hr`、um `/fapi/v1/ticker/24hr`、cm `/dapi/v1/ticker/24hr` 三端点（主备回退）；options 返回空（不参与分级）。
+- `ExchangeInfoRefresher` 在 exchangeInfo 解析后、DiffSync 前调用 `VolumeFetcher` 把 24h quote volume 写入 `CatalogEntry.QuoteVolumeUSD`（enrich），使量能阈值在运行时真正生效；拉取失败仅告警不阻断刷新。
+- `runtime.go`：`catalog` 改用 `NewCatalogWithTiers(cfg.Tiers)` 并保留 BTC/ETH 初始种子；`ExchangeInfoRefreshConfig.VolumeFetcher` 接入；`cmd/binance-client/main.go` 的 `standaloneConfigFromCfg` 注入 `cfg.Tiers = bc.Tiers` 与 `cfg.VolumeFetcher = NewTickerVolumeFetcher(nil)`。
+- 验证：单测覆盖阈值边界、量能解码、enrich 流程、量能拉取失败非致命；`go build ./...` + `go vet ./...` + `go test ./internal/client/...` PASS。
 
 ### GC-3 — 观察期生效（P2）
 - `Rules.InObservationPeriod`（`rules.go`）接入 `SyncJob` 同步路径：新符号先以 `enabled=false` + `first_seen_at` 进入观察态（不向客户端推送），观察期（`ObservationDays=3`）结束后下一轮同步自动启用并保留首见时间；历史已准入行（`first_seen_at` 为 NULL/epoch）保持原有重新启用路径，不参与观察期。
