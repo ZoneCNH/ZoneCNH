@@ -204,7 +204,7 @@ echo -n "password" | openssl passwd -stdin -apr1 | sudo tee -a /etc/nginx/.htpas
 | 问题 | 修复 | commit |
 |---|---|---|
 | 处理延迟 ~300s（吞吐 1.6/s，NATS 积压 205,861） | worker pool + TDengine 连接池 + skip-kafka，吞吐→915/s，freshness→11ms | `5f65211` |
-| st_bar 数据为 0（stale rejection 阻止 bar 落库） | 同上，freshness 11ms 后 bar 正常写入（556+ growing） | `5f65211` |
+| kline (legacy: st_bar) 数据为 0（stale rejection 阻止 bar 落库） | 同上，freshness 11ms 后 bar 正常写入（556+ growing） | `5f65211` |
 
 ### 9.2 当前问题
 
