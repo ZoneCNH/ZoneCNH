@@ -1,10 +1,10 @@
 # Binance Traceability Matrix
 
-- [KNOWN] Matrix-Version: v4.0.0
-- [KNOWN] Last-Updated: 2026-07-07
-- Source-SPEC: `module/binance/spec/SPEC.md` v4.0.0
+- [KNOWN] Matrix-Version: v4.0.1
+- [KNOWN] Last-Updated: 2026-07-08（白名单补齐 GC-0~GC-5 全合入）
+- Source-SPEC: `module/binance/spec/SPEC.md` v4.0.1
 - State-Model: single-state only
-- [KNOWN] Current-State: 65 Done / 0 Partial / 0 Drifted / 0 Pending（FR-052~061 spot/um/cm 已实现；options 待 Phase 2）
+- [KNOWN] Current-State: 65 Done / 0 Partial / 0 Drifted / 0 Pending（FR-052~061 spot/um/cm 已实现；options 待 Phase 2；FR-045~051 白名单补齐 GC-0~GC-5 全合入）
 - [KNOWN] release_closeable: YES（规格口径 65 Done；FR-052~061 spot/um/cm 已实现，options 待 Phase 2）
 
 ## 1. Rule
@@ -63,13 +63,13 @@ This matrix is the compact FR/BR/AC/TC projection. It intentionally does not dup
 | FR-042 | BR-005 | AC-007 | soak evidence needed | Done（Soak L1+L2 全覆盖：`TestSoak_ServerStability` CI PASS + `TestSoak_BinancePipeline` 全管线 WS→TDengine 已实现） |
 | FR-043 | BR-005 | AC-007 | chaos evidence needed | Done（Chaos L1+L2 全覆盖：4 项故障注入 CI PASS + `TestChaos_{NATSStop,RedisStop,ProcessKill}Recovery` 真实故障注入已实现） |
 | FR-044 | BR-005 | AC-007 | security hardening evidence needed | Done（Security L2 全覆盖：6 项安全测试 CI PASS，gitleaks + govulncheck + admin auth 全 PASS） |
-| FR-045 | BR-009 | AC-001 | Whitelist Sync Job（ADR-006 rewrite） | Done |
-| FR-046 | BR-009 | AC-001 | whitelist 表 + version SSOT + sync_log | Done |
-| FR-047 | BR-009 | AC-001 | GET /internal/whitelist API | Done |
-| FR-048 | BR-009 | AC-001 | NATS binance.whitelist.version 推送（独立 NATS 连接 + publish 非致命） | Done |
-| FR-049 | BR-009 | AC-001 | 下游消费方 SDK（Bearer token 鉴权） | Done |
+| FR-045 | BR-009 | AC-001 | Whitelist Sync Job（GC-0 server→client 回灌 #444；GC-1 手动审核队列 #445；GC-3 观察期 #447） | Done |
+| FR-046 | BR-009 | AC-001 | whitelist 表 + version SSOT + sync_log + first_seen_at 列（migration 016） | Done |
+| FR-047 | BR-009 | AC-001 | GET /internal/whitelist；POST /internal/whitelist/refresh（GC-5b 审核态反馈 #452） | Done |
+| FR-048 | BR-009 | AC-001 | NATS binance.whitelist.version 推送（独�� NATS 连接 + publish 非致命） | Done |
+| FR-049 | BR-009 | AC-001 | 下游消费方 SDK（GC-5c 真正 fail-open #449：degraded 态 + OnDegraded + IsFailOpen） | Done |
 | FR-050 | BR-009 | AC-001 | catalog_symbols 扩展字段（ApplyDiff COALESCE 保留 tier + TRADIFI_PERPETUAL 区分币股 + ListCandidates COALESCE） | Done |
-| FR-051 | BR-009 | AC-001 | Tier 分配策略：spot/um_perp(PERPETUAL)/um_perp(TRADIFI)/cm_perp/options 各 24h quoteVolume top 20（ADR-008 统一） | Done |
+| FR-051 | BR-009 | AC-001 | Tier 分配策略（GC-2 三级优先级 #446：显式列表 > QuoteVolumeUSD≥阈值 > BTC/ETH 兜底） | Done |
 
 ### v4.0.0 Order Book FR-052~061（spot/um/cm Done；options 待 Phase 2）
 
@@ -108,7 +108,7 @@ release_closeable 判定公式：
 release_closeable = Code-Done FR / Total FR ≥ 90% AND Drifted FR = 0 AND Pending FR = 0 AND PRG-001~007 gates PASS
 ```
 
-当前状态：`release_closeable: YES`（65 FR: 65 Done = 100% ≥ 90%，PRG-001~007 全 PASS）。FR-052~061 options depth 待 Phase 2 testnet 实测后激活。
+当前状态：`release_closeable: YES`（65 FR: 65 Done = 100% ≥ 90%，PRG-001~007 全 PASS）。FR-052~061 options depth 待 Phase 2 testnet 实测后激活。2026-07-08 白名单补齐 GC-0~GC-5 全合入（PR #444/#445/#446/#447/#449/#452），G-CF 门禁全 PASS，非规格新增故 FR 计数不变。
 
 | PRG | Gate | State | Evidence |
 | --- | --- | --- | --- |

@@ -111,8 +111,8 @@
 ## 6. 验收标准
 
 - [x] GC-0~GC-5 全部合入 main（PR #444/#445/#446/#447/#449/#452），`go test ./...` PASS（G-CF 验证注记）。
-- [ ] `module/binance/spec/SPEC.md` 标注 manual 白名单 / 审核队列 / 观察期 / quote-volume Tier 为 Done — 待独立 PR。
-- [ ] `module/binance/matrix/TRACEABILITY.md` 对应 FR/BR 行 State=Done — 待独立 PR。
+- [x] `module/binance/spec/SPEC.md` 标注 manual 白名单 / 审核队列 / 观察期 / quote-volume Tier 为 Done（v4.0.1：FR-045~051 证据锚点更新 + 变更历史 + 变更记录）。
+- [x] `module/binance/matrix/TRACEABILITY.md` 对应 FR/BR 行 State=Done（v4.0.1：FR-045~051 evidence anchor 更新 + §4 release 注记）。
 - [x] `boundary-gates.sh` 15/15 PASS。
 - [x] CHANGELOG 追加一条"白名单机制补齐（GC-0~GC-5）"。
 
