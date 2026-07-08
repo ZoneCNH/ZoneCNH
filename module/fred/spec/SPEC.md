@@ -161,7 +161,7 @@
 
 ### 9.1 `domain_macro` 绑定状态
 
-[COMPUTED][HIGH] 上表 8 个模型为 fred 目标领域语义。`domain-macro` 仓库 v0.1.0 源码（`pkg/domainmacro/`）当前只有 `MacroPoint`（字段 `SeriesCode/Value/ObservedAt/ReleasedAt/AvailableAt/RevisionVersion/IsPreliminary/Source`，含 `Validate()` 与 `IsVisibleAt()` no-lookahead 判定）和 `MacroInformationSet`；`MacroSeries/MacroRelease/MacroRevision/MacroCategory/MacroTag/MacroSource/MacroIngestJob` 尚不存在。
+[COMPUTED][HIGH] 上表 8 个模型为 fred 目标领域语义。`domain-macro` 仓库 v1.0.1 源码（`pkg/domainmacro/`）当前只有 `MacroPoint`（字段 `SeriesCode/Value/ObservedAt/ReleasedAt/AvailableAt/RevisionVersion/IsPreliminary/Source`，含 `Validate()` 与 `IsVisibleAt()` no-lookahead 判定）和 `MacroInformationSet`；`MacroSeries/MacroRelease/MacroRevision/MacroCategory/MacroTag/MacroSource/MacroIngestJob` 尚不存在（注：模型是否已随 v1.0.1 补齐需复核 domain_macro 运行时源码，本绑定状态以 registry `domain_macro.spec_version` 为准）。
 
 [INFERRED][HIGH] 绑定决策（详见 [stage2-contracts-binding-20260622.md](../../report/fred/stage2-contracts-binding-20260622.md) §2）：
 - `MacroObservation` 映射到现有 `MacroPoint`，fred 实施期推动 `domain-macro` 补 `provider/unit/period_start/period_end/vintage_at` 字段。

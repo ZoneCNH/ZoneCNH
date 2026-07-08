@@ -444,9 +444,9 @@ domain_macro:
   spec_ref: module/domain_macro/spec/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml
   maturity_ref: .foundationx/status/index.json#domain_macro
-  spec_version: v0.1.0
+  spec_version: v1.0.1
   release:
-    latest_tag: v0.1.0
+    latest_tag: v1.0.1
     cadence: irregular
 
 domain_exchange:
