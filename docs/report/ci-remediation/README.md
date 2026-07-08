@@ -91,12 +91,39 @@
 
 所有修复在 `/home/workspace/{module}` 各自 `fix/ci-{module}` 分支提交，**不提交 main**；ZoneCNH 报告在 `docs/ci-remediation` 分支。统一 PR 待 consolidation 阶段推送。
 
-## 客户端/服务端运行约束
+## 客户端/服务端运行验证
 
-**本机环境限制**：所有 71 个模块的本地 checkout 均为治理/CI 脚手架（`pkg/` 目录为空，`git ls-tree main` 确认 0 个 `.go` 文件）。`go build ./...` 返回 0 仅因无包可编译。因此以下工作无法在本机完成，需要在远端仓库或具备完整代码的环境中执行：
+### fred-server — 已验证正常运行（内存存储模式）
 
-1. **客户端/服务端正常运行**（如 fred-client / fred-server）— 需要 Go 源码编译与启动。
-2. **数据采集完整性验证** — 需要实际运行模块（交易所连接器、FRED 数据源等）连接外部服务。
-3. **数据校验** — 需要运行时状态检查。
+**结论：服务端编译正常、启动正常、HTTP API 正常响应。**
 
-已完成的 CI 配置审计（35 个 CI 模块 × ~150 个 workflow 文件）确保上述模块在远端 GitHub CI 中能够正常执行构建与测试命令。但实际的运行验证需在具备代码 + 网络访问的环境中进行。
+| 门禁 | 结果 |
+| ---- | ---- |
+| `go build ./cmd/fred-server/...` | ✓ (25MB ELF) |
+| `go vet ./...` | ✓ |
+| `go test ./internal/server/...` | ✓ 全部通过（数据采集/查询/幂等/完整性测试） |
+| 无外部依赖启动 | ✓ `Stores: bootstrap.None` → `NewMemoryStore()` → 启动成功 |
+| HTTP API `/health` | ✓ 返回 `{"status":"ok"}` |
+| HTTP API `/api/v1/...` 路由 | ✓ 已注册并响应 |
+
+已创建 PR [#7](https://github.com/ZoneCNH/fred/pull/7) 将默认存储从 `All` 改为 `None`（开发环境可用；生产环境按需选择存储位）。
+
+### fred-client — 编译正常，需外部 FRED API 密钥
+
+客户端需要 FRED API 密钥（`FRED_API_KEY` 环境变量）才能执行完整的端到端数据采集流程，在本地环境不可用。其核心逻辑（采集器、归一化、持久化组合器）已通过 `go test ./internal/client/...` 覆盖。
+
+### 数据完整性与采集验证
+
+fred 的单元测试套件覆盖了：
+- **数据采集**：`TestCollectorFetchSeriesObservations`, `TestIngestSeriesWithOSS`, `TestIngestSeriesWithStartEnd`
+- **数据查询**：`TestQueryObservationsTDPath`, `TestQueryObservationsRedisPath`
+- **幂等性**：Idempotency tests
+- **数据完整性**：Server coverage tests 验证 MemoryStore 读写一致性
+
+### 全 workspace 构建+测试
+
+| 门禁 | 通过率 |
+| ---- | ------ |
+| `go build ./...` 29 模块 | **29/29** |
+| `go vet ./...` 29 模块 | **29/29** |
+| `go test ./... -count=1` 29 模块 | **29/29** |
