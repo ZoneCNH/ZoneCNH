@@ -15,7 +15,7 @@
 | [02-matrix-analysis.md](02-matrix-analysis.md) | 追溯矩阵层（TRACEABILITY） | 覆盖率 100%，5 类结构缺陷 |
 | [03-plan-analysis.md](03-plan-analysis.md) | 计划与任务层（PLAN/TASK） | 缺失 6 个 Task，prompt 目录空置 |
 | [04-engineering-analysis.md](04-engineering-analysis.md) | 工程与治理层（DESIGN/GATE/CI/Evidence） | DoD 5/10 Pending，cmd/* 覆盖率 0% |
-| [05-fred-rules-proposal.md](05-fred-rules-proposal.md) | 模块规范建议（FRED-RULES.md 草稿） | 10 节专属规范建议 |
+| [05-fred-rules-proposal.md](05-fred-rules-proposal.md) | 模块规范建议（RULES.md 草稿） | 10 节专属规范建议 |
 
 ---
 
@@ -64,7 +64,7 @@
 
 | 文件 | 用途 | 优先级 |
 |---|---|---|
-| `FRED-RULES.md` | fred 专属模块规范（10 节） | P1 |
+| `RULES.md` | fred 专属模块规范（10 节） | P1 |
 
 ### 架构决策记录
 
@@ -113,7 +113,7 @@
 8. 为所有 Task 添加 Scope/Non-scope 节和 Verification Commands 节
 9. 统一 Task FR 编号为根规格体系
 10. 创建 `spec/SERIES-NAMING.md`（关闭 OPEN-CAT-1）
-11. 创建 `FRED-RULES.md`（10 节专属规范）
+11. 创建 `RULES.md`（10 节专属规范）
 12. 补全 evidence/review/release/retrospective 子目录
 13. 修复 CI workflow（boundary 补 setup-go，lint 升级 golangci-lint）
 

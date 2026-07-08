@@ -183,9 +183,9 @@ paths-ignore: ['**.md', 'docs/**', 'module/fred/evidence/**']
 
 ---
 
-## 八、模块专属规范建议（FRED-RULES.md）
+## 八、模块专属规范建议（RULES.md）
 
-**建议创建 `module/fred/FRED-RULES.md`**，覆盖：
+**建议创建 `module/fred/RULES.md`**，覆盖：
 
 ```
 §1 进程边界不变式

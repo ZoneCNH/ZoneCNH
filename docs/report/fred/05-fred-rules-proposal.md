@@ -1,6 +1,6 @@
-# FRED-RULES.md 提案草稿
+# RULES.md 提案草稿
 
-> **状态**：提案（待审批后移至 `module/fred/FRED-RULES.md`）  
+> **状态**：提案（待审批后移至 `module/fred/RULES.md`）  
 > **来源**：2026-07-08 深度分析报告 — 工程层建议  
 > **授权要求**：创建模块专属规范文件须经治理层审批
 
@@ -135,9 +135,9 @@ retrospective/ — 风险复盘（OPEN item 状态更新）
 
 创建此文件后：
 
-1. 在 `design/DESIGN.md` L1 添加引用：`> 模块专属规范见 [FRED-RULES.md](../FRED-RULES.md)`
-2. 在 `gate/BOUNDARY-GATES.md` 顶部添加引用：`> 完整规则见 [FRED-RULES.md](../FRED-RULES.md)`
-3. 在 `spec/SPEC.md §20 CI 门禁` 末尾引用：`> 覆盖率阈值和 Gate 定义见 FRED-RULES.md §8`
+1. 在 `design/DESIGN.md` L1 添加引用：`> 模块专属规范见 [RULES.md](../RULES.md)`
+2. 在 `gate/BOUNDARY-GATES.md` 顶部添加引用：`> 完整规则见 [RULES.md](../RULES.md)`
+3. 在 `spec/SPEC.md §20 CI 门禁` 末尾引用：`> 覆盖率阈值和 Gate 定义见 RULES.md §8`
 
 ---
 
