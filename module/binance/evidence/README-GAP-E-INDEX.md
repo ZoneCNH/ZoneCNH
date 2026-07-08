@@ -42,13 +42,13 @@
 | **GAP-E7** | SPEC 内部矛盾——§509 含违宪文件 | `2026-07-03/gap-e-projection-alignment.md` | TASK-SPEC-001 | Open（P0） |
 | **GAP-E10** | catalog SSOT 职责模糊 | `2026-07-02/tier-gap-cross-reference.md` | TASK-CLIENT-016 + ADR-005 | Open |
 | **GAP-E12** | NATS AckWait 与 backfill timeout 不匹配 | `2026-06-30/release/prg-007-issue-sync.md` | TASK-SERVER-022 | Open |
-| **GAP-E17** | server 25+ 处 time.Now() 不带 UTC | —（#1652 归档，待补） | TASK-SERVER-023 | Open（高 ROI） |
+| **GAP-E17** | server 25+ 处 time.Now() 不带 UTC | [DATA-INTEGRITY-E2E-20260708.md](../../report/binance/DATA-INTEGRITY-E2E-20260708.md#gap-e17) | TASK-SERVER-023 | Open（高 ROI） |
 | **GAP-E18** | TDengine WriteBatch 部分成功处理缺失 | `2026-06-30/release/prg-007-issue-sync.md` | TASK-SERVER-024 | Open |
 | **GAP-E24** | CatalogEntry 无 Tier/Priority 字段 | `2026-07-02/tier-gap-cross-reference.md` | ADR-005 + TASK-CLIENT-015/017 + TASK-SERVER-018 | Open（核心） |
 | **GAP-E26** | interval 列表碎片化 + 覆盖率 40% | `2026-07-02/tier-gap-cross-reference.md` | ADR-005 + TASK-CLIENT-016 | Open |
-| **GAP-E27** | WebSocket 无 SetReadLimit，OOM | —（#1652 归档，待补） | TASK-CLIENT-020 | Open（ROI） |
+| **GAP-E27** | WebSocket 无 SetReadLimit，OOM | [DATA-INTEGRITY-E2E-20260708.md](../../report/binance/DATA-INTEGRITY-E2E-20260708.md#gap-e27) | TASK-CLIENT-020 | Open（ROI） |
 | **GAP-E28** | PG 完全无事务管理 | `2026-06-28/review/perfect10-issue-alignment-20260628.md` | TASK-SERVER-025 | Open |
-| **GAP-E32** | 7 处 goroutine 启动无 recover | —（#1652 归档，待补） | TASK-CLIENT-021 + TASK-SERVER-026 | Open（ROI） |
+| **GAP-E32** | 7 处 goroutine 启动无 recover | [DATA-INTEGRITY-E2E-20260708.md](../../report/binance/DATA-INTEGRITY-E2E-20260708.md#gap-e32) | TASK-CLIENT-021 + TASK-SERVER-026 | Open（ROI） |
 | **GAP-E37** | admin API 缺 CSRF token 防护 | `2026-06-30/release/prg-004-observability.md` | TASK-SECURITY-001 | Open |
 
 ### §1.3 P2 缺口（MEDIUM，22 项）
@@ -56,7 +56,7 @@
 | GAP-ID | 缺口名 | 相关证据 | 治理制品 | 状态 |
 |--------|--------|---------|---------|------|
 | **GAP-E4** | throttle 默认 120 req/min 偏保守 | `2026-06-30/release/prg-007-issue-sync.md` | TASK-CLIENT-022 | Open |
-| **GAP-E5'** | ResourceGovernor 死代码 | —（#1652 归档，待补） | TASK-CLIENT-023 | Open |
+| **GAP-E5'** | ResourceGovernor 死代码 | [DATA-INTEGRITY-E2E-20260708.md](../../report/binance/DATA-INTEGRITY-E2E-20260708.md#gap-e5) | TASK-CLIENT-023 | Open |
 | **GAP-E8** | SchemaVersion 硬编码，无版本协商 | `2026-07-02/tier-gap-cross-reference.md` | TASK-CLIENT-024 | Open |
 | **GAP-E9** | client 端可观测性碎片化 | `2026-06-30/release/prg-004-observability.md` | TASK-CLIENT-025 + TASK-OBSERVABILITY-001 | Open |
 | **GAP-E13** | deadletter replay 跨进程一致性 | `2026-06-28/review/perfect10-issue-alignment-20260628.md` | TASK-SERVER-027 | Open |
@@ -67,25 +67,25 @@
 | **GAP-E29** | 无 migration runner | `2026-06-30/release/prg-007-issue-sync.md` | TASK-DEPLOYMENT-001 | Open |
 | **GAP-E30** | 无 pprof/debug endpoint | `2026-06-30/release/prg-004-observability.md` | TASK-OBSERVABILITY-002 | Open |
 | **GAP-E31** | NATS 拓扑常量硬编码 | `2026-07-02/tier-gap-cross-reference.md` | TASK-CONFIG-001 | Open |
-| **GAP-E33** | resiliencx 基座未接入 | —（#1652 归档，待补） | TASK-RESILIENCE-001 | Open |
-| **GAP-E34** | HTTP server 超时不完整 | —（#1652 归档，待补） | TASK-CLIENT-027 + TASK-SERVER-031 | Open |
+| **GAP-E33** | resiliencx 基座未接入 | [DATA-INTEGRITY-E2E-20260708.md](../../report/binance/DATA-INTEGRITY-E2E-20260708.md#gap-e33) | TASK-RESILIENCE-001 | Open |
+| **GAP-E34** | HTTP server 超时不完整 | [DATA-INTEGRITY-E2E-20260708.md](../../report/binance/DATA-INTEGRITY-E2E-20260708.md#gap-e34) | TASK-CLIENT-027 + TASK-SERVER-031 | Open |
 | **GAP-E36** | 零 build info（ldflags） | `2026-06-30/release/prg-007-issue-sync.md` | TASK-BUILD-001 | Open |
-| **GAP-E39** | exchangeInfo fetch 错误链断裂 | —（#1652 归档，待补） | TASK-CLIENT-028 | Open |
-| **GAP-E40** | http.DefaultClient 无 Timeout | —（#1652 归档，待补） | TASK-CLIENT-029 | Open |
+| **GAP-E39** | exchangeInfo fetch 错误链断裂 | [DATA-INTEGRITY-E2E-20260708.md](../../report/binance/DATA-INTEGRITY-E2E-20260708.md#gap-e39) | TASK-CLIENT-028 | Open |
+| **GAP-E40** | http.DefaultClient 无 Timeout | [DATA-INTEGRITY-E2E-20260708.md](../../report/binance/DATA-INTEGRITY-E2E-20260708.md#gap-e40) | TASK-CLIENT-029 | Open |
 | **GAP-E41** | liveness probe 检查项不足 | `2026-06-30/release/prg-007-issue-sync.md` | TASK-DEPLOYMENT-002 | Open |
 | **GAP-E42** | readiness probe 缺依赖探测 | `2026-06-30/release/prg-007-issue-sync.md` | TASK-DEPLOYMENT-003 | Open |
-| **GAP-E46** | 容器 base image hardening | —（#1652 归档，待补） | TASK-SECURITY-002 | Open |
+| **GAP-E46** | 容器 base image hardening | [DATA-INTEGRITY-E2E-20260708.md](../../report/binance/DATA-INTEGRITY-E2E-20260708.md#gap-e46) | TASK-SECURITY-002 | Open |
 | **GAP-E47** | 资源 limit 文档化不全 | `2026-06-30/release/prg-007-issue-sync.md` | TASK-OPS-001 | Open |
-| **GAP-E48** | 容器 distroless/non-root 未文档化 | —（#1652 归档，待补） | TASK-SECURITY-003 | Open |
-| **GAP-E50** | Dockerfile USER 指令缺失 | —（#1652 归档，待补） | TASK-SECURITY-004 | Open |
+| **GAP-E48** | 容器 distroless/non-root 未文档化 | [DATA-INTEGRITY-E2E-20260708.md](../../report/binance/DATA-INTEGRITY-E2E-20260708.md#gap-e48) | TASK-SECURITY-003 | Open |
+| **GAP-E50** | Dockerfile USER 指令缺失 | [DATA-INTEGRITY-E2E-20260708.md](../../report/binance/DATA-INTEGRITY-E2E-20260708.md#gap-e50) | TASK-SECURITY-004 | Open |
 
 ### §1.4 P3 缺口（LOW，20 项）
 
 | GAP-ID | 缺口名 | 相关证据 | 治理制品 | 状态 |
 |--------|--------|---------|---------|------|
-| **GAP-E11** | Binance REST 4 endpoint 全单点 | —（#1652 归档，待补） | TASK-RESILIENCE-002 | Open |
-| **GAP-E15** | ResourceGovernor 内存预算未接入 | —（#1652 归档，待补） | TASK-CLIENT-030 | Open |
-| **GAP-E16** | query timeout 未覆盖重放路径 | —（#1652 归档，待补） | TASK-CLIENT-031 | Open |
+| **GAP-E11** | Binance REST 4 endpoint 全单点 | [DATA-INTEGRITY-E2E-20260708.md](../../report/binance/DATA-INTEGRITY-E2E-20260708.md#gap-e11) | TASK-RESILIENCE-002 | Open |
+| **GAP-E15** | ResourceGovernor 内存预算未接入 | [DATA-INTEGRITY-E2E-20260708.md](../../report/binance/DATA-INTEGRITY-E2E-20260708.md#gap-e15) | TASK-CLIENT-030 | Open |
+| **GAP-E16** | query timeout 未覆盖重放路径 | [DATA-INTEGRITY-E2E-20260708.md](../../report/binance/DATA-INTEGRITY-E2E-20260708.md#gap-e16) | TASK-CLIENT-031 | Open |
 | **GAP-E21** | UX 错误消息碎片化 | `2026-06-30/release/prg-007-issue-sync.md` | TASK-CLIENT-032 | Open |
 | **GAP-E22** | 无 rate limit 告警 | `2026-06-30/release/prg-007-issue-sync.md` | TASK-OPS-002 | Open |
 | **GAP-E35** | metrics 字段名不规范 | `2026-06-30/release/prg-004-observability.md` | TASK-OBSERVABILITY-003 | Open |
@@ -118,7 +118,7 @@
 
 #### 运行时检验层
 
-> ⚠️ 原 DATA-INTEGRITY-E2E-20260701.md 报告（曾关联 E1/E2/E3/E17/E27/E32/E33/E34/E36/E39/E40/E46/E48/E50/E5'/E11/E15/E16/E49）已于 PR #1652 归档清理。本层暂无在用运行时证据，需在补齐替代证据后回填本表。
+> ⚠️ 原 DATA-INTEGRITY-E2E-20260701.md 报告（曾关联 E1/E2/E3/E17/E27/E32/E33/E34/E36/E39/E40/E46/E48/E50/E5'/E11/E15/E16/E49）已于 PR #1652 归档清理。当前 15 个归档 GAP-E 的在用运行时证据已回指 `report/binance/DATA-INTEGRITY-E2E-20260708.md`，本表后续以该主报告为准。
 
 #### 发布验证层
 
@@ -133,6 +133,7 @@
 | 证据文件 | 关联 GAP-E | 内容概要 |
 |---------|-----------|---------|
 | `2026-06-28/review/perfect10-issue-alignment-20260628.md` | E28, E13, E20 | P10 十轮对齐（issue closure 事实） |
+| `../../report/binance/DATA-INTEGRITY-E2E-20260708.md` | E5', E11, E15, E16, E17, E27, E32, E33, E34, E39, E40, E46, E48, E49, E50 | 15 个归档 GAP-E 的当前运行时主证据源 |
 | `2026-06-28/todo-archived.md` | — | 已归档（历史参考） |
 
 ---
@@ -234,7 +235,7 @@ Fixes #369"
 | **P3** | 20 | alignment-summary.md（原 DATA-INTEGRITY 报告 #1652 归档） |
 | **Meta** | 2 | gap-e-projection-alignment.md, RUNTIME-GAP-MATRIX.md |
 
-**总计**：58 项缺口。其中 15 项（E5'/E11/E15/E16/E17/E27/E32/E33/E34/E39/E40/E46/E48/E49/E50）的原运行时证据（DATA-INTEGRITY-E2E-20260701.md）已于 #1652 归档，标注待补；其余 43 项可追溯到在用 evidence。
+**总计**：58 项缺口。其中 15 项（E5'/E11/E15/E16/E17/E27/E32/E33/E34/E39/E40/E46/E48/E49/E50）的原运行时证据（DATA-INTEGRITY-E2E-20260701.md）已由 `DATA-INTEGRITY-E2E-20260708.md` 接管；其余 43 项可追溯到在用 evidence。
 
 ---
 
