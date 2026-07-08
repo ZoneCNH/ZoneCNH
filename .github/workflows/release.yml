@@ -164,7 +164,11 @@ jobs:
             TAG="${GITHUB_REF_NAME}"
           fi
 
+          # 笔记文件路径与「生成 release notes」步骤写入的路径保持一致。
+          # 注意：上一步的 shell 局部变量不会跨 step 传递，必须在此显式定义。
+          NOTES_FILE="release/manifest/release-notes.md"
+
           gh release create "$TAG" \
             --title "FoundationX ${TAG}" \
-            --notes-file "$NOTES_FILE" \
+            --notes-file "${NOTES_FILE}" \
             release/manifest/release-manifest.json
