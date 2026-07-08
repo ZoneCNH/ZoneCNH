@@ -139,7 +139,7 @@ alertx 首次发布目标 **runtime tag v1.0.0**（非渐进 v0.x）。依据宪
 - [module/observex/ADR-dual-attribution.md](../observex/ADR-dual-attribution.md) — observex 双重归属先例（R7 闭环）
 - [module/registry.yaml:892-904](../registry.yaml) — alertx 注册条目
 - [ROADMAP.md:213](../../ROADMAP.md) — v0.5.0 三类告警锚点
-- [docs/goal/rsi-standard/23-monitoring-incident-response.md](../../docs/goal/rsi-standard/23-monitoring-incident-response.md) — I0-I5 事件分级标准（severity 映射源）
+- docs/goal/rsi-standard/23-monitoring-incident-response.md — I0-I5 事件分级标准（severity 映射源）
 
 ---
 
