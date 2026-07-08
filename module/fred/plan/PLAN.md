@@ -42,7 +42,7 @@
 
 | 项 | 内容 |
 | -- | ---- |
-| 任务 | 实现 FRED collector：按 `spec/SPEC.md` §5.1 全端点矩阵完成拉取、分页、限流、重试、错误分类 |
+| 任务 | 实现 FRED collector：按 `spec/SPEC.md` §5.1 全端点矩阵与 `spec/SERIES-CATALOG.md` 的 P0/P1/P2 分层完成拉取（**P0 核心指标包优先、再 P1 领先/衰退核心、最后 P2 完整覆盖**）、分页、限流、重试、错误分类 |
 | 任务 | 首次全量按默认起点 `1990-01-01` 分片回补，后续按游标增量并回拉最近 3 个月修订窗口 |
 | 任务 | 实现 multi-series batch 拉取、D->M/M->Q 聚合视图，并保留 `realtime_start/realtime_end` 版本维度 |
 | 任务 | FRED DTO → `domain_macro` 映射，写 OSS raw，发布 NATS ingest envelope |

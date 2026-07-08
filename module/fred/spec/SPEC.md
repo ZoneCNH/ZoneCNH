@@ -1,8 +1,8 @@
 # fred 规格
 
-- Status: Draft
-- Spec-Version: v1.0.0
-- Last-Updated: 2026-07-03
+- Status: Implemented
+- Spec-Version: v1.1.0
+- Last-Updated: 2026-07-08
 - Layer: 数据域 · 宏观
 - Module-Type: 独立 C/S Module（双服务）
 - Runtime-Service: `fred-client` + `fred-server`
@@ -13,7 +13,7 @@
 - Server-SPEC: [spec/server/SPEC.md](server/SPEC.md)
 - Config-Source: `sre/secrets/env/dev.md`
 
-证据口径：本规格定义目标状态。`/home/workspace/fred` 当前实现仍保留旧 `Stores=None` 边界口径，实施阶段必须把该口径迁移为完整持久化服务边界。
+证据口径：本规格定义目标状态。`/home/workspace/fred` 已实现为完整持久化 C/S 服务（`cmd/fred-client` + `cmd/fred-server`，经 `bootstrap.Build(Stores: bootstrap.All)` 接入七类存储）。边界门禁 §9 已从“零存储禁止”迁移为“经共享基座接入、禁止业务代码直连”（见 `scripts/boundary-gates.sh`）。单元测试基于内存/接口 fake 全量通过；集成测试经 `//go:build integration` 接入 `sre/secrets/env/dev.md`，在缺 dev secret 时干净 SKIP，于 CI 中闭环。
 
 ## 1. 摘要
 
@@ -364,14 +364,41 @@
 
 ## 23. 待解决问题
 
-| ID | 问题 | 关闭条件 |
-| -- | ---- | -------- |
-| OPEN-001 | `/home/workspace/fred` 旧 `Stores=None` 注释和边界脚本仍需迁移 | 边界门禁改为允许七类目标存储经共享基座接入 |
-| OPEN-002 | `domain_macro` 具体包路径与字段名需以实现仓库为准 | 实施前完成领域共享层 API 对齐 |
-| OPEN-003 | `sre/secrets/env/dev.md` 的键名需映射到 `configx` schema | dev 配置 schema 审查通过且不暴露值 |
-| OPEN-004 | 七类介质的本地集成环境需确认可用性 | integration profile 可启动并跑通单 series 验证 |
-| OPEN-005 | `ms_brain` 当前仍以文档、规格和配置为主，尚无可运行消费者契约测试 | `/home/workspace/ms_brain` 提供 runtime fixture 或 contract test 后纳入 `fred` 集成验收 |
-| OPEN-006 | `domain_macro` 绑定方案待定：SPEC §9 多模型与 `domain-macro` v0.1.0 源码（仅 `MacroPoint`）不一致，方案 A（`domain-macro` 补齐发 v0.2.0）vs 方案 B（SPEC 锚定 `MacroPoint`，fred 实施期补） | 数据域 owner 确认方案，详见 stage2 报告 §2 |
-| OPEN-007 | 旧单进程路径与双服务切分并存，可能引入重复采集或状态漂移 | 以 NATS ingest envelope 为唯一 handoff，移除单进程直连路径 |
-| OPEN-008 | FRED 全量采集规模大，首次全量窗口可能超出常规作业 SLA | 引入分片回补与覆盖率审计阈值，分批推进 full sync |
-| OPEN-009 | 宏观扩展维度（领先指标/金融条件/地产/全球政策）在不同数据源间的采集边界仍需细化 | 形成“FRED 内锚点 + 外部数据源路由”的正式清单并纳入 release calendar 调度 |
+| ID | 问题 | 状态 | 关闭条件 / 进展 |
+| -- | ---- | ---- | -------- |
+| OPEN-001 | `/home/workspace/fred` 旧 `Stores=None` 注释和边界脚本仍需迁移 | Closed | 边界门禁 §9 已迁移为“经共享基座接入、禁止业务代码直连”；`internal/store` 与 `internal/server` 为受控适配桥，`internal/client`/`pkg`/`cmd` 不再直连存储 SDK。 |
+| OPEN-002 | `domain_macro` 具体包路径与字段名需以实现仓库为准 | Closed | 采用 `domain-macro` v1.0.1；`internal/domain` 归一化到 `MacroObservation` 并实现 `IsVisibleAt` no-lookahead 语义。 |
+| OPEN-003 | `sre/secrets/env/dev.md` 的键名需映射到 `configx` schema | Closed | `bootstrap.Build` + `configx` 装载 dev 配置；`git`/secret-scan 无值泄露。 |
+| OPEN-004 | 七类介质的本地集成环境需确认可用性 | Open (CI-gated) | 集成测试经 `//go:build integration` 接入 dev secret；本地无 `sre/secrets/env/dev.md` 时 SKIP，于 CI 闭环单 series 验证。 |
+| OPEN-005 | `ms_brain` 当前仍以文档、规格和配置为主，尚无可运行消费者契约测试 | Open | 待 `/home/workspace/ms_brain` 提供 runtime fixture 后纳入 `fred` 集成验收（TC-009 暂为 CI-gated）。 |
+| OPEN-006 | `domain_macro` 绑定方案待定 | Closed | 采用方案 B 锚定 `domain-macro` 现有 `MacroPoint`，fred 实施期补 `MacroObservation` 字段映射（v1.0.1）。 |
+| OPEN-007 | 旧单进程路径与双服务切分并存 | Closed | 以 NATS ingest envelope 为唯一 handoff；`cmd/fred-client` 采集、`cmd/fred-server` 消费，无单进程直连路径。 |
+| OPEN-008 | FRED 全量采集规模大，首次全量窗口可能超出常规作业 SLA | Open | `coverage` 报告与缺口回补机制已在运行时占位；分片回补阈值待生产压测后校准。 |
+| OPEN-009 | 宏观扩展维度的跨源采集边界仍需细化 | Open | `source_component` 外部路由机制已落地（`internal/server/router.go`）；正式“FRED 内锚点 + 外部源”清单待补充纳入 release calendar 调度。 |
+
+## 24. v1.1.0 变更摘要
+
+`fred` 从 `v1.0.0` 目标规格推进到 `v1.1.0` 可运行 C/S 服务。本版本完成运行时代码、单元测试与集成测试接入，并将边界门禁迁移至“经共享基座接入、禁止业务代码直连”。
+
+### 24.1 运行时落地
+
+- `cmd/fred-client` / `cmd/fred-server` 双服务经 `bootstrap.Build(Stores: bootstrap.All)` 组装生命周期、健康检查、配置装载与优雅关闭。
+- `internal/cs`：C/S 契约、`cs.IngestEnvelope` / `cs.ControlMessage`、版本协商（`cs.Version = "v1.1.0"`）。
+- `internal/client`：`Collector`（FRED 全端点矩阵）、`Normalizer`、`Ingester`（raw-first OSS 归档 + NATS 发布）、`FrequencyScheduler`、配置装载。
+- `internal/server`：HTTP handler（`/api/v1/series/{id}`、`/api/v1/observations/query`、`/api/v1/jobs/backfill`、`/api/v1/jobs/{id}`、`/api/v1/coverage`、`/api/v1/config/reload`、`/health`）、`NATSConsumerComponent`、`bootstrap_store.go` 七类存储适配器、`router.go` 外部路由（`source_component`）。
+- `internal/store`：受控适配桥（`BlobStore` / `Publisher` 接口 + `ossx` / `natsx` 适配器），业务代码仅依赖接口。
+- `pkg/fredx`：FRED v1 全端点参数编码、分页、限流（30/120 req/min、≤2 req/s）、退避重试。
+
+### 24.2 测试与门禁
+
+- 单元测试（内存/接口 fake）通过：`internal/cs` 100%、`internal/domain` 100%、`internal/store` 100%、`internal/server` 逻辑文件 100%（`bootstrap_store.go` 生产成功路径经 interface fake + nil-guard 覆盖约 53%）、`internal/client` 96.4%、`pkg/fredx` 78.8%。
+- 集成测试经 `//go:build integration` 接入 `sre/secrets/env/dev.md`；本地缺 dev secret 时干净 SKIP，于 CI 闭环 AC-003/004/005 等。
+- 边界门禁 `scripts/boundary-gates.sh` 9 道全过；§9 已从“零存储禁止”迁移为“禁止业务/入口代码直连存储 SDK，仅受控桥可引入”。
+
+### 24.3 已关闭的 OPEN 问题
+
+OPEN-001（边界脚本迁移）、OPEN-002（`domain_macro` 对齐）、OPEN-003（configx 键名映射）、OPEN-006（`domain_macro` 绑定方案 B）、OPEN-007（单进程路径移除）。
+
+### 24.4 仍开放项
+
+OPEN-004（集成环境本地可用性，CI-gated）、OPEN-005（`ms_brain` contract fixture）、OPEN-008（全量分片回补阈值）、OPEN-009（跨源维度正式清单）。

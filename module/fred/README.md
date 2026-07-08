@@ -8,6 +8,8 @@
 | ---- | ---- |
 | [goal/goal.md](goal/goal.md) | 目标、边界、成功标准 |
 | [spec/SPEC.md](spec/SPEC.md) | 根规格（23 节） |
+| [spec/SERIES-CATALOG.md](spec/SERIES-CATALOG.md) | FRED 系列分类目录（源自 `.beads/1.md`，12 类 90 序列权威采集集） |
+| [spec/SERIES-API.md](spec/SERIES-API.md) | 路由接口细节（source_component、authority registry、外部路由集成测试） |
 | [spec/client/SPEC.md](spec/client/SPEC.md) | client 子模块规格 |
 | [spec/server/SPEC.md](spec/server/SPEC.md) | server 子模块规格 |
 | [matrix/TRACEABILITY.md](matrix/TRACEABILITY.md) | 根追溯矩阵 |
@@ -69,6 +71,8 @@
 5. Tags：`/tags`、`/related_tags`、`/tags/series`
 
 ## 核心指标包（初始）
+
+> 以下 27 个锚点为 **P0（首期）** 优先级。完整权威采集集见 [spec/SERIES-CATALOG.md](spec/SERIES-CATALOG.md)（源自 `.beads/1.md`，12 类 90 序列，含 P0/P1/P2 分层与差异对账）。别名统一建议：`WDTGAL→WTREGEN`、`VXVCLS→VIXCLS`。
 
 | 维度 | 指标 |
 | --- | --- |

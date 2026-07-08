@@ -35,7 +35,7 @@
 | FR-S005 | WHEN 热点查询访问 | THEN 使用 `Redis` 缓存并保持可重建 |
 | FR-S006 | WHEN 分析投影生成 | THEN 写入 `clickhouse` 读模型并可重建 |
 | FR-S007 | WHEN 业务事实确定 | THEN 发布 Kafka durable event（版本化） |
-| FR-S008 | WHEN 外部查询调用 | THEN API 返回 `domain_macro` 语义并执行 no-lookahead |
+| FR-S008 | WHEN 外部查询调用 | THEN API 返回 `domain_macro` 语义并执行 no-lookahead；`GetSeries`/`GetCatalogCoverage`/`QueryObservations` 必须支持 `source_component` 外部路由语义（见 `spec/SERIES-API.md`） |
 | FR-S009 | WHEN admin 指令触发 | THEN 走 NATS control subject 并落审计日志 |
 | FR-S010 | WHEN 任一关键步骤失败 | THEN job 不得标记 completed，需可重放恢复 |
 | FR-S011 | WHEN 执行覆盖审计 | THEN 生成 series/release/category/tag/source/updates 六域覆盖率、缺口分片和重采任务视图，并按 root SPEC §5.1 细分端点级缺口，核对默认 `1990-01-01` 全量起点、最近 3 个月修订回拉与 `realtime_start/realtime_end` 版本结果 |
@@ -60,7 +60,7 @@
 | AC-S003 | Kafka/NATS 分层正确 | TC-S003 |
 | AC-S004 | no-lookahead 查询语义正确 | TC-S004 |
 | AC-S005 | API/admin 契约与鉴权可验证 | TC-S005 |
-| AC-S006 | 覆盖审计接口可返回六域覆盖率与缺口分片 | TC-S006 |
+| AC-S006 | 覆盖审计接口可返回六域覆盖率与缺口分片；外部路由序列单列 `external_routed_count` | TC-S006 |
 
 | TC | 命令建议 |
 | --- | --- |

@@ -1,0 +1,16 @@
+=== go test -cover ./... (2026-07-08T00:15:29Z) ===
+	github.com/ZoneCNH/fred/cmd/fred-client		coverage: 0.0% of statements
+	github.com/ZoneCNH/fred/cmd/fred-server		coverage: 0.0% of statements
+ok  	github.com/ZoneCNH/fred/internal/client	(cached)	coverage: 96.4% of statements
+ok  	github.com/ZoneCNH/fred/internal/cs	(cached)	coverage: 100.0% of statements
+ok  	github.com/ZoneCNH/fred/internal/domain	(cached)	coverage: 100.0% of statements
+ok  	github.com/ZoneCNH/fred/internal/server	(cached)	coverage: 84.0% of statements
+ok  	github.com/ZoneCNH/fred/internal/store	(cached)	coverage: 100.0% of statements
+ok  	github.com/ZoneCNH/fred/pkg/fredx	(cached)	coverage: 78.8% of statements
+
+=== boundary-gates.sh ===
+
+Results: 9 passed, 0 failed
+
+=== integration build/skip ===
+ok  	github.com/ZoneCNH/fred/internal/server	(cached)
