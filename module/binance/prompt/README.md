@@ -24,7 +24,7 @@ prompt/
 
 ## 当前状态
 
-**Pipeline State**：Spec→Code 管线的 S5-Prompt 层。v4.0.0 当前采用单状态模型：`55 Done / 0 Partial / 0 Drifted / 10 Pending`（FR-052~061 order book rebuild）。release_closeable=YES（PRG-001~007 全 PASS）。GitHub open issue = 0。
+**Pipeline State**：Spec→Code 管线的 S5-Prompt 层。v4.0.1 当前采用单状态模型：`65 Done / 0 Partial / 0 Drifted / 0 Pending`（FR-052~061 order book rebuild）。release_closeable=YES（PRG-001~007 全 PASS）。GitHub open issue = 0。
 
 > [COMPUTED, HIGH] 2026-06-28 full E2E 包仅作为历史运行证据，不构成发布关闭结论。后续生成新 Context Package 时，必须引用当前 P10 action plan、team fix context、Beads/GitHub issue 状态、[`../todo.md`](../todo.md) 只读投影与 [`../evidence/2026-06-28/todo-archived.md`](../evidence/2026-06-28/todo-archived.md) 的历史快照。
 

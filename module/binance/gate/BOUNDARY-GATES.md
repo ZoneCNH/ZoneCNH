@@ -1,8 +1,8 @@
 # module/binance BOUNDARY GATES
 
 > 版本：v2.2.5
-> Module-Version: v4.0.0
-> 更新日期：2026-07-07
+> Module-Version: v4.0.1
+> 更新日期：2026-07-08
 > Runtime 仓库：`/home/workspace/binance`
 > Runtime 契约：`/home/workspace/binance/BOUNDARY-GATES.md`
 > Runtime 脚本：`/home/workspace/binance/scripts/boundary-gates.sh`

@@ -5,15 +5,15 @@
 | 字段           | 值                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Status         | Generated from current module SSOT                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| Last-Updated   | 2026-07-06                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| Module-Version | v4.0.0 |
-| Module-State   | v4.0.0：FR **65 Done / 0 Pending**（FR-052~061 order book rebuild spot/um/cm 已实现；options depth 协议待 Phase 2 实测激活）。release_closeable=YES（PRG-001~007 全 PASS）。 |
+| Last-Updated   | 2026-07-08                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| Module-Version | v4.0.1 |
+| Module-State   | v4.0.1：FR **65 Done / 0 Partial / 0 Drifted / 0 Pending**（FR-052~061 order book rebuild spot/um/cm 已实现；options depth 协议待 Phase 2 实测激活）。release_closeable=YES（PRG-001~007 全 PASS）。 |
 | Runtime-Repo   | `/home/workspace/binance`                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | Source         | `SPEC.md`, `TRACEABILITY.md`, `STANDARD.md`, `client/TRACEABILITY.md`, `server/TRACEABILITY.md`, `BOUNDARY-GATES.md`                                                                                                                                                                                                                                                                                                                                  |
 
 本文档是验收执行清单，不是通过证明。每个 Pending 项必须由实际命令输出、CI run、测试报告或 traceability 状态更新关闭。
 
-> [COMPUTED, HIGH] 2026-07-06 状态对齐：SPEC v3.14.0 已确认 55/55 FR Done（100%），release_closeable=YES（PRG-001~007 全 PASS）；运行时口径 59 个 GAP-E 全部 Fixed（GAP-E59 数据血缘于 2026-07-06 修复）。历史 P10 issues（43+28 GitHub + 43 Beads）已全部关闭。CI workflow 已从 self-hosted 迁移到 ubuntu-latest（self-hosted runner 已下线）。
+> [COMPUTED, HIGH] 2026-07-08 状态对齐：SPEC v4.0.1 已确认 65/65 FR Done（100%），release_closeable=YES（PRG-001~007 全 PASS）；运行时口径 59 个 GAP-E 全部 Fixed（GAP-E59 数据血缘于 2026-07-06 修复）。历史 P10 issues（43+28 GitHub + 43 Beads）已全部关闭。CI workflow 已从 self-hosted 迁移到 ubuntu-latest（self-hosted runner 已下线）。
 
 ### 状态口径 L1/L2 分层（RULES R4）+ 单一状态模型（v3.9.0）
 
@@ -21,7 +21,7 @@
 
 #### 代码+验收统一层（Done / Partial / Drifted / Pending）
 
-定义：FR 实现状态综合代码存在性、装配就绪、TC PASS 和 evidence 归档。当前 55 Done + 10 Pending（FR-052~061 order book rebuild）。
+定义：FR 实现状态综合代码存在性、装配就绪、TC PASS 和 evidence 归档。当前 65 Done + 0 Pending（FR-052~061 order book rebuild）。
 
 | 状态      | 含义                                                                    | 证据要求                                      |
 | --------- | ----------------------------------------------------------------------- | --------------------------------------------- |
