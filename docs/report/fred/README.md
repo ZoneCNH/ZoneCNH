@@ -16,6 +16,7 @@
 | [03-plan-analysis.md](03-plan-analysis.md) | 计划与任务层（PLAN/TASK） | 缺失 6 个 Task，prompt 目录空置 |
 | [04-engineering-analysis.md](04-engineering-analysis.md) | 工程与治理层（DESIGN/GATE/CI/Evidence） | DoD 5/10 Pending，cmd/* 覆盖率 0% |
 | [05-fred-rules-proposal.md](05-fred-rules-proposal.md) | 模块规范建议（RULES.md 草稿） | 10 节专属规范建议 |
+| [06-deep-iteration-analysis.md](06-deep-iteration-analysis.md) | 深度迭代复评（4 路 Agent 团队，2026-07-08） | 综合 ~72/100；3 个新 P0（registry 脱节 / CI 集成空转 / prompt 缺失）；建议建跨模块宏观数据源标准 |
 
 ---
 
