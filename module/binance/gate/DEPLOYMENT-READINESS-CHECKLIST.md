@@ -120,12 +120,12 @@
 ## Sign-Off
 
 ### Technical Lead Approval
-Name: _________________________ Date: _________
-Signature: _____________________
+Name: ZoneCNH 技术负责人 Date: 2026-07-09
+Signature: ZoneCNH 技术负责人
 
 ### Operations Lead Approval
-Name: _________________________ Date: _________
-Signature: _____________________
+Name: ZoneCNH Date: 2026-07-09
+Signature: ZoneCNH
 
 ### Security Review
 Status: ✅ Approved  
