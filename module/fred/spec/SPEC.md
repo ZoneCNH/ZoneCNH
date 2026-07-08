@@ -81,9 +81,9 @@
 
 | 维度 | 初始序列锚点 |
 | -- | ---- |
-| 流动性（Liquidity） | `WALCL`、`WDTGAL`、`RRPONTSYD`、`ECBASSETSW`、`JPNASSETS`、`DEXUSEU`、`DEXJPUS` |
+| 流动性（Liquidity） | `WALCL`、`WTREGEN`、`RRPONTSYD`、`ECBASSETSW`、`JPNASSETS`、`DEXUSEU`、`DEXJPUS` |
 | 增长与通胀（Growth × Inflation） | `INDPRO`、`PERMIT`、`T5YIE`、`CPIAUCSL`、`PCEPILFE` |
-| 风险（Risk） | `VXVCLS`、`STLFSI4` |
+| 风险（Risk） | `VIXCLS`、`STLFSI4` |
 | 政策（Policy Stance） | `DFEDTARU`、`PCEPI`、`GDPC1`、`GDPPOT`、`UNRATE`、`NROU` |
 | 基础宏观 | `GDP`、`FEDFUNDS`、`CPILFESL`、`PAYEMS`、`ICSA`、`DGS10`、`M2SL` |
 

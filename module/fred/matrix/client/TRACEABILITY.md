@@ -1,19 +1,20 @@
 # fred-client Traceability Matrix
 
-- Last-Updated: 2026-07-03
+- Last-Updated: 2026-07-08
 - Source: [../../spec/client/SPEC.md](../../spec/client/SPEC.md)
+- Source-From: matrix/TRACEABILITY.md（主矩阵权威状态投影）
 
 | FR | BR | AC | TC | 状态 |
 | --- | --- | --- | --- | --- |
-| FR-C001 | BR-C001 | AC-C001 | TC-C001 | Planned |
-| FR-C002 | BR-C004 | AC-C001 | TC-C001 | Planned |
-| FR-C003 | BR-C002 | AC-C002 | TC-C002 | Planned |
-| FR-C004 | BR-C001, BR-C003 | AC-C004 | TC-C004 | Planned |
-| FR-C005 | BR-C002 | AC-C003 | TC-C003 | Planned |
-| FR-C006 | BR-C002 | AC-C003 | TC-C003 | Planned |
-| FR-C007 | BR-C004 | AC-C001 | TC-C001 | Planned |
-| FR-C008 | BR-C004 | AC-C001 | TC-C001 | Planned |
-| FR-C009 | BR-C005 | AC-C005 | TC-C005 | Planned |
+| FR-C001 | BR-C001 | AC-C001 | TC-C001 | Done |
+| FR-C002 | BR-C004 | AC-C001 | TC-C001 | Done |
+| FR-C003 | BR-C002 | AC-C002 | TC-C002 | Done |
+| FR-C004 | BR-C001, BR-C003 | AC-C004 | TC-C004 | Done |
+| FR-C005 | BR-C002 | AC-C003 | TC-C003 | Done |
+| FR-C006 | BR-C002 | AC-C003 | TC-C003 | Done |
+| FR-C007 | BR-C004 | AC-C006 | TC-C006 | Done |
+| FR-C008 | BR-C004 | AC-C007 | TC-C007 | Done |
+| FR-C009 | BR-C005 | AC-C005 | TC-C005 | Done |
 
 ## 任务映射
 
