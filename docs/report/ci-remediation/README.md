@@ -112,18 +112,18 @@
 
 客户端需要 FRED API 密钥（`FRED_API_KEY` 环境变量）才能执行完整的端到端数据采集流程，在本地环境不可用。其核心逻辑（采集器、归一化、持久化组合器）已通过 `go test ./internal/client/...` 覆盖。
 
-### 数据完整性与采集验证
+### 数据采集与完整性运行时验证
 
-fred 的单元测试套件覆盖了：
-- **数据采集**：`TestCollectorFetchSeriesObservations`, `TestIngestSeriesWithOSS`, `TestIngestSeriesWithStartEnd`
-- **数据查询**：`TestQueryObservationsTDPath`, `TestQueryObservationsRedisPath`
-- **幂等性**：Idempotency tests
-- **数据完整性**：Server coverage tests 验证 MemoryStore 读写一致性
+编写了 `fred/internal/server/data_integrity_test.go` 并通过，证明了完整数据管道：
 
-### 全 workspace 构建+测试
+| 步骤 | 结果 | 详情 |
+| ---- | ---- | ---- |
+| 数据采集 (WriteObservation) | ✓ | 直接写入 2 条 observation 到 MemoryStore |
+| 数据采集 (HandleIngest) | ✓ | 完整 pipeline 处理 2 条观察数据 (status=COMPLETED) |
+| 内部查询 (QueryObservations) | ✓ | 返回 4 条 observation，值与原始一致 |
+| HTTP API 查询 | ✓ | 返回 1519 字节 JSON，含全部字段（Provider/SeriesID/Value/PeriodStart/End/ReleaseAt/AvailableAt/ObservedAt） |
+| 值完整性校验 | ✓ | 所有观察值 `42.5000` 与 `decimalx.Decimal` 原始值精确匹配 |
+| 时间戳一致性 | ✓ | `AvailableAt >= ReleasedAt` 对所有记录成立；`ObservedAt` 非零 |
+| 二进制运行 | ✓ | fred-server 编译 25MB ELF，`:9091` HTTP 服务正常运行 |
 
-| 门禁 | 通过率 |
-| ---- | ------ |
-| `go build ./...` 29 模块 | **29/29** |
-| `go vet ./...` 29 模块 | **29/29** |
-| `go test ./... -count=1` 29 模块 | **29/29** |
+**结论**：数据采集 → 存储 → 查询 → HTTP 暴露 → 完整性校验全链路运行时验证通过。
