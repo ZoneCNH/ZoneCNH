@@ -108,6 +108,20 @@
 | FR-043 | Cost / Budget Observability | Done | chaos test scripts + go test -race PASS (0 races) |
 | FR-044 | Compliance Destruction Proof | Done | gitleaks scan + govulncheck + admin auth Bearer token |
 
+### v4.0.0 新增 FR-045~051（whitelist / catalog / tier，全部 Done）
+
+> [COMPUTED, HIGH] 以下 FR 为 v4.0.0 白名单系统与服务端扩展，对齐 ADR-008（options 准入/采集解耦）。全部 Done。
+
+| FR | 名称 | 状态 | 核心内容 |
+| --- | --- | --- | --- |
+| FR-045 | Whitelist Sync Job | Done | whitelist/sync_job.go + rules.go（事件驱动 + 定时兜底 + PG advisory lock 单写者） |
+| FR-046 | Whitelist 表 + Meta SSOT | Done | pg_whitelist.go + migrations/011_whitelist.sql（whitelist_meta version SSOT + whitelist_sync_log 审计） |
+| FR-047 | GET /internal/whitelist | Done | whitelist/service.go + api/whitelist_handler.go（全量 + 增量，200 统一响应） |
+| FR-048 | NATS whitelist.version 推送 | Done | whitelist/publisher.go + assembly 独立 NATS 连接注入（core NATS fire-and-forget，失败非致命） |
+| FR-049 | 下游消费方 SDK | Done | pkg/whitelistclient/cache.go + client.go（缓存 3h TTL + 增量刷新 + 容灾降级 + Bearer token 鉴权） |
+| FR-050 | catalog_symbols 扩展字段 | Done | migrations/011_whitelist.sql + pg_catalog.go ApplyDiff（COALESCE 保留手动 tier/collection） |
+| FR-051 | Tier 分配策略 | Done | whitelist/rules.go + 运维 SQL 批量分配（spot/um_perp/cm_perp/options 各取 24h quoteVolume top 20；ADR-008 准入/采集解耦） |
+
 ### 能力边界声明（#1113/#1114/#1115/#1116 降级闭合）
 
 > [COMPUTED, HIGH] 以下 issue 的关闭条件接受「明确降级/Partial/排除」作为替代方案。本节记录当前能力边界，作为这些 issue 的闭合依据。
@@ -130,16 +144,16 @@
 
 | FR | 名称 | 状态 | 核心内容 | 待闭合 |
 | --- | --- | --- | --- | --- |
-| FR-052 | OB full_incremental 模式 | Pending | per-symbol 本地 book 状态机（UNINIT/BUFFERING/ALIGNED/REBUILDING）+ 独立 goroutine | [STATE-MACHINE.md](../design/ORDER-BOOK-STATE-MACHINE.md) §3-§4 实现 |
-| FR-053 | OB snapshot_topn 模式 | Pending | 无状态转发限档快照（5/10/20档），不需序号校验 | §2.2 实现 |
-| FR-054 | OB Initial Alignment + Seq Validation | Pending | REST 快照对齐 9 步 + spot U/u + futures U/u/pu + qty=="0" 删除 + 定点数 | §4.2-§4.5 实现 |
-| FR-055 | OB Auto-Rebuild | Pending | gap → 丢弃 → BUFFERING 重新对齐，buffer cap 10000 | §4.1 实现 |
-| FR-056 | OB Snapshot Persistence + Fast Recovery | Pending | 5min 持久化 + 冷启动 fast path | §5 实现 |
-| FR-057 | OB Staleness API | Pending | stale 派生标志 + 下游消费方契约 | §8 实现 |
-| FR-058 | OB TopN Subscription | Pending | 100ms 推送 + stale=true 继续推送 | §10.2 实现 |
-| FR-059 | OB Incremental Forwarding | Pending | 校验增量转发 + rebuild 标记事件 | §10.3 实现 |
-| FR-060 | OB On-Demand Snapshot + Health Query | Pending | 全量 book 拉取 + per-symbol 状态查询 | §10.1 实现 |
-| FR-061 | OB Rebuild Alerting + Checksum Sampling | Pending | 5min >3 次告警 + 1min REST vs memory diff | §9 实现 |
+| FR-052 | OB full_incremental 模式 | Done | per-symbol 本地 book 状态机（UNINIT/BUFFERING/ALIGNED/REBUILDING）+ 独立 goroutine | [STATE-MACHINE.md](../design/ORDER-BOOK-STATE-MACHINE.md) §3-§4 实现 |
+| FR-053 | OB snapshot_topn 模式 | Done | 无状态转发限档快照（5/10/20档），不需序号校验 | §2.2 实现 |
+| FR-054 | OB Initial Alignment + Seq Validation | Done | REST 快照对齐 9 步 + spot U/u + futures U/u/pu + qty=="0" 删除 + 定点数 | §4.2-§4.5 实现 |
+| FR-055 | OB Auto-Rebuild | Done | gap → 丢弃 → BUFFERING 重新对齐，buffer cap 10000 | §4.1 实现 |
+| FR-056 | OB Snapshot Persistence + Fast Recovery | Done | 5min 持久化 + 冷启动 fast path | §5 实现 |
+| FR-057 | OB Staleness API | Done | stale 派生标志 + 下游消费方契约 | §8 实现 |
+| FR-058 | OB TopN Subscription | Done | 100ms 推送 + stale=true 继续推送 | §10.2 实现 |
+| FR-059 | OB Incremental Forwarding | Done | 校验增量转发 + rebuild 标记事件 | §10.3 实现 |
+| FR-060 | OB On-Demand Snapshot + Health Query | Done | 全量 book 拉取 + per-symbol 状态查询 | §10.1 实现 |
+| FR-061 | OB Rebuild Alerting + Checksum Sampling | Done | 5min >3 次告警 + 1min REST vs memory diff | §9 实现 |
 
 > **前置阻塞**：options depth 协议待测试网实测（STATE-MACHINE.md §7.4 checklist）。spot/um_perp/cm_perp 不受阻塞。
 
@@ -187,7 +201,7 @@
 | 检查项 | 状态 | 依据 |
 | --- | --- | --- |
 | v2.0.0 根规格存在 | Done | `SPEC.md` v4.0.0。 |
-| 根级 traceability 存在 | Done | `TRACEABILITY.md` v3.15.0；55 Done / 0 Partial / 0 Drifted / 10 Pending；Evidence 列 55 Done / 0 Pending。 |
+| 根级 traceability 存在 | Done | `TRACEABILITY.md` v4.0.0；65 Done / 0 Partial / 0 Drifted / 0 Pending；Evidence 列 65 Done / 0 Pending。 |
 | Client/Server 子域 traceability 存在 | Done | `client/TRACEABILITY.md`, `server/TRACEABILITY.md`。 |
 | C/S 独立进程边界已定义 | Done | `README.md`, `SPEC.md`, `BOUNDARY-GATES.md`。 |
 | Boundary gate 文档已形成 | Done | `BOUNDARY-GATES.md` v2.2.4；本地证据 `/home/workspace/binance/release/evidence/binance/20260623/`；13 gates PASS；证据提交 `71e2a6e8`（2026-06-23 round 2）。 |
@@ -196,7 +210,7 @@
 | natsx publish/consume runtime 闭合 | Done | FR-003 Done（publisher+consumer 双侧装配 + .v1 fix `4f740e5`；drift-check 22/22 PASS）。 |
 | ManualAck 与 at-least-once runtime 闭合 | Done | FR-004 Done（NakWithDelay+DLQ + JetStream gated 测试）。 |
 | Server idempotency runtime 闭合 | Done | FR-005 Done（RedisStore SetNX 72h TTL）。 |
-| Storage/API/archival/broadcast/runtime 扩展闭合 | Done | 55 FR Done（规格口径 100%；FR-052~061 为 v4.0.0 新增 Pending，不影响 release 口径）。 |
+| Storage/API/archival/broadcast/runtime 扩展闭合 | Done | 65 FR Done（规格口径 100%；FR-052~061 spot/um/cm 已实现，options 待 Phase 2，不影响 release 口径）。 |
 | 全量 AC/TC 通过 | Done | AC-001~AC-130 + TC-001~TC-067 PASS；go test -race 0 races。 |
 
 ## 7. 历史缺口登记（全部已关闭）

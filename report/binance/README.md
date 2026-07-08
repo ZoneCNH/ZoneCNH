@@ -13,6 +13,7 @@
 | [02-features.md](02-features.md) | 功能点清单（17 项逐项确认） |
 | [03-static-analysis.md](03-static-analysis.md) | 静态分析：异常处理、边界条件、限频、密钥安全、并发 |
 | [04-test-report.md](04-test-report.md) | 测试执行报告与用例设计 |
+| [DATA-INTEGRITY-E2E-20260708.md](DATA-INTEGRITY-E2E-20260708.md) | 15 个归档 GAP-E 项的主运行时证据源；替代已归档的 20260701 版本 |
 
 ## 一句话总结
 
