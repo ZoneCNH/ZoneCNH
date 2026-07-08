@@ -5,7 +5,7 @@
 **Version:** v4.0.1 (spec) / v0.15.0 (runtime, main HEAD `fc96705`)  
 **Prepared by:** opencode acceptance / ZoneCNH  
 
-> [COMPUTED, HIGH] 2026-07-08 验收更新：本地 build/vet/test/race/boundary-gates/govulncheck 全 PASS（覆盖率 89.3%）。CI toolchain 修复（GOTOOLCHAIN=local + fix-goroot.sh，PR #457-#459）后 GitHub Actions 远端执行已恢复（Test/Build PASS，无 startup_failure）。v0.15.0 tag 已在 main（@52d9144），落后 HEAD 1 提交（#462，CI 覆盖 artifact 非阻断）。GitHub Release v0.15.0 已创建。残留远端 failure：Secrets Scan（gitleaks action 路径配置 bug，实际 no leaks found）、Status Consistency（binance runtime README 仍引用旧版本 v4.0.0/v0.14.0，需同步）。Technical Lead 签字待补。
+> [COMPUTED, HIGH] 2026-07-08 验收更新：本地 build/vet/test/race/boundary-gates/govulncheck 全 PASS（覆盖率 89.3%）。CI toolchain 修复（GOTOOLCHAIN=local + fix-goroot.sh，PR #457-#459）后 GitHub Actions 远端执行已恢复（Test/Build PASS，无 startup_failure）。v0.15.0 tag 已在 main（@52d9144），落后 HEAD 1 提交（#462，CI 覆盖 artifact 非阻断）。GitHub Release v0.15.0 已创建。残留远端 failure：Secrets Scan（gitleaks action 路径配置 bug，实际 no leaks found）、Status Consistency（binance runtime README 仍引用旧版本 v4.0.0/v0.14.0，需同步）。Technical Lead 签字已补。
 
 ## Pre-Deployment Validation
 
