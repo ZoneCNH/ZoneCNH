@@ -538,7 +538,7 @@ fred:
   domain: data
   layer: business
   arch_type: cs_module
-  lifecycle: implemented
+  lifecycle: active
   owner: ZoneCNH
   registered: 2026-06-10
   spec_ref: module/fred/spec/SPEC.md
