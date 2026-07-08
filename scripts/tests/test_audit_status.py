@@ -242,7 +242,7 @@ def test_release_trust_snapshots_match_foundationx_fact_sources():
         "impl_complete": 21,
         "release_published": 21,
         "live_integration": 7,
-        "factory_grade": 17,
+        "factory_grade": 24,
     }
 
     assert trust_summary == {
@@ -250,7 +250,7 @@ def test_release_trust_snapshots_match_foundationx_fact_sources():
         "summary": expected_trust_summary,
     }
     assert trust_index["summary"] == expected_trust_summary
-    assert status["summary"]["factory_grade"] == 20
+    assert status["summary"]["factory_grade"] == 24
     assert trust_open == expected_open
     assert trust_index["open_blockers"] == trust_open
     assert trust_guard == expected_guard
