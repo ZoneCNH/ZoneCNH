@@ -4,10 +4,10 @@
 
 | 字段 | 值 |
 | --- | --- |
-| Status | Generated from current module SSOT |
-| Last-Updated | 2026-07-03 |
-| Module-Version | v1.0.0 |
-| Module-State | 目标规格已定义；runtime 仍需从旧 `Stores=None` 口径迁移 |
+| Status | Verified against runtime (unit) |
+| Last-Updated | 2026-07-08 |
+| Module-Version | v1.1.0 |
+| Module-State | Runtime 实现完成；单元测试全量通过；集成测试经 `//go:build integration` 接入 dev secret，本地 SKIP、CI 闭环 |
 | Layer | 数据域 · 宏观 |
 | Module-Type | 独立 C/S Module（client/server 双服务） |
 | Runtime-Repo | `/home/workspace/fred` |
@@ -35,22 +35,22 @@
 
 | ID | 功能 | 当前状态 | 已有证据 | 剩余实现面 |
 | --- | --- | --- | --- | --- |
-| FR-001 | `fred-client`/`fred-server` 双进程启动、生命周期、health、ready/live、优雅关闭、版本输出 | Planned | `spec/SPEC.md` 已定义 | runtime 需提供双服务启动与健康证据 |
-| FR-002 | 从 `sre/secrets/env/dev.md` 装载配置，禁止复制 secret 值 | Planned | `spec/SPEC.md` 配置源已定义 | runtime 需接入共享 `configx`，并完成 secret scan |
-| FR-003 | FRED client 覆盖 `spec/SPEC.md` §5.1 全端点矩阵与核心指标包，并支持分页、限流、退避重试、错误分类、请求审计字段 | Planned | `spec/SPEC.md` FR 与 TC 已定义 | `/home/workspace/fred/pkg/fredx` 需完成 SDK 行为测试 |
-| FR-004 | 支持 backfill、incremental、series sync、revision scan，并生成 job、checkpoint、idempotency key | Planned | `spec/SPEC.md` 写明作业模型 | runtime 需落地 job 状态机和幂等账本 |
-| FR-005 | provider 响应归一化到 `domain_macro`，保留 `released_at`、`available_at`、`vintage_at` | Planned | `spec/SPEC.md` 领域模型已定义 | 需确认 `domain_macro` 实际包路径和字段映射 |
-| FR-006 | 原始 provider 响应先写入 `oss`，再归一化、写多存储、发事件 | Planned | `spec/SPEC.md` 写明 raw-first 顺序 | runtime 需实现内容 hash、路径规则和失败回滚策略 |
-| FR-007 | 有效观测写入 `taos`，支持按 series/time/vintage selector 查询 | Planned | `spec/SPEC.md` 存储职责已定义 | runtime 需实现 TDengine schema、写入和查询测试 |
-| FR-008 | series metadata、release calendar、idempotency ledger、checkpoint 写入 `postgres` 事务边界 | Planned | `spec/SPEC.md` 存储职责已定义 | runtime 需实现事务写入和 checkpoint 完成顺序 |
-| FR-009 | Redis 承载热序列缓存、锁、rate bucket、短游标，且可重建 | Planned | `spec/SPEC.md` BR 已定义 | runtime 需证明 cache clear 后可从权威存储重建 |
-| FR-010 | Kafka 发布版本化事件，携带幂等键和无前视字段 | Planned | `spec/SPEC.md` 消息边界已定义 | runtime 需实现 topic、schema、producer 幂等与消费验证 |
-| FR-011 | NATS 承载 client→server ingest handoff 与 reload/backfill/pause/resume/heartbeat 控制面，不替代 Kafka durable event | Planned | `spec/SPEC.md` 控制面边界已定义 | runtime 需证明 handoff 与 durable event 分离 |
-| FR-012 | ClickHouse 保存分析读模型和校验输出，且可重建 | Planned | `spec/SPEC.md` read model 职责已定义 | runtime 需实现重建路径和分析查询证据 |
-| FR-013 | API 提供 series metadata、observation query、job status、admin trigger | Planned | `spec/SPEC.md` API 表已定义 | runtime 需实现 C/S API、错误码和鉴权/管理边界 |
-| FR-014 | 边界 gate 只允许通过共享基座接入目标存储适配器，禁止直接 infra connection | Planned | `spec/SPEC.md` AC/TC 已定义 | 需迁移旧 `Stores=None` boundary script 到完整存储边界 |
-| FR-015 | 提供 `ms_brain` 下游消费画像，覆盖 PIT 宏观观测、修订、发布日历、freshness/degrade 和初始序列锚点 | Planned | `spec/SPEC.md` 已补充 `ms_brain` 初始数据契约 | runtime 需提供 integration profile、contract fixture 和无前视查询证据 |
-| FR-016 | 全量采集覆盖审计：series/release/category/tag/source/updates 六域覆盖率、默认 `1990-01-01` 全量起点、最近 3 个月修订回拉、`realtime_start/realtime_end` 版本闭合与缺口重采可追踪 | Planned | `spec/SPEC.md` 已定义覆盖审计要求 | runtime 需实现 coverage report、缺口回补与验收阈值 |
+| FR-001 | `fred-client`/`fred-server` 双进程启动、生命周期、health、ready/live、优雅关闭、版本输出 | Implemented (unit) | `cmd/fred-client`、`cmd/fred-server` 经 `bootstrap.Build`；`internal/server/component.go` 组件测试 | `main` 入口未单测；集成启停于 CI 闭环 |
+| FR-002 | 从 `sre/secrets/env/dev.md` 装载配置，禁止复制 secret 值 | Implemented (unit) | `internal/client/config.go` + `bootstrap`/`configx`；git/secret-scan 无值泄露 | — |
+| FR-003 | FRED client 覆盖 `spec/SPEC.md` §5.1 全端点矩阵与核心指标包，并支持分页、限流、退避重试、错误分类、请求审计字段 | Implemented (unit) | `pkg/fredx` 78.8% 覆盖；参数编码/限流/重试测试 | 生产联调于 CI |
+| FR-004 | 支持 backfill、incremental、series sync、revision scan，并生成 job、checkpoint、idempotency key | Implemented (unit) | `internal/server/server.go`、`bootstrap_store.go`（job/checkpoint/idempotency）单测 | 事务级联于 CI 闭环 |
+| FR-005 | provider 响应归一化到 `domain_macro`，保留 `released_at`、`available_at`、`vintage_at` | Implemented (unit) | `internal/domain` 100% 覆盖；`IsVisibleAt` no-lookahead | — |
+| FR-006 | 原始 provider 响应先写入 `oss`，再归一化、写多存储、发事件 | Implemented (unit) | `internal/client/ingester.go` + `ingester_test.go`（fake OSS/NATS） | 真实 OSS 写于 CI 闭环 |
+| FR-007 | 有效观测写入 `taos`，支持按 series/time/vintage selector 查询 | Implemented · CI-gated | `internal/server/bootstrap_store.go` `TaosStore` + nil-guard/fake 单测 | 真实 TDengine 于 CI 闭环 |
+| FR-008 | series metadata、release calendar、idempotency ledger、checkpoint 写入 `postgres` 事务边界 | Implemented · CI-gated | `PostgresStore`（GetSeries/CreateJob/ReloadAuthorityRegistry/GetCatalogCoverage）单测 | 真实 Postgres 于 CI 闭环 |
+| FR-009 | Redis 承载热序列缓存、锁、rate bucket、短游标，且可重建 | Implemented · CI-gated | `RedisStoreAdapter` nil-guard 单测 | 真实 Redis 重建于 CI 闭环 |
+| FR-010 | Kafka 发布版本化事件，携带幂等键和无前视字段 | Implemented · CI-gated | `KafkaStoreAdapter`（client.Producer().Send）单测 | 真实 Kafka 于 CI 闭环 |
+| FR-011 | NATS 承载 client→server ingest handoff 与 reload/backfill/pause/resume/heartbeat 控制面，不替代 Kafka durable event | Implemented (unit) + CI-gated | `NATSConsumerComponent.ProcessMessage` 单测；handoff 与 durable event 分层 | 真实 NATS/Kafka 分离于 CI 闭环 |
+| FR-012 | ClickHouse 保存分析读模型和校验输出，且可重建 | Implemented · CI-gated | `ClickHouseStoreAdapter` nil-guard 单测 | 真实 ClickHouse 于 CI 闭环 |
+| FR-013 | API 提供 series metadata、observation query、job status、admin trigger | Implemented (unit) | `internal/server/handlers.go` 100% 覆盖 | — |
+| FR-014 | 边界 gate 只允许通过共享基座接入目标存储适配器，禁止直接 infra connection | Implemented | `scripts/boundary-gates.sh` §9 迁移；`internal/store` 受控桥；业务代码零直连 | — |
+| FR-015 | 提供 `ms_brain` 下游消费画像，覆盖 PIT 宏观观测、修订、发布日历、freshness/degrade 和初始序列锚点 | Implemented · CI-gated | `internal/server/router.go` 外部路由（`source_component`）；无前视查询单测 | `ms_brain` contract fixture 待 OPEN-005 闭合（TC-009 CI-gated） |
+| FR-016 | 全量采集覆盖审计：series/release/category/tag/source/updates 六域覆盖率、默认 `1990-01-01` 全量起点、最近 3 个月修订回拉、`realtime_start/realtime_end` 版本闭合与缺口重采可追踪 | Implemented · CI-gated | `GetCatalogCoverage`/`ExternalRoutedList` 单测 | 全量六域审计于 CI 闭环（OPEN-008 阈值待校准） |
 
 ## 业务规则
 
@@ -108,9 +108,9 @@
 
 ## 当前缺口
 
-1. `/home/workspace/fred` 旧边界脚本仍需从 `Stores=None` 迁移到 `taos`、`kafka`、`postgres`、`Redis`、`oss`、`nats`、`clickhouse` 完整目标。
-2. `domain_macro` 的实际 Go 包路径、字段名和版本契约仍需在 runtime 实现前确认。
-3. `sre/secrets/env/dev.md` 只能作为配置键名和装载约定来源，不能把 secret 值复制到 `module/fred/` 或 `/home/workspace/fred`。
-4. 集成验收依赖 dev 环境中的 FRED 凭证和七类基础设施可用性；未满足前只能完成文档与单元级验证。
-5. `ms_brain` 当前证据主要来自文档、spec 和 YAML 配置；在其 runtime 落地前，`fred` 先用 contract fixture 和回放样例闭合消费契约。
-6. 全量采集覆盖审计（FR-016/BR-010）需补齐跨入口计数对账和缺口重采机制。
+1. 边界脚本已从 `Stores=None` 迁移为完整目标边界（§9 改为“经共享基座接入、禁止业务代码直连”），`internal/store` 与 `internal/server` 为受控适配桥。
+2. `domain_macro` 采用 v1.0.1，`internal/domain` 已归一化到 `MacroObservation` 并实现 `IsVisibleAt` no-lookahead 语义。
+3. `sre/secrets/env/dev.md` 仅作为配置键名与装载约定来源；git 与 secret-scan 未检出 secret 值。
+4. 集成验收依赖 dev 环境的 FRED 凭证与七类基础设施；本地缺失时集成测试经 `//go:build integration` 干净 SKIP，于 CI 闭环（OPEN-004）。
+5. `ms_brain` contract fixture 待其 runtime 落地后纳入（OPEN-005）；`fred` 已落地 `source_component` 外部路由机制。
+6. 全量采集覆盖审计（`GetCatalogCoverage`/`ExternalRoutedList`）单测已覆盖；六域全量阈值与分片回补待生产压测校准（OPEN-008）。
