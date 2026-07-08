@@ -1,8 +1,8 @@
 # fred-server SPEC
 
-- Status: Planned
-- Spec-Version: v1.0.0
-- Last-Updated: 2026-07-03
+- Status: Implemented
+- Spec-Version: v1.1.0
+- Last-Updated: 2026-07-08
 - Parent: [../SPEC.md](../SPEC.md)
 - Plan: [../../plan/server/PLAN.md](../../plan/server/PLAN.md)
 
