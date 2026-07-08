@@ -162,20 +162,21 @@ jobs:
           CHANGELOG_BODY: ${{ steps.changelog.outputs.changes }}
         run: |
           TAG="${GITHUB_REF#refs/tags/}"
+          NOTES_FILE="release/manifest/release-notes.md"
 
-          BODY="## FoundationX 文档枢纽 ${TAG}"
-          BODY+=$'\n\n'
-          BODY+="### 📊 系统快照"
-          BODY+=$'\n'
-          BODY+="${MANIFEST_SUMMARY:-}"
-          BODY+=$'\n\n'
-          BODY+="${CHANGELOG_BODY:-}"
-          BODY+=$'\n\n'
-          BODY+="---"
-          BODY+=$'\n'
-          BODY+="📎 完整 manifest 见附件"
+          {
+            echo "## FoundationX 文档枢纽 ${TAG}"
+            echo
+            echo "### 📊 系统快照"
+            printf '%s\n' "${MANIFEST_SUMMARY:-}"
+            echo
+            printf '%s\n' "${CHANGELOG_BODY:-}"
+            echo
+            echo "---"
+            echo "📎 完整 manifest 见附件"
+          } > "$NOTES_FILE"
 
           gh release create "$TAG" \
             --title "FoundationX ${TAG}" \
-            --notes "$BODY" \
+            --notes-file "$NOTES_FILE" \
             release/manifest/release-manifest.json
