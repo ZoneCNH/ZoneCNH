@@ -112,8 +112,8 @@ release_closeable = Code-Done FR / Total FR ≥ 90% AND Drifted FR = 0 AND Pendi
 
 | PRG | Gate | State | Evidence |
 | --- | --- | --- | --- |
-| PRG-001 | remote CI current run | PASS | CI runner 从 self-hosted 迁移到 ubuntu-latest，CI 已触发运行 |
-| PRG-002 | release promotion | PASS | v0.13.0 tag + GitHub Release 均存在（2026-07-05） |
+| PRG-001 | remote CI current run | PASS | CI runner 为 self-hosted [ci-go]；GOTOOLCHAIN=local + `scripts/fix-goroot.sh` 修复 Go toolchain staleness（PR #457-#459），CI 已恢复可运行 |
+| PRG-002 | release promotion | PASS | v0.14.0 tag + GitHub Release（2026-07-06）；待打新 tag 覆盖 PR #442-#458 的修复 |
 | PRG-003 | production readiness | PASS | PRG-001~007 全 PASS |
 | PRG-004 | observability | PASS | Jaeger/Grafana/Loki/AlertManager 全在线 |
 | PRG-005 | security | PASS | OpenTelemetry SDK v1.44.0，govulncheck 清洁 |
