@@ -238,9 +238,9 @@ Foundation 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中在 
 | **L2.5**          |                 |                          |
 | L2.5              | domainx         | `/home/workspace/domainx/`         |
 | L2.5              | decimalx        | `/home/workspace/decimalx/`        |
-| L2.5              | domain_market   | `/home/workspace/domain-market/`   |
-| L2.5              | domain_exchange | `/home/workspace/domain-exchange/` |
-| L2.5              | domain_macro    | `/home/workspace/domain-macro/`    |
+| L2.5              | domain_market   | `/home/workspace/domain_market/`   |
+| L2.5              | domain_exchange | `/home/workspace/domain_exchange/` |
+| L2.5              | domain_macro    | `/home/workspace/domain_macro/`    |
 | **数据域 · 行情** |                 |                          |
 | 数据域            | binance         | `/home/workspace/binance/`         |
 | 数据域            | okx             | `/home/workspace/okx/`             |
@@ -260,12 +260,12 @@ Foundation 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中在 
 | 数据域            | treasury        | `/home/workspace/treasury/`        |
 | 数据域            | bea             | `/home/workspace/bea/`             |
 | 数据域            | ecb             | `/home/workspace/ecb/`             |
-| 数据域            | uk_cb           | `/home/workspace/uk-cb/`           |
-| 数据域            | japan_cb        | `/home/workspace/japan-cb/`        |
+| 数据域            | uk_cb           | `/home/workspace/uk_cb/`           |
+| 数据域            | japan_cb        | `/home/workspace/japan_cb/`        |
 | 数据域            | eastmoney       | `/home/workspace/eastmoney/`       |
 | 数据域            | jin10           | `/home/workspace/jin10/`           |
 | 数据域            | yahoo           | `/home/workspace/yahoo/`           |
-| 数据域            | yield_curve     | `/home/workspace/yield-curve/`     |
+| 数据域            | yield_curve     | `/home/workspace/yield_curve/`     |
 | **分析域**        |                 |                          |
 | 分析域            | flowx           | `/home/workspace/flowx/`           |
 | **决策域**        |                 |                          |
