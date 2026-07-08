@@ -35,11 +35,36 @@
 
 ## 各模块结果
 
-> 由 agent 团队回填（Wave 1：domain/messaging/coreinfra/storage/support；Wave 3：binance/ms_brain/market_data/ZoneCNH/xlib_*）。
+> 静态审计由脚本化跨模块扫描 + 逐个读取关键 workflow 完成（因 429 API 频率限制，agent 团队未产出结果）。
 
-| 模块 | Agent | workflow 数 | 缺陷数 | 已修复 | 剩余阻塞 | 分支 |
-| ---- | ----- | ---------- | ------ | ------ | -------- | ---- |
-| _（待回填）_ | | | | | | |
+| 模块 | workflow 数 | 缺陷 | 已修复 | 分支/PR |
+| ---- | ---------- | ---- | ------ | ------- |
+| redisx | 9 | `.github/workflows/worktree-guard.yml` line 37：`run:` 值中中文文本含冒号，YAML 解析失败 | 已修复（单引号包裹） | `fix/ci-worktree-guard-yaml` → PR [#28](https://github.com/ZoneCNH/redisx/pull/28) |
+| fred | 0（本地 scaffold） | 前期已修复：registry desync / CI integration 空跑 / prompt 缺失 / domain_macro 版本绑定 | 已修（PR #1729/1730/1731/1733） | 已合入 |
+| binance | 12 | 静态扫描通过：所有 `-tags=soak/chaos/security/live` 正确；`scripts/boundary-gates.sh`、`scripts/benchmark-regression.sh`、`.github/ci/binance-status-consistency-check.sh` 均存在；YAML 可解析 | 无需修复 | — |
+| alertx | 4 | 单元测试扫过，未见明显缺陷 | — | — |
+| bootstrap | 3 | 待深入 | — | — |
+| clickhousex | 2 | 待深入 | — | — |
+| configx | 4 | 待深入 | — | — |
+| contracts | 6 | 待深入 | — | — |
+| decimalx | 1 | 单 workflow，YAML 可解析 | — | — |
+| domainx/market/macro/exchange | 1-2 | 待深入 | — | — |
+| kafkax | 8 | 待深入 | — | — |
+| kernel | 5 | 待深入 | — | — |
+| market_data | 1 | 待深入 | — | — |
+| ms_brain | 2 | 待深入 | — | — |
+| natsx | 6 | 待深入 | — | — |
+| observex | 4 | 待深入 | — | — |
+| ossx | 1 | 待深入 | — | — |
+| postgresx | 4 | 待深入 | — | — |
+| resiliencx | 8 | 待深入 | — | — |
+| schedulex | 6 | 待深入 | — | — |
+| sre | 4 | 待深入 | — | — |
+| taosx | 8 | 待深入 | — | — |
+| testkitx | 4 | 待深入 | — | — |
+| transportx | 9 | 待深入 | — | — |
+| xlib_evidence/gate/harness/standard | 5-7 | 待深入 | — | — |
+| ZoneCNH | 13 | 待深入 | — | — |
 
 ## NOCI 模块处置建议
 
