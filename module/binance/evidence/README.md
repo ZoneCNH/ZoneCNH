@@ -14,6 +14,7 @@
 
 | Evidence | Task | Status | Date |
 |----------|------|--------|------|
+| DATA-INTEGRITY-E2E-20260708.md | 15 个归档 GAP-E 的当前运行时主证据源 | Active / Replaces #1652 archive | 2026-07-08 |
 | 2026-07-02/tier-gap-cross-reference.md | Symbol 分级体系治理制品交叉引用（GAP-E6/E24/E25/E26 ↔ ADR-005 ↔ 5 TASK ↔ AC-TIER，修 GAP-E57） | PASS（治理制品闭合）/ 运行时 Open | 2026-07-02 |
 | A10-FR024-HOT-RELOAD-EVAL.md | FR-024 Runtime Config Hot Reload | Partial | 2026-06 |
 | 2026-06-27/test/worker-a-runtime-evidence.md | GitHub #1269/#1277/#1278/#1279 local runtime evidence | Partial / Evidence Pending | 2026-06-27 |
