@@ -1,11 +1,11 @@
-# Deployment Readiness Checklist v0.14.0
+# Deployment Readiness Checklist v0.15.0
 
-**Status:** 🟡 READY — pending CI billing restoration  
-**Date:** 2026-07-06  
-**Version:** v3.14.0 (spec) / v0.13.0+ (runtime, main HEAD `db76b2d`)  
+**Status:** 🟢 READY — CI 计费已恢复，远端可验证  
+**Date:** 2026-07-08  
+**Version:** v4.0.1 (spec) / v0.15.0 (runtime, main HEAD `fc96705`)  
 **Prepared by:** opencode acceptance / ZoneCNH  
 
-> [COMPUTED, HIGH] 2026-07-06 验收更新：本地 build/vet/test/race/boundary-gates/govulncheck 全 PASS（覆盖率 89.3%）。CI workflow 已修复（self-hosted→ubuntu-latest），但 GitHub Actions 远端执行因账户级配额/计费问题暂不可用（startup_failure）。需恢复 Actions 分钟配额后方可远端验证。
+> [COMPUTED, HIGH] 2026-07-08 验收更新：本地 build/vet/test/race/boundary-gates/govulncheck 全 PASS（覆盖率 89.3%）。CI toolchain 修复（GOTOOLCHAIN=local + fix-goroot.sh，PR #457-#459）后 GitHub Actions 远端执行已恢复（PRG-001 PASS，无 startup_failure）。v0.15.0 tag 已在 main（@52d9144），落后 HEAD 1 提交（#462，CI 覆盖 artifact 非阻断）。Technical Lead 签字待补。
 
 ## Pre-Deployment Validation
 
@@ -22,7 +22,7 @@
 
 ### Version Consistency ⚠️
 - Spec version: v3.14.0
-- Runtime main HEAD: `db76b2d` (GAP-E59 lineage)
+- Runtime main HEAD: `fc96705` (GAP-E59 lineage)
 - Latest git tag: v0.13.0 (`42e2f7b`, 落后 main 9 commits)
 - Consistency gate: 需在 main HEAD 打 v0.14.0 tag 后 PASS
 - Documentation: ACCEPTANCE.md/DEPLOYMENT-CHECKLIST 已对齐 v3.14.0

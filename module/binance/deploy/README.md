@@ -1,7 +1,7 @@
 # module/binance 部署文档
 
 - Spec-Version: v4.0.1
-- Runtime-Version: v0.14.0（anchor: `/home/workspace/binance@main`）
+- Runtime-Version: v0.15.0（anchor: `/home/workspace/binance@main`）
 - Target: jp1 (84.247.154.45)
 - Last-Updated: 2026-07-08
 

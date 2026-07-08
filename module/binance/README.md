@@ -3,7 +3,7 @@
 `module/binance` is the Binance-specific Market Data C/S Module for ZoneCNH.
 
 - Spec-Version: v4.0.1 (root / client / server — v3.18.0 canonical 命名对齐 + v4.0.0 order book rebuild 纳入 ADR-011)
-- Runtime-Version: v0.14.0（Runtime-Anchor: `/home/workspace/binance@main`）
+- Runtime-Version: v0.15.0（Runtime-Anchor: `/home/workspace/binance@main`）
 - Delivery-State: FR-001~FR-065 spec/traceability registered — single state `65 Done / 0 Partial / 0 Drifted / 0 Pending`。release_closeable=YES（PRG-001~007 全 PASS）。47/47 tasks Done；deep-review 37/37 fixed；coverage 100.0%；0 GitHub open issues。
 - Last-Updated: 2026-07-08 (canonical 命名对齐 Binance 原生事件名)
 
