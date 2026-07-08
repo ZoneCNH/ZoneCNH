@@ -132,3 +132,6 @@ __pycache__/
 # LSP / filetree cache (local editor state)
 .lsp.json
 .filetree.json
+
+# local runtime state under module/ (not a module, not a Goal artifact)
+/module/.omc/

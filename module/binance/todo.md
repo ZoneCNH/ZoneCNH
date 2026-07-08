@@ -1,6 +1,6 @@
 # module/binance TODO — 未修复问题追踪（read-only projection）
 
-> 由 20 轮深度检查（2026-07-07）汇总，已修复的 P0/P1/P2 见 `ALIGNMENT-SYNC.md` 与 `CHANGELOG.md`。
+> 由 20 轮深度检查（2026-07-07）汇总，已修复的 P0/P1/P2 见 [`ALIGNMENT-SYNC.md`](../../docs/migrations/binance-ALIGNMENT-SYNC.md) 与 `CHANGELOG.md`。
 > 本文件仅追踪**尚未修复**的问题，按严重度排序；它是 read-only projection，不是 Closure SSOT。
 
 - **Last-Updated**: 2026-07-07

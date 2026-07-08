@@ -54,7 +54,7 @@ module_goal_document:
     - "module/{module}/goal/**/[0-9]*.md"
     - "goal/1.md"
     - "goal/*.md"
-  module_count: 71
+  module_count: 67
 
 module_code_location:
   canonical_path_pattern: "/home/workspace/{module}"
