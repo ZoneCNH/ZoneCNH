@@ -3,11 +3,11 @@
 > 本文档追踪运行时仓 `github.com/ZoneCNH/binance` 与规格仓 `module/binance` 之间的状态对齐与同步记录。
 > 每次跨仓深度检查/修复后更新，确保规格口径与运行时实现一致、无漂移。
 
-- **Last-Updated**: 2026-07-07
-- **Spec-Version**: v4.0.0
-- **Runtime-Version**: v0.14.0（HEAD `17dcdec` + 20轮检查修复）
+- **Last-Updated**: 2026-07-08
+- **Spec-Version**: v4.0.1
+- **Runtime-Version**: v0.15.0（HEAD `52d9144`，tag v0.15.0 已发布）
 - **Spec-State**: 65 Done / 0 Partial / 0 Pending / release_closeable=YES
-- **Runtime-State**: Build PASS / 30 packages test PASS / race PASS / boundary-gates 15/15 PASS
+- **Runtime-State**: Build PASS / test PASS / race PASS / boundary-gates 15/15 PASS / readiness-audit PASS
 
 ---
 
@@ -15,12 +15,13 @@
 
 | 维度 | 规格仓（module/binance） | 运行时仓（binance） | 状态 |
 |------|--------------------------|---------------------|------|
-| Spec-Version | v4.0.0 | — | ✅ 一致 |
-| Runtime-Version | v0.14.0 | v0.14.0 | ✅ 一致 |
+| Spec-Version | v4.0.1 | — | ✅ 一致 |
+| Runtime-Version | v0.15.0 | v0.15.0（tag `52d9144`） | ✅ 一致 |
 | FR 总数 | 65 Done | 65 Done 可验证 | ✅ 一致 |
-| release_closeable | YES | 门禁全 PASS | ✅ 一致 |
+| release_closeable | YES | 门禁全 PASS + GitHub Release 已创建 | ✅ 一致 |
 | 覆盖率门槛 | ≥80% | 86.1%（实测） | ✅ 一致 |
 | 边界门禁 | 15/15 | 15/15 PASS | ✅ 一致 |
+| readiness-audit | PASS | PASS（Release gate status + Plan008 tokens） | ✅ 一致 |
 
 ---
 
