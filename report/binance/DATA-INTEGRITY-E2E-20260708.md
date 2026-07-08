@@ -134,4 +134,3 @@
 ## 3. 结论
 
 本报告恢复了 15 个归档 GAP-E 项的**唯一主证据入口**，并保持每个标签可单独回链。后续 `module/binance/evidence/README-GAP-E-INDEX.md` 可直接指向本文件中的对应节标题。
-
