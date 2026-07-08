@@ -15,6 +15,7 @@
 | Evidence | Task | Status | Date |
 |----------|------|--------|------|
 | 2026-07-02/tier-gap-cross-reference.md | Symbol 分级体系治理制品交叉引用（GAP-E6/E24/E25/E26 ↔ ADR-005 ↔ 5 TASK ↔ AC-TIER，修 GAP-E57） | PASS（治理制品闭合）/ 运行时 Open | 2026-07-02 |
+| `report/binance/DATA-INTEGRITY-E2E-20260708.md` | 15 个归档 GAP-E 主运行时证据源（E5'/E11/E15/E16/E17/E27/E32/E33/E34/E39/E40/E46/E48/E49/E50） | PASS（当前 runtime evidence） | 2026-07-08 |
 | A10-FR024-HOT-RELOAD-EVAL.md | FR-024 Runtime Config Hot Reload | Partial | 2026-06 |
 | 2026-06-27/test/worker-a-runtime-evidence.md | GitHub #1269/#1277/#1278/#1279 local runtime evidence | Partial / Evidence Pending | 2026-06-27 |
 | 2026-06-27/test/worker-b-observability-evidence.md | GitHub #1270/#1271/#1272/#1275 local observability/control-plane evidence | Partial / Evidence Pending | 2026-06-27 |
