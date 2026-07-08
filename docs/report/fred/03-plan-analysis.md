@@ -109,7 +109,7 @@
 1. **统一 FR/BR 编号体系**：所有 Task Covers 节引用根规格 ID（FR-001..016），子规格命名在括号中补注
 2. **为每个 Task 添加 Scope/Non-scope 节**
 3. **为每个 Task 添加独立 Verification Commands 节**
-4. **修复子计划 matrix 路径引用错误**（改为 `../../matrix/TRACEABILITY.md`）
+4. **修复子计划 matrix 路径引用错误**（改为 `../../../module/fred/matrix/TRACEABILITY.md`）
 
 ### P1（本阶段完成）
 

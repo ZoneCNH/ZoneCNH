@@ -12,10 +12,10 @@ Foundation 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中在 
 | [`module/FOUNDATION-DEPS.yaml`](./module/FOUNDATION-DEPS.yaml)           | 机器可读依赖矩阵，CI 可消费                                       |
 | [`module/ADR-foundationx-exit.md`](./module/ADR-foundationx-exit.md)     | ADR：foundationx 兼容退出计划                                     |
 | [`module/FOUNDATION-TRACKER.md`](./module/FOUNDATION-TRACKER.md)         | 执行跟踪器 — P0/P1/P2 Issue 检查清单                              |
-| [`ROADMAP.md`](./ROADMAP.md)                                             | 六阶段交付路线图 — 任务编号、依赖链、验收标准                     |
-| [`docs/governance/ROADMAP-RULES.md`](./docs/governance/ROADMAP-RULES.md) | ROADMAP 编写规范 — 状态流转、版本规划、任务拆分、维护原则         |
-| [`CONSTITUTION.md`](./CONSTITUTION.md)                                   | 系统宪法 — FoundationX 全系统最高治理文件，覆盖模块实现与交付管线 |
-| [`docs/sre/foundation-cicd-plan.md`](./docs/sre/foundation-cicd-plan.md) | SRE CI/CD — 基座层 19 模块 4 阶段部署方案、机器池架构、标准化模板 |
+| [`ROADMAP.md`](../../ROADMAP.md)                                             | 六阶段交付路线图 — 任务编号、依赖链、验收标准                     |
+| [`docs/governance/ROADMAP-RULES.md`](../governance/ROADMAP-RULES.md) | ROADMAP 编写规范 — 状态流转、版本规划、任务拆分、维护原则         |
+| [`CONSTITUTION.md`](../../CONSTITUTION.md)                                   | 系统宪法 — FoundationX 全系统最高治理文件，覆盖模块实现与交付管线 |
+| [`docs/sre/foundation-cicd-plan.md`](../sre/foundation-cicd-plan.md) | SRE CI/CD — 基座层 19 模块 4 阶段部署方案、机器池架构、标准化模板 |
 
 19 个基座模块的独立规格均为 23 节结构：行为规格 WHEN/THEN、接口契约、业务规则、错误处理、边界场景、验收标准、目录结构、CI Gate、测试矩阵、性能预算、可观测输出、发布 DoD。完整索引见 [`module/README.md`](./module/README.md)。`x.go` 负责治理/工具 CLI，`composer` 负责运行时组合根；两者都不作为 `module/` 下的模块规格。
 
@@ -47,22 +47,22 @@ Foundation 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中在 
 
 | 文档                                                                                 | 定位                                                        |
 | ------------------------------------------------------------------------------------ | ----------------------------------------------------------- |
-| [`docs/product/product-spec.md`](./docs/product/product-spec.md)                     | 产品规格 — Vision、Users、Goals、MVP Scope                  |
-| [`docs/testing/test-strategy.md`](./docs/testing/test-strategy.md)                   | 测试策略 — 覆盖率、格式、工具、CI 集成                      |
-| [`docs/testing/acceptance-tests.md`](./docs/testing/acceptance-tests.md)             | 验收测试 — 端到端验收场景和检查清单                         |
-| [`docs/ai/agent-rules.md`](./docs/ai/agent-rules.md)                                 | AI 代理规则 — 编码、测试、安全、禁止事项                    |
-| [`docs/ai/prompt-templates.md`](./docs/ai/prompt-templates.md)                       | Prompt 模板 — 审查、拆分、实现、自查、修复                  |
-| [`docs/ai/code-review-rules.md`](./docs/ai/code-review-rules.md)                     | 代码审查规则 — AI 代理审查标准和流程                        |
-| [`GLOSSARY.md`](./GLOSSARY.md)                                                       | 术语表 — 系统核心概念和缩写定义                             |
-| [`docs/governance/DEFINITION-OF-READY.md`](./docs/governance/DEFINITION-OF-READY.md) | Spec Ready — spec 可以进入开发的前置条件                    |
-| [`docs/governance/DEFINITION-OF-DONE.md`](./docs/governance/DEFINITION-OF-DONE.md)   | Spec Done — 模块实现完成的验收条件                          |
-| [`docs/governance/TRACEABILITY.md`](./docs/governance/TRACEABILITY.md)               | 需求追踪 — FR → AC → TC → 实现全覆盖                        |
-| [`docs/governance/anti-requirements.md`](./docs/governance/anti-requirements.md)     | 反需求 — 明确不做之事，防止范围蔓延                         |
+| [`docs/product/product-spec.md`](../product/product-spec.md)                     | 产品规格 — Vision、Users、Goals、MVP Scope                  |
+| [`docs/testing/test-strategy.md`](../testing/test-strategy.md)                   | 测试策略 — 覆盖率、格式、工具、CI 集成                      |
+| [`docs/testing/acceptance-tests.md`](../testing/acceptance-tests.md)             | 验收测试 — 端到端验收场景和检查清单                         |
+| [`docs/ai/agent-rules.md`](../ai/agent-rules.md)                                 | AI 代理规则 — 编码、测试、安全、禁止事项                    |
+| [`docs/ai/prompt-templates.md`](../ai/prompt-templates.md)                       | Prompt 模板 — 审查、拆分、实现、自查、修复                  |
+| [`docs/ai/code-review-rules.md`](../ai/code-review-rules.md)                     | 代码审查规则 — AI 代理审查标准和流程                        |
+| [`GLOSSARY.md`](../../GLOSSARY.md)                                                       | 术语表 — 系统核心概念和缩写定义                             |
+| [`docs/governance/DEFINITION-OF-READY.md`](../governance/DEFINITION-OF-READY.md) | Spec Ready — spec 可以进入开发的前置条件                    |
+| [`docs/governance/DEFINITION-OF-DONE.md`](../governance/DEFINITION-OF-DONE.md)   | Spec Done — 模块实现完成的验收条件                          |
+| [`docs/governance/TRACEABILITY.md`](../governance/TRACEABILITY.md)               | 需求追踪 — FR → AC → TC → 实现全覆盖                        |
+| [`docs/governance/anti-requirements.md`](../governance/anti-requirements.md)     | 反需求 — 明确不做之事，防止范围蔓延                         |
 | [`module/ADR-TEMPLATE.md`](./module/ADR-TEMPLATE.md)                                 | ADR 模板 — 架构决策记录标准格式                             |
-| [`docs/governance/TASK-TEMPLATE.md`](./docs/governance/TASK-TEMPLATE.md)             | Task 模板 — AI 代理任务拆分标准格式                         |
-| [`docs/governance/LIFECYCLE.md`](./docs/governance/LIFECYCLE.md)                     | 规格生命周期 — 六态状态机、流转规则、CI 集成                |
-| [`docs/governance/SPEC-TEMPLATE.md`](./docs/governance/SPEC-TEMPLATE.md)             | 23 节结构模板 — 新建模块规格时复制本文件                    |
-| [`docs/governance/AGENT-SPEC-TEMPLATE.md`](./docs/governance/AGENT-SPEC-TEMPLATE.md) | Agent Spec 模板 — 五层规格体系第五层，AI 代理角色/约束/协作 |
+| [`docs/governance/TASK-TEMPLATE.md`](../governance/TASK-TEMPLATE.md)             | Task 模板 — AI 代理任务拆分标准格式                         |
+| [`docs/governance/LIFECYCLE.md`](../governance/LIFECYCLE.md)                     | 规格生命周期 — 六态状态机、流转规则、CI 集成                |
+| [`docs/governance/SPEC-TEMPLATE.md`](../governance/SPEC-TEMPLATE.md)             | 23 节结构模板 — 新建模块规格时复制本文件                    |
+| [`docs/governance/AGENT-SPEC-TEMPLATE.md`](../governance/AGENT-SPEC-TEMPLATE.md) | Agent Spec 模板 — 五层规格体系第五层，AI 代理角色/约束/协作 |
 
 ## Foundation 第一阶段闭环
 
@@ -200,7 +200,7 @@ Foundation 模块的详细规格、依赖矩阵、执行跟踪和 ADR 集中在 
 | 横切                  | [observex](https://github.com/ZoneCNH/observex)                 | v0.3.4       | ✅ 已发布 | █████ 100%     | 可观测性（同时归属基座，提供底层 metrics/tracing/logging）；Labels type alias；redisx/kafkax/clickhousex 已对齐                                                                                                                                                                                                                                                                                                                       |
 | **独立**              |                                                                 |              |           |                |                                                                                                                                                                                                                                                                                                                                                                                  |
 | 独立                  | [module](./module/README.md)                                    | -            | ✅ 已有   | -              | 项目技术规范、接口定义与 Goal 适配模块索引                                                                                                                                                                                                                                                                                                                                       |
-| 治理                  | [docs/governance](./docs/governance/README.md)                  | -            | ✅ 已有   | -              | Spec → Code 交付治理、模板、门禁与评分规则                                                                                                                                                                                                                                                                                                                                       |
+| 治理                  | [docs/governance](../governance/README.md)                  | -            | ✅ 已有   | -              | Spec → Code 交付治理、模板、门禁与评分规则                                                                                                                                                                                                                                                                                                                                       |
 
 ### 历史兼容映射（仅供迁移）
 
