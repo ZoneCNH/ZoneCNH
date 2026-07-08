@@ -1,7 +1,0 @@
-{
-  "tool_name": "Bash",
-  "tool_input_preview": "{\"command\":\"/bin/ls -1d */ 2>/dev/null | tr -d '/' | sort > /tmp/dirs.txt\\npython3 -c \\\"\\nimport yaml\\nd=yaml.safe_load(open('registry.yaml'))\\nkeys=sorted(k for k,v in d.items() if isinstance(v,dict)...",
-  "error": "Exit code 1\n=== 目录有 但 registry 无 ===\nbea\ndata_cs_module\ndata_independent_process\neastmoney\necb\n_exchange-template\njapan_cb\n_template\nuk_cb\nxlibgate\ncomm: file 2 is not in sorted order\nyield_curve\ncomm: input is not in sorted order\n=== registry 有 但目录无 ===\nbacktest_engine\norder_engine\nportfolio_engine\nrisk_engine\ncomm: file 2 is not in sorted order\nxlibgate\ncomm: input is not in sorted order",
-  "timestamp": "2026-07-05T14:41:42.518Z",
-  "retry_count": 2
-}
