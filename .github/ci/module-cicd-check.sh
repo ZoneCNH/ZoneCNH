@@ -42,7 +42,7 @@ while IFS= read -r -d '' module_dir; do
   file="$module_dir/ci-workflow.yaml"
 
   # Modules exempt from ci-workflow.yaml requirement (entry/composition/template/non-runtime)
-  exempt_modules=(cmd composer x.go frontend assembly data_cs_module data_independent_process binancecfg binancex _exchange-template treasury alertx alternative_data fred _template)
+  exempt_modules=(cmd composer x.go frontend assembly data_cs_module data_independent_process binancecfg binancex _exchange-template treasury alertx alternative_data fred _template .omc)
   is_exempt=false
   for ex in "${exempt_modules[@]}"; do
     [[ "$module" == "$ex" ]] && is_exempt=true && break
