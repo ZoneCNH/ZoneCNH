@@ -1,14 +1,13 @@
 # module/binance TODO — 未修复问题追踪（read-only projection）
 
-> 截至 2026-07-08 第二轮事实校验（runtime HEAD `0047d8a`）。已修复的 P0/P1/P2 见
+> 截至 2026-07-08 第二轮事实校验 + 全部修复已合并。已修复的 P0/P1/P2 见
 > [`ALIGNMENT-SYNC.md`](../../docs/migrations/binance-ALIGNMENT-SYNC.md) 与 runtime 仓 `CHANGELOG.md`。
 > 本文件仅追踪**尚未修复或有意保留**的问题；它是 read-only projection，不是 Closure SSOT。
 > 已关闭项归宿见文末「已关闭项摘要」。
 
-- **Last-Updated**: 2026-07-08（第二轮）
-- **Runtime-Version**: v0.14.0 (HEAD `0047d8a`)
+- **Last-Updated**: 2026-07-08（全部修复已合并）
+- **Runtime-Version**: v0.14.0 (main HEAD `e06466e`，含全部修复)
 - **文档性质**：read-only projection；进度与验证以 ALIGNMENT-SYNC.md 为 SSOT
-- **本轮 PR**：binance #453（8 项）/ #454（P3-03/05）/ #455（P2-07）/ #456（P2-03 分析）
 
 ---
 
@@ -16,7 +15,7 @@
 
 | # | 问题 | 位置 | 状态 |
 |---|------|------|------|
-| P2-03 | CI 工作流重复（12 个 workflow，gitleaks/govulncheck 三方交叉，release tag 双触发） | `.github/workflows/` | **分析完成 + DEPRECATED 标注**（binance PR #456）；实际删除/合并需 repo admin 核对分支保护 required checks + release 双触发人工决策。详见 PR #456 描述的分阶段计划。 |
+| P2-03 | CI 工作流重复（gitleaks/govulncheck 三方交叉，release tag 双触发） | `.github/workflows/` | **分析完成 + DEPRECATED 标注**（binance PR #456 已合并）；实际删除/合并需 repo admin 核对分支保护 required checks + release 双触发人工决策。security.yml 已标 DEPRECATED，release.yml 已标竞态警告。 |
 
 ---
 
@@ -49,34 +48,34 @@
 
 ---
 
-## 已关闭项摘要（2026-07-08 两轮事实校验）
+## 已关闭项摘要（2026-07-08 两轮事实校验，全部已合并）
 
 以下项已从本 todo 移除，记录其归宿：
 
-### 第一轮（binance PR #453）
+### 第一轮（binance PR #453，已 MERGED）
 
-| 原编号 | 归宿 | 说明 |
-|--------|------|------|
-| P1-07 | main 已修（`17dcdec` 之前） | `BackfillSplitRatio` env 桥接齐全（binancecfg `BACKFILL_SPLIT_RATIO` + cmd 桥接） |
-| P1-08 | PR #453 | `DispatchRetryBackoffs` env 桥接（`FOUNDATIONX_BINANCE_DISPATCH_RETRY_BACKOFFS`）+ `parseDurationList` + 3 个 test |
-| P2-05 | main 已修（gocyclo nolint 全部移除） | `RunStandalone`/`buildStorage`/`detectGapByEventType`/`UpsertEntries` 已重构或不再触发警告 |
-| P3-01 | PR #453 | 删除 `validateAndApply` 死代码（零调用方） |
-| P3-02 | PR #453 | 抽取 `dropOldestAndSend` helper，去重 Dispatch vs run forwarder 通道满逻辑 |
-| P3-04 | PR #453 | `topnOnce`/`incrementalOnce` sync.Once 保护 `topnCh`/`incrementalCh` 懒初始化 |
-| P3-06 | PR #453 | `AIMDConfig` + `DefaultAIMDConfig()`，6 个 AIMD 常量可配置（零值向后兼容） |
-| P3-07 | PR #453 | `.env.example` 前缀 `XGO_BINANCE_*` → `FOUNDATIONX_BINANCE_*` + 注释订正 |
-| P3-08 | PR #453（SASL_MECHANISM）+ main 已修（RECONCILE_HOUR） | `configs/binance-server.env.example` 补 `FOUNDATIONX_KAFKAX_SASL_MECHANISM=PLAIN` |
-| P3-09 | PR #453 | env.example 加注释说明 `ReconcileCronHour` 代码 fallback=4 vs 示例=2 的设计意图 |
-| P3-11 | 路径订正 | `internal/coverage` → `internal/server/coverage`；覆盖率持平 |
+| 原编号 | 说明 |
+|--------|------|
+| P1-07 | main 已修：`BackfillSplitRatio` env 桥接齐全 |
+| P1-08 | `DispatchRetryBackoffs` env 桥接（`FOUNDATIONX_BINANCE_DISPATCH_RETRY_BACKOFFS`）+ `parseDurationList` + 3 test |
+| P2-05 | main 已修：gocyclo nolint 全部移除 |
+| P3-01 | 删除 `validateAndApply` 死代码（零调用方） |
+| P3-02 | 抽取 `dropOldestAndSend` helper，去重 Dispatch vs run forwarder 通道满逻辑 |
+| P3-04 | `topnOnce`/`incrementalOnce` sync.Once 保护懒初始化 |
+| P3-06 | `AIMDConfig` + `DefaultAIMDConfig()`，6 个 AIMD 常量可配置（零值向后兼容） |
+| P3-07 | `.env.example` 前缀 `XGO_BINANCE_*` → `FOUNDATIONX_BINANCE_*` + 注释订正 |
+| P3-08 | `configs/binance-server.env.example` 补 `FOUNDATIONX_KAFKAX_SASL_MECHANISM=PLAIN`（RECONCILE_HOUR main 已修） |
+| P3-09 | env.example 加注释说明 `ReconcileCronHour` 代码 fallback=4 vs 示例=2 的设计意图 |
+| P3-11 | 路径订正：`internal/coverage` → `internal/server/coverage` |
 
-### 第二轮（binance PR #454/#455/#456）
+### 第二轮（binance PR #454/#455/#456/#457/#458，全部已 MERGED）
 
-| 原编号 | 归宿 | 说明 |
-|--------|------|------|
-| P3-03 | PR #454 | `handleSnapshotTopN` 通过 `bookPool`（sync.Pool）+ `Book.Reset()` 复用 Book 对象，减少 GC 压力 |
-| P3-05 | PR #454 | `pushTopN` 跳过 `DepthModeSnapshotTopN` 模式 books，消除双重推送（snapshot_topn 已由事件驱动推送） |
-| P2-07 | PR #455 | `NewAdminServer`/`NewAdminServerWithHistory` 的 `options ...any` → `...AdminOption`（functional options，8 个 `With*` 函数），编译期类型安全 |
+| 原编号 | 说明 |
+|--------|------|
+| P3-03 | PR #454：`handleSnapshotTopN` 通过 `bookPool`（sync.Pool）+ `Book.Reset()` 复用 Book 对象，减少 GC 压力 |
+| P3-05 | PR #454：`pushTopN` 跳过 `DepthModeSnapshotTopN` 模式 books，消除双重推送 |
+| P2-07 | PR #455：`NewAdminServer` 的 `options ...any` → `...AdminOption`（8 个 `With*` 函数），编译期类型安全 |
+| P2-03 | PR #456：CI 去重分析 + security.yml DEPRECATED 标注 + release.yml 竞态警告（实际删除待 admin） |
+| (CI) | PR #457/#458：self-hosted runner Go toolchain 修复（`GOTOOLCHAIN=local` + `go env -w GOROOT`） |
 
-**验证**：所有 PR 均通过 build/vet/test/race + boundary-gates 15/15。
-
-**待合入**：binance PR #453/#454/#455/#456 待 review 合入。ZoneCNH 本 todo.md 投影待 binance PR 合入后同步 ALIGNMENT-SYNC.md。
+**所有修复已合并到 binance main**（HEAD `e06466e`）。验证：build/vet/test/race/boundary-gates 15/15。
