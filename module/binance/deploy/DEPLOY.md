@@ -1,6 +1,6 @@
 # binance 二进制构建与部署
 
-- Runtime-Version: v0.14.0（anchor: `/home/workspace/binance@main` — 白名单补齐 GC-0~GC-5 全合入）
+- Runtime-Version: v0.15.0（anchor: `/home/workspace/binance@main` — 白名单补齐 GC-0~GC-5 全合入）
 - Target: jp1 (84.247.154.45)
 - Last-Updated: 2026-07-08
 

@@ -177,7 +177,7 @@
 
 ## 4. 覆盖闭合矩阵（Evidence 视角）
 
-> **v3.9.0 单一状态模型**：此矩阵 Evidence 列标注各 FR 的 evidence 归档状态。`Done` = TC 全部 PASS + AC 全部满足 + runtime evidence 归档。**55 个 FR Evidence 全部 Done（100%）**。release_closeable=**YES**（PRG-001~007 全 PASS）。FR-052~061 为 v4.0.0 新增 Pending，不影响 release 口径。
+> **v3.9.0 单一状态模型**：此矩阵 Evidence 列标注各 FR 的 evidence 归档状态。`Done` = TC 全部 PASS + AC 全部满足 + runtime evidence 归档。**55 个 FR Evidence 全部 Done（100%）**。release_closeable=**YES**（PRG-001~007 全 PASS）。FR-052~061 order book rebuild spot/um/cm 已实现（Phase 1，TC-OB-001~011 由 `internal/client/orderbook/` 包测试覆盖）；options depth 待 Phase 2 实测激活。
 
 | FR      | AC 覆盖                                                        | TC 覆盖        | Evidence 闭合状态                                                                                                                                                                                                                         |
 | ------- | -------------------------------------------------------------- | -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
@@ -230,7 +230,7 @@
 | FR-043  | AC-125~AC-127                                                  | TC-059         | Done（chaos test scripts + go test -race PASS，0 races）                                                                                                                                   |
 | FR-044  | AC-128~AC-130                                                  | TC-060, TC-061 | Done（gitleaks scan + govulncheck + admin auth Bearer token）                                                                                                                               |
 
-> **总结**：55 Evidence Done / 0 Evidence Pending。release_closeable=YES（PRG-001~007 全 PASS）。FR-052~061 为 v4.0.0 新增 Pending，不影响 release 口径。历史 full E2E evidence package 已归档。
+> **总结**：55 Evidence Done / 0 Evidence Pending。release_closeable=YES（PRG-001~007 全 PASS）。FR-052~061 order book rebuild spot/um/cm 已实现（Phase 1，TC-OB-001~011 由 `internal/client/orderbook/` 包测试覆盖）；options depth 待 Phase 2 实测激活。历史 full E2E evidence package 已归档。
 
 ## 5. Release Definition of Done
 
@@ -333,7 +333,7 @@
 
 ---
 
-## Order Book FR-052~061 验收标准（v4.0.0 Pending）
+## Order Book FR-052~061 验收标准（spot/um/cm 已实现；options 待 Phase 2）
 
 > 来源：[ADR-011](../design/ADR-011-order-book-rebuild-inclusion.md) + [ORDER-BOOK-STATE-MACHINE.md](../design/ORDER-BOOK-STATE-MACHINE.md)
 
@@ -358,14 +358,14 @@
 
 | TC | 覆盖 AC | 测试内容 | 状态 |
 |----|---------|---------|------|
-| TC-OB-001 | AC-OB-001 | 状态机转换：mock WS + REST，验证 4 状态转换路径全覆盖 | Pending |
-| TC-OB-002 | AC-OB-003 | 对齐算法：mock REST 快照 + buffer，验证 9 步对齐（成功/快照太旧/缓冲区空/对齐失败） | Pending |
-| TC-OB-003 | AC-OB-004 | 序号校验：spot U/u + futures U/u/pu，正常通过 + gap 触发 REBUILDING | Pending |
-| TC-OB-004 | AC-OB-005 | 档位删除：qty=="0" 删除价位 + 定点数精度对齐（同价位不分裂） | Pending |
-| TC-OB-005 | AC-OB-006 | Auto-Rebuild：gap → 丢弃 → 重新对齐；buffer cap 溢出 → 丢弃重来 | Pending |
-| TC-OB-006 | AC-OB-007 | 持久化恢复：正常关闭→fast path 恢复；异常崩溃→降级完整重建 | Pending |
-| TC-OB-007 | AC-OB-008 | Staleness：ALIGNED→stale=false；BUFFERING/REBUILDING→stale=true；下游可读 | Pending |
-| TC-OB-008 | AC-OB-009 | TopN 推送：ALIGNED 100ms 推 stale=false；非 ALIGNED 继续推 stale=true | Pending |
-| TC-OB-009 | AC-OB-010 | 增量转发：正常转发 + rebuild_start/complete 标记事件 | Pending |
-| TC-OB-010 | AC-OB-011 | 按需快照 + 健康查询：全量 book 拉取 + per-symbol 状态 | Pending |
-| TC-OB-011 | AC-OB-012 | 告警 + checksum：5min >3 次重建告警 + REST vs memory diff 漂移检测 | Pending |
+| TC-OB-001 | AC-OB-001 | 状态机转换：mock WS + REST，验证 4 状态转换路径全覆盖 | Done（spot/um/cm；options 待 Phase 2） |
+| TC-OB-002 | AC-OB-003 | 对齐算法：mock REST 快照 + buffer，验证 9 步对齐（成功/快照太旧/缓冲区空/对齐失败） | Done（spot/um/cm；options 待 Phase 2） |
+| TC-OB-003 | AC-OB-004 | 序号校验：spot U/u + futures U/u/pu，正常通过 + gap 触发 REBUILDING | Done（spot/um/cm；options 待 Phase 2） |
+| TC-OB-004 | AC-OB-005 | 档位删除：qty=="0" 删除价位 + 定点数精度对齐（同价位不分裂） | Done（spot/um/cm；options 待 Phase 2） |
+| TC-OB-005 | AC-OB-006 | Auto-Rebuild：gap → 丢弃 → 重新对齐；buffer cap 溢出 → 丢弃重来 | Done（spot/um/cm；options 待 Phase 2） |
+| TC-OB-006 | AC-OB-007 | 持久化恢复：正常关闭→fast path 恢复；异常崩溃→降级完整重建 | Done（spot/um/cm；options 待 Phase 2） |
+| TC-OB-007 | AC-OB-008 | Staleness：ALIGNED→stale=false；BUFFERING/REBUILDING→stale=true；下游可读 | Done（spot/um/cm；options 待 Phase 2） |
+| TC-OB-008 | AC-OB-009 | TopN 推送：ALIGNED 100ms 推 stale=false；非 ALIGNED 继续推 stale=true | Done（spot/um/cm；options 待 Phase 2） |
+| TC-OB-009 | AC-OB-010 | 增量转发：正常转发 + rebuild_start/complete 标记事件 | Done（spot/um/cm；options 待 Phase 2） |
+| TC-OB-010 | AC-OB-011 | 按需快照 + 健康查询：全量 book 拉取 + per-symbol 状态 | Done（spot/um/cm；options 待 Phase 2） |
+| TC-OB-011 | AC-OB-012 | 告警 + checksum：5min >3 次重建告警 + REST vs memory diff 漂移检测 | Done（spot/um/cm；options 待 Phase 2） |

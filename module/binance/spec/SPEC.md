@@ -4,7 +4,7 @@
 - Module: binance
 - Last-Updated: 2026-07-08（白名单补齐 GC-0~GC-5 全合入 main）
 - Runtime-Repo: `/home/workspace/binance`
-- Runtime-Version: v0.14.0（order book FR-052~061 spot/um/cm 实现；白名单 GC-0~GC-5 补齐）
+- Runtime-Version: v0.15.0（order book FR-052~061 spot/um/cm 实现；白名单 GC-0~GC-5 补齐）
 - State-Model: single-state only
 - Current-State: 65 Done / 0 Partial / 0 Drifted / 0 Pending
 - release_closeable: YES（规格口径 65 Done；FR-052~061 spot/um/cm 已实现，options 待 Phase 2）

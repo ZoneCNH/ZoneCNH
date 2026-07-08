@@ -1,9 +1,9 @@
 # Binance 发布前 Checklist
 
-> **版本**：v1.0.0
-> **最后更新**：2026-07-04
+> **版本**：v1.1.0
+> **最后更新**：2026-07-08
 > **适用范围**：所有 binance runtime 版本发布（patch / minor / major）
-> **关联文件**：`gate/BOUNDARY-GATES.md`、`spec/SPEC.md §22`、`ACCEPTANCE.md §5`
+> **关联文件**：`gate/BOUNDARY-GATES.md`、`spec/SPEC.md §21（Release Gate）`、`ACCEPTANCE.md §5`
 
 ---
 
@@ -37,7 +37,7 @@
 
 | # | 检查项 | 位置 | 通过标准 |
 |---|--------|------|----------|
-| S1 | SPEC §22 Release DoD checkbox 全勾 | `module/binance/spec/SPEC.md §22` | 所有 `- [x]` 项 |
+| S1 | SPEC Release Gate / Release DoD 全勾 | `module/binance/spec/SPEC.md §21（Release Gate）` + `ACCEPTANCE.md §5` | 所有 `- [x]` 项 / §5 全 Done |
 | S2 | TRACEABILITY §4 PRG-* 状态对齐 | `module/binance/matrix/TRACEABILITY.md §4` | 无 `N/A → Done` 跳升（必须经 Partial） |
 | S3 | ACCEPTANCE §5 全部 Done/Accepted | `module/binance/spec/ACCEPTANCE.md §5` | `Not Done` 计数为 0 |
 | S4 | CHANGELOG 已记录本版本条目 | `module/binance/CHANGELOG.md` | 新版本 `## vX.Y.Z` 节存在 |
