@@ -1440,8 +1440,8 @@ docs/archive/ROADMAP-v0.x.md
 ```md
 ## Archive
 
-- [ROADMAP-2025](docs/archive/ROADMAP-2025.md)
-- [ROADMAP-v0.x](docs/archive/ROADMAP-v0.x.md)
+- [ROADMAP-2025](../archive/ROADMAP-2025.md)
+- [ROADMAP-v0.x](../archive/ROADMAP-v0.x.md)
 ```
 
 ---

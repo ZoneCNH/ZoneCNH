@@ -10,22 +10,8 @@
 |---|---|---|:---:|
 | [solid-adaptation-20260703.md](./solid-adaptation-20260703.md) | 2026-07-03 | SOLID 规则适配分析与处置账本（外部模板 vs 宪法/编码规范逐条比对：70% 重叠 / 15% 冲突 / 15% 增量；Mock 契约一致性 + 依赖注入细则并入 go-coding-standards） | — |
 | [audit-issues-20260625.md](./audit-issues-20260625.md) | 2026-06-25 | 架构审计 10 项 issue 状态总表（9 closed + 1 long-term open，PR #1098 修复落地） | — |
-| [architecture-structural-analysis-20260625-v1.md](./architecture-structural-analysis-20260625-v1.md) | 2026-06-25 | 架构深度分析与结构性评分 v1（Supersedes 0622-v2；audit 52/52；B 维首破 60；路线图 12 项：5 短期✅ + 4 中期✅ + 3 长期框架✅） | 72/100 (B) |
-| [binance/deep-analysis-20260622-backlog.md](./binance/deep-analysis-20260622-backlog.md) | 2026-06-23 | binance 5 份深度分析未完成项汇总（20 类问题，11 已解决 / 9 剩余，含版本漂移新发现） | — |
-| [binance/github-issues-923-931-closure-ledger-20260623.md](./binance/github-issues-923-931-closure-ledger-20260623.md) | 2026-06-23 | binance GitHub #923-#931 closure ledger（9/9 GitHub issues closed；runtime/release readiness 仍由 acceptance/release gates 单独治理） | — |
-| [binance/goal-execution-plan-20260622.md](./binance/goal-execution-plan-20260622.md) | 2026-06-22 | binance Goal 执行方案（82→95 分，7 阶段 × 9 AC × 26 issues，遵循 docs/goal/02-goal-standard.md） | — |
-| [binance/iteration-plan-20260622.md](./binance/iteration-plan-20260622.md) | 2026-06-22 | binance 完整更新迭代方案（5 份报告 + 8 issues 收敛，27 项 backlog，7 阶段路线） | — |
 | [fred/iteration-plan-20260622.md](./fred/iteration-plan-20260622.md) | 2026-06-22 | fred 完整更新迭代方案（4 份报告 + 7 模块文件收敛，29 项 backlog，7 阶段路线，68→80+ 分） | 68/100 (D+) |
-| [binance/deep-analysis-20260622-v4.md](./binance/deep-analysis-20260622-v4.md) | 2026-06-22 | binance 历史数据 vs 实时数据缺口（13 条建议 FR: FR-012~FR-024） | — |
-| [binance/deep-analysis-20260622-v3.md](./binance/deep-analysis-20260622-v3.md) | 2026-06-22 | binance 治理漂移分析（命名 SSOT、Kafka topic、任务引用、状态口径） | — |
-| [binance/business-types-coverage-20260622.md](./binance/business-types-coverage-20260622.md) | 2026-06-22 | binance 业务类型覆盖（Spot/合约/期权/订单簿）+ Options depth 缺口与命名漂移识别 | — |
-| [binance/deep-analysis-20260622-v2.md](./binance/deep-analysis-20260622-v2.md) | 2026-06-22 | binance 模块修复链复盘与 runtime 阻断复核 | 82/100 (B+) |
 | [branch-governance-audit-20260622.md](./branch-governance-audit-20260622.md) | 2026-06-22 | Git 分支治理、同步与工作树审计 | — |
-| [architecture-structural-analysis-20260622.md](./architecture-structural-analysis-20260622.md) | 2026-06-22 | 架构深度分析与 P0 修复（entropy 迁移、4 占位移除） | 68/100 (C) |
-| [architecture-deep-analysis-20260621-v2.md](./architecture-deep-analysis-20260621-v2.md) | 2026-06-21 | 跨文档版本一致性审计 v2 | 71/100 (B) |
-| [architecture-structural-analysis-20260621.md](./architecture-structural-analysis-20260621.md) | 2026-06-21 | 早间结构性分析（v2 前身） | 68.6/100 (C) |
-| [architecture-structural-repair-plan-20260621.md](./architecture-structural-repair-plan-20260621.md) | 2026-06-21 | 结构性修复计划 | — |
-| [architecture-problem-analysis-20260620.md](./architecture-problem-analysis-20260620.md) | 2026-06-20 | 业务域实现度分析 | — |
 | [repo-naming-unification-20260620.md](./repo-naming-unification-20260620.md) | 2026-06-20 | 仓库命名统一方案 | — |
 
 ## 子目录

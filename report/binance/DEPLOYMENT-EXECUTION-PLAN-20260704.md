@@ -521,8 +521,8 @@ collect_system() {
 
 ## 附录 D：参考文档
 
-- [`DEPLOYMENT-READINESS-CHECKLIST.md`](DEPLOYMENT-READINESS-CHECKLIST.md) — 预部署准备清单
-- [`DEEP-ANALYSIS-20260704.md`](../DEEP-ANALYSIS-20260704.md) § 10 — 部署状态汇总
+- [`DEPLOYMENT-READINESS-CHECKLIST.md`](../../module/binance/gate/DEPLOYMENT-READINESS-CHECKLIST.md) — 预部署准备清单
+- [`DEEP-ANALYSIS-20260704.md`](./DEEP-ANALYSIS-20260704.md) § 10 — 部署状态汇总
 - [`/home/workspace/binance/scripts/staging-verify.sh`](../../../../binance/scripts/staging-verify.sh) — 暂存环境验证脚本
 - v0.12.0 测试报告 — C1/C2/C3 54/54 PASS
 
