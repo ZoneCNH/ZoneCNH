@@ -66,7 +66,7 @@
 ## Validation Commands
 
 ```bash
-cd /home/workspace/domain-macro
+cd /home/workspace/domain_macro
 go build ./...
 go test ./... -race -count=1
 go vet ./...

@@ -61,14 +61,14 @@ modules:
 
   # 标准源 / 门禁（不参与运行时依赖）
   xlib_standard:
-    path: github.com/ZoneCNH/xlib-standard
+    path: github.com/ZoneCNH/xlib_standard
     layer: standard-source
     stdlib_only: false
     runtime_dependency: false
     description: "标准事实源 / Go Reference Template / schema / template"
 
   xlib_harness:
-    path: github.com/ZoneCNH/xlib-harness
+    path: github.com/ZoneCNH/xlib_harness
     layer: harness
     stdlib_only: false
     runtime_dependency: false
@@ -158,19 +158,19 @@ modules:
     description: "高精度十进制运算原语（纯 stdlib）"
 
   domain_market:
-    path: github.com/ZoneCNH/domain-market
+    path: github.com/ZoneCNH/domain_market
     layer: L2.5
     stdlib_only: false
     description: "市场领域共享语义：ProductLine/InstrumentKey/MarketFactEnvelope + Tick/Quote/Bar/OrderBook"
 
   domain_macro:
-    path: github.com/ZoneCNH/domain-macro
+    path: github.com/ZoneCNH/domain_macro
     layer: L2.5
     stdlib_only: false
     description: "宏观领域共享语义：MacroPoint/MacroInformationSet/no-lookahead"
 
   domain_exchange:
-    path: github.com/ZoneCNH/domain-exchange
+    path: github.com/ZoneCNH/domain_exchange
     layer: L2.5
     stdlib_only: false
     description: "交易所 SPI：VenueCapability/RateLimitPolicy/ExchangeError"
@@ -225,10 +225,6 @@ forbidden_deps:
   - github.com/ZoneCNH/upbit
   - github.com/ZoneCNH/coinglass
   - github.com/ZoneCNH/yield_curve
-  - github.com/ZoneCNH/bybit_market
-  - github.com/ZoneCNH/bitget_market
-  - github.com/ZoneCNH/okx_market
-  - github.com/ZoneCNH/coinbase_market
   - github.com/ZoneCNH/fred
   - github.com/ZoneCNH/treasury
   - github.com/ZoneCNH/bea
@@ -238,7 +234,7 @@ forbidden_deps:
   - github.com/ZoneCNH/eastmoney
   - github.com/ZoneCNH/jin10
   - github.com/ZoneCNH/yahoo
-  - github.com/ZoneCNH/alternative-data
+  - github.com/ZoneCNH/alternative_data
   - github.com/ZoneCNH/factor_engine
   - github.com/ZoneCNH/feature_store
   - github.com/ZoneCNH/factor_eval

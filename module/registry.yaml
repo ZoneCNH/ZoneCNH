@@ -417,7 +417,7 @@ decimalx:
 
 domain_market:
   repo: github.com/ZoneCNH/domain_market
-  local_path: /home/workspace/domain-market
+  local_path: /home/workspace/domain_market
   domain: l2_5
   layer: l2_5
   arch_type: library
@@ -434,7 +434,7 @@ domain_market:
 
 domain_macro:
   repo: github.com/ZoneCNH/domain_macro
-  local_path: /home/workspace/domain-macro
+  local_path: /home/workspace/domain_macro
   domain: l2_5
   layer: l2_5
   arch_type: library
@@ -451,7 +451,7 @@ domain_macro:
 
 domain_exchange:
   repo: github.com/ZoneCNH/domain_exchange
-  local_path: /home/workspace/domain-exchange
+  local_path: /home/workspace/domain_exchange
   domain: l2_5
   layer: l2_5
   arch_type: library
@@ -661,7 +661,7 @@ yield_curve:
 # --- 独立进程聚合层 ---
 market_data:
   repo: github.com/ZoneCNH/market_data
-  local_path: /home/workspace/market-data
+  local_path: /home/workspace/market_data
   domain: data
   layer: business
   arch_type: independent_process
