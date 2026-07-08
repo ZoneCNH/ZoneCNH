@@ -74,8 +74,8 @@ Source: [spec/SPEC.md](../spec/SPEC.md) | Goal: GOAL-FRED-001 | Status: Implemen
 | -- | -------- | -------- |
 | TC-001 | FR-003, FR-013 | `go test ./pkg/fredx/...` |
 | TC-002 | FR-005, BR-001, BR-008 | `go test ./internal/domain/... ./internal/client/...` |
-| TC-003 | FR-004, FR-008, FR-010, BR-002, BR-005 | `go test ./internal/server/... -run Idempotency` |
-| TC-004 | FR-006, FR-007, FR-008, FR-009, FR-010, FR-011, FR-012, BR-005, BR-007 | `FRED_DEV_CONFIG=sre/secrets/env/dev.md go test ./internal/integration/...` |
+| TC-003 | FR-004, FR-008, BR-002, BR-005 | `go test ./internal/server/... -run Idempotency` |
+| TC-004 | FR-006, FR-007, FR-008, FR-010, FR-012, BR-005, BR-007 | `FRED_DEV_CONFIG=sre/secrets/env/dev.md go test ./internal/integration/...` |
 | TC-005 | FR-004, FR-009, BR-006 | `go test ./internal/server/... -run RedisRebuild` |
 | TC-006 | FR-001, FR-002, FR-011, BR-004 | `go test ./internal/integration/... -run NATSIngestHandoff` |
 | TC-007 | FR-005, BR-003 | `go test ./internal/server/... -run NoLookahead` |

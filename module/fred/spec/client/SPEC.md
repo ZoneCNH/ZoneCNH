@@ -57,6 +57,8 @@
 | AC-C003 | NATS 发布带版本字段并可重试          | TC-C003 |
 | AC-C004 | 归一化结果满足 `domain_macro` 契约   | TC-C004 |
 | AC-C005 | 全量采集覆盖快照可用，缺口分片可输出 | TC-C005 |
+| AC-C006 | 缺少必要配置键时，`fred-client` 启动 fail-fast，并在日志中输出具体缺失键名，不降级为静默默认值 | TC-C006 |
+| AC-C007 | 采集日志与指标必须携带 `job_id`、`series_id`、`request_id` 关联字段，可通过结构化日志解析验证 | TC-C007 |
 
 | TC      | 命令建议                                                  |
 | ------- | --------------------------------------------------------- |
@@ -65,6 +67,8 @@
 | TC-C003 | `go test ./internal/client/... -run NATSIngestPublish`    |
 | TC-C004 | `go test ./internal/domain/... -run DomainMacroMapping`   |
 | TC-C005 | `go test ./internal/client/... -run FullCoverageSnapshot` |
+| TC-C006 | `go test ./internal/client/... -run FailFastMissingConfig` |
+| TC-C007 | `go test ./internal/client/... -run StructuredLogFields`  |
 
 ## 7. Dependencies
 

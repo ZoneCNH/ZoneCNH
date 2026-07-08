@@ -37,6 +37,7 @@
 | V-014 | `rg -n "category/related|release/related_tags|release/sources|releases/dates|series/categories|series/release|series/tags|series/search/tags|series/search/related_tags|sources" module/fred/spec/SPEC.md module/fred/README.md` | FRED v1 全端点矩阵在模块规格与索引文档中可定位。 | Passed |
 | V-015 | `rg -n "1990-01-01|最近 3 个月|30 req/min|120 req/min|2 req/s|发布后 24h" module/fred/spec/SPEC.md module/fred/README.md module/fred/plan/PLAN.md` | 默认回溯窗口、修订回拉、限流策略与同步周期在规格/索引/计划中可定位。 | Passed |
 | V-016 | `rg -n "批量采集|频率聚合|D->M|M->Q|realtime_start|realtime_end|ALFRED" module/fred/spec/SPEC.md module/fred/README.md` | 批量采集、频率聚合和版本维度策略在规格与索引文档中可定位。 | Passed |
+| V-017 | `rg -n "source_component|ECBASSETSW|JPNASSETS|ExternalRouting\|EXTERNAL\|ROUTE_EXTERNAL" module/fred/spec/SERIES-API.md module/fred/spec/SPEC.md /home/workspace/fred/internal/domain/` | 外部路由标记（source_component）和路由规则在 SERIES-API.md 规格与 domain 层中可定位，且边界 gate 禁止外部路由序列混入 FRED 完整性断言。 | Passed |
 
 ## Acceptance Criteria
 
@@ -67,6 +68,7 @@
 | TC-008 | 边界 gate 阻止绕过共享基座的直接 infra connection。 | FR-014、BR-001、BR-008 | `cd /home/workspace/fred && bash scripts/boundary-gates.sh` | Passed |
 | TC-009 | `ms_brain` integration profile 和 contract fixture。 | FR-015、BR-009 | `cd /home/workspace/fred && go test ./internal/integration/... -run MsBrainContract` | Pending (CI-gated) |
 | TC-010 | 全量采集覆盖审计、默认 `1990-01-01` 全量起点与最近 3 个月修订回拉、`realtime_start/realtime_end` 版本闭合、缺口回补。 | FR-016、BR-010 | `cd /home/workspace/fred && go test ./internal/integration/... -run FullCoverageAudit` | Pending (CI-gated) |
+| TC-011 | 外部路由集成套件：GetSeries 对 ECBASSETSW/JPNASSETS 返回正确 source_component；GetCatalogCoverage 分母不包含外部路由序列；外部路由序列不触发 FRED vintage 断言；authority registry reload 后路由判定可热切换；source_component 透传至 MacroObservation 与 Kafka event；边界 gate 阻止外部路由序列被误写入 FRED 完整性断言（IT-ROUTING-001..006）。 | FR-013、FR-014、FR-016、BR-001、BR-010 | `cd /home/workspace/fred && go test ./internal/server/... -run ExternalRoutingGetSeries && go test ./internal/integration/... -run ExternalCoverageDenominator ExternalNoVintage AuthorityRegistryReload ExternalEventSourceComponent` | Pending (CI-gated) |
 
 ## Definition of Done
 

@@ -7,9 +7,9 @@
 | Module | `fred` |
 | Domain | 数据域 · 宏观 |
 | Goal-ID | `GOAL-FRED-001` |
-| Status | Draft |
+| Status | Approved |
 | Owner | 数据域 |
-| Last-Updated | 2026-06-22 |
+| Last-Updated | 2026-07-08 |
 | Source-Code | `/home/workspace/fred/` |
 
 ## 目标陈述
