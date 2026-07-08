@@ -1,7 +1,7 @@
 # binance 实施计划
 
-- Module-Version: v4.0.0
-- Last-Updated: 2026-07-07
+- Module-Version: v4.0.1
+- Last-Updated: 2026-07-08
 - Status: execution plan complete; release_closeable=YES（PRG-001~007 全 PASS）
 - Runtime-Repo: `/home/workspace/binance`
 

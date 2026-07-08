@@ -2,9 +2,9 @@
 
 所有 notable 变更记录，按 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/) 格式维护。
 
-- Module-Version: v4.0.0
+- Module-Version: v4.0.1
 - Last-Updated: 2026-07-08
-- Spec-Reference: `module/binance/spec/SPEC.md` v4.0.0
+- Spec-Reference: `module/binance/spec/SPEC.md` v4.0.1
 - 治理规则：`module/binance/gate/RULES.md` R9 文档存在性性
 
 ---

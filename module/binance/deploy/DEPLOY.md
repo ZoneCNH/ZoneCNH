@@ -1,8 +1,8 @@
 # binance 二进制构建与部署
 
-- Runtime-Version: v0.12.0（anchor: `/home/workspace/binance@c24b4ce` — merge `fix/runtime-gap-phase2-5` + post-merge config 字段回归修复）
+- Runtime-Version: v0.14.0（anchor: `/home/workspace/binance@main` — 白名单补齐 GC-0~GC-5 全合入）
 - Target: jp1 (84.247.154.45)
-- Last-Updated: 2026-07-04
+- Last-Updated: 2026-07-08
 
 ## 目录
 

@@ -12,7 +12,7 @@ FEATURES_FILE="$BINANCE_DIR/spec/FEATURES.md"
 ACCEPTANCE_FILE="$BINANCE_DIR/spec/ACCEPTANCE.md"
 TRACEABILITY_FILE="$BINANCE_DIR/matrix/TRACEABILITY.md"
 LEGACY_MAPPING_FILE="$REPO_ROOT/docs/migrations/ac-bnc-legacy-mapping.md"
-EXPECTED_STATS="48 Done / 0 Partial / 0 Drifted / 0 Pending"
+EXPECTED_STATS="65 Done / 0 Partial / 0 Drifted / 0 Pending"
 
 fail() {
   echo "FAIL: $*"
@@ -176,7 +176,10 @@ readme_stats=$(
   summary_stats "$BINANCE_DIR/README.md" \
     's/.*single state `([0-9]+ Done \/ [0-9]+ Partial \/ [0-9]+ Drifted \/ [0-9]+ Pending)`.*/\1/p'
 )
-features_stats=$(count_status_column "$BINANCE_DIR/spec/FEATURES.md" 4)
+features_stats=$(
+  summary_stats "$BINANCE_DIR/spec/FEATURES.md" \
+    's/.*Module-State.*\*\*([0-9]+ Done \/ [0-9]+ Partial \/ [0-9]+ Drifted \/ [0-9]+ Pending)\*\*.*/\1/p'
+)
 acceptance_stats=$(
   summary_stats "$BINANCE_DIR/spec/ACCEPTANCE.md" \
     's/.*FR \*\*([0-9]+ Done \/ [0-9]+ Partial \/ [0-9]+ Drifted \/ [0-9]+ Pending)\*\*.*/\1/p'
