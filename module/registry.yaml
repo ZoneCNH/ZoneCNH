@@ -32,7 +32,7 @@ xlib_standard:
   repo: github.com/ZoneCNH/xlib_standard
   local_path: /home/workspace/xlib_standard
   domain: foundation
-  layer: standard-source
+  layer: standard_source
   arch_type: library
   lifecycle: active
   owner: ZoneCNH
@@ -385,7 +385,7 @@ domainx:
   repo: github.com/ZoneCNH/domainx
   local_path: /home/workspace/domainx
   domain: l2_5
-  layer: L2.5
+  layer: l2_5
   arch_type: library
   lifecycle: active
   owner: ZoneCNH
@@ -402,7 +402,7 @@ decimalx:
   repo: github.com/ZoneCNH/decimalx
   local_path: /home/workspace/decimalx
   domain: l2_5
-  layer: L2.5
+  layer: l2_5
   arch_type: library
   lifecycle: active
   owner: ZoneCNH
@@ -419,7 +419,7 @@ domain_market:
   repo: github.com/ZoneCNH/domain_market
   local_path: /home/workspace/domain-market
   domain: l2_5
-  layer: L2.5
+  layer: l2_5
   arch_type: library
   lifecycle: active
   owner: ZoneCNH
@@ -436,7 +436,7 @@ domain_macro:
   repo: github.com/ZoneCNH/domain_macro
   local_path: /home/workspace/domain-macro
   domain: l2_5
-  layer: L2.5
+  layer: l2_5
   arch_type: library
   lifecycle: active
   owner: ZoneCNH
@@ -453,7 +453,7 @@ domain_exchange:
   repo: github.com/ZoneCNH/domain_exchange
   local_path: /home/workspace/domain-exchange
   domain: l2_5
-  layer: L2.5
+  layer: l2_5
   arch_type: library
   lifecycle: active
   owner: ZoneCNH
