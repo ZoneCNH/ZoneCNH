@@ -41,7 +41,8 @@
 |----------|---------|------|
 | ~~`VXVCLS`~~ | `VIXCLS` | SPEC.md §5.2 风险行已修正 |
 | ~~`WDTGAL`~~ | `WTREGEN` | SPEC.md §5.2 流动性行已修正 |
-| ~~`JPNASSETS`~~ | 待确认（外部路由，见 §3）| SPEC.md §5.2 央行资产负债表 |
+
+> 注：`JPNASSETS` **不是别名**，而是合法的 FRED `series_id`（日本央行资产负债表经 FRED 第三方接入），仅作为外部路由序列处理（见 §3 与 CATALOG:265/362，登记为 `EXTERNAL(BoJ)`）。因此不列入上表"禁止使用"清单，亦无需替换为其他 ID。
 
 ---
 
@@ -66,11 +67,13 @@ note: "日本央行资产负债表，通过 FRED 第三方接入，需校验 FRE
 ### §3.3 覆盖率计算排除
 
 外部路由序列**不计入** FRED API 采集覆盖率（分母为 FRED-native 序列）。Admin 覆盖审计输出格式：
+> 以下为输出格式示例，数值（如 `total_fred_native: 246`）为示例值，**非真实分母**；真实分母见 `SERIES-CATALOG.md` §3（FRED-native 90 序列）。
+
 ```json
 {
-  "total_fred_native": 246,
-  "covered": 198,
-  "missing": 48,
+  "total_fred_native": 90,
+  "covered": 90,
+  "missing": 0,
   "external_routed": 12
 }
 ```
@@ -85,9 +88,9 @@ note: "日本央行资产负债表，通过 FRED 第三方接入，需校验 FRE
 |---------|----------|------|--------|----------|------|
 | OPEN-CAT-1-A | SPEC.md §5.2 风险行 | `VXVCLS` | `VIXCLS` | v1.1.0 | ✅ 已修复 |
 | OPEN-CAT-1-B | SPEC.md §5.2 流动性行 | `WDTGAL` | `WTREGEN` | v1.1.0 | ✅ 已修复 |
-| OPEN-CAT-1-C | SERIES-CATALOG 条目缺失 `VIXCLS` | — | 待补录 | — | 🔧 待修复 |
-| OPEN-CAT-1-D | SERIES-CATALOG 条目缺失 `WTREGEN` | — | 待补录 | — | 🔧 待修复 |
-| OPEN-CAT-1-E | `JPNASSETS` 来源确认 | — | 待确认是否 FRED-native 或外部路由 | — | 🔧 待确认 |
+| OPEN-CAT-1-C | SERIES-CATALOG 条目缺失 `VIXCLS` | — | 已补录（CATALOG:178） | v1.1.0 | ✅ 已修复 |
+| OPEN-CAT-1-D | SERIES-CATALOG 条目缺失 `WTREGEN` | — | 已补录（CATALOG:109） | v1.1.0 | ✅ 已修复 |
+| OPEN-CAT-1-E | `JPNASSETS` 来源确认 | — | 已确认外部路由（CATALOG:265/362 登记 `EXTERNAL(BoJ)`，非 FRED-native） | v1.1.0 | ✅ 已确认 |
 
 ---
 
