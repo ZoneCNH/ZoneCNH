@@ -12,6 +12,7 @@
 | 文档 | 适用范围 | 说明 |
 |------|---------|------|
 | [go-coding-standards.md](./go-coding-standards.md) | 所有 Go 模块 | 格式化、命名、错误处理、并发、接口设计、测试等 14 个维度 |
+| [macro-data-source-module-standard.md](./macro-data-source-module-standard.md) | fred/bea/ecb/treasury/yahoo 等 13 个宏观数据源模块 | C/S 架构、存储拓扑、raw-first 写入顺序、无前视语义、CI 门禁、契约变更 |
 
 ---
 
