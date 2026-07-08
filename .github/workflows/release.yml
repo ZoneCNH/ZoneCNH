@@ -94,6 +94,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     needs: build-manifest
+    if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/v')
     steps:
       - uses: actions/checkout@v4
         with:
@@ -106,8 +107,15 @@ jobs:
           path: release/manifest/
 
       - name: 生成 release notes
+        if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/v')
+        env:
+          RELEASE_TAG: ${{ inputs.tag }}
         run: |
-          TAG="${GITHUB_REF#refs/tags/}"
+          if [ "${GITHUB_EVENT_NAME}" = "workflow_dispatch" ]; then
+            TAG="${RELEASE_TAG}"
+          else
+            TAG="${GITHUB_REF_NAME}"
+          fi
           PREV_TAG=$(git tag --sort=-version:refname | grep -A1 "^${TAG}$" | tail -1)
           NOTES_FILE="release/manifest/release-notes.md"
 
@@ -148,8 +156,13 @@ jobs:
       - name: 创建 GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.tag }}
         run: |
-          TAG="${GITHUB_REF#refs/tags/}"
+          if [ "${GITHUB_EVENT_NAME}" = "workflow_dispatch" ]; then
+            TAG="${RELEASE_TAG}"
+          else
+            TAG="${GITHUB_REF_NAME}"
+          fi
 
           gh release create "$TAG" \
             --title "FoundationX ${TAG}" \
