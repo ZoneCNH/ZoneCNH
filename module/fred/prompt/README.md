@@ -1,6 +1,6 @@
 # module/fred Prompt 包入口
 
-- Last-Updated: 2026-07-03
+- Last-Updated: 2026-07-08
 - 目标：为单个 Task 生成可直接执行的 Context Packet
 
 ## 命名规范
