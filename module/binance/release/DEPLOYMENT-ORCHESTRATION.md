@@ -1,13 +1,15 @@
-# Binance v0.12.0 Deployment Orchestration
+# Binance Release Execution Guide
 
-**Status:** 🟢 READY TO HANDOFF TO OPS  
-**Version:** v4.0.0 (spec) / v0.14.0 (runtime)  
-**Prepared:** 2026-07-04T14:05Z  
-**Lead:** Copilot CLI / ZoneCNH  
+> **职责**：发布执行层手册；入口和判定请分别查看 `README.md` / `gate/` / `spec/`。
+
+**Status:** 🟢 EXECUTION MANUAL
+**Version:** v4.0.0 (spec) / v0.14.0 (runtime)
+**Prepared:** 2026-07-04T14:05Z
+**Lead:** Copilot CLI / ZoneCNH
 
 ## Executive Summary
 
-Binance v0.12.0 is production-ready for immediate deployment. All code quality metrics verified (54/54 tests PASS), staging validation complete (health checks OK), and deployment procedures documented. Recommended approach: Blue-green deployment with 72-hour monitoring period.
+This document is the release execution runbook. It assumes the reader already passed `README.md` -> `gate/RELEASE-CHECKLIST.md` -> `gate/DEPLOY-PREFLIGHT.md` and only needs the operational steps for release path A/B, rollback, and post-release smoke.
 
 ## Pre-Deployment Validation Status
 

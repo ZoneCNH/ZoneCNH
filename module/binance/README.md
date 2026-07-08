@@ -2,6 +2,16 @@
 
 `module/binance` is the Binance-specific Market Data C/S Module for ZoneCNH.
 
+## 入口导航
+
+`module/binance` 只保留三条主线：
+
+- 开发：`goal/goal.md`、`spec/SPEC.md`、`design/DESIGN.md`
+- 验证：`matrix/TRACEABILITY.md`、`spec/ACCEPTANCE.md`
+- 发布：`gate/RELEASE-CHECKLIST.md`、`gate/DEPLOY-PREFLIGHT.md`、`release/DEPLOYMENT-ORCHESTRATION.md`
+
+其余文档保持原位，但不再在 README 里展开成完整流程。
+
 - Spec-Version: v4.0.1 (root / client / server — v3.18.0 canonical 命名对齐 + v4.0.0 order book rebuild 纳入 ADR-011)
 - Runtime-Version: v0.15.0（Runtime-Anchor: `/home/workspace/binance@main`）
 - Delivery-State: FR-001~FR-065 spec/traceability registered — single state `65 Done / 0 Partial / 0 Drifted / 0 Pending`。release_closeable=YES（PRG-001~007 全 PASS）。47/47 tasks Done；deep-review 37/37 fixed；coverage 100.0%；0 GitHub open issues。
@@ -106,8 +116,10 @@ module/binance/server
 
 ## Read Next
 
-- `spec/SPEC.md`
+### 开发
+
 - `goal/goal.md`
+- `spec/SPEC.md`
 - `design/DESIGN.md`
 - `design/EVENT-TYPE-MAPPING.md` — Binance 原生事件类型 → canonical 映射 + 四产品线覆盖矩阵
 - `design/SEQUENCE-CONTINUITY-STRATEGY.md` — 序号连续性校验策略
@@ -115,7 +127,16 @@ module/binance/server
 - `design/ADR-009-user-data-stream-scope.md` — 用户数据流排除决策
 - `design/ADR-010-platform-change-risks.md` — 平台变更风险登记
 - `design/ADR-011-order-book-rebuild-inclusion.md` — 订单簿重建纳入决策（supersede ADR-003，v4.0.0 MAJOR 升级）
-- `deploy/README.md`
-- `gate/BOUNDARY-GATES.md`
+
+### 验证
+
 - `matrix/TRACEABILITY.md`
 - `evidence/2026-06-26/`
+
+### 发布
+
+- `gate/BOUNDARY-GATES.md`
+- `gate/RELEASE-CHECKLIST.md`
+- `gate/DEPLOY-PREFLIGHT.md`
+- `release/DEPLOYMENT-ORCHESTRATION.md`
+- `deploy/README.md`
