@@ -105,14 +105,13 @@ jobs:
           name: release-manifest
           path: release/manifest/
 
-      - name: 生成 changelog
-        id: changelog
+      - name: 生成 release notes
         run: |
           TAG="${GITHUB_REF#refs/tags/}"
           PREV_TAG=$(git tag --sort=-version:refname | grep -A1 "^${TAG}$" | tail -1)
+          NOTES_FILE="release/manifest/release-notes.md"
 
           if [ "$PREV_TAG" = "$TAG" ] || [ -z "$PREV_TAG" ]; then
-            # 首个 tag，列出所有提交
             RANGE="HEAD"
             PREV_LABEL="初始版本"
           else
@@ -121,60 +120,36 @@ jobs:
           fi
 
           {
-            echo "changes<<CHANGELOG_EOF"
-            echo "## 从 ${PREV_LABEL} 到 ${TAG}"
-            echo ""
-
-            # 按 conventional commits 分类
-            echo "### ✨ 新功能"
-            git log "$RANGE" --pretty=format:"- %s (%h)" --grep="^feat" 2>/dev/null || true
-            echo ""
-            echo "### 🐛 修复"
-            git log "$RANGE" --pretty=format:"- %s (%h)" --grep="^fix" 2>/dev/null || true
-            echo ""
-            echo "### 📝 文档"
-            git log "$RANGE" --pretty=format:"- %s (%h)" --grep="^docs" 2>/dev/null || true
-            echo ""
-            echo "### 🔧 其他"
-            git log "$RANGE" --pretty=format:"- %s (%h)" --invert-grep --grep="^feat" --grep="^fix" --grep="^docs" 2>/dev/null || true
-            echo ""
-            echo "CHANGELOG_EOF"
-          } >> "$GITHUB_OUTPUT"
-
-      - name: 读取 manifest 摘要
-        id: manifest
-        run: |
-          if [ -f "release/manifest/release-manifest.json" ]; then
-            SUMMARY=$(jq -r '
-              "组件总数: \(.stats.total_components) | 已有: \(.stats.existing) | 已创建: \(.stats.planned)\n平均进度: \(.stats.average_progress)% | 有版本号: \(.stats.versioned)"
-            ' release/manifest/release-manifest.json)
-            {
-              echo "summary<<SUMMARY_EOF"
-              echo "$SUMMARY"
-              echo "SUMMARY_EOF"
-            } >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: 创建 GitHub Release
-        env:
-          GH_TOKEN: ${{ github.token }}
-          MANIFEST_SUMMARY: ${{ steps.manifest.outputs.summary }}
-          CHANGELOG_BODY: ${{ steps.changelog.outputs.changes }}
-        run: |
-          TAG="${GITHUB_REF#refs/tags/}"
-          NOTES_FILE="release/manifest/release-notes.md"
-
-          {
             echo "## FoundationX 文档枢纽 ${TAG}"
             echo
-            echo "### 📊 系统快照"
-            printf '%s\n' "${MANIFEST_SUMMARY:-}"
+            echo "## 从 ${PREV_LABEL} 到 ${TAG}"
             echo
-            printf '%s\n' "${CHANGELOG_BODY:-}"
+            echo "### 📊 系统快照"
+            jq -r '
+              "组件总数: \(.stats.total_components) | 已有: \(.stats.existing) | 已创建: \(.stats.planned)\n平均进度: \(.stats.average_progress)% | 有版本号: \(.stats.versioned)"
+            ' release/manifest/release-manifest.json
+            echo
+            echo "### ✨ 新功能"
+            git log "$RANGE" --pretty=format:"- %s (%h)" --grep="^feat" 2>/dev/null || true
+            echo
+            echo "### 🐛 修复"
+            git log "$RANGE" --pretty=format:"- %s (%h)" --grep="^fix" 2>/dev/null || true
+            echo
+            echo "### 📝 文档"
+            git log "$RANGE" --pretty=format:"- %s (%h)" --grep="^docs" 2>/dev/null || true
+            echo
+            echo "### 🔧 其他"
+            git log "$RANGE" --pretty=format:"- %s (%h)" --invert-grep --grep="^feat" --grep="^fix" --grep="^docs" 2>/dev/null || true
             echo
             echo "---"
             echo "📎 完整 manifest 见附件"
           } > "$NOTES_FILE"
+
+      - name: 创建 GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="${GITHUB_REF#refs/tags/}"
 
           gh release create "$TAG" \
             --title "FoundationX ${TAG}" \
