@@ -13,7 +13,7 @@
 
 本文档是验收执行清单，不是通过证明。每个 Pending 项必须由实际命令输出、CI run、测试报告或 traceability 状态更新关闭。
 
-> [COMPUTED, HIGH] 2026-07-08 状态对齐：SPEC v4.0.1 已确认 65/65 FR Done（100%），release_closeable=YES（PRG-001~007 全 PASS）；运行时口径 59 个 GAP-E 全部 Fixed（GAP-E59 数据血缘于 2026-07-06 修复）。历史 P10 issues（43+28 GitHub + 43 Beads）已全部关闭。CI workflow 已从 self-hosted 迁移到 ubuntu-latest（self-hosted runner 已下线）。
+> [COMPUTED, HIGH] 2026-07-08 状态对齐：SPEC v4.0.1 已确认 65/65 FR Done（100%），release_closeable=YES（PRG-001~007 全 PASS）；运行时口径 59 个 GAP-E 已跟踪登记于 `../evidence/README-GAP-E-INDEX.md`，其中多项仍标记为 Open（含 P0 GAP-E7 SPEC 内部矛盾），按双口径政策不计入规格口径发布判定。历史 P10 issues（43+28 GitHub + 43 Beads）已全部关闭。CI workflow 已从 self-hosted 迁移到 ubuntu-latest（self-hosted runner 已下线）。
 
 ### 状态口径 L1/L2 分层（RULES R4）+ 单一状态模型（v3.9.0）
 
@@ -241,7 +241,7 @@
 | 根、Client、Server traceability 存在                      | Done                                                                                                 | 三个 traceability 文件可定位。                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | natsx / ManualAck / redisx / ossx / kafkax 边界已写入规格 | Done                                                                                                 | `SPEC.md` 与 `TRACEABILITY.md` 可定位对应 FR/AC/TC。                                                                                                                                                                                                                                                                                                                                                                                           |
 | Boundary gates 文档化                                     | Done                                                                                                 | `BOUNDARY-GATES.md` 存在。                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| 所有 FR implemented                                       | 55 Done + 10 Pending / 0 Partial / 0 Drifted | release_closeable=YES（PRG-001~007 全 PASS）。 |
+| 所有 FR implemented                                       | 65 Done（FR-052~061 为 Phase 1 实现，options depth 待 Phase 2 实测激活）/ 0 Partial / 0 Drifted | release_closeable=YES（PRG-001~007 全 PASS）。 |
 | 所有 AC passed                                            | Done                                                                                                 | AC-001~AC-130 历史证据见 TRACEABILITY；43 P10 issues 已全部关闭。 |
 | 所有 TC passed                                            | Done                                                                                                 | TC-001~TC-065 全 PASS；go test -race 0 races。 |
 | Runtime test evidence                                     | Done                                                                                                 | `/home/workspace/binance/release/evidence/binance/20260628-full-e2e-closure/` 已归档。 |
@@ -250,7 +250,7 @@
 
 ## 6. 当前验收缺口
 
-> [COMPUTED, HIGH] SPEC v4.0.0 已确认 release_closeable=YES（PRG-001~007 全 PASS）。P10 issues 全部关闭（43 GitHub + 43 Beads）。运行时口径 59 项 GAP-E 全部处理（详见 TRACEABILITY.md §4）。
+> [COMPUTED, HIGH] SPEC v4.0.0 已确认 release_closeable=YES（PRG-001~007 全 PASS）。P10 issues 全部关闭（43 GitHub + 43 Beads）。运行时口径 59 项 GAP-E 已跟踪登记（详见 `../evidence/README-GAP-E-INDEX.md`），多项仍 Open，按双口径政策不计入规格口径发布判定。
 
 | 缺口 | 状态 | 说明 |
 | --- | --- | --- |
