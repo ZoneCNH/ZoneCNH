@@ -12,7 +12,7 @@
 >
 > 历史投影 / 兼容层 → **[06-dataflow.md](./06-dataflow.md)** · **[07-three-engines.md](./07-three-engines.md)**
 >
-> 🗺️ 六阶段交付路线图、任务编号与验收标准 → **[ROADMAP.md](./ROADMAP.md)**
+> 🗺️ 六阶段交付路线图、任务编号与验收标准 → **[ROADMAP.md](../../ROADMAP.md)**
 
 ### 代码依赖拓扑
 

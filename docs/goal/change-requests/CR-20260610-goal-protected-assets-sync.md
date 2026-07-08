@@ -28,7 +28,7 @@ Owner: workflow owner
 - [14-agent-protocols.md](../14-agent-protocols.md) 要求 Agent 不得绕过 G0-G11，并要求单任务单 writer、worktree 隔离、多源 review 和 arbiter 边界。
 - [04-gates.md](../04-gates.md)、[17-risk-and-decisions.md](../17-risk-and-decisions.md)、[20-metrics-evidence.md](../20-metrics-evidence.md) 已将 G10 Release Gate 绑定到 strict validator、Matrix check-only、Risk Register、Release Manifest、Evidence Bundle 和 rollback validation。
 - [04-gates.md](../04-gates.md)、[17-risk-and-decisions.md](../17-risk-and-decisions.md)、[20-metrics-evidence.md](../20-metrics-evidence.md)、[25-execution-guide.md](../25-execution-guide.md) 均要求 G10 / Release Evidence 包含 `validation_summary`；本 CR 验证到 `.config/goal/schema/rules.yaml` 曾未显式列出该字段，2026-06-11 已同步为 schema 回归要求。
-- [CONSTITUTION.md](../../CONSTITUTION.md) §17 曾描述 `Goal → Spec → Matrix → Tasks → Plan → Prompt → Code → Test → Release → Metrics`，而 [03-pipeline.md](../03-pipeline.md) 定义 11 层主流程并将 Matrix 定位为横切追溯制品；2026-06-11 已对齐为当前主流程。由于 Constitution 是最高治理源，后续再次修改仍必须单独审批。
+- [CONSTITUTION.md](../../../CONSTITUTION.md) §17 曾描述 `Goal → Spec → Matrix → Tasks → Plan → Prompt → Code → Test → Release → Metrics`，而 [03-pipeline.md](../03-pipeline.md) 定义 11 层主流程并将 Matrix 定位为横切追溯制品；2026-06-11 已对齐为当前主流程。由于 Constitution 是最高治理源，后续再次修改仍必须单独审批。
 - `.codex/agents/goal-*.toml` 已补齐并与 [14-agent-protocols.md](../14-agent-protocols.md) 对齐；2026-06-11 已补齐 `.copilot/agents/goal-*.md`，并在 `.copilot/AGENTS.md` 中声明这些文件只是 `docs/goal/` 的 prompt 投影，不是独立规则源。
 - `python3 docs/goal/tools/rule-drift-check.py --root .` 已在 2026-06-11 验证通过；此前 CI job 漂移已作为本 CR 的第 2 项部分实现完成，后续作为回归检查保留。
 

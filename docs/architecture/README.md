@@ -37,7 +37,7 @@ x.go（治理/工具 CLI）→ composer（Composition Root）→ 基座(L0/L1) �
 market_data → market_engine → S State ─┐
 macro_data  → macro_engine  → M State  ├─► regime_engine → DecisionCard
 ```
-> 注：上图保留 market_engine / macro_engine / regime_engine 历史投影名；活跃事实链路见 [01-overview.md](./01-overview.md)、[README.md](../README.md) 与 [08-contracts.md](./08-contracts.md)。[06-dataflow.md](./06-dataflow.md) / [07-three-engines.md](./07-three-engines.md) 仅作投影与迁移对照。
+> 注：上图保留 market_engine / macro_engine / regime_engine 历史投影名；活跃事实链路见 [01-overview.md](./01-overview.md)、[README.md](../../README.md) 与 [08-contracts.md](./08-contracts.md)。[06-dataflow.md](./06-dataflow.md) / [07-three-engines.md](./07-three-engines.md) 仅作投影与迁移对照。
 → 详见 [06-dataflow.md](./06-dataflow.md) · [07-three-engines.md](./07-three-engines.md)
 
 ### Foundation 状态
