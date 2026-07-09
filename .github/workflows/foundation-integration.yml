@@ -10,7 +10,12 @@ on:
   workflow_dispatch:
 
 jobs:
+  # ── 0. CICD-001 门禁 ───────────────────────────────────────
+  runner-gate:
+    uses: ./.github/workflows/runner-gate.yml
+
   yaml-lint:
+    needs: runner-gate
     name: Validate FOUNDATION-DEPS.yaml
     runs-on: [self-hosted, Linux, X64, sre/foundation-l1]
     timeout-minutes: 10

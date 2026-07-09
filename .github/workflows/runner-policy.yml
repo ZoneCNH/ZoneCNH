@@ -22,9 +22,9 @@ concurrency:
 jobs:
   runner-policy:
     name: Enforce Self-hosted Runner Policy
-    # 2026-07-09：使用 sre/foundation-l0（10.2.2.9 在线）。
+    # 2026-07-09：使用 sre/governance（10.2.2.9 在线）。
     # sre/governance（94.72.124.39）恢复后切换至 sre/governance per ci.md §9。
-    runs-on: [self-hosted, Linux, X64, sre/foundation-l0]
+    runs-on: [self-hosted, Linux, X64, sre/governance]
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4

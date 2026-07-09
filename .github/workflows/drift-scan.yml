@@ -1,0 +1,134 @@
+name: Drift Scan
+
+# CICD-001 基线漂移检测 — 定时扫描全仓，发现违规自动提 Issue
+# 扫描内容：GitHub runner 残留、pool 标签漂移、Go 版本漂移、证据缺失
+
+on:
+  schedule:
+    - cron: "37 3 * * *"  # 每日 03:37 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: drift-scan
+  cancel-in-progress: true
+
+jobs:
+  # ── 1. Runner policy 漂移扫描 ──────────────────────────────────
+  runner-drift:
+    name: Runner Policy Drift
+    runs-on: [self-hosted, Linux, X64, sre/governance]
+    timeout-minutes: 15
+    outputs:
+      violations: ${{ steps.scan.outputs.violations }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - id: scan
+        name: Scan for runner policy violations
+        run: |
+          VIOLATIONS=$(bash .github/ci/runner-policy-guard.sh . 2>&1 | grep -c "ERROR" || true)
+          echo "violations=${VIOLATIONS}" >> $GITHUB_OUTPUT
+          if [ "${VIOLATIONS}" -gt 0 ]; then
+            echo "Found ${VIOLATIONS} runner policy violations"
+            bash .github/ci/runner-policy-guard.sh . 2>&1 | grep "ERROR" | tee drift-runner-violations.txt
+          else
+            echo "No runner policy violations ✓"
+          fi
+
+      - name: Create issue on drift
+        if: steps.scan.outputs.violations > 0
+        run: |
+          gh issue create \
+            --title "ci(drift): ${VIOLATIONS} runner policy violations detected" \
+            --label "ci,drift,p0" \
+            --body "$(cat <<'BODY'
+          ## Runner Policy Drift Detected
+
+          Automatic scan found runner policy violations.
+
+          See workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+          Action required:
+          1. All workflows must use self-hosted runners
+          2. No GitHub runners (use self-hosted sre/* pools only)
+          3. All pools must be registered per CICD-001
+          BODY
+          )" \
+            --repo ${{ github.repository }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VIOLATIONS: ${{ steps.scan.outputs.violations }}
+
+  # ── 2. Go baseline 漂移扫描 ──────────────────────────────────
+  go-baseline-drift:
+    name: Go Baseline Drift
+    runs-on: [self-hosted, Linux, X64, sre/governance]
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Scan for Go version drift
+        run: |
+          BASELINE=$(grep -oP 'ci_version:\s*"\K[^"]+' BASELINE.yaml | head -1)
+          echo "Baseline Go version: ${BASELINE}"
+
+          DRIFT_COUNT=0
+          for f in module/*/ci-workflow.yaml; do
+            MOD_VERSION=$(grep -oP 'GO_VERSION:\s*"\K[^"]+' "$f" 2>/dev/null || echo "not-found")
+            if [ "${MOD_VERSION}" != "${BASELINE}" ] && [ "${MOD_VERSION}" != "not-found" ]; then
+              MODULE=$(basename $(dirname "$f"))
+              echo "DRIFT: ${MODULE} uses Go ${MOD_VERSION} (baseline: ${BASELINE})"
+              DRIFT_COUNT=$((DRIFT_COUNT + 1))
+            fi
+          done
+
+          if [ "${DRIFT_COUNT}" -gt 0 ]; then
+            echo "Go version drift detected: ${DRIFT_COUNT} modules"
+            gh issue create \
+              --title "ci(drift): ${DRIFT_COUNT} modules have Go version drift (baseline: ${BASELINE})" \
+              --label "ci,drift,p1" \
+              --body "Automatic scan found Go version drift. See run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+              --repo ${{ github.repository }}
+          else
+            echo "All modules on Go ${BASELINE} ✓"
+          fi
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+  # ── 3. Runner pool 漂移扫描 ──────────────────────────────────
+  pool-drift:
+    name: Runner Pool Drift
+    runs-on: [self-hosted, Linux, X64, sre/governance]
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Scan for unknown pool references
+        run: |
+          if command -v xlibgate &>/dev/null; then
+            xlibgate trust runner-pools --repo . 2>&1 | tee drift-pools.json
+          else
+            bash .github/ci/runner-policy-guard.sh . 2>&1 | grep "unknown runner pool" | tee drift-pools.txt
+          fi
+
+  # ── 4. 摘要报告 ──────────────────────────────────────────────
+  summary:
+    name: Drift Summary
+    needs: [runner-drift, go-baseline-drift, pool-drift]
+    runs-on: [self-hosted, Linux, X64, sre/governance]
+    timeout-minutes: 5
+    steps:
+      - run: |
+          echo "## CICD-001 Drift Scan Summary"
+          echo "Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          echo "Timestamp: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          echo "---"
+          echo "Runner policy scan: ${{ needs.runner-drift.outputs.violations || '0' }} violations"
+          echo "Go baseline scan: completed"
+          echo "Pool drift scan: completed"

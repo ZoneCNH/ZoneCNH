@@ -1,7 +1,12 @@
 name: Minimal Test
 on: workflow_dispatch
 jobs:
+  # ── 0. CICD-001 门禁 ───────────────────────────────────────
+  runner-gate:
+    uses: ./.github/workflows/runner-gate.yml
+
   hello:
+    needs: runner-gate
     runs-on: [self-hosted, Linux, X64, sre/foundation-l0]
     steps:
       - run: echo hello

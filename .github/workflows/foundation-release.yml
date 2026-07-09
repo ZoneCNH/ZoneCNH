@@ -21,7 +21,12 @@ permissions:
   contents: write
 
 jobs:
+  # ── 0. CICD-001 门禁 ───────────────────────────────────────
+  runner-gate:
+    uses: ./.github/workflows/runner-gate.yml
+
   quality-gate:
+    needs: runner-gate
     uses: ./.github/workflows/docs-ci.yml
 
   release-prep:
