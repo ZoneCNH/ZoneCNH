@@ -294,3 +294,14 @@ jobs:
           fi
         env:
           PATH: /home/workspace/xlibgate:${{ env.PATH }}
+
+  # ── 17. Module-Pool Sync Check ─────────────────────────────────
+  module-pool-sync:
+    name: Module-Pool Sync (CICD-001)
+    runs-on: [self-hosted, Linux, X64, sre/governance]
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 校验 RUNNER-POOLS.yaml 与 registry.yaml 同步
+        run: bash .github/ci/module-pool-sync-check.sh .

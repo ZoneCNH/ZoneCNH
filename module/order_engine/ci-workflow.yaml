@@ -1,8 +1,8 @@
-# CI/CD Workflow 参考模板 — schedulex
+# CI/CD Workflow 参考模板 — order_engine
 #
-# 将此文件复制到 github.com/ZoneCNH/schedulex/.github/workflows/ci.yml。
+# 将此文件复制到 github.com/ZoneCNH/order_engine/.github/workflows/ci.yml。
 # 所有 CI 与 CD job 必须使用 sre/ 机器池；禁止回退 GitHub-hosted runner。
-# CI 机器池: sre/foundation-l1；CD 机器池: sre/deploy。
+# CI 机器池: sre/engine；CD 机器池: sre/deploy。
 
 name: CI/CD
 
@@ -24,14 +24,14 @@ concurrency:
 
 env:
   GO_VERSION: "1.26.5"
-  SRE_CI_POOL: "sre/foundation-l1"
+  SRE_CI_POOL: "sre/engine"
   SRE_DEPLOY_POOL: "sre/deploy"
   EVIDENCE_DIR: "release/evidence"
 
 jobs:
   ci-preflight:
     name: CI Preflight
-    runs-on: [self-hosted, Linux, X64, sre/foundation-l1]
+    runs-on: [self-hosted, Linux, X64, sre/engine]
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
@@ -47,7 +47,7 @@ jobs:
   build:
     name: Build
     needs: ci-preflight
-    runs-on: [self-hosted, Linux, X64, sre/foundation-l1]
+    runs-on: [self-hosted, Linux, X64, sre/engine]
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
@@ -60,7 +60,7 @@ jobs:
   test:
     name: Unit Test
     needs: ci-preflight
-    runs-on: [self-hosted, Linux, X64, sre/foundation-l1]
+    runs-on: [self-hosted, Linux, X64, sre/engine]
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
@@ -74,7 +74,7 @@ jobs:
   lint:
     name: Lint
     needs: ci-preflight
-    runs-on: [self-hosted, Linux, X64, sre/foundation-l1]
+    runs-on: [self-hosted, Linux, X64, sre/engine]
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
@@ -99,7 +99,7 @@ jobs:
   evidence:
     name: Evidence Package
     needs: [build, test, lint, secret-scan]
-    runs-on: [self-hosted, Linux, X64, sre/foundation-l1]
+    runs-on: [self-hosted, Linux, X64, sre/engine]
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
@@ -107,8 +107,8 @@ jobs:
           mkdir -p ${{ env.EVIDENCE_DIR }}
           cat > ${{ env.EVIDENCE_DIR }}/ci-manifest.json <<'JSON'
 {
-  "module": "schedulex",
-  "ci_pool": "sre/foundation-l1",
+  "module": "order_engine",
+  "ci_pool": "sre/engine",
   "deploy_pool": "sre/deploy",
   "runner_namespace": "sre/",
   "go_version": "1.26.5"

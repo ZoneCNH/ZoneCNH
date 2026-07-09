@@ -219,28 +219,28 @@
 
 [口径-DEPS20] 20/20 模块全部阶段 ≥67（rule-scorer 真实评分），其中 13/20 全线 ≥98。该表是 Spec→Code 管线分项评分，不代表 release/factory；release/factory 投影以 `.foundationx/status/index.json` + `.foundationx/blockers.json` 为准。
 
-| 模块          | spec | matrix | tasks | plan | prompt | code |
-| ------------- | :--: | :----: | :---: | :--: | :----: | :--: |
-| clickhousex   | 100  |  100   |  100  | 100  |  100   | 100  |
-| configx       | 100  |  100   |  96   | 100  |  100   | 100  |
-| contracts     | 100  |  100   |  100  | 100  |  100   | 100  | ✅ P0 DTO 2026-06-20 |
-| domainx       | 100  |  100   |  100  | 100  |  100   | 100  |
-| kafkax        | 100  |  100   |  100  | 100  |  100   | 100  |
-| kernel        | 100  |  100   |  100  | 100  |  100   | 100  |
-| natsx         | 100  |  100   |  92   | 100  |  100   | 100  |
-| observex      | 100  |  100   |  100  | 100  |  100   | 100  |
-| ossx          | 100  |  100   |  100  | 100  |  100   | 100  |
-| postgresx     | 100  |  100   |  100  | 100  |  100   | 100  |
-| redisx        |  98  |  100   |  100  | 100  |  100   | 100  |
-| resiliencx    | 100  |  100   |  100  | 100  |  100   | 100  |
-| schedulex     |  98  |  100   |  100  | 100  |  100   | 100  |
-| bootstrap     | ~90  |  N/A   |  N/A  | N/A  |  N/A   | N/A  |
-| taosx         | ~88  |  100   | ~88   | 100  |  100   | 100  |
-| testkitx      | 100  |  100   |  100  | 100  |  100   | 100  |
-| transportx    |  84  |  100   |  100  | 100  |  100   | 100  |
-| xlib_evidence |  83  |  100   |  100  | 100  |  100   | 100  |
-| xlib_harness  |  83  |  100   |  97   | 100  |  100   | 100  |
-| xlib_standard | 100  |   80   |  98   | 100  |  100   | 100  |
-| xlibgate      | 100  |  100   |  100  | 100  |  100   | 100  |
+| 模块 | spec | matrix | tasks | plan | prompt | code | CI Pool | CI Verified |
+|--------|:----:|:------:|:-----:|:----:|:------:|:----:|---------|:-----------:|
+| clickhousex | 100 | 100 | 100 | 100 | 100 | 100 | `sre/storage-heavy` | ✅ |
+| configx | 100 | 100 | 96 | 100 | 100 | 100 | `sre/foundation-l1` | ✅ |
+| contracts | 100 | 100 | 100 | 100 | 100 | 100 | `sre/contracts` | ✅ |
+| domainx | 100 | 100 | 100 | 100 | 100 | 100 | `sre/contracts` | ✅ |
+| kafkax | 100 | 100 | 100 | 100 | 100 | 100 | `sre/storage-heavy` | ✅ |
+| kernel | 100 | 100 | 100 | 100 | 100 | 100 | `sre/foundation-l0` | ✅ |
+| natsx | 100 | 100 | 92 | 100 | 100 | 100 | `sre/storage-light` | ✅ |
+| observex | 100 | 100 | 100 | 100 | 100 | 100 | `sre/foundation-l1` | ✅ |
+| ossx | 100 | 100 | 100 | 100 | 100 | 100 | `sre/storage-light` | ✅ |
+| postgresx | 100 | 100 | 100 | 100 | 100 | 100 | `sre/storage-heavy` | ✅ |
+| redisx | 98 | 100 | 100 | 100 | 100 | 100 | `sre/storage-light` | ✅ |
+| resiliencx | 100 | 100 | 100 | 100 | 100 | 100 | `sre/foundation-l1` | ✅ |
+| schedulex | 98 | 100 | 100 | 100 | 100 | 100 | `sre/foundation-l1` | ✅ |
+| bootstrap | ~90 | N/A | N/A | N/A | N/A | N/A | `sre/foundation-l1` | ✅ |
+| taosx | ~88 | 100 | ~88 | 100 | 100 | 100 | `sre/storage-heavy` | ✅ |
+| testkitx | 100 | 100 | 100 | 100 | 100 | 100 | `sre/foundation-l1` | ✅ |
+| transportx | 84 | 100 | 100 | 100 | 100 | 100 | `sre/contracts` | ✅ |
+| xlib_evidence | 83 | 100 | 100 | 100 | 100 | 100 | `sre/governance` | ✅ |
+| xlib_harness | 83 | 100 | 97 | 100 | 100 | 100 | `sre/governance` | ✅ |
+| xlib_standard | 100 | 80 | 98 | 100 | 100 | 100 | `sre/governance` | ✅ |
+| xlibgate | 100 | 100 | 100 | 100 | 100 | 100 | `sre/governance` | ✅ |
 
 > 剩余 7 模块需 SPEC 级内容修复（spec 缺 WHEN/THEN、章节等）。prompt/code 外仓模块为 pass-through。xlib_standard 为快照格式除外。

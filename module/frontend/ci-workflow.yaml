@@ -1,6 +1,6 @@
-# CI/CD Workflow 参考模板 — schedulex
+# CI/CD Workflow 参考模板 — frontend
 #
-# 将此文件复制到 github.com/ZoneCNH/schedulex/.github/workflows/ci.yml。
+# 将此文件复制到 github.com/ZoneCNH/frontend/.github/workflows/ci.yml。
 # 所有 CI 与 CD job 必须使用 sre/ 机器池；禁止回退 GitHub-hosted runner。
 # CI 机器池: sre/foundation-l1；CD 机器池: sre/deploy。
 
@@ -107,7 +107,7 @@ jobs:
           mkdir -p ${{ env.EVIDENCE_DIR }}
           cat > ${{ env.EVIDENCE_DIR }}/ci-manifest.json <<'JSON'
 {
-  "module": "schedulex",
+  "module": "frontend",
   "ci_pool": "sre/foundation-l1",
   "deploy_pool": "sre/deploy",
   "runner_namespace": "sre/",

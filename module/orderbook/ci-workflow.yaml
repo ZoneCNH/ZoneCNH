@@ -32,15 +32,15 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  GO_VERSION: "1.23.x"
-  SRE_CI_POOL: "sre/foundation-l0"
+  GO_VERSION: "1.26.5"
+  SRE_CI_POOL: "sre/market"
   SRE_DEPLOY_POOL: "sre/deploy"
   EVIDENCE_DIR: "release/evidence"
 
 jobs:
   ci-preflight:
     name: CI Preflight
-    runs-on: [self-hosted, Linux, X64, sre/foundation-l0]
+    runs-on: [self-hosted, Linux, X64, sre/market]
     timeout-minutes: 10
     steps:
       - name: Checkout
@@ -61,7 +61,7 @@ jobs:
   build:
     name: Build
     needs: ci-preflight
-    runs-on: [self-hosted, Linux, X64, sre/foundation-l0]
+    runs-on: [self-hosted, Linux, X64, sre/market]
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
@@ -75,7 +75,7 @@ jobs:
   test:
     name: Unit And Race Test
     needs: ci-preflight
-    runs-on: [self-hosted, Linux, X64, sre/foundation-l0]
+    runs-on: [self-hosted, Linux, X64, sre/market]
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
@@ -91,7 +91,7 @@ jobs:
   lint:
     name: Lint
     needs: ci-preflight
-    runs-on: [self-hosted, Linux, X64, sre/foundation-l0]
+    runs-on: [self-hosted, Linux, X64, sre/market]
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
@@ -105,7 +105,7 @@ jobs:
   boundary:
     name: Boundary And Replay Gates
     needs: ci-preflight
-    runs-on: [self-hosted, Linux, X64, sre/foundation-l0]
+    runs-on: [self-hosted, Linux, X64, sre/market]
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
@@ -125,7 +125,7 @@ jobs:
   integration:
     name: Integration Test
     needs: ci-preflight
-    runs-on: [self-hosted, Linux, X64, sre/foundation-l0]
+    runs-on: [self-hosted, Linux, X64, sre/market]
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
@@ -139,7 +139,7 @@ jobs:
   secret-scan:
     name: Secret Scan
     needs: ci-preflight
-    runs-on: [self-hosted, Linux, X64, sre/foundation-l0]
+    runs-on: [self-hosted, Linux, X64, sre/market]
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
@@ -151,7 +151,7 @@ jobs:
   evidence:
     name: Evidence Package
     needs: [build, test, lint, boundary, integration, secret-scan]
-    runs-on: [self-hosted, Linux, X64, sre/foundation-l0]
+    runs-on: [self-hosted, Linux, X64, sre/market]
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
@@ -161,7 +161,7 @@ jobs:
           cat > "${{ env.EVIDENCE_DIR }}/ci-manifest.json" <<'JSON'
           {
             "module": "orderbook",
-            "ci_pool": "sre/foundation-l0",
+            "ci_pool": "sre/market",
             "deploy_pool": "sre/deploy",
             "runner_namespace": "sre/",
             "contract": "orderbook replay/conformance library"
@@ -213,7 +213,7 @@ jobs:
     name: Post Release Smoke
     needs: release-publish
     if: startsWith(github.ref, 'refs/tags/v')
-    runs-on: [self-hosted, Linux, X64, sre/foundation-l0]
+    runs-on: [self-hosted, Linux, X64, sre/market]
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
