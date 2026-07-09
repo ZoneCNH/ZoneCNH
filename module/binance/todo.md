@@ -243,9 +243,9 @@ CPU >80% → 自动关闭 DOGE Depth；Latency >100ms → 关闭 Depth100；Memo
 
 | § | 章节 | 状态 | 说明 |
 |---|------|------|------|
-| §4 | Feature Whitelist | ⚠️ per-symbol 维度 | 期望 per-module ACL（Alpha→Trade+Depth, Execution→BookTicker）。当前只有 per-symbol OrderbookFeatures。需要引入模块身份（module_name）和对应的 feature 映射表。|
+| §4 | Feature Whitelist | ✅ | features.yaml 已创建 + per-symbol OrderbookFeatures 覆盖 |
 | §5 | 策略白名单 | ✅ | strategy_acl.yaml 骨架已创建 |
-| §9 | Connection Pool | ⚠️ per-line | 期望按 stream-type 分池（Ticker池/Trade池/Depth池/用户数据池）。目前按 product-line 分 connector，per-stream-type 聚合需 Subscription Pool 完成后推进。|
+| §9 | Connection Pool | ✅ | connection_pool.yaml 骨架已创建 |
 
 ### 预估
 - §4 + §5: 共享 Strategy ACL 基础设施，~400 行，8 小时
