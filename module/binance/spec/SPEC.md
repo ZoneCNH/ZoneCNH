@@ -1,8 +1,8 @@
 # Binance SPEC
 
-- Spec-Version: v4.0.1
+- Spec-Version: v4.1.0
 - Module: binance
-- Last-Updated: 2026-07-08（白名单补齐 GC-0~GC-5 全合入 main）
+- Last-Updated: 2026-07-09（Plan 013 白名单规则统一重构：tier 词表统一 + DepthLevel 全链路）
 - Runtime-Repo: `/home/workspace/binance`
 - Runtime-Version: v0.15.0（order book FR-052~061 spot/um/cm 实现；白名单 GC-0~GC-5 补齐）
 - State-Model: single-state only
@@ -113,7 +113,7 @@
 | FR-048 | notify | NATS subject `binance.whitelist.version` 推送（core NATS fire-and-forget，publisher 使用独立 NATS 连接，不依赖 ingest transport；publish 失败非致命） | Done | whitelist/publisher.go + assembly 独立 NATS 连接注入 |
 | FR-049 | consumer | 下游消费方 SDK（缓存 3h TTL + NATS 订阅 + 增量刷新 + GC-5c 真正的 fail-open 降级：`degraded` 态 + `OnDegraded` 回调 + `IsFailOpen()` 信号；Bearer token 鉴权） | Done | pkg/whitelistclient/cache.go + client.go + failopen_test.go |
 | FR-050 | catalog | catalog_symbols 扩展字段（exchange_status/last_seen_at/tier/collection/raw_extra）；ApplyDiff upsert 用 COALESCE 保留手动分配的 tier/collection；contract_type=TRADIFI_PERPETUAL 区分币股 | Done | migrations/011_whitelist.sql + pg_catalog.go ApplyDiff |
-| FR-051 | tier | Tier 分配策略：spot / um_perp(PERPETUAL) / um_perp(TRADIFI_PERPETUAL) / cm_perp / options 各取 24h quoteVolume 流动性 top 20，统一 core 准入（GC-2 core tier 三级优先级：显式列表 > 量能阈值 > BTC/ETH 兜底）；options 准入层与采集分桶层解耦（ADR-008） | Done | whitelist/rules.go + ticker_volume.go + catalog.go 三级判定 |
+| FR-051 | tier | Tier 分配策略：4 档词表 prime/standard/lite/blocked（禁止向后兼容，无 core 档）；spot / um_perp(PERPETUAL) / um_perp(TRADIFI_PERPETUAL) / cm_perp / options 各取 24h quoteVolume 流动性 top 20；tierCapabilityMap（pkg/whitelistclient/tier_capability.go）作为 tier → (Streams, Features, Depth) 三元组静态映射 SSOT，PG 只存 tier 单列，三元组由代码推导（决策 5）；DepthLevel 全链路接通（ObEntry → OrderbookWhitelist → obWantEntry → SubscribeWithFeatures → SyncSubscriptionsWithCapabilities）；服务端准入 autoAdmitTiers={prime,standard,lite}，blocked 走审核队列；options 准入层与采集分桶层解耦（ADR-008） | Done | whitelist/rules.go + ticker_volume.go + catalog.go + pkg/whitelistclient/tier_capability.go + migrations 017/018 |
 | FR-052 | orderbook | Order Book Manager — `full_incremental` 模式：per-symbol 本地 book 状态机（UNINITIALIZED→BUFFERING→ALIGNED→REBUILDING），per-symbol 独立 goroutine 无全局锁 | Done | `internal/client/orderbook/manager.go` + `state.go` + `runtime.go` 接入主路径；options 待 Phase 2 |
 | FR-053 | orderbook | Order Book Manager — `snapshot_topn` 模式：无状态转发限档快照流（5/10/20档），不需序号校验，不进 REBUILDING | Done | `internal/client/orderbook/manager.go` handleSnapshotTopN + `rest.go` DepthMode；options 待 Phase 2 |
 | FR-054 | orderbook | Order Book Initial Alignment + Sequence Validation：REST 快照对齐（9步算法）+ spot U/u 连续性 + futures U/u/pu 连续性 + qty=="0" 删除价位 + 定点数价格对齐 | Done | `internal/client/orderbook/align.go` alignAlgorithm + validateSequence + `book.go` ApplyLevel qty=="0" 删除；options 待 Phase 2 |
@@ -248,6 +248,7 @@ PRG-001~007 状态如下：
 
 | Version | Date | Change |
 | --- | --- | --- |
+| v4.1.0 | 2026-07-09 | Plan 013 白名单规则统一重构：tier 词表 core/standard→prime/standard/lite/blocked 4 档；tierCapabilityMap 三元组推导 SSOT；DepthLevel 全链路接通；删 7 套机制收敛为 PG 双表 1 套；migration 017/018 |
 | v4.0.1 | 2026-07-08 | 白名单补齐 GC-0~GC-5 全合入 main：GC-0 收口 server→client 回灌（#444）+ GC-1 手动白名单审核队列（#445）+ GC-2 core tier 24h quote volume 三级分级（#446）+ GC-3 观察期生效 first_seen_at（#447）+ GC-5b 审核态 refresh 反馈（#452）+ GC-5c whitelistclient 真正 fail-open 降级（#449）；GC-4 Collection 明确 deferred；FR-045~051 证据锚点更新 |
 | v4.0.0 | 2026-07-07 | Phase 1 实现 FR-052~061 spot/um/cm 部分：order book 状态机（4 状态 + per-symbol goroutine）、对齐算法（9 步 + 序号校验）、auto-rebuild、快照持久化 + fast recovery、staleness API、TopN 推送、增量转发、on-demand snapshot + health query、rebuild 告警 + checksum 抽样；代码位于 `internal/client/orderbook/`（8 文件 + 5 测试文件），接入主路径（runtime.go + admin.go + config.go）；options 待 Phase 2 |
 | v3.18.0 | 2026-07-06 | canonical event_type 命名对齐 Binance 原生事件名（camelCase→snake_case）：§6 implemented 4 个 rename（tick→book_ticker, bar→kline, depth→depth_update, mark_price→mark_price_update）+ planned 2 个 rename（liquidation→force_order, contract_meta→contract_info）；新增 §2.0 命名规则（1:1映射/多事件聚合/派生类型/语义分组）；legacy alias 保留用于 runtime migration 追溯 |

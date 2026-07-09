@@ -2,6 +2,20 @@
 
 > 基于 `knowledge/streams.md` 13 章设计文档与 `todo.md` 实施计划。
 > 验证日期：2026-07-09，30 次连续 build+test 通过。
+> **Plan 013 修订（2026-07-09）**：白名单规则统一重构完成——7 套机制收敛为 PG 双表 1 套；tier 词表 `core/standard` → `prime/standard/lite/blocked`；`tierCapabilityMap` 三元组推导 SSOT；DepthLevel 全链路接通。下方 §4/§5/§13 及「配置文件清单」中标 ❌(Plan 013 删) 的项为已删除死代码，不再生效。
+
+## Plan 013 修订摘要（2026-07-09）
+
+| 维度 | Plan 013 前 | Plan 013 后 |
+|------|-------------|-------------|
+| symbol 控制机制 | 7 套（仅 3 套生效） | 1 套（PG 双表 SSOT） |
+| tier 词表 | `core/standard`（2 档） | `prime/standard/lite/blocked`（4 档，禁止向后兼容） |
+| 能力三元组 | 客户端零值/硬编码 | `tierCapabilityMap` 从 tier 推导（决策 5：PG 只存 tier 单列） |
+| DepthLevel | 5 处断链，硬编码 L4 | 全链路接通（ObEntry→OrderbookWhitelist→obWantEntry→SubscribeWithFeatures→SyncSubscriptionsWithCapabilities） |
+| 死代码 | whitelist.yaml/strategy_acl.yaml/features.yaml/tier_map/policy.Manager/WhitelistWatcher | 全部删除（Phase 1，commit 8985105） |
+| 验证 | — | 15 boundary-gates 全过 + race 全绿 + options 回归 PASS |
+
+> 详见 [`todo.md`](todo.md)（Phase 0-6 全完成）与 [`plans/binance/013-whitelist-unification-plan-20260709.md`](../../plans/binance/013-whitelist-unification-plan-20260709.md)。
 
 ## 总体完成度
 
@@ -19,12 +33,12 @@
 
 | § | 章节 | 实现 | 验证 |
 |---|------|------|------|
-| §1  | Symbol Whitelist    | ✅ Entry.Enabled + StreamWhitelist | 自动化 |
+| §1  | Symbol Whitelist    | ✅ Entry.Enabled + StreamWhitelist + PG 双表 SSOT（Plan 013） | 自动化 |
 | §2  | Stream Whitelist    | ✅ StreamType 8位掩码 + streamConfig 接入 | 7 tests |
-| §3  | OrderBook Whitelist | ✅ OrderbookFeatures 6位掩码 | 3 tests |
-| §3+ | DepthLevel 分级     | ✅ L0-L4 + Book.TopN 档位截断 | 3 tests |
-| §4  | Feature Whitelist   | ✅ features.yaml + per-symbol 骨架 | config |
-| §5  | 策略白名单           | ✅ strategy_acl.yaml 骨架 | config |
+| §3  | OrderBook Whitelist | ✅ OrderbookFeatures 6位掩码（从 tier 推导，Plan 013） | 3 tests |
+| §3+ | DepthLevel 分级     | ✅ L0-L4 全链路接通（tierCapabilityMap 驱动，Plan 013 §3） | 5 断链修复 |
+| §4  | Feature Whitelist   | ❌ Plan 013 删（features.yaml 为死代码，能力改由 tier→tierCapabilityMap 推导） | — |
+| §5  | 策略白名单           | ❌ Plan 013 删（strategy_acl.yaml 为死代码，follow-up 另开 plan） | — |
 | §6  | IP 封禁原因          | ✅ 已分析 | — |
 | §7  | Reconnect Manager   | ✅ ReconnectQueue 2/s 限速 + backoff | 集成 |
 | §8  | Subscription Pool   | ✅ 引用计数 + FanOut | 11 tests |
@@ -32,7 +46,7 @@
 | §10 | Rate Limiter        | ✅ On429 + Priority + Burst | 7 tests |
 | §11 | 自适应白名单         | ✅ AdaptiveManager CPU/Memory 驱动 | 6 tests |
 | §12 | Anti-Ban Engine     | ✅ AntiBanEngine 连接风暴检测 | 3 tests |
-| §13 | 配置文件拆分         | ✅ 10/10 YAML + WhitelistWatcher hot-reload | 5 tests |
+| §13 | 配置文件拆分         | ✅ Plan 013 后精简：删 whitelist/features/strategy_acl.yaml 死代码；tier 配置改 env（`FOUNDATIONX_BINANCE_TIERS_*`） | 5 tests |
 
 ## 新增模块（超出原 13 章）
 
@@ -64,21 +78,22 @@ Phase 3: 10 passes (after AdaptiveManager + AntiBanEngine + config files)
 30/30 ALL PASSES
 ```
 
-## 配置文件清单 (10/10)
+## 配置文件清单 (Plan 013 后精简)
 
 | 文件 | 状态 |
 |------|------|
-| `whitelist.yaml` | ✅ |
+| `whitelist.yaml` | ❌ Plan 013 删（死代码，PG 双表为 SSOT） |
 | `reconnect.yaml` | ✅ |
 | `rate_limit.yaml` | ✅ |
 | `connection_pool.yaml` | ✅ |
-| `features.yaml` | ✅ |
-| `strategy_acl.yaml` | ✅ |
+| `features.yaml` | ❌ Plan 013 删（死代码，能力由 tierCapabilityMap 推导） |
+| `strategy_acl.yaml` | ❌ Plan 013 删（死代码，follow-up 另开 plan） |
 | `anti_ban.yaml` | ✅ |
 | `adaptive.yaml` | ✅ |
 | `otel-collector.yaml` | ✅ (已有) |
 | `binance-client.env.example` | ✅ (已有) |
 | `binance-server.env.example` | ✅ (已有) |
+| **tier env**（`FOUNDATIONX_BINANCE_TIERS_*`）| ✅ Plan 013 新增（CORE_SYMBOLS/CORE_QUOTE_VOLUME/STANDARD_QUOTE_VOLUME/BLOCKED_SYMBOLS） |
 
 ## 提交记录
 
@@ -99,12 +114,18 @@ Phase 3: 10 passes (after AdaptiveManager + AntiBanEngine + config files)
 | `1cb0be9` | UMFuturesClient REST SDK |
 | `7b002d8` | UMFuturesErrors 限流处理 |
 | `65db015` | AntiBanEngine 防封禁引擎 |
+| `8985105` | **Plan 013 Phase 1** 删白名单死代码（tier_map/whitelist_config/feature_acl/policy/3 个 yaml） |
+| `3910085` | **Plan 013 Phase 2a** migration 018 tier 数据迁移 core→prime |
+| *(本分支)* | **Plan 013 Phase 2-6** migration 017 CHECK + tierCapabilityMap + DepthLevel 全链路 + 4 档词表 + 文档同步 |
 
 ## 热加载特性
 
+> ⚠️ Plan 013 删除了 `WhitelistWatcher`（fsnotify 文件监听）——经 PR #1742 核实为零生产引用死代码。白名单变更改由 PG 双表 + 服务端 API 增量推送（`whitelistclient` cache 刷新）驱动，不再依赖本地 YAML 热加载。下表为历史记录，已不生效。
+
 | 功能 | 状态 |
 |------|------|
-| fsnotify 文件监听 | ✅ |
-| 模块级路径解析 | ✅ |
-| 500ms debounce | ✅ |
-| context 优雅关闭 | ✅ |
+| fsnotify 文件监听 | ❌ Plan 013 删（WhitelistWatcher 死代码） |
+| 模块级路径解析 | ❌ Plan 013 删 |
+| 500ms debounce | ❌ Plan 013 删 |
+| context 优雅关闭 | ❌ Plan 013 删 |
+| PG 增量推送 + cache 刷新 | ✅ Plan 013 后的权威路径 |
