@@ -50,6 +50,7 @@ GitHub Release 已创建：`https://github.com/ZoneCNH/orderbook/releases/tag/v0
 | `bash scripts/adapter-conformance-gate.sh` | PASS on post-release `main` PR #1 |
 | `bash scripts/replay-determinism-gate.sh` | PASS |
 | `bash scripts/gap-injection-gate.sh` | PASS |
+| `bash .github/ci/module-cicd-check.sh` | PASS |
 | `bash docs/goal/tools/goal-workflow.sh validate` | PASS |
 | GitHub Actions `main` CI | PASS |
 | GitHub Actions `v0.1.0` CI | PASS |
