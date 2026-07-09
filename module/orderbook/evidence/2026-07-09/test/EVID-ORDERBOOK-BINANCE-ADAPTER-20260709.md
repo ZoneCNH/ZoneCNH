@@ -6,19 +6,20 @@
 > Evidence Type: Downstream adapter wrapper
 > Binance PR: `https://github.com/ZoneCNH/binance/pull/479`
 > Binance Branch: `feat/orderbook-contract-adapter`
-> Binance Commit: `0a085cc99de4949820a1c9032c68cdb0bd50f288`
+> Binance Head Commit: `f46c17fd8297779c9f0c0931cc94b6f5ff1ed150`
+> Binance Merge Commit: `b2547735e9df6b9bb4bb939baaeb74436260ce50`
 
 ---
 
 ## 1. Scope
 
-The Binance repository now has an open PR that maps Binance REST snapshots and depth events into the released `github.com/ZoneCNH/orderbook v0.1.0` contract types.[COMPUTED, HIGH]
+The Binance repository merged PR #479, which maps Binance REST snapshots and depth events into the released `github.com/ZoneCNH/orderbook v0.1.0` contract types.[COMPUTED, HIGH]
 
 The PR is a thin adapter wrapper only; it does not replace the existing Binance production order book state machine, reconnect loop, persistence path or downstream publish path.[COMPUTED, HIGH]
 
 The adapter implementation introduced `go.mod`, `go.sum`, `internal/client/orderbook/contract_adapter.go` and `internal/client/orderbook/contract_adapter_test.go` changes in `/home/workspace/binance/.worktree/workspaces/feat/orderbook-contract-adapter`.[COMPUTED, HIGH]
 
-The same PR later closed pre-existing Binance CI baseline failures in workflows, status consistency, vulnerability baseline, full-suite tests, Live E2E handling and benchmark stability so that the adapter branch could become mergeable.[COMPUTED, HIGH]
+The same PR later closed pre-existing Binance CI baseline failures in workflows, status consistency, vulnerability baseline, full-suite tests, Live E2E handling and benchmark stability so that the adapter branch could be merged.[COMPUTED, HIGH]
 
 ## 2. Implemented Contract Mapping
 
@@ -53,7 +54,7 @@ The same PR later closed pre-existing Binance CI baseline failures in workflows,
 
 PR #479 was opened against `ZoneCNH/binance:main` from `feat/orderbook-contract-adapter`.[COMPUTED, HIGH]
 
-After commit `0a085cc99de4949820a1c9032c68cdb0bd50f288`, GitHub reported PR #479 as `MERGEABLE`.[COMPUTED, HIGH]
+After head commit `f46c17fd8297779c9f0c0931cc94b6f5ff1ed150`, GitHub reported PR #479 as `MERGEABLE`; the PR was merged at `2026-07-09T15:40:48Z` with merge commit `b2547735e9df6b9bb4bb939baaeb74436260ce50`.[COMPUTED, HIGH]
 
 Remote `Build & Vet` passed.[COMPUTED, HIGH]
 
@@ -62,6 +63,8 @@ Remote `Unit Test & Race & Cover` passed.[COMPUTED, HIGH]
 Remote `golangci-lint`, `govulncheck + go mod audit`, `Security`, `gitleaks`, `Status Consistency Check`, `Boundary Gates (15 gates)`, `Live E2E`, `Soak + Chaos (tagged)` and `Benchmark Regression` all passed in the final PR check set.[COMPUTED, HIGH]
 
 Condition-gated `Integration Test`, `E2E Test` and `Gated Resilience Tests` were skipped by workflow condition in the final PR check set.[COMPUTED, HIGH]
+
+After merge, Binance `main` CI runs for merge commit `b2547735e9df6b9bb4bb939baaeb74436260ce50` all completed with `success`, including Binance CI, Test, Build, Lint, Boundary Gates, Status Consistency, Secrets Scan, Security and Vulnerability Scan.[COMPUTED, HIGH]
 
 ## 5. Full-suite Baseline Closure
 
@@ -73,9 +76,9 @@ The adapter package and the full Binance test baseline both passed local and rem
 
 ## 6. Claim Boundary
 
-This evidence closes the first adapter-wrapper implementation step, not production migration.[COMPUTED, HIGH]
+This evidence closes the first adapter-wrapper implementation and merge step, not production migration.[COMPUTED, HIGH]
 
-The OrderBook module still cannot claim production cross-venue completeness until a second venue conformance fixture passes and the Binance PR is merged or superseded by an equivalent production integration.[INFERRED, HIGH]
+The OrderBook module still cannot claim production cross-venue completeness until a second venue conformance fixture passes and the merged wrapper is followed by an explicit production runtime migration or equivalent production integration.[INFERRED, HIGH]
 
 ---
 

@@ -14,11 +14,11 @@ Current State:       DONE
 Current Phase:       RETROSPECTIVE
 Phase Status:        DONE
 Workflow Step:       RETROSPECTIVE_EXECUTION
-Allowed Actions:     Review/merge Binance adapter wrapper PR; add second venue conformance; prepare v0.2.0 compatibility tests
+Allowed Actions:     Plan Binance production runtime migration; add second venue conformance; prepare v0.2.0 compatibility tests
 Blocked By:          None for v0.1.0 release
 Required Gate:       None; GOB-0..GOB-11 PASS
 Evidence Required:   Follow-up evidence only for future work
-Recommended Next Action: 审查并合并 Binance adapter wrapper PR #479，并把第二 venue fixture 作为 v0.2.0 前置任务单独规划。
+Recommended Next Action: 规划 Binance production runtime migration，并把第二 venue fixture 作为 v0.2.0 前置任务单独规划。
 ```
 
 ---
@@ -37,14 +37,14 @@ Recommended Next Action: 审查并合并 Binance adapter wrapper PR #479，并�
 
 | 级别 | 阻断项 | 影响 | 解除条件 |
 | --- | --- | --- | --- |
-| P1 | Binance adapter wrapper PR #479 已远端绿灯且可合并，但尚未合并，也未替换生产 runtime。[COMPUTED, HIGH] | 不能声明 binance runtime 已迁移。[FRAME, HIGH] | 审查并合并 PR，或用等价生产集成替代。[FRAME, HIGH] |
+| P1 | Binance adapter wrapper PR #479 已合并，但尚未替换生产 runtime。[COMPUTED, HIGH] | 不能声明 binance runtime 已迁移。[FRAME, HIGH] | 单独规划并执行生产 runtime migration，或用等价生产集成替代。[FRAME, HIGH] |
 | P1 | 第二 venue adapter 未实现。[COMPUTED, HIGH] | 不能声明生产级跨 venue runtime 完成。[FRAME, HIGH] | 选择 OKX/Bybit 等第二 venue 并完成 conformance fixture。[FRAME, MED] |
 
 ---
 
 ## 4. 下一步最小动作
 
-1. 审查并合并 Binance adapter wrapper PR #479，不直接重写 `/home/workspace/binance` 生产路径。[FRAME, HIGH]
+1. 规划 Binance production runtime migration，不在无新任务证据时直接重写 `/home/workspace/binance` 生产路径。[FRAME, HIGH]
 2. 选择第二 venue conformance fixture 范围。[FRAME, HIGH]
 3. 为 v0.2.0 增加 contract compatibility tests。[FRAME, HIGH]
 

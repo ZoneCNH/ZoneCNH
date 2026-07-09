@@ -59,11 +59,13 @@ Evidence: `module/orderbook/evidence/2026-07-09/test/EVID-ORDERBOOK-VALIDATION-2
 
 ## 4. Not Done / Residual Risk
 
-Binance adapter wrapper 已在 `https://github.com/ZoneCNH/binance/pull/479` 打开 PR；该 PR 只映射 `orderbook v0.1.0` contract，尚未替换 `/home/workspace/binance` 的生产 OrderBook runtime。[COMPUTED, HIGH]
+Binance adapter wrapper PR #479 已合并：`https://github.com/ZoneCNH/binance/pull/479`；该 PR 只映射 `orderbook v0.1.0` contract，尚未替换 `/home/workspace/binance` 的生产 OrderBook runtime。[COMPUTED, HIGH]
 
-Binance PR #479 已更新到 head `0a085cc99de4949820a1c9032c68cdb0bd50f288`，GitHub 报告 `MERGEABLE`，最终远端检查均为 success 或 condition-gated skip。[COMPUTED, HIGH]
+Binance PR #479 最终 head 为 `f46c17fd8297779c9f0c0931cc94b6f5ff1ed150`，merge commit 为 `b2547735e9df6b9bb4bb939baaeb74436260ce50`，合并时间为 `2026-07-09T15:40:48Z`。[COMPUTED, HIGH]
 
 Binance PR #479 的最终远端通过项包括 Build & Vet、Unit Test & Race & Cover、golangci-lint、govulncheck + go mod audit、Security、gitleaks、Status Consistency Check、Boundary Gates、Live E2E、Soak + Chaos 和 Benchmark Regression。[COMPUTED, HIGH]
+
+Binance `main` 在 merge commit `b2547735e9df6b9bb4bb939baaeb74436260ce50` 上的合并后 CI 全部 success。[COMPUTED, HIGH]
 
 未实现第二 venue adapter，因此不能宣称生产级跨 venue 平台完成。[COMPUTED, HIGH]
 
