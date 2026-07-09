@@ -259,7 +259,7 @@ CPU >80% → 自动关闭 DOGE Depth；Latency >100ms → 关闭 Depth100；Memo
 Phase 1 (本周)
 ├── ✅ Section 1-3 基础完成 + OrderbookFeatures + StreamType + whitelist.yaml
 ├── ✅ P0: streamConfig 接入 StreamType（~1h）—— **已完成** (commit 0664bf2)
-└── [ ] P1: Reconnect Manager（~3h）
+└── ✅ P1: Reconnect Manager（~3h）—— **已完成** (commit 446de16)
 
 Phase 2 (下周)
 ├── [ ] P1: Rate Limiter 补全（~4h）—— P1 优先级，Phase 2 排期
@@ -762,9 +762,9 @@ func BenchmarkStreamTypeHas(b *testing.B) {
 | P1-7 | 4 个 `StreamType` 单元测试 | ✅ | `Has`/`Effective`/`BackwardCompat`/`Suffix` 全部 PASS |
 | P1-8 | 3 个 `WhitelistConfig` 单元测试 | ✅ | `Load`/`Parse`/`ParseUnknown` 全部 PASS |
 | P1-9 | `streamConfig()` 接入 `StreamType` 过滤 | ✅ | `stream_control.go` / `spot.go` — commit 0664bf2 |
-| P1-10 | `ReconnectQueue` 中央重连队列 | ⬜ | **未实现** — AC-10/AC-11 依赖项 |
+| P1-10 | `ReconnectQueue` 中央重连队列 | ✅ | `reconnect_queue.go` — commit 446de16 |
 
-**Phase 1 结论**: 9/10 完成。实施就绪度 90%，剩余阻塞项为 P1-10（ReconnectQueue）。
+**Phase 1 结论**: 10/10 完成。Phase 1 全部就绪，可进入 Phase 2。
 
 ### Phase 2 验收结论 (P1 RateLimiter + P2)
 
