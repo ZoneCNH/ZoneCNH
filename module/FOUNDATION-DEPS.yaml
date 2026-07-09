@@ -2,8 +2,8 @@
 # CI 可直接消费此文件执行依赖守卫检查
 # 与 FOUNDATION-V1.md Issue 2 对应
 
-version: "1.3.0"
-updated: "2026-07-03"
+version: "1.3.1"
+updated: "2026-07-09"
 
 # ============================================================
 # Go baseline
@@ -439,8 +439,9 @@ forbidden_foundation_edges:
 #   - business_forbidden_edges 业务域间禁止依赖（基于 03-boundaries 守卫表）
 # ============================================================
 business_domain_modules:
-  # 数据域（11）
+  # 数据域（12）
   binance:           { domain: data, repo: github.com/ZoneCNH/binance, description: "币安行情采集" }
+  orderbook:         { domain: data, repo: github.com/ZoneCNH/orderbook, description: "跨 venue 订单簿事实链 contract 与 replay runtime" }
   okx:               { domain: data, repo: github.com/ZoneCNH/okx, description: "OKX 行情采集" }
   hyperliquid:       { domain: data, repo: github.com/ZoneCNH/hyperliquid, description: "Hyperliquid 行情采集" }
   coinglass:         { domain: data, repo: github.com/ZoneCNH/coinglass, description: "Coinglass 衍生品数据采集" }
@@ -514,6 +515,7 @@ business_forbidden_edges:
   strategyx: [orderx, positionx, settlement]
   # 守卫：数据域不依赖分析/决策/执行域（line 34，数据域是上游）
   binance: [factor_engine, feature_store, factor_eval, signal_factory, strategyx, riskx, orderx, positionx]
+  orderbook: [factor_engine, feature_store, factor_eval, signal_factory, strategyx, riskx, orderx, positionx]
   okx: [factor_engine, feature_store, factor_eval, signal_factory, strategyx, riskx, orderx, positionx]
   hyperliquid: [factor_engine, feature_store, factor_eval, signal_factory, strategyx, riskx, orderx, positionx]
   coinglass: [factor_engine, feature_store, factor_eval, signal_factory, strategyx, riskx, orderx, positionx]

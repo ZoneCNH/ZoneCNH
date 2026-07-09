@@ -1,0 +1,14 @@
+name: orderbook-ci
+status: active
+commands:
+  - cd /home/workspace/orderbook && GOWORK=off go vet ./...
+  - cd /home/workspace/orderbook && GOWORK=off go test ./...
+  - cd /home/workspace/orderbook && GOWORK=off go test -race ./...
+  - cd /home/workspace/orderbook && bash scripts/boundary-gates.sh
+  - cd /home/workspace/orderbook && bash scripts/replay-determinism-gate.sh
+  - cd /home/workspace/orderbook && bash scripts/gap-injection-gate.sh
+  - bash docs/goal/tools/goal-workflow.sh validate
+remote_ci:
+  repository: https://github.com/ZoneCNH/orderbook
+  main_run: https://github.com/ZoneCNH/orderbook/actions/runs/29020604242
+  release_run: https://github.com/ZoneCNH/orderbook/actions/runs/29020608940

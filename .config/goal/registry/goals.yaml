@@ -365,3 +365,30 @@ goals:
       - 7 外部依赖 live E2E PASS（redisx/kafkax/natsx/postgresx/taosx/ossx/clickhousex）
       - 4 产品线 mainnet live PASS（spot/um_perp/cm_perp/options）
       - release_closeable=YES；GitHub #1267-#1279 全部 CLOSED
+
+  - goal_id: GOAL-20260709-001
+    document_version: "2026-07-09"
+    title: "OrderBook 事实链模块 v0.1.0"
+    status: Achieved
+    owner: ZoneCNH
+    priority: P0
+    north_star: "交付 active 状态的 orderbook 模块规格、stdlib-only runtime core、GitHub Release 和可追溯 evidence，提供 adapter contract、BookHash、ReplayRunner、Gap Gate、Boundary Gate。"
+    pipeline_state: DONE
+    current_phase: RETROSPECTIVE
+    phase_status: DONE
+    workflow_step: RETROSPECTIVE_EXECUTION
+    created_at: "2026-07-09"
+    updated_at: "2026-07-09"
+    related_issues: []
+    related_specs:
+      - module/orderbook/goal/goal.md
+      - module/orderbook/spec/SPEC.md
+      - module/orderbook/spec/CONTRACT.md
+      - module/orderbook/matrix/TRACEABILITY.md
+    success_criteria:
+      - module/orderbook 制品完整，registry lifecycle 为 active
+      - /home/workspace/orderbook 执行 go test ./... 通过
+      - replay determinism gate 同一 fixture 100 次 hash 一致
+      - gap injection gate 对 sequence break 输出 unreliable quality
+      - boundary gate 不发现 venue internal import
+      - GitHub Release v0.1.0 和远端 CI 通过证据存在

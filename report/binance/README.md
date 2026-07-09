@@ -17,7 +17,8 @@
 | [orderbook-deep-analysis.md](orderbook-deep-analysis.md) | `knowledge/OrderBook.md` 草稿 vs binance 实现 19 章对照（维度 A/B/C + 同步协议 + Market State Engine 对齐度量化） |
 | [ORDERBOOK-REVIEW-MEMO-20260709.md](ORDERBOOK-REVIEW-MEMO-20260709.md) | 对 orderbook-deep-analysis.md 的评审异议：草稿事实性错误、反对 PolicyManager 过度抽象、Market State Engine 域归属 |
 | [WHITELIST-LOGIC-ANALYSIS-20260709.md](WHITELIST-LOGIC-ANALYSIS-20260709.md) | 行情流 vs 订单簿白名单逻辑梳理：7 套机制仅 3 套生效、tier 词表冲突、whitelist.yaml/policy.Manager 死代码、订单簿 DepthLevel 断链。**Plan 013 已据此报告完成修复**（tier 词表统一 prime/standard/lite/blocked + tierCapabilityMap + DepthLevel 全链路，2026-07-09） |
+| [PRODUCTION-READINESS-DEEP-ANALYSIS-20260709.md](PRODUCTION-READINESS-DEEP-ANALYSIS-20260709.md) | 生产级可发布深度分析：本地 runtime P0 gate 已闭合；覆盖数据流架构、现货/合约/期权/订单簿业务矩阵、canonical event_type 修复、重连队列并发修复、剩余 release evidence 和模块规则/标准升级建议 |
 
 ## 一句话总结
 
-Binance 行情数据采集 C/S 模块，交易适配器覆盖现货下单/撤单/查询（合约未实现），行情侧覆盖四产品线 K线/深度/WS 实时推送，存储层四套（TDengine+ClickHouse+OSS+PG）完整带降级。核心包覆盖率 100%，`go vet`/race 零告警。主要风险：限频逻辑已实现未接线、SubmitOrder 无客户端参数校验、StreamExecutions 阻塞读不响应 ctx 取消。
+Binance 公共行情采集 C/S 模块；当前本地 runtime P0 gates 已恢复，覆盖现货、USDⓈ-M、COIN-M、Options 的公共行情路径与订单簿主路径测试。交易/账户/私有流不在本模块发布口径内；最终 release Go 仍需远端 CI、release tag、live capture、外部依赖 E2E 与 rollback 证据。

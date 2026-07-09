@@ -2,7 +2,36 @@
 # 权威来源：docs/goal/15-registry.md §7
 # 路径：.config/goal/registry/decisions.yaml
 
-decisions: []
+decisions:
+  - decision_id: DEC-GOAL-20260709-001-001
+    document_version: "2026-07-09"
+    goal_id: GOAL-20260709-001
+    title: 创建 orderbook active 模块、runtime library 与 GitHub Release
+    status: Accepted
+    maker: ZoneCNH
+    created_at: "2026-07-09"
+    updated_at: "2026-07-09"
+    context: |
+      report/OrderBook 已完成 OrderBook 独立化分析，用户在当前会话授权执行全部待完成任务，目标是实现完整 OrderBook 模块。
+    decision: |
+      创建 module/orderbook 治理制品、登记 registry active 条目，在 /home/workspace/orderbook 实现 stdlib-only runtime library，并发布 github.com/ZoneCNH/orderbook v0.1.0。
+    alternatives:
+      - name: 只保留 report 草案
+        reason: "不能满足用户要求的完整模块目标。"
+      - name: 只保留 proposed 本地 baseline
+        reason: "用户要求继续完成完整模块，且 GitHub Release 与远端 CI 已可闭环。"
+      - name: 继续只在 binance 内硬化
+        reason: "无法形成跨 venue contract/replay/conformance SSOT。"
+    consequences:
+      - module/registry.yaml 新增 orderbook active 条目
+      - /home/workspace/orderbook 成为 runtime library 工作目录
+      - github.com/ZoneCNH/orderbook 发布 v0.1.0
+      - binance Phase 1 hardening 仍作为后续迁移风险保留
+    related_tasks:
+      - TASK-OB-001
+      - TASK-OB-002
+      - TASK-OB-003
+      - TASK-OB-004
 
 # 示例条目：
 # - decision_id: DEC-20260608-001

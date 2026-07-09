@@ -1,8 +1,20 @@
 # Binance Subscription Governance — 对齐结论
 
-> 基于 `knowledge/streams.md` 13 章设计文档与 `todo.md` 实施计划。
-> 验证日期：2026-07-09，30 次连续 build+test 通过。
+> 基于 `knowledge/streams.md` 13 章设计文档与 Plan 013 历史实施计划。
+> 验证日期：2026-07-09。
+> Plan 013 历史验证：30 次连续 build+test 通过。
+> Release recovery 当前验证：20 轮重复检查通过；见 [`todo.md`](todo.md) 与 [`evidence/2026-07-09/test/runtime-gates-recovery.md`](evidence/2026-07-09/test/runtime-gates-recovery.md)。
 > **Plan 013 修订（2026-07-09）**：白名单规则统一重构完成——7 套机制收敛为 PG 双表 1 套；tier 词表 `core/standard` → `prime/standard/lite/blocked`；`tierCapabilityMap` 三元组推导 SSOT；DepthLevel 全链路接通。下方 §4/§5/§13 及「配置文件清单」中标 ❌(Plan 013 删) 的项为已删除死代码，不再生效。
+
+## 2026-07-09 发布 gate 对齐增补
+
+| 项 | 当前对齐结论 |
+| --- | --- |
+| 文档 gate | `bash scripts/check-binance-docs.sh` 已从旧根 `module/binance/SPEC.md` SKIP 修复为扫描 goal-driven 目录，并在 2026-07-09 本仓通过。[COMPUTED, HIGH] |
+| 标准 | `module/binance/gate/STANDARD.md` 已升级为发布与漂移标准，覆盖业务边界、产品线矩阵、canonical event_type、合约身份、options、order book、Foundation 依赖、发布证据和 gate 职责边界。[COMPUTED, HIGH] |
+| 规则 | `module/binance/gate/RULES.md` 已同步 R1/R2/R13：指向 `spec/NAMING.md` 与 `gate/STANDARD.md`，并禁止 docs gate 因旧根 SPEC 缺失而 SKIP。[COMPUTED, HIGH] |
+| runtime 发布口径 | `/home/workspace/binance` 本地已通过 `go test ./...`、`go vet ./...`、`boundary-gates.sh`、`spec-runtime-drift-check.sh` 与 `git diff --check`；本文件的 Plan 013 100% 仍只表示白名单重构历史完成，不自动等同于正式 release Go。[COMPUTED, HIGH] |
+| 待合并证据 | 本地 race、smoke、30s soak 与本地 chaos 已通过；release tag、远端 CI、rollback、live capture、真实 NATS/Kafka/TDengine/Redis/API E2E 与 live chaos 仍需进入最终 release evidence。[INFERRED, HIGH] |
 
 ## Plan 013 修订摘要（2026-07-09）
 
@@ -15,7 +27,7 @@
 | 死代码 | whitelist.yaml/strategy_acl.yaml/features.yaml/tier_map/policy.Manager/WhitelistWatcher | 全部删除（Phase 1，commit 8985105） |
 | 验证 | — | 15 boundary-gates 全过 + race 全绿 + options 回归 PASS |
 
-> 详见 [`todo.md`](todo.md)（Phase 0-6 全完成）与 [`plans/binance/013-whitelist-unification-plan-20260709.md`](../../plans/binance/013-whitelist-unification-plan-20260709.md)。
+> Plan 013 历史执行详见 [`plans/binance/013-whitelist-unification-plan-20260709.md`](../../plans/binance/013-whitelist-unification-plan-20260709.md)；当前 `todo.md` 已切换为 release readiness TODO 投影。
 
 ## 总体完成度
 

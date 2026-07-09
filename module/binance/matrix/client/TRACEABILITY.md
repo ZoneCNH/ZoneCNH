@@ -1,12 +1,12 @@
 # module/binance/client TRACEABILITY
 
 > 追溯矩阵 §1–§7，符合 `../../../../docs/governance/TRACEABILITY.md` 标准格式。
-> 数据来源：`module/binance/spec/client/SPEC.md` v4.0.1（FR/BR 使用 root canonical 编号）。
+> 数据来源：`module/binance/spec/client/SPEC.md` v4.1.0（FR/BR 使用 root canonical 编号）。
 > **SC 编号说明**：本文件的 SC-001~SC-015 为子模块本地场景 ID（Scenario），不与 root TRACEABILITY 的 canonical TC-001~TC-083 冲突。正式 TC 编号以 `module/binance/matrix/TRACEABILITY.md` §4 为准。
 
-- Module-Version: v4.0.1（FR/BR 编号统一为 root canonical；与 root SPEC v4.0.1 一致）
+- Module-Version: v4.1.0（FR/BR 编号统一为 root canonical；与 root SPEC v4.1.0 一致）
 - Last-Updated: 2026-07-08（全局 single state 为 65 Done / 0 Partial / 0 Drifted / 0 Pending，release_closeable=YES）
-- Spec-Reference: `module/binance/spec/client/SPEC.md` v4.0.1
+- Spec-Reference: `module/binance/spec/client/SPEC.md` v4.1.0
 
 ---
 

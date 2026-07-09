@@ -1,8 +1,8 @@
 # Binance Traceability Matrix
 
-- [KNOWN] Matrix-Version: v4.0.1
+- [KNOWN] Matrix-Version: v4.1.0
 - [KNOWN] Last-Updated: 2026-07-08（白名单补齐 GC-0~GC-5 全合入）
-- Source-SPEC: `module/binance/spec/SPEC.md` v4.0.1
+- Source-SPEC: `module/binance/spec/SPEC.md` v4.1.0
 - State-Model: single-state only
 - [KNOWN] Current-State: 65 Done / 0 Partial / 0 Drifted / 0 Pending（FR-052~061 spot/um/cm 已实现；options 待 Phase 2；FR-045~051 白名单补齐 GC-0~GC-5 全合入）
 - [KNOWN] release_closeable: YES（规格口径 65 Done；FR-052~061 spot/um/cm 已实现，options 待 Phase 2）

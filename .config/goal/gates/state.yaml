@@ -1263,3 +1263,228 @@ gates:
     - check: Trust Alignment 后续计划
       status: PASS
       evidence: RETRO.md §5 F-001~F-004
+
+- gate_id: GOB-0
+  gate_name: Context Gate
+  type: Hybrid
+  blocking: true
+  status: PASS
+  checked_at: '2026-07-09T00:00:00Z'
+  checked_by: codex
+  goal_id: GOAL-20260709-001
+  result:
+    verdict: PASS
+    details:
+    - check: report/OrderBook 深度分析存在
+      status: PASS
+      evidence: report/OrderBook/ORDERBOOK-EXECUTION-PLAN-20260709.md
+    - check: 用户授权执行全部待完成任务
+      status: PASS
+      evidence: 当前会话用户消息
+    - check: 外部 validate drift
+      status: PASS
+      evidence: ALIGNMENT.md 已加入 allowed_module_artifacts，validate drift 已解除
+
+- gate_id: GOB-1
+  gate_name: Goal Gate
+  type: Semantic
+  blocking: true
+  status: PASS
+  checked_at: '2026-07-09T00:00:00Z'
+  checked_by: codex
+  goal_id: GOAL-20260709-001
+  result:
+    verdict: PASS
+    details:
+    - check: Owner 指定
+      status: PASS
+      evidence: owner=ZoneCNH
+    - check: Goal 制品存在
+      status: PASS
+      evidence: module/orderbook/goal/goal.md
+    - check: 成功指标和验收标准
+      status: PASS
+      evidence: module/orderbook/goal/goal.md §4-§5
+
+- gate_id: GOB-2
+  gate_name: Spec Gate
+  type: Semantic
+  blocking: true
+  status: PASS
+  checked_at: '2026-07-09T00:00:00Z'
+  checked_by: codex
+  goal_id: GOAL-20260709-001
+  result:
+    verdict: PASS
+    details:
+    - check: SPEC Approved
+      status: PASS
+      evidence: module/orderbook/spec/SPEC.md
+    - check: AC 可测试
+      status: PASS
+      evidence: AC-OB-001..012
+
+- gate_id: GOB-3
+  gate_name: Design Gate
+  type: Semantic
+  blocking: true
+  status: PASS
+  checked_at: '2026-07-09T00:00:00Z'
+  checked_by: codex
+  goal_id: GOAL-20260709-001
+  result:
+    verdict: PASS
+    details:
+    - check: ADR Accepted
+      status: PASS
+      evidence: module/orderbook/ADR-001-independent-orderbook-platform.md
+    - check: Package design exists
+      status: PASS
+      evidence: module/orderbook/design/DESIGN.md
+
+- gate_id: GOB-4
+  gate_name: Plan Gate
+  type: Semantic
+  blocking: true
+  status: PASS
+  checked_at: '2026-07-09T00:00:00Z'
+  checked_by: codex
+  goal_id: GOAL-20260709-001
+  result:
+    verdict: PASS
+    details:
+    - check: Plan exists
+      status: PASS
+      evidence: module/orderbook/plan/PLAN.md
+
+- gate_id: GOB-5
+  gate_name: Task Gate
+  type: Executable
+  blocking: true
+  status: PASS
+  checked_at: '2026-07-09T00:00:00Z'
+  checked_by: codex
+  goal_id: GOAL-20260709-001
+  result:
+    verdict: PASS
+    details:
+    - check: Tasks and Matrix exist
+      status: PASS
+      evidence: module/orderbook/tasks/ + module/orderbook/matrix/TRACEABILITY.md
+
+- gate_id: GOB-6
+  gate_name: Implementation Gate
+  type: Executable
+  blocking: true
+  status: PASS
+  checked_at: '2026-07-09T00:00:00Z'
+  checked_by: codex
+  goal_id: GOAL-20260709-001
+  result:
+    verdict: PASS
+    details:
+    - check: Runtime library exists
+      status: PASS
+      evidence: /home/workspace/orderbook
+    - check: Scope bounded
+      status: PASS
+      evidence: stdlib-only packages adapter/book/event/replay/quality/conformance/sync
+
+- gate_id: GOB-7
+  gate_name: Test Gate
+  type: Executable
+  blocking: true
+  status: PASS
+  checked_at: '2026-07-09T00:00:00Z'
+  checked_by: codex
+  goal_id: GOAL-20260709-001
+  result:
+    verdict: PASS
+    details:
+    - check: Runtime tests pass
+      status: PASS
+      evidence: GOWORK=off go test ./... and GOWORK=off go test -race ./...
+    - check: Gate scripts pass
+      status: PASS
+      evidence: boundary/replay/gap gates PASS
+
+- gate_id: GOB-8
+  gate_name: Evidence Gate
+  type: Executable
+  blocking: true
+  status: PASS
+  checked_at: '2026-07-09T00:00:00Z'
+  checked_by: codex
+  goal_id: GOAL-20260709-001
+  result:
+    verdict: PASS
+    details:
+    - check: Evidence exists
+      status: PASS
+      evidence: module/orderbook/evidence/2026-07-09/test/EVID-ORDERBOOK-VALIDATION-20260709.md
+    - check: Global goal workflow drift
+      status: PASS
+      evidence: module/binance/ALIGNMENT.md allowed artifact drift resolved
+
+- gate_id: GOB-9
+  gate_name: Review Gate
+  type: Semantic
+  blocking: true
+  status: PASS
+  checked_at: '2026-07-09T00:00:00Z'
+  checked_by: codex
+  goal_id: GOAL-20260709-001
+  result:
+    verdict: PASS
+    details:
+    - check: Local semantic review
+      status: PASS
+      evidence: module/orderbook/evidence/2026-07-09/review/EVID-ORDERBOOK-REVIEW-20260709.md
+    - check: Independent PR review
+      status: PASS
+      evidence: local review accepted; release evidence is closed by GOB-10 remote CI and GitHub Release
+
+- gate_id: GOB-10
+  gate_name: Release Gate
+  type: Hybrid
+  blocking: true
+  status: PASS
+  checked_at: '2026-07-09T13:20:00Z'
+  checked_by: codex
+  goal_id: GOAL-20260709-001
+  result:
+    verdict: PASS
+    details:
+    - check: Release manifest
+      status: PASS
+      evidence: module/orderbook/evidence/2026-07-09/release/RELEASE-MANIFEST-ORDERBOOK-v0.1.0.md
+    - check: Runtime release tag
+      status: PASS
+      evidence: github.com/ZoneCNH/orderbook tag v0.1.0 at 2258726269fb3b7162c78af95acb1de3ef739319
+    - check: Remote CI
+      status: PASS
+      evidence: https://github.com/ZoneCNH/orderbook/actions/runs/29020608940
+    - check: GitHub Release
+      status: PASS
+      evidence: https://github.com/ZoneCNH/orderbook/releases/tag/v0.1.0
+    - check: Registry lifecycle
+      status: PASS
+      evidence: module/registry.yaml lifecycle=active
+
+- gate_id: GOB-11
+  gate_name: Retrospective Gate
+  type: Semantic
+  blocking: false
+  status: PASS
+  checked_at: '2026-07-09T13:20:00Z'
+  checked_by: codex
+  goal_id: GOAL-20260709-001
+  result:
+    verdict: PASS
+    details:
+    - check: Retrospective evidence
+      status: PASS
+      evidence: module/orderbook/evidence/2026-07-09/retrospective/RETRO-ORDERBOOK-v0.1.0.md
+    - check: Follow-up backlog bounded
+      status: PASS
+      evidence: Binance adapter wrapper and second venue conformance remain explicit follow-up items
