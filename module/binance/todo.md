@@ -258,7 +258,7 @@ CPU >80% → 自动关闭 DOGE Depth；Latency >100ms → 关闭 Depth100；Memo
 ```
 Phase 1 (本周)
 ├── ✅ Section 1-3 基础完成 + OrderbookFeatures + StreamType + whitelist.yaml
-├── [ ] P0: streamConfig 接入 StreamType（~1h）
+├── ✅ P0: streamConfig 接入 StreamType（~1h）—— **已完成** (commit 0664bf2)
 └── [ ] P1: Reconnect Manager（~3h）
 
 Phase 2 (下周)
@@ -761,10 +761,10 @@ func BenchmarkStreamTypeHas(b *testing.B) {
 | P1-6 | `WhitelistFile.AllEntries()` 分组合并 | ✅ | 优先级 blocked < basic < liquid < core, 已测试 |
 | P1-7 | 4 个 `StreamType` 单元测试 | ✅ | `Has`/`Effective`/`BackwardCompat`/`Suffix` 全部 PASS |
 | P1-8 | 3 个 `WhitelistConfig` 单元测试 | ✅ | `Load`/`Parse`/`ParseUnknown` 全部 PASS |
-| P1-9 | `streamConfig()` 接入 `StreamType` 过滤 | ⬜ | **未实现** — AC-1/AC-2 依赖项 |
+| P1-9 | `streamConfig()` 接入 `StreamType` 过滤 | ✅ | `stream_control.go` / `spot.go` — commit 0664bf2 |
 | P1-10 | `ReconnectQueue` 中央重连队列 | ⬜ | **未实现** — AC-10/AC-11 依赖项 |
 
-**Phase 1 结论**: 8/10 完成。实施就绪度 80%，阻塞项为 P1-9（streamConfig 接入）和 P1-10（ReconnectQueue）。这两个是 AC-1/AC-2/AC-10/AC-11 的前置依赖。
+**Phase 1 结论**: 9/10 完成。实施就绪度 90%，剩余阻塞项为 P1-10（ReconnectQueue）。
 
 ### Phase 2 验收结论 (P1 RateLimiter + P2)
 
@@ -810,7 +810,7 @@ func BenchmarkStreamTypeHas(b *testing.B) {
 ### 整体结论
 
 ```
-Phase 1 就绪度: ████████░░ 80%  (8/10, 阻塞: streamConfig + ReconnectQueue)
+Phase 1 就绪度: █████████░ 90%  (9/10, 阻塞: ReconnectQueue)
 Phase 2 就绪度: █░░░░░░░░��  5%  (基础节流已有，其余待 Phase 1)
 Phase 3 就绪度: ░░░░░░░░░░  0%  (全部为未来规划)
 基础 设施:     █████████░ 90%  (10/11, 缺 streamConfig 接入 + ReconnectQueue)
