@@ -73,7 +73,7 @@
 - [x] 实现 `ReconnectQueue`：全局队列 + Worker 池
 - [x] 速率控制：每秒恢复 `reconnectRate` 个连接（默认 2）
 - [x] 支持指数退避 `[1s, 2s, 4s, 8s, 16s, 32s]`（可配置）
-- [ ] 创建 `configs/reconnect.yaml`
+- [x] 创建 `configs/reconnect.yaml`
 
 ### 文件
 
@@ -98,7 +98,7 @@
 - [x] `RateLimiter` 支持 `Weight`、`Window`、`Burst`、`Delay`
 - [x] Binance `429` 响应自动 Adaptive 降速
 - [x] Priority Queue（高优先 REST 先行）
-- [ ] 创建 `configs/rate_limit.yaml`
+- [x] 创建 `configs/rate_limit.yaml`
 
 ### 文件
 
@@ -121,9 +121,9 @@ Binance 组合流 (`/stream?streams=btcusdt@trade/btcusdt@ticker/...`) 已经实
 ### 动作
 
 - [x] 实现 `SubscriptionPool`：per stream-type 引用计数 + FanOut
-- [ ] 策略通过 `Subscribe(symbol, streamType)` 申请而非直接建 WS
-- [ ] FanOut dispatcher 复制事件给所有订阅者
-- [ ] 创建 `configs/connection_pool.yaml`
+- [x] 策略通过 `Subscribe(symbol, streamType)` 申请而非直接建 WS
+- [x] FanOut dispatcher 复制事件给所有订阅者
+- [x] 创建 `configs/connection_pool.yaml`
 
 ### 文件
 
@@ -146,8 +146,8 @@ Binance 组合流 (`/stream?streams=btcusdt@trade/btcusdt@ticker/...`) 已经实
 
 - [x] 新增 `DepthLevel` 枚举：`None, L1(10), L2(20), L3(100), L4(Full)`
 - [x] `Entry.DepthLevel` 字段
-- [ ] `Book.TopN(depthLevel)` 根据档位截断
-- [ ] `whitelist.yaml` 添加 `depth_level` 字段
+- [x] `Book.TopN(depthLevel)` 根据档位截断
+- [x] `whitelist.yaml` 添加 `depth_level` 字段
 
 ### 文件
 
@@ -179,7 +179,7 @@ Binance 组合流 (`/stream?streams=btcusdt@trade/btcusdt@ticker/...`) 已经实
 ### 动作
 
 - [x] 创建 7 个配置文件骨架（YAML schema + 默认值 + 文档注释）—— **已完成** (commit 9de887a)
-- [ ] 每个文件配对应的 Go 加载代码
+- [x] 每个文件配对应的 Go 加载代码
 
 ### 预估
 
@@ -195,11 +195,11 @@ CPU >80% → 自动关闭 DOGE Depth；Latency >100ms → 关闭 Depth100；Memo
 
 ### 动作
 
-- [ ] 实现 `AdaptiveManager`：定期采样 CPU/Memory/Latency
-- [ ] 阈值触发降级：`cpuDegradeThreshold`, `memDegradeThreshold`, `latencyDegradeThreshold`
-- [ ] 降级策略：关闭低优先级 symbol 的深度 stream / OrderBook 功能位
-- [ ] 恢复策略：资源恢复正常后逐步重新启用
-- [ ] 创建 `configs/adaptive.yaml`
+- [x] 实现 `AdaptiveManager`：定期采样 CPU/Memory/Latency
+- [x] 阈值触发降级：`cpuDegradeThreshold`, `memDegradeThreshold`, `latencyDegradeThreshold`
+- [x] 降级策略：关闭低优先级 symbol 的深度 stream / OrderBook 功能位
+- [x] 恢复策略：资源恢复正常后逐步重新启用
+- [x] 创建 `configs/adaptive.yaml`
 
 ### 文件  
 
@@ -220,10 +220,10 @@ CPU >80% → 自动关闭 DOGE Depth；Latency >100ms → 关闭 Depth100；Memo
 
 ### 动作
 
-- [ ] 实现 `AntiBanEngine`：监控 `[连接数, 重连率, Burst, REST 权重, IP 封禁信号]`
-- [ ] 集成 `ReconnectQueue` + `RateLimiter` + `ConnectionPool`
-- [ ] 全局决策：当检测到封禁风险时降级（暂停低优先级 symbol、降低重连速率）
-- [ ] 创建 `configs/anti_ban.yaml`
+- [x] 实现 `AntiBanEngine`：监控 `[连接数, 重连率, Burst, REST 权重, IP 封禁信号]`
+- [x] 集成 `ReconnectQueue` + `RateLimiter` + `ConnectionPool`
+- [x] 全局决策：当检测到封禁风险时降级（暂停低优先级 symbol、降低重连速率）
+- [x] 创建 `configs/anti_ban.yaml`
 
 ### 文件
 
@@ -267,9 +267,9 @@ Phase 2 (下周)
 └── ✅ P2: DepthLevel 分级（~1h）—— **已完成** (commit a6e6620)
 
 Phase 3 (未来)
-├── [ ] P3: 剩余配置文件（~2h）
-├── [ ] P3: 自适应白名单（~6h）
-└── [ ] P3: Anti-Ban Engine（~8h）
+├── ✅ P3: 剩余配置文件（~2h）
+├── ✅ P3: 自适应白名单（~6h）
+└── ✅ P3: Anti-Ban Engine（~8h）
 ```
 
 ---
