@@ -237,6 +237,22 @@ CPU >80% → 自动关闭 DOGE Depth；Latency >100ms → 关闭 Depth100；Memo
 
 ---
 
+## P3 — 未分配章节（§4/§5/§9）
+
+以下章节在分章进度中标记为 ⚠️ 或 ❌，但未纳入现有 P0-P2 优先级。统一归入 P3（未来），待 Phase 1-2 核心治理完成后再推进。
+
+| § | 章节 | 状态 | 说明 |
+|---|------|------|------|
+| §4 | Feature Whitelist | ⚠️ per-symbol 维度 | 期望 per-module ACL（Alpha→Trade+Depth, Execution→BookTicker）。当前只有 per-symbol OrderbookFeatures。需要引入模块身份（module_name）和对应的 feature 映射表。|
+| §5 | 策略白名单 | ❌ | 期望不同策略不同权限（Scalping→Trade+BookTicker+Depth20, Trend→Ticker+Kline+Funding）。目前无策略层抽象，需要在 Strategy Manager 层实现 `strategy_acl.yaml`。|
+| §9 | Connection Pool | ⚠️ per-line | 期望按 stream-type 分池（Ticker池/Trade池/Depth池/用户数据池）。目前按 product-line 分 connector，per-stream-type 聚合需 Subscription Pool 完成后推进。|
+
+### 预估
+- §4 + §5: 共享 Strategy ACL 基础设施，~400 行，8 小时
+- §9: 依赖 §8 Subscription Pool，~150 行，3 小时
+
+---
+
 ## 实施路线图
 
 ```
