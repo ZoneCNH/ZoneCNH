@@ -16,6 +16,7 @@
 | [DATA-INTEGRITY-E2E-20260708.md](DATA-INTEGRITY-E2E-20260708.md) | 15 个归档 GAP-E 项的主运行时证据源；替代已归档的 20260701 版本 |
 | [orderbook-deep-analysis.md](orderbook-deep-analysis.md) | `knowledge/OrderBook.md` 草稿 vs binance 实现 19 章对照（维度 A/B/C + 同步协议 + Market State Engine 对齐度量化） |
 | [ORDERBOOK-REVIEW-MEMO-20260709.md](ORDERBOOK-REVIEW-MEMO-20260709.md) | 对 orderbook-deep-analysis.md 的评审异议：草稿事实性错误、反对 PolicyManager 过度抽象、Market State Engine 域归属 |
+| [WHITELIST-LOGIC-ANALYSIS-20260709.md](WHITELIST-LOGIC-ANALYSIS-20260709.md) | 行情流 vs 订单簿白名单逻辑梳理：7 套机制仅 3 套生效、tier 词表冲突、whitelist.yaml/policy.Manager 死代码、订单簿 DepthLevel 断链 |
 
 ## 一句话总结
 
