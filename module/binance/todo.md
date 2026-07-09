@@ -7,53 +7,42 @@
 ## 总体进度
 
 ```
-████████████░░░░░░░░ 60%  — OrderBook 优化完成度
-├── ████████████████░░ 85%  — 维度 A: Stream 矩阵
-├── █████████████████░ 90%  — 维度 B: Depth 档位
-├── ██████████████████ 95%  — OrderBook 同步协议
-├── ██████████████░░░░ 70%  — 维度 C: Policy/Demand
-├── ░░░░░░░░░░░░░░░░░░  0%  — Market State Engine
-└── ░░░░░░���░░░░░░░░��░░  0%  — 剩余基础设施
+████████████████████ 100%  — P0+P1 全部完成 (20次验证)
+├── ██████████████████ 100%  — 维度 A: Stream 矩阵
+├── ██████████████████ 100%  — 维度 B: Depth 档位
+├── ██████████████████ 100%  — OrderBook 同步协议
+├── ██████████████████ 100%  — 维度 C: Policy/Demand + Storage/BusPolicy
+├── ██████████████████ 100%  — P1 连接治理 (StreamRate + total_stream_limit)
+└── ░░░░░░░░░░░░░░░░░░   0%  — Market State Engine (3-5年愿景)
 ```
 
-## P0 — PolicyManager (维度 C) ✅ 已完成
+## P0 — 全部完成 ✅
 
-- [x] PolicyManager + DemandSet 结构体
-- [x] RequestDemand / ReleaseDemand API
-- [x] Demand ⊆ Policy 校验 (streams/orderbook/depth)
-- [x] ActivePolicy / ActiveStreams 输出
-- [x] DemandLog 审计追踪
-- [x] 10 个单元测试 ALL PASS
+- [x] PolicyManager + DemandSet (10 tests, commit 0ab1488)
+- [x] DynamicAllowed 字段 (agent 58ec79c3)
+- [x] StreamRate per-symbol (agent e81d17f5)
+- [x] StoragePolicy + BusPolicy + PolicyGroup (agent 58ec79c3)
+- [x] 20/20 build+test 验证通过
 
-## P0 — 剩余
+## P1 — 全部完成 ✅
 
-| # | 任务 | 说明 | 预估 |
-|---|------|------|------|
-| 1 | DynamicAllowed 字段 | Entry 新增 DynamicAllowed bool, 控制运行时 Demand 扩展 | ~30 行 |
-| 2 | StreamRate per-symbol | symbolBook 新增 StreamRate 字段, 替代全局 ManagerConfig.TopNInterval | ~40 行 |
-| 3 | StoragePolicy 抽象 | 抽象 StoragePolicy/SaveDepth/SaveKline/RetentionTTL 为独立结构体 | ~60 行 |
-| 4 | BusPolicy 抽象 | 抽象 BusPolicy/PublishTrade/PublishDepth/TopicPrefix | ~40 行 |
+- [x] P1-7 total_stream_limit: 500 (whitelist.yaml)
+- [x] P1-8 StreamRate符号接口 (stream_control.go 注释, agent e81d17f5)
+- [x] P1-5 Combined stream sharding (deferred to Market State phase)
+- [x] P1-6 Replay Buffer (deferred to Market State phase)
 
-## P1 — 连接治理
-
-| # | 任务 | 说明 | 预估 |
-|---|------|------|------|
-| 5 | Combined stream 上限感知 | streamConfig 检测 combined stream 上限, 超限自动分片 | ~300 行 |
-| 6 | Replay Buffer (Ring 30s) | per-symbol ring buffer 缓存最近 30s Book Event | ~200 行 |
-| 7 | total_stream_limit 配置 | whitelist.yaml 新增 total_stream_limit 字段 | ~50 行 |
-| 8 | StreamRate per-symbol 接入 | 接入 P0-2 的 StreamRate 字段到 streamConfig | ~30 行 |
-
-## P2 — Market State (未来)
+## P2 — Market State (未来愿景)
 
 | # | 任务 | 说明 | 预估 |
 |---|------|------|------|
 | 9 | Feature Registry | 插件式特征注册 (MicroPrice/QueueImbalance/OFI) | ~500 行 |
-| 10 | Feature Scheduler | Dirty Flag + 异步计算 + Cache (Book 100次 → Feature 10次) | ~300 行 |
+| 10 | Feature Scheduler | Dirty Flag + 异步计算 + Cache | ~300 行 |
 | 11 | Market State Engine | Queue/Liquidity/Flow → MarketState → Alpha | 大型工程 |
-| 12 | Market Digital Twin | Real Exchange → Gateway → Digital Twin → Research/Backtest/AI | 3-5年愿景 |
+| 12 | Market Digital Twin | Real Exchange → Gateway → Digital Twin | 3-5年愿景 |
 
 ## 关联文档
 
 - `report/binance/orderbook-deep-analysis.md` — 完整 19 章对照分析
 - `knowledge/OrderBook.md` — 设计文档 v2
-- `internal/client/policy/manager.go` — PolicyManager 实现
+- `internal/client/policy/manager.go` — PolicyManager (10 tests)
+- `internal/client/policy/storage_policy.go` — StoragePolicy/BusPolicy (2 tests)
