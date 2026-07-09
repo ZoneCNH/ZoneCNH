@@ -3,7 +3,7 @@
 > 日期：2026-07-09  
 > runtime 仓：`/home/workspace/binance`  
 > docs 仓：`/home/workspace/ZoneCNH`
-> runtime evidence commit：`b66ea770bdc73759c934656325cef47563ae9e4a`
+> runtime merged fix commit：`cc51916b9c7686128433465844cf436330260f8c`（PR #486）
 
 ## 1. 结论
 
@@ -13,11 +13,15 @@
 
 最终状态检查时，runtime 当前工作树已再次执行 `GOTOOLCHAIN=go1.26.5+auto scripts/run-full-validation.sh --skip-health` 并通过；该入口覆盖 build、vet、全量测试、race、boundary、专项测试、版本一致性和引用完整性。[COMPUTED, HIGH]
 
-本轮已在 runtime commit `b66ea770bdc73759c934656325cef47563ae9e4a` 上生成本地 release evidence bundle：`/home/workspace/binance/release/evidence/binance/20260709-canonical-recovery`；其 `head.log` 指向该 commit，`status.txt` 全部 PASS，`external-gates.log` 记录 `live_binance_websocket=NOT_CAPTURED`、`natsx_jetstream_puback_manualack=CORE_ENVELOPE_ADAPTER_PRESENT_JETSTREAM_ACK_NOT_CAPTURED`、`external_durable_storage_fanout_query=PACKAGE_BOUNDARY_PRESENT_EXTERNAL_IO_NOT_CAPTURED`、`remote_github_actions=NOT_CAPTURED`、`release_tag=NOT_CAPTURED`、`release_closeable=NO`。[COMPUTED, HIGH]
+本轮 release evidence bundle 位于 `/home/workspace/binance/release/evidence/binance/20260709`；PR #486 已把后续 gate 修复和 evidence 日志合入 runtime `main`，merge commit 为 `cc51916b9c7686128433465844cf436330260f8c`。[COMPUTED, HIGH]
 
-本轮安全扫描记录在 runtime evidence bundle 的 `vuln-scan.log`：`govulncheck` 报告可达漏洞 0；`gitleaks` 本机未安装，记录为 skipped。[COMPUTED, HIGH]
+当前 `external-gates.log` 记录 `live_binance_websocket=CAPTURED_MAINNET_FOUR_PRODUCT_LINES`、`external_durable_storage_fanout_query=FAILED_CLICKHOUSE_AUTH_REDACTED`、`remote_github_actions=NOT_CAPTURED`、`release_tag=NOT_CAPTURED`、`release_closeable=NO`。[COMPUTED, HIGH]
 
-本证据不是最终 release evidence；远端 CI、release tag、live capture、外部依赖 E2E 和 rollback 仍需独立闭合。[COMPUTED, HIGH]
+本轮安全扫描记录在 runtime evidence bundle 的 `vuln-scan.log`：`govulncheck` 报告可达漏洞 0；`gitleaks` 8.30.1 扫描无泄漏。[COMPUTED, HIGH]
+
+PR #486 远端 checks 已通过 Build/Vet、Unit Test & Race & Cover、golangci-lint、Security/gitleaks/govulncheck、Status Consistency、Boundary Gates、Benchmark Regression、Live E2E、Soak+Chaos；workflow 条件控制的 Integration/Gated/E2E jobs 为 SKIPPED。[COMPUTED, HIGH]
+
+本证据不是最终 release evidence；release tag、release notes、外部 durable storage/fanout/query E2E 和 rollback 仍需独立闭合。[COMPUTED, HIGH]
 
 ## 2. 修复摘要
 
@@ -44,15 +48,19 @@
 | `XGO_BINANCE_SMOKE_SELF_TEST=1 go run ./cmd/binance-smoke` | PASS。[COMPUTED, HIGH] |
 | `make test-gated` | PASS；30s soak PASS，本地 chaos PASS，真实外部依赖 chaos 按环境缺失 SKIP。[COMPUTED, HIGH] |
 | `SOAK_DURATION=30s go test -tags=soak ./test/soak/ -run TestSoak_ServerStability -count=1 -timeout 5m` | PASS。[COMPUTED, HIGH] |
-| `GOTOOLCHAIN=go1.26.5+auto make vuln-scan` | PASS；可达漏洞 0，`gitleaks` skipped。[COMPUTED, HIGH] |
+| `GOTOOLCHAIN=go1.26.5+auto make vuln-scan` | PASS；可达漏洞 0，`gitleaks` 无泄漏。[COMPUTED, HIGH] |
+| `GOTOOLCHAIN=go1.26.5+auto BINANCE_MAINNET_LIVE=1 go test -tags=e2e ./test/e2e -run 'TestMainnetLive_' -count=1 -v -timeout 3m` | PASS；四产品线 mainnet WS capture 已生成。[COMPUTED, HIGH] |
+| `GOTOOLCHAIN=go1.26.5+auto bash scripts/benchmark-regression.sh --threshold 20` | PASS；24 个 release-critical benchmark 无 regression。[COMPUTED, HIGH] |
+| PR #486 remote checks | PASS/condition-skipped；关键 gate SUCCESS，Integration/Gated/E2E 条件 job SKIPPED。[COMPUTED, HIGH] |
 | `git diff --check` | PASS。[COMPUTED, HIGH] |
-| `./scripts/runtime-release-evidence.sh` | PASS；bundle: `/home/workspace/binance/release/evidence/binance/20260709-canonical-recovery`。[COMPUTED, HIGH] |
+| `./scripts/runtime-release-evidence.sh` | PASS；bundle: `/home/workspace/binance/release/evidence/binance/20260709`。[COMPUTED, HIGH] |
 | 20 轮重复检查 | PASS；日志目录：`/tmp/binance-final-20check-20260709221859`。[COMPUTED, HIGH] |
 
 ## 4. 剩余证据
 
-- [ ] 远端 CI 对同一 commit 运行测试与 gate。[FRAME, HIGH]
-- [ ] live WS capture 与 NATS/Kafka/TDengine/Redis/API E2E。[FRAME, HIGH]
-- [ ] release tag、release notes、rollback checklist。[FRAME, HIGH]
+- [x] 远端 CI 对 PR #486 运行测试与 gate。[COMPUTED, HIGH]
+- [x] live WS capture。[COMPUTED, HIGH]
+- [ ] NATS/Kafka/TDengine/Redis/API 外部 durable E2E；当前被 ClickHouse 认证失败阻断。[COMPUTED, HIGH]
+- [ ] release tag、release notes、rollback checklist；最新 release 仍为 `v0.15.1`，未覆盖 `cc51916b9c7686128433465844cf436330260f8c`。[COMPUTED, HIGH]
 
 [RULES I BROKE]：无
