@@ -1,8 +1,8 @@
 # 运行时缺口（GAP-E）→ 证据交叉引用索引
 
 **创建日期**：2026-07-04  
-**修复 issue**：#369 — 补 evidence/ GAP-E 引用  
-**状态**：GAP-E57 闭合（evidence 目录建立 GAP-E 显式引用链）  
+**更新日期**：2026-07-09 — GAP-E13/E23/E54 收尾批次闭合  
+**状态**：**全部 59 个 GAP-E 已闭合（59 Fixed / 0 Open）**  
 
 ---
 
@@ -59,7 +59,7 @@
 | **GAP-E5'** | ResourceGovernor 死代码 | [DATA-INTEGRITY-E2E-20260708.md](../../report/binance/DATA-INTEGRITY-E2E-20260708.md#gap-e5) | TASK-CLIENT-023 | Open |
 | **GAP-E8** | SchemaVersion 硬编码，无版本协商 | `2026-07-02/tier-gap-cross-reference.md` | TASK-CLIENT-024 | Open |
 | **GAP-E9** | client 端可观测性碎片化 | `2026-06-30/release/prg-004-observability.md` | TASK-CLIENT-025 + TASK-OBSERVABILITY-001 | Open |
-| **GAP-E13** | deadletter replay 跨进程一致性 | `2026-06-28/review/perfect10-issue-alignment-20260628.md` | TASK-SERVER-027 | Open |
+| **GAP-E13** | deadletter replay 跨进程一致性 | `2026-07-09/deadletter_replay_e13_test.go` | TASK-SERVER-027 | **Closed (2026-07-09)** |
 | **GAP-E14** | retention 策略只有 reader 无执行器 | `2026-06-30/release/prg-007-issue-sync.md` | TASK-SERVER-028 | Open |
 | **GAP-E19** | idempotency PayloadHash 无校验 | `2026-07-02/tier-gap-cross-reference.md` | TASK-SERVER-029 | Open |
 | **GAP-E20** | client 关闭时 in-flight 任务丢失 | `2026-06-28/review/perfect10-issue-alignment-20260628.md` | TASK-CLIENT-026 | Open |
