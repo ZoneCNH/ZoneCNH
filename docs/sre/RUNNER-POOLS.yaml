@@ -22,6 +22,7 @@ global:
 pools:
   sre/governance:
     purpose: governance, docs, baseline, dependency matrix, policy check
+    label: ci-governance
     allowed_events: [pull_request, push, workflow_dispatch, schedule]
     secrets: none
     docker: false
@@ -38,7 +39,7 @@ pools:
       - xlibgate        # gate
 
   sre/foundation-l0:
-    purpose: kernel, decimalx, stdlib-only modules
+    purpose: kernel, stdlib-only modules
     allowed_events: [pull_request, push, workflow_dispatch]
     secrets: none
     docker: false
