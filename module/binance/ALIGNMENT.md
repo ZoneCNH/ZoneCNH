@@ -6,8 +6,8 @@
 ## 总体完成度
 
 ```
-████████████░░░░░░░░ 50%  综合
-├── ██████████████████ 80%  访问控制 (Symbol/Stream/Feature/Strategy)
+█████████████░░░░░░░ 55%  综合
+├── ██████████████████ 85%  访问控制 (Symbol/Stream/Feature/Strategy + Hot-Reload)
 ├── ████████████░░░░░░ 60%  订阅管理
 ├── ██████████████░░░░ 70%  连接治理
 ├── ██████████████░░░░ 70%  速率治理
@@ -32,16 +32,17 @@
 | §10 | Rate Limiter | ✅ On429 + Priority + Burst | 7 个测试 |
 | §11 | 自适应白名单 | ❌ | — |
 | §12 | Anti-Ban Engine | ❌ | — |
-| §13 | 配置文件拆分 | ✅ whitelist.yaml, 其他 P3 | — |
+| §13 | 配置文件拆分 | ✅ whitelist.yaml + hot-reload (WhitelistWatcher), 其他 P3 | 5 个 watcher 测试 |
 
 ## 测试覆盖
 
 | 包 | 测试数 | 状态 |
 |----|--------|------|
-| `pkg/whitelistclient/` | 17 | ✅ PASS |
+| `pkg/binancecfg/` | 8 | ✅ PASS (新增 5 watcher) |
+| `pkg/whitelistclient/` | 20 | ✅ PASS |
 | `internal/client/` (governance) | 25 | ✅ PASS |
 | `internal/server/cache/` | 46 | ✅ PASS |
-| **合计** | **88** | **ALL PASS** |
+| **合计** | **99** | **ALL PASS** |
 
 ## 10 次验证通过
 
@@ -64,6 +65,8 @@
 | `5fbe669` | CircuitBreakerClient |
 | `5518d19` | Health Probe |
 
+| `6d136b4` | WhitelistWatcher 热加载 (fsnotify + 模块级路径) |
+
 ## 下一步
 
 ```
@@ -75,3 +78,14 @@ Phase 3 (未来)
 ├── §12 Anti-Ban Engine
 └── §13 P3 config files (features/strategy_acl/anti_ban/adaptive.yaml)
 ```
+
+## 热加载特性
+
+| 功能 | 状态 |
+|------|------|
+| fsnotify 文件监听 | ✅ |
+| 模块级路径解析 (filepath.Abs) | ✅ |
+| Write/Create 事件触发重载 | ✅ |
+| 500ms debounce 防抖 | ✅ |
+| 启动即文件校验 | ✅ |
+| context-driven 优雅关闭 | ✅ |
