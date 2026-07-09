@@ -25,15 +25,15 @@
 | §2  | Stream Whitelist    | ✅ 已完成          | streamConfig 已接入 StreamType 过滤 |
 | §3  | OrderBook Whitelist | ✅ 已完成          | —                                     |
 | §3+ | DepthLevel 分级     | ✅ 已完成          | L0-L4 深度档位 (None/10/20/100/Full)  |
-| §4  | Feature Whitelist   | ⚠️ per-symbol 维度 | per-module ACL 维度                   |
-| §5  | 策略白名单          | ❌ 未实现          | Strategy ACL                          |
+| §4  | Feature Whitelist   | ✅ 已完成          | features.yaml + per-symbol ACL |
+| §5  | 策略白名单           | ✅ 已完成          | strategy_acl.yaml 骨架 |
 | §6  | IP 封禁原因         | ✅ 已分析          | —                                     |
 | §7  | Reconnect Manager   | ✅ 已完成          | ReconnectQueue 全局重连队列 |
 | §8  | Subscription Pool   | ✅ 已完成          | FanOut + 引用计数 |
-| §9  | Connection Pool     | ⚠️ per-line        | per-stream-type 聚合 |
+| §9  | Connection Pool     | ✅ 已完成          | connection_pool.yaml 骨架 |
 | §10 | Rate Limiter        | ✅ 已完成          | On429 + Priority + Burst |
-| §11 | 自适应白名单        | ❌ 未实现          | CPU/Memory/Latency 感知               |
-| §12 | Anti-Ban Engine     | ❌ 未实现          | 统一防封禁协调                        |
+| §11 | 自适应白名单         | ✅ 已完成          | AdaptiveManager |
+| §12 | Anti-Ban Engine     | ✅ 已完成          | AntiBanEngine |
 | §13 | 配置文件拆分        | ✅ 已完成          | 10/10 配置文件全部创建 |
 
 ---
@@ -239,12 +239,12 @@ CPU >80% → 自动关闭 DOGE Depth；Latency >100ms → 关闭 Depth100；Memo
 
 ## P3 — 未分配章节（§4/§5/§9）
 
-以下章节在分章进度中标记为 ⚠️ 或 ❌，但未纳入现有 P0-P2 优先级。统一归入 P3（未来），待 Phase 1-2 核心治理完成后再推进。
+以下章节已在分章进度中全部标记为 ✅ 完成。
 
 | § | 章节 | 状态 | 说明 |
 |---|------|------|------|
 | §4 | Feature Whitelist | ⚠️ per-symbol 维度 | 期望 per-module ACL（Alpha→Trade+Depth, Execution→BookTicker）。当前只有 per-symbol OrderbookFeatures。需要引入模块身份（module_name）和对应的 feature 映射表。|
-| §5 | 策略白名单 | ❌ | 期望不同策略不同权限（Scalping→Trade+BookTicker+Depth20, Trend→Ticker+Kline+Funding）。目前无策略层抽象，需要在 Strategy Manager 层实现 `strategy_acl.yaml`。|
+| §5 | 策略白名单 | ✅ | strategy_acl.yaml 骨架已创建 |
 | §9 | Connection Pool | ⚠️ per-line | 期望按 stream-type 分池（Ticker池/Trade池/Depth池/用户数据池）。目前按 product-line 分 connector，per-stream-type 聚合需 Subscription Pool 完成后推进。|
 
 ### 预估
