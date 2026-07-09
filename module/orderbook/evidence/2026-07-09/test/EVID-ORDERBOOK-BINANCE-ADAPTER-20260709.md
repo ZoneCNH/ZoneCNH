@@ -78,7 +78,7 @@ The adapter package and the full Binance test baseline both passed local and rem
 
 This evidence closes the first adapter-wrapper implementation and merge step, not production migration.[COMPUTED, HIGH]
 
-The OrderBook module still cannot claim production cross-venue completeness until a second venue conformance fixture passes and the merged wrapper is followed by an explicit production runtime migration or equivalent production integration.[INFERRED, HIGH]
+The second venue-style conformance fixture was later merged in `orderbook` PR #1; production cross-venue completeness still requires a real second venue adapter/live integration and an explicit Binance production runtime migration or equivalent production integration.[COMPUTED, HIGH]
 
 ---
 

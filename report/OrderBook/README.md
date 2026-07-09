@@ -19,5 +19,6 @@
 | [ORDERBOOK-GOAL-VALIDATION-NOTE-20260709.md](ORDERBOOK-GOAL-VALIDATION-NOTE-20260709.md) | 2026-07-09 | 记录 `goal-workflow validate` 最终通过，以及早期 drift 的修复闭环。[COMPUTED, HIGH] |
 | [ORDERBOOK-COMPLETION-REPORT-20260709.md](ORDERBOOK-COMPLETION-REPORT-20260709.md) | 2026-07-09 | 记录授权后正式创建 `module/orderbook/`、GitHub runtime release、registry/control-plane 登记和验证结果。[COMPUTED, HIGH] |
 | [../../module/orderbook/evidence/2026-07-09/test/EVID-ORDERBOOK-BINANCE-ADAPTER-20260709.md](../../module/orderbook/evidence/2026-07-09/test/EVID-ORDERBOOK-BINANCE-ADAPTER-20260709.md) | 2026-07-09 | 记录 Binance adapter wrapper PR #479 的实现、验证、合并和 main CI 状态。[COMPUTED, HIGH] |
+| [../../module/orderbook/evidence/2026-07-10/test/EVID-ORDERBOOK-SECOND-VENUE-CONFORMANCE-20260710.md](../../module/orderbook/evidence/2026-07-10/test/EVID-ORDERBOOK-SECOND-VENUE-CONFORMANCE-20260710.md) | 2026-07-10 | 记录 `orderbook` PR #1 的第二 venue-style conformance fixture、合并和 main CI 状态。[COMPUTED, HIGH] |
 
 [RULES I BROKE]：无

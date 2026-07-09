@@ -128,7 +128,7 @@ binance runtime 当前已经具备本地 book、snapshot + diff 对齐、sequenc
 | 本 Goal 不交付 OrderBook runtime 代码。[FRAME, HIGH] | 当前阶段是治理启动，不是 S6 Code。[COMPUTED, HIGH] |
 | 本 Goal 不批准 `orderbook` 模块准入。[FRAME, HIGH] | 准入必须由正式 ADR 和双闸门裁决完成。[COMPUTED, HIGH] |
 | 本 Goal 不替代 binance orderbook Phase 1 实现任务。[FRAME, HIGH] | Phase 1 需要在 `/home/workspace/binance` runtime 仓执行。[COMPUTED, HIGH] |
-| 本 Goal 不宣称跨 venue 平台完成。[FRAME, HIGH] | 当前只有 Binance 证据最完整，第二 venue conformance 尚未完成。[INFERRED, HIGH] |
+| 本 Goal 不宣称跨 venue 平台完成。[FRAME, HIGH] | 后续已补第二 venue-style conformance fixture，但真实第二 venue adapter/live integration 仍未完成。[COMPUTED, HIGH] |
 | 本 Goal 不定义交易策略或下单逻辑。[FRAME, HIGH] | 策略和执行属于下游消费方职责。[INFERRED, HIGH] |
 
 ---

@@ -35,7 +35,7 @@ GitHub Release 已创建：`https://github.com/ZoneCNH/orderbook/releases/tag/v0
 | `pkg/sync` | snapshot + diff alignment、gap detection、quality output。[COMPUTED, HIGH] |
 | `pkg/replay` | fixture replay、hash、quality timeline、expected reliable check。[COMPUTED, HIGH] |
 | `pkg/quality` | stale fail-closed policy。[COMPUTED, HIGH] |
-| `pkg/conformance` | Binance-like fixture conformance runner。[COMPUTED, HIGH] |
+| `pkg/conformance` | `v0.1.0` 包含 Binance-like fixture conformance runner；post-release `main` 通过 PR #1 增加 Bybit-like prev-link fixture。[COMPUTED, HIGH] |
 
 ---
 
@@ -47,13 +47,14 @@ GitHub Release 已创建：`https://github.com/ZoneCNH/orderbook/releases/tag/v0
 | `GOWORK=off go test ./...` | PASS |
 | `GOWORK=off go test -race ./...` | PASS |
 | `bash scripts/boundary-gates.sh` | PASS |
+| `bash scripts/adapter-conformance-gate.sh` | PASS on post-release `main` PR #1 |
 | `bash scripts/replay-determinism-gate.sh` | PASS |
 | `bash scripts/gap-injection-gate.sh` | PASS |
 | `bash docs/goal/tools/goal-workflow.sh validate` | PASS |
 | GitHub Actions `main` CI | PASS |
 | GitHub Actions `v0.1.0` CI | PASS |
 
-Evidence: `module/orderbook/evidence/2026-07-09/test/EVID-ORDERBOOK-VALIDATION-20260709.md`。[COMPUTED, HIGH]
+Evidence: `module/orderbook/evidence/2026-07-09/test/EVID-ORDERBOOK-VALIDATION-20260709.md` and `module/orderbook/evidence/2026-07-10/test/EVID-ORDERBOOK-SECOND-VENUE-CONFORMANCE-20260710.md`。[COMPUTED, HIGH]
 
 ---
 
@@ -67,7 +68,7 @@ Binance PR #479 的最终远端通过项包括 Build & Vet、Unit Test & Race & 
 
 Binance `main` 在 merge commit `b2547735e9df6b9bb4bb939baaeb74436260ce50` 上的合并后 CI 全部 success。[COMPUTED, HIGH]
 
-未实现第二 venue adapter，因此不能宣称生产级跨 venue 平台完成。[COMPUTED, HIGH]
+第二 venue-style conformance fixture 已在 post-release `main` 合并；真实第二 venue adapter/live integration 未实现，因此仍不能宣称生产级跨 venue runtime 完成。[COMPUTED, HIGH]
 
 全局 `bash docs/goal/tools/goal-workflow.sh validate` 已通过 strict control-plane validation 和 Matrix check-only。[COMPUTED, HIGH]
 

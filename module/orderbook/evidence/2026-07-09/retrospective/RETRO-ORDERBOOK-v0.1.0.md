@@ -18,7 +18,7 @@ The runtime validates adapter sequence policies, deterministic book mutation, re
 
 A Binance adapter wrapper PR was opened after the `orderbook v0.1.0` release, but `/home/workspace/binance` remains the production runtime for Binance order book collection and has not been migrated to the shared replay engine.[COMPUTED, HIGH]
 
-No second venue adapter was implemented, so cross-venue production completeness remains unclaimed.[COMPUTED, HIGH]
+No real second venue adapter or live integration was implemented, so cross-venue production completeness remains unclaimed.[COMPUTED, HIGH]
 
 No downstream execution, factor or strategy consumer was integrated.[COMPUTED, HIGH]
 
@@ -35,7 +35,7 @@ The release gate should be closed only after remote CI and release notes exist; 
 | ID | Item | Owner | Priority |
 | --- | --- | --- | --- |
 | OB-FU-001 | Implement Binance adapter wrapper against `orderbook` contract. | ZoneCNH | Merged: `https://github.com/ZoneCNH/binance/pull/479` |
-| OB-FU-002 | Add a second venue conformance fixture before claiming cross-venue production readiness. | ZoneCNH | P1 |
+| OB-FU-002 | Add a second venue conformance fixture before claiming cross-venue production readiness. | ZoneCNH | Merged post-release fixture: `https://github.com/ZoneCNH/orderbook/pull/1`; real adapter remains separate |
 | OB-FU-003 | Add contract compatibility tests before v0.2.0 API expansion. | ZoneCNH | P1 |
 
 ---

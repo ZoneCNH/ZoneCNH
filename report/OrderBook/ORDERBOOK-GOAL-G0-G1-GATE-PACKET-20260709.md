@@ -143,11 +143,11 @@ G0 不阻断继续进行 G1 人工评审准备。[FRAME, HIGH]
 Current State:       DONE
 Current Phase:       RETROSPECTIVE
 Phase Status:        DONE
-Allowed Actions:     Plan Binance adapter wrapper; add second venue conformance
+Allowed Actions:     Plan Binance production runtime migration; plan real second venue adapter/live integration
 Blocked By:          None for v0.1.0 release
 Required Gate:       None; GOB-0..GOB-11 PASS
 Evidence Required:   Future evidence only for v0.2.0 follow-up work
-Recommended Next Action: 将 Binance adapter wrapper 和第二 venue fixture 作为后续任务规划。
+Recommended Next Action: 将 Binance production runtime migration 和真实第二 venue adapter/live integration 作为后续任务规划。
 ```
 
 ---

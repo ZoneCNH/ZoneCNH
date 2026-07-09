@@ -24,6 +24,6 @@
 | BR-OB-005 | AC-OB-003 | TASK-OB-003 | gap injection gate | Done |
 | BR-OB-006 | AC-OB-010 | TASK-OB-003 | conformance note | Done with risk |
 
-第二 venue adapter 尚未实现，因此跨 venue 平台 claim 仍保持风险声明。[INFERRED, HIGH]
+第二 venue-style conformance fixture 已补齐；真实第二 venue adapter/live integration 尚未实现，因此跨 venue production runtime claim 仍保持风险声明。[COMPUTED, HIGH]
 
 [RULES I BROKE]：无

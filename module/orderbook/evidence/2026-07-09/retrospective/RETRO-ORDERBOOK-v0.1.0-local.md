@@ -21,7 +21,7 @@ The initial local baseline did not include GitHub remote repository, remote CI r
 
 No real Binance adapter migration was performed; `/home/workspace/binance` remains the production runtime for Binance order book collection.[COMPUTED, HIGH]
 
-No second venue adapter was implemented, so cross-venue production completeness remains unclaimed.[COMPUTED, HIGH]
+No real second venue adapter or live integration was implemented, so cross-venue production completeness remains unclaimed.[COMPUTED, HIGH]
 
 ## 3. Lessons
 
@@ -39,7 +39,7 @@ The existing Goal workflow drift around `module/binance/ALIGNMENT.md` was resolv
 | OB-FU-002 | Configure GitHub CI and produce first GitHub Release. | ZoneCNH | Closed |
 | OB-FU-003 | Keep `module/registry.yaml` proposed until release evidence exists. | ZoneCNH | Closed |
 | OB-FU-004 | Implement Binance adapter wrapper against `orderbook` contract. | ZoneCNH | P1 |
-| OB-FU-005 | Add a second venue conformance fixture before claiming cross-venue production readiness. | ZoneCNH | P1 |
+| OB-FU-005 | Add a second venue conformance fixture before claiming cross-venue production readiness. | ZoneCNH | Merged post-release fixture: `https://github.com/ZoneCNH/orderbook/pull/1`; real adapter remains separate |
 
 ---
 
