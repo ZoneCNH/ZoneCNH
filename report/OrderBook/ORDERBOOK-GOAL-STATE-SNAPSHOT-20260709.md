@@ -18,7 +18,7 @@ Allowed Actions:     Review/merge Binance adapter wrapper PR; add second venue c
 Blocked By:          None for v0.1.0 release
 Required Gate:       None; GOB-0..GOB-11 PASS
 Evidence Required:   Follow-up evidence only for future work
-Recommended Next Action: 处理 Binance adapter wrapper PR #479 的远端基线失败，并把第二 venue fixture 作为 v0.2.0 前置任务单独规划。
+Recommended Next Action: 审查并合并 Binance adapter wrapper PR #479，并把第二 venue fixture 作为 v0.2.0 前置任务单独规划。
 ```
 
 ---
@@ -37,7 +37,7 @@ Recommended Next Action: 处理 Binance adapter wrapper PR #479 的远端基线�
 
 | 级别 | 阻断项 | 影响 | 解除条件 |
 | --- | --- | --- | --- |
-| P1 | Binance adapter wrapper 已打开 PR #479，但尚未合并，也未替换生产 runtime。[COMPUTED, HIGH] | 不能声明 binance runtime 已迁移。[FRAME, HIGH] | 先处理 PR 远端基线失败，再决定是否推进生产迁移。[FRAME, HIGH] |
+| P1 | Binance adapter wrapper PR #479 已远端绿灯且可合并，但尚未合并，也未替换生产 runtime。[COMPUTED, HIGH] | 不能声明 binance runtime 已迁移。[FRAME, HIGH] | 审查并合并 PR，或用等价生产集成替代。[FRAME, HIGH] |
 | P1 | 第二 venue adapter 未实现。[COMPUTED, HIGH] | 不能声明生产级跨 venue runtime 完成。[FRAME, HIGH] | 选择 OKX/Bybit 等第二 venue 并完成 conformance fixture。[FRAME, MED] |
 
 ---

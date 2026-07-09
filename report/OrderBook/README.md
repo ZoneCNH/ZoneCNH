@@ -18,6 +18,6 @@
 | [ORDERBOOK-GOAL-CONTROL-PLANE-DRAFT-20260709.md](ORDERBOOK-GOAL-CONTROL-PLANE-DRAFT-20260709.md) | 2026-07-09 | 为后续可能写入 `.config/goal/` 准备 goals/pipeline/gates/risks/decisions YAML 草案，当前不得直接落库。[COMPUTED, HIGH] |
 | [ORDERBOOK-GOAL-VALIDATION-NOTE-20260709.md](ORDERBOOK-GOAL-VALIDATION-NOTE-20260709.md) | 2026-07-09 | 记录 `goal-workflow validate` 最终通过，以及早期 drift 的修复闭环。[COMPUTED, HIGH] |
 | [ORDERBOOK-COMPLETION-REPORT-20260709.md](ORDERBOOK-COMPLETION-REPORT-20260709.md) | 2026-07-09 | 记录授权后正式创建 `module/orderbook/`、GitHub runtime release、registry/control-plane 登记和验证结果。[COMPUTED, HIGH] |
-| [../../module/orderbook/evidence/2026-07-09/test/EVID-ORDERBOOK-BINANCE-ADAPTER-20260709.md](../../module/orderbook/evidence/2026-07-09/test/EVID-ORDERBOOK-BINANCE-ADAPTER-20260709.md) | 2026-07-09 | 记录 Binance adapter wrapper PR #479 的实现、验证和远端 CI 基线风险。[COMPUTED, HIGH] |
+| [../../module/orderbook/evidence/2026-07-09/test/EVID-ORDERBOOK-BINANCE-ADAPTER-20260709.md](../../module/orderbook/evidence/2026-07-09/test/EVID-ORDERBOOK-BINANCE-ADAPTER-20260709.md) | 2026-07-09 | 记录 Binance adapter wrapper PR #479 的实现、验证和最终远端绿灯状态。[COMPUTED, HIGH] |
 
 [RULES I BROKE]：无

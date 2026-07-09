@@ -6,7 +6,7 @@
 > Evidence Type: Downstream adapter wrapper
 > Binance PR: `https://github.com/ZoneCNH/binance/pull/479`
 > Binance Branch: `feat/orderbook-contract-adapter`
-> Binance Commit: `8f8ee93653e1a0eaf40c687978f194cf3c018132`
+> Binance Commit: `0a085cc99de4949820a1c9032c68cdb0bd50f288`
 
 ---
 
@@ -16,7 +16,9 @@ The Binance repository now has an open PR that maps Binance REST snapshots and d
 
 The PR is a thin adapter wrapper only; it does not replace the existing Binance production order book state machine, reconnect loop, persistence path or downstream publish path.[COMPUTED, HIGH]
 
-The PR changed `go.mod`, `go.sum`, `internal/client/orderbook/contract_adapter.go` and `internal/client/orderbook/contract_adapter_test.go` in `/home/workspace/binance/.worktree/workspaces/feat/orderbook-contract-adapter`.[COMPUTED, HIGH]
+The adapter implementation introduced `go.mod`, `go.sum`, `internal/client/orderbook/contract_adapter.go` and `internal/client/orderbook/contract_adapter_test.go` changes in `/home/workspace/binance/.worktree/workspaces/feat/orderbook-contract-adapter`.[COMPUTED, HIGH]
+
+The same PR later closed pre-existing Binance CI baseline failures in workflows, status consistency, vulnerability baseline, full-suite tests, Live E2E handling and benchmark stability so that the adapter branch could become mergeable.[COMPUTED, HIGH]
 
 ## 2. Implemented Contract Mapping
 
@@ -36,34 +38,38 @@ The PR changed `go.mod`, `go.sum`, `internal/client/orderbook/contract_adapter.g
 | --- | --- |
 | `GOWORK=off go test ./internal/client/orderbook` | PASS |
 | `GOWORK=off go vet ./internal/client/orderbook` | PASS |
+| `GOWORK=off GOTOOLCHAIN=auto go test ./...` | PASS |
+| `GOWORK=off GOTOOLCHAIN=auto go test ./... -race -count=1` | PASS |
+| `GOWORK=off GOTOOLCHAIN=auto go build ./...` | PASS |
+| `GOWORK=off GOTOOLCHAIN=auto go vet ./...` | PASS |
+| `GOWORK=off GOTOOLCHAIN=auto golangci-lint run` | PASS |
+| `GOWORK=off GOTOOLCHAIN=auto go run golang.org/x/vuln/cmd/govulncheck@latest ./...` | PASS |
+| `GOWORK=off GOTOOLCHAIN=auto bash scripts/benchmark-regression.sh --threshold 20` | PASS |
 | `bash scripts/boundary-gates.sh` | PASS |
+| `bash scripts/readiness-audit.sh` | PASS |
 | `git diff --check -- go.mod go.sum internal/client/orderbook/contract_adapter.go internal/client/orderbook/contract_adapter_test.go` | PASS |
 
 ## 4. Remote PR Status
 
 PR #479 was opened against `ZoneCNH/binance:main` from `feat/orderbook-contract-adapter`.[COMPUTED, HIGH]
 
-Remote `Boundary Gates (15 gates)` passed on the PR event observed after creation.[COMPUTED, HIGH]
+After commit `0a085cc99de4949820a1c9032c68cdb0bd50f288`, GitHub reported PR #479 as `MERGEABLE`.[COMPUTED, HIGH]
 
-Remote `Status Consistency Check` failed because Binance `README` declares `release_closeable=YES` while matching `status.txt` evidence is missing and `release/evidence/binance/20260708/status.txt` contains FAIL entries.[COMPUTED, HIGH]
+Remote `Build & Vet` passed.[COMPUTED, HIGH]
 
-Remote `govulncheck + go mod audit` failed on existing Binance code paths because the workflow used `crypto/tls@go1.26.4` where the advisory is fixed in `go1.26.5`, and `github.com/quic-go/quic-go@v0.59.0` where the advisory is fixed in `v0.59.1`.[COMPUTED, HIGH]
+Remote `Unit Test & Race & Cover` passed.[COMPUTED, HIGH]
 
-Remote `Build & Vet` failed in the same non-target packages seen locally: `internal/client`, `internal/server/api`, `internal/server/cache` and `internal/server/storage`; the PR log shows `internal/client/orderbook` passed.[COMPUTED, HIGH]
+Remote `golangci-lint`, `govulncheck + go mod audit`, `Security`, `gitleaks`, `Status Consistency Check`, `Boundary Gates (15 gates)`, `Live E2E`, `Soak + Chaos (tagged)` and `Benchmark Regression` all passed in the final PR check set.[COMPUTED, HIGH]
 
-Remote `Unit Test & Race & Cover` failed in the same non-target package set; the PR log again shows `internal/client/orderbook` passed.[COMPUTED, HIGH]
+Condition-gated `Integration Test`, `E2E Test` and `Gated Resilience Tests` were skipped by workflow condition in the final PR check set.[COMPUTED, HIGH]
 
-Remote `Live E2E` failed before live tests ran because `.env` was missing in the GitHub Actions job.[COMPUTED, HIGH]
+## 5. Full-suite Baseline Closure
 
-Remote `Benchmark Regression` failed with exit code 2 after the benchmark run; this remains a Binance CI baseline to triage separately from the adapter wrapper.[COMPUTED, MED]
+The earlier remote failures were triaged and fixed in the Binance PR branch before this evidence was finalized.[COMPUTED, HIGH]
 
-These remote failures are not caused by the new adapter files, but they still block a green Binance PR until the Binance repository fixes its governance status, vulnerability baseline, full-suite test baseline, live-test environment and benchmark baseline.[INFERRED, HIGH]
+The final Binance branch includes CI baseline fixes for Go `1.26.5`, `github.com/quic-go/quic-go v0.59.1`, status consistency, canonical `book_ticker` tests, circuit breaker assertions, reconnect queue race behavior, Live E2E `.env` handling and benchmark regression stability.[COMPUTED, HIGH]
 
-## 5. Full-suite Residual
-
-`GOWORK=off go test ./...` from the clean Binance feature worktree still fails outside the new adapter package in `internal/client`, `internal/server/api`, `internal/server/cache` and `internal/server/storage`.[COMPUTED, HIGH]
-
-The adapter package itself passed targeted test and vet verification.[COMPUTED, HIGH]
+The adapter package and the full Binance test baseline both passed local and remote verification after those fixes.[COMPUTED, HIGH]
 
 ## 6. Claim Boundary
 

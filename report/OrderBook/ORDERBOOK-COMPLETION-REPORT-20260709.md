@@ -61,7 +61,9 @@ Evidence: `module/orderbook/evidence/2026-07-09/test/EVID-ORDERBOOK-VALIDATION-2
 
 Binance adapter wrapper 已在 `https://github.com/ZoneCNH/binance/pull/479` 打开 PR；该 PR 只映射 `orderbook v0.1.0` contract，尚未替换 `/home/workspace/binance` 的生产 OrderBook runtime。[COMPUTED, HIGH]
 
-Binance PR #479 的本地目标包测试、vet 和 boundary gate 通过；远端 CI 仍受 binance 仓已有 status consistency、govulncheck、非目标全量测试、Live E2E `.env` 缺失和 benchmark regression 阻塞。[COMPUTED, HIGH]
+Binance PR #479 已更新到 head `0a085cc99de4949820a1c9032c68cdb0bd50f288`，GitHub 报告 `MERGEABLE`，最终远端检查均为 success 或 condition-gated skip。[COMPUTED, HIGH]
+
+Binance PR #479 的最终远端通过项包括 Build & Vet、Unit Test & Race & Cover、golangci-lint、govulncheck + go mod audit、Security、gitleaks、Status Consistency Check、Boundary Gates、Live E2E、Soak + Chaos 和 Benchmark Regression。[COMPUTED, HIGH]
 
 未实现第二 venue adapter，因此不能宣称生产级跨 venue 平台完成。[COMPUTED, HIGH]
 

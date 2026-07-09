@@ -34,7 +34,7 @@ The release gate should be closed only after remote CI and release notes exist; 
 
 | ID | Item | Owner | Priority |
 | --- | --- | --- | --- |
-| OB-FU-001 | Implement Binance adapter wrapper against `orderbook` contract. | ZoneCNH | PR open: `https://github.com/ZoneCNH/binance/pull/479` |
+| OB-FU-001 | Implement Binance adapter wrapper against `orderbook` contract. | ZoneCNH | PR open, remote green and mergeable: `https://github.com/ZoneCNH/binance/pull/479` |
 | OB-FU-002 | Add a second venue conformance fixture before claiming cross-venue production readiness. | ZoneCNH | P1 |
 | OB-FU-003 | Add contract compatibility tests before v0.2.0 API expansion. | ZoneCNH | P1 |
 
