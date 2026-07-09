@@ -110,6 +110,19 @@ client 和 server **互不感知彼此的进程位置**。server 只知道 NATS 
 
 > **编号规则（v3.8.0 统一）**：本节以根 SPEC canonical FR 编号为标题，补充 server 特有的 WHEN/THEN 实现细节。不定义独立 FR 编号。完整 FR 定义见 [根 SPEC](../SPEC.md) §7。FR-025~028 等根级 FR 的 server 侧实现锚点以引用形式标注。
 
+> **职责分层声明（修复 GAP-E54）**：本 SPEC 是根 SPEC 全集（FR-001~FR-061）的 **server 进程投影**，**故意只列出 server 进程实现的 FR 子集**，不重复全部根 FR。根 SPEC 中未出现在本节的 FR 不属于 server 职责，其归属如下（**这些"缺失"是设计而非遗漏**）：
+>
+> | 归属进程 | 涉及根 FR（概要） | 说明 |
+> |---------|------------------|------|
+> | **client 采集** | FR-001/002（stream/kline 采集与归一化） | 行情订阅、normalize envelope，见 [Client SPEC](../client/SPEC.md) |
+> | **catalog/identity** | FR-012/013/015/022/024/031/033/034/035/036/050/051 | ExchangeInfo catalog、InstrumentKey、delist、tier 分级——部分 client 侧采集、部分跨进程共享，server 仅在 FR-032 消费落地 |
+> | **orderbook 状态机** | FR-052~FR-061 | Order Book Manager 全部在 client 侧进程（per-symbol 本地状态机、rebuild、TopN 订阅） |
+> | **whitelist 同步** | FR-045~FR-049 | 白名单 sync job / review 队列 / consumer SDK，跨 client + server，server 侧落地见 FR-032/FR-006b |
+> | **observability/smoke** | FR-016/037 | client metrics、`/ingest` smoke 开关 |
+> | **release/ops/quality** | FR-014/019/023/030/037/039/040/041/042/043 | 优雅关闭、REST 查询、retention、admin、HA/DR、canary、soak/chaos——属部署/运维面，部分跨进程，server 侧锚点已在本节对应 FR（如 FR-005/FR-011）内体现 |
+>
+> **审计口径**：server SPEC FR 数（本节，约 36 条）≠ 根 SPEC FR 数（65 条）是**职责分层结果**。判定"FR 是否下沉"应检查「server 进程是否实际实现该 FR 的行为」，而非「本 SPEC 是否机械列出该 FR 编号」。
+
 ### Server 实现 FR 速查表
 
 | 根 FR | 名称 | Server 侧职责 |
