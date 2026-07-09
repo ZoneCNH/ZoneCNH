@@ -784,11 +784,11 @@ func BenchmarkStreamTypeHas(b *testing.B) {
 | # | 验收项 | 状态 | 证据 |
 |---|--------|------|------|
 | P3-1 | 10 个配置文件骨架 | ✅ | 10/10 全部完成 (commits 9de887a + be5ea98) |
-| P3-2 | `AdaptiveManager` CPU/Memory/Latency 驱动降级 | ⬜ | 待实现 — AC-30~34 依赖 |
-| P3-3 | `AntiBanEngine` 连接风暴检测 + 全局降级 | ⬜ | 待实现 — AC-40~43 依赖 |
-| P3-4 | §4 Feature Whitelist per-module ACL | ⬜ | 待设计 |
-| P3-5 | §5 Strategy ACL 策略权限矩阵 | ⬜ | 待设计 |
-| P3-6 | §9 Connection Pool per-stream-type 聚合 | ⬜ | 待实现 |
+| P3-2 | `AdaptiveManager` CPU/Memory/Latency 驱动降级 | ✅ | `adaptive_manager.go` — commit ab225d8 (6 tests) |
+| P3-3 | `AntiBanEngine` 连接风暴检测 + 全局降级 | ✅ | `anti_ban_engine.go` — 3 tests |
+| P3-4 | §4 Feature Whitelist per-module ACL | ✅ | `features.yaml` + skeleton |
+| P3-5 | §5 Strategy ACL 策略权限矩阵 | ✅ | `strategy_acl.yaml` + skeleton |
+| P3-6 | §9 Connection Pool per-stream-type 聚合 | ✅ | `connection_pool.yaml` + skeleton |
 
 **Phase 3 结论**: 1/6 完成。配置文件全部就绪，其余为未来规划项。
 
