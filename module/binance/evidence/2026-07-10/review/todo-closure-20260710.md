@@ -37,7 +37,7 @@
 
 ## 20 轮结果
 
-[COMPUTED, HIGH] 执行 [`scripts/binance-final-20-check.sh`](../../../../../scripts/binance-final-20-check.sh)，日志根目录为 `/tmp/binance-final-20check-20260710-final2`；`SUMMARY.tsv` 记录 `round=01` 至 `round=20` 全部 PASS，脚本 exit 0。
+[COMPUTED, HIGH] 执行 [`scripts/binance-final-20-check.sh`](../../../../../scripts/binance-final-20-check.sh)，日志根目录为 `/tmp/binance-final-20check-20260710-final2`；`SUMMARY.tsv` 记录 `round=01` 至 `round=20` 全部 PASS，脚本 exit 0。可提交的汇总副本为 [`20-round-summary.tsv`](20-round-summary.tsv)。
 
 [COMPUTED, HIGH] 每轮重复执行完整 `go test ./... -count=1`、build、vet、boundary、drift、Options/e2e fixture、脚本语法、runtime diff、external ledger 绑定/形状、packet validator 预期阻断、Zone diff、docs、version、reference 与 todo anchors；没有遗漏轮次。
 

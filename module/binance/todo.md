@@ -159,7 +159,7 @@ flowchart LR
 | --- | --- |
 | 执行脚本 | [`scripts/binance-final-20-check.sh`](../../scripts/binance-final-20-check.sh)；每轮执行完整 `go test ./... -count=1` 与结构/文档/发布检查。[COMPUTED, HIGH] |
 | 轮次 | `round=01..20 PASS`，脚本 exit 0。[COMPUTED, HIGH] |
-| 日志 | `/tmp/binance-final-20check-20260710-final2/SUMMARY.tsv` 与各 `round-XX/` 子目录。[COMPUTED, HIGH] |
+| 日志 | `/tmp/binance-final-20check-20260710-final2/SUMMARY.tsv`；可提交汇总副本：[`20-round-summary.tsv`](evidence/2026-07-10/review/20-round-summary.tsv)。[COMPUTED, HIGH] |
 | 外部 gate 口径 | 每轮均验证 5 项真实外部 gate 为 `BLOCKED/NOT_RUN`，未把缺凭证当成 PASS。[COMPUTED, HIGH] |
 | 最终解释 | 本地实现与治理投影无遗漏；runtime formal release 仍被外部环境、tag/release notes、部署 preflight 与 rollback 阻断。[COMPUTED, HIGH] |
 
