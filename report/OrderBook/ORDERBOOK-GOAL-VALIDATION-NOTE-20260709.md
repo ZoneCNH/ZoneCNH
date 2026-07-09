@@ -75,7 +75,7 @@ GOB-10 已通过，证据包括 GitHub repository、`v0.1.0` tag、远端 CI 和
 
 ## 5. 后续条件
 
-后续工作不再是 release closure，而是 Binance adapter wrapper、第二 venue conformance 和 v0.2.0 API 兼容性测试。[FRAME, HIGH]
+后续工作不再是 release closure；Binance adapter wrapper 已进入 PR #479，剩余重点是处理 binance 远端基线失败、第二 venue conformance 和 v0.2.0 API 兼容性测试。[FRAME, HIGH]
 
 ---
 
