@@ -3,9 +3,11 @@
 > **职责**：本文件只负责发布前门禁判定，不描述开发路径、也不展开执行细节。
 
 > **版本**：v1.1.0
-> **最后更新**：2026-07-08
+> **最后更新**：2026-07-10
 > **适用范围**：所有 binance runtime 版本发布（patch / minor / major）
-> **关联文件**：`gate/BOUNDARY-GATES.md`、`spec/SPEC.md §21（Release Gate）`、`ACCEPTANCE.md §5`
+> **关联文件**：`gate/BOUNDARY-GATES.md`、`spec/SPEC.md §21（Release Gate）`、`spec/ACCEPTANCE.md §5`
+
+> [COMPUTED, HIGH] 当前 implementation commit：`3f6366728b635c32d73565874965d40c20a92caf`。本地代码门禁已 PASS；`release/evidence/binance/20260710/external-gates.tsv` 的 NATS/Kafka/TDengine/Redis/API 五项仍为 `BLOCKED/NOT_RUN`，packet validator 为 11 blockers，因此本 checklist 不得标记 runtime release-closeable。
 
 ---
 
@@ -33,6 +35,8 @@
 | B4 | **版本号一致性 PASS** | `bash .github/ci/binance-version-consistency-check.sh`（在 ZoneCNH 主仓） | `Result: PASS` |
 | B5 | **文档引用完整性 PASS** | `bash .github/ci/binance-reference-integrity-check.sh`（在 ZoneCNH 主仓） | `PASS: SPEC/TRACEABILITY file references are valid` |
 
+> B3 通过只表示 tag 指向目标 commit；它不替代 external-gates。正式发布还必须验证同一 commit 的 NATS/Kafka/TDengine/Redis/API evidence、部署 preflight 和 rollback packet。
+
 ---
 
 ## §3 规格一致性门禁
@@ -54,6 +58,16 @@
 | I2 | boundary-gates CI workflow 通过 | `boundary-gates.yml` ✅ |
 | I3 | security CI workflow 通过 | `security.yml` + `vuln-scan.yml` ✅ |
 | I4 | status-consistency CI workflow 通过 | `status-consistency.yml` ✅ |
+
+## §4.1 外部证据门禁（runtime release hard block）
+
+| # | 检查项 | 通过标准 |
+|---|--------|----------|
+| E1 | NATS PubAck/ManualAck | 同一 bundle 有真实 JetStream publish duplicate、Ack、Nak/MaxDeliver 日志；local unit 不替代 |
+| E2 | Kafka fanout | 配置 broker/topic/ACL 摘要与 producer→consumer roundtrip 日志；缺凭证为 `BLOCKED` |
+| E3 | Durable storage/query | TDengine write/read、Redis hot-cache TTL/key、API latest/range read-back 全部 PASS；ClickHouse 阻断必须原样保留 |
+| E4 | Release provenance | `head.log`、tag SHA、CI URL、release notes、preflight 和 rollback evidence 指向同一 commit |
+| E5 | Options/legacy scope | release packet 明确 options order book Phase 2 excluded 与 legacy alias sunset 日期/owner |
 
 ---
 

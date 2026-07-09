@@ -126,12 +126,15 @@ implemented_event_types=(
   option_tick
 )
 
-planned_event_types=(
+extended_event_types=(
   ticker
-  force_order
   open_interest
   index_reference
   contract_info
+)
+
+opt_in_event_types=(
+  force_order
 )
 
 product_lines=(spot um_perp cm_perp options)
@@ -150,10 +153,18 @@ for event_type in "${implemented_event_types[@]}"; do
   expect_rg "\\b${event_type}\\b" module/binance/gate/STANDARD.md "STANDARD implemented event_type ${event_type}"
 done
 
-for event_type in "${planned_event_types[@]}"; do
-  expect_rg "\\b${event_type}\\b" module/binance/spec/SPEC.md "SPEC planned event_type ${event_type}"
-  expect_rg "\\b${event_type}\\b" module/binance/spec/NAMING.md "NAMING planned event_type ${event_type}"
-  expect_rg "\\b${event_type}\\b" module/binance/gate/STANDARD.md "STANDARD planned event_type ${event_type}"
+for event_type in "${extended_event_types[@]}"; do
+  expect_rg "\\b${event_type}\\b" module/binance/spec/SPEC.md "SPEC extended implemented event_type ${event_type}"
+  expect_rg "\\b${event_type}\\b" module/binance/spec/NAMING.md "NAMING extended implemented event_type ${event_type}"
+  expect_rg "\\b${event_type}\\b" module/binance/gate/RULES.md "RULES extended implemented event_type ${event_type}"
+  expect_rg "\\b${event_type}\\b" module/binance/gate/STANDARD.md "STANDARD extended implemented event_type ${event_type}"
+done
+
+for event_type in "${opt_in_event_types[@]}"; do
+  expect_rg "\\b${event_type}\\b" module/binance/spec/SPEC.md "SPEC opt-in event_type ${event_type}"
+  expect_rg "\\b${event_type}\\b" module/binance/spec/NAMING.md "NAMING opt-in event_type ${event_type}"
+  expect_rg "\\b${event_type}\\b" module/binance/gate/RULES.md "RULES opt-in event_type ${event_type}"
+  expect_rg "\\b${event_type}\\b" module/binance/gate/STANDARD.md "STANDARD opt-in event_type ${event_type}"
 done
 
 expect_rg 'binance\.market\.\{product_line\}\.\{event_type\}\.v1' module/binance/spec/SPEC.md \

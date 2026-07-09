@@ -3,11 +3,22 @@
 > 本文档追踪运行时仓 `github.com/ZoneCNH/binance` 与规格仓 `module/binance` 之间的状态对齐与同步记录。
 > 每次跨仓深度检查/修复后更新，确保规格口径与运行时实现一致、无漂移。
 
-- **Last-Updated**: 2026-07-08
-- **Spec-Version**: v4.0.1
-- **Runtime-Version**: v0.15.0（HEAD `52d9144`，tag v0.15.0 已发布）
-- **Spec-State**: 65 Done / 0 Partial / 0 Pending / release_closeable=YES
-- **Runtime-State**: Build PASS / test PASS / race PASS / boundary-gates 15/15 PASS / readiness-audit PASS
+- **Last-Updated**: 2026-07-10
+- **Spec-Version**: v4.1.0
+- **Runtime-Version**: v0.15.1（last published tag `fc967053d7d8c21dba3c4e93962effbbbba0a70c`；本轮 implementation commit `3f6366728b635c32d73565874965d40c20a92caf` 未创建新 tag）[COMPUTED, HIGH]
+- **Spec-State**: 65 Done / 0 Partial / 0 Pending / `release_closeable_spec=YES`。[COMPUTED, HIGH]
+- **Runtime-State**: full test PASS / race PASS / build PASS / vet PASS / boundary 15/15 PASS / drift PASS；external-gates 5 BLOCKED/NOT_RUN，故 `release_closeable_runtime=NO`。[COMPUTED, HIGH]
+
+## 0. 2026-07-10 当前 closure override
+
+| 对齐面 | 当前事实 | 证据 |
+| --- | --- | --- |
+| Runtime implementation | `ticker`、`open_interest`、`index_reference`、`contract_info` canonical 链路已在 implementation commit `3f6366728b635c32d73565874965d40c20a92caf` 完成；`force_order` 是 opt-in scaffold；Options depth 是 fixture/capture，OrderBookManager 仍 postponed。[COMPUTED, HIGH] | `/home/workspace/binance` runtime tests、`docs/release/RELEASE-NOTES-UNRELEASED-20260710.md` |
+| Local verification | full test、race、build、vet、boundary、drift、e2e fixture、公开 Options depth capture、本地 NATS JetStream 语义均 PASS。[COMPUTED, HIGH] | [`module/binance/todo.md`](../../module/binance/todo.md) §1 |
+| External release gates | NATS、Kafka、TDengine、Redis、部署 API 五项为 `BLOCKED/NOT_RUN`，缺少所需目标环境/凭证；不以 local fake 替代。[COMPUTED, HIGH] | `release/evidence/binance/20260710/external-gates.tsv` |
+| Formal release | packet validator 为 11 blockers；无新 tag、无真实部署、无回滚执行。[COMPUTED, HIGH] | `scripts/validate-release-packet.sh` 输出与 packet template |
+
+> 本节覆盖旧历史快照的当前解释；旧表中的版本、稳定表名、coverage 与 release-closeable 结论不得投影到 2026-07-10 当前状态。[COMPUTED, HIGH]
 
 ---
 
@@ -25,7 +36,7 @@
 
 ---
 
-## 2. 20 轮深度检查汇总（2026-07-07）
+## 2. 历史 20 轮深度检查汇总（2026-07-07；不继承为本轮 closure evidence）
 
 对运行时仓执行 20 轮独立重复检查，覆盖构建/测试/配置/数据完整性/OrderBook/安全/错误处理/并发/性能/文档/CI/边界/flaky/资源泄漏/代码质量等维度。
 
@@ -69,7 +80,7 @@
 
 ---
 
-## 3. 事件类型链路对齐（11 种）
+## 3. 历史事件类型链路对齐快照（11 种；不替代当前 runtime canonical 链路）
 
 | 事件类型 | normalize | taos_writer | quality | reconciler | 状态 |
 |----------|-----------|-------------|---------|------------|------|
@@ -102,7 +113,7 @@
 
 ---
 
-## 5. 门禁与验证状态
+## 5. 历史门禁与验证状态（2026-07-07 快照）
 
 | 门禁/检查 | 结果 | 说明 |
 |-----------|------|------|
@@ -180,3 +191,9 @@
 ---
 
 *本文件由 20 轮深度检查驱动生成，每次修复后增量更新。*
+
+## 8. 2026-07-10 当前 20 轮 closure 结果
+
+[COMPUTED, HIGH] 本轮 implementation commit 为 `3f6366728b635c32d73565874965d40c20a92caf`，dated evidence commit 为 `660a3701589cc15fa95c7859fae02fad4863e1ad`；执行 `scripts/binance-final-20-check.sh` 后 `round=01..20 PASS`，脚本 exit 0。日志：`/tmp/binance-final-20check-20260710-final2/SUMMARY.tsv`。
+
+[COMPUTED, HIGH] 每轮覆盖完整 `go test ./... -count=1`、build/vet、boundary、drift、e2e fixture、release ledger/packet、Zone docs/version/reference/diff；external ledger 的 5 项 BLOCKED/NOT_RUN 是预期的真实环境阻断，不是漏检。

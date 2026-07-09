@@ -1,7 +1,7 @@
 # module/binance RULES.md — 模块治理规则
 
 - Module-Version: v4.1.0
-- Last-Updated: 2026-07-09
+- Last-Updated: 2026-07-10
 - 适用范围：`module/binance/` 全部规格文档 + `github.com/ZoneCNH/binance` runtime 仓
 - 优先级：本文 > 子规格 > task；与 `CONSTITUTION.md` §0-§20 冲突时以 `CONSTITUTION.md` 为准
 - 强制级别：每条规则标注【硬】（违反即治理违规）/【软】（推荐）/【开】（仅验证存在性）
@@ -35,8 +35,9 @@
 
 **规则**：`module/binance/` 的 product_line（spot/um_perp/cm_perp/options）与 canonical event_type 必须以状态矩阵维护，而不是假设所有组合都适用。
 
-1. implemented event_type：`book_ticker`、`trade`、`kline`、`depth_update`、`funding_rate`、`mark_price_update`、`option_tick`
-2. planned event_type：`ticker`、`force_order`、`open_interest`、`index_reference`、`contract_info`
+1. baseline implemented event_type：`book_ticker`、`trade`、`kline`、`depth_update`、`funding_rate`、`mark_price_update`、`option_tick`
+2. extended local runtime event_type：`ticker`、`open_interest`、`index_reference`、`contract_info`
+3. opt-in/postponed event_type：`force_order`（独立设计与 scaffold；未默认订阅，需 release owner/live gate）
 3. 每个 product_line × implemented event_type 单元必须标注 `supported`、`unsupported` 或 `postponed`
 4. supported 单元必须在 natsx subject、Kafka topic、TDengine stable/tag、Redis key、ossx path、Gin REST API 或明确的 bridge/查询豁免中使用同一 canonical event_type
 5. unsupported/postponed 单元必须说明业务原因或 Phase 条件，不能被统计为发布完成证据

@@ -13,11 +13,13 @@
 其余文档保持原位，但不再在 README 里展开成完整流程。
 
 - Spec-Version: v4.1.0 (root / client / server — canonical event_type recovery + order book rebuild 纳入 ADR-011)
-- Runtime-Version: v0.15.0（Runtime-Anchor: `/home/workspace/binance@main`）
-- Delivery-State: FR-001~FR-065 spec/traceability registered — single state `65 Done / 0 Partial / 0 Drifted / 0 Pending`。release_closeable=YES（PRG-001~007 全 PASS）。47/47 tasks Done；deep-review 37/37 fixed；coverage 100.0%；0 GitHub open issues。
-- Last-Updated: 2026-07-08 (canonical 命名对齐 Binance 原生事件名)
+- Runtime-Version: v0.15.1（last published tag；本轮 audit branch 未创建新 release tag）
+- Runtime-Implementation-Commit: `3f6366728b635c32d73565874965d40c20a92caf`；本轮 canonical market event closure 已提交，尚未创建新 tag。[COMPUTED, HIGH]
+- Runtime-Evidence: `/home/workspace/binance/release/evidence/binance/20260710`；external-gates 当前 5 项 BLOCKED/NOT_RUN。[COMPUTED, HIGH]
+- Delivery-State: FR-001~FR-065 spec/traceability registered — single state `65 Done / 0 Partial / 0 Drifted / 0 Pending`。规格口径 `release_closeable_spec=YES` 不等于 runtime 发布批准；本轮 runtime evidence 仍为 `release_closeable_runtime=NO`，外部 E2E、tag/release notes 与 rollback 需独立闭合。
+- Last-Updated: 2026-07-10 (todo closure audit + alignment split)
 
-[COMPUTED, HIGH] 当前 Binance 发布结论：单状态模型为 `65 Done / 0 Partial / 0 Drifted / 0 Pending`，release_closeable=YES（PRG-001~007 全 PASS）。47/47 tasks Done，deep-review 37/37 fixed；0 GitHub open issues（28 issues 于 2026-07-05 全部关闭）；PRG-006 gated resilience 测试 CI-runnable（soak L2 PASS + chaos L2 5 PASS/8 SKIP/0 FAIL）。
+[COMPUTED, HIGH] 当前 Binance 规格结论仍为 `65 Done / 0 Partial / 0 Drifted / 0 Pending`；这是 FR/规格投影。runtime 正式发布结论保持 `release_closeable=NO`，直到同一最终 commit 具备外部 E2E、release tag/release notes、部署前检查和真实 rollback evidence。
 
 It is split into two submodules:
 
@@ -106,9 +108,9 @@ module/binance/server
 
 [COMPUTED, HIGH] GitHub #1104~#1118 and #1123 remain historical 2026-06-25 sync evidence. Current stop condition is the single state ledger plus production evidence/live/CI/dashboard/credentials/multi-tenant/destruction gates listed in the 2026-06-28 P10 issues.
 
-[COMPUTED, HIGH] 2026-07-07 对齐状态：当前 single state 为 `55 Done / 0 Partial / 0 Drifted / 10 Pending`（FR-052~061 order book rebuild），release_closeable=YES（PRG-001~007 全 PASS）。历史 full E2E evidence closure 仍保留为 historical 证据归档（`/home/workspace/binance/release/evidence/binance/20260628-full-e2e-closure/`），不作为当前结论来源。
+[COMPUTED, HIGH] 2026-07-07 对齐状态是历史快照：当时记录 `55 Done / 0 Partial / 0 Drifted / 10 Pending` 与 `release_closeable=YES`；不覆盖本文件顶部 2026-07-10 的 `65 Done` 规格投影和 `release_closeable_runtime=NO` 当前结论。历史 full E2E evidence closure 仍保留为归档证据，不作为当前结论来源。
 
-[COMPUTED, HIGH] 2026-07-07 Issue Gate：`module/binance/todo.md` 是只读投影，Beads/GitHub Issues 是关闭 SSOT。当前口径：`55 Done / 10 Pending`、release_closeable=YES（PRG-001~007 全 PASS）。历史 P10 对齐证据见 [`evidence/2026-06-28/review/p10-closure-evidence.md`](evidence/2026-06-28/review/p10-closure-evidence.md) 与 [`evidence/2026-06-28/p10-alignment-10-pass.md`](evidence/2026-06-28/p10-alignment-10-pass.md)（historical）。
+[COMPUTED, HIGH] 2026-07-07 Issue Gate 是历史快照；`module/binance/todo.md` 仍是只读投影，当前 runtime release 状态以本轮 dated evidence 与 external ledger 为准。历史 P10 对齐证据见 [`evidence/2026-06-28/review/p10-closure-evidence.md`](evidence/2026-06-28/review/p10-closure-evidence.md) 与 [`evidence/2026-06-28/p10-alignment-10-pass.md`](evidence/2026-06-28/p10-alignment-10-pass.md)。
 
 [COMPUTED, HIGH] 2026-07-05 Issue Gate：`gh issue list -R ZoneCNH/binance --state open` = 0 open。Phase-1~8 全量修复（28 issues closed），PRG-001~007 全 PASS，release_closeable=YES。PRG-006 gated resilience 测试 CI-runnable（PR #426）。
 

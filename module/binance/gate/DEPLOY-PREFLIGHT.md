@@ -1,5 +1,7 @@
 # Binance 部署预检清单与执行手册
 
+> [COMPUTED, HIGH] 本文件 §6 的 v0.15.0 jp1 实测是历史部署快照；2026-07-10 当前 last published tag 为 v0.15.1，implementation commit `3f6366728b635c32d73565874965d40c20a92caf` 尚未部署。本轮 release packet、external ledger 与 rollback 状态以 `todo.md` 和 `gate/RELEASE-CHECKLIST.md` 为准。
+
 > **职责**：本文件只负责发布执行前预检，列出阻塞条件与执行路径，不定义功能验收。
 
 > **版本**：v1.1.0
