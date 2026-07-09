@@ -1,8 +1,7 @@
 # MODULE-RUNNER-MAP.yaml — ZoneCNH 模块 → Runner Pool 确定性映射
 #
 # 权威来源：knowledge/ci.md §7, BASELINE.yaml, module/registry.yaml
-# 现状 2026-07-09：10.2.2.9 已恢复 sre/foundation-l0×2, sre/foundation-l1×2, sre/contracts×1, sre/security×1
-#   sre/governance, sre/storage-light, sre/storage-heavy, sre/market, sre/macro, sre/engine, sre/deploy 待主机恢复。
+# 映射快照：模块到 pool 的关系；pool 注册状态以 RUNNER-POOLS.yaml 为准，实时状态以 status.sh/GitHub API 为准。
 # 使用方式：workflow 中 runs-on: [self-hosted, Linux, X64, <pool>]
 # Pool 定义：docs/sre/RUNNER-POOLS.yaml
 
