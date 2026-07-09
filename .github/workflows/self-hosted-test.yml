@@ -3,6 +3,6 @@ on: workflow_dispatch
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, sre/foundation-l0]
     steps:
       - run: echo "self-hosted runner works" && hostname

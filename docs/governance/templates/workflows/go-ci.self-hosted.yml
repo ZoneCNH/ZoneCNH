@@ -1,0 +1,132 @@
+# Standard Go CI/CD Workflow (Self-hosted)
+# ZoneCNH CICD-001 合规模板 — 适用于所有 Go runtime 模块仓库
+#
+# 使用方法：
+#   1. 复制到模块仓库 .github/workflows/ci.yml
+#   2. 替换 __POOL__ 为模块对应的 sre/* pool（见 docs/sre/MODULE-RUNNER-MAP.yaml）
+#   3. 替换 __MODULE__ 为模块名
+#
+# 来源：knowledge/ci.md §10, BASELINE.yaml
+
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  GO_VERSION: "1.26.5"
+  GOTOOLCHAIN: "local"
+  CGO_ENABLED: "0"
+  GOFLAGS: "-mod=readonly -trimpath"
+
+jobs:
+  # ── 1. Runner Policy（第一道门禁）────────────────────────────────
+  runner-policy:
+    name: Runner Policy
+    runs-on: [self-hosted, Linux, X64, sre/foundation-l0]
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - run: bash <(curl -s https://raw.githubusercontent.com/ZoneCNH/ZoneCNH/main/.github/ci/runner-policy-guard.sh) .
+
+  # ── 2. Preflight ────────────────────────────────────────────────
+  preflight:
+    name: Preflight
+    needs: runner-policy
+    runs-on: [self-hosted, Linux, X64, __POOL__]
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+      - run: go version
+      - run: go mod download
+      - run: go mod tidy && git diff --exit-code go.mod go.sum
+
+  # ── 3. Build ────────────────────────────────────────────────────
+  build:
+    name: Build
+    needs: preflight
+    runs-on: [self-hosted, Linux, X64, __POOL__]
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+      - run: go build ./...
+
+  # ── 4. Test（race + coverage）───────────────────────────────────
+  test:
+    name: Test Race Coverage
+    needs: preflight
+    runs-on: [self-hosted, Linux, X64, __POOL__]
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+      - run: go test ./... -race -count=1 -coverprofile=coverage.out
+      - run: go tool cover -func=coverage.out | tee coverage.txt
+
+  # ── 5. Lint ─────────────────────────────────────────────────────
+  lint:
+    name: Lint
+    needs: preflight
+    runs-on: [self-hosted, Linux, X64, __POOL__]
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+      - run: go vet ./...
+      - uses: golangci/golangci-lint-action@v6
+
+  # ── 6. Security ─────────────────────────────────────────────────
+  security:
+    name: Security
+    needs: preflight
+    runs-on: [self-hosted, Linux, X64, sre/security]
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+      - uses: gitleaks/gitleaks-action@v2
+      - run: govulncheck ./...
+
+  # ── 7. Evidence ─────────────────────────────────────────────────
+  evidence:
+    name: Evidence
+    needs: [build, test, lint, security]
+    runs-on: [self-hosted, Linux, X64, sre/foundation-l0]
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - run: bash <(curl -s https://raw.githubusercontent.com/ZoneCNH/ZoneCNH/main/.github/ci/runner-evidence.sh) release/evidence/runner-evidence.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ci-evidence-${{ github.sha }}
+          path: release/evidence/

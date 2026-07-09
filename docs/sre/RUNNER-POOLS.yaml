@@ -1,0 +1,149 @@
+# RUNNER-POOLS.yaml — ZoneCNH Self-hosted Runner Pool 注册表
+#
+# 权威来源：knowledge/ci.md §6.2, CICD-001
+# 现状 2026-07-09：10.2.2.9 已恢复 6 个 sre/* runner；其余 pool 待主机恢复。
+# 巡检入口：sre/bootstrap/status.sh, sre/bootstrap/health-check.sh
+# 主机注册表 SSOT：sre/bootstrap/hosts.env
+
+version: "2026.07.09"
+owner: ZoneCNH
+policy: self_hosted_only
+
+global:
+  required_labels:
+    - self-hosted
+    - Linux
+    - X64
+  forbidden_github_hosted: true
+  ephemeral_preferred: true
+  persistent_runner_allowed_temporarily: true
+
+pools:
+  sre/governance:
+    purpose: governance, docs, baseline, dependency matrix, policy check
+    allowed_events: [pull_request, push, workflow_dispatch, schedule]
+    secrets: none
+    docker: false
+    production_access: false
+    max_concurrency: 2
+    host: 94.72.124.39
+    status: pending_recovery
+    note: 2026-06-18 退役，待重新注册
+
+  sre/foundation-l0:
+    purpose: kernel, decimalx, stdlib-only modules
+    allowed_events: [pull_request, push, workflow_dispatch]
+    secrets: none
+    docker: false
+    production_access: false
+    max_concurrency: 2
+    host: 10.2.2.9
+    status: online
+    runner_count: 2
+    note: 2026-07-09 恢复，Go 1.26.5
+
+  sre/foundation-l1:
+    purpose: configx, observex, resiliencx, schedulex, testkitx, bootstrap
+    allowed_events: [pull_request, push, workflow_dispatch]
+    secrets: none
+    docker: false
+    production_access: false
+    max_concurrency: 3
+    host: 10.2.2.9
+    status: online
+    runner_count: 2
+    note: 2026-07-09 恢复，Go 1.26.5
+
+  sre/contracts:
+    purpose: contracts, transportx, domain modules
+    allowed_events: [pull_request, push, workflow_dispatch]
+    secrets: none
+    docker: false
+    production_access: false
+    max_concurrency: 2
+    host: 10.2.2.9
+    status: online
+    runner_count: 1
+    note: 2026-07-09 恢复，Go 1.26.5
+
+  sre/storage-light:
+    purpose: redisx, natsx, ossx
+    allowed_events: [pull_request, push, workflow_dispatch]
+    secrets: test_only
+    docker: true
+    production_access: false
+    max_concurrency: 2
+    host: null
+    status: pending_recovery
+    note: 待主机恢复（84.247.154.45 或新主机）
+
+  sre/storage-heavy:
+    purpose: postgresx, kafkax, clickhousex, taosx
+    allowed_events: [pull_request, push, workflow_dispatch]
+    secrets: test_only
+    docker: true
+    production_access: false
+    resources:
+      cpu: 8
+      memory_gb: 16
+    max_concurrency: 1
+    host: null
+    status: pending_recovery
+    note: ��主机恢复，需 Docker 服务栈
+
+  sre/market:
+    purpose: exchange adapters and market data
+    allowed_events: [pull_request, push, workflow_dispatch]
+    secrets: test_only
+    docker: optional
+    production_access: false
+    max_concurrency: 2
+    host: null
+    status: pending_recovery
+    note: 待主机恢复
+
+  sre/macro:
+    purpose: macro data providers
+    allowed_events: [pull_request, push, workflow_dispatch]
+    secrets: test_only
+    docker: optional
+    production_access: false
+    max_concurrency: 2
+    host: null
+    status: pending_recovery
+    note: 待主机恢复
+
+  sre/engine:
+    purpose: factor, regime, backtest, optimizer, execution
+    allowed_events: [pull_request, push, workflow_dispatch]
+    secrets: none
+    docker: optional
+    production_access: false
+    max_concurrency: 2
+    host: null
+    status: pending_recovery
+    note: 待主机恢复（84.247.154.45 或新主机）
+
+  sre/security:
+    purpose: gitleaks, govulncheck, sbom, supply-chain scan
+    allowed_events: [pull_request, push, workflow_dispatch, schedule]
+    secrets: read_only
+    docker: false
+    production_access: false
+    max_concurrency: 1
+    host: 10.2.2.9
+    status: online
+    runner_count: 1
+    note: 2026-07-09 恢复，Go 1.26.5
+
+  sre/deploy:
+    purpose: release, deploy, smoke, rollback
+    allowed_events: [push_tag, workflow_dispatch]
+    forbidden_events: [pull_request]
+    secrets: production
+    docker: optional
+    production_access: true
+    max_concurrency: 1
+    host: null
+    status: pending_recovery
+    note: 待主机恢复（84.247.154.45 deploy profile）

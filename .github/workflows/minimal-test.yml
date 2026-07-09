@@ -2,6 +2,6 @@ name: Minimal Test
 on: workflow_dispatch
 jobs:
   hello:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, sre/foundation-l0]
     steps:
       - run: echo hello

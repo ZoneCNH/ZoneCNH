@@ -1,6 +1,6 @@
 name: Foundation Dependency Matrix
 
-# Self-hosted runner decommissioned 2026-06-18. Migrated to ubuntu-latest.
+# Self-hosted runner recovered 2026-07-09 (knowledge/ci.md Phase 0). Migrated to sre/foundation-l0.
 on:
   push:
     branches: [main]
@@ -11,7 +11,7 @@ on:
 jobs:
   yaml-lint:
     name: Validate YAML
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, sre/foundation-l0]
     steps:
       - uses: actions/checkout@v4
       - name: Validate FOUNDATION-DEPS.yaml
@@ -30,7 +30,7 @@ jobs:
 
   deps-check:
     name: Check Dependencies
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, sre/foundation-l0]
     needs: yaml-lint
     outputs:
       violations: ${{ steps.check.outputs.violations }}
@@ -175,7 +175,7 @@ jobs:
 
   pr-comment:
     name: PR Comment
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, sre/foundation-l0]
     needs: deps-check
     if: github.event_name == 'pull_request' && needs.deps-check.outputs.has_violations == 'true'
     steps:
@@ -214,7 +214,7 @@ jobs:
 
   summary:
     name: Summary
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, sre/foundation-l0]
     needs: [deps-check]
     if: always()
     steps:

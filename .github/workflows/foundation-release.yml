@@ -26,7 +26,7 @@ jobs:
 
   release-prep:
     name: Release Pre-flight
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, sre/foundation-l0]
     timeout-minutes: 10
     needs: quality-gate
     if: github.event_name == 'workflow_dispatch'
@@ -80,7 +80,7 @@ jobs:
   release-modules:
     name: Release ${{ matrix.module }}
     needs: release-prep
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, sre/foundation-l0]
     timeout-minutes: 10
     if: github.event_name == 'workflow_dispatch'
     strategy:
@@ -146,7 +146,7 @@ jobs:
 
   aggregate-manifest:
     name: Aggregate Release Manifest
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, sre/foundation-l0]
     timeout-minutes: 10
     needs: release-modules
     if: always() && needs.release-modules.result != 'failure' && needs.release-modules.result != 'cancelled' && github.event_name == 'workflow_dispatch'

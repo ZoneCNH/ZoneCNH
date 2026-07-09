@@ -13,8 +13,8 @@ environment:
   version: v1.0.0
 
 runner_pools:
-  ci: ubuntu-latest
-  release: ubuntu-latest
+  ci: self-hosted sre/*
+  release: self-hosted sre/*
 
 required_status_checks:
   - ci
@@ -172,84 +172,84 @@ concurrency:
 jobs:
   ci-preflight:
     name: CI Preflight
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, sre/foundation-l1]
     timeout-minutes: 10
     steps:
       - run: echo "ci-preflight stub — runtime authority schedulex/.github/workflows/ci.yml"
 
   build:
     name: Build
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, sre/foundation-l1]
     timeout-minutes: 15
     steps:
       - run: echo "build stub — covered by make ci build target"
 
   test:
     name: Unit Test
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, sre/foundation-l1]
     timeout-minutes: 25
     steps:
       - run: echo "test stub — covered by make ci test target (race enabled)"
 
   lint:
     name: Lint
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, sre/foundation-l1]
     timeout-minutes: 15
     steps:
       - run: echo "lint stub — covered by make ci lint target (golangci-lint v2.1.6)"
 
   boundary:
     name: Boundary And Trust Gates
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, sre/foundation-l1]
     timeout-minutes: 15
     steps:
       - run: echo "boundary stub — covered by make boundary / make contracts"
 
   integration:
     name: Integration Test
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, sre/foundation-l1]
     timeout-minutes: 30
     steps:
       - run: echo "integration stub — covered by make integration"
 
   secret-scan:
     name: Secret Scan
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, sre/foundation-l1]
     timeout-minutes: 10
     steps:
       - run: echo "secret-scan stub — covered by make security (govulncheck + gitleaks)"
 
   evidence:
     name: Evidence Package
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, sre/foundation-l1]
     timeout-minutes: 10
     steps:
       - run: echo "evidence stub — covered by make evidence / release-preflight"
 
   release-preflight:
     name: Release Preflight
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, sre/foundation-l1]
     timeout-minutes: 15
     steps:
       - run: echo "release-preflight stub — covered by make release-preflight VERSION"
 
   release-publish:
     name: Publish Release
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, sre/foundation-l1]
     timeout-minutes: 15
     steps:
       - run: echo "release-publish stub — covered by release.yml gh release create_or_edit"
 
   post-release-smoke:
     name: Post Release Smoke
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, sre/foundation-l1]
     timeout-minutes: 10
     steps:
       - run: echo "post-release-smoke stub — covered by make downstream-smoke (post-publish)"
 
   rollback-drill:
     name: Rollback Drill
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, sre/foundation-l1]
     timeout-minutes: 10
     steps:
       - run: echo "rollback-drill stub — manual release reversal evidence"

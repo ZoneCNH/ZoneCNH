@@ -73,8 +73,21 @@ while IFS= read -r -d '' module_dir; do
     fi
   done
 
-  # Self-hosted runner decommissioned 2026-06-18; ubuntu-latest is now accepted.
-  # runs-on label enforcement and GitHub-hosted runner ban removed.
+  # Self-hosted runner 已恢复 2026-07-09（knowledge/ci.md Phase 0-1）。
+  # 强制要求：所有 module ci-workflow.yaml 必须声明 self-hosted + sre/* pool。
+  # 禁止 GitHub-hosted runner 标签。
+
+  if grep -qnE 'ubuntu-latest|windows-latest|macos-latest|ubuntu-22\.04|ubuntu-24\.04|macos-14|windows-2022' "$file" 2>/dev/null; then
+    report_failure "$module" "forbidden GitHub-hosted runner reference"
+  fi
+
+  if ! grep -q 'self-hosted' "$file" 2>/dev/null; then
+    report_failure "$module" "missing self-hosted runner label"
+  fi
+
+  if ! grep -qE 'sre/' "$file" 2>/dev/null; then
+    report_failure "$module" "missing sre/* pool label"
+  fi
 
   if grep -nE '(^|[[:space:]])(ssh|scp|rsync|kubectl|helm|systemctl)([[:space:]]|$)|docker compose' "$file" >/dev/null; then
     report_failure "$module" "inline remote deployment command is forbidden"

@@ -1,0 +1,42 @@
+name: Runner Policy
+
+# CICD-001 — 强制 self-hosted runner 作为唯一 CI/CD 执行平面
+# 来源：knowledge/ci.md §9, BASELINE.yaml §ci_cd
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+  schedule:
+    - cron: "17 2 * * *"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: runner-policy-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  runner-policy:
+    name: Enforce Self-hosted Runner Policy
+    # 2026-07-09：使用 sre/foundation-l0（10.2.2.9 在线）。
+    # sre/governance（94.72.124.39）恢复后切换至 sre/governance per ci.md §9。
+    runs-on: [self-hosted, Linux, X64, sre/foundation-l0]
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Enforce runner policy
+        run: bash .github/ci/runner-policy-guard.sh .
+
+      - name: Write runner evidence
+        run: bash .github/ci/runner-evidence.sh release/evidence/runner-policy-evidence.json
+
+      - name: Upload runner evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: runner-policy-evidence-${{ github.sha }}
+          path: release/evidence/runner-policy-evidence.json

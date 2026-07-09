@@ -40,6 +40,19 @@
 | 第二十条：认识论标准 | [`docs/constitution/20-epistemic-standards.md`](docs/constitution/20-epistemic-standards.md) | 证据标签、置信度、FRAME→REALITY 禁止、反奉承红旗、自检要求 |
 | 附录 A / B / L2.5 | [`docs/constitution/appendix.md`](docs/constitution/appendix.md) | 模块清单（基座+L2.5）、与 CLAUDE.md 关系、L2.5 收口边界 |
 
+## CI/CD 执行平面（CICD-001）
+
+> **SSOT**：`BASELINE.yaml` · **规则文档**：`knowledge/ci.md`
+
+CICD-001 规定 ZoneCNH 全体系 CI/CD 只运行在 self-hosted runners 上，禁止使用 GitHub-hosted runners（`ubuntu-latest` / `windows-latest` / `macos-latest`）。所有 workflow job 必须声明 `[self-hosted, Linux, X64, sre/*]` pool，部署只能走 `sre/deploy`，业务仓库禁止内联 `ssh`/`scp`/`rsync`/`kubectl`/`helm`/`systemctl`/`docker compose` 等部署命令。
+
+| 规则文件 | 用途 |
+| -------- | ---- |
+| [`BASELINE.yaml`](BASELINE.yaml) | Go 基线 + CI/CD runner 策略 SSOT |
+| [`docs/sre/RUNNER-POOLS.yaml`](docs/sre/RUNNER-POOLS.yaml) | 11 个 `sre/*` runner pool 注册表 |
+| [`docs/sre/MODULE-RUNNER-MAP.yaml`](docs/sre/MODULE-RUNNER-MAP.yaml) | 68 个模块到 runner pool 的确定性映射 |
+| [`knowledge/ci.md`](knowledge/ci.md) | CICD-001 完整方案 + 恢复时间表 + 负责人
+
 ---
 
 ## 与 CLAUDE.md 的关系

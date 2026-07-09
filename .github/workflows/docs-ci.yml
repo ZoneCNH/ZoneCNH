@@ -5,10 +5,16 @@
 
 name: Docs CI
 
-# Self-hosted runner decommissioned 2026-06-18. Migrated to ubuntu-latest.
+# Self-hosted runner recovered 2026-07-09 (knowledge/ci.md Phase 0). Migrated to sre/foundation-l0.
 # 仅保留 workflow_call/workflow_dispatch（被 release.yml 与 foundation-release.yml 引用）。
-# 重装 runner 后恢复 pull_request/push/schedule trigger。
+# Trigger 已恢复 2026-07-09（Phase 3）。
 on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  schedule:
+    - cron: "0 2 * * 1"
   workflow_call:
   workflow_dispatch:
 
@@ -19,7 +25,7 @@ jobs:
   # ── 1. Markdown 格式规范 ──────────────────────────────────────
   markdownlint:
     name: Markdownlint
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, sre/foundation-l0]
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
@@ -37,7 +43,7 @@ jobs:
   # ── 2. 链接有效性检查 ────────────────────────────────────────
   link-check:
     name: Link Check
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, sre/foundation-l0]
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
@@ -71,7 +77,7 @@ jobs:
   # ── 3. 敏感内容守卫 ──────────────────────────────────────────
   grep-guard:
     name: Grep Guard
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, sre/foundation-l0]
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
@@ -82,7 +88,7 @@ jobs:
   # ── 4. Workflow 策略守卫 ──────────────────────────────────────
   workflow-policy-guard:
     name: Workflow Policy Guard
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, sre/foundation-l0]
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
@@ -93,7 +99,7 @@ jobs:
   # ── 4b. 模块 CI/CD 契约守卫 ─────────────────────────────────
   module-cicd-contract:
     name: Module CI/CD Contract
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, sre/foundation-l0]
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
@@ -104,7 +110,7 @@ jobs:
   # ── 5. 状态一致性校验 ────────────────────────────────────────
   status-consistency:
     name: Status Consistency
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, sre/foundation-l0]
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
@@ -117,7 +123,7 @@ jobs:
   # ── 6. Spec 结构校验 ────────────────────────────────────────
   spec-lint:
     name: Spec Lint
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, sre/foundation-l0]
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
@@ -128,7 +134,7 @@ jobs:
   # ── 6c. 模块注册表校验 ─────────────────────────────────────
   registry-lint:
     name: Registry Lint
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, sre/foundation-l0]
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
@@ -139,7 +145,7 @@ jobs:
   # ── 6b. Spec 漂移防护 ──────────────────────────────────────
   spec-drift-guard:
     name: Spec Drift Guard
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, sre/foundation-l0]
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
@@ -150,7 +156,7 @@ jobs:
   # ── 7. 追踪矩阵校验 ────────────────────────────────────────
   traceability-check:
     name: Traceability Check
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, sre/foundation-l0]
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
@@ -161,7 +167,7 @@ jobs:
   # ── 8. Task Spec 校验 ────────────────────────────────────────
   task-spec-validate:
     name: Task Spec Validate
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, sre/foundation-l0]
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
@@ -172,7 +178,7 @@ jobs:
   # ── 9. Binance 文档治理校验 ────────────────────────────────
   binance-docs-check:
     name: Binance Docs Check
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, sre/foundation-l0]
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
@@ -183,7 +189,7 @@ jobs:
   # ── 9b. 版本漂移检测 ────────────────────────────────────────
   version-drift-guard:
     name: Version Consistency Guard
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, sre/foundation-l0]
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
@@ -194,7 +200,7 @@ jobs:
   # ── 9c. SPEC/TRACEABILITY 引用完整性 ──────────────────────
   spec-traceability-reference-guard:
     name: SPEC/TRACEABILITY Reference Guard
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, sre/foundation-l0]
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
@@ -205,7 +211,7 @@ jobs:
   # ── 10. Spec 状态报告 ───────────────────────────────────────
   spec-status-report:
     name: Spec Status Report
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, sre/foundation-l0]
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
@@ -216,7 +222,7 @@ jobs:
   # ── 11. 术语一致性检查 ──────────────────────────────────────
   glossary-consistency:
     name: Glossary Consistency
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, sre/foundation-l0]
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
@@ -227,7 +233,7 @@ jobs:
   # ── 12. 反需求扫描 ─────────────────────────────────────────
   anti-requirement-scan:
     name: Anti-Requirement Scan
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, sre/foundation-l0]
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
@@ -240,7 +246,7 @@ jobs:
   # 或带 [outer-metrics] 标记的提交。
   outer-metrics-guard:
     name: Outer Metrics Guard
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, sre/foundation-l0]
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
@@ -255,7 +261,7 @@ jobs:
   # 或在 workflow 内写 inline 远程部署命令。
   deployment-policy:
     name: Deployment Policy
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, sre/foundation-l0]
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4

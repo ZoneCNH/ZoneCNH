@@ -28,7 +28,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  GO_VERSION: "1.23"
+  GO_VERSION: "1.26.5"
   SRE_CI_POOL: "sre/storage-heavy"
   SRE_DEPLOY_POOL: "sre/deploy"
   EVIDENCE_DIR: "release/evidence"

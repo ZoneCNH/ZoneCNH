@@ -8,6 +8,6 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, sre/foundation-l0]
     steps:
       - run: echo "runner works" && hostname && whoami && date

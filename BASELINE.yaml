@@ -1,0 +1,74 @@
+# BASELINE.yaml — ZoneCNH CI/CD 统一基线（单一事实源 SSOT）
+#
+# 修改本文件即修改全体系基线；其他文件只做投影，不做事实源。
+# 治理规则：knowledge/ci.md §5, CICD-001
+
+version: "2026.07.09"
+status: active
+owner: ZoneCNH
+
+go:
+  language: "1.26"
+  toolchain: "go1.26.5"
+  ci_version: "1.26.5"
+  gotoolchain: "local"
+  cgo_enabled: "0"
+  goflags:
+    - "-mod=readonly"
+    - "-trimpath"
+
+ci_cd:
+  runner_policy: self_hosted_only
+  github_hosted_allowed: false
+
+  required_runner_labels:
+    - self-hosted
+    - Linux
+    - X64
+
+  required_pool_prefix: "sre/"
+
+  approved_pools:
+    governance: "sre/governance"
+    foundation_l0: "sre/foundation-l0"
+    foundation_l1: "sre/foundation-l1"
+    contracts: "sre/contracts"
+    storage_light: "sre/storage-light"
+    storage_heavy: "sre/storage-heavy"
+    market: "sre/market"
+    macro: "sre/macro"
+    engine: "sre/engine"
+    security: "sre/security"
+    deploy: "sre/deploy"
+
+  forbidden_runs_on:
+    - "ubuntu-latest"
+    - "windows-latest"
+    - "macos-latest"
+    - "ubuntu-22.04"
+    - "ubuntu-24.04"
+    - "windows-2022"
+    - "macos-14"
+
+  forbidden_workflow_commands:
+    - "ssh "
+    - "scp "
+    - "rsync "
+    - "kubectl "
+    - "helm "
+    - "systemctl "
+    - "docker compose"
+
+  deploy:
+    only_via_sre_reusable_workflow: true
+    control_plane_repository: "ZoneCNH/sre"
+    reusable_workflow: "ZoneCNH/sre/.github/workflows/deploy-contract.yml@main"
+    deploy_pool: "sre/deploy"
+    pull_request_deploy_forbidden: true
+    production_requires_environment_approval: true
+    concurrency_required: true
+
+evidence:
+  runner_fingerprint_required: true
+  release_manifest_required: true
+  ci_manifest_required: true
