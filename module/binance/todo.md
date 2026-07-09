@@ -9,7 +9,7 @@
 ████████░░░░░░░░░░░░ 30%  — 综合完成度
 ├── ████████░░░░░░░░░░ 40%  — 访问控制（Symbol/Stream/Feature/Strategy 四级）
 ├── ████░░░░░░░░░░░░░░ 20%  — 订阅管理
-├── ████░░░░░░░░░░░░░░ 25%  — 连接治理
+├── ██░░░░░░░░░░░░░░░░ 10%  — 连接治理（per-connector jitter, no central queue）
 ├── ██░░░░░░░░░░░░░░░░ 15%  — 速率治理
 ├── ░░░░░░░░░░░░░░░░░░  0%  — 资源治理（自适应白名单）
 └── ░░░░░░░░░░░░░░░░░░  0%  — 防封禁引擎
@@ -165,25 +165,25 @@ Binance 组合流 (`/stream?streams=btcusdt@trade/btcusdt@ticker/...`) 已经实
 
 ### 状态
 
-| 文件                   | 状态                                            |
-| ---------------------- | ----------------------------------------------- |
-| `whitelist.yaml`       | ✅ 已创建（合并 symbols + streams + orderbook） |
-| `features.yaml`        | ❌                                              |
-| `strategy_acl.yaml`    | ❌                                              |
-| `rate_limit.yaml`      | ❌                                              |
-| `reconnect.yaml`       | ❌                                              |
-| `connection_pool.yaml` | ❌                                              |
-| `anti_ban.yaml`        | ❌                                              |
-| `adaptive.yaml`        | ❌                                              |
+| 文件                   | 状态                                            | 所属 Phase |
+| ---------------------- | ----------------------------------------------- | ---------- |
+| `whitelist.yaml`       | ✅ 已创建（合并 symbols + streams + orderbook） | —          |
+| `reconnect.yaml`       | ⬜ P1 同 Phase（Reconnect Manager 创建）        | P1         |
+| `rate_limit.yaml`      | ⬜ P1 同 Phase（Rate Limiter 创建）             | P1         |
+| `connection_pool.yaml` | ⬜ P2 同 Phase（Subscription Pool 创建）        | P2         |
+| `features.yaml`        | ❌                                              | P3         |
+| `strategy_acl.yaml`    | ❌                                              | P3         |
+| `anti_ban.yaml`        | ❌                                              | P3         |
+| `adaptive.yaml`        | ❌                                              | P3         |
 
 ### 动作
 
-- [ ] 创建 7 个配置文件骨架（YAML schema + 默认值 + 文档注释）
+- [ ] 创建 4 个 P3 配置文件骨架（YAML schema + 默认值 + 文档注释）
 - [ ] 每个文件配对应的 Go 加载代码
 
 ### 预估
 
-~150 行配置 + ~100 行 Go，2 小时。
+~80 行配置 + ~60 行 Go，1 小时。
 
 ---
 
@@ -246,7 +246,7 @@ Phase 1 (本周)
 └── [ ] P1: Reconnect Manager（~3h）
 
 Phase 2 (下周)
-├── [ ] P1: Rate Limiter 补全（~4h）
+├── [ ] P1: Rate Limiter 补全（~4h）—— P1 优先级，Phase 2 排期
 ├── [ ] P2: Subscription Pool（~5h）
 └── [ ] P2: DepthLevel 分级（~1h）
 
