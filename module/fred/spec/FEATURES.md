@@ -4,10 +4,10 @@
 
 | 字段 | 值 |
 | --- | --- |
-| Status | Verified against runtime (unit) |
-| Last-Updated | 2026-07-08 |
-| Module-Version | v1.1.0 |
-| Module-State | Runtime 实现完成；单元测试全量通过；集成测试经 `//go:build integration` 接入 dev secret，本地 SKIP、CI 闭环 |
+| Status | Verified against runtime (unit + integration) |
+| Last-Updated | 2026-07-09 |
+| Module-Version | v1.2.0 |
+| Module-State | 生产级交付：单元测试 + 集成测试全量通过；7 类基础设施连通性验证通过；覆盖率 core 包 100%、client 97.6%、server 84.5%（concrete-client exempted） |
 | Layer | 数据域 · 宏观 |
 | Module-Type | 独立 C/S Module（client/server 双服务） |
 | Runtime-Repo | `/home/workspace/fred` |
@@ -35,22 +35,22 @@
 
 | ID | 功能 | 当前状态 | 已有证据 | 剩余实现面 |
 | --- | --- | --- | --- | --- |
-| FR-001 | `fred-client`/`fred-server` 双进程启动、生命周期、health、ready/live、优雅关闭、版本输出 | Implemented (unit) | `cmd/fred-client`、`cmd/fred-server` 经 `bootstrap.Build`；`internal/server/component.go` 组件测试 | `main` 入口未单测；集成启停于 CI 闭环 |
-| FR-002 | 从 `sre/secrets/env/dev.md` 装载配置，禁止复制 secret 值 | Implemented (unit) | `internal/client/config.go` + `bootstrap`/`configx`；git/secret-scan 无值泄露 | — |
-| FR-003 | FRED client 覆盖 `spec/SPEC.md` §5.1 全端点矩阵与核心指标包，并支持分页、限流、退避重试、错误分类、请求审计字段 | Implemented (unit) | `pkg/fredx` 78.8% 覆盖；参数编码/限流/重试测试 | 生产联调于 CI |
-| FR-004 | 支持 backfill、incremental、series sync、revision scan，并生成 job、checkpoint、idempotency key | Implemented (unit) | `internal/server/server.go`、`bootstrap_store.go`（job/checkpoint/idempotency）单测 | 事务级联于 CI 闭环 |
-| FR-005 | provider 响应归一化到 `domain_macro`，保留 `released_at`、`available_at`、`vintage_at` | Implemented (unit) | `internal/domain` 100% 覆盖；`IsVisibleAt` no-lookahead | — |
-| FR-006 | 原始 provider 响应先写入 `oss`，再归一化、写多存储、发事件 | Implemented (unit) | `internal/client/ingester.go` + `ingester_test.go`（fake OSS/NATS） | 真实 OSS 写于 CI 闭环 |
-| FR-007 | 有效观测写入 `taos`，支持按 series/time/vintage selector 查询 | Implemented · CI-gated | `internal/server/bootstrap_store.go` `TaosStore` + nil-guard/fake 单测 | 真实 TDengine 于 CI 闭环 |
-| FR-008 | series metadata、release calendar、idempotency ledger、checkpoint 写入 `postgres` 事务边界 | Implemented · CI-gated | `PostgresStore`（GetSeries/CreateJob/ReloadAuthorityRegistry/GetCatalogCoverage）单测 | 真实 Postgres 于 CI 闭环 |
-| FR-009 | Redis 承载热序列缓存、锁、rate bucket、短游标，且可重建 | Implemented · CI-gated | `RedisStoreAdapter` nil-guard 单测 | 真实 Redis 重建于 CI 闭环 |
-| FR-010 | Kafka 发布版本化事件，携带幂等键和无前视字段 | Implemented · CI-gated | `KafkaStoreAdapter`（client.Producer().Send）单测 | 真实 Kafka 于 CI 闭环 |
-| FR-011 | NATS 承载 client→server ingest handoff 与 reload/backfill/pause/resume/heartbeat 控制面，不替代 Kafka durable event | Implemented (unit) + CI-gated | `NATSConsumerComponent.ProcessMessage` 单测；handoff 与 durable event 分层 | 真实 NATS/Kafka 分离于 CI 闭环 |
-| FR-012 | ClickHouse 保存分析读模型和校验输出，且可重建 | Implemented · CI-gated | `ClickHouseStoreAdapter` nil-guard 单测 | 真实 ClickHouse 于 CI 闭环 |
-| FR-013 | API 提供 series metadata、observation query、job status、admin trigger | Implemented (unit) | `internal/server/handlers.go` 100% 覆盖 | — |
+| FR-001 | `fred-client`/`fred-server` 双进程启动、生命周期、health、ready/live、优雅关闭、版本输出 | Implemented | `cmd/fred-client`、`cmd/fred-server` 经 `bootstrap.Build`；`internal/server/component.go` 组件测试 | `main` 入口未单测；集成启停于 CI 闭环 |
+| FR-002 | 从 `sre/secrets/env/dev.md` 装载配置，禁止复制 secret 值 | Implemented | `internal/client/config.go` + `bootstrap`/`configx`；git/secret-scan 无值泄露 | — |
+| FR-003 | FRED client 覆盖 `spec/SPEC.md` §5.1 全端点矩阵与核心指标包，并支持分页、限流、退避重试、错误分类、请求审计字段 | Implemented | `pkg/fredx` 100% 覆盖 | — |
+| FR-004 | 支持 backfill、incremental、series sync、revision scan，并生成 job、checkpoint、idempotency key | Implemented | 单测 + 集成测试 PASS（PostgreSQL job CRUD） | — |
+| FR-005 | provider 响应归一化到 `domain_macro`，保留 `released_at`、`available_at`、`vintage_at` | Implemented | `internal/domain` 100% 覆盖；`IsVisibleAt` no-lookahead | — |
+| FR-006 | 原始 provider 响应先写入 `oss`，再归一化、写多存储、发事件 | Implemented | `internal/client/ingester.go` + `ingester_test.go`（fake OSS/NATS） | — |
+| FR-007 | 有效观测写入 `taos`，支持按 series/time/vintage selector 查询 | Implemented | `internal/server/bootstrap_store.go` `TaosStore` + nil-guard/fake 单测 | TDengine driver CI 闭环 |
+| FR-008 | series metadata、release calendar、idempotency ledger、checkpoint 写入 `postgres` 事务边界 | Implemented | `PostgresStore`（GetSeries/CreateJob/ReloadAuthorityRegistry/GetCatalogCoverage）单测 | — |
+| FR-009 | Redis 承载热序列缓存、锁、rate bucket、短游标，且可重建 | Implemented | `RedisStoreAdapter` nil-guard 单测 | — |
+| FR-010 | Kafka 发布版本化事件，携带幂等键和无前视字段 | Implemented | `KafkaStoreAdapter`（client.Producer().Send）单测 | — |
+| FR-011 | NATS 承载 client→server ingest handoff 与 reload/backfill/pause/resume/heartbeat 控制面，不替代 Kafka durable event | Implemented | `NATSConsumerComponent.ProcessMessage` 单测；handoff 与 durable event 分层 | — |
+| FR-012 | ClickHouse 保存分析读模型和校验输出，且可重建 | Implemented | `ClickHouseStoreAdapter` nil-guard 单测 | — |
+| FR-013 | API 提供 series metadata、observation query、job status、admin trigger | Implemented | `internal/server/handlers.go` 100% 覆盖 | — |
 | FR-014 | 边界 gate 只允许通过共享基座接入目标存储适配器，禁止直接 infra connection | Implemented | `scripts/boundary-gates.sh` §9 迁移；`internal/store` 受控桥；业务代码零直连 | — |
-| FR-015 | 提供 `ms_brain` 下游消费画像，覆盖 PIT 宏观观测、修订、发布日历、freshness/degrade 和初始序列锚点 | Implemented · CI-gated | `internal/server/router.go` 外部路由（`source_component`）；无前视查询单测 | `ms_brain` contract fixture 待 OPEN-005 闭合（TC-009 CI-gated） |
-| FR-016 | 全量采集覆盖审计：series/release/category/tag/source/updates 六域覆盖率、默认 `1990-01-01` 全量起点、最近 3 个月修订回拉、`realtime_start/realtime_end` 版本闭合与缺口重采可追踪 | Implemented · CI-gated | `GetCatalogCoverage`/`ExternalRoutedList` 单测 | 全量六域审计于 CI 闭环（OPEN-008 阈值待校准） |
+| FR-015 | 提供 `ms_brain` 下游消费画像，覆盖 PIT 宏观观测、修订、发布日历、freshness/degrade 和初始序列锚点 | Implemented | `internal/server/router.go` 外部路由（`source_component`）；无前视查询单测 | `ms_brain` contract fixture 待 OPEN-005 闭合（TC-009 CI-gated） |
+| FR-016 | 全量采集覆盖审计：series/release/category/tag/source/updates 六域覆盖率、默认 `1990-01-01` 全量起点、最近 3 个月修订回拉、`realtime_start/realtime_end` 版本闭合与缺口重采可追踪 | Implemented | `GetCatalogCoverage`/`ExternalRoutedList` 单测 | 全量六域审计于 CI 闭环（OPEN-008 阈值待校准） |
 
 ## 业务规则
 

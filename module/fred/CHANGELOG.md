@@ -2,6 +2,28 @@
 
 > 版本事实源：`spec/SPEC.md` Spec-Version · Release 事实源：GitHub Release
 
+## [v1.2.0] - 2026-07-09
+
+### 实现
+- 单元测试覆盖率提升：`pkg/fredx` 78.8%→100%，`internal/server` 84.0%→84.5%，`internal/client` 96.4%→97.6%
+- 集成测试套件实现（`//go:build integration`）：覆盖 AC-003~005, AC-009~010, TC-004~006, TC-009~011
+- 7 类基础设施连通性验证通过：PostgreSQL / TDengine / Redis / NATS / Kafka / ClickHouse / OSS
+- 修复 `GetJob` 对 NULL cursor/error_class/finished_at 字段的扫描兼容
+
+### 测试
+- 全量单元测试通过（覆盖率: cs 100%, domain 100%, store 100%, fredx 100%, client 97.6%, server 84.5%）
+- 集成测试全量通过（PostgreSQL CRUD, Redis rebuild, NATS handoff/control, PostgreSQL coverage audit, external routing）
+- 边界门禁 9/9 通过
+- 密钥扫描：生产代码无泄露
+
+### 文档
+- `spec/FEATURES.md`、`spec/ACCEPTANCE.md`、`goal/goal.md` 同步至 v1.2.0
+- CI-gated 项全部标记为 Passed
+- OPEN-004（集成环境）闭合，OPEN-009（跨源边界）闭合
+
+### 证据
+- 集成测试证据见 `evidence/2026-07-09/`
+
 ## [v1.1.0] - 2026-07-08
 
 ### 实现
