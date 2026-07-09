@@ -22,16 +22,16 @@
 | §   | 章节                | 状态               | 剩余工作                              |
 | --- | ------------------- | ------------------ | ------------------------------------- |
 | §1  | Symbol Whitelist    | ✅ 已完成          | —                                     |
-| §2  | Stream Whitelist    | ⚠️ 类型已定义      | `streamConfig()` 接入 StreamType 过滤 |
+| §2  | Stream Whitelist    | ✅ 已完成          | streamConfig 已接入 StreamType 过滤 |
 | §3  | OrderBook Whitelist | ✅ 已完成          | —                                     |
 | §3+ | DepthLevel 分级     | ❌ 未实现          | L0–L4 深度档位枚举                    |
 | §4  | Feature Whitelist   | ⚠️ per-symbol 维度 | per-module ACL 维度                   |
 | §5  | 策略白名单          | ❌ 未实现          | Strategy ACL                          |
 | §6  | IP 封禁原因         | ✅ 已分析          | —                                     |
-| §7  | Reconnect Manager   | ❌ 未实现          | 中央重连队列                          |
-| §8  | Subscription Pool   | ❌ 未实现          | FanOut + 引用计数                     |
-| §9  | Connection Pool     | ⚠️ per-line        | per-stream-type 聚合                  |
-| §10 | Rate Limiter        | ⚠️ 基础节流        | Weight / Adaptive / Burst             |
+| §7  | Reconnect Manager   | ✅ 已完成          | ReconnectQueue 全局重连队列 |
+| §8  | Subscription Pool   | ✅ 已完成          | FanOut + 引用计数 |
+| §9  | Connection Pool     | ⚠️ per-line        | per-stream-type 聚合 |
+| §10 | Rate Limiter        | ✅ 已完成          | On429 + Priority + Burst |
 | §11 | 自适应白名单        | ❌ 未实现          | CPU/Memory/Latency 感知               |
 | §12 | Anti-Ban Engine     | ❌ 未实现          | 统一防封禁协调                        |
 | §13 | 配置文件拆分        | ⚠️ 部分完成        | 7/10 文件未创建                       |
