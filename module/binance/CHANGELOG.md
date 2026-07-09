@@ -15,6 +15,7 @@
 - Spec：v4.1.0（65 FR Done / 0 Pending；order book FR-052~061 spot/um/cm 已实现，options 待 Phase 2；canonical event_type recovery 已同步）。
 - 配套：CI toolchain 修复（GOTOOLCHAIN=local + fix-goroot.sh，PR #457-#459）、gofmt cleanup（#461）、coverage artifact 非阻断（#462）。
 - 推送：`binance` → `fix/upgrade-go-1.26.5`；`ZoneCNH` → `docs/binance_production_readiness_report`。
+- 发布说明：[RELEASE-NOTES-PR-1746](../../docs/report/RELEASE-NOTES-PR-1746-20260709.md)（PR [#1746](https://github.com/ZoneCNH/ZoneCNH/pull/1746)）。
 - 详细变更见下方按日期归档的明细。
 
 ---

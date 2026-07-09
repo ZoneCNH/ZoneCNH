@@ -1,6 +1,6 @@
 # Binance 模块分析报告
 
-> **分析日期**：2026-07-05
+> **分析日期**：2026-07-05；生产可发布复核更新：2026-07-09
 > **代码仓库**：`/home/workspace/binance`（`github.com/ZoneCNH/binance`）
 > **执行方式**：4 agent team 并行分析 + 交叉验证
 
@@ -21,4 +21,4 @@
 
 ## 一句话总结
 
-Binance 公共行情采集 C/S 模块；当前本地 runtime P0 gates 已恢复，覆盖现货、USDⓈ-M、COIN-M、Options 的公共行情路径与订单簿主路径测试。交易/账户/私有流不在本模块发布口径内；最终 release Go 仍需远端 CI、release tag、live capture、外部依赖 E2E 与 rollback 证据。
+Binance 公共行情采集 C/S 模块；当前本地 runtime P0 gates 已恢复，`full validation`、race、30s soak、server stability soak、readiness audit 与可达漏洞扫描均通过。交易/账户/私有流不在本模块发布口径内；最终 release Go 仍需远端 CI、release tag、live capture、外部依赖 E2E、`gitleaks` runner 证据与 rollback 证据。

@@ -49,7 +49,7 @@
 | 维度 | 允许值 |
 | --- | --- |
 | product_line | `spot`, `um_perp`, `cm_perp`, `options` |
-| event_type (implemented) | `book_ticker`, `kline`, `depth_update`, `trade`, `funding_rate`, `mark_price_update` |
+| event_type (implemented) | `book_ticker`, `kline`, `depth_update`, `trade`, `funding_rate`, `mark_price_update`, `option_tick` |
 | event_type (planned) | `ticker`, `force_order`, `open_interest`, `index_reference`, `contract_info` |
 | identity | exchange + product_line + instrument_type + instrument_subtype + symbol + expiry + strike + option_type |
 

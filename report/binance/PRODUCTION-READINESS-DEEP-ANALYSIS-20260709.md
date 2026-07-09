@@ -4,6 +4,7 @@
 > 分析对象：`module/binance/` 与运行时仓 `/home/workspace/binance`  
 > 当前结论：本地 runtime P0 gate 已闭合；最终 release Go 仍需远端 CI、tag、live capture 和部署证据。[COMPUTED, HIGH]  
 > 证据边界：本报告基于当前本地工作区和本地命令输出，不等同于 GitHub Release 或生产部署裁决。[COMPUTED, HIGH]
+> runtime evidence commit：`b66ea770bdc73759c934656325cef47563ae9e4a`。[COMPUTED, HIGH]
 
 ## 0. 反结论先行
 
@@ -11,9 +12,9 @@
 
 `/home/workspace/binance` 当前本地验证结果为：`go test ./...` PASS、`go vet ./...` PASS、`./scripts/boundary-gates.sh` 15/15 PASS、`./scripts/spec-runtime-drift-check.sh` PASS、`git diff --check` PASS。[COMPUTED, HIGH]
 
-本轮额外完成 20 轮重复检查并全部 PASS；每轮覆盖 runtime 编译测试、`go vet`、boundary gate、drift gate、runtime `git diff --check`、生产旧 event_type 输出扫描、主仓 docs gate 和主仓 `git diff --check`。[COMPUTED, HIGH]
+本轮额外完成最终 20 轮重复检查并全部 PASS；每轮覆盖 runtime targeted tests、boundary gate、readiness audit、legacy contract scan、runtime `git diff --check`、主仓 docs gate、版本一致性、引用完整性和主仓 `git diff --check`；日志目录为 `/tmp/binance-final-20check-20260709221859`。[COMPUTED, HIGH]
 
-本轮继续补齐本地 release evidence：`go test ./... -race -count=1` PASS、`golangci-lint run` PASS、binance smoke self-test PASS、`make test-gated` PASS，并生成 `/home/workspace/binance/release/evidence/binance/20260709-canonical-recovery`。[COMPUTED, HIGH]
+本轮继续补齐本地 release evidence：在 runtime commit `b66ea770bdc73759c934656325cef47563ae9e4a` 上，`scripts/run-full-validation.sh --skip-health` PASS、`go test ./... -race -count=1` PASS、`golangci-lint run` PASS、binance smoke self-test PASS、`make test-gated` PASS、`-tags=soak` server stability PASS、`make vuln-scan` 可达漏洞 0，并生成 `/home/workspace/binance/release/evidence/binance/20260709-canonical-recovery`。[COMPUTED, HIGH]
 
 仍不能直接宣布生产发布 Go，因为本轮没有证明远端 CI、release tag、release notes、回滚路径、live WS capture、NATS/Kafka/TDengine/Redis/API 实盘 E2E；runtime evidence bundle 也把这些外部项记录为 `NOT_CAPTURED`。[COMPUTED, HIGH]
 
@@ -27,6 +28,7 @@
 | order book 派生事件 | TopN、incremental、rebuild 事件使用 `eventtypes` 常量。[COMPUTED, HIGH] | `go test ./internal/client/orderbook ./internal/client` PASS。[COMPUTED, HIGH] |
 | ReconnectQueue | `Stop()` 可重复调用；停止后拒绝新入队；等待 slot/backoff 的 goroutine 可释放。[COMPUTED, HIGH] | ReconnectQueue 相关 client 测试随 `go test ./internal/client` 通过。[COMPUTED, HIGH] |
 | drift gate | `internal/ingestcodec/doc.go` 补充 shared boundary 角色说明。[COMPUTED, HIGH] | `./scripts/spec-runtime-drift-check.sh` PASS。[COMPUTED, HIGH] |
+| security scan | `quic-go` 与 Go toolchain 对齐到无可达漏洞结果；`vuln-scan.log` 记录 `govulncheck` 可达漏洞 0。[COMPUTED, HIGH] | `GOTOOLCHAIN=go1.26.5+auto make vuln-scan` PASS；`gitleaks` 因本机未安装 skipped。[COMPUTED, HIGH] |
 
 ## 2. 数据流架构图
 
@@ -63,7 +65,7 @@ flowchart LR
 | 现货 Spot | trade、book_ticker、kline、depth_update 标准化与下游测试通过。[COMPUTED, HIGH] | 公共行情覆盖；下单、账户、私有流不在 scope。[INFERRED, HIGH] |
 | USDⓈ-M 合约 | mark_price_update、funding_rate、kline、depth_update、history routing 本地测试通过。[COMPUTED, HIGH] | 需要 live capture 和生产端点证据。[FRAME, HIGH] |
 | COIN-M 合约 | CM product_line、kline/depth/mark/funding 代码路径与 fixture 测试通过。[COMPUTED, HIGH] | 交割合约 subtype 仍需 release evidence 复核。[INFERRED, MED] |
-| Options | optionTicker、options depth normalize fixture 通过；options order book 仍按 Phase 2 管控。[COMPUTED, HIGH] | 不宣称 options order book 已完成。[INFERRED, HIGH] |
+| Options | `option_tick`、options depth normalize fixture 通过；options order book 仍按 Phase 2 管控。[COMPUTED, HIGH] | 不宣称 options order book 已完成。[INFERRED, HIGH] |
 | Order Book | spot/UM/CM 本地状态机、TopN/增量派生事件和主路径测试通过。[COMPUTED, HIGH] | 需要 live depth snapshot + stream alignment evidence。[FRAME, HIGH] |
 | 订单/账户/用户私有流 | SPEC 明确排除。[COMPUTED, HIGH] | 发布说明必须继续排除。[INFERRED, HIGH] |
 
@@ -73,7 +75,8 @@ flowchart LR
 | --- | --- | --- |
 | 远端 CI | 本轮未验证。[COMPUTED, HIGH] | 本地 PASS 不能替代远端 clean runner。[COMMON, HIGH] |
 | release tag/release notes | 本轮未生成。[COMPUTED, HIGH] | 无法证明用户安装的是已验证 commit。[INFERRED, HIGH] |
-| race/soak/chaos | `go test ./... -race -count=1` PASS；`make test-gated` 中 30s soak PASS，本地 chaos PASS，真实外部依赖 chaos SKIP。[COMPUTED, HIGH] | 真实 NATS/Redis/TDengine/Kafka 与 sudo 级 live chaos 仍需环境证据。[INFERRED, HIGH] |
+| race/soak/chaos | `go test ./... -race -count=1` PASS；`make test-gated` 中 30s soak PASS；`SOAK_DURATION=30s go test -tags=soak ./test/soak/ -run TestSoak_ServerStability` PASS；本地 chaos PASS，真实外部依赖 chaos SKIP。[COMPUTED, HIGH] | 长时 soak、真实 NATS/Redis/TDengine/Kafka 与 sudo 级 live chaos 仍需环境证据。[INFERRED, HIGH] |
+| security scan | `govulncheck` 可达漏洞 0；`gitleaks` 本机未安装，secret scan skipped。[COMPUTED, HIGH] | 发布前 runner 需要安装并强制执行 `gitleaks`。[INFERRED, HIGH] |
 | live WS capture | 本轮未执行。[COMPUTED, HIGH] | Binance 真实 payload 与 test fixture 仍可能漂移。[INFERRED, MED] |
 | NATS/Kafka/TDengine/Redis/API E2E | 本轮只验证本地单元/集成测试。[COMPUTED, HIGH] | 外部依赖、凭证、网络、schema 权限仍需部署前证据。[INFERRED, HIGH] |
 | 回滚路径 | 本轮未验证。[COMPUTED, HIGH] | 发布失败时无法证明可恢复。[INFERRED, HIGH] |
@@ -84,7 +87,7 @@ flowchart LR
 
 当前已同步的规则与标准包括：`module/binance/gate/STANDARD.md` 覆盖业务边界、产品线矩阵、canonical event_type、合约身份、options、order book、Foundation 依赖、发布证据和 gate 职责；`module/binance/gate/RULES.md` 指向 goal-driven `spec/NAMING.md` 与 `gate/STANDARD.md`，并禁止 docs gate 因旧根 SPEC 缺失而 SKIP。[COMPUTED, HIGH]
 
-后续必须把 runtime commit、CI run、release tag、evidence bundle 链接写入 release packet，避免规格 closeable 与运行时证据脱钩。[INFERRED, HIGH]
+后续必须把 CI run、release tag、正式 release evidence bundle 链接写入 release packet；当前本地 evidence 已锚定 runtime commit `b66ea770bdc73759c934656325cef47563ae9e4a`。[INFERRED, HIGH]
 
 ## 6. 迭代路线
 
@@ -93,6 +96,7 @@ flowchart LR
 1. 在远端 CI 对同一 commit 跑 `go test ./...`、`go vet ./...`、boundary gates、drift gates。[FRAME, HIGH]
 2. 生成 live WS capture 与 NATS/Kafka/storage/query E2E evidence。[FRAME, HIGH]
 3. 生成 release tag、release notes、rollback checklist。[FRAME, HIGH]
+4. 给 REST legacy alias 与 TDengine child-table legacy prefix 制定 sunset 日期或删除计划。[COMPUTED, HIGH]
 
 ### R1 业务能力补齐
 

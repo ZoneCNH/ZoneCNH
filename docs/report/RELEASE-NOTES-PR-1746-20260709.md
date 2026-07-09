@@ -1,7 +1,5 @@
 # Release Notes — PR #1746
 
-> 已同步至项目文档目录: [docs/report/RELEASE-NOTES-PR-1746-20260709.md](../../docs/report/RELEASE-NOTES-PR-1746-20260709.md)
-
 ## 概述
 
 docs: binance production readiness report + benchmark CHANGELOG updates

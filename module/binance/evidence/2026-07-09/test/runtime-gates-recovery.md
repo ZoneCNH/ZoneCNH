@@ -3,16 +3,19 @@
 > 日期：2026-07-09  
 > runtime 仓：`/home/workspace/binance`  
 > docs 仓：`/home/workspace/ZoneCNH`
+> runtime evidence commit：`b66ea770bdc73759c934656325cef47563ae9e4a`
 
 ## 1. 结论
 
 本地 runtime P0 gate 已恢复：`go test ./...`、`go vet ./...`、`./scripts/boundary-gates.sh`、`./scripts/spec-runtime-drift-check.sh`、`git diff --check` 均通过。[COMPUTED, HIGH]
 
-本轮额外执行 20 轮重复检查并全部通过；每轮覆盖 runtime 编译测试、`go vet`、boundary gate、drift gate、runtime `git diff --check`、生产旧 event_type 输出扫描、主仓 docs gate 和主仓 `git diff --check`。[COMPUTED, HIGH]
+本轮额外执行最终 20 轮重复检查并全部通过；每轮覆盖 runtime targeted tests、boundary gate、readiness audit、legacy contract scan、runtime `git diff --check`、主仓 docs gate、版本一致性、引用完整性和主仓 `git diff --check`；日志目录为 `/tmp/binance-final-20check-20260709221859`。[COMPUTED, HIGH]
 
-最终状态检查时，runtime 当前工作树已再次执行完整 `go test ./... -count=1` 并通过。[COMPUTED, HIGH]
+最终状态检查时，runtime 当前工作树已再次执行 `GOTOOLCHAIN=go1.26.5+auto scripts/run-full-validation.sh --skip-health` 并通过；该入口覆盖 build、vet、全量测试、race、boundary、专项测试、版本一致性和引用完整性。[COMPUTED, HIGH]
 
-本轮已生成本地 release evidence bundle：`/home/workspace/binance/release/evidence/binance/20260709-canonical-recovery`；其 `status.txt` 全部 PASS，`external-gates.log` 记录 `live_binance_websocket=NOT_CAPTURED`、`natsx_jetstream_puback_manualack=CORE_ENVELOPE_ADAPTER_PRESENT_JETSTREAM_ACK_NOT_CAPTURED`、`external_durable_storage_fanout_query=PACKAGE_BOUNDARY_PRESENT_EXTERNAL_IO_NOT_CAPTURED`、`remote_github_actions=NOT_CAPTURED`、`release_tag=NOT_CAPTURED`、`release_closeable=NO`。[COMPUTED, HIGH]
+本轮已在 runtime commit `b66ea770bdc73759c934656325cef47563ae9e4a` 上生成本地 release evidence bundle：`/home/workspace/binance/release/evidence/binance/20260709-canonical-recovery`；其 `head.log` 指向该 commit，`status.txt` 全部 PASS，`external-gates.log` 记录 `live_binance_websocket=NOT_CAPTURED`、`natsx_jetstream_puback_manualack=CORE_ENVELOPE_ADAPTER_PRESENT_JETSTREAM_ACK_NOT_CAPTURED`、`external_durable_storage_fanout_query=PACKAGE_BOUNDARY_PRESENT_EXTERNAL_IO_NOT_CAPTURED`、`remote_github_actions=NOT_CAPTURED`、`release_tag=NOT_CAPTURED`、`release_closeable=NO`。[COMPUTED, HIGH]
+
+本轮安全扫描记录在 runtime evidence bundle 的 `vuln-scan.log`：`govulncheck` 报告可达漏洞 0；`gitleaks` 本机未安装，记录为 skipped。[COMPUTED, HIGH]
 
 本证据不是最终 release evidence；远端 CI、release tag、live capture、外部依赖 E2E 和 rollback 仍需独立闭合。[COMPUTED, HIGH]
 
@@ -25,6 +28,8 @@
 | TDengine/history/cache | storage、taosdriver、assembly、api 测试验证 canonical stable/key/query 语义。[COMPUTED, HIGH] |
 | ReconnectQueue | client 测试覆盖 stop/enqueue 并发关闭语义。[COMPUTED, HIGH] |
 | drift gate | `internal/ingestcodec/doc.go` 已补 shared boundary 说明，`spec-runtime-drift-check.sh` PASS。[COMPUTED, HIGH] |
+| TDengine DDL | `migrations/taos_ddl.sql` 已对齐 `StableSpecs()` canonical stable；新增 DDL stable name drift 测试。[COMPUTED, HIGH] |
+| server allowlist | `DefaultValidator` 已拒绝 planned/unknown event_type，允许 implemented canonical 与 legacy 输入 alias。[COMPUTED, HIGH] |
 
 ## 3. 本地命令结果
 
@@ -38,9 +43,11 @@
 | `./scripts/spec-runtime-drift-check.sh` | PASS。[COMPUTED, HIGH] |
 | `XGO_BINANCE_SMOKE_SELF_TEST=1 go run ./cmd/binance-smoke` | PASS。[COMPUTED, HIGH] |
 | `make test-gated` | PASS；30s soak PASS，本地 chaos PASS，真实外部依赖 chaos 按环境缺失 SKIP。[COMPUTED, HIGH] |
+| `SOAK_DURATION=30s go test -tags=soak ./test/soak/ -run TestSoak_ServerStability -count=1 -timeout 5m` | PASS。[COMPUTED, HIGH] |
+| `GOTOOLCHAIN=go1.26.5+auto make vuln-scan` | PASS；可达漏洞 0，`gitleaks` skipped。[COMPUTED, HIGH] |
 | `git diff --check` | PASS。[COMPUTED, HIGH] |
 | `./scripts/runtime-release-evidence.sh` | PASS；bundle: `/home/workspace/binance/release/evidence/binance/20260709-canonical-recovery`。[COMPUTED, HIGH] |
-| 20 轮重复检查 | PASS；日志目录：`/tmp/binance-20check-20260709210216`。[COMPUTED, HIGH] |
+| 20 轮重复检查 | PASS；日志目录：`/tmp/binance-final-20check-20260709221859`。[COMPUTED, HIGH] |
 
 ## 4. 剩余证据
 

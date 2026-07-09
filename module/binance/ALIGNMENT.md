@@ -13,8 +13,8 @@
 | 文档 gate | `bash scripts/check-binance-docs.sh` 已从旧根 `module/binance/SPEC.md` SKIP 修复为扫描 goal-driven 目录，并在 2026-07-09 本仓通过。[COMPUTED, HIGH] |
 | 标准 | `module/binance/gate/STANDARD.md` 已升级为发布与漂移标准，覆盖业务边界、产品线矩阵、canonical event_type、合约身份、options、order book、Foundation 依赖、发布证据和 gate 职责边界。[COMPUTED, HIGH] |
 | 规则 | `module/binance/gate/RULES.md` 已同步 R1/R2/R13：指向 `spec/NAMING.md` 与 `gate/STANDARD.md`，并禁止 docs gate 因旧根 SPEC 缺失而 SKIP。[COMPUTED, HIGH] |
-| runtime 发布口径 | `/home/workspace/binance` 本地已通过 `go test ./...`、`go vet ./...`、`boundary-gates.sh`、`spec-runtime-drift-check.sh` 与 `git diff --check`；本文件的 Plan 013 100% 仍只表示白名单重构历史完成，不自动等同于正式 release Go。[COMPUTED, HIGH] |
-| 待合并证据 | 本地 race、smoke、30s soak 与本地 chaos 已通过；release tag、远端 CI、rollback、live capture、真实 NATS/Kafka/TDengine/Redis/API E2E 与 live chaos 仍需进入最终 release evidence。[INFERRED, HIGH] |
+| runtime 发布口径 | `/home/workspace/binance` 本地已通过 `scripts/run-full-validation.sh --skip-health`、`make readiness-audit`、`make vuln-scan`、`boundary-gates.sh`、`spec-runtime-drift-check.sh` 与 `git diff --check`；本文件的 Plan 013 100% 仍只表示白名单重构历史完成，不自动等同于正式 release Go。[COMPUTED, HIGH] |
+| 待合并证据 | 本地 race、smoke、30s soak、`-tags=soak` server stability、本地 chaos 与 `govulncheck` 可达漏洞 0 已通过；release tag、远端 CI、rollback、live capture、真实 NATS/Kafka/TDengine/Redis/API E2E、`gitleaks` runner 证据与 live chaos 仍需进入最终 release evidence。[INFERRED, HIGH] |
 
 ## Plan 013 修订摘要（2026-07-09）
 

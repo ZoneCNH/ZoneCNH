@@ -35,7 +35,7 @@
 
 **规则**：`module/binance/` 的 product_line（spot/um_perp/cm_perp/options）与 canonical event_type 必须以状态矩阵维护，而不是假设所有组合都适用。
 
-1. implemented event_type：`book_ticker`、`trade`、`kline`、`depth_update`、`funding_rate`、`mark_price_update`
+1. implemented event_type：`book_ticker`、`trade`、`kline`、`depth_update`、`funding_rate`、`mark_price_update`、`option_tick`
 2. planned event_type：`ticker`、`force_order`、`open_interest`、`index_reference`、`contract_info`
 3. 每个 product_line × implemented event_type 单元必须标注 `supported`、`unsupported` 或 `postponed`
 4. supported 单元必须在 natsx subject、Kafka topic、TDengine stable/tag、Redis key、ossx path、Gin REST API 或明确的 bridge/查询豁免中使用同一 canonical event_type

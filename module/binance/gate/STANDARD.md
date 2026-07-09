@@ -39,13 +39,13 @@
 | `spot` | `prime`/`standard`/`lite` 按 tierCapabilityMap 启用；`blocked` 禁止采集。 | `book_ticker`, `trade`, `kline`, `depth_update` | `funding_rate`, `mark_price_update` 不适用。 |
 | `um_perp` | `prime`/`standard`/`lite` 按 tierCapabilityMap 启用；永续与交割由 `instrument_subtype` 区分。 | `book_ticker`, `trade`, `kline`, `depth_update`, `funding_rate`, `mark_price_update` | 不得拆出 `um_delivery`。 |
 | `cm_perp` | `prime`/`standard`/`lite` 按 tierCapabilityMap 启用；永续与交割由 `instrument_subtype` 区分。 | `book_ticker`, `trade`, `kline`, `depth_update`, `funding_rate`, `mark_price_update` | 不得拆出 `cm_delivery`。 |
-| `options` | 默认需要人工审核或显式 tier 准入；采集分桶与准入层解耦。 | `trade`, `kline`, `depth_update` raw stream | `book_ticker`, `funding_rate`, `mark_price_update` 不适用；order book manager Phase 2 postponed。 |
+| `options` | 默认需要人工审核或显式 tier 准入；采集分桶与准入层解耦。 | `trade`, `kline`, `depth_update`, `option_tick` raw stream | `book_ticker`, `funding_rate`, `mark_price_update` 不适用；order book manager Phase 2 postponed。 |
 
 [FRAME, HIGH] Planned event_type 为 `ticker`、`force_order`、`open_interest`、`index_reference`、`contract_info`。它们可以出现在规格与设计中，但 runtime 发布前必须有独立 FR、任务、测试和 release evidence。
 
 ## 3. Canonical event_type 与迁移
 
-[FRAME, HIGH] implemented canonical event_type 只有以下 6 个：
+[FRAME, HIGH] implemented canonical event_type 只有以下 7 个：
 
 ```text
 book_ticker
@@ -54,6 +54,7 @@ kline
 depth_update
 funding_rate
 mark_price_update
+option_tick
 ```
 
 [FRAME, HIGH] planned canonical event_type 只有以下 5 个：

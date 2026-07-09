@@ -91,6 +91,7 @@ implemented_event_types=(
   depth_update
   funding_rate
   mark_price_update
+  option_tick
 )
 
 planned_event_types=(
