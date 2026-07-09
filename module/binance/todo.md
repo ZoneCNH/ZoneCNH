@@ -775,9 +775,9 @@ func BenchmarkStreamTypeHas(b *testing.B) {
 | P2-3 | Binance 429 自适应降速 | ✅ | `throttle.go` — On429() (commit e48af2f) |
 | P2-4 | `SubscriptionPool` FanOut + 引用计数 | ✅ | `subscription_pool.go` — (commit 6f7509e) |
 | P2-5 | `DepthLevel` 枚举 L0-L4 | ✅ | `depthlevel.go` — (commit a6e6620) |
-| P2-6 | `Book.TopN(depthLevel)` 档位截断 | ⬜ | **未实现** — P2-5 依赖 |
+| P2-6 | `Book.TopN(depthLevel)` 档位截断 | ✅ | `manager.go` / `book.go` — commit f63272f |
 
-**Phase 2 结论**: 5/6 完成。仅剩 P2-6 (Book.TopN 档位截断) 未实现。
+**Phase 2 结论**: 6/6 完成。Phase 2 全部就绪。
 
 ### Phase 3 验收结论 (P3)
 

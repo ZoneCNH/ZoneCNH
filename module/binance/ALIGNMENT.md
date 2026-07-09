@@ -1,15 +1,15 @@
 # Binance Subscription Governance — 对齐结论
 
 > 基于 `knowledge/streams.md` 13 章设计文档与 `todo.md` 实施计划。
-> 验证日期：2026-07-09，10 次连续 build+test 通过。
+> 验证日期：2026-07-09，20 次连续 build+test 通过。
 
 ## 总体完成度
 
 ```
-█████████████░░░░░░░ 55%  综合
-├── ██████████████████ 85%  访问控制 (Symbol/Stream/Feature/Strategy + Hot-Reload)
-├── ████████████░░░░░░ 60%  订阅管理
-├── ██████████████░░░░ 70%  连接治理
+███████████████░░░░░ 65%  综合
+├── ██████████████████ 90%  访问控制 (Symbol/Stream/Feature/Depth + Hot-Reload)
+├── ██████████████░░░░ 70%  订阅管理
+├── ████████████████░░ 80%  连接治理
 ├── ██████████████░░░░ 70%  速率治理
 ├── ░░░░░░░░░░░░░░░░░░  0%  资源治理
 └── ░░░░░░░░░░░░░░░░░░  0%  防封禁引擎
@@ -22,7 +22,7 @@
 | §1  | Symbol Whitelist | ✅ Entry.Enabled + StreamWhitelist | 自动化测试 |
 | §2  | Stream Whitelist | ✅ StreamType 8位掩码 + streamConfig 接入 | 7 个单元测试 |
 | §3  | OrderBook Whitelist | ✅ OrderbookFeatures 6位掩码 | 3 个测试 |
-| §3+ | DepthLevel | ✅ L0-L4 深度分级 | 3 个测试 |
+| §3+ | DepthLevel | ✅ L0-L4 深度分级 + Book.TopN 档位截断 | 3 个测试 |
 | §4  | Feature Whitelist | ⚠️ per-symbol, 缺 per-module ACL | — |
 | §5  | 策略白名单 | ❌ | — |
 | §6  | IP 封禁原因 | ✅ 已分析 | — |
