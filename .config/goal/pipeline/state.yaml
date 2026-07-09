@@ -732,3 +732,48 @@ pipeline:
     blockers: []
     updated_at: "2026-06-29T00:00:00Z"
     notes: "首次注册 Goal 管线；代码已发布 v1.0.0，at-least-once 执行语义，可注入时钟"
+
+  - goal_id: GOAL-20260709-001
+    pipeline_state: DONE
+    previous_pipeline_state: RELEASING
+    current_phase: RETROSPECTIVE
+    phase_status: DONE
+    workflow_step: RETROSPECTIVE_EXECUTION
+    state_model: four_axis
+    state_axes:
+      pipeline_state: docs/goal/03-pipeline.md#20-状态轴边界
+      current_phase: docs/goal/03-pipeline.md#20-状态轴边界
+      phase_status: docs/goal/03-pipeline.md#20-状态轴边界
+      workflow_step: docs/goal/03-pipeline.md#20-状态轴边界
+    artifacts_ready:
+      - goal
+      - spec
+      - design
+      - plan
+      - tasks
+      - prompt
+      - matrix
+      - gates
+      - code
+      - test
+      - evidence
+      - review
+      - release
+      - retrospective
+    gates_passed:
+      - GOB-0
+      - GOB-1
+      - GOB-2
+      - GOB-3
+      - GOB-4
+      - GOB-5
+      - GOB-6
+      - GOB-7
+      - GOB-8
+      - GOB-9
+      - GOB-10
+      - GOB-11
+    gates_pending: []
+    blockers: []
+    updated_at: "2026-07-09T13:20:00Z"
+    notes: "GitHub repository、v0.1.0 tag、remote CI、GitHub Release、release manifest 和 retrospective evidence 已闭环。"

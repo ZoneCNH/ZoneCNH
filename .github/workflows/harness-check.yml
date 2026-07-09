@@ -1,5 +1,5 @@
 name: Harness Check
-# Self-hosted runner decommissioned 2026-06-18. Migrated to ubuntu-latest.
+# Self-hosted runner recovered 2026-07-09 (knowledge/ci.md Phase 0). Migrated to sre/foundation-l0.
 # Restored push/pull_request triggers.
 on:
   push:
@@ -9,8 +9,13 @@ on:
   workflow_dispatch:
 
 jobs:
+  # ── 0. CICD-001 门禁 ───────────────────────────────────────
+  runner-gate:
+    uses: ./.github/workflows/runner-gate.yml
+
   check:
-    runs-on: ubuntu-latest
+    needs: runner-gate
+    runs-on: [self-hosted, Linux, X64, sre/foundation-l0]
     steps:
       - uses: actions/checkout@v4
       - name: Use Node.js

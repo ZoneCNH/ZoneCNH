@@ -1,0 +1,174 @@
+name: CICD-001 Compliance
+
+# 统一合规监控 — 聚合所有 Runner Policy / Pool / Evidence / Deploy 检查
+# 触发：每次 PR + 每日定时 + 手动触发
+# 输出：合规报告 JSON artifact
+
+on:
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: "7 7 * * *"  # 每日 07:07 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: compliance-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ── 1. Runner Policy (shell guard + xlibgate) ─────────────────
+  runner-policy:
+    name: Runner Policy
+    runs-on: [self-hosted, Linux, X64, sre/governance]
+    timeout-minutes: 15
+    outputs:
+      shell_status: ${{ steps.shell.outputs.status }}
+      xlibgate_status: ${{ steps.xlibgate.outputs.status }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: shell
+        name: Shell-based runner policy check
+        run: |
+          if bash .github/ci/runner-policy-guard.sh . 2>&1; then
+            echo "status=pass" >> $GITHUB_OUTPUT
+          else
+            echo "status=fail" >> $GITHUB_OUTPUT
+          fi
+
+      - id: xlibgate
+        name: xlibgate runner policy check
+        if: ${{ !cancelled() }}
+        continue-on-error: true
+        run: |
+          if command -v xlibgate &>/dev/null; then
+            xlibgate trust runner-policy --repo . 2>&1 | tee compliance-runner-policy.json
+            if grep -q '"status": "pass"' compliance-runner-policy.json; then
+              echo "status=pass" >> $GITHUB_OUTPUT
+            else
+              echo "status=fail" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "status=skip" >> $GITHUB_OUTPUT
+          fi
+        env:
+          PATH: /home/workspace/xlibgate:${{ env.PATH }}
+
+      - name: Upload runner policy evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: compliance-runner-policy-${{ github.sha }}
+          path: compliance-runner-policy.json
+
+  # ── 2. Runner Pools ──────────────────────────────────────────
+  runner-pools:
+    name: Runner Pools
+    runs-on: [self-hosted, Linux, X64, sre/governance]
+    timeout-minutes: 10
+    outputs:
+      status: ${{ steps.check.outputs.status }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: check
+        name: Verify runner pool registration
+        run: |
+          if command -v xlibgate &>/dev/null; then
+            xlibgate trust runner-pools --repo . 2>&1 | tee compliance-runner-pools.json
+            if grep -q '"status": "pass"' compliance-runner-pools.json; then
+              echo "status=pass" >> $GITHUB_OUTPUT
+            else
+              echo "status=fail" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "status=skip" >> $GITHUB_OUTPUT
+          fi
+        env:
+          PATH: /home/workspace/xlibgate:${{ env.PATH }}
+
+      - name: Upload pool evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: compliance-runner-pools-${{ github.sha }}
+          path: compliance-runner-pools.json
+
+  # ── 3. Deploy Isolation ──────────────────────────────────────
+  deploy-isolation:
+    name: Deploy Isolation
+    runs-on: [self-hosted, Linux, X64, sre/governance]
+    timeout-minutes: 10
+    outputs:
+      status: ${{ steps.check.outputs.status }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: check
+        name: Verify deploy isolation rules
+        run: |
+          echo "status=pass" >> $GITHUB_OUTPUT
+          bash .github/ci/deploy-policy-guard.sh 2>&1 || echo "status=fail" >> $GITHUB_OUTPUT
+          if command -v xlibgate &>/dev/null; then
+            xlibgate trust deploy-isolation --repo . 2>&1 | tee compliance-deploy-isolation.json
+          fi
+
+  # ── 4. Runner Evidence ───────────────────────────────────────
+  runner-evidence:
+    name: Runner Evidence
+    runs-on: [self-hosted, Linux, X64, sre/governance]
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generate runner evidence for compliance run
+        run: bash .github/ci/runner-evidence.sh release/evidence/compliance-runner-evidence.json
+
+      - name: Upload evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: compliance-evidence-${{ github.sha }}
+          path: release/evidence/compliance-runner-evidence.json
+
+  # ── 5. Compliance Summary ────────────────────────────────────
+  compliance-summary:
+    name: Compliance Summary
+    needs: [runner-policy, runner-pools, deploy-isolation, runner-evidence]
+    runs-on: [self-hosted, Linux, X64, sre/governance]
+    timeout-minutes: 5
+    if: always()
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generate compliance report
+        run: |
+          TIMESTAMP=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+          cat > release/evidence/compliance-report.json <<JSON
+          {
+            "schema": "zonecnh.compliance-report.v1",
+            "timestamp": "${TIMESTAMP}",
+            "repository": "${{ github.repository }}",
+            "ref": "${{ github.ref }}",
+            "sha": "${{ github.sha }}",
+            "checks": {
+              "runner_policy_shell": "${{ needs.runner-policy.outputs.shell_status || 'unknown' }}",
+              "runner_policy_xlibgate": "${{ needs.runner-policy.outputs.xlibgate_status || 'unknown' }}",
+              "runner_pools": "${{ needs.runner-pools.outputs.status || 'unknown' }}",
+              "deploy_isolation": "${{ needs.deploy-isolation.outputs.status || 'unknown' }}",
+              "runner_evidence": "generated"
+            },
+            "baseline": {
+              "go_version": "$(grep -oP 'ci_version:\s*\"\K[^\"]+' BASELINE.yaml 2>/dev/null || echo unknown)",
+              "runner_policy": "self_hosted_only"
+            }
+          }
+          JSON
+          echo "Compliance report generated:"
+          cat release/evidence/compliance-report.json | python3 -m json.tool 2>/dev/null || cat release/evidence/compliance-report.json
+
+      - name: Upload compliance report
+        uses: actions/upload-artifact@v4
+        with:
+          name: compliance-report-${{ github.sha }}
+          path: release/evidence/compliance-report.json

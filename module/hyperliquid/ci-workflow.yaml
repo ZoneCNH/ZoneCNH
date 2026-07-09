@@ -2,7 +2,7 @@
 #
 # 将此文件复制到 github.com/ZoneCNH/hyperliquid/.github/workflows/ci.yml。
 # 所有 CI 与 CD job 必须使用 sre/ 机器池；禁止回退 GitHub-hosted runner。
-# CI 机器池: sre/storage-light；CD 机器池: sre/deploy。
+# CI 机器池: sre/market；CD 机器池: sre/deploy。
 
 name: CI/CD
 
@@ -28,15 +28,15 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  GO_VERSION: "1.23"
-  SRE_CI_POOL: "sre/storage-light"
+  GO_VERSION: "1.26.5"
+  SRE_CI_POOL: "sre/market"
   SRE_DEPLOY_POOL: "sre/deploy"
   EVIDENCE_DIR: "release/evidence"
 
 jobs:
   ci-preflight:
     name: CI Preflight
-    runs-on: [self-hosted, Linux, X64, sre/storage-light]
+    runs-on: [self-hosted, Linux, X64, sre/market]
     timeout-minutes: 10
     steps:
       - name: Checkout
@@ -65,7 +65,7 @@ jobs:
   build:
     name: Build
     needs: ci-preflight
-    runs-on: [self-hosted, Linux, X64, sre/storage-light]
+    runs-on: [self-hosted, Linux, X64, sre/market]
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
@@ -79,7 +79,7 @@ jobs:
   test:
     name: Unit Test
     needs: ci-preflight
-    runs-on: [self-hosted, Linux, X64, sre/storage-light]
+    runs-on: [self-hosted, Linux, X64, sre/market]
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
@@ -102,7 +102,7 @@ jobs:
   lint:
     name: Lint
     needs: ci-preflight
-    runs-on: [self-hosted, Linux, X64, sre/storage-light]
+    runs-on: [self-hosted, Linux, X64, sre/market]
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
@@ -120,7 +120,7 @@ jobs:
   boundary:
     name: Boundary And Trust Gates
     needs: ci-preflight
-    runs-on: [self-hosted, Linux, X64, sre/storage-light]
+    runs-on: [self-hosted, Linux, X64, sre/market]
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
@@ -139,7 +139,7 @@ jobs:
   integration:
     name: Integration Test
     needs: ci-preflight
-    runs-on: [self-hosted, Linux, X64, sre/storage-light]
+    runs-on: [self-hosted, Linux, X64, sre/market]
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
@@ -158,7 +158,7 @@ jobs:
   secret-scan:
     name: Secret Scan
     needs: ci-preflight
-    runs-on: [self-hosted, Linux, X64, sre/storage-light]
+    runs-on: [self-hosted, Linux, X64, sre/market]
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
@@ -170,7 +170,7 @@ jobs:
   evidence:
     name: Evidence Package
     needs: [build, test, lint, boundary, integration, secret-scan]
-    runs-on: [self-hosted, Linux, X64, sre/storage-light]
+    runs-on: [self-hosted, Linux, X64, sre/market]
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
@@ -180,7 +180,7 @@ jobs:
           cat > "${{ env.EVIDENCE_DIR }}/ci-manifest.json" <<'JSON'
           {
             "module": "hyperliquid",
-            "ci_pool": "sre/storage-light",
+            "ci_pool": "sre/market",
             "deploy_pool": "sre/deploy",
             "runner_namespace": "sre/",
             "required_jobs": [

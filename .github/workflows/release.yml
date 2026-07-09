@@ -5,12 +5,10 @@
 
 name: Release
 
-# Self-hosted runner decommissioned 2026-06-18. Migrated to ubuntu-latest.
+# Self-hosted runner recovered 2026-07-09 (knowledge/ci.md Phase 0). Migrated to sre/foundation-l0.
 # 删除 tag push trigger 防止 queued 堆积。重装 runner 后恢复 push tags trigger。
 on:
   push:
-    branches: [main]
-  pull_request:
     branches: [main]
   workflow_dispatch:
     inputs:
@@ -22,9 +20,18 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
+  # ── 0. CICD-001 门禁 ───────────────────────────────────────
+  runner-gate:
+    uses: ./.github/workflows/runner-gate.yml
+
   # ── 1. 质量门禁：复用 docs-ci 全部检查 ─────────────────────────
   quality-gate:
+    needs: runner-gate
     uses: ./.github/workflows/docs-ci.yml
 
   # ── 2. Goal 控制面 CI：复用 Goal CI 全部检查 ────────────────────
@@ -34,7 +41,7 @@ jobs:
   # ── 3. Goal 发布硬阻断：未满足 G10/风险/证据合同不得发布 ─────────
   release-gate:
     name: Goal Release Gate
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, sre/foundation-l0]
     timeout-minutes: 10
     needs:
       - quality-gate
@@ -56,7 +63,7 @@ jobs:
   # ── 4. 生成 Release Manifest ──────────────────────────────────
   build-manifest:
     name: Build Release Manifest
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, sre/foundation-l0]
     timeout-minutes: 15
     needs: release-gate
     steps:
@@ -74,13 +81,16 @@ jobs:
         env:
           DEPLOY_ENVIRONMENT: staging
           DEPLOY_TARGET: homepage
-          DEPLOY_TARGET_POOL: sre/homepage
+          DEPLOY_TARGET_POOL: sre/governance
         run: bash .github/ci/generate-release-manifest.sh
 
       - name: 校验 SRE deploy contract
         env:
           REQUIRE_DEPLOY_EVIDENCE: "1"
         run: bash .github/ci/deploy-contract-preflight.sh
+
+      - name: 生成 runner evidence（CICD-001）
+        run: bash .github/ci/runner-evidence.sh release/evidence/runner-evidence.json
 
       - name: 上传 manifest 产物
         uses: actions/upload-artifact@v4
@@ -91,7 +101,7 @@ jobs:
   # ── 5. 创建 GitHub Release ────────────────────────────────────
   publish-release:
     name: Publish Release
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, sre/foundation-l0]
     timeout-minutes: 10
     needs: build-manifest
     if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/v')

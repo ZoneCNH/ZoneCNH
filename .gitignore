@@ -106,6 +106,8 @@ report/node_modules/
 # Separate sre project (not part of this repo)
 /sre/
 sre/
+# docs/sre/ is governance documentation SSOT — not the sre/ project
+!docs/sre/
 
 # Report tooling npm artifacts
 report/package.json

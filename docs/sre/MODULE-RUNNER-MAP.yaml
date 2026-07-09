@@ -1,0 +1,218 @@
+# MODULE-RUNNER-MAP.yaml — ZoneCNH 模块 → Runner Pool 确定性映射
+#
+# 权威来源：knowledge/ci.md §7, BASELINE.yaml, module/registry.yaml
+# 现状 2026-07-09：10.2.2.9 已恢复 sre/foundation-l0×2, sre/foundation-l1×2, sre/contracts×1, sre/security×1
+#   sre/governance, sre/storage-light, sre/storage-heavy, sre/market, sre/macro, sre/engine, sre/deploy 待主机恢复。
+# 使用方式：workflow 中 runs-on: [self-hosted, Linux, X64, <pool>]
+# Pool 定义：docs/sre/RUNNER-POOLS.yaml
+
+version: "2026.07.09"
+default_pool: sre/foundation-l1
+
+modules:
+  # ========================================================================
+  # 治理层（文档 / 基线 / 策略检查）
+  # ========================================================================
+  ZoneCNH:
+    pool: sre/governance
+
+  # ========================================================================
+  # 基座 L0 原语（stdlib-only）
+  # ========================================================================
+  kernel:
+    pool: sre/foundation-l0
+
+  # ========================================================================
+  # 基座 L1 运行时
+  # ========================================================================
+  configx:
+    pool: sre/foundation-l1
+  observex:
+    pool: sre/foundation-l1
+  resiliencx:
+    pool: sre/foundation-l1
+  schedulex:
+    pool: sre/foundation-l1
+  testkitx:
+    pool: sre/foundation-l1
+  bootstrap:
+    pool: sre/foundation-l1
+
+  # ========================================================================
+  # 基座 标准源 / 证据 / 门禁
+  # ========================================================================
+  xlib_standard:
+    pool: sre/governance
+  xlib_harness:
+    pool: sre/governance
+  xlib_evidence:
+    pool: sre/governance
+  xlibgate:
+    pool: sre/governance
+
+  # ========================================================================
+  # 基座 存储扩展
+  # ========================================================================
+  redisx:
+    pool: sre/storage-light
+  natsx:
+    pool: sre/storage-light
+  ossx:
+    pool: sre/storage-light
+
+  postgresx:
+    pool: sre/storage-heavy
+  kafkax:
+    pool: sre/storage-heavy
+  clickhousex:
+    pool: sre/storage-heavy
+  taosx:
+    pool: sre/storage-heavy
+
+  # ========================================================================
+  # 基座 契约 / 传输
+  # ========================================================================
+  contracts:
+    pool: sre/contracts
+  transportx:
+    pool: sre/contracts
+
+  # ========================================================================
+  # L2.5 领域共享模块
+  # ========================================================================
+  decimalx:
+    pool: sre/contracts
+  domainx:
+    pool: sre/contracts
+  domain_market:
+    pool: sre/contracts
+  domain_macro:
+    pool: sre/contracts
+  domain_exchange:
+    pool: sre/contracts
+
+  # ========================================================================
+  # 数据域 — 市场（交易所适配器 + 行情数据）
+  # ========================================================================
+  binance:
+    pool: sre/market
+  orderbook:
+    pool: sre/market
+  okx:
+    pool: sre/market
+  hyperliquid:
+    pool: sre/market
+  coinglass:
+    pool: sre/market
+  market_data:
+    pool: sre/market
+
+  # ========================================================================
+  # 数据域 — 宏观 / 基本面
+  # ========================================================================
+  fred:
+    pool: sre/macro
+  bea:
+    pool: sre/macro
+  ecb:
+    pool: sre/macro
+  treasury:
+    pool: sre/macro
+  yahoo:
+    pool: sre/macro
+  eastmoney:
+    pool: sre/macro
+  japan_cb:
+    pool: sre/macro
+  uk_cb:
+    pool: sre/macro
+  yield_curve:
+    pool: sre/macro
+  macro_data:
+    pool: sre/macro
+  pe_data:
+    pool: sre/macro
+  alternative_data:
+    pool: sre/macro
+
+  # ========================================================================
+  # 分析域 — 因子 / 信号 / 特征 / 脑机
+  # ========================================================================
+  factor_engine:
+    pool: sre/engine
+  feature_store:
+    pool: sre/engine
+  factor_eval:
+    pool: sre/engine
+  market_regime:
+    pool: sre/engine
+  macro_regime:
+    pool: sre/engine
+  regime_engine:
+    pool: sre/engine
+  ms_brain:
+    pool: sre/engine
+  flowx:
+    pool: sre/engine
+
+  # ========================================================================
+  # 决策域 — 信号 / 回测 / 优化 / 策略
+  # ========================================================================
+  signal_factory:
+    pool: sre/engine
+  backtestx:
+    pool: sre/engine
+  backtest_engine:
+    pool: sre/engine
+  optimizer:
+    pool: sre/engine
+  strategyx:
+    pool: sre/engine
+  maestro:
+    pool: sre/engine
+
+  # ========================================================================
+  # 执行域 — 风控 / 订单 / 持仓 / 结算
+  # ========================================================================
+  riskx:
+    pool: sre/engine
+  risk_engine:
+    pool: sre/engine
+  orderx:
+    pool: sre/engine
+  order_engine:
+    pool: sre/engine
+  positionx:
+    pool: sre/engine
+  portfolio_engine:
+    pool: sre/engine
+  settlement:
+    pool: sre/engine
+
+  # ========================================================================
+  # 入口域 — 前端 / 通知 / 编排器
+  # ========================================================================
+  frontend:
+    pool: sre/foundation-l1
+  alertx:
+    pool: sre/foundation-l1
+  composer:
+    pool: sre/foundation-l1
+
+  # ========================================================================
+  # 横切 — x.go 跨模块工具
+  # ========================================================================
+  x.go:
+    pool: sre/foundation-l1
+
+# ============================================================================
+# 安全扫描（全局复用 sre/security pool）
+# ============================================================================
+security:
+  pool: sre/security
+  modules: all
+  workflows:
+    - gitleaks
+    - govulncheck
+    - sbom
+    - supply-chain-scan

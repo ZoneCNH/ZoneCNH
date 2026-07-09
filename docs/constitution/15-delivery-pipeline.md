@@ -37,4 +37,15 @@ Goal → Spec → Design → Plan → Tasks → Prompt → Code → Test → Rev
 
 本条款的详细流程、制品模板和 Agent 编排规则见 `docs/governance/DEVELOPMENT-WORKFLOW.md`。
 
+### 15.5 CI/CD 执行平面
+
+管线所有 CI/CD 阶段（Build / Test / Lint / Security Scan / Release / Deploy）必须运行在 self-hosted runners 上（CICD-001）。执行平面规则详见：
+
+| 文档 | 用途 |
+| ---- | ---- |
+| `BASELINE.yaml` | SSOT — Go 基线 + runner 策略 |
+| `docs/sre/RUNNER-POOLS.yaml` | `sre/*` pool 注册表 + 状态 |
+| `docs/sre/MODULE-RUNNER-MAP.yaml` | 模块→pool 确定性映射 |
+| `knowledge/ci.md` | 完整方案 + 恢复时间表 |
+
 ---

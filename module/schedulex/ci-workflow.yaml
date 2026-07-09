@@ -1,154 +1,12 @@
-# CI/CD Workflow 参考模板 - schedulex v1.0.0
+# CI/CD Workflow 参考模板 — schedulex
 #
-# Runtime authority: /home/workspace/schedulex/.github/workflows/*.yml
-# 本文件用于 module/schedulex 文档侧同步，不直接替代运行时仓库 workflow。
-# Workflow target: github.com/ZoneCNH/schedulex/.github/workflows/ci.yml
+# 将此文件复制到 github.com/ZoneCNH/schedulex/.github/workflows/ci.yml。
+# 所有 CI 与 CD job 必须使用 sre/ 机器池；禁止回退 GitHub-hosted runner。
+# CI 机器池: sre/foundation-l1；CD 机器池: sre/deploy。
 
-name: schedulex-release-gates
-version: v1.0.0
+name: CI/CD
 
-environment:
-  go_version: "1.23"
-  gowork: "off"
-  version: v1.0.0
-
-runner_pools:
-  ci: ubuntu-latest
-  release: ubuntu-latest
-
-required_status_checks:
-  - ci
-  - release-check
-  - security
-  - integration
-  - gates
-  - worktree-check
-
-tools:
-  golangci_lint: v2.1.6
-  govulncheck: v1.3.0
-
-workflows:
-  ci:
-    file: .github/workflows/ci.yml
-    triggers:
-      - pull_request_to_main
-      - push_to_main
-    permissions:
-      contents: read
-    jobs:
-      - id: ci
-        runner: ci
-        preflight:
-          - add_go_bin_to_path
-          - install_golangci_lint
-          - install_govulncheck
-        command: GOWORK=off make ci
-      - id: release-check
-        runner: ci
-        preflight:
-          - add_go_bin_to_path
-          - install_golangci_lint
-          - install_govulncheck
-        command: GOWORK=off make release-check VERSION="${VERSION}"
-
-  goal_gates:
-    file: .github/workflows/goal-gates.yml
-    triggers:
-      - pull_request_to_main
-      - push_to_main
-      - workflow_dispatch
-    permissions:
-      contents: read
-    jobs:
-      - id: gates
-        runner: ci
-        preflight:
-          - verify_worktree_gate
-          - add_go_bin_to_path
-          - install_golangci_lint
-          - install_govulncheck
-        command: GOWORK=off make ci-extended VERSION="${VERSION}"
-
-  security:
-    file: .github/workflows/security.yml
-    triggers:
-      - pull_request_to_main
-      - workflow_dispatch
-    permissions:
-      contents: read
-    jobs:
-      - id: security
-        runner: ci
-        command: GOWORK=off make security
-
-  release:
-    file: .github/workflows/release.yml
-    triggers:
-      - push_tag_v_star
-    permissions:
-      contents: write
-    jobs:
-      - id: release-check
-        runner: release
-        command: GOWORK=off make release-check VERSION="${VERSION}"
-        evidence:
-          - release/manifest/latest.json
-          - release/manifest/latest.json.sha256
-          - release artifact release-manifest-${RUN_ID}
-        publish:
-          command: gh release create_or_edit "${VERSION}" --verify-tag
-
-local_release_gate_order:
-  - GOWORK=off make fmt
-  - GOWORK=off make vet
-  - GOWORK=off make lint
-  - GOWORK=off make test
-  - GOWORK=off make race
-  - GOWORK=off make boundary
-  - GOWORK=off make contracts
-  - GOWORK=off make docs-check
-  - GOWORK=off make security
-  - GOWORK=off make api-check
-  - GOWORK=off make downstream-smoke
-  - GOWORK=off make integration
-  - GOWORK=off make governance-check
-  - GOWORK=off make p1-governance-check
-  - GOWORK=off make p2-runtime-check
-  - GOWORK=off make evidence
-  - GOWORK=off make release-final-check
-  - GOWORK=off make score
-  - GOWORK=off make release-preflight VERSION=v1.0.0
-  - GOWORK=off make release-check VERSION=v1.0.0
-
-branch_and_tag_protection:
-  main:
-    required_signatures: true
-    required_status_checks:
-      - ci
-      - release-check
-      - security
-      - integration
-      - gates
-      - worktree-check
-  release_tags:
-    pattern: v*
-    required_signatures: true
-
-release_notes:
-  known_post_publish_check:
-    status: pending_until_tag_published
-    command: GOWORK=off make downstream-smoke
-    reason: external module resolution requires published v1.0.0 tag
-
-# ---------------------------------------------------------------------------
-# module-cicd-check contract projection
-#
-# 以下 section 仅用于满足 .github/ci/module-cicd-check.sh 的 token / job 形式检查。
-# 运行时权威 workflow 仍为 /home/workspace/schedulex/.github/workflows/{ci,release}.yml。
-# 本投影以 GitHub Actions YAML 语法表达 schedulex 已有的 release gates。
-# ---------------------------------------------------------------------------
-triggers:
+on:
   pull_request:
     branches: [main]
   push:
@@ -156,11 +14,6 @@ triggers:
     tags:
       - "v*"
   workflow_dispatch:
-    inputs:
-      rollback_ref:
-        description: "Optional tag/ref for rollback drill"
-        required: false
-        type: string
 
 permissions:
   contents: read
@@ -169,87 +22,95 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  GO_VERSION: "1.26.5"
+  SRE_CI_POOL: "sre/foundation-l1"
+  SRE_DEPLOY_POOL: "sre/deploy"
+  EVIDENCE_DIR: "release/evidence"
+
 jobs:
   ci-preflight:
     name: CI Preflight
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, sre/foundation-l1]
     timeout-minutes: 10
     steps:
-      - run: echo "ci-preflight stub — runtime authority schedulex/.github/workflows/ci.yml"
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+      - run: go mod download
+      - run: go version
 
   build:
     name: Build
-    runs-on: ubuntu-latest
+    needs: ci-preflight
+    runs-on: [self-hosted, Linux, X64, sre/foundation-l1]
     timeout-minutes: 15
     steps:
-      - run: echo "build stub — covered by make ci build target"
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+      - run: go build ./...
 
   test:
     name: Unit Test
-    runs-on: ubuntu-latest
+    needs: ci-preflight
+    runs-on: [self-hosted, Linux, X64, sre/foundation-l1]
     timeout-minutes: 25
     steps:
-      - run: echo "test stub — covered by make ci test target (race enabled)"
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+      - run: go test ./... -race -count=1 -coverprofile=coverage.out
+      - run: go tool cover -func=coverage.out | tee coverage.txt
 
   lint:
     name: Lint
-    runs-on: ubuntu-latest
+    needs: ci-preflight
+    runs-on: [self-hosted, Linux, X64, sre/foundation-l1]
     timeout-minutes: 15
     steps:
-      - run: echo "lint stub — covered by make ci lint target (golangci-lint v2.1.6)"
-
-  boundary:
-    name: Boundary And Trust Gates
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    steps:
-      - run: echo "boundary stub — covered by make boundary / make contracts"
-
-  integration:
-    name: Integration Test
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    steps:
-      - run: echo "integration stub — covered by make integration"
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+      - run: go vet ./...
+      - uses: golangci/golangci-lint-action@v6
 
   secret-scan:
     name: Secret Scan
-    runs-on: ubuntu-latest
+    needs: ci-preflight
+    runs-on: [self-hosted, Linux, X64, sre/security]
     timeout-minutes: 10
     steps:
-      - run: echo "secret-scan stub — covered by make security (govulncheck + gitleaks)"
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
 
   evidence:
     name: Evidence Package
-    runs-on: ubuntu-latest
+    needs: [build, test, lint, secret-scan]
+    runs-on: [self-hosted, Linux, X64, sre/foundation-l1]
     timeout-minutes: 10
     steps:
-      - run: echo "evidence stub — covered by make evidence / release-preflight"
-
-  release-preflight:
-    name: Release Preflight
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    steps:
-      - run: echo "release-preflight stub — covered by make release-preflight VERSION"
-
-  release-publish:
-    name: Publish Release
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    steps:
-      - run: echo "release-publish stub — covered by release.yml gh release create_or_edit"
-
-  post-release-smoke:
-    name: Post Release Smoke
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - run: echo "post-release-smoke stub — covered by make downstream-smoke (post-publish)"
-
-  rollback-drill:
-    name: Rollback Drill
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - run: echo "rollback-drill stub — manual release reversal evidence"
+      - uses: actions/checkout@v4
+      - run: |
+          mkdir -p ${{ env.EVIDENCE_DIR }}
+          cat > ${{ env.EVIDENCE_DIR }}/ci-manifest.json <<'JSON'
+{
+  "module": "schedulex",
+  "ci_pool": "sre/foundation-l1",
+  "deploy_pool": "sre/deploy",
+  "runner_namespace": "sre/",
+  "go_version": "1.26.5"
+}
+JSON

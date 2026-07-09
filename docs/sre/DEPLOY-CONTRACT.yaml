@@ -1,0 +1,71 @@
+# Deploy Contract — ZoneCNH CI/CD 部署合同
+
+> 来源：CICD-001, BASELINE.yaml §ci_cd.deploy, knowledge/ci.md §11
+> 这是一个参考合同模板，实际合同由 `generate-release-manifest.sh` 生成。
+> SRE 执行平面：`ZoneCNH/sre/.github/workflows/deploy-contract.yml@main`
+
+## 部署合同格式
+
+```json
+{
+  "contract_version": "zonecnh.deploy-contract.v1",
+  "release_ref": "<tag-or-commit-sha>",
+  "environment": "staging | production",
+  "target": "<module-name>",
+  "target_pool": "sre/deploy",
+  "action": "deploy",
+  "dry_run": false,
+  "manifest_path": "release/manifest/release-manifest.json",
+  "evidence_path": "release/evidence/runner-evidence.json",
+  "execution_plane": {
+    "repository": "ZoneCNH/sre",
+    "workflow": "ZoneCNH/sre/.github/workflows/deploy-contract.yml@main",
+    "runner_pool": "sre/deploy",
+    "remote_execution_allowed_in_this_repo": false
+  }
+}
+```
+
+## 隔离规则（CICD-001 §deploy）
+
+| 规则 | 说明 | 强制方式 |
+|------|------|----------|
+| R1 | deploy/release 工作流不响应 `pull_request` 事件 | `deploy-policy-guard.sh` |
+| R2 | production 部署必须 GitHub Environment approval | GitHub branch protection ruleset |
+| R3 | 业务仓库禁止 inline 部署命令（ssh/scp/rsync/kubectl/helm/systemctl/docker-compose） | `deploy-policy-guard.sh` + `runner-policy-guard.sh` |
+| R4 | 真实部署只能通过 `ZoneCNH/sre/.github/workflows/deploy-contract.yml@main` | `deploy-contract-preflight.sh` |
+| R5 | deploy pool 与其他 pool 物理隔离（PR runner 不拿 production secrets） | `sre/bootstrap/hosts.env` 部署分离 |
+| R6 | concurrency 互斥锁，同一时间只有一个 release 在执行 | workflow `concurrency.group` |
+| R7 | release 必须生成 runner evidence | `runner-evidence.sh` |
+
+## ZoneCNH/sre 仓库结构（待初始化）
+
+```
+sre/
+├── .github/
+│   └── workflows/
+│       ├── deploy-contract.yml      # 部署合同入口
+│       ├── runner-health.yml        # runner 健康检查
+│       └── runner-provision.yml     # runner 自动注册
+├── runners/
+│   ├── pools.yaml                   # 1:1 镜像 docs/sre/RUNNER-POOLS.yaml
+│   ├── provision.sh                 # runner 注册脚本
+│   ├── register-ephemeral.sh        # ephemeral runner 注册
+│   ├── unregister-stale.sh          # 清理僵尸 runner
+│   └── health-check.sh              # 健康检查
+├── deploy/
+│   ├── smoke.sh                     # 冒烟测试
+│   ├── rollback.sh                  # 回滚
+│   └── contract-validate.sh         # 合同校验
+└── docs/
+    └── RUNNER-OPERATIONS.md
+```
+
+## 权限分层
+
+| Workflow 类型 | permissions | 说明 |
+|--------------|-------------|------|
+| PR CI | `contents: read` | 最小权限 |
+| Security scan | `contents: read`, `security-events: write` | 仅 SARIF 上传 |
+| Release | `contents: write` | 创建 GitHub Release |
+| Deploy (sre/deploy) | `contents: read`, `deployments: write`, `id-token: write` | 独立权限 |

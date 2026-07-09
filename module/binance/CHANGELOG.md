@@ -2,9 +2,9 @@
 
 所有 notable 变更记录，按 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/) 格式维护。
 
-- Module-Version: v4.0.1
+- Module-Version: v4.1.0
 - Last-Updated: 2026-07-08
-- Spec-Reference: `module/binance/spec/SPEC.md` v4.0.1
+- Spec-Reference: `module/binance/spec/SPEC.md` v4.1.0
 - 治理规则：`module/binance/gate/RULES.md` R9 文档存在性性
 
 ---
@@ -12,8 +12,10 @@
 ## v0.15.0（2026-07-08）
 
 - Runtime tag：v0.15.0（@52d9144，含白名单 GC-0~GC-5 与 PR #442-#461 修复；#462 coverage artifact 非阻断在 tag 之后合入 main，不纳入本版本）。
-- Spec：v4.0.1（65 FR Done / 0 Pending；order book FR-052~061 spot/um/cm 已实现，options 待 Phase 2）。
+- Spec：v4.1.0（65 FR Done / 0 Pending；order book FR-052~061 spot/um/cm 已实现，options 待 Phase 2；canonical event_type recovery 已同步）。
 - 配套：CI toolchain 修复（GOTOOLCHAIN=local + fix-goroot.sh，PR #457-#459）、gofmt cleanup（#461）、coverage artifact 非阻断（#462）。
+- 推送：`binance` → `fix/upgrade-go-1.26.5`；`ZoneCNH` → `docs/binance_production_readiness_report`。
+- 发布说明：[RELEASE-NOTES-PR-1746](../../docs/report/RELEASE-NOTES-PR-1746-20260709.md)（PR [#1746](https://github.com/ZoneCNH/ZoneCNH/pull/1746)）。
 - 详细变更见下方按日期归档的明细。
 
 ---

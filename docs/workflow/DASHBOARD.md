@@ -27,32 +27,32 @@
 
 ## 模块管线进度
 
-| 模块 | Maturity | Pipeline 进度 | 仲裁 |
-|------|----------|-------------|------|
-| alertx | ░░░░░░ 0/8 | 🟡🟡🟡🟡🟡⬜ SMTaPlPrC | 5/5 pass |
-| binance | ░░░░░░ 0/8 | 🔴⬜⬜⬜⬜⬜ SMTaPlPrC | — |
-| bootstrap | ▓▓▓░░░ 5/8 🏭 | ⬜⬜⬜⬜⬜⬜ SMTaPlPrC | — |
-| clickhousex | ▓▓▓▓░░ 6/8 🏭 | 🟡🟡🟡🟡🟡🟡 SMTaPlPrC | 6/6 pass |
-| configx | ▓▓▓▓░░ 6/8 🏭 | 🟡🟡🟡🟡🟡🟡 SMTaPlPrC | 6/6 pass |
-| contracts | ▓▓▓▓░░ 6/8 🏭 | 🟢🟢🟢🟢🟢🟢 SMTaPlPrC | 2/6 pass |
-| domainx | ▓▓▓░░░ 5/8 🏭 | 🟡🟡🟡🟡🟡🟡 SMTaPlPrC | 6/6 pass |
-| goal | ░░░░░░ 0/8 | ⬜🔴⬜⬜⬜⬜ SMTaPlPrC | — |
-| kafkax | ▓▓▓▓░░ 6/8 🏭 | 🟡🟡🟡🟡🟡🟡 SMTaPlPrC | 6/6 pass |
-| kernel | ▓▓▓▓░░ 6/8 🏭 | 🟡🟡🟢🟡🟡🟡 SMTaPlPrC | 6/6 pass |
-| natsx | ▓▓▓▓░░ 6/8 🏭 | 🟡🟡🟡🟡🟡🟡 SMTaPlPrC | 6/6 pass |
-| observex | ▓▓▓▓░░ 6/8 🏭 | 🟡🟡🟡🟡🟡🟡 SMTaPlPrC | 6/6 pass |
-| ossx | ▓▓▓▓░░ 6/8 🏭 | 🟡🟡🟡🟡🟡🟡 SMTaPlPrC | 6/6 pass |
-| postgresx | ▓▓▓▓░░ 6/8 🏭 | 🟡🟡🟡🟡🟡🟡 SMTaPlPrC | 6/6 pass |
-| redisx | ▓▓▓▓░░ 6/8 🏭 | 🟡🟡🟡🟡🟡🟡 SMTaPlPrC | 6/6 pass |
-| resiliencx | ▓▓▓▓░░ 6/8 🏭 | 🟡🟡🟡🟡🟡🟡 SMTaPlPrC | 6/6 pass |
-| schedulex | ▓▓▓▓░░ 6/8 🏭 | 🟡🟡🟡🟡🟡🟡 SMTaPlPrC | 6/6 pass |
-| taosx | ▓▓▓▓░░ 6/8 🏭 | 🟡🟡🟡🟡🟡🟡 SMTaPlPrC | 6/6 pass |
-| testkitx | ▓▓▓░░░ 4/8 🏭 | 🟡🟡🟡🟡🟡🟡 SMTaPlPrC | 6/6 pass |
-| transportx | ▓▓▓░░░ 5/8 🏭 | 🟡🟡🟡🟡🟡🟡 SMTaPlPrC | 6/6 pass |
-| xlib_evidence | ▓▓▓░░░ 5/8 🏭 | 🟡🟡🟡🟡🟡🟡 SMTaPlPrC | 6/6 pass |
-| xlib_harness | ▓▓▓░░░ 5/8 🏭 | 🟡🟡🟡🟡🟡🟡 SMTaPlPrC | 6/6 pass |
-| xlib_standard | ▓▓▓░░░ 5/8 🏭 | 🟡🟡🟡🟡🟢🟡 SMTaPlPrC | 6/6 pass |
-| xlibgate | ▓▓▓░░░ 5/8 🏭 | 🟡🟡🟡🟡🟡🟡 SMTaPlPrC | 6/6 pass |
+| 模块 | Maturity | Pipeline 进度 | 仲裁 | CI Pool |
+|------|----------|-------------|------|---------|
+| alertx | ░░░░░░ 0/8 | 🟡🟡🟡🟡🟡⬜ SMTaPlPrC | 5/5 pass | `sre/foundation-l1` |
+| binance | ░░░░░░ 0/8 | 🔴⬜⬜⬜⬜⬜ SMTaPlPrC | — | `sre/market` |
+| bootstrap | ▓▓▓░░░ 5/8 🏭 | ⬜⬜⬜⬜⬜⬜ SMTaPlPrC | — | `sre/foundation-l1` |
+| clickhousex | ▓▓▓▓░░ 6/8 🏭 | 🟡🟡🟡🟡🟡🟡 SMTaPlPrC | 6/6 pass | `sre/storage-heavy` |
+| configx | ▓▓▓▓░░ 6/8 🏭 | 🟡🟡🟡🟡🟡🟡 SMTaPlPrC | 6/6 pass | `sre/foundation-l1` |
+| contracts | ▓▓▓▓░░ 6/8 🏭 | 🟢🟢🟢🟢🟢🟢 SMTaPlPrC | 2/6 pass | `sre/contracts` |
+| domainx | ▓▓▓░░░ 5/8 🏭 | 🟡🟡🟡🟡🟡🟡 SMTaPlPrC | 6/6 pass | `sre/contracts` |
+| goal | ░░░░░░ 0/8 | ⬜🔴⬜⬜⬜⬜ SMTaPlPrC | — | - |
+| kafkax | ▓▓▓▓░░ 6/8 🏭 | 🟡🟡🟡🟡🟡🟡 SMTaPlPrC | 6/6 pass | `sre/storage-heavy` |
+| kernel | ▓▓▓▓░░ 6/8 🏭 | 🟡🟡🟢🟡🟡🟡 SMTaPlPrC | 6/6 pass | `sre/foundation-l0` |
+| natsx | ▓▓▓▓░░ 6/8 🏭 | 🟡🟡🟡🟡🟡🟡 SMTaPlPrC | 6/6 pass | `sre/storage-light` |
+| observex | ▓▓▓▓░░ 6/8 🏭 | 🟡🟡🟡🟡🟡🟡 SMTaPlPrC | 6/6 pass | `sre/foundation-l1` |
+| ossx | ▓▓▓▓░░ 6/8 🏭 | 🟡🟡🟡🟡🟡🟡 SMTaPlPrC | 6/6 pass | `sre/storage-light` |
+| postgresx | ▓▓▓▓░░ 6/8 🏭 | 🟡🟡🟡🟡🟡🟡 SMTaPlPrC | 6/6 pass | `sre/storage-heavy` |
+| redisx | ▓▓▓▓░░ 6/8 🏭 | 🟡🟡🟡🟡🟡🟡 SMTaPlPrC | 6/6 pass | `sre/storage-light` |
+| resiliencx | ▓▓▓▓░░ 6/8 🏭 | 🟡🟡🟡🟡🟡🟡 SMTaPlPrC | 6/6 pass | `sre/foundation-l1` |
+| schedulex | ▓▓▓▓░░ 6/8 🏭 | 🟡🟡🟡🟡🟡🟡 SMTaPlPrC | 6/6 pass | `sre/foundation-l1` |
+| taosx | ▓▓▓▓░░ 6/8 🏭 | 🟡🟡🟡🟡🟡🟡 SMTaPlPrC | 6/6 pass | `sre/storage-heavy` |
+| testkitx | ▓▓▓░░░ 4/8 🏭 | 🟡🟡🟡🟡🟡🟡 SMTaPlPrC | 6/6 pass | `sre/foundation-l1` |
+| transportx | ▓▓▓░░░ 5/8 🏭 | 🟡🟡🟡🟡🟡🟡 SMTaPlPrC | 6/6 pass | `sre/contracts` |
+| xlib_evidence | ▓▓▓░░░ 5/8 🏭 | 🟡🟡🟡🟡🟡🟡 SMTaPlPrC | 6/6 pass | `sre/governance` |
+| xlib_harness | ▓▓▓░░░ 5/8 🏭 | 🟡🟡🟡🟡🟡🟡 SMTaPlPrC | 6/6 pass | `sre/governance` |
+| xlib_standard | ▓▓▓░░░ 5/8 🏭 | 🟡🟡🟡🟡🟢🟡 SMTaPlPrC | 6/6 pass | `sre/governance` |
+| xlibgate | ▓▓▓░░░ 5/8 🏭 | 🟡🟡🟡🟡🟡🟡 SMTaPlPrC | 6/6 pass | `sre/governance` |
 
 > **图例**: 🟢 四源齐全 🔴 部分 🟡 2源 ⬜ 无 | 🏭 Factory 达标
 

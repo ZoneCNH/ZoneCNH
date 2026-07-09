@@ -1,7 +1,7 @@
 # Binance Config Schema
 
 - Last-Updated: 2026-07-08
-- Source-SPEC: `module/binance/spec/SPEC.md` v4.0.1 §11
+- Source-SPEC: `module/binance/spec/SPEC.md` v4.1.0 §11
 - Runtime examples: `/home/workspace/binance/configs/binance-client.env.example`, `/home/workspace/binance/configs/binance-server.env.example`
 
 ## Rule

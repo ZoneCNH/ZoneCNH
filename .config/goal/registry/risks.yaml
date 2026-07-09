@@ -118,6 +118,62 @@ risks:
     related_tasks: []
 
 # - risk_id: RISK-GOAL-20260608-001-001
+
+  - risk_id: RISK-GOAL-20260709-001-001
+    document_version: "2026-07-09"
+    goal_id: GOAL-20260709-001
+    title: orderbook release closure
+    severity: Medium
+    probability: High
+    impact: Medium
+    status: Closed
+    release_blocking: false
+    owner: ZoneCNH
+    created_at: "2026-07-09"
+    updated_at: "2026-07-09"
+    due_at: "2026-08-31"
+    review_gate: G10
+    evidence_id: EVID-ORDERBOOK-VALIDATION-20260709
+    risk_owner: ZoneCNH
+    risk_level: medium
+    risk_reason: "GitHub repository、v0.1.0 tag、remote CI 和 GitHub Release 已创建，GOB-10 release 阻断已关闭。"
+    mitigation:
+      - module/registry.yaml lifecycle 已更新为 active
+      - release manifest 记录 GitHub Release 和 CI URL
+    contingency:
+      - 若远端 release 或 CI 回归失败，重新打开风险并降级 lifecycle
+    related_gates:
+      - G10
+    related_tasks:
+      - TASK-OB-004
+
+  - risk_id: RISK-GOAL-20260709-001-002
+    document_version: "2026-07-09"
+    goal_id: GOAL-20260709-001
+    title: 全局 goal-workflow validate 被 binance ALIGNMENT drift 阻断
+    severity: Medium
+    probability: High
+    impact: Medium
+    status: Closed
+    release_blocking: false
+    owner: ZoneCNH
+    created_at: "2026-07-09"
+    updated_at: "2026-07-09"
+    due_at: "2026-07-31"
+    review_gate: G8
+    evidence_id: EVID-ORDERBOOK-VALIDATION-20260709
+    risk_owner: ZoneCNH
+    risk_level: medium
+    risk_reason: "ALIGNMENT.md 已加入模块允许制品规则，goal-workflow strict validation 和 Matrix check-only 已通过。"
+    mitigation:
+      - 保留 allowed_module_artifacts 中的 ALIGNMENT.md
+      - 发布前复跑 goal-workflow validate
+    contingency:
+      - 若规则漂移复现，重新打开风险并阻断发布
+    related_gates:
+      - G8
+    related_tasks:
+      - TASK-OB-004
 #   document_version: "2026-06-09"
 #   goal_id: GOAL-20260608-001
 #   title: WS 连接稳定性风险

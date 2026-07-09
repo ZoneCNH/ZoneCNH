@@ -1,8 +1,8 @@
 # module/binance NAMING.md — 命名 SSOT
 
-- Module-Version: v4.0.0
-- Last-Updated: 2026-07-06
-- Applies-To: `module/binance/spec/SPEC.md` v3.18.0, `module/binance/gate/RULES.md` v3.18.0
+- Module-Version: v4.1.0
+- Last-Updated: 2026-07-09
+- Applies-To: `module/binance/spec/SPEC.md` v4.1.0, `module/binance/gate/RULES.md` v4.1.0
 - Scope: product_line、event_type、natsx subject、Kafka topic、TDengine stable、Redis key、REST endpoint、OSS path、PostgreSQL table、ClickHouse table
 
 > [COMPUTED, HIGH] 本文件是 `module/binance` 命名权威入口。所有新增规格、任务和 runtime 代码必须使用本文件的 canonical token；历史别名只允许出现在本文件、治理报告、漂移清单和归档 task 中。canonical 命名对齐 Binance 原生事件名（camelCase → snake_case），详见 [EVENT-TYPE-MAPPING.md](../design/EVENT-TYPE-MAPPING.md) §2.0。
@@ -47,6 +47,7 @@
 | `trade` | — | 事件型 | `aggTrade` / `trade` |
 | `funding_rate` | — | 状态型 | (派生自 `markPriceUpdate` `r` 字段) |
 | `mark_price_update` | ~~`mark_price`~~ | 状态型 | `markPriceUpdate` |
+| `option_tick` | — | 状态型 | `optionTicker` |
 
 ### 2.2 计划类型（设计层已定义，runtime 待 FR 驱动）
 
@@ -58,7 +59,7 @@
 | `index_reference` | 状态型 | `compositeIndex` / `assetIndex` / `avgPrice` / `referencePrice` |
 | `contract_info` | 事件型(低频) | `contractInfo` |
 
-> [COMPUTED, HIGH] v3.18.0 起 product_line × event_type 为 **4 × 11** 矩阵（6 implemented + 5 planned）。runtime 可用 capability/status 标识暂不产出的组合。
+> [COMPUTED, HIGH] v4.1.0 起 product_line × event_type 为 **4 × 12** 矩阵（7 implemented + 5 planned）。runtime 可用 capability/status 标识暂不产出的组合。
 
 ### 2.3 Bar 订阅周期集（FR-014）
 
@@ -80,7 +81,7 @@
 | `spot` | `book_ticker`, `trade`, `kline`, `depth_update` |
 | `um_perp` | `book_ticker`, `trade`, `kline`, `depth_update`, `funding_rate`, `mark_price_update` |
 | `cm_perp` | `book_ticker`, `trade`, `kline`, `depth_update`, `funding_rate`, `mark_price_update` |
-| `options` | `trade`, `kline`, `depth_update` |
+| `options` | `trade`, `kline`, `depth_update`, `option_tick` |
 
 > [COMPUTED, HIGH] `—`（未列出的组合）表示该产品线不适用此 event_type（详见 [EVENT-TYPE-MAPPING.md](../design/EVENT-TYPE-MAPPING.md) §4.1）。NATS stream 注册 wildcard `binance.market.*.*.v1`，未实现的组合不产生消息。
 
@@ -114,7 +115,7 @@ binance.market.{product_line}.contract_info.v1
 | `spot` | `book_ticker`, `trade`, `kline`, `depth_update` |
 | `um_perp` | `book_ticker`, `trade`, `kline`, `depth_update`, `funding_rate`, `mark_price_update` |
 | `cm_perp` | `book_ticker`, `trade`, `kline`, `depth_update`, `funding_rate`, `mark_price_update` |
-| `options` | `trade`, `kline`, `depth_update` |
+| `options` | `trade`, `kline`, `depth_update`, `option_tick` |
 
 ### 4.2 计划 topics（待 FR 驱动）
 
@@ -137,7 +138,7 @@ signal_engine  risk_engine  backtestx  market_regime
 | 层级 | 格式 | 示例 |
 |---|---|---|
 | Database | `binance_market` | `binance_market` |
-| Supertable | `{event_type}` (无前缀) | `book_ticker`, `trade`, `kline`, `depth_update`, `funding_rate`, `mark_price_update` |
+| Supertable | `{event_type}` (无前缀) | `book_ticker`, `trade`, `kline`, `depth_update`, `funding_rate`, `mark_price_update`, `option_tick` |
 | Subtable | `{event_type}_{product_line}_{symbol_slug}` | `book_ticker_spot_btcusdt` |
 | Tags | `exchange`, `product_line`, `symbol`, `event_type` | `binance`, `um_perp`, `BTCUSDT`, `mark_price_update` |
 
@@ -157,7 +158,7 @@ signal_engine  risk_engine  backtestx  market_regime
 
 | 用途 | 格式 | TTL |
 |---|---|---|
-| 最新事件缓存 | `binance:{event_type}:{product_line}:{symbol}` | book_ticker/trade/kline/funding_rate/mark_price_update 60s；depth_update 5s |
+| 最新事件缓存 | `binance:{event_type}:{product_line}:{symbol}` | book_ticker/trade/kline/funding_rate/mark_price_update/option_tick 60s；depth_update 5s |
 | 幂等标记 | `binance:idem:{idempotency_key}` | 72h |
 | 分布式锁 | `binance:lock:{scope}` | 30s lease |
 | 限流桶 | `binance:ratelimit:{endpoint}:{token}` | 1s |

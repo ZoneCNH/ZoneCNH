@@ -1,0 +1,116 @@
+# CI/CD Workflow 参考模板 — risk_engine
+#
+# 将此文件复制到 github.com/ZoneCNH/risk_engine/.github/workflows/ci.yml。
+# 所有 CI 与 CD job 必须使用 sre/ 机器池；禁止回退 GitHub-hosted runner。
+# CI 机器池: sre/engine；CD 机器池: sre/deploy。
+
+name: CI/CD
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  GO_VERSION: "1.26.5"
+  SRE_CI_POOL: "sre/engine"
+  SRE_DEPLOY_POOL: "sre/deploy"
+  EVIDENCE_DIR: "release/evidence"
+
+jobs:
+  ci-preflight:
+    name: CI Preflight
+    runs-on: [self-hosted, Linux, X64, sre/engine]
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+      - run: go mod download
+      - run: go version
+
+  build:
+    name: Build
+    needs: ci-preflight
+    runs-on: [self-hosted, Linux, X64, sre/engine]
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+      - run: go build ./...
+
+  test:
+    name: Unit Test
+    needs: ci-preflight
+    runs-on: [self-hosted, Linux, X64, sre/engine]
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+      - run: go test ./... -race -count=1 -coverprofile=coverage.out
+      - run: go tool cover -func=coverage.out | tee coverage.txt
+
+  lint:
+    name: Lint
+    needs: ci-preflight
+    runs-on: [self-hosted, Linux, X64, sre/engine]
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+      - run: go vet ./...
+      - uses: golangci/golangci-lint-action@v6
+
+  secret-scan:
+    name: Secret Scan
+    needs: ci-preflight
+    runs-on: [self-hosted, Linux, X64, sre/security]
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+
+  evidence:
+    name: Evidence Package
+    needs: [build, test, lint, secret-scan]
+    runs-on: [self-hosted, Linux, X64, sre/engine]
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          mkdir -p ${{ env.EVIDENCE_DIR }}
+          cat > ${{ env.EVIDENCE_DIR }}/ci-manifest.json <<'JSON'
+{
+  "module": "risk_engine",
+  "ci_pool": "sre/engine",
+  "deploy_pool": "sre/deploy",
+  "runner_namespace": "sre/",
+  "go_version": "1.26.5"
+}
+JSON

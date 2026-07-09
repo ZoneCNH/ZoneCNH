@@ -1,6 +1,6 @@
 name: Audit STATUS.md consistency
 
-# Self-hosted runner decommissioned 2026-06-18. Migrated to ubuntu-latest.
+# Self-hosted runner recovered 2026-07-09 (knowledge/ci.md Phase 0). Migrated to sre/foundation-l0.
 # schedule: 每日 06:00 UTC 定时刷新 audit，检测投影层与事实层漂移（P1-1，2026-06-25）。
 on:
   push:
@@ -12,8 +12,13 @@ on:
     - cron: '0 6 * * *'
 
 jobs:
+  # ── 0. CICD-001 门禁 ───────────────────────────────────────
+  runner-gate:
+    uses: ./.github/workflows/runner-gate.yml
+
   audit:
-    runs-on: ubuntu-latest
+    needs: runner-gate
+    runs-on: [self-hosted, Linux, X64, sre/foundation-l0]
     steps:
       - uses: actions/checkout@v4
       - name: Validate FoundationX JSON files

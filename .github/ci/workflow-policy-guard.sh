@@ -9,14 +9,26 @@ import re
 import sys
 
 WORKFLOW_DIR = Path(".github/workflows")
-# Accepted runner labels. Self-hosted runner was relabeled 2026-07-01 from
-# `homepage` to `ci-governance` (commit 88239ab4) to match the label actually
-# registered on sre host 94.72.124.39 (sre/bootstrap/hosts.env). `homepage`
-# now survives only as a deploy target / repository concept (DEPLOY_TARGET),
-# not as a runner label, so it is removed from this runner whitelist.
+# Accepted runner labels.
+# 2026-07-01: Self-hosted runner relabeled from `homepage` to `ci-governance` (commit 88239ab4).
+# 2026-07-09: sre/* 标签池新增（knowledge/ci.md Phase 0, Scheme A）。
+#   - ubuntu-latest: 过渡期保留，目标态移除（Phase 2 完成为唯一准入）
+#   - ci-governance: 94.72.124.39 历史标签，Phase 3 迁移至 sre/governance 后移除
+#   - sre/*: ci.md CICD-001 目标标签体系（self_hosted_only）
 ACCEPTED_RUNNERS = [
     ["ubuntu-latest"],
     ["self-hosted", "Linux", "X64", "ci-governance"],
+    ["self-hosted", "Linux", "X64", "sre/governance"],
+    ["self-hosted", "Linux", "X64", "sre/foundation-l0"],
+    ["self-hosted", "Linux", "X64", "sre/foundation-l1"],
+    ["self-hosted", "Linux", "X64", "sre/contracts"],
+    ["self-hosted", "Linux", "X64", "sre/storage-light"],
+    ["self-hosted", "Linux", "X64", "sre/storage-heavy"],
+    ["self-hosted", "Linux", "X64", "sre/market"],
+    ["self-hosted", "Linux", "X64", "sre/macro"],
+    ["self-hosted", "Linux", "X64", "sre/engine"],
+    ["self-hosted", "Linux", "X64", "sre/security"],
+    ["self-hosted", "Linux", "X64", "sre/deploy"],
 ]
 EXPECTED_REUSABLE_PREFIX = "./.github/workflows/"
 EXPECTED_DEPLOY_CONTRACT = "ZoneCNH/sre/.github/workflows/deploy-contract.yml@main"

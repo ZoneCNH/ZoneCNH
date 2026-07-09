@@ -8,6 +8,7 @@
 
 | 报告 | 日期 | 主题 | 综合评分 |
 |---|---|---|:---:|
+| [OrderBook/ORDERBOOK-EXECUTION-PLAN-20260709.md](./OrderBook/ORDERBOOK-EXECUTION-PLAN-20260709.md) | 2026-07-09 | `knowledge/OrderBook.md` 深度分析与执行计划裁决版（不创建新模块；先完成治理授权、binance 前置硬化、契约冻结与门禁设计） | — |
 | [solid-adaptation-20260703.md](./solid-adaptation-20260703.md) | 2026-07-03 | SOLID 规则适配分析与处置账本（外部模板 vs 宪法/编码规范逐条比对：70% 重叠 / 15% 冲突 / 15% 增量；Mock 契约一致性 + 依赖注入细则并入 go-coding-standards） | — |
 | [audit-issues-20260625.md](./audit-issues-20260625.md) | 2026-06-25 | 架构审计 10 项 issue 状态总表（9 closed + 1 long-term open，PR #1098 修复落地） | — |
 | [fred/iteration-plan-20260622.md](./fred/iteration-plan-20260622.md) | 2026-06-22 | fred 完整更新迭代方案（4 份报告 + 7 模块文件收敛，29 项 backlog，7 阶段路线，68→80+ 分） | 68/100 (D+) |
@@ -19,6 +20,7 @@
 | 路径 | 说明 |
 |---|---|
 | [`binance/`](./binance/) | binance 模块深度分析（v2 评分权威；v3 治理漂移；v4 历史/实时缺口；iteration-plan 为收敛迭代方案；v1 保留 PR #850 基线） |
+| [`OrderBook/`](./OrderBook/) | `knowledge/OrderBook.md` 深度分析与独立 OrderBook 执行计划报告 |
 | [`fred/`](./fred/) | fred 模块深度分析（deep-analysis P0/P1 排序；data-issues 历史/实时/同步/清洗/缺口；ms_brain 下游契约；structural-score 68/42 分账本；iteration-plan 为收敛迭代方案） |
 | [`goal/`](./goal/) | Goal 文档分析（2026-06-09 收尾，含 ISSUE-LEDGER 与 README） |
 | [`archive/`](./archive/) | 历史档案区（已收敛的过程草稿） |
@@ -42,6 +44,8 @@
 
 | 日期 | 变更 |
 |---|---|
+| 2026-07-09 | 新增 `OrderBook/ORDERBOOK-EXECUTION-PLAN-20260709.md`：基于 `knowledge/OrderBook.md`、binance runtime 源码、既有 orderbook 报告和宪法双闸门要求，输出 OrderBook 独立化执行计划裁决版；新增准入 ADR 输入包、binance Phase 1 前置硬化任务包、准入 ADR 草案、Contract/Gate 草案、SPEC 草案、Traceability seed、Binance 迁移映射、Goal 草案、G0/G1 Gate 启动包、Goal 状态快照、控制面登记草案、Goal 验证记录与 `OrderBook/README.md`。 |
+| 2026-07-09 | 用户授权执行全部待完成任务后，创建 `module/orderbook/` proposed 模块、`/home/workspace/orderbook` runtime library、registry/control-plane 登记和 `OrderBook/ORDERBOOK-COMPLETION-REPORT-20260709.md`；runtime 测试与 replay/gap/boundary gate 通过。 |
 | 2026-07-03 | 新增 `solid-adaptation-20260703.md`：SOLID 模板逐条处置账本；原模板归档至 `archive/solid-template-20260703/`；采纳项（Mock 契约一致性、依赖注入、接口稳定性、禁类型断言分支、读写/流式分离）同 PR 并入 `docs/standards/go-coding-standards.md` §6/§11 |
 | 2026-06-25 | 新增 `architecture-structural-analysis-20260625-v1.md`：架构深度分析 v1（Supersedes 0622-v2；audit 52/52 PASS；综合 72/B；含 5 项短期修复落地：P1-1 事实层 verified_against 刷新+CI cron、P0-2 五模块 §8 Evidence 投影、P1-2 LIFECYCLE 主态+后缀补态、P1-3 AC ID 规范核实已完成、P2-1 核实取消） |
 | 2026-06-23 | 新增 `binance/deep-analysis-20260622-backlog.md`：5 份深度分析（v1~v5）未完成项汇总，20 类问题逐条回核，11 已解决 / 9 剩余；新发现 STATUS/ARCHITECTURE spec 版本落后（v3.3.0 vs v3.4.0） |

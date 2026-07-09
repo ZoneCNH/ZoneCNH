@@ -6,8 +6,8 @@
 |------|-----|
 | Module | `module/binance/server` |
 | Status | Approved |
-| Spec-Version | v4.0.1 |
-| Last-Updated | 2026-07-08 (版本口径回刷：Runtime-Version v0.14.0 对齐) |
+| Spec-Version | v4.1.0 |
+| Last-Updated | 2026-07-09 (canonical event_type recovery + Runtime-Version v0.15.0 对齐) |
 | Last-Updated | 2026-06-26 (v2.2.0→v3.8.0: 结构性修复 — 废除本地 FR/BR 编号，全部改为引用根 SPEC canonical FR/BR；§7 重构为根 FR 的 server 实现视图；删除内嵌 FR-025~028 改为根引用；SC→TC 测试编号统一) |
 | Owner | ZoneCNH |
 | Layer | 数据域 · 行情接入层 |

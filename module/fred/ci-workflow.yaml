@@ -22,14 +22,14 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  GO_VERSION: "1.23"
-  SRE_CI_POOL: "sre/storage-light"
+  GO_VERSION: "1.26.5"
+  SRE_CI_POOL: "sre/macro"
   SRE_DEPLOY_POOL: "sre/deploy"
 
 jobs:
   preflight:
     name: Preflight
-    runs-on: [self-hosted, Linux, X64, sre/storage-light]
+    runs-on: [self-hosted, Linux, X64, sre/macro]
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
@@ -49,7 +49,7 @@ jobs:
   build:
     name: Build
     needs: preflight
-    runs-on: [self-hosted, Linux, X64, sre/storage-light]
+    runs-on: [self-hosted, Linux, X64, sre/macro]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
@@ -61,7 +61,7 @@ jobs:
   test:
     name: Unit Test
     needs: preflight
-    runs-on: [self-hosted, Linux, X64, sre/storage-light]
+    runs-on: [self-hosted, Linux, X64, sre/macro]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
@@ -73,7 +73,7 @@ jobs:
   lint:
     name: Lint
     needs: preflight
-    runs-on: [self-hosted, Linux, X64, sre/storage-light]
+    runs-on: [self-hosted, Linux, X64, sre/macro]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
@@ -85,7 +85,7 @@ jobs:
   boundary:
     name: Boundary Gates
     needs: preflight
-    runs-on: [self-hosted, Linux, X64, sre/storage-light]
+    runs-on: [self-hosted, Linux, X64, sre/macro]
     steps:
       - uses: actions/checkout@v4
       - name: Run boundary gates
@@ -94,7 +94,7 @@ jobs:
   integration:
     name: Integration
     needs: preflight
-    runs-on: [self-hosted, Linux, X64, sre/storage-light]
+    runs-on: [self-hosted, Linux, X64, sre/macro]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
@@ -109,7 +109,7 @@ jobs:
   secret-scan:
     name: Secret Scan
     needs: preflight
-    runs-on: [self-hosted, Linux, X64, sre/storage-light]
+    runs-on: [self-hosted, Linux, X64, sre/macro]
     steps:
       - uses: actions/checkout@v4
         with:

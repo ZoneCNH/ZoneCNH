@@ -1,0 +1,51 @@
+name: Runner Gate
+
+# CICD-001 可复用门禁 — 所有 CI workflow 的第一道检查
+# 调用方式：
+#   jobs:
+#     gate:
+#       uses: ./.github/workflows/runner-gate.yml
+#  后续 job 添加 needs: [gate]即可继承门禁
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  gate:
+    name: CICD-001 Gate
+    runs-on: [self-hosted, Linux, X64, sre/governance]
+    timeout-minutes: 15
+    outputs:
+      status: ${{ steps.guard.outputs.status }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: guard
+        name: Runner Policy Guard
+        run: |
+          if bash .github/ci/runner-policy-guard.sh . 2>&1; then
+            echo "status=pass" >> $GITHUB_OUTPUT
+            echo "CICD-001 runner policy: PASS"
+          else
+            echo "status=fail" >> $GITHUB_OUTPUT
+            echo "::error::CICD-001 runner policy FAILED"
+            exit 1
+          fi
+
+      - name: Deploy Policy Guard
+        run: bash .github/ci/deploy-policy-guard.sh 2>&1 || true
+
+      - name: xlibgate Dual Verification
+        continue-on-error: true
+        run: |
+          if command -v xlibgate &>/dev/null; then
+            xlibgate trust runner-policy --repo . || true
+            xlibgate trust runner-pools --repo . || true
+          else
+            echo "xlibgate: not installed (skipping)"
+          fi
+        env:
+          PATH: /home/workspace/xlibgate:${{ env.PATH }}

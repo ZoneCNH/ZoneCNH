@@ -17,7 +17,7 @@
 # 强制级别：本文件字段变更须遵循 01-module-registry.md §4 登记变更规则。
 
 schema_version: module-registry/v1
-updated: 2026-07-06
+updated: 2026-07-09
 
 # ============================================================================
 # 基座层（Foundation）— 20 模块
@@ -485,10 +485,27 @@ binance:
   spec_ref: module/binance/spec/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml  # forbidden_deps 黑名单成员
   maturity_ref: module/binance/goal/goal.md  # index.json 仅含 foundation 模块，binance 用 goal.md 为 maturity 投影
-  spec_version: v4.0.1
+  spec_version: v4.1.0
   release:
     latest_tag: v0.15.0
     cadence: on-demand
+
+orderbook:
+  repo: github.com/ZoneCNH/orderbook
+  local_path: /home/workspace/orderbook
+  domain: data
+  layer: business
+  arch_type: library
+  lifecycle: active
+  owner: ZoneCNH
+  registered: 2026-07-09
+  spec_ref: module/orderbook/spec/SPEC.md
+  deps_ref: module/FOUNDATION-DEPS.yaml  # business_domain_modules schema entry
+  maturity_ref: module/orderbook/goal/goal.md
+  spec_version: v0.1.0
+  release:
+    latest_tag: v0.1.0
+    cadence: irregular
 
 okx:
   repo: github.com/ZoneCNH/okx

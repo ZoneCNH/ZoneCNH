@@ -1,0 +1,247 @@
+# RUNNER-POOLS.yaml — ZoneCNH Self-hosted Runner Pool 注册表
+#
+# 权威来源：knowledge/ci.md §6.2, CICD-001
+# 现状 2026-07-10：全部 11 个 pool online，16 runners，3 hosts，Go 1.26.5
+# 巡检入口：sre/bootstrap/status.sh, sre/bootstrap/health-check.sh
+# 主机注册表 SSOT：sre/bootstrap/hosts.env
+# 模块分配表：sre/module.md
+
+version: "2026.07.10"
+owner: ZoneCNH
+policy: self_hosted_only
+
+global:
+  required_labels:
+    - self-hosted
+    - Linux
+    - X64
+  forbidden_github_hosted: true
+  ephemeral_preferred: true
+  persistent_runner_allowed_temporarily: true
+
+pools:
+  sre/governance:
+    purpose: governance, docs, baseline, dependency matrix, policy check
+    allowed_events: [pull_request, push, workflow_dispatch, schedule]
+    secrets: none
+    docker: false
+    production_access: false
+    max_concurrency: 2
+    host: 94.72.124.39
+    status: online
+    runner_count: 2
+    note: 2026-07-09 恢复，Go 1.26.5
+    modules:
+      - xlib_standard   # standard source
+      - xlib_harness    # harness
+      - xlib_evidence   # evidence
+      - xlibgate        # gate
+
+  sre/foundation-l0:
+    purpose: kernel, decimalx, stdlib-only modules
+    allowed_events: [pull_request, push, workflow_dispatch]
+    secrets: none
+    docker: false
+    production_access: false
+    max_concurrency: 2
+    host: 10.2.2.9
+    status: online
+    runner_count: 2
+    note: 2026-07-09 恢复，Go 1.26.5
+    modules:
+      - kernel          # L0 primitives
+
+  sre/foundation-l1:
+    purpose: configx, observex, resiliencx, schedulex, testkitx, bootstrap, entry, crosscut
+    allowed_events: [pull_request, push, workflow_dispatch]
+    secrets: none
+    docker: false
+    production_access: false
+    max_concurrency: 3
+    host: 10.2.2.9
+    status: online
+    runner_count: 2
+    note: 2026-07-09 恢复，Go 1.26.5
+    modules:
+      - bootstrap       # foundation L1
+      - configx         # foundation L1
+      - observex        # foundation L1
+      - resiliencx      # foundation L1
+      - schedulex       # foundation L1
+      - testkitx        # foundation L1 test-only
+      - alertx          # crosscut
+      - composer        # entry
+      - frontend        # entry
+      - x.go            # crosscut
+
+  sre/contracts:
+    purpose: contracts, transportx, domain modules
+    allowed_events: [pull_request, push, workflow_dispatch]
+    secrets: none
+    docker: false
+    production_access: false
+    max_concurrency: 2
+    host: 10.2.2.9
+    status: online
+    runner_count: 1
+    note: 2026-07-09 恢复，Go 1.26.5
+    modules:
+      - contracts       # foundation contracts
+      - transportx      # foundation contracts
+      - decimalx        # L2.5 domain
+      - domain_exchange # L2.5 domain
+      - domain_macro    # L2.5 domain
+      - domain_market   # L2.5 domain
+      - domainx         # L2.5 domain
+
+  sre/security:
+    purpose: gitleaks, govulncheck, sbom, supply-chain scan
+    allowed_events: [pull_request, push, workflow_dispatch, schedule]
+    secrets: read_only
+    docker: false
+    production_access: false
+    max_concurrency: 1
+    host: 10.2.2.9
+    status: online
+    runner_count: 1
+    note: 2026-07-09 恢复，Go 1.26.5
+    workflows:
+      - gitleaks
+      - govulncheck
+      - sbom
+      - supply-chain-scan
+
+  sre/market:
+    purpose: exchange adapters and market data
+    allowed_events: [pull_request, push, workflow_dispatch]
+    secrets: test_only
+    docker: optional
+    production_access: false
+    max_concurrency: 2
+    host: 84.247.154.45
+    status: online
+    runner_count: 1
+    note: 2026-07-09 恢复，Go 1.26.5
+    modules:
+      - binance         # exchange adapter
+      - coinglass       # market data
+      - hyperliquid     # exchange adapter
+      - market_data     # market data aggregator
+      - okx             # exchange adapter
+      - orderbook       # orderbook analysis
+
+  sre/macro:
+    purpose: macro data providers
+    allowed_events: [pull_request, push, workflow_dispatch]
+    secrets: test_only
+    docker: optional
+    production_access: false
+    max_concurrency: 2
+    host: 84.247.154.45
+    status: online
+    runner_count: 1
+    note: 2026-07-09 恢复，Go 1.26.5
+    modules:
+      - alternative_data
+      - bea
+      - eastmoney
+      - ecb
+      - fred
+      - japan_cb
+      - macro_data
+      - pe_data
+      - treasury
+      - uk_cb
+      - yahoo
+      - yield_curve
+
+  sre/storage-light:
+    purpose: redisx, natsx, ossx
+    allowed_events: [pull_request, push, workflow_dispatch]
+    secrets: test_only
+    docker: true
+    production_access: false
+    max_concurrency: 2
+    host: 84.247.154.45
+    status: online
+    runner_count: 1
+    note: 2026-07-09 恢复，Go 1.26.5, Docker
+    modules:
+      - natsx           # NATS client
+      - ossx            # OSS client
+      - redisx          # Redis client
+
+  sre/storage-heavy:
+    purpose: postgresx, kafkax, clickhousex, taosx
+    allowed_events: [pull_request, push, workflow_dispatch]
+    secrets: test_only
+    docker: true
+    production_access: false
+    resources:
+      cpu: 8
+      memory_gb: 16
+    max_concurrency: 1
+    host: 84.247.154.45
+    status: online
+    runner_count: 2
+    note: 2026-07-09 恢复，Go 1.26.5, Docker
+    modules:
+      - clickhousex     # OLAP client
+      - kafkax          # Kafka client
+      - postgresx       # PostgreSQL client
+      - taosx           # TDengine client
+
+  sre/engine:
+    purpose: factor, regime, backtest, optimizer, execution
+    allowed_events: [pull_request, push, workflow_dispatch]
+    secrets: none
+    docker: optional
+    production_access: false
+    max_concurrency: 2
+    host: 84.247.154.45
+    status: online
+    runner_count: 1
+    note: 2026-07-09 恢复，Go 1.26.5
+    modules:
+      # analytics
+      - factor_engine
+      - factor_eval
+      - feature_store
+      - flowx
+      - macro_regime
+      - market_regime
+      - ms_brain
+      - regime_engine
+      # decision
+      - signal_factory
+      - backtestx
+      - backtest_engine
+      - optimizer
+      - strategyx
+      - maestro
+      # execution
+      - riskx
+      - risk_engine
+      - orderx
+      - order_engine
+      - positionx
+      - portfolio_engine
+      - settlement
+
+  sre/deploy:
+    purpose: release, deploy, smoke, rollback
+    allowed_events: [push_tag, workflow_dispatch]
+    forbidden_events: [pull_request]
+    secrets: production
+    docker: optional
+    production_access: true
+    max_concurrency: 1
+    host: 84.247.154.45
+    status: online
+    runner_count: 2
+    note: 2026-07-09 恢复，production secrets, deploy isolation
+    workflows:
+      - release-preflight
+      - release-publish
+      - post-release-smoke
+      - rollback-drill

@@ -1,7 +1,7 @@
 # module/binance RULES.md — 模块治理规则
 
-- Module-Version: v4.0.0
-- Last-Updated: 2026-07-06
+- Module-Version: v4.1.0
+- Last-Updated: 2026-07-09
 - 适用范围：`module/binance/` 全部规格文档 + `github.com/ZoneCNH/binance` runtime 仓
 - 优先级：本文 > 子规格 > task；与 `CONSTITUTION.md` §0-§20 冲突时以 `CONSTITUTION.md` 为准
 - 强制级别：每条规则标注【硬】（违反即治理违规）/【软】（推荐）/【开】（仅验证存在性）
@@ -12,7 +12,7 @@
 
 ## R1【硬】命名一致性 — Naming SSOT 不可漂移
 
-**规则**：`module/binance/` 全部文档与 runtime 代码的 `product_line`、`event_type`、natsx subject、Kafka topic、TDengine stable/tag、Redis key、ossx 路径、Gin API、Go 文件名、环境变量必须 100% 匹配 `module/binance/NAMING.md` §1-§13。
+**规则**：`module/binance/` 全部文档与 runtime 代码的 `product_line`、`event_type`、natsx subject、Kafka topic、TDengine stable/tag、Redis key、ossx 路径、Gin API、Go 文件名、环境变量必须 100% 匹配 `module/binance/spec/NAMING.md` §1-§13 与 `module/binance/gate/STANDARD.md` §2-§3。
 
 **违规**：使用 `usdm_futures`、`coinm_futures`、`futures_usdt`、`futures_coin`、`option`、`opts` 等历史别名
 
@@ -31,28 +31,28 @@
 
 ---
 
-## R2【硬】4 × 6 对称矩阵无缺口
+## R2【硬】Canonical event_type 矩阵必须带状态
 
-**规则**：`module/binance/` 的 product_line（spot/um_perp/cm_perp/options）× event_type（book_ticker/trade/kline/depth_update/funding_rate/mark_price_update）构成 24 个组合，全部组合必须在以下 5 个层面对称存在：
+**规则**：`module/binance/` 的 product_line（spot/um_perp/cm_perp/options）与 canonical event_type 必须以状态矩阵维护，而不是假设所有组合都适用。
 
-1. natsx subject（`SPEC.md` §9 + `RUNTIME-MAPPING.md`）
-2. Kafka topic（`binance.{product_line}.{event_type}.v1`；`TASK-BINANCE-SERVER-014-kafkax-dispatch.md`）
-3. TDengine 子表（`TASK-BINANCE-SERVER-013-taosx-storage.md`）
-4. ossx 归档路径（`TASK-BINANCE-SERVER-016-ossx-archiver.md`）
-5. Gin REST API（`TASK-BINANCE-SERVER-015-gin-market-api.md`）
+1. implemented event_type：`book_ticker`、`trade`、`kline`、`depth_update`、`funding_rate`、`mark_price_update`、`option_tick`
+2. planned event_type：`ticker`、`force_order`、`open_interest`、`index_reference`、`contract_info`
+3. 每个 product_line × implemented event_type 单元必须标注 `supported`、`unsupported` 或 `postponed`
+4. supported 单元必须在 natsx subject、Kafka topic、TDengine stable/tag、Redis key、ossx path、Gin REST API 或明确的 bridge/查询豁免中使用同一 canonical event_type
+5. unsupported/postponed 单元必须说明业务原因或 Phase 条件，不能被统计为发布完成证据
 
-**交割合约承载**：`um_perp` / `cm_perp` product_line 下永续与交割合约通过 `instrument_subtype`（perpetual/delivery）维度区分（NAMING §1.1、SPEC §9 identity 矩阵、FR-002a），**不拆分 product_line、不扩矩阵**。subject/topic/path 仍只含 product_line + event_type；`instrument_subtype` 只进入 InstrumentKey identity 与 TDengine tag / Redis key identity 段。
+**交割合约承载**：`um_perp` / `cm_perp` product_line 下永续与交割合约通过 `instrument_subtype`（perpetual/delivery）维度区分（NAMING §1.1、SPEC §6 identity 矩阵、STANDARD §4），**不拆分 product_line、不扩矩阵**。subject/topic/path 仍只含 product_line + event_type；`instrument_subtype` 只进入 InstrumentKey identity 与 TDengine tag / Redis key identity 段。
 
-**违规**：缺失任一组合（例如缺 `binance.market.options.depth_update.v1`）；或把交割合约拆为独立 product_line（如 `um_delivery`）破坏 4×6 矩阵
+**违规**：supported 组合缺少 canonical 命名锚点；不适用组合没有 `unsupported` 标注；Phase 2 组合没有 `postponed` 条件；或把交割合约拆为独立 product_line（如 `um_delivery`）破坏矩阵。
 
 **检测**：
 ```bash
 bash scripts/check-binance-docs.sh
 ```
 
-**例外**：暂不实现的组合必须显式标注 `[POSTPONED <task-id>]`，且 PR 描述说明推迟理由
+**例外**：暂不实现的组合必须显式标注 `postponed` 或 `[POSTPONED <task-id>]`，且 PR 描述说明推迟理由
 
-**修复义务**：发现缺口 → 同 PR 补全或显式 POSTPONED → bump SPEC MINOR 版本
+**修复义务**：发现缺口 → 同 PR 补全或显式 unsupported/postponed → 契约变更时 bump SPEC MINOR 版本；纯状态澄清只更新 Last-Updated
 
 ---
 
@@ -141,10 +141,7 @@ grep -lE "^\> \[ARCHIVED" module/binance/ --include="*.md" -r | grep -v "DEEP-AN
 
 **违规**：使用异名字段名；顶层 Module-Version 与 root SPEC Spec-Version 不一致；子规格 TRACEABILITY Module-Version 与子 SPEC Spec-Version 不一致；Spec-Reference 指向错误版本
 
-**检测**：
-```bash
-bash scripts/check-binance-docs.sh   # 含 R6 全量版本统一校验
-```
+**检测**：R6 仍由 PR 审查、version-bump-check 和元数据审计负责；`scripts/check-binance-docs.sh` 当前只阻断 goal-driven 文档缺失、canonical event_type 漂移和 legacy contract 残留。
 
 **修复义务**：SPEC bump 时同 commit 更新所有顶层 Module-Version + Spec-Reference；子规格 bump 时同 commit 更新对应 TRACEABILITY
 
@@ -199,7 +196,7 @@ bash scripts/check-binance-docs.sh   # 含 R6 全量版本统一校验
 | `CHANGELOG.md` | 模块变更历史 |
 | `spec/client/SPEC.md` + `matrix/client/TRACEABILITY.md` | 客户端子规格 |
 | `spec/server/SPEC.md` + `matrix/server/TRACEABILITY.md` | 服务端子规格 |
-| `gate/STANDARD.md` | 模块标准入口（runtime control + evidence 薄层索引） |
+| `gate/STANDARD.md` | 发布、漂移、依赖版本与证据标准 |
 | `scripts/check-binance-docs.sh` | binance 文档漂移 CI gate（仓库脚本） |
 
 **检测**：
@@ -281,11 +278,35 @@ rg "2\s*\*\s*(interval|expected)" /home/workspace/binance/internal/ --include='*
 **违反时**：低流动性 symbol 产生海量假缺口（trade/book_ticker），depth updateId 跳跃漏检。必须在实现层按 FR-017 v3.9.0 分类型策略。
 **来源**：深度分析 v3.9.0 P0-2。
 
+### R13: Goal-driven Docs Gate Coverage
+
+**级别**：Hard
+**内容**：`scripts/check-binance-docs.sh` 必须扫描 goal-driven 新目录结构，不得再以旧根路径 `module/binance/SPEC.md` 缺失为理由 `SKIP`。最小扫描面为：
+
+```text
+module/binance/spec/SPEC.md
+module/binance/spec/NAMING.md
+module/binance/matrix/TRACEABILITY.md
+module/binance/gate/RULES.md
+module/binance/gate/STANDARD.md
+```
+
+**检测命令**：
+```bash
+bash scripts/check-binance-docs.sh
+```
+
+**违反时**：文档 CI 不能发现 canonical event_type、product_line、subject/topic/storage/REST 命名漂移，发布证据不可关闭。
+**来源**：2026-07-09 生产级可发布深度分析 P0 文档 gate 失效项。
+
 ---
 
 ## 13. 变更历史
 
 | 日期 | 版本 | 变更内容 | 作者 |
 |---|---|---|---|
+| 2026-07-09 | v4.1.0 | 升级 goal-driven docs gate 规则：R1 指向 `spec/NAMING.md` 与 `gate/STANDARD.md`；R2 从旧 4×6 全组合改为 canonical event_type 状态矩阵；新增 R13 禁止 `check-binance-docs.sh` 因旧根 SPEC 缺失而 SKIP | ZoneCNH |
 | 2026-06-22 | v1.0.1 | 接入 `scripts/check-binance-docs.sh`，明确 Kafka topic canonical v1 格式，并将状态一致性规则拆分为 L1 boundary gate 与 L2 functional runtime FR | ZoneCNH |
 | 2026-06-22 | v1.0.0 | 首次建立。整合 2026-06-22 治理审计复盘 + binance/SPEC.md §11 NFR 治理章节 + CLAUDE.md 编辑纪律，规则 R1-R10 全部可机器检测 | ZoneCNH |
+
+[RULES I BROKE]：无

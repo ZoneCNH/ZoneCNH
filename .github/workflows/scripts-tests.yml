@@ -5,7 +5,7 @@
 
 name: Scripts Tests
 
-# Self-hosted runner decommissioned 2026-06-18. Migrated to ubuntu-latest.
+# Self-hosted runner recovered 2026-07-09 (knowledge/ci.md Phase 0). Migrated to sre/foundation-l0.
 on:
   push:
     branches: [main]
@@ -17,9 +17,14 @@ permissions:
   contents: read
 
 jobs:
+  # ── 0. CICD-001 门禁 ───────────────────────────────────────
+  runner-gate:
+    uses: ./.github/workflows/runner-gate.yml
+
   rule-scorer-tests:
+    needs: runner-gate
     name: rule-scorer pytest
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, sre/foundation-l0]
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
@@ -31,7 +36,7 @@ jobs:
 
   shell-smoke:
     name: shell 脚本烟雾测试
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, sre/foundation-l0]
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
