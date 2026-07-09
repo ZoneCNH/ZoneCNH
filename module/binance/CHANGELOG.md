@@ -14,6 +14,7 @@
 - Runtime tag：v0.15.0（@52d9144，含白名单 GC-0~GC-5 与 PR #442-#461 修复；#462 coverage artifact 非阻断在 tag 之后合入 main，不纳入本版本）。
 - Spec：v4.1.0（65 FR Done / 0 Pending；order book FR-052~061 spot/um/cm 已实现，options 待 Phase 2；canonical event_type recovery 已同步）。
 - 配套：CI toolchain 修复（GOTOOLCHAIN=local + fix-goroot.sh，PR #457-#459）、gofmt cleanup（#461）、coverage artifact 非阻断（#462）。
+- 推送：`binance` → `fix/upgrade-go-1.26.5`；`ZoneCNH` → `docs/binance_production_readiness_report`。
 - 详细变更见下方按日期归档的明细。
 
 ---
