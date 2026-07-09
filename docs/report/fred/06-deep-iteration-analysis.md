@@ -85,7 +85,7 @@
 - **结论：已充分，结构完整（§1-§10），与 spec 一致性良好，无矛盾项。**
 - 版本对齐：`RULES.md:3` `v1.1.0` = `spec/SPEC.md:4`；所引制品（SERIES-CATALOG/SERIES-NAMING/SPEC）均存在；核心概念在 spec 中均有依据。
 - **微迭代项（非缺陷，属增强）**：
-  - §7.1/§10.1 引用的 `scripts/boundary-gates.sh` 实位于 runtime 仓 `/home/workspace/fred`，主仓无法核验——建 PR 前应确认脚本与 gate 表一致（P0 级事实确认）。
+  - §7.1/§10.1 引用的 `scripts/boundary-gates.sh` 实位于 fred runtime 仓 checkout，主仓无法核验——建 PR 前应确认脚本与 gate 表一致（P0 级事实确认）。
   - §1.3「fred 禁止依赖 macro_data 内部包」属跨模块约束，但 `module/FOUNDATION-DEPS.yaml:520` 的 `fred:` 禁止边仅列 analytics/decision/execution 域，**未显式登记 macro_data**——建议回填该边或上升为标准。
   - 缺采集重试/限流/退避（resiliencx 绑定）专章、缺 OSS 重放/backfill 流程专章（§2.3/§5 仅点到）。
 

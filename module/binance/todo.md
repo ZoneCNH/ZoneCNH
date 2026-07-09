@@ -6,6 +6,7 @@
 > 范围：`module/binance/` 规格治理与 `/home/workspace/binance` runtime 发布阻断项。[COMPUTED, HIGH]
 > runtime merged fix commit：`cc51916b9c7686128433465844cf436330260f8c`（PR #486）。[COMPUTED, HIGH]
 > runtime release evidence bundle：`/home/workspace/binance/release/evidence/binance/20260709`。[COMPUTED, HIGH]
+> Projection：read-only projection；not a closure SSOT。权威闭环状态以 `module/binance/matrix/TRACEABILITY.md`、runtime release evidence 和 GitHub Release 为准。[FRAME, HIGH]
 
 ## 0. 发布判断
 

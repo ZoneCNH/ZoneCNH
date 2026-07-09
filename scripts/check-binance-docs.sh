@@ -12,6 +12,34 @@ fail() {
   failures=$((failures + 1))
 }
 
+search_has() {
+  local pattern=$1 path=$2
+  if command -v rg >/dev/null 2>&1; then
+    rg -q "$pattern" "$path"
+  else
+    grep -Eq -- "$pattern" "$path"
+  fi
+}
+
+search_matches() {
+  local pattern=$1
+  shift
+  if command -v rg >/dev/null 2>&1; then
+    rg -n "$pattern" "$@"
+  else
+    grep -nE -- "$pattern" "$@"
+  fi
+}
+
+filter_out() {
+  local pattern=$1
+  if command -v rg >/dev/null 2>&1; then
+    rg -v "$pattern"
+  else
+    grep -Ev -- "$pattern"
+  fi
+}
+
 expect_file() {
   local path=$1
   if [[ -f "$path" ]]; then
@@ -32,7 +60,7 @@ expect_executable() {
 
 expect_rg() {
   local pattern=$1 path=$2 label=$3
-  if rg -q "$pattern" "$path"; then
+  if search_has "$pattern" "$path"; then
     pass "$label"
   else
     fail "$label"
@@ -41,7 +69,7 @@ expect_rg() {
 
 expect_no_rg() {
   local pattern=$1 path=$2 label=$3
-  if rg -q "$pattern" "$path"; then
+  if search_has "$pattern" "$path"; then
     fail "$label"
   else
     pass "$label"
@@ -51,7 +79,11 @@ expect_no_rg() {
 reject_contract_pattern() {
   local pattern=$1 label=$2
   local matches
-  matches=$(rg -n "$pattern" "${docs[@]}" 2>/dev/null | rg -v 'legacy|~~|Drift Detection|rg -n|Change History|历史别名' || true)
+  matches=$(
+    search_matches "$pattern" "${docs[@]}" 2>/dev/null |
+      filter_out 'legacy|~~|Drift Detection|rg -n|Change History|历史别名' ||
+      true
+  )
   if [[ -n "$matches" ]]; then
     fail "$label"
     printf '%s\n' "$matches"
