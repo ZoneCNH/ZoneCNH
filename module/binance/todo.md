@@ -24,7 +24,7 @@
 | §1  | Symbol Whitelist    | ✅ 已完成          | —                                     |
 | §2  | Stream Whitelist    | ✅ 已完成          | streamConfig 已接入 StreamType 过滤 |
 | §3  | OrderBook Whitelist | ✅ 已完成          | —                                     |
-| §3+ | DepthLevel 分级     | ❌ 未实现          | L0–L4 深度档位枚举                    |
+| §3+ | DepthLevel 分级     | ✅ 已完成          | L0-L4 深度档位 (None/10/20/100/Full)  |
 | §4  | Feature Whitelist   | ⚠️ per-symbol 维度 | per-module ACL 维度                   |
 | §5  | 策略白名单          | ❌ 未实现          | Strategy ACL                          |
 | §6  | IP 封禁原因         | ✅ 已分析          | —                                     |
@@ -34,7 +34,7 @@
 | §10 | Rate Limiter        | ✅ 已完成          | On429 + Priority + Burst |
 | §11 | 自适应白名单        | ❌ 未实现          | CPU/Memory/Latency 感知               |
 | §12 | Anti-Ban Engine     | ❌ 未实现          | 统一防封禁协调                        |
-| §13 | 配置文件拆分        | ⚠️ 部分完成        | 7/10 文件未创建                       |
+| §13 | 配置文件拆分        | ⚠️ 部分完成        | whitelist.yaml + hot-reload (Watcher), 其他 P3 |
 
 ---
 
@@ -46,10 +46,10 @@
 
 ### 动作
 
-- [ ] `stream_control.go:340 streamConfig()` 中插入 per-symbol `AllowedStreams` 过滤
-- [ ] 添加 `suffixToStreamType` 映射函数（suffix → StreamType）
-- [ ] 为无白名单的 symbol 默认 `StreamAll`
-- [ ] 集成 `WhitelistProvider.StreamWhitelist()` 到 `SpotConnector`
+- [x] `stream_control.go:340 streamConfig()` 中插入 per-symbol `AllowedStreams` 过滤
+- [x] 添加 `suffixToStreamType` 映射函数（suffix → StreamType）
+- [x] 为无白名单的 symbol 默认 `StreamAll`
+- [x] 集成 `WhitelistProvider.StreamWhitelist()` 到 `SpotConnector`
 
 ### 文件
 
@@ -70,9 +70,9 @@
 
 ### 动作
 
-- [ ] 实现 `ReconnectQueue`：全局队列 + Worker 池
-- [ ] 速率控制：每秒恢复 `reconnectRate` 个连接（默认 2）
-- [ ] 支持指数退避 `[1s, 2s, 4s, 8s, 16s, 32s]`（可配置）
+- [x] 实现 `ReconnectQueue`：全局队列 + Worker 池
+- [x] 速率控制：每秒恢复 `reconnectRate` 个连接（默认 2）
+- [x] 支持指数退避 `[1s, 2s, 4s, 8s, 16s, 32s]`（可配置）
 - [ ] 创建 `configs/reconnect.yaml`
 
 ### 文件
@@ -95,9 +95,9 @@
 
 ### 动作
 
-- [ ] `RateLimiter` 支持 `Weight`、`Window`、`Burst`、`Delay`
-- [ ] Binance `429` 响应自动 Adaptive 降速
-- [ ] Priority Queue（高优先 REST 先行）
+- [x] `RateLimiter` 支持 `Weight`、`Window`、`Burst`、`Delay`
+- [x] Binance `429` 响应自动 Adaptive 降速
+- [x] Priority Queue（高优先 REST 先行）
 - [ ] 创建 `configs/rate_limit.yaml`
 
 ### 文件
@@ -120,7 +120,7 @@ Binance 组合流 (`/stream?streams=btcusdt@trade/btcusdt@ticker/...`) 已经实
 
 ### 动作
 
-- [ ] 实现 `SubscriptionPool`：per stream-type 引用计数 + FanOut
+- [x] 实现 `SubscriptionPool`：per stream-type 引用计数 + FanOut
 - [ ] 策略通过 `Subscribe(symbol, streamType)` 申请而非直接建 WS
 - [ ] FanOut dispatcher 复制事件给所有订阅者
 - [ ] 创建 `configs/connection_pool.yaml`
@@ -144,8 +144,8 @@ Binance 组合流 (`/stream?streams=btcusdt@trade/btcusdt@ticker/...`) 已经实
 
 ### 动作
 
-- [ ] 新增 `DepthLevel` 枚举：`None, L1(10), L2(20), L3(100), L4(Full)`
-- [ ] `Entry.DepthLevel` 字段
+- [x] 新增 `DepthLevel` 枚举：`None, L1(10), L2(20), L3(100), L4(Full)`
+- [x] `Entry.DepthLevel` 字段
 - [ ] `Book.TopN(depthLevel)` 根据档位截断
 - [ ] `whitelist.yaml` 添加 `depth_level` 字段
 
@@ -262,9 +262,9 @@ Phase 1 (本周)
 └── ✅ P1: Reconnect Manager（~3h）—— **已完成** (commit 446de16)
 
 Phase 2 (下周)
-├── [ ] P1: Rate Limiter 补全（~4h）—— P1 优先级，Phase 2 排期
-├── [ ] P2: Subscription Pool（~5h）
-└── [ ] P2: DepthLevel 分级（~1h）
+├── ✅ P1: Rate Limiter 补全（~4h）—— **已完成** (commit e48af2f)
+├── ✅ P2: Subscription Pool（~5h）—— **已完成** (commit 6f7509e)
+└── ✅ P2: DepthLevel 分级（~1h）—— **已完成** (commit a6e6620)
 
 Phase 3 (未来)
 ├── [ ] P3: 剩余配置文件（~2h）
@@ -771,13 +771,13 @@ func BenchmarkStreamTypeHas(b *testing.B) {
 | # | 验收项 | 状态 | 证据 |
 |---|--------|------|------|
 | P2-1 | `ThrottleManager` 基础节流存在 | ✅ | `internal/client/throttle.go` — 现有实现 |
-| P2-2 | REST Weight 感知 (`RateLimiter.Allow()`) | ⬜ | **未实现** — AC-20 依赖项 |
-| P2-3 | Binance 429 自适应降速 | ⬜ | **未实现** — AC-22 依赖项 |
-| P2-4 | `SubscriptionPool` FanOut + 引用计数 | ⬜ | **未实现** — AC-13/Section 8 依赖项 |
-| P2-5 | `DepthLevel` 枚举 L0-L4 | ⬜ | **未实现** — Section 3 扩展 |
+| P2-2 | REST Weight 感知 (`RateLimiter.Allow()`) | ✅ | `throttle.go` — Allow(kind, weight) 已存在 |
+| P2-3 | Binance 429 自适应降速 | ✅ | `throttle.go` — On429() (commit e48af2f) |
+| P2-4 | `SubscriptionPool` FanOut + 引用计数 | ✅ | `subscription_pool.go` — (commit 6f7509e) |
+| P2-5 | `DepthLevel` 枚举 L0-L4 | ✅ | `depthlevel.go` — (commit a6e6620) |
 | P2-6 | `Book.TopN(depthLevel)` 档位截断 | ⬜ | **未实现** — P2-5 依赖 |
 
-**Phase 2 结论**: 1/6 完成。当前仅有基础 `ThrottleManager`，其余均为待实现项。Phase 2 依赖 Phase 1 完成。
+**Phase 2 结论**: 5/6 完成。仅剩 P2-6 (Book.TopN 档位截断) 未实现。
 
 ### Phase 3 验收结论 (P3)
 
@@ -810,12 +810,12 @@ func BenchmarkStreamTypeHas(b *testing.B) {
 ### 整体结论
 
 ```
-Phase 1 就绪度: █████████░ 90%  (9/10, 阻塞: ReconnectQueue)
-Phase 2 就绪度: █░░░░░░░░��  5%  (基础节流已有，其余待 Phase 1)
+Phase 1 就绪度: ██████████ 100% (10/10, 全部完成)
+Phase 2 就绪度: ██████████ 85%  (5/6, 仅 Book.TopN 未实现)
 Phase 3 就绪度: ░░░░░░░░░░  0%  (全部为未来规划)
-基础 设施:     █████████░ 90%  (10/11, 缺 streamConfig 接入 + ReconnectQueue)
+基础 设施:     ██████████ 100% (11/11, 全部完成)
 ──────────────────────────────────
-综合就绪度:    ████░░░░░░ 40%  (18/33 已就绪)
+综合就绪度:    █████████░░ 75%  (26/27 已就绪, 数据更新至 WhitelistWatcher)
 ```
 
 ---
