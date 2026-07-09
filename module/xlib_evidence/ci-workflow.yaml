@@ -36,7 +36,7 @@ env:
 jobs:
   ci-preflight:
     name: CI Preflight
-    runs-on: [self-hosted, Linux, X64, sre/governance]
+    runs-on: [self-hosted, Linux, X64, ci-governance]
     timeout-minutes: 10
     steps:
       - name: Checkout
@@ -65,7 +65,7 @@ jobs:
   build:
     name: Build
     needs: ci-preflight
-    runs-on: [self-hosted, Linux, X64, sre/governance]
+    runs-on: [self-hosted, Linux, X64, ci-governance]
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
@@ -79,7 +79,7 @@ jobs:
   test:
     name: Unit Test
     needs: ci-preflight
-    runs-on: [self-hosted, Linux, X64, sre/governance]
+    runs-on: [self-hosted, Linux, X64, ci-governance]
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
@@ -102,7 +102,7 @@ jobs:
   lint:
     name: Lint
     needs: ci-preflight
-    runs-on: [self-hosted, Linux, X64, sre/governance]
+    runs-on: [self-hosted, Linux, X64, ci-governance]
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
@@ -120,7 +120,7 @@ jobs:
   boundary:
     name: Boundary And Trust Gates
     needs: ci-preflight
-    runs-on: [self-hosted, Linux, X64, sre/governance]
+    runs-on: [self-hosted, Linux, X64, ci-governance]
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
@@ -139,7 +139,7 @@ jobs:
   integration:
     name: Integration Test
     needs: ci-preflight
-    runs-on: [self-hosted, Linux, X64, sre/governance]
+    runs-on: [self-hosted, Linux, X64, ci-governance]
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
@@ -158,7 +158,7 @@ jobs:
   secret-scan:
     name: Secret Scan
     needs: ci-preflight
-    runs-on: [self-hosted, Linux, X64, sre/governance]
+    runs-on: [self-hosted, Linux, X64, ci-governance]
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
@@ -170,7 +170,7 @@ jobs:
   evidence:
     name: Evidence Package
     needs: [build, test, lint, boundary, integration, secret-scan]
-    runs-on: [self-hosted, Linux, X64, sre/governance]
+    runs-on: [self-hosted, Linux, X64, ci-governance]
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
