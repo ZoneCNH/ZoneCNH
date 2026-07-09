@@ -34,7 +34,7 @@
 | §10 | Rate Limiter        | ✅ 已完成          | On429 + Priority + Burst |
 | §11 | 自适应白名单        | ❌ 未实现          | CPU/Memory/Latency 感知               |
 | §12 | Anti-Ban Engine     | ❌ 未实现          | 统一防封禁协调                        |
-| §13 | 配置文件拆分        | ⚠️ 部分完成        | whitelist.yaml + hot-reload (Watcher), 其他 P3 |
+| §13 | 配置文件拆分        | ✅ 已完成          | 10/10 配置文件全部创建 |
 
 ---
 
@@ -168,17 +168,17 @@ Binance 组合流 (`/stream?streams=btcusdt@trade/btcusdt@ticker/...`) 已经实
 | 文件                   | 状态                                            | 所属 Phase |
 | ---------------------- | ----------------------------------------------- | ---------- |
 | `whitelist.yaml`       | ✅ 已创建（合并 symbols + streams + orderbook） | —          |
-| `reconnect.yaml`       | ⬜ P1 同 Phase（Reconnect Manager 创建）        | P1         |
-| `rate_limit.yaml`      | ⬜ P1 同 Phase（Rate Limiter 创建）             | P1         |
-| `connection_pool.yaml` | ⬜ P2 同 Phase（Subscription Pool 创建）        | P2         |
-| `features.yaml`        | ❌                                              | P3         |
-| `strategy_acl.yaml`    | ❌                                              | P3         |
-| `anti_ban.yaml`        | ❌                                              | P3         |
-| `adaptive.yaml`        | ❌                                              | P3         |
+| `reconnect.yaml`       | ✅ P1 创建完成 (commit 9de887a)                   | P1         |
+| `rate_limit.yaml`      | ✅ P1 创建完成 (commit 9de887a)                   | P1         |
+| `connection_pool.yaml` | ✅ P2 创建完成 (commit 9de887a)                   | P2         |
+| `features.yaml`        | ✅ P3 创建完成 (commit 9de887a)                   | P3         |
+| `strategy_acl.yaml`    | ✅ P3 创建完成 (commit 9de887a)                   | P3         |
+| `anti_ban.yaml`        | ✅ P3 创建完成 (commit 9de887a)                   | P3         |
+| `adaptive.yaml`        | ✅ P3 创建完成 (commit 9de887a)                   | P3         |
 
 ### 动作
 
-- [ ] 创建 4 个 P3 配置文件骨架（YAML schema + 默认值 + 文档注释）
+- [x] 创建 7 个配置文件骨架（YAML schema + 默认值 + 文档注释）—— **已完成** (commit 9de887a)
 - [ ] 每个文件配对应的 Go 加载代码
 
 ### 预估
