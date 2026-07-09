@@ -2,10 +2,10 @@
 
 **量化交易基础设施工程师** | 构建高性能、高可靠的金融数据与交易系统
 
-[![Docs CI](https://github.com/ZoneCNH/ZoneCNH/actions/workflows/docs-ci.yml/badge.svg?branch=docs/binance_production_readiness_report)](https://github.com/ZoneCNH/ZoneCNH/actions/workflows/docs-ci.yml)
-[![Runner Policy](https://github.com/ZoneCNH/ZoneCNH/actions/workflows/runner-policy.yml/badge.svg?branch=docs/binance_production_readiness_report)](https://github.com/ZoneCNH/ZoneCNH/actions/workflows/runner-policy.yml)
-[![Compliance](https://github.com/ZoneCNH/ZoneCNH/actions/workflows/compliance.yml/badge.svg?branch=docs/binance_production_readiness_report)](https://github.com/ZoneCNH/ZoneCNH/actions/workflows/compliance.yml)
-[![Runner Health](https://github.com/ZoneCNH/ZoneCNH/actions/workflows/runner-health.yml/badge.svg?branch=docs/binance_production_readiness_report)](https://github.com/ZoneCNH/ZoneCNH/actions/workflows/runner-health.yml)
+[![Docs CI](https://github.com/ZoneCNH/ZoneCNH/actions/workflows/docs-ci.yml/badge.svg)](https://github.com/ZoneCNH/ZoneCNH/actions/workflows/docs-ci.yml)
+[![Runner Policy](https://github.com/ZoneCNH/ZoneCNH/actions/workflows/runner-policy.yml/badge.svg)](https://github.com/ZoneCNH/ZoneCNH/actions/workflows/runner-policy.yml)
+[![Compliance](https://github.com/ZoneCNH/ZoneCNH/actions/workflows/compliance.yml/badge.svg)](https://github.com/ZoneCNH/ZoneCNH/actions/workflows/compliance.yml)
+[![Runner Health](https://github.com/ZoneCNH/ZoneCNH/actions/workflows/runner-health.yml/badge.svg)](https://github.com/ZoneCNH/ZoneCNH/actions/workflows/runner-health.yml)
 [![Go 1.26.5](https://img.shields.io/badge/Go-1.26.5-00ADD8?logo=go)](https://go.dev/dl/)
 
 > 本仓库是 FoundationX 治理体系仓——定义 Goal 驱动交付管线、模块治理规则、Spec→Code 工作流和四源评分体系，同时承载个人架构索引。治理对象覆盖 20 个基座模块仓和 68 个 module 规格目录；模块实现统一在 `/home/workspace/{module}` 对应 GitHub 仓库中完成。
