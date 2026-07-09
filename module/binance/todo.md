@@ -310,6 +310,388 @@ Phase 3 (未来)
 
 ---
 
+## Phase 4 — 代码示例
+
+### 4.1 访问控制
+
+#### AC-1: Blocked symbol 不建立 WS 连接
+
+**实现位置**: `stream_control.go:340 streamConfig()`
+
+```go
+// stream_control.go — streamConfig 中插入白名单过滤
+func (sc *SpotConnector) streamConfig() ([]string, []string, []string, string) {
+    activeSymbols := sc.catalog.ActiveSymbols(productLine)
+    // ... 省略 fallback ...
+
+    streamSuffixes := append([]string(nil), sc.streams...)
+    activeStreams := make([]string, 0, len(activeSymbols)*len(streamSuffixes))
+
+    for _, symbol := range activeSymbols {
+        // AC-1: 检查 symbol 是否在白名单中
+        if sc.streamWL != nil {
+            if _, allowed := sc.streamWL[symbol]; !allowed {
+                continue  // Entry.Enabled=false → 跳过整个 symbol
+            }
+        }
+        lower := strings.ToLower(symbol)
+        for _, suffix := range streamSuffixes {
+            activeStreams = append(activeStreams, lower+suffix)
+        }
+    }
+    // ...
+}
+```
+
+**测试**:
+```go
+func TestStreamConfig_SkipsBlockedSymbol(t *testing.T) {
+    catalog := newTestCatalog("spot", "BTCUSDT", "SCAMUSDT")
+    sc := NewProductLineConnector("spot", nil, catalog, SpotConfig{
+        StreamBase: "wss://test",
+        Streams:    []string{"@trade", "@bookTicker"},
+    })
+    sc.streamWL = map[string]bool{"BTCUSDT": true} // SCAMUSDT not in WL
+
+    symbols, _, streams, _ := sc.streamConfig()
+    if len(symbols) != 1 || symbols[0] != "BTCUSDT" {
+        t.Errorf("blocked symbol leaked: %v", symbols)
+    }
+}
+```
+
+#### AC-2: StreamType 过滤
+
+**实现位置**: `stream_control.go` 中新增 `suffixToStreamType` + 过滤逻辑
+
+```go
+// suffixToStreamType maps WebSocket stream suffixes to StreamType bits.
+var suffixToStreamType = map[string]whitelistclient.StreamType{
+    "@trade":          whitelistclient.StreamTrade,
+    "@bookTicker":     whitelistclient.StreamBookTicker,
+    "@depth20@100ms":  whitelistclient.StreamDepth20,
+    "@depth@1000ms":   whitelistclient.StreamDepthFull,
+    "@markPrice":      whitelistclient.StreamMarkPrice,
+    "@fundingRate":    whitelistclient.StreamFundingRate,
+    "@ticker":         whitelistclient.StreamTicker,
+    // @kline_* suffixes handled by prefix match
+}
+
+// streamTypeForSuffix 返回 suffix 对应的 StreamType 位。
+// Kline 前缀 "@kline" 统一返回 StreamKline。
+func streamTypeForSuffix(suffix string) whitelistclient.StreamType {
+    if strings.HasPrefix(suffix, "@kline") {
+        return whitelistclient.StreamKline
+    }
+    return suffixToStreamType[suffix]
+}
+
+// streamConfig 中的 AC-2 过滤:
+// for _, suffix := range streamSuffixes {
+//     streamBit := streamTypeForSuffix(suffix)
+//     if streamBit == 0 {
+//         activeStreams = append(...)  // 未知 suffix 默认允许
+//         continue
+//     }
+//     allowed := sc.resolvedStreamMask(symbol)
+//     if allowed.Has(streamBit) {
+//         activeStreams = append(activeStreams, lower+suffix)
+//     }
+// }
+```
+
+**测试**:
+```go
+func TestStreamConfig_FiltersByStreamType(t *testing.T) {
+    sc := newTestConnector()
+    sc.streamWL = map[string]whitelistclient.StreamType{
+        "BTCUSDT": whitelistclient.StreamTrade | whitelistclient.StreamBookTicker,
+    }
+    _, _, streams, _ := sc.streamConfig()
+    for _, s := range streams {
+        if strings.HasPrefix(s, "btcusdt@depth") {
+            t.Errorf("depth stream leaked through filter: %s", s)
+        }
+    }
+}
+```
+
+#### AC-3: 0 = StreamAll 向后兼容
+
+```go
+func TestStreamType_ZeroEqualsAll(t *testing.T) {
+    // 无 AllowedStreams 字段 → JSON 反序列化为 0
+    entry := whitelistclient.Entry{Symbol: "BTCUSDT", Enabled: true}
+    effective := entry.AllowedStreams.Effective()
+    if effective != whitelistclient.StreamAll {
+        t.Errorf("unset (=0) should be All, got %d", effective)
+    }
+    // 验证所有基础流均在
+    for _, s := range []whitelistclient.StreamType{
+        whitelistclient.StreamTrade, whitelistclient.StreamBookTicker,
+        whitelistclient.StreamDepth20, whitelistclient.StreamDepthFull,
+        whitelistclient.StreamTicker,
+    } {
+        if !effective.Has(s) {
+            t.Errorf("All should include stream %d", s)
+        }
+    }
+}
+```
+
+#### AC-7: 降级链
+
+```go
+func resolveStreamWhitelist(cfg StandaloneConfig, envWhitelist map[string]bool) map[string]bool {
+    // 1. server whitelist (WhitelistProvider)
+    if cfg.WhitelistProvider != nil {
+        wlMap, err := cfg.WhitelistProvider.StreamWhitelist(ctx)
+        if err == nil && len(wlMap) > 0 {
+            return flattenStreamWL(wlMap)
+        }
+        slog.Warn("stream whitelist provider failed, fallback to env", "err", err)
+    }
+    // 2. env STREAM_SYMBOLS
+    if wl := buildSymbolWhitelist(cfg.StreamSymbols); len(wl) > 0 {
+        return wl
+    }
+    // 3. fail-open: nil = allow all
+    return nil
+}
+```
+
+### 4.2 连接治理
+
+#### AC-10/11: ReconnectQueue 限速 + 指数退避
+
+**新文件**: `internal/client/reconnect_queue.go`
+
+```go
+// ReconnectQueue 序列化 WS 重连，防止连接风暴导致 IP Ban。
+type ReconnectQueue struct {
+    mu       sync.Mutex
+    queue    []reconnectTask
+    rate     int           // 每秒允许的次数（默认 2）
+    backoff  []time.Duration // [1s, 2s, 4s, 8s, 16s, 32s]
+}
+
+type reconnectTask struct {
+    connector *SpotConnector
+    attempts  int
+}
+
+// Enqueue 排队等待重连。返回 release 函数，调用方在重连完成后调用。
+func (q *ReconnectQueue) Enqueue(connector *SpotConnector, attempts int) (release func()) {
+    q.mu.Lock()
+    q.queue = append(q.queue, reconnectTask{connector: connector, attempts: attempts})
+    if len(q.queue) == 1 {
+        go q.processLoop()
+    }
+    q.mu.Unlock()
+    // 阻塞直到轮到该 connector
+    // ...
+}
+
+// processLoop 按照 rate 限制消费队列。
+func (q *ReconnectQueue) processLoop() {
+    ticker := time.NewTicker(time.Second / time.Duration(q.rate))
+    defer ticker.Stop()
+    for range ticker.C {
+        q.mu.Lock()
+        if len(q.queue) == 0 {
+            q.mu.Unlock()
+            return
+        }
+        task := q.queue[0]
+        q.queue = q.queue[1:]
+        q.mu.Unlock()
+
+        // 计算退避时间
+        backoffIndex := min(task.attempts, len(q.backoff)-1)
+        delay := q.backoff[backoffIndex]
+        time.Sleep(delay)
+        // 允许重连
+    }
+}
+```
+
+**集成测试**:
+```go
+func TestReconnectQueue_RateLimited(t *testing.T) {
+    q := NewReconnectQueue(2) // 2/s
+    started := time.Now()
+    for i := 0; i < 10; i++ {
+        go q.Enqueue(newTestConnector(), 0)
+    }
+    elapsed := time.Since(started)
+    // 10 connections @ 2/s = ~5s
+    if elapsed < 4*time.Second {
+        t.Errorf("rate limit not enforced: %v for 10 reconnects", elapsed)
+    }
+}
+```
+
+#### AC-13: Connection Pool per-stream-type
+
+**新文件**: `configs/connection_pool.yaml`
+
+```yaml
+# connection_pool.yaml
+pools:
+  ticker:
+    max_connections: 2      # Ticker/Trade 共享池
+    stream_types: [trade, bookTicker, ticker]
+  depth:
+    max_connections: 2      # Depth 专用池
+    stream_types: [depth20, depthFull]
+  kline:
+    max_connections: 1      # Kline 专用池
+    stream_types: [kline]
+  private:
+    max_connections: 1      # 用户数据流
+    stream_types: [userData, markPrice, fundingRate]
+```
+
+### 4.3 速率治理
+
+#### AC-20: REST Weight 感知
+
+```go
+type WeightedEndpoint struct {
+    Path   string
+    Weight int  // Binance API weight cost
+}
+
+var endpointWeights = map[string]int{
+    "/api/v3/depth":          50,
+    "/api/v3/depth?limit=5":  5,
+    "/api/v3/ticker/price":   1,
+    "/api/v3/exchangeInfo":   10,
+    "/api/v3/klines":         1,
+}
+
+func (r *RateLimiter) Allow(endpoint string) bool {
+    weight := endpointWeights[endpoint]
+    if weight == 0 { weight = 1 }
+    return r.tryConsume(weight)
+}
+```
+
+#### AC-22: 429 自适应降速
+
+```go
+func (r *RateLimiter) On429() {
+    r.mu.Lock()
+    defer r.mu.Unlock()
+    // 指数降速: maxWeight *= 0.5, 不低于 floor
+    r.maxWeight = max(r.maxWeight/2, r.minWeight)
+    // 记录降速事件供 Prometheus
+    r.degradeCount++
+    r.lastDegradeAt = time.Now()
+    slog.Warn("rate limiter adaptive slowdown",
+        "new_max_weight", r.maxWeight, "degrade_count", r.degradeCount)
+}
+```
+
+### 4.4 资源治理
+
+#### AC-30: CPU 驱动降级
+
+```go
+func (a *AdaptiveManager) sampleLoop(ctx context.Context) {
+    ticker := time.NewTicker(a.sampleInterval) // 5s
+    defer ticker.Stop()
+    for range ticker.C {
+        cpu := a.readCPU() // e.g. /proc/stat or gopsutil
+        if cpu > a.cfg.CPUDegradeThreshold { // 80%
+            a.degrade(LevelCPU, "cpu %.1f%% > %.1f%%", cpu, a.cfg.CPUDegradeThreshold)
+        } else if cpu < a.cfg.CPURecoveryThreshold { // 60%
+            a.recover(LevelCPU)
+        }
+    }
+}
+
+func (a *AdaptiveManager) degrade(level DegradeLevel, reason string, args ...any) {
+    // 按优先级关闭 symbol 的深度流:
+    // 1. 最低优先级 symbol 的 DepthFull
+    // 2. 最低优先级 symbol 的 Depth20
+    // 3. 中等优先级 symbol 的 DepthFull
+    // ...
+    // 保留 Ticker/Trade 作为最小保障
+    for _, sym := range a.getSymbolsByPriority(false) {
+        mask := a.activeMasks[sym]
+        if mask.Has(whitelistclient.StreamDepthFull) {
+            mask &^= whitelistclient.StreamDepthFull
+            a.activeMasks[sym] = mask
+            a.auditlog = append(a.auditlog, DegradeEvent{
+                Level: level, Symbol: sym,
+                Feature: "DepthFull", Reason: fmt.Sprintf(reason, args...),
+                Timestamp: time.Now(),
+            })
+            return
+        }
+    }
+}
+```
+
+### 4.5 防封禁引擎
+
+#### AC-40: 检测连接风暴
+
+```go
+type AntiBanEngine struct {
+    reconnectWindow *slidingWindow // 10s 窗口
+    reconnectLimit  int           // 10/s 触发降级
+}
+
+func (e *AntiBanEngine) RecordReconnect() {
+    e.reconnectWindow.Add(1)
+    if e.reconnectWindow.Sum() > e.reconnectLimit {
+        e.triggerDegrade("reconnect_storm", e.reconnectWindow.Sum())
+    }
+}
+
+func (e *AntiBanEngine) triggerDegrade(reason string, rate int) {
+    slog.Error("anti-ban: global degradation triggered",
+        "reason", reason, "reconnect_rate_per_sec", rate)
+    // 通知所有 AdaptiveManager: 暂停低优先级重连
+    e.onDegrade(DegradeReconnect, 0.5) // 降低到 50% 速率
+}
+```
+
+### 4.7 测试覆盖
+
+#### T-5: 1:1 测试文件对应
+
+```go
+// 規约: 每个源文件必须有对应的测试文件
+internal/client/stream_control.go        → stream_control_test.go
+internal/client/reconnect_queue.go       → reconnect_queue_test.go
+internal/client/rate_limiter.go          → rate_limiter_test.go
+internal/client/adaptive_manager.go      → adaptive_manager_test.go
+internal/client/anti_ban_engine.go       → anti_ban_engine_test.go
+internal/client/subscription_pool.go     → subscription_pool_test.go
+pkg/binancecfg/whitelist_config.go       → whitelist_config_test.go  ✅
+pkg/whitelistclient/cache.go            → cache_test.go               ✅
+```
+
+### 4.8 性能
+
+#### P-1/2: 位操作 < 10ns
+
+```go
+func BenchmarkStreamTypeHas(b *testing.B) {
+    mask := whitelistclient.StreamAll
+    b.ResetTimer()
+    for i := 0; i < b.N; i++ {
+        _ = mask.Has(whitelistclient.StreamTrade)
+    }
+}
+// 期望: ~1-2ns (单个 AND 指令 + CMP)
+```
+
+---
+
 ## 关联 PR
 
 | PR | 仓库 | 内容 |
