@@ -747,6 +747,79 @@ func BenchmarkStreamTypeHas(b *testing.B) {
 
 ---
 
+## Phase 4 — 分阶段验收结论
+
+### Phase 1 验收结论 (P0 + P1 Reconnect)
+
+| # | 验收项 | 状态 | 证据 |
+|---|--------|------|------|
+| P1-1 | `StreamType` 位掩码 8 种流类型定义完成 | ✅ | `cache.go:15-29` — `StreamTrade..StreamAll` 常量 + `Has()`/`Effective()`/`Suffix()` |
+| P1-2 | `Entry.AllowedStreams` JSON 字段 | ✅ | `cache.go:115` — `AllowedStreams StreamType json:"allowed_streams"` |
+| P1-3 | `whitelist.yaml` 配置文件创建 | ✅ | `configs/whitelist.yaml` — 4 层分组 (core/liquid/basic/blocked) + defaults |
+| P1-4 | `ParseStreamType()` 字符串转换 | ✅ | `binancecfg/whitelist_config.go:46-56` — 大小写不敏感 + 未知流跳过 |
+| P1-5 | `LoadWhitelistFile()` YAML 加载 | ✅ | `binancecfg/whitelist_config.go:90-99` |
+| P1-6 | `WhitelistFile.AllEntries()` 分组合并 | ✅ | 优先级 blocked < basic < liquid < core, 已测试 |
+| P1-7 | 4 个 `StreamType` 单元测试 | ✅ | `Has`/`Effective`/`BackwardCompat`/`Suffix` 全部 PASS |
+| P1-8 | 3 个 `WhitelistConfig` 单元测试 | ✅ | `Load`/`Parse`/`ParseUnknown` 全部 PASS |
+| P1-9 | `streamConfig()` 接入 `StreamType` 过滤 | ⬜ | **未实现** — AC-1/AC-2 依赖项 |
+| P1-10 | `ReconnectQueue` 中央重连队列 | ⬜ | **未实现** — AC-10/AC-11 依赖项 |
+
+**Phase 1 结论**: 8/10 完成。实施就绪度 80%，阻塞项为 P1-9（streamConfig 接入）和 P1-10（ReconnectQueue）。这两个是 AC-1/AC-2/AC-10/AC-11 的前置依赖。
+
+### Phase 2 验收结论 (P1 RateLimiter + P2)
+
+| # | 验收项 | 状态 | 证据 |
+|---|--------|------|------|
+| P2-1 | `ThrottleManager` 基础节流存在 | ✅ | `internal/client/throttle.go` — 现有实现 |
+| P2-2 | REST Weight 感知 (`RateLimiter.Allow()`) | ⬜ | **未实现** — AC-20 依赖项 |
+| P2-3 | Binance 429 自适应降速 | ⬜ | **未实现** — AC-22 依赖项 |
+| P2-4 | `SubscriptionPool` FanOut + 引用计数 | ⬜ | **未实现** — AC-13/Section 8 依赖项 |
+| P2-5 | `DepthLevel` 枚举 L0-L4 | ⬜ | **未实现** — Section 3 扩展 |
+| P2-6 | `Book.TopN(depthLevel)` 档位截断 | ⬜ | **未实现** — P2-5 依赖 |
+
+**Phase 2 结论**: 1/6 完成。当前仅有基础 `ThrottleManager`，其余均为待实现项。Phase 2 依赖 Phase 1 完成。
+
+### Phase 3 验收结论 (P3)
+
+| # | 验收项 | 状态 | 证据 |
+|---|--------|------|------|
+| P3-1 | 4 个配置文件骨架 | ⬜ | 待实现 — features/strategy_acl/anti_ban/adaptive.yaml |
+| P3-2 | `AdaptiveManager` CPU/Memory/Latency 驱动降级 | ⬜ | 待实现 — AC-30~34 依赖 |
+| P3-3 | `AntiBanEngine` 连接风暴检测 + 全局降级 | ⬜ | 待实现 — AC-40~43 依赖 |
+| P3-4 | §4 Feature Whitelist per-module ACL | ⬜ | 待设计 |
+| P3-5 | §5 Strategy ACL 策略权限矩阵 | ⬜ | 待设计 |
+| P3-6 | §9 Connection Pool per-stream-type 聚合 | ⬜ | 待实现 |
+
+**Phase 3 结论**: 0/6 完成。全部为未来规划项，依赖 Phase 1-2 基础设施。
+
+### 基础设施验收 (跨 Phase)
+
+| # | 验收项 | 状态 | 证据 |
+|---|--------|------|------|
+| INF-1 | `OrderbookFeatures` 6 位掩码 | ✅ | `cache.go:20-28` — `ObFeatureDepth..ObFeatureHealthMonitor` |
+| INF-2 | `ObEntry` 类型 + 测试 | ✅ | `client.go:414-420` — 3 个 Features 测试 PASS |
+| INF-3 | `EtcdLock` 实现 + 7 单元 + 4 集成 | ✅ | `etcd_lock.go` + test files — 全部 `-race` 通过 |
+| INF-4 | `CircuitBreakerClient` + 5 熔断 + 7 Probe | ✅ | `circuit_breaker.go` + tests — `Probe()` 不影响断路器状态 |
+| INF-5 | `ElectionClient.Probe()` 接口 | ✅ | `etcd_lock.go:48` — `etcdElectionClient` 使用 `clientv3.Status` |
+| INF-6 | CHANGELOG 完整覆盖 28 文件 | ✅ | `CHANGELOG.md` — 全部变更已记录 |
+| INF-7 | RUNTIME-GAP-MATRIX 59/59 Fixed | ✅ | `module/binance/matrix/RUNTIME-GAP-MATRIX.md` |
+| INF-8 | GAP-E13/E23/E54 已修复 | ✅ | DLQ 权威反转 + cleanse_schema + 节流优化 |
+| INF-9 | `go build` + `go vet` + `go test` 全 PASS | ✅ | 29/29 workspace modules, 55+ tests |
+| INF-10 | whitelistclient 10 个测试全 PASS | ✅ | Has/Effective/BackwardCompat 全部通过 |
+
+### 整体结论
+
+```
+Phase 1 就绪度: ████████░░ 80%  (8/10, 阻塞: streamConfig + ReconnectQueue)
+Phase 2 就绪度: █░░░░░░░░��  5%  (基础节流已有，其余待 Phase 1)
+Phase 3 就绪度: ░░░░░░░░░░  0%  (全部为未来规划)
+基础 设施:     █████████░ 90%  (10/11, 缺 streamConfig 接入 + ReconnectQueue)
+──────────────────────────────────
+综合就绪度:    ████░░░░░░ 40%  (18/33 已就绪)
+```
+
+---
+
 ## 关联 PR
 
 | PR                                                    | 仓库    | 内容                           |
