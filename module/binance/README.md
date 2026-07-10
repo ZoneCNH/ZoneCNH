@@ -14,9 +14,9 @@
 
 - Spec-Version: v4.1.0 (root / client / server — canonical event_type recovery + order book rebuild 纳入 ADR-011)
 - Runtime-Version: v0.15.1（last published tag；本轮 audit branch 未创建新 release tag）
-- Runtime-Implementation-Commit: `3f6366728b635c32d73565874965d40c20a92caf`；本轮 canonical market event closure 已提交，尚未创建新 tag。[COMPUTED, HIGH]
+- Runtime-Implementation-Commit: `462772f6`（fix/binance-production-readiness-20260710；local tests and boundary gates pass），尚未创建新 release tag。[COMPUTED, HIGH]
 - Runtime-Evidence: `/home/workspace/binance/release/evidence/binance/20260710`；external-gates 当前 5 项 BLOCKED/NOT_RUN。[COMPUTED, HIGH]
-- Delivery-State: FR-001~FR-065 spec/traceability registered — single state `65 Done / 0 Partial / 0 Drifted / 0 Pending`。规格口径 `release_closeable_spec=YES` 不等于 runtime 发布批准；本轮 runtime evidence 仍为 `release_closeable_runtime=NO`，外部 E2E、tag/release notes 与 rollback 需独立闭合。
+- Delivery-State: FR-001~FR-065 spec/traceability registered — the specification projection remains `65 Done / 0 Partial / 0 Drifted / 0 Pending`; it does not grant runtime release approval. External E2E, tag/release notes and rollback remain open.
 - Last-Updated: 2026-07-10 (todo closure audit + alignment split)
 
 [COMPUTED, HIGH] 当前 Binance 规格结论仍为 `65 Done / 0 Partial / 0 Drifted / 0 Pending`；这是 FR/规格投影。runtime 正式发布结论保持 `release_closeable=NO`，直到同一最终 commit 具备外部 E2E、release tag/release notes、部署前检查和真实 rollback evidence。
