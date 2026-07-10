@@ -362,11 +362,27 @@ def check_module_code_location(
         return
 
     module_dirs = sorted(path for path in module_root.iterdir() if path.is_dir())
-    expected_count = rules.get("module_goal_document", {}).get("module_count")
-    if isinstance(expected_count, int) and len(module_dirs) != expected_count:
+    goal_doc_rules = rules.get("module_goal_document", {})
+    expected_count = goal_doc_rules.get("module_count")
+    non_module_dirs = set(as_list(goal_doc_rules.get("non_module_dirs", [])))
+
+    # 加固：non_module_dirs 中每个目录必须真实存在于 module/ 下，
+    # 否则排除列表本身已漂移（拼写错误或已删除的目录），会静默掩盖真实计数偏差。
+    if non_module_dirs:
+        existing_names = {p.name for p in module_dirs}
+        stale_exclusions = sorted(non_module_dirs - existing_names)
+        if stale_exclusions:
+            fail(
+                "module_goal_document.non_module_dirs 列出了 module/ 下不存在的目录: "
+                + ", ".join(stale_exclusions)
+            )
+
+    counted_dirs = [p for p in module_dirs if p.name not in non_module_dirs]
+    if isinstance(expected_count, int) and len(counted_dirs) != expected_count:
         fail(
             "module_goal_document.module_count drift: "
-            f"expected {expected_count}, actual {len(module_dirs)}"
+            f"expected {expected_count}, actual {len(counted_dirs)} "
+            f"(module/ 共 {len(module_dirs)} 目录，排除 non_module_dirs {len(non_module_dirs)} 个)"
         )
 
     unexpected_artifacts: list[str] = []

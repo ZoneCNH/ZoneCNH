@@ -55,6 +55,14 @@ module_goal_document:
     - "goal/1.md"
     - "goal/*.md"
   module_count: 68
+  # module/ 下存在但不作为模块注册的模板/规范目录（不计入 module_count）。
+  # 权威来源：module/registry.yaml（模块身份 SSOT，68 键）；这些目录不在 registry 中，
+  # 且 module/registry.yaml 末尾已注释它们为"非模块目录（模板/规范目录）"。
+  non_module_dirs:
+    - "_template"
+    - "_exchange-template"
+    - "data_cs_module"
+    - "data_independent_process"
 
 module_code_location:
   canonical_path_pattern: "/home/workspace/{module}"

@@ -93,6 +93,16 @@ def test_public_projection_guardrails_remain_explicit_in_docs():
         assert "factory-grade" in text or "factory grade" in text
 
 
+def test_unique_repo_count_excludes_repo_home_self_reference():
+    helpers = load_audit_helpers()
+    unique_repos = helpers["unique_repos"]
+
+    readme = (ROOT / "README.md").read_text()
+
+    assert unique_repos(readme) == 72
+    assert unique_repos(readme, {"github.com/ZoneCNH/ZoneCNH"}) == 71
+
+
 def load_audit_status_namespace():
     source = (ROOT / "scripts" / "audit-status.py").read_text()
     tree = ast.parse(source, filename=str(ROOT / "scripts" / "audit-status.py"))
