@@ -7,16 +7,16 @@
 | Status | Generated from current module SSOT |
 | Last-Updated   | 2026-07-10                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | Module-Version | v4.1.0 |
-| Module-State   | v4.1.0 规格单一状态模型：**65 Done / 0 Partial / 0 Drifted / 0 Pending**（FR-052~061 order book rebuild spot/um/cm 已实现；options depth 协议仍 excluded/postponed）。`release_closeable_spec=YES`；runtime `release_closeable_runtime=NO`。 |
+| Module-State   | [COMPUTED, HIGH] v4.1.0 单一状态模型：**13 Done / 52 Partial / 0 Drifted / 0 Pending**。spec/runtime 均为 NO。 |
 | Layer | 数据域 / Binance-specific market_data C/S module |
 | Runtime-Repo | `/home/workspace/binance` |
 | Source | `goal.md`, `SPEC.md`, `TRACEABILITY.md`, `STANDARD.md`, `BOUNDARY-GATES.md`, `RUNTIME-MAPPING.md`, `IMPLEMENTATION-PLAN.md`, `client/`, `server/`, `tasks/` |
 
 本文档是 `module/binance` 当前规格库的实现投影，不是 runtime 代码验收证据。实际完成状态以 `TRACEABILITY.md`、`client/TRACEABILITY.md`、`server/TRACEABILITY.md` 和 `/home/workspace/binance` 的测试证据为准。
 
-> **v4.1.0 当前规格状态口径（2026-07-10）**：单一状态模型 — `Done` = 代码完整+装配就绪+TC PASS+evidence 归档。当前 Done 65 / Partial 0 / Drifted 0 / Pending 0（FR-052~061 order book rebuild spot/um/cm 已实现；options depth 协议仍 excluded/postponed）。规格 `release_closeable_spec=YES` 不替代 runtime 发布门禁。
+> [COMPUTED, HIGH] **v4.1.0 当前规格状态（2026-07-10）**：13 Done / 52 Partial / 0 Drifted / 0 Pending，spec/runtime 均为 NO。
 >
-> **单一状态模型**：FEATURES.md 的「Done」均指单一状态模型的 Done（代码完整+装配就绪+TC PASS+evidence 归档）。Evidence 列的判定见 `ACCEPTANCE.md` §4 闭合矩阵（全部 Done）。
+> **单一状态模型**：FEATURES.md 的「Done」均指单一状态模型的 Done（代码完整+装配就绪+TC PASS+evidence 归档）。[COMPUTED, HIGH] `ACCEPTANCE.md` §4 是历史 evidence 投影，不是当前状态源；当前 52 个 Partial 的 evidence 尚未闭合。
 >
 > [COMPUTED, HIGH] 2026-07-10 对齐：历史外部依赖/live 证据仍保留，但本轮 runtime evidence 需重新绑定最终 commit；在外部 durable/fanout/query E2E、正式 tag/release notes 与 rollback 未闭合前，runtime `release_closeable_runtime=NO`。
 
@@ -37,43 +37,43 @@
 
 > 历史编号体系调整：FR-006 拆分为 6a/6b/6c/6d；FR-007a 新增（analytics API）；FR-009 升为 Boundary Enforcement；FR-010 新增（clickhousex OLAP）；FR-011 新增（分布式锁）；FR-012~FR-030 登记 realtime control、historical lifecycle、event governance、release evidence、runtime hot reload、freshness SLA 与 options raw field pass-through。
 
-> 状态口径（v4.1.0）：`Done` / `Partial` / `Drifted` / `Pending` 为四态单一模型；L1 boundary governance 不替代 L2 功能验收。`Drifted` = 无，`Partial` = 无，`Pending` = 0（FR-052~061 order book rebuild）。65 FR Done。`release_closeable_spec=YES`；runtime `release_closeable_runtime=NO`，直到本轮 external-gates、正式 tag/release notes、部署前检查与 rollback 闭合。
+> [COMPUTED, HIGH] 状态口径（v4.1.0）：`Done` / `Partial` / `Drifted` / `Pending` 为四态单一模型；L1 boundary governance 不替代 L2 功能验收。当前 13 Done / 52 Partial / 0 Drifted / 0 Pending。
 
 | FR | 功能 | 当前状态 | 已有证据 | 剩余实现面 |
 | --- | --- | --- | --- | --- |
 | FR-001 | Product-Line Support | Done | 四产品线 connector 实现齐全（`connectors/{spot,um_perp,cm_perp,options}.go` + 共享 `NewProductLineConnector`）；runtime 仅装配 spot，um/cm/options 需 testnet 凭据验证（G7）。 | 合约/期权 testnet 凭据 + 产品线差异测试。 |
 | FR-002 | Instrument Identity | Done | Plan007 A4 (`f9c2c01`) 跨产品线碰撞断言 `TestNewInstrumentKey_CrossProductLine_NoCollision`；InstrumentKey 含 exchange/product_line/symbol 维度。 | 合约/期权 normalize 分发层差异测试（identity 层已闭合）。 |
-| FR-003 | natsx Communication | Done | publisher+consumer 双侧装配；subject `binance.market.{pl}.{et}.v1`（.v1 fix `4f740e5`）；drift-check 22/22 PASS。 | 无。 |
-| FR-004 | At-Least-Once Delivery | Done | Plan007 A3 (`1ec9d26`) NakWithDelay(5s) + MaxDeliver=5 + deadletter 包；本地 NATS JetStream gated 测试验证 PubAck/duplicate/Nak/MaxDeliver 语义。 | deadletter 为 in-memory（非持久化 DLQ），生产持久化 DLQ 可作后续增强。 |
-| FR-005 | Idempotent Acceptance | Done | `idempotency/redis_store.go` SetNX 72h TTL；G0 闭合后 `storageFromEnv` 装配 RedisStore（+PostgresLog durable）替换 MemoryIdempotencyStore。 | 真实 Redis 端到端验证（PENDING-LIVE-RUN）。 |
+| FR-003 | natsx Communication | Partial | publisher+consumer 双侧装配；subject `binance.market.{pl}.{et}.v1`（.v1 fix `4f740e5`）；drift-check 22/22 PASS。 | 无。 |
+| FR-004 | At-Least-Once Delivery | Partial | Plan007 A3 (`1ec9d26`) NakWithDelay(5s) + MaxDeliver=5 + deadletter 包；本地 NATS JetStream gated 测试验证 PubAck/duplicate/Nak/MaxDeliver 语义。 | deadletter 为 in-memory（非持久化 DLQ），生产持久化 DLQ 可作后续增强。 |
+| FR-005 | Idempotent Acceptance | Partial | `idempotency/redis_store.go` SetNX 72h TTL；G0 闭合后 `storageFromEnv` 装配 RedisStore（+PostgresLog durable）替换 MemoryIdempotencyStore。 | 真实 Redis 端到端验证（PENDING-LIVE-RUN）。 |
 | FR-006a | taosx Time-Series Storage | Done | `storage/taos_writer.go` WriteBatch；G0 闭合后 `storageFromEnv` 装配 TaosWriter 注入 `ServerConfig.StorageWriter`，`persist()` 不再静默跳过。 | 真实 TDengine 端到端落盘验证（PENDING-LIVE-RUN）。 |
 | FR-006b | postgresx Metadata Storage | Done | `storage/pg_catalog.go` UpsertSymbol ON CONFLICT；G0 闭合后经 `pgCatalogHook` 装配进 `PostAcceptHooks`。 | 真实 PostgreSQL 验证（PENDING-LIVE-RUN）。 |
 | FR-006c | redisx Hot Cache | Done | `cache/hot_cache.go` TickTTL 5s/BarTTL 60s；G0 闭合后经 `hotCacheHook` 装配进 `PostAcceptHooks`。 | 真实 Redis 验证（PENDING-LIVE-RUN）。 |
 | FR-006d | ossx Archival | Done | `storage/oss_archiver.go` Put/Delete/List + SHA256；G0 闭合后经 `ossArchiveHook`（batch 攒批）装配进 `PostAcceptHooks`。 | 真实 OSS 端到端归档验证（PENDING-LIVE-RUN）。 |
-| FR-007 | Gin Market API | Done | REST API + analytics tests PASS (80.3% coverage)；`api/query.go` 路由 + hot/cache/taos 查询证据归档。 | 无。 |
-| FR-007a | clickhousex Analytics API | Done | `api/analytics.go` + `analytics_adapter.go` + history_lifecycle.go (737 lines)；analytics tests PASS。 | 无。 |
+| FR-007 | Gin Market API | Partial | 本地路由/测试存在。 | 当前 RC query E2E。 |
+| FR-007a | clickhousex Analytics API | Partial | 本地 analytics/history 实现存在。 | durable replay 与外部 readback。 |
 | FR-008 | kafkax Broadcast | Done | **main.go 生产默认 dispatcher**，无 broker 时 fail-fast；Kafka live roundtrip PASS。 | 无。 |
 | FR-009 | Boundary Enforcement | Done | `BOUNDARY-GATES.md` 13 gates PASS；evidence 归档。 | 无。 |
-| FR-010 | clickhousex OLAP Storage | Done | `storage/olap/clickhouse_olap.go` ETL；OLAP ETL 已装配。 | 无。 |
-| FR-011 | Distributed Coordinator Lock | Done | deadletter tests PASS (86.6% coverage) + DLQ consumer。 | 无。 |
-| FR-012 | Stream Session Lifecycle | Done | `controlplane/stream_registry.go` + `stream_control.go`；client runtime 装配。 | 无（client 侧已装配）。 |
-| FR-013 | Exchange Reliability Controls | **Done** | throttle.go AIMD + 418 circuit breaker + stream_control.go reload。 | 无。 |
-| FR-014 | Runtime Stream Observability | Done | metrics/metrics.go 9 指标 + /metrics endpoint。 | 无。 |
-| FR-015 | Runtime Pause/Resume/Drain | Done | InFlightTracker + AuditLog；client runtime 装配。 | 无。 |
-| FR-016 | Historical Backfill Planner | Done | `history_rest.go` + metrics/cost.go (101 lines) + fetcher runtime injection。 | 无。 |
-| FR-017 | Gap Detection and Replay | **Done** | `quality.go` (152 lines) + error taxonomy + alerts。 | 无。 |
-| FR-018 | Archive Manifest and Restore | Done | `archive_manifest.go` RecordArchive/IsArchived/GetMissingRanges + mergeEntries；client runtime 装配（in-memory 计划态）。 | 落 OSS 依赖 G0 的 OssArchiver 装配。 |
-| FR-019 | Backfill Resource Governance | Done | `resource_governance.go` Acquire（并发预算）+ ReserveMem（内存预算）；client runtime 装配。 | 无（client 侧已装配）。 |
-| FR-020 | Funding Rate Event Support | Done | `normalize.go:429` parseFundingRate（FR-020 合约专属）。 | 合约 testnet 凭据验证（G7）。 |
-| FR-021 | Mark and Index Price Support | Done | `normalize.go:392` parseMarkPrice（FR-021/022 合约专属）。 | 合约 testnet 凭据验证（G7）。 |
-| FR-022 | Event-Type Governance Matrix | Done | TRACEABILITY + checker 登记 4×6×5 matrix anchors；matrix checker 持续阻断旧 topic/product_line/endpoint。 | 无。 |
-| FR-023 | Release Evidence Bundle | Done | taos_retention.go (121 lines) + oss_archiver.go + release evidence archive。 | 无。 |
-| FR-024 | Runtime Config Hot Reload | Done | controlplane/lifecycle.go + assembly reload + A10 hot reload eval。 | 无。 |
-| FR-025 | Backfill Throttle & Priority | **Done** | throttle.go AIMD + 418 circuit breaker + stream limits。 | 无。 |
-| FR-026 | Daily Reconciliation Job | Done | cron_reconcile.go + cursor recovery + history lifecycle。 | 无。 |
-| FR-027 | Cold Data Rehydration | Done | history_lifecycle.go (737 lines) multi-line backfill。 | 无。 |
-| FR-028 | Backfill Progress API | Done | admin.go progress endpoint + FileHistoryStateStore。 | 无。 |
-| FR-029 | Data Quality & Freshness SLA | Done | `sla_window.go` P95/P99 + StaleCount + quality.go。 | 无。 |
+| FR-010 | clickhousex OLAP Storage | Partial | `storage/olap/clickhouse_olap.go` ETL；OLAP ETL 已装配。 | 无。 |
+| FR-011 | Distributed Coordinator Lock | Partial | 本地 DLQ 耐久性已修复。 | 生产必填 path 与故障注入证据。 |
+| FR-012 | Stream Session Lifecycle | Partial | `controlplane/stream_registry.go` + `stream_control.go`；client runtime 装配。 | 无（client 侧已装配）。 |
+| FR-013 | Exchange Reliability Controls | Partial | throttle/circuit breaker/refresh 实现存在。 | 当前 RC hot-reload E2E。 |
+| FR-014 | Runtime Stream Observability | Partial | metrics/metrics.go 9 指标 + /metrics endpoint。 | 无。 |
+| FR-015 | Runtime Pause/Resume/Drain | Partial | InFlightTracker + AuditLog；client runtime 装配。 | 无。 |
+| FR-016 | Historical Backfill Planner | Partial | 回填 completion/pagination 本轮已修复。 | 实时 coverage 能力矩阵。 |
+| FR-017 | Gap Detection and Replay | Partial | quality/replay 基础实现存在。 | kline cadence、futures `pu`、durable repair 证据。 |
+| FR-018 | Archive Manifest and Restore | Partial | `archive_manifest.go` RecordArchive/IsArchived/GetMissingRanges + mergeEntries；client runtime 装配（in-memory 计划态）。 | 落 OSS 依赖 G0 的 OssArchiver 装配。 |
+| FR-019 | Backfill Resource Governance | Partial | `resource_governance.go` Acquire（并发预算）+ ReserveMem（内存预算）；client runtime 装配。 | 无（client 侧已装配）。 |
+| FR-020 | Funding Rate Event Support | Partial | `normalize.go:429` parseFundingRate（FR-020 合约专属）。 | 合约 testnet 凭据验证（G7）。 |
+| FR-021 | Mark and Index Price Support | Partial | `normalize.go:392` parseMarkPrice（FR-021/022 合约专属）。 | 合约 testnet 凭据验证（G7）。 |
+| FR-022 | Event-Type Governance Matrix | Partial | TRACEABILITY + checker 登记 4×6×5 matrix anchors；matrix checker 持续阻断旧 topic/product_line/endpoint。 | 无。 |
+| FR-023 | Release Evidence Bundle | Partial | 历史 evidence 存在。 | OSS partition/retry/rehydrate 当前 RC 证据。 |
+| FR-024 | Runtime Config Hot Reload | Partial | controlplane/reload 实现存在。 | 同 RC no-restart reload 证据。 |
+| FR-025 | Backfill Throttle & Priority | Partial | throttle/breaker 与有界内存 queue/backpressure/PubAck retry 主路已接入。 | OQ-002 crash-window loss 策略、operator 配置与指标裁决。 |
+| FR-026 | Daily Reconciliation Job | Partial | UTC day、failed-job retry、running restart recovery 与 save ordering 已修复。 | coverage interval-set、按 as_of/type/window reconcile、state-load fail-closed。 |
+| FR-027 | Cold Data Rehydration | Partial | 多线 history 基础实现存在。 | Options/four-line lifecycle 与 rehydrate 证据。 |
+| FR-028 | Backfill Progress API | Partial | progress/state store 实现存在。 | terminal/restart/error 完整证据。 |
+| FR-029 | Data Quality & Freshness SLA | Partial | `sla_window.go` P95/P99 + StaleCount + quality.go。 | 无。 |
 | FR-030 | Options Chain Raw Field Pass-through | Done | rawPassThrough + optionTicker 已实现。 | 无。 |
 
 ### 2.1 变更历史
@@ -86,27 +86,27 @@
 
 | FR | 名称 | 状态 | 核心内容 | 待闭合 |
 | --- | --- | --- | --- | --- |
-| FR-031 | REST ExchangeInfo Discovery | Done | exchangeinfo.go (247 lines) + refresh_test.go | 无。 |
-| FR-032 | ExchangeInfo Refresh & Diff | Done | exchangeinfo_refresh.go (36 lines) + catalog.go (136 lines) | 无。 |
-| FR-033 | Symbol Tiering & Priority | Done | exchangeinfo.go symbols BREAK/HALT/DELISTED lifecycle（**澄清**：本 FR 承载 delist 交易状态生命周期，非 GAP-E24 采集分级；symbol 采集 Tier/Collection 见 [ADR-005](../design/ADR-005-symbol-tier-classification.md)） | 无。 |
-| FR-034 | Dynamic Pair Universe | Done | product_line.go (27 lines) + DTO validation | 无。 |
-| FR-035 | Admin Control Surface | Done | exchangeinfo_option.go delivery metadata + catalog | 无。 |
-| FR-036 | Stream Load Shedding | Done | exchangeinfo_option.go (111 lines) options metadata | 无。 |
+| FR-031 | REST ExchangeInfo Discovery | Partial | discovery 实现存在。 | Candidate Catalog/Admission 分离。 |
+| FR-032 | ExchangeInfo Refresh & Diff | Partial | refresh/diff 实现存在。 | true Added/Updated/Removed 传播。 |
+| FR-033 | Symbol Tiering & Priority | Partial | delist/tier 基础实现存在。 | 策略移除与 exchange delist 隔离。 |
+| FR-034 | Dynamic Pair Universe | Partial | product-line identity 基础实现存在。 | wire/payload identity 一致性。 |
+| FR-035 | Admin Control Surface | Partial | delivery metadata 基础实现存在。 | perpetual/delivery discovery 分离。 |
+| FR-036 | Stream Load Shedding | Partial | Options metadata 基础实现存在。 | status filter、strong-key roundtrip、容量预检。 |
 
-### v3.7.0 新增 FR-037~044（全部 Done）
+### v3.7.0 新增 FR-037~044（历史登记；当前按 root Matrix 投影）
 
-> [COMPUTED, HIGH] 以下 FR 为 2026-06-26 v3.7.0 新增，对齐 Plan008 生产级缺口终审。全部 Done。对应 GitHub issue #1180-#1186 已关闭。
+> [COMPUTED, HIGH] 以下 FR 于 2026-06-26 v3.7.0 登记，对应 GitHub issue #1180-#1186 的历史事项已关闭；issue closure 不等于当前 RC 验收。当前 FR-037 为 Done，FR-038~044 为 Partial。
 
 | FR | 名称 | 状态 | 核心内容 |
 | --- | --- | --- | --- |
 | FR-037 | Canary & Rollback Controls | Done | smoke-only route gate + runtime `/ingest` 404 |
-| FR-038 | Retention / Archive / Rehydrate | Done | credential rotation runbook (508 lines) + oss_archiver |
-| FR-039 | Trace Propagation | Done | binancex/tracing.go + HA/DR docs (7 docs) + InitTracer |
-| FR-040 | Resource Quota & Backpressure | Done | canary drill script + deploy-canary-gate.sh |
-| FR-041 | Audit Log Immutability | Done | capacity planning doc + resource limits in stream_control |
-| FR-042 | Schema Compatibility Gate | Done | soak test scripts + test/e2e suite PASS |
-| FR-043 | Cost / Budget Observability | Done | chaos test scripts + go test -race PASS (0 races) |
-| FR-044 | Compliance Destruction Proof | Done | gitleaks scan + govulncheck + admin auth Bearer token |
+| FR-038 | Retention / Archive / Rehydrate | Partial | 安全/归档边界存在。 | credential incident/rotation 与 archive durability 回执。 |
+| FR-039 | Trace Propagation | Partial | tracing 与 canonical deploy contract 存在。 | 同 RC HA/DR/OTel 证据。 |
+| FR-040 | Resource Quota & Backpressure | Partial | canary 基础制品存在。 | 同 RC canary/rollback 证据。 |
+| FR-041 | Audit Log Immutability | Partial | capacity/resource 基础实现存在。 | Options/four-line load 证据。 |
+| FR-042 | Schema Compatibility Gate | Partial | soak test scripts + test/e2e suite PASS |
+| FR-043 | Cost / Budget Observability | Partial | chaos test scripts + go test -race PASS (0 races) |
+| FR-044 | Compliance Destruction Proof | Partial | gitleaks scan + govulncheck + admin auth Bearer token |
 
 ### v4.0.0 新增 FR-045~051（whitelist / catalog / tier，全部 Done）
 
@@ -114,13 +114,13 @@
 
 | FR | 名称 | 状态 | 核心内容 |
 | --- | --- | --- | --- |
-| FR-045 | Whitelist Sync Job | Done | whitelist/sync_job.go + rules.go（事件驱动 + 定时兜底 + PG advisory lock 单写者） |
+| FR-045 | Whitelist Sync Job | Partial | whitelist/sync_job.go + rules.go（事件驱动 + 定时兜底 + PG advisory lock 单写者） |
 | FR-046 | Whitelist 表 + Meta SSOT | Done | pg_whitelist.go + migrations/011_whitelist.sql（whitelist_meta version SSOT + whitelist_sync_log 审计） |
 | FR-047 | GET /internal/whitelist | Done | whitelist/service.go + api/whitelist_handler.go（全量 + 增量，200 统一响应） |
-| FR-048 | NATS whitelist.version 推送 | Done | whitelist/publisher.go + assembly 独立 NATS 连接注入（core NATS fire-and-forget，失败非致命） |
+| FR-048 | NATS whitelist.version 推送 | Partial | whitelist/publisher.go + assembly 独立 NATS 连接注入（core NATS fire-and-forget，失败非致命） |
 | FR-049 | 下游消费方 SDK | Done | pkg/whitelistclient/cache.go + client.go（缓存 3h TTL + 增量刷新 + 容灾降级 + Bearer token 鉴权） |
-| FR-050 | catalog_symbols 扩展字段 | Done | migrations/011_whitelist.sql + pg_catalog.go ApplyDiff（COALESCE 保留手动 tier/collection） |
-| FR-051 | Tier 分配策略 | Done | whitelist/rules.go + 运维 SQL 批量分配（spot/um_perp/cm_perp/options 各取 24h quoteVolume top 20；ADR-008 准入/采集解耦） |
+| FR-050 | catalog_symbols 扩展字段 | Partial | migrations/011_whitelist.sql + pg_catalog.go ApplyDiff（COALESCE 保留手动 tier/collection） |
+| FR-051 | Tier 分配策略 | Partial | whitelist/rules.go + 运维 SQL 批量分配（spot/um_perp/cm_perp/options 各取 24h quoteVolume top 20；ADR-008 准入/采集解耦） |
 
 ### 能力边界声明（#1113/#1114/#1115/#1116 降级闭合）
 
@@ -140,20 +140,20 @@
 
 ## 3. 边界与质量需求投影
 
-> **v4.0.0 新增 Order Book FR-052~061**（全部 Pending，ADR-011 Proposed）
+> **v4.1.0 Order Book FR-052~061 当前投影**：四线均为 Partial；Options 已接入显式白名单 full-incremental 路径，live checklist 未闭合。
 
 | FR | 名称 | 状态 | 核心内容 | 待闭合 |
 | --- | --- | --- | --- | --- |
-| FR-052 | OB full_incremental 模式 | Done | per-symbol 本地 book 状态机（UNINIT/BUFFERING/ALIGNED/REBUILDING）+ 独立 goroutine | [STATE-MACHINE.md](../design/ORDER-BOOK-STATE-MACHINE.md) §3-§4 实现 |
-| FR-053 | OB snapshot_topn 模式 | Done | 无状态转发限档快照（5/10/20档），不需序号校验 | §2.2 实现 |
-| FR-054 | OB Initial Alignment + Seq Validation | Done | REST 快照对齐 9 步 + spot U/u + futures U/u/pu + qty=="0" 删除 + 定点数 | §4.2-§4.5 实现 |
-| FR-055 | OB Auto-Rebuild | Done | gap → 丢弃 → BUFFERING 重新对齐，buffer cap 10000 | §4.1 实现 |
-| FR-056 | OB Snapshot Persistence + Fast Recovery | Done | 5min 持久化 + 冷启动 fast path | §5 实现 |
-| FR-057 | OB Staleness API | Done | stale 派生标志 + 下游消费方契约 | §8 实现 |
-| FR-058 | OB TopN Subscription | Done | 100ms 推送 + stale=true 继续推送 | §10.2 实现 |
-| FR-059 | OB Incremental Forwarding | Done | 校验增量转发 + rebuild 标记事件 | §10.3 实现 |
-| FR-060 | OB On-Demand Snapshot + Health Query | Done | 全量 book 拉取 + per-symbol 状态查询 | §10.1 实现 |
-| FR-061 | OB Rebuild Alerting + Checksum Sampling | Done | 5min >3 次告警 + 1min REST vs memory diff | §9 实现 |
+| FR-052 | OB full_incremental 模式 | Partial | per-symbol 本地 book 状态机（UNINIT/BUFFERING/ALIGNED/REBUILDING）+ 独立 goroutine | [STATE-MACHINE.md](../design/ORDER-BOOK-STATE-MACHINE.md) §3-§4 实现 |
+| FR-053 | OB snapshot_topn 模式 | Partial | 无状态转发限档快照（5/10/20档），不需序号校验 | §2.2 实现 |
+| FR-054 | OB Initial Alignment + Seq Validation | Partial | REST 快照对齐 9 步 + spot U/u + futures U/u/pu + qty=="0" 删除 + 定点数 | §4.2-§4.5 实现 |
+| FR-055 | OB Auto-Rebuild | Partial | gap → 丢弃 → BUFFERING 重新对齐，buffer cap 10000 | §4.1 实现 |
+| FR-056 | OB Snapshot Persistence + Fast Recovery | Partial | 5min 持久化 + 冷启动 fast path | §5 实现 |
+| FR-057 | OB Staleness API | Partial | stale 派生标志 + 下游消费方契约 | §8 实现 |
+| FR-058 | OB TopN Subscription | Partial | 100ms 推送 + stale=true 继续推送 | §10.2 实现 |
+| FR-059 | OB Incremental Forwarding | Partial | 校验增量转发 + rebuild 标记事件 | §10.3 实现 |
+| FR-060 | OB On-Demand Snapshot + Health Query | Partial | 全量 book 拉取 + per-symbol 状态查询 | §10.1 实现 |
+| FR-061 | OB Rebuild Alerting + Checksum Sampling | Partial | 5min >3 次告警 + 1min REST vs memory diff | §9 实现 |
 
 > **前置阻塞**：options depth 协议待测试网实测（STATE-MACHINE.md §7.4 checklist）。spot/um_perp/cm_perp 不受阻塞。
 
@@ -188,7 +188,7 @@
 | --- | --- | --- |
 | `goal.md` | 业务目标与模块意图 | 作为实现清单的目标来源。 |
 | `SPEC.md` | v2.0.0 功能与边界规格 | 作为 FR/BR/NFR 语义来源。 |
-| `TRACEABILITY.md` | 根级 FR/AC/TC/Task 追溯 | 作为当前状态与验收编号来源；v4.0.0 当前口径，55 Done / 0 Partial / 0 Drifted / 10 Pending；Evidence 列 55 Done / 0 Pending。 |
+| `TRACEABILITY.md` | 根级 FR/AC/TC/Task 追溯 | [COMPUTED, HIGH] 当前 canonical 口径为 13 Done / 52 Partial / 0 Drifted / 0 Pending；spec/runtime 均为 NO。 |
 | `client/TRACEABILITY.md` | Client 子域追溯 | 作为 client active/pending 实现面来源。 |
 | `server/TRACEABILITY.md` | Server 子域追溯 | 作为 server active/pending 实现面来源。 |
 | `BOUNDARY-GATES.md` | 边界漂移防线 | 作为 FR-009 与 BR-001~BR-009 的文档和本地 runtime 证据入口。 |
@@ -201,7 +201,7 @@
 | 检查项 | 状态 | 依据 |
 | --- | --- | --- |
 | v2.0.0 根规格存在 | Done | `SPEC.md` v4.0.0。 |
-| 根级 traceability 存在 | Done | `TRACEABILITY.md` v4.0.0；65 Done / 0 Partial / 0 Drifted / 0 Pending；Evidence 列 65 Done / 0 Pending。 |
+| 根级 traceability 存在 | Done | [COMPUTED, HIGH] `TRACEABILITY.md` v4.1.0；13 Done / 52 Partial / 0 Drifted / 0 Pending。 |
 | Client/Server 子域 traceability 存在 | Done | `client/TRACEABILITY.md`, `server/TRACEABILITY.md`。 |
 | C/S 独立进程边界已定义 | Done | `README.md`, `SPEC.md`, `BOUNDARY-GATES.md`。 |
 | Boundary gate 文档已形成 | Done | `BOUNDARY-GATES.md` v2.2.4；本地证据 `/home/workspace/binance/release/evidence/binance/20260623/`；13 gates PASS；证据提交 `71e2a6e8`（2026-06-23 round 2）。 |
@@ -210,12 +210,12 @@
 | natsx publish/consume runtime 闭合 | Done | FR-003 Done（publisher+consumer 双侧装配 + .v1 fix `4f740e5`；drift-check 22/22 PASS）。 |
 | ManualAck 与 at-least-once runtime 闭合 | Done | FR-004 Done（NakWithDelay+DLQ + JetStream gated 测试）。 |
 | Server idempotency runtime 闭合 | Done | FR-005 Done（RedisStore SetNX 72h TTL）。 |
-| Storage/API/archival/broadcast/runtime 扩展闭合 | Done | 65 FR Done（规格口径 100%；FR-052~061 spot/um/cm 已实现，options 待 Phase 2，不影响 release 口径）。 |
-| 全量 AC/TC 通过 | Done | AC-001~AC-130 + TC-001~TC-067 PASS；go test -race 0 races。 |
+| Storage/API/archival/broadcast/runtime 扩展闭合 | Partial | [COMPUTED, HIGH] OSS/coverage/funding/Options orderbook 等未闭合。 |
+| 全量 AC/TC 通过 | Partial | [COMPUTED, HIGH] 本地 full test/race PASS，但当前 RC 外部 AC/TC 未闭合。 |
 
 ## 7. 历史缺口登记（全部已关闭）
 
-> [COMPUTED, HIGH] 下表 #1104~#1118 / #1180~#1186 为历史 closed ledger；P10 issues（GitHub #1289~#1331 / Beads 43 条）已全部关闭。release_closeable=YES（PRG-001~007 全 PASS）。
+> [COMPUTED, HIGH] 下表 #1104~#1118 / #1180~#1186 为历史 closed ledger；当时投影曾写 `release_closeable=YES`，不改变当前 NO。
 
 | 缺口 | 影响 | 关闭条件 |
 | --- | --- | --- |
@@ -228,4 +228,4 @@
 | **#1114/#1116 runtime 增量状态机（P2，已关闭）** | order book rebuild 与 hot reload 曾需增量 diff/state machine 证据。 | 以能力边界文档化 Closed（#1114 明确排除，#1116 维持 Partial）。 |
 | **#1115 ClickHouse ETL 持久化（P2，已关闭）** | FR-007a 曾需持久化、多实例 source 与 live OLAP evidence。 | 以能力边界文档化 Closed。 |
 | **#1117/#1118 持久化进度与 DLQ（P2，已关闭）** | FR-017/026/027/028 曾缺持久化 progress/history/reconcile/rehydration 证据；DLQ 曾缺持久化 wiring/replay；Evidence 列仍为 Pending（Partial FR 代码缺口未闭合）。 | 以能力边界文档化 Closed。 |
-| **#1180-#1186 Plan008 剩余 P2 Task（P0/P1/P2 历史已关闭）** | FR-037~044（v3.7.0 新增）的 runtime 实现。 | 该行仅记录上一轮历史 closure；当前 P10 release gate（GitHub #1289~#1331 / Beads 43 条）已全部关闭，release_closeable=YES（PRG-001~007 全 PASS）。 |
+| **#1180-#1186 Plan008 剩余 P2 Task（历史）** | FR-037~044 的旧 runtime 实现投影。 | [COMPUTED, HIGH] 当时曾投影 YES；当前以 canonical Matrix 的 NO 为准。 |

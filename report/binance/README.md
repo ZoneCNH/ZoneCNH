@@ -1,8 +1,8 @@
 # Binance 模块分析报告
 
-> **分析日期**：2026-07-05；生产可发布复核更新：2026-07-09
+> **分析日期**：2026-07-05；生产可发布综合复核更新：2026-07-10
 > **代码仓库**：`/home/workspace/binance`（`github.com/ZoneCNH/binance`）
-> **执行方式**：4 agent team 并行分析 + 交叉验证
+> **执行方式**：agent team 分阶段并行审计、实现与交叉验证。[COMPUTED, HIGH]
 
 ## 报告索引
 
@@ -15,10 +15,14 @@
 | [04-test-report.md](04-test-report.md) | 测试执行报告与用例设计 |
 | [DATA-INTEGRITY-E2E-20260708.md](DATA-INTEGRITY-E2E-20260708.md) | 15 个归档 GAP-E 项的主运行时证据源；替代已归档的 20260701 版本 |
 | [orderbook-deep-analysis.md](orderbook-deep-analysis.md) | `knowledge/OrderBook.md` 草稿 vs binance 实现 19 章对照（维度 A/B/C + 同步协议 + Market State Engine 对齐度量化） |
-| [ORDERBOOK-REVIEW-MEMO-20260709.md](ORDERBOOK-REVIEW-MEMO-20260709.md) | 对 orderbook-deep-analysis.md 的评审异议：草稿事实性错误、反对 PolicyManager 过度抽象、Market State Engine 域归属 |
-| [WHITELIST-LOGIC-ANALYSIS-20260709.md](WHITELIST-LOGIC-ANALYSIS-20260709.md) | 行情流 vs 订单簿白名单逻辑梳理：7 套机制仅 3 套生效、tier 词表冲突、whitelist.yaml/policy.Manager 死代码、订单簿 DepthLevel 断链。**Plan 013 已据此报告完成修复**（tier 词表统一 prime/standard/lite/blocked + tierCapabilityMap + DepthLevel 全链路，2026-07-09） |
-| [PRODUCTION-READINESS-DEEP-ANALYSIS-20260709.md](PRODUCTION-READINESS-DEEP-ANALYSIS-20260709.md) | 生产级可发布深度分析：本地 runtime P0 gate 已闭合；覆盖数据流架构、现货/合约/期权/订单簿业务矩阵、canonical event_type 修复、重连队列并发修复、剩余 release evidence 和模块规则/标准升级建议 |
+| [ORDERBOOK-REVIEW-MEMO-20260709.md](ORDERBOOK-REVIEW-MEMO-20260709.md) | [COMPUTED, HIGH] **历史快照**：对旧 orderbook 报告的评审异议；当前缺口以 2026-07-10 综合复审为准 |
+| [WHITELIST-LOGIC-ANALYSIS-20260709.md](WHITELIST-LOGIC-ANALYSIS-20260709.md) | [COMPUTED, HIGH] **历史快照**：记录 2026-07-09 白名单实现与 Plan 013 结论；已由 2026-07-10 综合复审取代，不作为当前 RC 状态源 |
+| [PRODUCTION-READINESS-DEEP-ANALYSIS-20260709.md](PRODUCTION-READINESS-DEEP-ANALYSIS-20260709.md) | [COMPUTED, HIGH] **历史快照**：当时“本地 P0 已闭合”的判断已被新审计推翻；仅供追溯 |
+| [PRODUCTION-READINESS-DEEP-ANALYSIS-20260710.md](PRODUCTION-READINESS-DEEP-ANALYSIS-20260710.md) | [COMPUTED, HIGH] **历史快照**：早期 No-Go 审计，已由综合复审取代 |
+| [REMEDIATION-20260710.md](REMEDIATION-20260710.md) | [COMPUTED, HIGH] **历史快照**：旧修复分支记录；原短 SHA 不可解析，不作为当前 evidence anchor |
+| [OFFICIAL-CAPABILITY-BASELINE-20260710.md](OFFICIAL-CAPABILITY-BASELINE-20260710.md) | [COMPUTED, HIGH] Spot、USDⓈ-M、COIN-M、Options 与订单簿的官方协议能力基线 |
+| [PRODUCTION-READINESS-CONSOLIDATED-20260710.md](PRODUCTION-READINESS-CONSOLIDATED-20260710.md) | [COMPUTED, HIGH] **当前裁决入口**：agent team 并行审计/实现/复核、四业务线能力矩阵、白名单/历史/实时/完整性/订单簿修复、门禁证据与 No-Go 发布路径 |
 
 ## 一句话总结
 
-Binance 公共行情采集 C/S 模块；当前本地 runtime P0 gates 已恢复，`full validation`、race、30s soak、server stability soak、readiness audit 与可达漏洞扫描均通过。交易/账户/私有流不在本模块发布口径内；最终 release Go 仍需远端 CI、release tag、live capture、外部依赖 E2E、`gitleaks` runner 证据与 rollback 证据。
+[COMPUTED, HIGH] Binance 公共行情采集 C/S 模块当前为 **No-Go**：本轮已修复部分本地 P0，但仍有 Options 订单簿 live alignment/容量、可靠采集队列、Catalog diff、coverage 能力矩阵、OSS 归档耐久性等本地缺口，且当前 RC 的外部 E2E、tag/release notes、preflight 与 rollback 证据未闭合。

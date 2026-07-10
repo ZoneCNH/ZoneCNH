@@ -4,11 +4,11 @@
 - [KNOWN] Last-Updated: 2026-07-10（runtime implementation/evidence 双口径对齐审计）
 - Source-SPEC: `module/binance/spec/SPEC.md` v4.1.0
 - State-Model: single-state only
-- [KNOWN] Current-State: 65 Done / 0 Partial / 0 Drifted / 0 Pending（FR-052~061 spot/um/cm 已实现；options 待 Phase 2；FR-045~051 白名单补齐 GC-0~GC-5 全合入）
-- [FRAME] Spec-release-closeable: YES（仅表示 FR/规格投影；options order book 仍待 Phase 2）
+- [COMPUTED, HIGH] Current-State: 13 Done / 52 Partial / 0 Drifted / 0 Pending
+- [COMPUTED, HIGH] Spec-release-closeable: NO（canonical Matrix 仍有 52 个 Partial）
 - [COMPUTED, HIGH] Runtime-release-closeable: NO（2026-07-10 audit：外部 durable/fanout/query E2E、正式 tag/release notes 与 rollback evidence 尚未绑定同一最终 commit）
 
-> [COMPUTED, HIGH] Runtime implementation commit：`3f6366728b635c32d73565874965d40c20a92caf`；dated external ledger commit：`660a3701589cc15fa95c7859fae02fad4863e1ad`。上方 `Spec-release-closeable=YES` 仅为规格投影，不提升 runtime release 状态。
+> [COMPUTED, HIGH] 上述旧 implementation/external ledger 提交与当前 runtime 审计基线 `b20f6d44f8b246149c7a9f9c06a4dc27bc7b49ef` 不同，不得用于提升当前 RC 状态。
 
 ## 1. Rule
 
@@ -20,9 +20,9 @@ This matrix is the compact FR/BR/AC/TC projection. It intentionally does not dup
 | --- | --- | --- | --- | --- |
 | FR-001 | BR-001 | AC-001 | client ingestion tests/e2e history | Done |
 | FR-002 | BR-001 | AC-001 | bar ingestion tests/e2e history | Done |
-| FR-003 | BR-003 | AC-002, AC-003 | subject drift check 22/22 PASS + .v1 fix `4f740e5` | Done |
-| FR-004 | BR-002 | AC-001 | server consumer boundary | Done |
-| FR-005 | BR-001 | AC-001 | ClickHouse persistence tests/history | Done |
+| FR-003 | BR-003 | AC-002, AC-003 | current RC NATS external gate blocked | Partial |
+| FR-004 | BR-002 | AC-001 | consumer code exists; JetStream ManualAck/redelivery current-RC evidence needed | Partial |
+| FR-005 | BR-001 | AC-001 | current RC durable persistence/readback evidence needed | Partial |
 | FR-006a | BR-002 | AC-001 | client CLI/config example | Done |
 | FR-006b | BR-002 | AC-001 | server CLI/config example | Done |
 | FR-006c | BR-003 | AC-001 | config schema/examples | Done |
@@ -31,26 +31,26 @@ This matrix is the compact FR/BR/AC/TC projection. It intentionally does not dup
 | FR-007a | BR-001 | AC-001 | replay evidence needed | Partial |
 | FR-008 | BR-001 | AC-001 | depth ingestion history | Done |
 | FR-009 | BR-001 | AC-001 | trade ingestion history | Done |
-| FR-010 | BR-001 | AC-001 | bar persistence/query history | Done |
+| FR-010 | BR-001 | AC-001 | current RC persistence/query readback needed | Partial |
 | FR-011 | BR-002 | AC-001 | failure injection needed | Partial |
-| FR-012 | BR-004 | AC-001 | ExchangeInfo refresh docs/runtime | Done |
+| FR-012 | BR-004 | AC-001 | Candidate Catalog/Admission separation and current-RC refresh evidence needed | Partial |
 | FR-013 | BR-004 | AC-001 | hot reload evidence needed | Partial |
-| FR-014 | BR-002 | AC-001 | graceful shutdown tests/history | Done |
-| FR-015 | BR-003 | AC-001 | stable identity validation | Done |
+| FR-014 | BR-002 | AC-001 | active history/drain recovery is not closed | Partial |
+| FR-015 | BR-003 | AC-001 | request/payload/instrument identity validation incomplete | Partial |
 | FR-016 | BR-005 | AC-001 | metrics scrape evidence needed | Partial |
 | FR-017 | BR-005 | AC-001 | OTel evidence needed | Partial |
-| FR-018 | BR-001 | AC-001 | bars API runtime evidence | Done |
-| FR-019 | BR-001 | AC-001 | depth API runtime evidence | Done |
-| FR-020 | BR-001 | AC-001 | funding-rate API runtime evidence | Done |
-| FR-021 | BR-001 | AC-001 | mark-price API runtime evidence | Done |
-| FR-022 | BR-003 | AC-001 | instrument identity validation | Done |
+| FR-018 | BR-001 | AC-001 | current RC bars API external readback needed | Partial |
+| FR-019 | BR-001 | AC-001 | orderbook incomplete; current RC depth API evidence needed | Partial |
+| FR-020 | BR-001 | AC-001 | independent funding stream/history path is not implemented | Partial |
+| FR-021 | BR-001 | AC-001 | current RC mark-price storage/query evidence needed | Partial |
+| FR-022 | BR-003 | AC-001 | strong identity wire validation incomplete | Partial |
 | FR-023 | BR-005 | AC-001 | retention/archive evidence needed | Partial |
 | FR-024 | BR-004 | AC-001 | symbol reload evidence needed | Partial |
 | FR-025 | BR-005 | AC-001 | soak/load evidence needed | Partial |
-| FR-026 | BR-002 | AC-001 | restart recovery evidence needed | Partial |
+| FR-026 | BR-002 | AC-001 | retry/restart fixed; interval-set reconciliation and state-load fail-closed evidence needed | Partial |
 | FR-027 | BR-001 | AC-001 | full product-line evidence needed | Partial |
 | FR-028 | BR-003 | AC-001 | error taxonomy evidence needed | Partial |
-| FR-029 | BR-003 | AC-001 | data quality SLA migration | Done |
+| FR-029 | BR-003 | AC-001 | coverage/gap/reconcile capability matrix incomplete | Partial |
 | FR-030 | BR-002 | AC-001 | health/readiness runtime | Done |
 | FR-031 | BR-004 | AC-001 | full sync evidence needed | Partial |
 | FR-032 | BR-004 | AC-001 | diff sync evidence needed | Partial |
@@ -63,33 +63,33 @@ This matrix is the compact FR/BR/AC/TC projection. It intentionally does not dup
 | FR-039 | BR-005 | AC-007 | HA/DR doc/evidence needed | Partial |
 | FR-040 | BR-005 | AC-007 | canary exercise evidence needed | Partial |
 | FR-041 | BR-005 | AC-007 | capacity evidence needed | Partial |
-| FR-042 | BR-005 | AC-007 | soak evidence archived | Done（Soak L1+L2 全覆盖：`TestSoak_ServerStability` CI PASS + `TestSoak_BinancePipeline` 全管线 WS→TDengine 已实现） |
-| FR-043 | BR-005 | AC-007 | chaos evidence archived | Done（Chaos L1+L2 全覆盖：4 项故障注入 CI PASS + `TestChaos_{NATSStop,RedisStop,ProcessKill}Recovery` 真实故障注入已实现） |
-| FR-044 | BR-005 | AC-007 | security hardening evidence archived | Done（Security L2 全覆盖：6 项安全测试 CI PASS，gitleaks + govulncheck + admin auth 全 PASS） |
-| FR-045 | BR-009 | AC-001 | Whitelist Sync Job（GC-0 server→client 回灌 #444；GC-1 手动审核队列 #445；GC-3 观察期 #447） | Done |
+| FR-042 | BR-005 | AC-007 | historical soak is not bound to current RC | Partial |
+| FR-043 | BR-005 | AC-007 | historical chaos evidence is not bound to current RC | Partial |
+| FR-044 | BR-005 | AC-007 | current RC security scan/pentest and credential-incident closure needed | Partial |
+| FR-045 | BR-009 | AC-001 | fail-open/update/reconnect current-RC E2E needed | Partial |
 | FR-046 | BR-009 | AC-001 | whitelist 表 + version SSOT + sync_log + first_seen_at 列（migration 016） | Done |
 | FR-047 | BR-009 | AC-001 | GET /internal/whitelist；POST /internal/whitelist/refresh（GC-5b 审核态反馈 #452） | Done |
-| FR-048 | BR-009 | AC-001 | NATS binance.whitelist.version 推送（独�� NATS 连接 + publish 非致命） | Done |
+| FR-048 | BR-009 | AC-001 | current RC NATS version-push evidence needed | Partial |
 | FR-049 | BR-009 | AC-001 | 下游消费方 SDK（GC-5c 真正 fail-open #449：degraded 态 + OnDegraded + IsFailOpen） | Done |
-| FR-050 | BR-009 | AC-001 | catalog_symbols 扩展字段（ApplyDiff COALESCE 保留 tier + TRADIFI_PERPETUAL 区分币股 + ListCandidates COALESCE） | Done |
-| FR-051 | BR-009 | AC-001 | Tier 分配策略（GC-2 三级优先级 #446：显式列表 > QuoteVolumeUSD≥阈值 > BTC/ETH 兜底） | Done |
+| FR-050 | BR-009 | AC-001 | true Catalog Added/Updated/Removed propagation incomplete | Partial |
+| FR-051 | BR-009 | AC-001 | Options capability/hot update fixed; live admission and capacity evidence incomplete | Partial |
 
-### v4.0.0 Order Book FR-052~061（spot/um/cm Done；options 待 Phase 2）
+### v4.1.0 Order Book FR-052~061（四线当前均为 Partial）
 
 | FR | BR | AC | Evidence | State |
 | --- | --- | --- | --- | --- |
-| FR-052 | BR-001 | AC-OB-001 | `internal/client/orderbook/manager.go` + `state.go` + `runtime.go` 接入主路径 | Done |
-| FR-053 | BR-001 | AC-OB-002 | `manager.go` handleSnapshotTopN + `rest.go` DepthMode | Done |
-| FR-054 | BR-001 | AC-OB-003~005 | `align.go` alignAlgorithm + validateSequence + `book.go` qty=="0" 删除 | Done |
-| FR-055 | BR-001 | AC-OB-006 | `manager.go` triggerRebuild + buffer cap 10000 | Done |
-| FR-056 | BR-001 | AC-OB-007 | `persist.go` FilePersistor + restoreBookFromSnapshot + StartPersistLoop | Done |
-| FR-057 | BR-001 | AC-OB-008 | `manager.go` GetState + AllHealth + `admin.go` orderbookHealthAll | Done |
-| FR-058 | BR-001 | AC-OB-009 | `manager.go` StartTopNPusher + pushTopN + `topn.go` TopNUpdate | Done |
-| FR-059 | BR-001 | AC-OB-010 | `manager.go` forwardIncremental + forwardRebuildMarker + `topn.go` IncrementalEvent | Done |
-| FR-060 | BR-001 | AC-OB-011 | `manager.go` GetBook + `admin.go` orderbookHandler | Done |
-| FR-061 | BR-005 | AC-OB-012 | `health.go` HealthMonitor + StartChecksumSampler + driftDetected | Done |
+| FR-052 | BR-001 | AC-OB-001 | Options explicit-whitelist path exists; four-line live generation/freshness evidence remains | Partial |
+| FR-053 | BR-001 | AC-OB-002 | four-line snapshot mode evidence incomplete | Partial |
+| FR-054 | BR-001 | AC-OB-003~005 | alignment race/apply-error/Options sequence evidence incomplete | Partial |
+| FR-055 | BR-001 | AC-OB-006 | rebuild generation and disconnect trigger incomplete | Partial |
+| FR-056 | BR-001 | AC-OB-007 | persisted recovery lacks age/bridge/checksum validation | Partial |
+| FR-057 | BR-001 | AC-OB-008 | disconnect freshness cannot be proven | Partial |
+| FR-058 | BR-001 | AC-OB-009 | stale output/pooled-book lifecycle evidence incomplete | Partial |
+| FR-059 | BR-001 | AC-OB-010 | rebuild markers can be dropped | Partial |
+| FR-060 | BR-001 | AC-OB-011 | four-line on-demand snapshot evidence incomplete | Partial |
+| FR-061 | BR-005 | AC-OB-012 | checksum sampling config/concurrency and Options coverage incomplete | Partial |
 
-> **options 待 Phase 2**：FR-052~061 中 options depth 协议相关部分阻塞于 ADR-011 §7.4 testnet 实测 checklist，Phase 2 闭环后激活。当前 Done 仅覆盖 spot/um_perp/cm_perp。
+> **Options 当前边界**：显式订单簿白名单、REST snapshot 与 full-incremental manager 路径已接入；ADR-011 §7.4 的 live alignment、重连、合约 churn、容量与 checksum checklist 未闭合，因此 FR-052~061 仍为 Partial。
 
 ## 3. Acceptance Criteria
 
@@ -111,23 +111,23 @@ This matrix is the compact FR/BR/AC/TC projection. It intentionally does not dup
 release_closeable_spec = Code-Done FR / Total FR ≥ 90% AND Drifted FR = 0 AND Pending FR = 0 AND PRG-001~007 gates PASS
 ```
 
-CI 门禁投影（`release_closeable_spec` 的等价投影，供 `binance-status-consistency-check.sh` 门禁消费）：`release_closeable: YES`（Code-Done 65/65 = 100% ≥ 90%，Drifted=0，Pending=0，PRG-001~007 全 PASS）。
+CI 门禁投影（`release_closeable_spec` 的等价投影，供一致性门禁消费）：`release_closeable: NO`（Code-Done 13/65，且存在 52 个 Partial）。[COMPUTED, HIGH]
 
 ```
 release_closeable = Code-Done FR / Total FR ≥ 90% AND Drifted FR = 0 AND Pending FR = 0 AND PRG-001~007 gates PASS
 ```
 
-当前规格状态：`release_closeable_spec: YES`（65 FR: 65 Done = 100% ≥ 90%，options depth 待 Phase 2 testnet 实测后激活）。runtime 发布状态必须额外满足 `release_closeable_runtime`：同一最终 commit 的外部 durable/fanout/query E2E、正式 release tag/release notes、部署前检查和 rollback evidence；本轮该值为 `NO`。[COMPUTED, HIGH]
+当前规格状态：`release_closeable_spec: NO`（65 FR 中 13 Done、52 Partial）。runtime 发布状态还必须满足同一最终 commit 的外部 durable/fanout/query E2E、正式 release tag/release notes、部署前检查和 rollback evidence；本轮 `release_closeable_runtime: NO`。[COMPUTED, HIGH]
 
 | PRG | Gate | State | Evidence |
 | --- | --- | --- | --- |
-| PRG-001 | remote CI current run | PASS | CI runner 为 self-hosted [ci-go]；GOTOOLCHAIN=local + `scripts/fix-goroot.sh` 修复 Go toolchain staleness（PR #457-#459），CI 已恢复可运行 |
-| PRG-002 | release promotion | PASS | v0.15.0 tag 已打（2026-07-08，@52d9144），含白名单 GC-0~GC-5 与 PR #442-#461 修复；GitHub Release v0.15.0 已创建（2026-07-08T11:52Z）；#462（coverage artifact 非阻断）在 tag 之后合入 main，不纳入本版本 |
-| PRG-003 | production readiness | PASS | PRG-001~007 全 PASS |
-| PRG-004 | observability | PASS | Jaeger/Grafana/Loki/AlertManager 全在线 |
-| PRG-005 | security | PASS | OpenTelemetry SDK v1.44.0，govulncheck 清洁 |
-| PRG-006 | resilience | PASS | Soak Level 2 PASS + Chaos Level 2 5 PASS/8 SKIP/0 FAIL（CI-runnable）；make test-gated 手动触发 Level 1 |
-| PRG-007 | issue sync | PASS | 0 个 GitHub open issue（2026-07-05 全部关闭，28 issues resolved across Phase-1~8） |
+| PRG-001 | remote CI current run | BLOCKED | [COMPUTED, HIGH] 当前 RC 无归档的远程 CI 成功证据 |
+| PRG-002 | release promotion | BLOCKED | [COMPUTED, HIGH] 当前 RC 无 tag/release notes/artifact digest |
+| PRG-003 | production readiness | BLOCKED | [COMPUTED, HIGH] PRG-001~007 未全通过 |
+| PRG-004 | observability | BLOCKED | [COMPUTED, HIGH] 外部可观测证据未绑定当前 RC |
+| PRG-005 | security | BLOCKED | [COMPUTED, HIGH] 当前 RC 的 security/lint 证据未闭合 |
+| PRG-006 | resilience | BLOCKED | [COMPUTED, HIGH] 外部耐久性、故障注入与 rollback 未绑定当前 RC |
+| PRG-007 | issue sync | BLOCKED | [COMPUTED, HIGH] Beads epic `ZoneCNH-7i1p` 仍为 in_progress |
 
 ## 5. Issue Projection & Evidence GAP-E Mapping
 
@@ -156,16 +156,16 @@ Beads and GitHub issues are the current P10 tracking SSOT. The retired local pro
 | Metric | Value |
 | --- | --- |
 | FR total | 65 |
-| Done | 43 |
-| Partial | 22 |
+| Done | 13 |
+| Partial | 52 |
 | Drifted | 0 |
 | Pending | 0 |
 | GitHub P10 open | 0 |
 | Beads P10 open | 0 |
-| release_closeable | NO（当前矩阵含 22 个 Partial） |
+| release_closeable | NO（当前矩阵含 52 个 Partial） |
 | release_closeable_spec | NO |
 | release_closeable_runtime | NO |
 
-> **运行时缺口投影**：历史 GAP-E 修复记录保留在本文件；本轮不从历史记录自动推导 runtime release。当前矩阵含 22 个 Partial，且 runtime `release_closeable_runtime=NO`；外部 durable/fanout/query、正式 tag/release notes、部署前检查和 rollback 仍需独立证据。
+> **运行时缺口投影**：历史 GAP-E 修复记录保留在本文件；本轮不从历史记录自动推导 runtime release。当前矩阵含 52 个 Partial，且 runtime `release_closeable_runtime=NO`。
 >
-> `release_closeable_spec=NO`：当前 Code-Done FR / Total FR = 43/65，22 个 FR 仍缺运行证据；runtime `release_closeable_runtime=NO`，本轮 external-gates、正式 tag/release notes、部署前检查与 rollback 尚未闭合。
+> `release_closeable_spec=NO`：当前 Code-Done FR / Total FR = 13/65，52 个 FR 仍缺功能或当前 RC 证据；runtime `release_closeable_runtime=NO`。

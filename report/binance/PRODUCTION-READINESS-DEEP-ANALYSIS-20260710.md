@@ -1,5 +1,7 @@
 # Binance 模块生产可发布深度分析
 
+> [COMPUTED, HIGH] **历史快照**：本文绑定 runtime `b2547735e9df6b9bb4bb939baaeb74436260ce50`，已被 [2026-07-10 综合复审](PRODUCTION-READINESS-CONSOLIDATED-20260710.md) 取代为当前裁决入口。本文保留作为时点证据，不得用于推导当前 RC 可发布。
+
 > 审计日期：2026-07-10（Asia/Shanghai）。[COMPUTED, HIGH]
 > 治理快照：ZoneCNH `5cf596ded21458340fe5713f7f74b979b8225b0c`。[COMPUTED, HIGH]
 > runtime 权威快照：`github.com/ZoneCNH/binance` `origin/main` `b2547735e9df6b9bb4bb939baaeb74436260ce50`。[COMPUTED, HIGH]
@@ -36,7 +38,7 @@
 ### 1.2 审计对象
 
 - ZoneCNH 规格侧共审阅 `module/binance/` 的 Goal、Spec、Design、Plan、Tasks、Prompt、Matrix、Gate、Evidence，以及三份跨模块 SSOT。[COMPUTED, HIGH]
-- runtime 侧按 `origin/main=b2547735...` 审阅连接器、标准化、订单簿、server ingest、持久化装配、生产 compose/Dockerfile、workflow 和 release evidence。[COMPUTED, HIGH]
+- runtime 侧按 `origin/main=b2547735e9df6b9bb4bb939baaeb74436260ce50` 审阅连接器、标准化、订单簿、server ingest、持久化装配、当时构建配置、workflow 和 release evidence。[COMPUTED, HIGH]
 - Binance 产品能力侧只使用 Binance Developers、Binance 官方 `binance-spot-api-docs` 和官方 Change Log。[COMPUTED, HIGH]
 - 本次没有使用生产凭证，没有执行下单，没有改动外部系统，也没有把本地测试结果称为真实部署结果。[COMPUTED, HIGH]
 
@@ -46,7 +48,7 @@
 
 `origin/main` 中的 `release/evidence/binance/20260709/status.txt` 记录的生成 commit 是 `b66ea770...`，比被审 `main` 少 8 个 commit。[COMPUTED, HIGH] 即使其中的本地 gate 全绿，也不能覆盖后续变更。[INFERRED, HIGH]
 
-PR #486 的证据与检查可以证明该 PR 时点的质量；当前 `b2547735...` 的 18 个 check run 中有 6 个条件跳过，包括 E2E、Live E2E、Benchmark、Soak+Chaos、Integration 和 Gated。[COMPUTED, HIGH] 当前 release 必须重新绑定同一 commit、同一制品与同一 Evidence Bundle。[INFERRED, HIGH]
+PR #486 的证据与检查可以证明该 PR 时点的质量；历史基线 `b2547735e9df6b9bb4bb939baaeb74436260ce50` 的 18 个 check run 中有 6 个条件跳过，包括 E2E、Live E2E、Benchmark、Soak+Chaos、Integration 和 Gated。[COMPUTED, HIGH] 当前 release 必须重新绑定同一 commit、同一制品与同一 Evidence Bundle。[INFERRED, HIGH]
 
 ## 2. 生产就绪总览
 

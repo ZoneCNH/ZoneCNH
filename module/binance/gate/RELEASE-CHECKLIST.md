@@ -7,7 +7,7 @@
 > **适用范围**：所有 binance runtime 版本发布（patch / minor / major）
 > **关联文件**：`gate/BOUNDARY-GATES.md`、`spec/SPEC.md §21（Release Gate）`、`spec/ACCEPTANCE.md §5`
 
-> [COMPUTED, HIGH] 当前 implementation commit：`3f6366728b635c32d73565874965d40c20a92caf`。本地代码门禁已 PASS；`release/evidence/binance/20260710/external-gates.tsv` 的 NATS/Kafka/TDengine/Redis/API 五项仍为 `BLOCKED/NOT_RUN`，packet validator 为 11 blockers，因此本 checklist 不得标记 runtime release-closeable。
+> [COMPUTED, HIGH] 2026-07-10 审计基线为 `b20f6d44f8b246149c7a9f9c06a4dc27bc7b49ef`，其上的 feature worktree 尚未形成不可变 RC；canonical 规格状态为 13 Done / 52 Partial / 0 Drifted / 0 Pending，spec/runtime 均为 NO。external-gates 的 NATS/Kafka/TDengine/Redis/API 五项仍为 `BLOCKED/NOT_RUN`，因此本 checklist 不得标记 release-closeable。
 
 ---
 
@@ -67,7 +67,7 @@
 | E2 | Kafka fanout | 配置 broker/topic/ACL 摘要与 producer→consumer roundtrip 日志；缺凭证为 `BLOCKED` |
 | E3 | Durable storage/query | TDengine write/read、Redis hot-cache TTL/key、API latest/range read-back 全部 PASS；ClickHouse 阻断必须原样保留 |
 | E4 | Release provenance | `head.log`、tag SHA、CI URL、release notes、preflight 和 rollback evidence 指向同一 commit |
-| E5 | Options/legacy scope | release packet 明确 options order book Phase 2 excluded 与 legacy alias sunset 日期/owner |
+| E5 | Options/legacy scope | [FRAME, HIGH] 当前四线目标必须包含 Options order book 并通过对应 evidence；若负责人批准缩小 profile，必须先同步 Goal/Spec/AC/Matrix，并记录 legacy alias sunset 日期/owner |
 
 ---
 
@@ -80,28 +80,15 @@
 
 ---
 
-## §6 发布操作序列
+## §6 发布交接序列
 
-```bash
-# 1. 确认 main worktree 无未提交改动
-git status --short
-
-# 2. 确认所有 feature branch 已合入
-git log --oneline origin/main --since="last release date" | head -20
-
-# 3. 版本一致性校验
-cd /home/workspace/ZoneCNH && bash .github/ci/binance-version-consistency-check.sh
-
-# 4. 文档引用完整性校验
-bash .github/ci/binance-reference-integrity-check.sh
-
-# 5. 打 tag（在 runtime 仓 main HEAD）
-cd /home/workspace/binance && git tag -a vX.Y.Z -m "Release vX.Y.Z"
-git push origin vX.Y.Z
-
-# 6. 验证 tag 指向 main HEAD
-git log --oneline vX.Y.Z..main | wc -l  # 应为 0
-```
+| 阶段 | 必须证明 | 责任边界 |
+| --- | --- | --- |
+| Freeze | main clean、feature 已合入、唯一不可变 RC SHA | 模块负责人提供只读证据，不在本文记录工作站路径 |
+| Validate | 版本一致性、引用完整性、build/vet/test/race/boundary 全部绑定 RC | CI/SRE 保存原始退出码与日志 |
+| Authorize | tag、artifact digest、SBOM、人工批准和变更单相互可追溯 | 获授权负责人签署；agent 不代签或发布 |
+| Handoff | 生成符合 [`docs/sre/DEPLOY-CONTRACT.yaml`](../../../docs/sre/DEPLOY-CONTRACT.yaml) 的 `zonecnh.deploy-contract.v1` 请求 | 真实执行只进入 `sre/deploy` 平面 |
+| Verify | runner evidence、external readback、canary、rollback 与观察窗均绑定同一 RC | 缺项保持 `release_closeable=NO` |
 
 ---
 

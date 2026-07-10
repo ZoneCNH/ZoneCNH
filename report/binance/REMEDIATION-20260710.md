@@ -1,6 +1,8 @@
 # Binance 2026-07-10 深度分析修复回执
 
-> 状态：[COMPUTED, HIGH]；对应 runtime 分支 `fix/binance-production-readiness-20260710`，提交 `462772f6`。
+> [COMPUTED, HIGH] **历史快照**：本文绑定旧分支/提交，其“已修复”结论已被后续 merge regression 与新审计结果部分推翻。当前裁决以 [2026-07-10 综合复审](PRODUCTION-READINESS-CONSOLIDATED-20260710.md) 为准。
+
+> 状态：[COMPUTED, HIGH]；对应历史 runtime 分支 `fix/binance-production-readiness-20260710`。原文记录的短 SHA 无法在当前 runtime 仓解析，因此不得作为可验证 evidence anchor；当前审计基线以综合复审报告记录的完整 SHA 为准。
 
 ## 已修复
 
@@ -14,4 +16,3 @@
 
 - [COMPUTED, HIGH] GitHub hosted runner、真实 Binance WebSocket、Kafka/存储 live E2E、正式 tag/release notes、部署前检查与 rollback 证据仍需在受控环境执行；因此 `release_closeable=NO`，不能由本地 PASS 推导为可发布。
 - [INFERRED, MED] 生产环境必须显式设置 `FOUNDATIONX_BINANCE_DLQ_PATH` 并确保目录由 SRE 预创建且具备持久磁盘权限；本地测试不会伪造该外部条件。
-

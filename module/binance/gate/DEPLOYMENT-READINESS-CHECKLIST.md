@@ -1,8 +1,8 @@
 # Deployment Readiness Checklist v0.15.0
 
-> [COMPUTED, HIGH] 本文件记录 v0.15.0 的历史 readiness 快照，不是本轮 runtime release 通过证明。2026-07-10 当前 implementation commit `3f6366728b635c32d73565874965d40c20a92caf` 尚未部署；当前 external-gates 5 项 BLOCKED/NOT_RUN，packet validator 11 blockers。
+> [COMPUTED, HIGH] 本文件记录 v0.15.0 的历史 readiness 快照，不是本轮 runtime release 通过证明。2026-07-10 审计基线为 `b20f6d44f8b246149c7a9f9c06a4dc27bc7b49ef`，feature worktree 尚未形成不可变 RC；canonical 规格状态为 13 Done / 52 Partial / 0 Drifted / 0 Pending，spec/runtime 均为 NO，external-gates 5 项 BLOCKED/NOT_RUN。
 
-**Status:** 🟡 READY — CI 计费已恢复，Test/Build 远端 PASS；残留 scan failure 待清理  
+**Status:** Historical Snapshot — Superseded；当前 `release_closeable_spec=NO`、`release_closeable_runtime=NO`
 **Date:** 2026-07-08  
 **Version:** v4.0.1 (spec) / v0.15.0 (runtime, main HEAD `fc96705`)  
 **Prepared by:** opencode acceptance / ZoneCNH  
@@ -107,8 +107,8 @@
 - [x] E2E tests: 6 PASS
 - [x] Depth tests: 54/54 PASS (C1/C2/C3)
 
-### Infrastructure (§5)
-- [x] Docker image: v0.14.0 built
+### Historical Infrastructure (§5)
+- [x] 当时记录的 immutable runtime artifact 已构建（未重新验证）
 - [x] Health endpoints: Verified
 - [x] Monitoring: Configured
 - [x] Alerting: Thresholds set
@@ -169,5 +169,5 @@ Reviewer: Automated Gate
 ---
 
 **Document prepared:** 2026-07-04T14:05Z  
-**Status:** 🟡 APPROVED FOR PRODUCTION DEPLOYMENT (pending residual scan fixes)
-**Next:** Hand off to ops team for execution
+**Historical Status:** 当时曾记录“approved”；该结论已被 2026-07-10 No-Go 复审取代。
+**Current Next:** 先关闭 root Matrix 的 52 个 Partial 与同一 RC external/release evidence，再重新执行审批。

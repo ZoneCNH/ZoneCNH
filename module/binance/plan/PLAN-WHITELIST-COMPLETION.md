@@ -1,5 +1,7 @@
 # binance 白名单机制补齐计划（Completion Plan）
 
+> [COMPUTED, HIGH] **Superseded / 历史计划**：本文的“Done / 已闭环”只记录 2026-07-08 当时工作分支，不是当前 RC 状态。2026-07-10 对抗性复审发现产品线隔离、Options 人工准入、乱序 version 回滚、reconcile 并发和真实 E2E 证据缺口；当前裁决以 canonical Matrix 与 `report/binance/PRODUCTION-READINESS-CONSOLIDATED-20260710.md` 为准。
+
 - Module-Version: v4.0.1（接续 `PLAN-WHITELIST.md`；SPEC/TRACEABILITY 已 bump 至 v4.0.1，见 PR #1710）
 - Last-Updated: 2026-07-08
 - Status: **Done / 已闭环**（GC-0~GC-5 全部合入、门禁全 PASS、SPEC/TRACEABILITY/CHANGELOG 已记录；收尾清理见 §8）

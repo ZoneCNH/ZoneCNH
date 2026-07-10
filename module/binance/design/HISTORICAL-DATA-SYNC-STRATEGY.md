@@ -4,6 +4,8 @@
 > 来源：report/binance/20260704.md + SPEC FR-016/FR-026/FR-027
 > Last-Updated: 2026-07-07
 
+> [COMPUTED, HIGH] 2026-07-10 实现投影：Options 已有 `/eapi/v1/klines` 公共 kline 回填路径，但 trade/depth 无同等历史端点；UM/CM aggTrades 只能查近 24 小时。当前 lifecycle worker 尚未将多周期 `Interval` 完整传递到 History job/coverage，因此本文的全周期目标仍是待验收契约，不是已闭环声明。
+
 ## 1. Overview
 
 历史数据同步必须先分清两条完全不同的路径，二者的"起始时间"定义方式截然不同 `[KNOWN]`：
