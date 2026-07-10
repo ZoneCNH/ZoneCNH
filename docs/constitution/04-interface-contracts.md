@@ -78,4 +78,22 @@ THEN 返回零值和 ErrTypeMismatch
 - 边界条件必须有独立的 WHEN/THEN
 - 不可省略 Error Handling 章节 — 无模块特定要求时写"参见 CONSTITUTION.md 第八条"
 
+### 4.5 跨模块通信协议
+
+模块间通信统一使用 HTTP 协议，统一使用 [Gin](https://github.com/gin-gonic/gin) 框架。
+
+| 规则           | 说明                                                                       |
+| -------------- | -------------------------------------------------------------------------- |
+| 通信协议       | 模块间通信统一使用 HTTP                                                     |
+| Web 框架       | 统一使用 Gin（`github.com/gin-gonic/gin`）                                |
+| 端口定义       | 跨模块 HTTP 端点须在 `contracts/` 中声明                                   |
+| DTO            | 请求/响应体须为 contracts 层不可变 DTO（§4.1）                             |
+| 错误映射       | HTTP 状态码须遵循 RFC 9110 语义，业务错误须通过统一错误信封返回            |
+
+**禁止：**
+
+- 禁止引入其他 Web 框架（Echo、Fiber、Chi、net/http 原生路由等）
+- 禁止使用 gRPC、WebSocket 等非 HTTP 协议作为模块间同步通信方式（异步事件流不受此限，见 §3.1 依赖拓扑）
+- 禁止在业务域模块内直接绕过 contracts 层定义 HTTP 端点
+
 ---
