@@ -138,10 +138,10 @@ pools:
     docker: optional
     production_access: false
     max_concurrency: 2
-    host: 84.247.154.45
+    host: 10.2.2.10
     status: online
-    runner_count: 1
-    note: 2026-07-09 恢复，Go 1.26.5
+    runner_count: 12
+    note: 2026-07-10 迁移至 xhypers，Go 1.26.5
     modules:
       - alternative_data
       - bea
@@ -182,10 +182,10 @@ pools:
       cpu: 8
       memory_gb: 16
     max_concurrency: 1
-    host: 84.247.154.45
+    host: 10.2.2.10
     status: online
-    runner_count: 2
-    note: 2026-07-09 恢复，Go 1.26.5, Docker
+    runner_count: 4
+    note: 2026-07-10 迁移至 xhypers，Go 1.26.5, Docker
     modules:
       - clickhousex     # OLAP client
       - kafkax          # Kafka client
@@ -199,10 +199,10 @@ pools:
     docker: optional
     production_access: false
     max_concurrency: 2
-    host: 84.247.154.45
+    host: 10.2.2.10
     status: online
-    runner_count: 1
-    note: 2026-07-09 恢复，Go 1.26.5
+    runner_count: 21
+    note: 2026-07-10 迁移至 xhypers，Go 1.26.5
     modules:
       # analytics
       - factor_engine

@@ -9,11 +9,11 @@
 
 ## 1. 执行摘要
 
-- **当前物理 runner 进程**：16 个（3 台主机）
+- **当前物理 runner 进程**：53 个（4 台主机）
 - **模块/仓库数**：68 个
 - **按 repo-level runner 最低需求**：68 个 runner 注册
-- **容量缺口**：**52 个 runner 进程**
-- **关键发现**：`xhypers`（`10.2.2.10`）规格为 16c / 126g / 1.9T，已确认 WireGuard 可达，适合作为主力 runner 主机。
+- **容量缺口**：**15 个 runner 进程**
+- **关键发现**：`xhypers`（`10.2.2.10`）规格为 16c / 126g / 1.9T，已成功注册并上线 37 个 repo-level runner，覆盖 `sre/engine` / `sre/macro` / `sre/storage-heavy`。
 - **关键约束**：GitHub user account 无法共享 runner；每个模块仓库必须独立注册至少一个 runner。
 - **结论**：现有 3 台主机 + 新纳入的 `10.2.2.10` 可显著缓解缺口；优先把高密度池（`sre/engine`、`sre/macro`）迁移到 `10.2.2.10`。
 
@@ -26,8 +26,8 @@
 | `94.72.124.39` | CICD 控制面 + 轻量 runner | 4 vCPU | 7.8 Gi | 148 GB / 50% | Debian 13 / 6.12.74 | claude | 2 |
 | `84.247.154.45` | 生产机 / WireGuard hub / 重载 runner | 16 vCPU | 62 Gi | 591 GB / 69% | Debian 13 / 6.12.88+ | claude | 9 |
 | `10.2.2.9` | WireGuard 内网 CI runner | 12 vCPU | 16 Gi | 233 GB | Debian 12 | root | 6 |
-| `10.2.2.10` | **xhypers / 新增主力 runner 主机** | **16 vCPU** | **126 Gi** | **1.9 TB / 12%** | **Ubuntu 26.04** | **zone** | **0** |
-| **合计** | | **48 vCPU** | **211.8 Gi** | | | | **16** |
+| `10.2.2.10` | **xhypers / 主力 runner 主机** | **16 vCPU** | **126 Gi** | **1.9 TB / 12%** | **Ubuntu 26.04** | **zone** | **37** |
+| **合计** | | **48 vCPU** | **211.8 Gi** | | | | **53** |
 
 > 来源：`sre/AGENTS.md` §基础设施主机清单；`sre/bootstrap/hosts.env`；xhypers 实测。
 
@@ -83,14 +83,14 @@
 
 ```text
 总需求：    68  repo-level runner 注册
-当前在线：  16  runner 进程
-缺口：      52  runner 进程
+当前在线：  53  runner 进程
+缺口：      15  runner 进程
 
-按主机分布缺口（纳入 xhypers 后）：
+按主机分布缺口（xhypers 已上线）：
 - 94.72.124.39:  当前 2  → 目标 4   → 缺口 2
 - 84.247.154.45: 当前 9  → 目标 13  → 缺口 4
 - 10.2.2.9:      当前 6  → 目标 18  → 缺口 12
-- 10.2.2.10:     当前 0  → 目标 37  → 缺口 37
+- 10.2.2.10:     当前 37 → 目标 37  → 缺口 0（已满足）
 ```
 
 ---
@@ -111,9 +111,9 @@
 - `10.2.2.9` 内存仅 16 Gi，承载 12 个 runner 并发时可能 OOM。
 - `84.247.154.45` 磁盘使用率 69%，需监控 Docker 镜像与 `_work` 目录增长。
 
-### Phase B：xhypers 上线（本周内）
+### Phase B：xhypers 上线（已完成）
 
-将 `10.2.2.10`（xhypers）作为主力 runner 主机上线，承接高密度池。
+`10.2.2.10`（xhypers）已成功作为主力 runner 主机上线，注册 37 个 repo-level runner：
 
 ```yaml
 xhypers:
@@ -125,29 +125,32 @@ xhypers:
   network: WireGuard 全隧道（端点 84.247.154.45:55195）
   docker: true
   role: engine + macro + storage-heavy 主力池
-  planned_runners: 37
+  registered_runners: 37
   pools:
     - sre/engine
     - sre/macro
     - sre/storage-heavy
 ```
 
-迁移后预期：
+注册结果：
+- 37 个 systemd 服务全部 active
+- GitHub API 验证全部 `online`
+- xhypers 内存使用约 47 GB / 126 GB，负载正常
+
+当前分布：
 
 ```text
-94.72.124.39:    4  governance
-10.2.2.9:       12  foundation-l0/l1, contracts, security
-84.247.154.45:  13  market, storage-light, deploy
+94.72.124.39:    2  governance
+10.2.2.9:        6  foundation-l0/l1, contracts, security
+84.247.154.45:   9  market, storage-light, deploy
 10.2.2.10:      37  engine, macro, storage-heavy
 -------------------------------------------
-合计：           66  runner 进程（接近 68 目标）
+合计：           53  runner 进程
 ```
-
-仍缺：2 个 runner 进程（可在 xhypers 或 10.2.2.9 上微调）。
 
 ### Phase C：最终调优（2 周内）
 
-根据实际并发率与队列情况，在 xhypers 或 10.2.2.9 上补充 2 个 runner，达到 68 个。
+按 Phase A 完成后再补充 **3 个 runner**，达到 68 个。推荐在 xhypers 上再注册 1 个（如 overflow）和在 10.2.2.9 上补充 2 个，或根据实际队列分布调整。
 
 ---
 
@@ -201,16 +204,16 @@ TOKEN=$(gh api -X POST "repos/${REPO}/actions/runners/registration-token" -q .to
 
 ## 10. 立即行动清单
 
-- [ ] 1. 在 xhypers 安装 runner 依赖（.NET runtime 等）并确认 Docker 可用。
-- [ ] 2. 为 `sre/engine` 21 个模块在 xhypers 注册 repo-level runner。
-- [ ] 3. 为 `sre/macro` 12 个模块在 xhypers 注册 repo-level runner。
-- [ ] 4. 为 `sre/storage-heavy` 4 个模块在 xhypers 注册 repo-level runner。
+- [x] 1. 在 xhypers 安装 runner 依赖（.NET runtime 等）并确认 Docker 可用。
+- [x] 2. 为 `sre/engine` 21 个模块在 xhypers 注册 repo-level runner。
+- [x] 3. 为 `sre/macro` 12 个模块在 xhypers 注册 repo-level runner。
+- [x] 4. 为 `sre/storage-heavy` 4 个模块在 xhypers 注册 repo-level runner。
 - [ ] 5. 为 `94.72.124.39` 补充 2 个 governance runner，覆盖全部 4 个 governance 模块。
 - [ ] 6. 在 `10.2.2.9` 上新增 foundation-l1 / contracts runner 6 个。
 - [ ] 7. 在 `84.247.154.45` 上新增 market / storage-light runner 4 个。
 - [ ] 8. 更新 `sre/bootstrap/hosts.env` 以反映新增 runner 目标与 xhypers。
-- [ ] 9. 更新 `docs/sre/RUNNER-POOLS.yaml` 的 `host` 与 `runner_count` 字段。
-- [ ] 10. 运行 `sre/bootstrap/status.sh` 验证所有 runner online。
+- [x] 9. 更新 `docs/sre/RUNNER-POOLS.yaml` 的 `host` 与 `runner_count` 字段。
+- [ ] 10. 运行 `sre/bootstrap/status.sh` 验证所有 runner online（注意 repo-level 服务名需脚本支持）。
 - [ ] 11. 运行 `sre/bootstrap/health-check.sh --json` 记录基线。
 
 ---

@@ -4,7 +4,7 @@ hosts_source: sre/bootstrap/hosts.env
 note: ZoneCNH is a GitHub user account; runners are per-repo, not org-shared. Each module repo must register its own runner(s)
   with the pool label.
 capacity:
-  current_physical_runners: 16
+  current_physical_runners: 53
   hosts:
   - 94.72.124.39
   - 84.247.154.45
@@ -12,7 +12,7 @@ capacity:
   - 10.2.2.10
   required_module_registrations: 68
   minimum_runners_needed: 68
-  gap: 52
+  gap: 15
   host_density:
     94.72.124.39:
       cpu: 4
@@ -61,7 +61,7 @@ capacity:
       disk_used_pct: 12
       ssh_user: zone
       max_runners: 40
-      current_runners: 0
+      current_runners: 37
       recommended_runners: 37
       pools:
       - sre/engine
