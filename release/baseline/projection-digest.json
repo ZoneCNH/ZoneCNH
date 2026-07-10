@@ -1,0 +1,8 @@
+{
+  "schema_version": "foundation-projection-digest/v1",
+  "baseline": "2026.07",
+  "digests": {
+    "catalog.json": "3aeda05f3c6f2cb5f6229a7e5186ea136dfe37aa89a672702888ae268f901d6e",
+    "status.json": "7688aeb48ef283419dad0cc57d498b3e13b2bc8b4a5585eab6ed8853bbeac38b"
+  }
+}

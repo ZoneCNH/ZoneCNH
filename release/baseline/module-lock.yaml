@@ -1,0 +1,130 @@
+schema_version: foundation-baseline-lock/v1
+baseline: "2026.07"
+generated_at: 2026-07-10T21:10:47Z
+module_count: 25
+modules:
+  xlib_standard:
+    version: "v1.0.2"
+    release: "True"
+    layer: "standard-source"
+    note: "标准事实源 / Go Reference Template (Generator/Harness/Evidence 已拆分); v1.0.2 release/preflight passed; release https://github.com/xhyperium/xlib_standard/releases/tag/v1.0.2"
+  xlib_harness:
+    version: "v0.1.7"
+    release: "True"
+    layer: "harness"
+    note: "GitHub Release v0.1.7 已发布；coverage 100.0%；pinned gitleaks CLI secret scan 已对齐；factory grade（与 STATUS 多维表一致）"
+  xlib_evidence:
+    version: "v0.2.5"
+    release: "True"
+    layer: "evidence"
+    note: "GitHub Release v0.2.5 已发布；go test/race/vet/build/coverage 100.0% 通过；release evidence assets 已归档；factory grade（与 STATUS 多维表一致）"
+  xlibgate:
+    version: "v1.2.0"
+    release: "True"
+    layer: "gate"
+    note: "import/gomod/baseline/release/repo-contract 机器门禁; check/l2/trust CLI 已实现; GitHub Release v1.2.0 已发布; .repo-contract.yaml aligned"
+  kernel:
+    version: "v1.1.0"
+    release: "True"
+    layer: "L0"
+    note: "L0 原语 / 12 子包 / stdlib-only; v1.1.0 release; Factory closed 2026-06-18: Goal Matrix 23 edges Verified (evidence_id=kernel-acceptance-20260618) + four-source arbiter 6 stages gate=pass + coverage 100% + evidence package archived; BLK-011 resolved"
+  configx:
+    version: "v1.1.0"
+    release: "True"
+    layer: "L1"
+    note: "配置管理（显式 source/last-wins/struct decode/secret 脱敏）; GitHub Release v1.1.0 已发布; .repo-contract.yaml aligned"
+  observex:
+    version: "v0.3.4"
+    release: "True"
+    layer: "L1"
+    note: "vendor-neutral 可观测性语义契约; 此前误标 v1.0.0 已修正; .repo-contract.yaml aligned"
+  resiliencx:
+    version: "v1.0.2"
+    release: "True"
+    layer: "L1"
+    note: "弹性策略 (timeout/retry/circuit/bulkhead/rate/fallback); 此前误标 v1.0.1 已修正; .repo-contract.yaml aligned"
+  schedulex:
+    version: "v1.0.0"
+    release: "True"
+    layer: "L1"
+    note: "cron/interval/delay 调度; 98.2% 覆盖; 下游 smoke 通过; .repo-contract.yaml aligned"
+  bootstrap:
+    version: "v0.2.0"
+    release: "True"
+    layer: "L1"
+    note: "BLK-009 closed; v0.2.0 released; foundationx direct dep removed; 8 store adapters implemented"
+  testkitx:
+    version: "v1.0.0"
+    release: "True"
+    layer: "L1"
+    note: "v1.0.0; test-only 非运行时模块; factory grade 不适用"
+  redisx:
+    version: "v1.1.1"
+    release: "True"
+    layer: "L2"
+    note: "Redis L2 adapter; KV/TTL/Hash/List/Pipeline/Cache-aside/Lock/RateLimit/Pool/Persistence; GitHub Release v1.1.1 已发布; release-preflight、PR checks、Docker-backed 与 dev Redis 集成验证通过"
+  kafkax:
+    version: "v1.1.0"
+    release: "True"
+    layer: "L2"
+    note: "Kafka L2 adapter; 真实 broker gates 已验证; 此前误标 v1.0.0 (tag 超前于表格); .repo-contract.yaml aligned"
+  natsx:
+    version: "v1.0.4"
+    release: "True"
+    layer: "L2"
+    note: "NATS L2 adapter; GitHub Release v1.0.4 已发布; PR #17 merged; BLK-001/BLK-002 resolved; factory grade"
+  postgresx:
+    version: "v1.1.2"
+    release: "True"
+    layer: "L2"
+    note: "PostgreSQL L2 adapter; BLK-006 resolved（覆盖率/Docker 集成证据闭合）; GitHub Release v1.1.2 已发布; factory grade"
+  taosx:
+    version: "v1.0.2"
+    release: "True"
+    layer: "L2"
+    note: "TDengine L2 adapter; BLK-007 resolved（SPEC 质量门禁闭合）; GitHub Release v1.0.2 已发布; factory grade"
+  ossx:
+    version: "v1.2.0"
+    release: "True"
+    layer: "L2"
+    note: "Aliyun OSS L2 adapter; BLK-010 resolved; GitHub Release v1.2.0 已发布（v1.2.1 为 tag-only）; pkg/ossx 17 files; 100% coverage; go build+test PASS; factory grade"
+  clickhousex:
+    version: "v1.0.9"
+    release: "True"
+    layer: "L2"
+    note: "ClickHouse L2 adapter; BLK-003 resolved（公开 GitHub Release 已发布）; GitHub Release v1.0.9 已发布; factory grade"
+  contracts:
+    version: "v0.4.7"
+    release: "True"
+    layer: "contracts"
+    note: "跨域稳定端口/事件/DTO 契约; BLK-004 resolved（仓库身份重写闭合）; GitHub Release v0.4.7 已发布（v1.5.0 为 tag-only）; factory grade"
+  transportx:
+    version: "v1.1.1-spec"
+    release: "True"
+    layer: "contracts"
+    note: "跨 runtime/adapter 传输契约; BLK-005 resolved（仓库身份重写闭合）; GitHub Release v1.1.1-spec 已发布; spec-only; factory grade"
+  decimalx:
+    version: "v1.0.0"
+    release: "True"
+    layer: "L2.5"
+    note: "L2.5 decimal 精度库；factory grade；v1.0.0 已发布；live/soak N/A（纯计算库）"
+  domainx:
+    version: "v1.0.1"
+    release: "True"
+    layer: "L2.5"
+    note: "L2.5 领域共享层；factory grade；v1.0.1 已发布；live/soak N/A（纯值对象库）"
+  domain_market:
+    version: "v1.1.0"
+    release: "True"
+    layer: "L2.5"
+    note: "L2.5 行情领域语义层；factory grade；v1.1.0 已发布；live/soak N/A（纯值对象库）"
+  domain_macro:
+    version: "v1.0.1"
+    release: "True"
+    layer: "L2.5"
+    note: "L2.5 宏观领域语义层；factory grade；v1.0.1 已发布；live/soak N/A（纯值对象库）"
+  domain_exchange:
+    version: "v1.0.0"
+    release: "True"
+    layer: "L2.5"
+    note: "L2.5 交易所领域语义层；factory grade；v1.0.0 已发布；live/soak N/A（纯值对象库）"

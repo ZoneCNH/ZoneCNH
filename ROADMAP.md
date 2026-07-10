@@ -29,6 +29,42 @@
 
 ---
 
+## Provisional Initiatives（规划候选项）
+
+> 状态：`provisional` / `unverified`。以下为前瞻规划候选项，尚未执行、未经验证，不计入 Current Focus 或 Milestones 进度。
+
+### 基座 + L2.5 领域共享层 Trust Reset（执行计划）
+
+Status: Provisional
+Priority: High
+Owner: ZoneCNH
+Tags: planning, architecture, foundation
+Reference: [`knowledge/xx/ZoneCNH_Foundation_L2_5_Claude_Execution_Plan_20260711_v2_10x_checked.md`](./knowledge/xx/ZoneCNH_Foundation_L2_5_Claude_Execution_Plan_20260711_v2_10x_checked.md)（含 `Optimization_Report` 与 `SYNC-ALIGNMENT`）
+
+Description:
+
+跨仓库、证据驱动的 Foundation Trust Reset：修复裁判与事实链、冻结唯一身份/版本/依赖模型、修复 L2.5 领域纯度与确定性、验证真实消费者、重新生成状态与投影、发布 Verifiable Baseline。覆盖 25 个模块（4 控制平面 + 5 L2.5 + 20 基座）。
+
+Scope Delta（务必注意）:
+
+- 本计划口径 "25 模块" ≠ `STATUS.md` 当前机器事实口径 `口径-STATUS21`（21 模块 = 20 基座 + 仅 `domainx` 作 L2.5 锚点）。
+- 本计划属前瞻执行范围；`STATUS.md` 仍为机器事实投影，不因本条目而改变其计数。
+- Runner 策略：治理仓 `ZoneCNH/ZoneCNH` 遵循 CICD-001 仅 self-hosted；基座+L2.5（`xhyperium/*`）不在 CICD-001 强制 self-hosted 范围（用户裁决 2026-07-11）。
+
+Out of Scope:
+
+- 业务域模块开发
+- 实盘交易
+
+Done when:
+
+- [ ] Trust Audit 生成且不修改仓库
+- [ ] Catalog v2 / xlibgate v1.3 / xlib_evidence v0.3 / xlib_harness v0.2 落地
+- [ ] L2.5 五模块确定性修复并 consumer compile 通过
+- [ ] Foundation Verifiable Baseline 发布
+
+---
+
 ## Milestones
 
 ### v0.1.0 — Foundation v1 基座闭环
