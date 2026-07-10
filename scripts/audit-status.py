@@ -52,8 +52,11 @@ def load_json(name):
 def stable_counter(counter):
     return {k: counter[k] for k in sorted(counter)}
 
-def unique_repos(text):
-    return len(set(re.findall(r'github\.com/ZoneCNH/[a-zA-Z0-9_.-]+', text)))
+def unique_repos(text, exclude=None):
+    repos = set(re.findall(r'github\.com/ZoneCNH/[a-zA-Z0-9_.-]+', text))
+    if exclude:
+        repos.difference_update(exclude)
+    return len(repos)
 
 def github_rows_between(text, start_h, end_h=None):
     """Count github.com links between two ### headings."""
@@ -465,7 +468,7 @@ else:
 print("\n--- 3. Sync table vs unique repos ---")
 sync_rows = parse_sync_table(STATUS)
 st = next((r for r in sync_rows if "组件总数" in r["check"]), None)
-ru = unique_repos(README); au = unique_repos(ARCH); su = unique_repos(STATUS)
+ru = unique_repos(README, {"github.com/ZoneCNH/ZoneCNH"}); au = unique_repos(ARCH); su = unique_repos(STATUS)
 if st:
     chk("README", str(ru), st["readme"])
     chk("ARCH",   str(au), st["arch"])
