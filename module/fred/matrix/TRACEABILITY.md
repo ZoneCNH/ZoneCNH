@@ -2,7 +2,7 @@
 
 > 模块级追溯矩阵。治理规范见 [docs/governance/TRACEABILITY.md](../../docs/governance/TRACEABILITY.md)。
 
-Last-Updated: 2026-07-08
+Last-Updated: 2026-07-09
 Source: [spec/SPEC.md](../spec/SPEC.md) | Goal: GOAL-FRED-001 | Status: Implemented (Production Verified; integration CI-gated)
 
 ---

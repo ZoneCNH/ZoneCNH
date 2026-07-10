@@ -1,8 +1,8 @@
 # fred 规格
 
 - Status: Implemented
-- Spec-Version: v1.1.0
-- Last-Updated: 2026-07-08
+- Spec-Version: v1.2.0
+- Last-Updated: 2026-07-09
 - Layer: 数据域 · 宏观
 - Module-Type: 独立 C/S Module（双服务）
 - Runtime-Service: `fred-client` + `fred-server`

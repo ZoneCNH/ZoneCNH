@@ -1,0 +1,527 @@
+	github.com/ZoneCNH/fred/cmd/fred-client		coverage: 0.0% of statements
+	github.com/ZoneCNH/fred/cmd/fred-server		coverage: 0.0% of statements
+=== RUN   TestNewCollectorPanicsOnNil
+--- PASS: TestNewCollectorPanicsOnNil (0.00s)
+=== RUN   TestCollectorNilClient
+--- PASS: TestCollectorNilClient (0.00s)
+=== RUN   TestCollectorGetURLParseError
+--- PASS: TestCollectorGetURLParseError (0.00s)
+=== RUN   TestCollectorGetCanceledCtx
+--- PASS: TestCollectorGetCanceledCtx (0.00s)
+=== RUN   TestCollectorGetConnectionError
+--- PASS: TestCollectorGetConnectionError (0.00s)
+=== RUN   TestCollectorGetStatusError
+--- PASS: TestCollectorGetStatusError (0.00s)
+=== RUN   TestCollectorGetBadJSON
+--- PASS: TestCollectorGetBadJSON (0.00s)
+=== RUN   TestCollectorFetchSeriesObservations
+--- PASS: TestCollectorFetchSeriesObservations (0.00s)
+=== RUN   TestCollectorFetchSeriesObservationsError
+--- PASS: TestCollectorFetchSeriesObservationsError (0.00s)
+=== RUN   TestCollectorFetchSeriesObservationsBadJSON
+--- PASS: TestCollectorFetchSeriesObservationsBadJSON (0.00s)
+=== RUN   TestCollectorFetchMethods
+--- PASS: TestCollectorFetchMethods (0.00s)
+=== RUN   TestLoadConfigRequiresAPIKey
+--- PASS: TestLoadConfigRequiresAPIKey (0.00s)
+=== RUN   TestLoadConfigDefaults
+--- PASS: TestLoadConfigDefaults (0.00s)
+=== RUN   TestLoadConfigOverrides
+--- PASS: TestLoadConfigOverrides (0.00s)
+=== RUN   TestLoadConfigInvalidEnvFallsBack
+--- PASS: TestLoadConfigInvalidEnvFallsBack (0.00s)
+=== RUN   TestValidate
+--- PASS: TestValidate (0.00s)
+=== RUN   TestEnvOr
+--- PASS: TestEnvOr (0.00s)
+=== RUN   TestEnvInt
+--- PASS: TestEnvInt (0.00s)
+=== RUN   TestEnvDuration
+--- PASS: TestEnvDuration (0.00s)
+=== RUN   TestEnvBool
+--- PASS: TestEnvBool (0.00s)
+=== RUN   TestLoadConfigZeroBoundsFallback
+--- PASS: TestLoadConfigZeroBoundsFallback (0.00s)
+=== RUN   TestParseDateOrDefault
+--- PASS: TestParseDateOrDefault (0.00s)
+=== RUN   TestNewIngesterPanicsOnNil
+--- PASS: TestNewIngesterPanicsOnNil (0.00s)
+=== RUN   TestIngestSeriesWithOSS
+--- PASS: TestIngestSeriesWithOSS (0.00s)
+=== RUN   TestIngestSeriesWithStartEnd
+--- PASS: TestIngestSeriesWithStartEnd (0.00s)
+=== RUN   TestIngestSeriesWithoutOSS
+--- PASS: TestIngestSeriesWithoutOSS (0.00s)
+=== RUN   TestIngestSeriesOSSPutError
+--- PASS: TestIngestSeriesOSSPutError (0.00s)
+=== RUN   TestIngestSeriesFetchError
+--- PASS: TestIngestSeriesFetchError (0.00s)
+=== RUN   TestIngestExternalSeriesPublishes
+--- PASS: TestIngestExternalSeriesPublishes (0.00s)
+=== RUN   TestIngestSeriesNATSPublishError
+--- PASS: TestIngestSeriesNATSPublishError (0.00s)
+=== RUN   TestIngestExternalSeriesNATSPublishError
+--- PASS: TestIngestExternalSeriesNATSPublishError (0.00s)
+=== RUN   TestCollectorGetReadError
+--- PASS: TestCollectorGetReadError (0.00s)
+=== RUN   TestNewNormalizer
+--- PASS: TestNewNormalizer (0.00s)
+=== RUN   TestToObservationsNil
+--- PASS: TestToObservationsNil (0.00s)
+=== RUN   TestToObservationsEmpty
+--- PASS: TestToObservationsEmpty (0.00s)
+=== RUN   TestToObservationsNormal
+--- PASS: TestToObservationsNormal (0.00s)
+=== RUN   TestNormalizeNilResult
+--- PASS: TestNormalizeNilResult (0.00s)
+=== RUN   TestNormalizeNilSpec
+--- PASS: TestNormalizeNilSpec (0.00s)
+=== RUN   TestNormalizeMismatch
+--- PASS: TestNormalizeMismatch (0.00s)
+=== RUN   TestNormalizeOK
+--- PASS: TestNormalizeOK (0.00s)
+=== RUN   TestExtractVintagesNil
+--- PASS: TestExtractVintagesNil (0.00s)
+=== RUN   TestExtractVintagesWindows
+--- PASS: TestExtractVintagesWindows (0.00s)
+=== RUN   TestRealtimeString
+--- PASS: TestRealtimeString (0.00s)
+=== RUN   TestParseFREDDate
+--- PASS: TestParseFREDDate (0.00s)
+=== RUN   TestParseFREDDateOrZero
+--- PASS: TestParseFREDDateOrZero (0.00s)
+=== RUN   TestParseDecimalToFloat64
+--- PASS: TestParseDecimalToFloat64 (0.00s)
+=== RUN   TestSplitOnce
+--- PASS: TestSplitOnce (0.00s)
+=== RUN   TestParseDecimalToFloat64Overflow
+--- PASS: TestParseDecimalToFloat64Overflow (0.00s)
+=== RUN   TestExtractVintagesSplitOnceSingle
+--- PASS: TestExtractVintagesSplitOnceSingle (0.00s)
+=== RUN   TestDefaultFrequencyIntervals
+--- PASS: TestDefaultFrequencyIntervals (0.00s)
+=== RUN   TestNewFrequencySchedulerDefaults
+--- PASS: TestNewFrequencySchedulerDefaults (0.00s)
+=== RUN   TestNewFrequencySchedulerCustom
+--- PASS: TestNewFrequencySchedulerCustom (0.00s)
+=== RUN   TestFrequencySchedulerStartErrors
+--- PASS: TestFrequencySchedulerStartErrors (0.00s)
+=== RUN   TestFrequencySchedulerStartStop
+--- PASS: TestFrequencySchedulerStartStop (0.02s)
+=== RUN   TestFrequencySchedulerTick
+--- PASS: TestFrequencySchedulerTick (0.00s)
+=== RUN   TestFrequencySchedulerFrequencies
+--- PASS: TestFrequencySchedulerFrequencies (0.00s)
+PASS
+coverage: 97.6% of statements
+ok  	github.com/ZoneCNH/fred/internal/client	0.054s	coverage: 97.6% of statements
+=== RUN   TestConstants
+--- PASS: TestConstants (0.00s)
+=== RUN   TestControlMessage_Validate
+--- PASS: TestControlMessage_Validate (0.00s)
+=== RUN   TestMarshalUnmarshalControlMessage
+--- PASS: TestMarshalUnmarshalControlMessage (0.00s)
+=== RUN   TestIngestEnvelope_Validate
+=== RUN   TestIngestEnvelope_Validate/ok
+=== RUN   TestIngestEnvelope_Validate/missing_version
+=== RUN   TestIngestEnvelope_Validate/missing_jobid
+=== RUN   TestIngestEnvelope_Validate/missing_seriesid
+=== RUN   TestIngestEnvelope_Validate/missing_provider
+=== RUN   TestIngestEnvelope_Validate/missing_idempotencykey
+=== RUN   TestIngestEnvelope_Validate/missing_payload
+=== RUN   TestIngestEnvelope_Validate/zero_fetchedat
+--- PASS: TestIngestEnvelope_Validate (0.00s)
+    --- PASS: TestIngestEnvelope_Validate/ok (0.00s)
+    --- PASS: TestIngestEnvelope_Validate/missing_version (0.00s)
+    --- PASS: TestIngestEnvelope_Validate/missing_jobid (0.00s)
+    --- PASS: TestIngestEnvelope_Validate/missing_seriesid (0.00s)
+    --- PASS: TestIngestEnvelope_Validate/missing_provider (0.00s)
+    --- PASS: TestIngestEnvelope_Validate/missing_idempotencykey (0.00s)
+    --- PASS: TestIngestEnvelope_Validate/missing_payload (0.00s)
+    --- PASS: TestIngestEnvelope_Validate/zero_fetchedat (0.00s)
+=== RUN   TestIngestEnvelope_MarshalJSON
+--- PASS: TestIngestEnvelope_MarshalJSON (0.00s)
+=== RUN   TestToMacroPoint
+--- PASS: TestToMacroPoint (0.00s)
+=== RUN   TestIsVisibleAt
+--- PASS: TestIsVisibleAt (0.00s)
+PASS
+coverage: 100.0% of statements
+ok  	github.com/ZoneCNH/fred/internal/cs	0.008s	coverage: 100.0% of statements
+=== RUN   TestMacroObservation_IsVisibleAt
+=== RUN   TestMacroObservation_IsVisibleAt/zero_asOf_visible
+=== RUN   TestMacroObservation_IsVisibleAt/zero_asOf_not_visible
+=== RUN   TestMacroObservation_IsVisibleAt/explicit_asOf_visible
+=== RUN   TestMacroObservation_IsVisibleAt/released_in_future_not_visible
+=== RUN   TestMacroObservation_IsVisibleAt/available_in_future_not_visible
+--- PASS: TestMacroObservation_IsVisibleAt (0.00s)
+    --- PASS: TestMacroObservation_IsVisibleAt/zero_asOf_visible (0.00s)
+    --- PASS: TestMacroObservation_IsVisibleAt/zero_asOf_not_visible (0.00s)
+    --- PASS: TestMacroObservation_IsVisibleAt/explicit_asOf_visible (0.00s)
+    --- PASS: TestMacroObservation_IsVisibleAt/released_in_future_not_visible (0.00s)
+    --- PASS: TestMacroObservation_IsVisibleAt/available_in_future_not_visible (0.00s)
+PASS
+coverage: 100.0% of statements
+ok  	github.com/ZoneCNH/fred/internal/domain	0.006s	coverage: 100.0% of statements
+=== RUN   TestDefaultSchema
+--- PASS: TestDefaultSchema (0.00s)
+=== RUN   TestPostgresStoreNilGuards
+--- PASS: TestPostgresStoreNilGuards (0.00s)
+=== RUN   TestTaosStoreNilGuards
+--- PASS: TestTaosStoreNilGuards (0.00s)
+=== RUN   TestRedisStoreAdapterNilGuards
+--- PASS: TestRedisStoreAdapterNilGuards (0.00s)
+=== RUN   TestKafkaStoreAdapterNilGuards
+--- PASS: TestKafkaStoreAdapterNilGuards (0.00s)
+=== RUN   TestNATSStoreAdapterNilGuards
+--- PASS: TestNATSStoreAdapterNilGuards (0.00s)
+=== RUN   TestOSSStoreAdapterNilGuards
+--- PASS: TestOSSStoreAdapterNilGuards (0.00s)
+=== RUN   TestClickHouseStoreAdapterNilGuards
+--- PASS: TestClickHouseStoreAdapterNilGuards (0.00s)
+=== RUN   TestTaosStoreFakeHappyPath
+--- PASS: TestTaosStoreFakeHappyPath (0.00s)
+=== RUN   TestOSSStoreAdapterFakeHappyPath
+--- PASS: TestOSSStoreAdapterFakeHappyPath (0.00s)
+=== RUN   TestOssKeyHash
+--- PASS: TestOssKeyHash (0.00s)
+=== RUN   TestPayloadReaderRead
+--- PASS: TestPayloadReaderRead (0.00s)
+=== RUN   TestIsVisibleAt
+--- PASS: TestIsVisibleAt (0.00s)
+=== RUN   TestDataCollectionAndIntegrity
+    data_integrity_test.go:45: === DATA COLLECTION ===
+=== RUN   TestDataCollectionAndIntegrity/InternalQueryAndIntegrity
+    data_integrity_test.go:76: Query returned 4 observations
+    data_integrity_test.go:78:   [0] series=INTEGRITY_TEST_SERIES val=42.5000 at=2026-07-08 00:00:00 +0000 UTC
+    data_integrity_test.go:78:   [1] series=INTEGRITY_TEST_SERIES val=42.5000 at=2026-07-08 00:00:00 +0000 UTC
+    data_integrity_test.go:78:   [2] series=INTEGRITY_TEST_SERIES val=42.5000 at=2026-07-08 00:00:00 +0000 UTC
+    data_integrity_test.go:78:   [3] series=INTEGRITY_TEST_SERIES val=42.5000 at=2026-07-08 00:00:00 +0000 UTC
+    data_integrity_test.go:89: Integrity verified: 4 observations - values+timestamps correct
+=== RUN   TestDataCollectionAndIntegrity/HTTPQuery
+    data_integrity_test.go:102: HTTP query: 1519 bytes returned
+=== NAME  TestDataCollectionAndIntegrity
+    data_integrity_test.go:105: === DATA SUMMARY ===
+    data_integrity_test.go:106: - Ingest via WriteObservation: 2 observations
+    data_integrity_test.go:107: - Ingest via HandleIngest: completed (status=COMPLETED)
+    data_integrity_test.go:108: - Internal query: data returned and validated
+    data_integrity_test.go:109: - HTTP query: data returned via HTTP
+--- PASS: TestDataCollectionAndIntegrity (0.00s)
+    --- PASS: TestDataCollectionAndIntegrity/InternalQueryAndIntegrity (0.00s)
+    --- PASS: TestDataCollectionAndIntegrity/HTTPQuery (0.00s)
+=== RUN   TestHTTPEndpoints
+=== RUN   TestHTTPEndpoints/Health
+    data_integrity_test.go:139: Health: {"status":"ok"}
+=== RUN   TestHTTPEndpoints/Coverage
+    data_integrity_test.go:148: Coverage: {"coverage_ratio":0,"native_count":0,"native_total":1,"missing_native":null,"external_routed_count":0,"external_routed_list":null,"last_sync_cursor":"2026-07-09T07:15:16.937082054Z"}
+--- PASS: TestHTTPEndpoints (0.00s)
+    --- PASS: TestHTTPEndpoints/Health (0.00s)
+    --- PASS: TestHTTPEndpoints/Coverage (0.00s)
+=== RUN   TestHandleValidateError
+--- PASS: TestHandleValidateError (0.00s)
+=== RUN   TestHandleSuccess
+--- PASS: TestHandleSuccess (0.00s)
+=== RUN   TestHandleIdempotencyCheckError
+--- PASS: TestHandleIdempotencyCheckError (0.00s)
+=== RUN   TestHandleIdempotencySeen
+--- PASS: TestHandleIdempotencySeen (0.00s)
+=== RUN   TestHandleOSSWriteError
+--- PASS: TestHandleOSSWriteError (0.00s)
+=== RUN   TestHandleTDWriteError
+--- PASS: TestHandleTDWriteError (0.00s)
+=== RUN   TestHandleCHWriteError
+--- PASS: TestHandleCHWriteError (0.00s)
+=== RUN   TestHandleKafkaPublishError
+--- PASS: TestHandleKafkaPublishError (0.00s)
+=== RUN   TestHandleCheckpointError
+--- PASS: TestHandleCheckpointError (0.00s)
+=== RUN   TestHandleMarkIdempotentError
+--- PASS: TestHandleMarkIdempotentError (0.00s)
+=== RUN   TestHandlePayloadConvertRaw
+--- PASS: TestHandlePayloadConvertRaw (0.00s)
+=== RUN   TestHandlePGNil
+--- PASS: TestHandlePGNil (0.00s)
+=== RUN   TestNewIngestHandler
+--- PASS: TestNewIngestHandler (0.00s)
+=== RUN   TestIdempotencyNilPG
+--- PASS: TestIdempotencyNilPG (0.00s)
+=== RUN   TestQueryObservationsTDPath
+--- PASS: TestQueryObservationsTDPath (0.00s)
+=== RUN   TestQueryObservationsRedisPath
+--- PASS: TestQueryObservationsRedisPath (0.00s)
+=== RUN   TestRebuildCache
+--- PASS: TestRebuildCache (0.00s)
+=== RUN   TestNewStaticSourceRouterNil
+--- PASS: TestNewStaticSourceRouterNil (0.00s)
+=== RUN   TestStaticSourceRouterRoute
+--- PASS: TestStaticSourceRouterRoute (0.00s)
+=== RUN   TestStaticSourceRouterNilReceiver
+--- PASS: TestStaticSourceRouterNilReceiver (0.00s)
+=== RUN   TestStaticSourceRouterReload
+--- PASS: TestStaticSourceRouterReload (0.00s)
+=== RUN   TestBuildAuthorityRegistryExternal
+--- PASS: TestBuildAuthorityRegistryExternal (0.00s)
+=== RUN   TestHTTPHandlerRouting
+--- PASS: TestHTTPHandlerRouting (0.00s)
+=== RUN   TestHandleQueryObservationsPeriodFilter
+--- PASS: TestHandleQueryObservationsPeriodFilter (0.00s)
+=== RUN   TestHandleQueryObservationsError
+--- PASS: TestHandleQueryObservationsError (0.00s)
+=== RUN   TestHandlerMethodNotAllowed
+--- PASS: TestHandlerMethodNotAllowed (0.00s)
+=== RUN   TestHTTPComponentStartStop
+--- PASS: TestHTTPComponentStartStop (0.00s)
+=== RUN   TestHTTPComponentNilServer
+--- PASS: TestHTTPComponentNilServer (0.00s)
+=== RUN   TestNATSConsumerComponent
+--- PASS: TestNATSConsumerComponent (0.00s)
+=== RUN   TestNATSConsumerProcessMessage
+--- PASS: TestNATSConsumerProcessMessage (0.00s)
+=== RUN   TestServerRebuildCacheWrapper
+--- PASS: TestServerRebuildCacheWrapper (0.00s)
+=== RUN   TestRebuildCacheMarshalError
+--- PASS: TestRebuildCacheMarshalError (0.00s)
+=== RUN   TestHTTPHandlerServeHTTP
+--- PASS: TestHTTPHandlerServeHTTP (0.00s)
+=== RUN   TestHandleStartBackfillCreateJobError
+--- PASS: TestHandleStartBackfillCreateJobError (0.00s)
+=== RUN   TestHandleGetCatalogCoverageError
+--- PASS: TestHandleGetCatalogCoverageError (0.00s)
+=== RUN   TestHTTPComponentListenError
+--- PASS: TestHTTPComponentListenError (0.00s)
+=== RUN   TestHTTPComponentServeError
+--- PASS: TestHTTPComponentServeError (0.10s)
+=== RUN   TestMemoryStoreFull
+--- PASS: TestMemoryStoreFull (0.00s)
+PASS
+coverage: 84.1% of statements
+ok  	github.com/ZoneCNH/fred/internal/server	0.119s	coverage: 84.1% of statements
+=== RUN   TestNewBlobStoreNilSafe
+--- PASS: TestNewBlobStoreNilSafe (0.00s)
+=== RUN   TestBlobStoreAdapterPutGet
+--- PASS: TestBlobStoreAdapterPutGet (0.00s)
+=== RUN   TestBlobStoreAdapterPutError
+--- PASS: TestBlobStoreAdapterPutError (0.00s)
+=== RUN   TestNewPublisherNilSafe
+--- PASS: TestNewPublisherNilSafe (0.00s)
+=== RUN   TestPublisherAdapterPublish
+--- PASS: TestPublisherAdapterPublish (0.00s)
+=== RUN   TestPublisherAdapterPublishError
+--- PASS: TestPublisherAdapterPublishError (0.00s)
+PASS
+coverage: 100.0% of statements
+ok  	github.com/ZoneCNH/fred/internal/store	0.008s	coverage: 100.0% of statements
+=== RUN   TestNew_RequiresAPIKey
+--- PASS: TestNew_RequiresAPIKey (0.00s)
+=== RUN   TestNew_Defaults
+--- PASS: TestNew_Defaults (0.00s)
+=== RUN   TestClient_Name
+--- PASS: TestClient_Name (0.00s)
+=== RUN   TestClient_HealthCheck
+--- PASS: TestClient_HealthCheck (0.00s)
+=== RUN   TestClient_ListSeries
+--- PASS: TestClient_ListSeries (0.00s)
+=== RUN   TestClient_GetSeriesSpec
+--- PASS: TestClient_GetSeriesSpec (0.00s)
+=== RUN   TestClient_Fetch
+--- PASS: TestClient_Fetch (0.00s)
+=== RUN   TestClient_Fetch_WithOptions
+--- PASS: TestClient_Fetch_WithOptions (0.00s)
+=== RUN   TestClient_Fetch_APIKeyError
+--- PASS: TestClient_Fetch_APIKeyError (0.00s)
+=== RUN   TestClient_Fetch_ClosedClient
+--- PASS: TestClient_Fetch_ClosedClient (0.00s)
+=== RUN   TestClient_RateLimiter
+--- PASS: TestClient_RateLimiter (0.00s)
+=== RUN   TestRedactAPIKey
+--- PASS: TestRedactAPIKey (0.00s)
+=== RUN   TestSeriesRegistry_Count
+--- PASS: TestSeriesRegistry_Count (0.00s)
+=== RUN   TestNormalizer
+--- PASS: TestNormalizer (0.00s)
+=== RUN   TestNormalizer_UnknownSeries
+--- PASS: TestNormalizer_UnknownSeries (0.00s)
+=== RUN   TestNormalizer_ValidateValue
+--- PASS: TestNormalizer_ValidateValue (0.00s)
+=== RUN   TestClient_BaseURL
+--- PASS: TestClient_BaseURL (0.00s)
+=== RUN   TestClient_APIKey
+--- PASS: TestClient_APIKey (0.00s)
+=== RUN   TestClient_HTTPClient
+--- PASS: TestClient_HTTPClient (0.00s)
+=== RUN   TestNew_WithHTTPClient
+--- PASS: TestNew_WithHTTPClient (0.00s)
+=== RUN   TestMinInt
+--- PASS: TestMinInt (0.00s)
+=== RUN   TestClient_Fetch_WithFrequency
+--- PASS: TestClient_Fetch_WithFrequency (0.00s)
+=== RUN   TestClient_Fetch_HTTPError
+--- PASS: TestClient_Fetch_HTTPError (0.00s)
+=== RUN   TestClient_Fetch_EmptyValue
+--- PASS: TestClient_Fetch_EmptyValue (0.00s)
+=== RUN   TestClient_Fetch_InvalidJSON
+--- PASS: TestClient_Fetch_InvalidJSON (0.00s)
+=== RUN   TestClient_Fetch_ReadBodyError
+--- PASS: TestClient_Fetch_ReadBodyError (0.00s)
+=== RUN   TestClient_Fetch_BadBaseURL
+--- PASS: TestClient_Fetch_BadBaseURL (0.00s)
+=== RUN   TestCheckResponse_StatusForbidden
+--- PASS: TestCheckResponse_StatusForbidden (0.00s)
+=== RUN   TestCheckResponse_StatusBadRequest_APIKey
+--- PASS: TestCheckResponse_StatusBadRequest_APIKey (0.00s)
+=== RUN   TestCheckResponse_StatusServerError
+--- PASS: TestCheckResponse_StatusServerError (0.00s)
+=== RUN   TestCheckResponse_StatusTeapot
+--- PASS: TestCheckResponse_StatusTeapot (0.00s)
+=== RUN   TestRedactAPIKey_MultipleKeys
+--- PASS: TestRedactAPIKey_MultipleKeys (0.00s)
+=== RUN   TestRedactAPIKey_KeyOnly
+--- PASS: TestRedactAPIKey_KeyOnly (0.00s)
+=== RUN   TestNormalizer_NilResult
+--- PASS: TestNormalizer_NilResult (0.00s)
+=== RUN   TestNormalizer_OutOfBoundsBelow
+--- PASS: TestNormalizer_OutOfBoundsBelow (0.00s)
+=== RUN   TestNormalizer_OutOfBoundsAbove
+--- PASS: TestNormalizer_OutOfBoundsAbove (0.00s)
+=== RUN   TestNormalizer_UnparseableValue
+--- PASS: TestNormalizer_UnparseableValue (0.00s)
+=== RUN   TestValidateValue_UnknownSeries
+--- PASS: TestValidateValue_UnknownSeries (0.00s)
+=== RUN   TestAcquireToken_ContextCancelled
+--- PASS: TestAcquireToken_ContextCancelled (0.00s)
+=== RUN   TestAcquireToken_Refill
+--- PASS: TestAcquireToken_Refill (0.20s)
+=== RUN   TestClient_Fetch_RateLimitExceeded
+--- PASS: TestClient_Fetch_RateLimitExceeded (0.00s)
+=== RUN   TestClient_Fetch_InvalidDecimalValue
+--- PASS: TestClient_Fetch_InvalidDecimalValue (0.00s)
+=== RUN   TestAcquireToken_WaitAndRetry
+--- PASS: TestAcquireToken_WaitAndRetry (0.00s)
+=== RUN   TestClient_Close_Idempotent
+--- PASS: TestClient_Close_Idempotent (0.00s)
+=== RUN   TestNewRequest_Error
+--- PASS: TestNewRequest_Error (0.00s)
+PASS
+coverage: 100.0% of statements
+ok  	github.com/ZoneCNH/fred/pkg/fredx	0.226s	coverage: 100.0% of statements
+=== RUN   TestMultiStorageWriteIntegration
+=== RUN   TestMultiStorageWriteIntegration/AC-003-01-PostgresSchemaInit
+    integration_test.go:140: PostgreSQL schema initialized successfully
+=== RUN   TestMultiStorageWriteIntegration/AC-003-02-PostgresSeriesMetaWriteRead
+    integration_test.go:179: Job created: cc75814a-f688-4bac-9a85-b99b8bcb4b61, status=RUNNING
+=== RUN   TestMultiStorageWriteIntegration/AC-003-03-PostgresIdempotency
+    integration_test.go:214: PostgreSQL idempotency works correctly
+=== RUN   TestMultiStorageWriteIntegration/AC-003-04-TDengineObservationWrite
+    integration_test.go:236: TDengine write skipped (driver not fully configured): unavailable: driver.WriteBatch: TDengine driver is not configured
+=== RUN   TestMultiStorageWriteIntegration/AC-003-05-RedisConnectivity
+    integration_test.go:254: Redis connection verified
+=== RUN   TestMultiStorageWriteIntegration/AC-003-06-ClickHouseConnectivity
+    integration_test.go:269: ClickHouse connection verified
+=== NAME  TestMultiStorageWriteIntegration
+    integration_test.go:272: AC-003: Multi-storage write integration PASSED
+--- PASS: TestMultiStorageWriteIntegration (0.04s)
+    --- PASS: TestMultiStorageWriteIntegration/AC-003-01-PostgresSchemaInit (0.01s)
+    --- PASS: TestMultiStorageWriteIntegration/AC-003-02-PostgresSeriesMetaWriteRead (0.01s)
+    --- PASS: TestMultiStorageWriteIntegration/AC-003-03-PostgresIdempotency (0.01s)
+    --- SKIP: TestMultiStorageWriteIntegration/AC-003-04-TDengineObservationWrite (0.00s)
+    --- PASS: TestMultiStorageWriteIntegration/AC-003-05-RedisConnectivity (0.00s)
+    --- PASS: TestMultiStorageWriteIntegration/AC-003-06-ClickHouseConnectivity (0.00s)
+=== RUN   TestRedisRebuildable
+=== RUN   TestRedisRebuildable/AC-004-01-RedisCacheRebuild
+    integration_test.go:330: Redis cache rebuild verified
+=== NAME  TestRedisRebuildable
+    integration_test.go:333: AC-004: Redis rebuildable PASSED
+--- PASS: TestRedisRebuildable (0.00s)
+    --- PASS: TestRedisRebuildable/AC-004-01-RedisCacheRebuild (0.00s)
+=== RUN   TestNATSKafkaSeparation
+=== RUN   TestNATSKafkaSeparation/AC-005-01-NATSConnectivity
+    integration_test.go:367: NATS publish successful
+=== RUN   TestNATSKafkaSeparation/AC-005-02-KafkaConnectivity
+    integration_test.go:378: Kafka client created successfully
+=== NAME  TestNATSKafkaSeparation
+    integration_test.go:381: AC-005: NATS/Kafka separation PASSED
+--- PASS: TestNATSKafkaSeparation (0.01s)
+    --- PASS: TestNATSKafkaSeparation/AC-005-01-NATSConnectivity (0.01s)
+    --- PASS: TestNATSKafkaSeparation/AC-005-02-KafkaConnectivity (0.00s)
+=== RUN   TestMsBrainContractIntegration
+=== RUN   TestMsBrainContractIntegration/AC-009-01-MacroObservationContract
+    integration_test.go:424: ms_brain contract: MacroObservation serialization round-trip OK
+=== RUN   TestMsBrainContractIntegration/AC-009-02-QueryResponseContract
+    integration_test.go:441: ms_brain contract: QueryResponses OK, anchor series DFII10 + BAMLH0A0HYM2
+=== NAME  TestMsBrainContractIntegration
+    integration_test.go:444: AC-009: ms_brain contract integration PASSED
+--- PASS: TestMsBrainContractIntegration (0.00s)
+    --- PASS: TestMsBrainContractIntegration/AC-009-01-MacroObservationContract (0.00s)
+    --- PASS: TestMsBrainContractIntegration/AC-009-02-QueryResponseContract (0.00s)
+=== RUN   TestFullCoverageAuditIntegration
+=== RUN   TestFullCoverageAuditIntegration/AC-010-01-CatalogCoverageComputation
+    integration_test.go:496: Coverage: ratio=0.91, native=10/11, external=1
+=== RUN   TestFullCoverageAuditIntegration/AC-010-02-DefaultStartDate1990
+    integration_test.go:506: Default start: 1990-01-01
+=== NAME  TestFullCoverageAuditIntegration
+    integration_test.go:509: AC-010: Full coverage audit PASSED
+--- PASS: TestFullCoverageAuditIntegration (0.01s)
+    --- PASS: TestFullCoverageAuditIntegration/AC-010-01-CatalogCoverageComputation (0.01s)
+    --- PASS: TestFullCoverageAuditIntegration/AC-010-02-DefaultStartDate1990 (0.00s)
+=== RUN   TestRawFirstMultiStoreIntegration
+=== RUN   TestRawFirstMultiStoreIntegration/TC-004-01-OSSBucketAccessible
+    integration_test.go:527: OSS config loaded (bucket=x-go, region=ap-northeast-1)
+=== NAME  TestRawFirstMultiStoreIntegration
+    integration_test.go:530: TC-004: Raw-first multi-store integration PASSED
+--- PASS: TestRawFirstMultiStoreIntegration (0.00s)
+    --- PASS: TestRawFirstMultiStoreIntegration/TC-004-01-OSSBucketAccessible (0.00s)
+=== RUN   TestRedisPurgeAndRebuildIntegration
+=== RUN   TestRedisPurgeAndRebuildIntegration/TC-005-01-RedisPurgeRebuildCycle
+    integration_test.go:581: TC-005: Redis purge + rebuild cycle PASSED
+=== NAME  TestRedisPurgeAndRebuildIntegration
+    integration_test.go:584: TC-005: Redis purge and rebuild PASSED
+--- PASS: TestRedisPurgeAndRebuildIntegration (0.00s)
+    --- PASS: TestRedisPurgeAndRebuildIntegration/TC-005-01-RedisPurgeRebuildCycle (0.00s)
+=== RUN   TestNATSKafkaEventSeparationIntegration
+=== RUN   TestNATSKafkaEventSeparationIntegration/TC-006-01-NATSIngestHandoff
+    integration_test.go:615: NATS ingest handoff published to subject=fred.ingest
+=== RUN   TestNATSKafkaEventSeparationIntegration/TC-006-02-NATSControlPlane
+    integration_test.go:635: NATS control published to subject=fred.control.backfill
+=== RUN   TestNATSKafkaEventSeparationIntegration/TC-006-03-KafkaSeparateFromNATS
+    integration_test.go:647: Kafka durable event topic prefix is distinct from NATS subjects
+=== NAME  TestNATSKafkaEventSeparationIntegration
+    integration_test.go:650: TC-006: NATS/Kafka event separation PASSED
+--- PASS: TestNATSKafkaEventSeparationIntegration (0.02s)
+    --- PASS: TestNATSKafkaEventSeparationIntegration/TC-006-01-NATSIngestHandoff (0.01s)
+    --- PASS: TestNATSKafkaEventSeparationIntegration/TC-006-02-NATSControlPlane (0.01s)
+    --- PASS: TestNATSKafkaEventSeparationIntegration/TC-006-03-KafkaSeparateFromNATS (0.00s)
+=== RUN   TestMsBrainProfileIntegration
+=== RUN   TestMsBrainProfileIntegration/TC-009-01-AnchoredSeries
+    integration_test.go:680: ms_brain anchor series validated
+=== RUN   TestMsBrainProfileIntegration/TC-009-02-EventSchemaCompatibility
+    integration_test.go:705: ms_brain event schema compatible
+=== NAME  TestMsBrainProfileIntegration
+    integration_test.go:708: TC-009: ms_brain integration profile PASSED
+--- PASS: TestMsBrainProfileIntegration (0.00s)
+    --- PASS: TestMsBrainProfileIntegration/TC-009-01-AnchoredSeries (0.00s)
+    --- PASS: TestMsBrainProfileIntegration/TC-009-02-EventSchemaCompatibility (0.00s)
+=== RUN   TestCoverageAuditFlowIntegration
+=== RUN   TestCoverageAuditFlowIntegration/TC-010-01-SixDomainCoverage
+    integration_test.go:759: Six-domain coverage: native=10/11 ratio=0.9091
+=== NAME  TestCoverageAuditFlowIntegration
+    integration_test.go:763: TC-010: Full coverage audit flow PASSED
+--- PASS: TestCoverageAuditFlowIntegration (0.02s)
+    --- PASS: TestCoverageAuditFlowIntegration/TC-010-01-SixDomainCoverage (0.02s)
+=== RUN   TestExternalRoutingIntegration
+=== RUN   TestExternalRoutingIntegration/TC-011-01-ECBASSETSWExternalRouting
+    integration_test.go:792: IT-ROUTING-001: External routing GetSeries correct source_component
+=== RUN   TestExternalRoutingIntegration/TC-011-02-ExternalNotInFREDAssertions
+    integration_test.go:811: IT-ROUTING-003: External routes separated from FRED vintage assertions
+=== RUN   TestExternalRoutingIntegration/TC-011-03-AuthorityRegistryReload
+    integration_test.go:835: IT-ROUTING-005: Authority registry reload verified
+=== RUN   TestExternalRoutingIntegration/TC-011-04-ExternalEventSourceComponent
+    integration_test.go:861: IT-ROUTING-006: source_component propagated to event
+=== NAME  TestExternalRoutingIntegration
+    integration_test.go:864: TC-011: External routing integration PASSED
+--- PASS: TestExternalRoutingIntegration (0.00s)
+    --- PASS: TestExternalRoutingIntegration/TC-011-01-ECBASSETSWExternalRouting (0.00s)
+    --- PASS: TestExternalRoutingIntegration/TC-011-02-ExternalNotInFREDAssertions (0.00s)
+    --- PASS: TestExternalRoutingIntegration/TC-011-03-AuthorityRegistryReload (0.00s)
+    --- PASS: TestExternalRoutingIntegration/TC-011-04-ExternalEventSourceComponent (0.00s)
+PASS
+ok  	github.com/ZoneCNH/fred/internal/integration	(cached)

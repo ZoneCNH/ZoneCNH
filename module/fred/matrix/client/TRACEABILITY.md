@@ -1,6 +1,6 @@
 # fred-client Traceability Matrix
 
-- Last-Updated: 2026-07-08
+- Last-Updated: 2026-07-09
 - Source: [../../spec/client/SPEC.md](../../spec/client/SPEC.md)
 - Source-From: matrix/TRACEABILITY.md（主矩阵权威状态投影）
 
