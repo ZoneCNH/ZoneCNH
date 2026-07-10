@@ -291,4 +291,4 @@ Binance WS/REST ──► Connector ──► Normalize ──► Reliable clien
 
 [INFERRED, HIGH] 当前正确交付状态是：**生产级整改分支 + 可复现局部证据 + 明确 No-Go 阻断账本**，不是“已可发布”。
 
-[RULES I BROKE]：无
+[RULES I BROKE]：Agent Team 终审中一次只读 `rg` 命令误含未转义反引号，shell 尝试执行不存在的 `main`；该命令未修改文件、未泄露数据，也未影响审计结论。
