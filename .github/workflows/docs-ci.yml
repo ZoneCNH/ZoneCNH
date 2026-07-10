@@ -48,6 +48,29 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # lychee-action@v2 在 self-hosted runner 上存在 PATH 传递 bug：
+      # install 把二进制放入 $RUNNER_TEMP/lychee/bin 并写入 $GITHUB_PATH，
+      # 但 entrypoint 在后续 step 找不到 lychee（command not found, exit 127）。
+      # 此处预装 lychee 到 $HOME/.local/bin（HOME 跨 step 稳定），绕过该 bug。
+      - name: 预装 lychee（绕过 lychee-action@v2 的 self-hosted PATH bug）
+        run: |
+          set -euo pipefail
+          if command -v lychee >/dev/null 2>&1; then
+            echo "lychee 已存在于 PATH: $(command -v lychee)"
+          else
+            mkdir -p "$HOME/.local/bin"
+            LYCHEE_VERSION="lychee-v0.24.2"
+            tmpdir="$(mktemp -d)"
+            curl -sfL "https://github.com/lycheeverse/lychee/releases/download/${LYCHEE_VERSION}/lychee-x86_64-unknown-linux-gnu.tar.gz" \
+              | tar -xz -C "$tmpdir"
+            install -D -m 0755 "${tmpdir}/lychee-x86_64-unknown-linux-gnu/lychee" "$HOME/.local/bin/lychee"
+            rm -rf "$tmpdir"
+            echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+            echo "已安装 lychee $LYCHEE_VERSION 到 $HOME/.local/bin"
+          fi
+          lychee --version
+        shell: bash
+
       - name: 检查链接有效性（lychee）
         uses: lycheeverse/lychee-action@v2
         env:

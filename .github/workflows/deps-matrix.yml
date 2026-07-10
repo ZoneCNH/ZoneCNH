@@ -46,6 +46,19 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version: "1.23"
+          # self-hosted runner（用户非 runner）上 /home/runner/go 不可写，
+          # setup-go v5 默认 cache:true 会 mkdir /home/runner/go 触发 EACCES。
+          # 本 job 仅用 go list -m 读 go.mod，无需模块缓存，禁用 cache。
+          cache: false
+
+      # GOPATH/GOCACHE 指向 RUNNER_TEMP（self-hosted runner 保证可写），
+      # 避免 go list -m all 运行时回退到 /home/runner/go/pkg/mod 再次 EACCES
+      - name: Configure Go paths for self-hosted runner
+        run: |
+          mkdir -p "$RUNNER_TEMP/go/pkg/mod" "$RUNNER_TEMP/go-cache"
+          echo "GOPATH=$RUNNER_TEMP/go" >> "$GITHUB_ENV"
+          echo "GOMODCACHE=$RUNNER_TEMP/go/pkg/mod" >> "$GITHUB_ENV"
+          echo "GOCACHE=$RUNNER_TEMP/go-cache" >> "$GITHUB_ENV"
 
       - name: Check dependency matrix
         id: check
