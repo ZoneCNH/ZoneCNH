@@ -160,6 +160,40 @@ Spec → Matrix → Tasks → Plan → Prompt → Code
 
 该入口与上述管线的门禁规则相同（详见 `docs/governance/DEVELOPMENT-WORKFLOW.md`）。
 
+## Sol/Luna 证据路由
+
+[FRAME, HIGH] 本节是持久任务路由指令，不是新的 agent 注册表。复杂且能够拆成至少 3 个**互斥写范围**的任务，自动交给保护区外的外层编排器；小任务或不能安全并行的任务由 Sol 直接处理。
+
+- `[FRAME, HIGH]` Luna 的硬保证入口是 `scripts/sol_luna_orchestrator.py`。入口显式向每个外部 `codex exec` 传入模型与推理档位；模型目录 probe 和 `.omx/state/orchestration/<run_id>/model-calls.jsonl` 共同构成路由证据。
+- `[FRAME, HIGH]` 可安全并行时使用 3–5 个 Luna；`--workers` 默认 3、上限 5。`.codex/config.toml` 的 `agents.max_threads` 只约束 Codex 原生 subagent，不替代此外层进程并发上限。
+- `[FRAME, HIGH]` cheap gate 通过后直接推进，不回 Sol。任何明确失败先由 Luna 修复并重跑 gate；只有 `evidence missing`、`evidence conflict`、`scope overlap` 或 `retry exhausted` 才回 Sol。
+- `[FRAME, HIGH]` 自动路由必须保留任务写范围、机械检查输出、重试次数、模型调用日志和证据路径；不得用 agent 名称或返回文本代替模型证据。
+- `[FRAME, HIGH]` 不注册或新增受保护 custom agent；本节不改变 21=21=21 的 agent 镜像，也不替代 Spec→Code 的四源评分与 arbiter。
+
+[FRAME, HIGH] 最小入口与执行命令如下；参数是否被当前实现接受，以命令退出码和 JSON 输出为准：
+
+```bash
+codex --version
+codex exec --help | rg -- '--model|reasoning|config'
+sed -n '1,80p' .codex/config.toml
+test -f scripts/sol_luna_orchestrator.py && \
+  python3 scripts/sol_luna_orchestrator.py --help && \
+  python3 scripts/sol_luna_orchestrator.py probe || \
+  echo 'sol_luna_orchestrator.py 未安装：Luna 入口不可宣称已运行'
+```
+
+[FRAME, HIGH] `run` 必须在 clean feature worktree 上启动，并显式提供可重复执行的全局 cheap check：
+
+```bash
+python3 scripts/sol_luna_orchestrator.py run \
+  --workspace "$PWD" \
+  --workers 3 \
+  --request-file /path/to/request.md \
+  --check '["python3", "-m", "pytest", "-q"]'
+```
+
+[FRAME, HIGH] 明确失败的修复循环保持为：`Sol 规划 → 3–5 Luna 并行 → cheap gate → Luna 修复 → 继续或按四类证据问题回 Sol`。父 worktree 只在 integration worktree 的全局检查通过后一次性接收 combined patch。
+
 ### 关键文档
 
 | 文档                                      | 用途                                                             |

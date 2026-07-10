@@ -100,7 +100,46 @@ executor → [Claude scorer | Codex scorer | Copilot scorer | Rules scorer]
 
 ---
 
-## 五、文档索引
+## 五、Sol/Luna 通用任务编排入口
+
+[FRAME, HIGH] 这是位于 Spec→Code 之上的通用任务编排层：它只负责把可安全拆分的任务路由给 Luna、收集证据并处理失败升级，不替代 Spec→Code 的四源评分、`pipeline-arbiter` 或既有 Gate，也不改动 21=21=21 的 agent 镜像。
+
+[FRAME, HIGH] 保护区外的硬入口是 `scripts/sol_luna_orchestrator.py`。入口在每次运行前 probe `gpt-5.6-sol`、`gpt-5.6-luna` 与 `xhigh`，并在每次模型调用中显式传参和记录日志；不得以 collaboration 子线程名称推断模型身份。
+
+| 条件 | 路由 | 结果 |
+|------|------|------|
+| 少于 3 个互斥写范围，或存在并发安全风险 | Sol 直接处理 | 保留单一写者与普通验证 |
+| 至少 3 个互斥写范围 | 外层编排器启动 3–5 个 Luna | 每个 Luna 只写自己的范围并返回证据 |
+| cheap gate 通过 | 继续下一步 | 不回 Sol |
+| 明确失败 | 先路由 Luna 修复 | 修复后重跑 gate |
+| `evidence missing` / `evidence conflict` / `scope overlap` / `retry exhausted` | 回 Sol | Sol 决定补证据、消歧、重划范围或停止 |
+
+最小探测命令：
+
+```bash
+codex --version
+codex exec --help | rg -- '--model|reasoning|config'
+python3 scripts/sol_luna_orchestrator.py --help
+python3 scripts/sol_luna_orchestrator.py probe
+```
+
+[FRAME, HIGH] 入口不存在或模型 probe 失败时，只能报告“未证实 Luna”，不能声称已完成 Luna 编排。
+
+[FRAME, HIGH] 自动执行示例：
+
+```bash
+python3 scripts/sol_luna_orchestrator.py run \
+  --workspace "$PWD" \
+  --workers 3 \
+  --request-file /path/to/request.md \
+  --check '["python3", "-m", "pytest", "-q"]'
+```
+
+[FRAME, HIGH] 每个 task 先在独立 detached worktree 运行机械检查；全部 task patch 再进入独立 integration worktree。只有全局检查通过时，父 worktree 才一次性应用 combined patch；明确失败先由 Luna 重试，证据缺失、冲突、范围重叠或重试耗尽才升级 Sol。
+
+---
+
+## 六、文档索引
 
 ### 管线定义
 
