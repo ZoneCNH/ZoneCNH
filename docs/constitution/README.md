@@ -26,9 +26,9 @@ docs/constitution/（章节视图，按条款快速导航）
 | [`preamble.md`](preamble.md) | 序言 | 宪法约束对象与适用范围 |
 | [`00-branch-discipline.md`](00-branch-discipline.md) | 第零条：分支纪律 | 🔴 最高优先级 — 禁止 main 开发、强制 worktree、Agent 约束 |
 | [`01-design-principles.md`](01-design-principles.md) | 第一条：设计原则 | 十三条不变量 P1-P13（基座 + 领域） |
-| [`02-module-boundaries.md`](02-module-boundaries.md) | 第二条：模块边界 | 职责声明、边界违规、仲裁优先级、奥卡姆剃刀 |
+| [`02-module-boundaries.md`](02-module-boundaries.md) | 第二条：模块边界 | 职责声明、边界违规、仲裁优先级、奥卡姆剃刀、业务域定义（§2.7） |
 | [`03-dependency-direction.md`](03-dependency-direction.md) | 第三条：依赖方向 | 依赖拓扑、单向下行规则、禁止依赖矩阵 |
-| [`04-interface-contracts.md`](04-interface-contracts.md) | 第四条：接口契约 | 窄接口（≤7方法）、编译期检查、WHEN/THEN 行为规格 |
+| [`04-interface-contracts.md`](04-interface-contracts.md) | 第四条：接口契约 | 窄接口（≤7方法）、编译期检查、WHEN/THEN 行为规格、跨模块通信协议（§4.5 HTTP + Gin） |
 | [`05-testing-standards.md`](05-testing-standards.md) | 第五条：测试标准 | 覆盖率分级（L0=100%）、测试分类、三段式命名 |
 | [`06-observability.md`](06-observability.md) | 第六条：可观测性 | Metrics 命名规范、Label Policy、Redaction |
 | [`07-naming-conventions.md`](07-naming-conventions.md) | 第七条：命名规范 | Go 命名、模块命名模式、数据域跨层命名 |

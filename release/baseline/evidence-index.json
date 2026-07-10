@@ -1,0 +1,34 @@
+{
+  "schema_version": "foundation-evidence-index/v1",
+  "baseline": "2026.07",
+  "artifacts": [
+    {
+      "module": "xlib_evidence",
+      "version": "v0.3.0",
+      "release": "https://github.com/xhyperium/xlib_evidence/releases/tag/v0.3.0",
+      "kind": "attestation-runtime",
+      "verified": true
+    },
+    {
+      "module": "xlib_harness",
+      "version": "v0.2.1",
+      "release": "https://github.com/xhyperium/xlib_harness/releases/tag/v0.2.1",
+      "kind": "domain-purity-gate",
+      "verified": true
+    },
+    {
+      "module": "xlibgate",
+      "version": "v1.3.0",
+      "release": "https://github.com/xhyperium/xlibgate/releases/tag/v1.3.0",
+      "kind": "catalog-identity-fleet",
+      "verified": true
+    },
+    {
+      "module": "xlib_standard",
+      "version": true,
+      "release": "",
+      "kind": "schema-owner",
+      "verified": true
+    }
+  ]
+}

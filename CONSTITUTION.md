@@ -5,7 +5,7 @@
 > 本文件是 AI 代理和人类贡献者在实现、审查或修改任何模块或交付流程时的最高权威参考。
 > 当本文件与 `module/*/spec/SPEC.md`、`module/FOUNDATION-SPEC.md`、`docs/governance/DEVELOPMENT-WORKFLOW.md` 或其他文档冲突时，以本文件为准。
 
-最后更新：2026-07-03
+最后更新：2026-07-11
 
 > **迁移通知**：宪法条款已按章节拆分至 [`docs/constitution/`](docs/constitution/)，便于按条款快速导航。
 > 本文件作为向后兼容存根保留，所有外部引用（`CLAUDE.md`、`AGENTS.md`、`module/*/spec/SPEC.md` 等）无需修改。
@@ -19,9 +19,9 @@
 | 序言 | [`docs/constitution/preamble.md`](docs/constitution/preamble.md) | 宪法约束对象与适用范围 |
 | 第零条：分支纪律 | [`docs/constitution/00-branch-discipline.md`](docs/constitution/00-branch-discipline.md) | 🔴 最高优先级 — 禁止 main 开发、强制 worktree、Agent 约束 |
 | 第一条：设计原则 | [`docs/constitution/01-design-principles.md`](docs/constitution/01-design-principles.md) | 十三条不变量 P1-P13（基座 + 领域） |
-| 第二条：模块边界 | [`docs/constitution/02-module-boundaries.md`](docs/constitution/02-module-boundaries.md) | 职责声明、边界违规、仲裁优先级、奥卡姆剃刀 |
+| 第二条：模块边界 | [`docs/constitution/02-module-boundaries.md`](docs/constitution/02-module-boundaries.md) | 职责声明、边界违规、仲裁优先级、奥卡姆剃刀、业务域定义（§2.7） |
 | 第三条：依赖方向 | [`docs/constitution/03-dependency-direction.md`](docs/constitution/03-dependency-direction.md) | 依赖拓扑、单向下行规则、禁止依赖矩阵 |
-| 第四条：接口契约 | [`docs/constitution/04-interface-contracts.md`](docs/constitution/04-interface-contracts.md) | 窄接口（≤7方法）、编译期检查、WHEN/THEN 行为规格 |
+| 第四条：接口契约 | [`docs/constitution/04-interface-contracts.md`](docs/constitution/04-interface-contracts.md) | 窄接口（≤7方法）、编译期检查、WHEN/THEN 行为规格、跨模块通信协议（§4.5 HTTP + Gin） |
 | 第五条：测试标准 | [`docs/constitution/05-testing-standards.md`](docs/constitution/05-testing-standards.md) | 覆盖率分级（L0=100%）、测试分类、三段式命名、Mock 契约一致性（§5.5） |
 | 第六条：可观测性 | [`docs/constitution/06-observability.md`](docs/constitution/06-observability.md) | Metrics 命名规范、Label Policy、Redaction |
 | 第七条：命名规范 | [`docs/constitution/07-naming-conventions.md`](docs/constitution/07-naming-conventions.md) | Go 命名、模块命名模式、数据域跨层命名 |
@@ -70,6 +70,7 @@ CICD-001 规定 ZoneCNH 全体系 CI/CD 只运行在 self-hosted runners 上，�
 
 | 日期 | 变更摘要 |
 | ---- | -------- |
+| 2026-07-11 | 新增 §2.7 业务域定义（数据域 · Data / 分析域 · Analytics / 决策域 · Decision / 执行域 · Execution）；新增 §4.5 跨模块通信协议（HTTP + Gin 强制约束）|
 | 2026-07-05 | 新增 §2.6：模块与仓库创建授权；§0.3 增补 Agent 创建约束（交叉引用 §2.6）|
 | 2026-07-03 | 新增 §5.5：Mock 契约一致性（Mock/Fake 须过与生产实现相同的契约测试，支撑 P6 回测与实盘共享代码）|
 | 2026-06-21 | 新增第二十条：认识论标准（§20）|
