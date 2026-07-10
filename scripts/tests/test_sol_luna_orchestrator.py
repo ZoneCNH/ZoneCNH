@@ -393,7 +393,7 @@ def test_traceability_fields_reject_unsafe_spec_refs_and_non_matrix_ids(
 def test_spec_reference_must_resolve_to_a_file_inside_workspace(tmp_path):
     spec = tmp_path / "module" / "demo" / "spec" / "SPEC.md"
     spec.parent.mkdir(parents=True)
-    spec.write_text("# Spec\n\nFR-001\n", encoding="utf-8")
+    spec.write_text("# Spec\n\n- FR-001\n", encoding="utf-8")
 
     assert orchestrator._validate_spec_reference(
         tmp_path, "module/demo/spec/SPEC.md"
@@ -405,6 +405,11 @@ def test_spec_reference_must_resolve_to_a_file_inside_workspace(tmp_path):
 
     args = _orchestration_args(tmp_path)
     args.spec_ref = ""
+    with pytest.raises(_error_types()):
+        orchestrator._run_orchestration(args)
+
+    args = _orchestration_args(tmp_path)
+    args.matrix_edge = []
     with pytest.raises(_error_types()):
         orchestrator._run_orchestration(args)
 
@@ -420,7 +425,10 @@ def test_matrix_edges_must_exist_in_canonical_matrix_for_spec(tmp_path):
     spec.write_text("# Spec\n\n- FR-001\n", encoding="utf-8")
     matrix.write_text(
         "| Edge ID | FR |\n|---|---|\n| M-001 | FR-001 |\n\n"
-        "```markdown\n| M-GHOST | FR-404 |\n```\n",
+        "```markdown\n| M-GHOST | FR-404 |\n```\n"
+        "~~~markdown\n| M-TILDE | FR-404 |\n~~~\n"
+        "- ```markdown\n  | Edge ID | FR |\n  |---|---|\n  | M-LIST | FR-404 |\n  ```\n"
+        "    | Edge ID | FR |\n    |---|---|\n    | M-INDENTED | FR-404 |\n",
         encoding="utf-8",
     )
     subprocess.run(["git", "add", "."], cwd=tmp_path, check=True)
@@ -450,6 +458,11 @@ def test_matrix_edges_must_exist_in_canonical_matrix_for_spec(tmp_path):
         orchestrator._validate_traceability_references(
             tmp_path, spec_ref, matrix_ref, ["M-GHOST"]
         )
+    for fake_edge in ("M-TILDE", "M-LIST", "M-INDENTED"):
+        with pytest.raises(_error_types()):
+            orchestrator._validate_traceability_references(
+                tmp_path, spec_ref, matrix_ref, [fake_edge]
+            )
 
     unrelated = tmp_path / "unrelated" / "matrix" / "TRACEABILITY.md"
     unrelated.parent.mkdir(parents=True)
@@ -498,10 +511,70 @@ def test_traceability_refs_must_be_tracked_in_current_head(tmp_path):
             tmp_path, spec_ref, matrix_ref, ["M-EPHEMERAL"]
         )
 
-    args = _orchestration_args(tmp_path)
-    args.matrix_edge = []
+
+def test_traceability_refs_reject_tracked_symlink_to_untracked_content(tmp_path):
+    subprocess.run(["git", "init", "-q"], cwd=tmp_path, check=True)
+    (tmp_path / ".gitignore").write_text("actual-spec.md\n", encoding="utf-8")
+    (tmp_path / "actual-spec.md").write_text("FR-001\n", encoding="utf-8")
+    (tmp_path / "SPEC.md").symlink_to("actual-spec.md")
+    matrix = tmp_path / "matrix" / "TRACEABILITY.md"
+    matrix.parent.mkdir()
+    matrix.write_text(
+        "| Edge ID | FR |\n|---|---|\n| M-001 | FR-001 |\n",
+        encoding="utf-8",
+    )
+    subprocess.run(["git", "add", ".gitignore", "SPEC.md", "matrix/TRACEABILITY.md"], cwd=tmp_path, check=True)
+    subprocess.run(
+        [
+            "git",
+            "-c",
+            "user.name=test",
+            "-c",
+            "user.email=test@example.invalid",
+            "commit",
+            "-qm",
+            "fixture",
+        ],
+        cwd=tmp_path,
+        check=True,
+    )
+
     with pytest.raises(_error_types()):
-        orchestrator._run_orchestration(args)
+        orchestrator._validate_traceability_references(
+            tmp_path, "SPEC.md", "matrix/TRACEABILITY.md", ["M-001"]
+        )
+
+
+def test_spec_fr_definitions_ignore_examples_comments_and_prose_mentions():
+    spec_text = """
+### FR-001: real heading
+- `FR-002` real list definition
+| FR-003 | real table definition |
+
+Prose only mentions FR-900 and does not define it.
+<!-- FR-901 -->
+```markdown
+### FR-902: fenced example
+```
+~~~markdown
+| FR-903 | fenced table |
+~~~
+- ```markdown
+  ### FR-905: list-contained fenced example
+  ```
+> ~~~markdown
+> ### FR-906: quote-contained fenced example
+> ~~~
+### FR-004: real heading after containers
+    ### FR-904: indented code
+"""
+
+    assert orchestrator._spec_fr_definitions(spec_text) == {
+        "FR-001",
+        "FR-002",
+        "FR-003",
+        "FR-004",
+    }
 
 
 def test_prompt_families_carry_spec_ref_and_matrix_edges(tmp_path, monkeypatch):
@@ -901,6 +974,8 @@ print(json.dumps({{
     'stdin': sys.stdin.read(),
     'host_secret_visible': Path('/opt/binance/secrets/prod.env').exists(),
     'host_socket_visible': Path('/run/docker.sock').exists(),
+    'cargo_credentials_visible': Path('/home/claude/.cargo/credentials.toml').exists(),
+    'cargo_home': os.environ.get('CARGO_HOME'),
     'rlimit_as': resource.getrlimit(resource.RLIMIT_AS)[0],
     'rlimit_fsize': resource.getrlimit(resource.RLIMIT_FSIZE)[0],
     'rlimit_nproc': resource.getrlimit(resource.RLIMIT_NPROC)[0],
@@ -922,6 +997,8 @@ print(json.dumps({{
     assert sandbox_result["stdin"] == ""
     assert sandbox_result["host_secret_visible"] is False
     assert sandbox_result["host_socket_visible"] is False
+    assert sandbox_result["cargo_credentials_visible"] is False
+    assert sandbox_result["cargo_home"] == "/tmp/cargo-home"
     assert sandbox_result["rlimit_as"] == 4_294_967_296
     assert sandbox_result["rlimit_fsize"] == 16_777_216
     assert sandbox_result["rlimit_nproc"] == 2_048
@@ -937,6 +1014,9 @@ print(json.dumps({{
     assert large_output.returncode == 0
     assert "cheap check 输出已截断" in large_output.stdout
     assert len(large_output.stdout) < orchestrator.MAX_CHEAP_CHECK_OUTPUT_BYTES + 200
+
+    sandbox_command = orchestrator._cheap_check_command(tmp_path, ["cargo", "test"])
+    assert str(Path.home() / ".cargo") not in sandbox_command
 
 
 def _guarded_ignored_result(monkeypatch, workspace, run_dir, ignored_after):
@@ -1130,6 +1210,34 @@ def test_escalation_digest_keeps_failures_and_compacts_passing_tasks(tmp_path):
     assert digest["passed_task_receipts"][0]["task_id"] == "task-pass"
     assert len(digest["passed_task_receipts"][0]["patch_sha256"]) == 64
     assert "huge" not in json.dumps(digest)
+
+    integration_digest = orchestrator._integration_escalation_digest(
+        {
+            "status": "test_failure",
+            "reason": "global failed",
+            "attempts": [
+                {
+                    "attempt": 1,
+                    "model_status": "fail",
+                    "check_results": [
+                        {
+                            "argv": ["pytest"],
+                            "returncode": 1,
+                            "stderr": "failure",
+                            "stdout": "x" * 20_000,
+                        }
+                    ],
+                    "raw_context": "y" * 20_000,
+                }
+            ],
+        },
+        results,
+    )
+    assert integration_digest["passed_task_receipts"][0]["task_id"] == "task-pass"
+    assert integration_digest["integration_failure"]["failed_checks"][0][
+        "returncode"
+    ] == 1
+    assert "raw_context" not in json.dumps(integration_digest)
 
 
 def test_model_usage_summary_separates_sol_luna_and_unknown_tokens(tmp_path):
@@ -1833,7 +1941,7 @@ def _patch_orchestration_dependencies(monkeypatch, workspace, integration_result
         / "SPEC.md"
     )
     spec.parent.mkdir(parents=True, exist_ok=True)
-    spec.write_text("# Spec\n\nFR-001\n", encoding="utf-8")
+    spec.write_text("# Spec\n\n- FR-001\n", encoding="utf-8")
     matrix = spec.parent / "matrix" / "TRACEABILITY.md"
     matrix.parent.mkdir(parents=True, exist_ok=True)
     matrix.write_text("| Edge ID | FR |\n|---|---|\n| M-001 | FR-001 |\n", encoding="utf-8")
@@ -1923,3 +2031,36 @@ def test_parent_apply_happens_once_only_after_integration_checks_pass(tmp_path, 
     assert summary["verdict"] == "accept"
     assert len(apply_calls) == 1
     assert apply_calls[0][0] == workspace
+
+
+def test_invalid_sol_plan_blocks_without_second_sol_call(tmp_path, monkeypatch):
+    workspace = tmp_path / "workspace"
+    apply_calls = []
+    _patch_orchestration_dependencies(
+        monkeypatch,
+        workspace,
+        {"status": "pass", "patch_file": str(workspace / "combined.patch")},
+        apply_calls,
+    )
+    monkeypatch.setattr(
+        orchestrator,
+        "_call_codex",
+        lambda *args, **kwargs: (
+            subprocess.CompletedProcess(["codex"], 0, stdout="", stderr=""),
+            "{}",
+        ),
+    )
+    escalation_calls = []
+    monkeypatch.setattr(
+        orchestrator,
+        "_sol_escalation",
+        lambda *args, **kwargs: escalation_calls.append((args, kwargs)),
+    )
+
+    code, summary = orchestrator._run_orchestration(_orchestration_args(workspace))
+
+    assert code == 20
+    assert summary["verdict"] == "blocked"
+    assert summary["model_failure_class"] == "invalid_plan"
+    assert escalation_calls == []
+    assert apply_calls == []

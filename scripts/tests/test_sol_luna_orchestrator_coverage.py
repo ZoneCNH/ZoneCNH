@@ -1114,7 +1114,8 @@ def test_run_orchestration_rejects_primary_workspace_and_probe_failure(tmp_path,
     spec = tmp_path / SPEC_REF
     spec.parent.mkdir(parents=True)
     spec.write_text(
-        "# Spec\n\n" + "\n".join(f"{edge.replace('M-', 'FR-')}" for edge in MATRIX_EDGES),
+        "# Spec\n\n"
+        + "\n".join(f"### {edge.replace('M-', 'FR-')}: fixture" for edge in MATRIX_EDGES),
         encoding="utf-8",
     )
     matrix = tmp_path / MATRIX_REF

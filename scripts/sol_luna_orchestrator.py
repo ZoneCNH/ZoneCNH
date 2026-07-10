@@ -1050,6 +1050,20 @@ def _sandbox_mount_args(source: Path, read_only: bool = True) -> list[str]:
     return ["--dir", str(resolved), operation, str(resolved), str(resolved)]
 
 
+def _sandbox_bind_args(
+    source: Path, destination: Path, read_only: bool = True
+) -> list[str]:
+    resolved_source = source.resolve()
+    operation = "--ro-bind" if read_only else "--bind"
+    return [
+        "--dir",
+        str(destination),
+        operation,
+        str(resolved_source),
+        str(destination),
+    ]
+
+
 def _cheap_check_command(worktree: Path, argv: Sequence[str]) -> list[str]:
     """Build a networkless, clean-environment bubblewrap command for tests."""
     workspace = worktree.resolve(strict=True)
@@ -1118,14 +1132,23 @@ def _cheap_check_command(worktree: Path, argv: Sequence[str]) -> list[str]:
         command.extend(_sandbox_mount_args(python_venv, read_only=True))
 
     host_home = Path.home().resolve()
-    cache_mounts = [
-        host_home / ".cargo",
-        host_home / ".rustup",
-        host_home / "go" / "pkg" / "mod",
-    ]
+    cache_mounts = [host_home / ".rustup", host_home / "go" / "pkg" / "mod"]
     for cache in cache_mounts:
         if cache.exists():
             command.extend(_sandbox_mount_args(cache, read_only=True))
+    cargo_home = host_home / ".cargo"
+    cargo_bin = cargo_home / "bin"
+    if cargo_bin.exists():
+        command.extend(_sandbox_mount_args(cargo_bin, read_only=True))
+    isolated_cargo_home = Path("/tmp/cargo-home")
+    for cache_name in ("registry", "git"):
+        source = cargo_home / cache_name
+        if source.exists():
+            command.extend(
+                _sandbox_bind_args(
+                    source, isolated_cargo_home / cache_name, read_only=True
+                )
+            )
 
     command.extend(_sandbox_mount_args(workspace, read_only=True))
     command.extend(_sandbox_mount_args(common_git, read_only=True))
@@ -1159,11 +1182,9 @@ def _cheap_check_command(worktree: Path, argv: Sequence[str]) -> list[str]:
         value = os.environ.get(name)
         if value:
             safe_environment[name] = value
-    cargo_home = host_home / ".cargo"
     rustup_home = host_home / ".rustup"
     module_cache = host_home / "go" / "pkg" / "mod"
-    if cargo_home.exists():
-        safe_environment["CARGO_HOME"] = str(cargo_home)
+    safe_environment["CARGO_HOME"] = str(isolated_cargo_home)
     if rustup_home.exists():
         safe_environment["RUSTUP_HOME"] = str(rustup_home)
     if module_cache.exists():
@@ -1388,7 +1409,10 @@ def _validate_spec_reference(workspace: Path, spec_ref: str) -> str:
     normalized_spec, _ = _traceability_fields(spec_ref, ["M-VALIDATE"])
     try:
         workspace_root = workspace.resolve(strict=True)
-        resolved_spec = (workspace_root / normalized_spec).resolve(strict=True)
+        lexical_spec = workspace_root / normalized_spec
+        if lexical_spec.is_symlink():
+            raise ValueError("spec-ref 不得是 symlink")
+        resolved_spec = lexical_spec.resolve(strict=True)
         resolved_spec.relative_to(workspace_root)
     except (OSError, ValueError) as error:
         raise ValueError(f"spec-ref 不存在或越出 workspace: {spec_ref}") from error
@@ -1422,15 +1446,58 @@ def _require_head_tracked_file(workspace: Path, relative_path: str) -> None:
         raise ValueError(f"追溯引用必须由当前 HEAD 跟踪: {relative_path}")
 
 
-def _matrix_edge_rows(matrix_text: str) -> dict[str, set[str]]:
+def _markdown_noncode_lines(markdown_text: str) -> list[str]:
+    markdown_text = re.sub(r"(?s)<!--.*?-->", "", markdown_text)
     lines: list[str] = []
-    in_fence = False
-    for line in matrix_text.splitlines():
-        if line.lstrip().startswith("```"):
-            in_fence = not in_fence
+    fence_character: str | None = None
+    fence_length = 0
+    for line in markdown_text.splitlines():
+        container_line = line
+        while True:
+            container = re.match(
+                r"^\s{0,3}(?:>\s?|(?:[-+*]|[0-9]+[.)])\s+)", container_line
+            )
+            if not container:
+                break
+            container_line = container_line[container.end() :]
+        fence = re.match(r"^\s{0,3}(`{3,}|~{3,})", container_line)
+        if fence_character is None and fence:
+            marker = fence.group(1)
+            fence_character = marker[0]
+            fence_length = len(marker)
             continue
-        if not in_fence:
-            lines.append(line)
+        if fence_character is not None:
+            closing = re.match(
+                rf"^{re.escape(fence_character)}{{{fence_length},}}\s*$",
+                container_line.lstrip(),
+            )
+            if closing:
+                fence_character = None
+                fence_length = 0
+            continue
+        if line.startswith("    ") or line.startswith("\t"):
+            continue
+        lines.append(line)
+    return lines
+
+
+def _spec_fr_definitions(spec_text: str) -> set[str]:
+    definitions: set[str] = set()
+    for line in _markdown_noncode_lines(spec_text):
+        for pattern in (
+            r"^\s{0,3}#{1,6}\s+`?(FR-[0-9]+)\b",
+            r"^\s*\|\s*`?(FR-[0-9]+)`?\s*\|",
+            r"^\s*[-*+]\s+`?(FR-[0-9]+)\b",
+        ):
+            match = re.match(pattern, line)
+            if match:
+                definitions.add(match.group(1))
+                break
+    return definitions
+
+
+def _matrix_edge_rows(matrix_text: str) -> dict[str, set[str]]:
+    lines = _markdown_noncode_lines(matrix_text)
     for index, line in enumerate(lines):
         if not line.lstrip().startswith("|"):
             continue
@@ -1485,7 +1552,10 @@ def _validate_traceability_references(
     try:
         workspace_root = workspace.resolve(strict=True)
         resolved_spec = (workspace_root / normalized_spec).resolve(strict=True)
-        resolved_matrix = (workspace_root / normalized_matrix).resolve(strict=True)
+        lexical_matrix = workspace_root / normalized_matrix
+        if lexical_matrix.is_symlink():
+            raise ValueError("matrix-ref 不得是 symlink")
+        resolved_matrix = lexical_matrix.resolve(strict=True)
         resolved_matrix.relative_to(workspace_root)
     except (OSError, ValueError) as error:
         raise ValueError(
@@ -1498,7 +1568,7 @@ def _validate_traceability_references(
 
     spec_text = resolved_spec.read_text(encoding="utf-8")
     matrix_text = resolved_matrix.read_text(encoding="utf-8")
-    spec_fr_ids = set(re.findall(r"\bFR-[0-9]+\b", spec_text))
+    spec_fr_ids = _spec_fr_definitions(spec_text)
     if not spec_fr_ids:
         raise ValueError("SPEC 缺少 FR-* 标识")
     edge_rows = _matrix_edge_rows(matrix_text)
@@ -2360,6 +2430,58 @@ def _task_escalation_digest(task_results: Sequence[Mapping[str, Any]]) -> dict[s
     }
 
 
+def _integration_escalation_digest(
+    integration: Mapping[str, Any],
+    task_results: Sequence[Mapping[str, Any]],
+) -> dict[str, Any]:
+    attempts = integration.get("attempts")
+    last_attempt = (
+        attempts[-1]
+        if isinstance(attempts, list) and attempts and isinstance(attempts[-1], dict)
+        else {}
+    )
+    failed_checks = []
+    check_records = last_attempt.get("check_results") or integration.get(
+        "final_check_results", integration.get("initial_checks", [])
+    )
+    for record in check_records or []:
+        if isinstance(record, dict) and record.get("returncode") != 0:
+            failed_checks.append(
+                {
+                    "argv": record.get("argv"),
+                    "returncode": record.get("returncode"),
+                    "stdout": _compact(record.get("stdout"), 2000),
+                    "stderr": _compact(record.get("stderr"), 2000),
+                }
+            )
+    task_digest = _task_escalation_digest(task_results)
+    return {
+        "integration_failure": {
+            "status": integration.get("status"),
+            "reason": integration.get("reason"),
+            "evidence_complete": integration.get("evidence_complete"),
+            "scope_ok": integration.get("scope_ok"),
+            "conflict": integration.get("conflict"),
+            "checks_ok": integration.get("checks_ok"),
+            "changed_files": integration.get("changed_files", []),
+            "outside_files": integration.get("outside_files", []),
+            "ignored_files": integration.get("ignored_files", []),
+            "attempts_exhausted": integration.get("attempts_exhausted"),
+            "last_attempt": {
+                "attempt": last_attempt.get("attempt"),
+                "model_status": last_attempt.get("model_status"),
+                "repair_changed_files": last_attempt.get("repair_changed_files", []),
+                "declared_changed_files": last_attempt.get(
+                    "declared_changed_files", []
+                ),
+            },
+            "failed_checks": failed_checks,
+            "combined_patch_sha256": _patch_sha256(integration.get("patch_file")),
+        },
+        "passed_task_receipts": task_digest["passed_task_receipts"],
+    }
+
+
 def _model_usage_summary(call_log: Path) -> dict[str, int]:
     usage = {
         "calls": 0,
@@ -2604,15 +2726,12 @@ write_scope 必须是工作区相对路径数组，任务之间不得重叠。ch
             plan = validate_plan(_parse_json(plan_raw), args.workers)
             plan = _validate_plan_scope_targets(workspace, plan)
         except ValueError as error:
-            summary.update({"reason": f"Sol 计划证据缺失或无效: {error}"})
-            summary["sol_escalation"] = _sol_escalation(
-                summary["reason"],
-                {"raw_plan": _compact(plan_raw)},
-                workspace,
-                run_dir,
-                call_log,
-                spec_ref,
-                matrix_edges,
+            summary.update(
+                {
+                    "verdict": "blocked",
+                    "reason": f"Sol 计划证据缺失或无效: {error}",
+                    "model_failure_class": "invalid_plan",
+                }
             )
             return 20, summary
         _write_json(run_dir / "plan.normalized.json", plan)
@@ -2699,7 +2818,7 @@ write_scope 必须是工作区相对路径数组，任务之间不得重叠。ch
             )
             summary["sol_escalation"] = _sol_escalation(
                 summary["reason"],
-                integration,
+                _integration_escalation_digest(integration, task_results),
                 workspace,
                 run_dir,
                 call_log,
@@ -2722,7 +2841,7 @@ write_scope 必须是工作区相对路径数组，任务之间不得重叠。ch
             summary.update({"verdict": "escalate_sol", "reason": "集成缺少 combined patch"})
             summary["sol_escalation"] = _sol_escalation(
                 summary["reason"],
-                integration,
+                _integration_escalation_digest(integration, task_results),
                 workspace,
                 run_dir,
                 call_log,
@@ -2735,7 +2854,7 @@ write_scope 必须是工作区相对路径数组，任务之间不得重叠。ch
             summary.update({"verdict": "escalate_sol", "reason": f"combined patch 冲突: {message}"})
             summary["sol_escalation"] = _sol_escalation(
                 summary["reason"],
-                integration,
+                _integration_escalation_digest(integration, task_results),
                 workspace,
                 run_dir,
                 call_log,

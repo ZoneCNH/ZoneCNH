@@ -11,7 +11,7 @@
 |----|------|------|
 | AC-001 | PASS `[COMPUTED, HIGH]` | strict config 的 `config.load=ok`，加载模型为 `gpt-5.6-sol`；没有未知键错误 |
 | AC-002 | PASS `[COMPUTED, HIGH]` | probe 返回 Sol=true、Luna=true、effort=`xhigh`、accepted=true |
-| AC-003 | PASS `[COMPUTED, HIGH]` | 定向测试 266 passed；标准库 trace 为 87%；`py_compile` 通过 |
+| AC-003 | PASS `[COMPUTED, HIGH]` | 定向测试 269 passed；标准库 trace 为 88%；`py_compile` 通过 |
 | AC-004 | PASS `[COMPUTED, HIGH]` | 回归测试证明 integration fail 时父 apply=0，pass 时父 apply=1 |
 | AC-005 | PASS `[COMPUTED, HIGH]` | 回归测试证明 task 与 integration 的显式 fail 后均先调用第二次 Luna |
 | AC-006 | PASS `[COMPUTED, HIGH]` | changed-file allowlist 检查无 §14.1 保护路径 |
@@ -22,13 +22,13 @@
 
 ```text
 python3 -m pytest -q scripts/tests/test_sol_luna_orchestrator.py scripts/tests/test_sol_luna_orchestrator_coverage.py
-266 passed in 5.21s
+269 passed in 5.32s
 
 python3 -m py_compile scripts/sol_luna_orchestrator.py scripts/tests/test_sol_luna_orchestrator.py scripts/tests/test_sol_luna_orchestrator_coverage.py
 exit 0
 
 python3 -m trace --count --missing --summary --module pytest ...
-scripts.sol_luna_orchestrator: 2311 executable lines, 87%
+scripts.sol_luna_orchestrator: 2405 executable lines, 88%
 
 git diff --check
 exit 0
@@ -84,9 +84,11 @@ python3 scripts/sol_luna_orchestrator.py probe
 
 [COMPUTED, HIGH] sandbox 资源证据为：RLIMIT_AS=4 GiB、RLIMIT_FSIZE=16 MiB、RLIMIT_NPROC=2048、RLIMIT_CPU=600 秒、tmpfs=512 MiB；父进程最多读取 2 MiB stdout/stderr，超出部分标记截断。
 
+[COMPUTED, HIGH] 最终独立复审进一步确认：Cargo 仅暴露 `bin/registry/git` 且 `CARGO_HOME=/tmp/cargo-home`，不挂载宿主 credentials；Spec/Matrix 拒绝 symlink，并排除顶层、list、blockquote 的反引号/波浪线 fence、缩进 code 和 prose/comment ghost FR；invalid Sol plan 不二次调用 Sol；integration escalation 仅发送失败摘要和通过 task receipts。复审最后报告上述 blocker 已关闭。
+
 ## 仓库级回归与基线隔离
 
-[COMPUTED, HIGH] `python3 -m pytest scripts/tests -q` 结果为 331 passed、1 failed。唯一失败是 `test_audit_status_full_mode_runs_clean_for_current_projection`，其输出为 README URL count 72、同步表 total 71。
+[COMPUTED, HIGH] `python3 -m pytest scripts/tests -q` 结果为 334 passed、1 failed。唯一失败是 `test_audit_status_full_mode_runs_clean_for_current_projection`，其输出为 README URL count 72、同步表 total 71。
 
 [COMPUTED, HIGH] 同一测试在 main checkout、README 无本地 diff 时仍稳定失败，因此它是既有基线缺陷，不是本候选引入；后续 Beads 为 `ZoneCNH-ndnv`。
 
