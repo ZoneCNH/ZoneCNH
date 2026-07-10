@@ -33,7 +33,9 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          RUNNERS=$(gh api /repos/${{ github.repository }}/actions/runners --jq '.runners')
+          API="https://api.github.com/repos/${{ github.repository }}/actions/runners"
+          AUTH=(-H "Authorization: Bearer ${{ github.token }}" -H "Accept: application/vnd.github+json")
+          RUNNERS=$(curl -fsS "${AUTH[@]}" "$API" | jq '.runners')
           TOTAL=$(echo "$RUNNERS" | jq 'length')
           ONLINE=$(echo "$RUNNERS" | jq '[.[] | select(.status=="online")] | length')
           OFFLINE=$((TOTAL - ONLINE))
@@ -52,23 +54,15 @@ jobs:
 
             # Only create issue on schedule runs (not manual)
             if [ "${{ github.event_name }}" = "schedule" ]; then
-              gh issue create \
-                --title "ci(health): ${OFFLINE} self-hosted runners offline" \
-                --label "ci,infra,p0" \
-                --body "## Runner Health Alert
-
-          ${OFFLINE} runner(s) are currently offline.
-
-          | Metric | Value |
-          |--------|-------|
-          | Total runners | ${TOTAL} |
-          | Online | ${ONLINE} |
-          | Offline | ${OFFLINE} |
-
-          Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-
-          Action: SSH to affected hosts and check \`systemctl status actions.runner.*\`" \
-                --repo ${{ github.repository }} 2>/dev/null || true
+              BODY=$(jq -n \
+                --arg total "${TOTAL}" --arg online "${ONLINE}" --arg offline "${OFFLINE}" \
+                --arg run_url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+                '{title: ("ci(health): " + ($offline | tostring) + " self-hosted runners offline"),
+                  labels: ["ci","infra","p0"],
+                  body: ("## Runner Health Alert\n\n\($offline) runner(s) are currently offline.\n\n| Metric | Value |\n|--------|-------|\n| Total runners | \($total) |\n| Online | \($online) |\n| Offline | \($offline) |\n\nRun: \($run_url)\n\nAction: SSH to affected hosts and check `systemctl status actions.runner.*`")}')
+              curl -fsS "${AUTH[@]}" -X POST \
+                "https://api.github.com/repos/${{ github.repository }}/issues" \
+                -d "$BODY" 2>/dev/null || true
             fi
           else
             echo "All runners online ✓"
@@ -108,7 +102,10 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           echo "=== Pool Capacity ==="
-          RUNNERS=$(gh api /repos/${{ github.repository }}/actions/runners --jq '.runners[] | select(.status=="online")')
+          AUTH=(-H "Authorization: Bearer ${{ github.token }}" -H "Accept: application/vnd.github+json")
+          RUNNERS=$(curl -fsS "${AUTH[@]}" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/runners" \
+            | jq '.runners[] | select(.status=="online")')
 
           # Group by pool label
           echo "$RUNNERS" | jq -r '.labels[] | select(.name | startswith("sre/")) | .name' | sort | uniq -c | while read count pool; do
