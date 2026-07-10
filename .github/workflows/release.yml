@@ -177,8 +177,18 @@ jobs:
           # 笔记文件路径与「生成 release notes」步骤写入的路径保持一致。
           # 注意：上一步的 shell 局部变量不会跨 step 传递，必须在此显式定义。
           NOTES_FILE="release/manifest/release-notes.md"
+          NOTES_BODY=$(jq -Rs . < "${NOTES_FILE}")
 
-          gh release create "$TAG" \
-            --title "FoundationX ${TAG}" \
-            --notes-file "${NOTES_FILE}" \
-            release/manifest/release-manifest.json
+          RESPONSE=$(curl -fsS -X POST \
+            -H "Authorization: Bearer ${{ github.token }}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${{ github.repository }}/releases" \
+            -d "{\"tag_name\":\"${TAG}\",\"name\":\"FoundationX ${TAG}\",\"body\":${NOTES_BODY}}")
+          RELEASE_ID=$(echo "$RESPONSE" | jq '.id')
+
+          UPLOAD_URL=$(echo "$RESPONSE" | jq -r '.upload_url' | sed 's/{?name,label}//')
+          curl -fsS -X POST \
+            -H "Authorization: Bearer ${{ github.token }}" \
+            -H "Content-Type: application/octet-stream" \
+            "${UPLOAD_URL}?name=release-manifest.json" \
+            --data-binary @release/manifest/release-manifest.json

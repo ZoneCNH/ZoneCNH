@@ -44,25 +44,16 @@ jobs:
       - name: Create issue on drift
         if: steps.scan.outputs.violations > 0
         run: |
-          gh issue create \
-            --title "ci(drift): ${VIOLATIONS} runner policy violations detected" \
-            --label "ci,drift,p0" \
-            --body "$(cat <<'BODY'
-          ## Runner Policy Drift Detected
-
-          Automatic scan found runner policy violations.
-
-          See workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-
-          Action required:
-          1. All workflows must use self-hosted runners
-          2. No GitHub runners (use self-hosted sre/* pools only)
-          3. All pools must be registered per CICD-001
-          BODY
-          )" \
-            --repo ${{ github.repository }}
+          BODY=$(jq -n --arg v "$VIOLATIONS" --arg url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+            '{title: ("ci(drift): " + $v + " runner policy violations detected"),
+              labels: ["ci","drift","p0"],
+              body: ("## Runner Policy Drift Detected\n\nAutomatic scan found runner policy violations.\n\nSee workflow run: \($url)\n\nAction required:\n1. All workflows must use self-hosted runners\n2. No GitHub runners (use self-hosted sre/* pools only)\n3. All pools must be registered per CICD-001")}')
+          curl -fsS -X POST \
+            -H "Authorization: Bearer ${{ github.token }}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${{ github.repository }}/issues" \
+            -d "$BODY"
         env:
-          GH_TOKEN: ${{ github.token }}
           VIOLATIONS: ${{ steps.scan.outputs.violations }}
 
   # ── 2. Go baseline 漂移扫描 ──────────────────────────────────
@@ -90,11 +81,15 @@ jobs:
 
           if [ "${DRIFT_COUNT}" -gt 0 ]; then
             echo "Go version drift detected: ${DRIFT_COUNT} modules"
-            gh issue create \
-              --title "ci(drift): ${DRIFT_COUNT} modules have Go version drift (baseline: ${BASELINE})" \
-              --label "ci,drift,p1" \
-              --body "Automatic scan found Go version drift. See run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
-              --repo ${{ github.repository }}
+            BODY=$(jq -n --arg v "$DRIFT_COUNT" --arg bl "$BASELINE" --arg url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+              '{title: ("ci(drift): " + $v + " modules have Go version drift (baseline: " + $bl + ")"),
+                labels: ["ci","drift","p1"],
+                body: ("Automatic scan found Go version drift. See run: \($url)")}')
+            curl -fsS -X POST \
+              -H "Authorization: Bearer ${{ github.token }}" \
+              -H "Accept: application/vnd.github+json" \
+              "https://api.github.com/repos/${{ github.repository }}/issues" \
+              -d "$BODY"
           else
             echo "All modules on Go ${BASELINE} ✓"
           fi
