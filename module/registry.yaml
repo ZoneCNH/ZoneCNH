@@ -42,8 +42,8 @@ xlib_standard:
   maturity_ref: .foundationx/status/index.json#xlib_standard
   spec_version: v1.1.0
   release:
-    latest_tag: v1.0.1
-    release_date: 2026-06-01
+    latest_tag: v1.0.2
+    release_date: 2026-07-10
     cadence: stable
 
 xlib_harness:
@@ -60,7 +60,8 @@ xlib_harness:
   maturity_ref: .foundationx/status/index.json#xlib_harness
   spec_version: v1.3.0
   release:
-    latest_tag: v0.1.6
+    latest_tag: v0.1.7
+    release_date: 2026-07-10
     cadence: stable
 
 xlib_evidence:
@@ -77,7 +78,8 @@ xlib_evidence:
   maturity_ref: .foundationx/status/index.json#xlib_evidence
   spec_version: v1.2.1
   release:
-    latest_tag: v0.2.4
+    latest_tag: v0.2.5
+    release_date: 2026-07-10
     cadence: stable
 
 xlibgate:
@@ -94,7 +96,8 @@ xlibgate:
   maturity_ref: .foundationx/status/index.json#xlibgate
   spec_version: v1.2.0
   release:
-    latest_tag: v1.0.0
+    latest_tag: v1.2.0
+    release_date: 2026-07-09
     cadence: stable
 
 # --- L0 原语（1）---

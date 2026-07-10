@@ -1,9 +1,9 @@
 {
   "schema_version": "fleet-status/v1",
-  "generated_at": "2026-07-02T00:00:00Z",
+  "generated_at": "2026-07-10T00:00:00Z",
   "generated_by": "xlibgate fleet-status",
-  "metadata_refreshed_at": "2026-07-02T00:00:00Z",
-  "metadata_refresh_note": "manual metadata refresh 2026-07-02: 13-module version aligned to GitHub Release latest (published release, tag-only excluded); 8-module note corrected to reflect BLK-001~011 all resolved (blockers.json confirmed); removed stale 'BLK open / factory=false / release=false' text that contradicted factory=true/release=true fields and trust_hardening empty arrays",
+  "metadata_refreshed_at": "2026-07-10T00:00:00Z",
+  "metadata_refresh_note": "PR cleanup 2026-07-10: xlib_standard v1.0.2 / xlib_harness v0.1.7 / xlib_evidence v0.2.5 / xlibgate v1.2.0 aligned to GitHub Release latest; release URLs corrected to xhyperium org",
   "source": ".foundationx/status/index.json",
   "total_modules": 25,
   "verified_against": {
@@ -25,7 +25,7 @@
   "modules": {
     "xlib_standard": {
       "layer": "standard-source",
-      "version": "v1.0.1",
+      "version": "v1.0.2",
       "spec": true,
       "impl": true,
       "release": true,
@@ -34,11 +34,11 @@
       "adopt": "N/A",
       "soak": "N/A",
       "factory": true,
-      "note": "标准事实源 / Go Reference Template (Generator/Harness/Evidence 已拆分); v1.0.1 release/preflight passed; release https://github.com/ZoneCNH/xlib_standard/releases/tag/v1.0.1"
+      "note": "标准事实源 / Go Reference Template (Generator/Harness/Evidence 已拆分); v1.0.2 release/preflight passed; release https://github.com/xhyperium/xlib_standard/releases/tag/v1.0.2"
     },
     "xlib_harness": {
       "layer": "harness",
-      "version": "v0.1.6",
+      "version": "v0.1.7",
       "spec": true,
       "impl": true,
       "release": true,
@@ -47,11 +47,11 @@
       "adopt": "N/A",
       "soak": "N/A",
       "factory": true,
-      "note": "GitHub Release v0.1.6 已发布；Release run 27855366871 与 main CI run 27855396013 通过；coverage 100.0%；pinned gitleaks CLI secret scan 已对齐；factory grade（与 STATUS 多维表一致）"
+      "note": "GitHub Release v0.1.7 已发布；coverage 100.0%；pinned gitleaks CLI secret scan 已对齐；factory grade（与 STATUS 多维表一致）"
     },
     "xlib_evidence": {
       "layer": "evidence",
-      "version": "v0.2.4",
+      "version": "v0.2.5",
       "spec": true,
       "impl": true,
       "release": true,
@@ -60,11 +60,11 @@
       "adopt": "N/A",
       "soak": "N/A",
       "factory": true,
-      "note": "GitHub Release v0.2.4 已发布；go test/race/vet/build/coverage 100.0% 通过；release evidence assets 已归档；factory grade（与 STATUS 多维表一致）"
+      "note": "GitHub Release v0.2.5 已发布；go test/race/vet/build/coverage 100.0% 通过；release evidence assets 已归档；factory grade（与 STATUS 多维表一致）"
     },
     "xlibgate": {
       "layer": "gate",
-      "version": "v1.0.0",
+      "version": "v1.2.0",
       "spec": true,
       "impl": true,
       "release": true,
@@ -73,7 +73,7 @@
       "adopt": "N/A",
       "soak": "N/A",
       "factory": true,
-      "note": "import/gomod/baseline/release/repo-contract 机器门禁; check/l2/trust CLI 已实现; 此前误标 v1.1.1; .repo-contract.yaml aligned"
+      "note": "import/gomod/baseline/release/repo-contract 机器门禁; check/l2/trust CLI 已实现; GitHub Release v1.2.0 已发布; .repo-contract.yaml aligned"
     },
     "kernel": {
       "layer": "L0",
