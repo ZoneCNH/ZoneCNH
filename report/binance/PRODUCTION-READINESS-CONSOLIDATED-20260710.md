@@ -279,7 +279,7 @@ Binance WS/REST ──► Connector ──► Normalize ──► Reliable clien
 
 [COMPUTED, HIGH] Beads 已存在与本任务完全匹配的 P0 epic `ZoneCNH-7i1p`，当前为 `in_progress`；本地代码/文档优化不能替代其外部证据子项。
 
-[COMPUTED, HIGH] 本轮尝试写回 Beads 时遇到本地 Dolt schema 错误 `events.id has no default`；因此没有伪造 close/update，epic 保持 `in_progress`，该 tracker 故障也需单独修复。
+[COMPUTED, HIGH] 早期 Beads 写回曾遇到本地 Dolt schema 错误 `events.id has no default`；2026-07-11 最终 `--append-notes` 已成功记录双仓提交、验证与 blocker。epic 因外部门禁和未执行 push/PR/release 仍保持 `in_progress`，未伪造 close。
 
 [COMPUTED, HIGH] repo-local `spec-code-pipeline` 与 Sol/Luna 外层入口均执行了前置核验，但当前 Matrix 没有外层协议要求的 canonical `M-###` Edge ID，无法提供真实 `--matrix-edge`；因此本轮使用原生 Agent Team 完成审计/实现/复核，并对正式 pipeline 保持 fail-closed，未声称已运行 Luna。
 
