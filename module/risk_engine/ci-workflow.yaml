@@ -14,6 +14,11 @@ on:
     tags:
       - "v*"
   workflow_dispatch:
+    inputs:
+      rollback_ref:
+        description: "Optional tag/ref for rollback drill"
+        required: false
+        type: string
 
 permissions:
   contents: read
@@ -85,6 +90,44 @@ jobs:
       - run: go vet ./...
       - uses: golangci/golangci-lint-action@v6
 
+  boundary:
+    name: Boundary And Trust Gates
+    needs: ci-preflight
+    runs-on: [self-hosted, Linux, X64, sre/engine]
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+      - name: Install xlibgate
+        run: go install github.com/ZoneCNH/xlibgate/cmd/xlibgate@v1.0.2
+      - name: Run boundary checks
+        run: |
+          xlibgate trust identity --repo .
+          xlibgate trust dependency --repo .
+          xlibgate trust release-consistency --offline --repo .
+
+  integration:
+    name: Integration Test
+    needs: ci-preflight
+    runs-on: [self-hosted, Linux, X64, sre/engine]
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+      - name: Run optional integration suite
+        run: |
+          if [ -f Makefile ] && grep -qE '^integration:' Makefile; then
+            make integration
+          else
+            go test ./... -run Integration -count=1 -v
+          fi
+
   secret-scan:
     name: Secret Scan
     needs: ci-preflight
@@ -98,7 +141,7 @@ jobs:
 
   evidence:
     name: Evidence Package
-    needs: [build, test, lint, secret-scan]
+    needs: [build, test, lint, boundary, integration, secret-scan]
     runs-on: [self-hosted, Linux, X64, sre/engine]
     timeout-minutes: 10
     steps:
@@ -114,3 +157,99 @@ jobs:
   "go_version": "1.26.5"
 }
 JSON
+
+  release-preflight:
+    name: Release Preflight
+    needs: evidence
+    if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch'
+    runs-on: [self-hosted, Linux, X64, sre/deploy]
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+      - name: Verify release machine pool
+        run: |
+          case "${{ env.SRE_DEPLOY_POOL }}" in
+            sre/*) ;;
+            *) echo "ERROR: CD must run on sre/ machine pool"; exit 1 ;;
+          esac
+      - name: Validate release ref
+        run: |
+          if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
+            git describe --tags --exact-match
+          fi
+      - name: Re-run release checks
+        run: |
+          go test ./... -race -count=1
+          go list ./... >/tmp/packages.txt
+
+  release-publish:
+    name: Publish Release
+    needs: release-preflight
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: [self-hosted, Linux, X64, sre/deploy]
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Publish GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if ! gh release view "${{ github.ref_name }}" >/dev/null 2>&1; then
+            gh release create "${{ github.ref_name }}" --verify-tag --generate-notes
+          fi
+
+  post-release-smoke:
+    name: Post Release Smoke
+    needs: release-publish
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: [self-hosted, Linux, X64, sre/deploy]
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify published release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view "${{ github.ref_name }}"
+          test "${{ env.SRE_DEPLOY_POOL }}" = "sre/deploy"
+
+  rollback-drill:
+    name: Rollback Drill
+    if: github.event_name == 'workflow_dispatch' && inputs.rollback_ref != ''
+    runs-on: [self-hosted, Linux, X64, sre/deploy]
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Produce rollback plan
+        run: |
+          mkdir -p "${{ env.EVIDENCE_DIR }}"
+          cat > "${{ env.EVIDENCE_DIR }}/rollback-plan.md" <<'PLAN'
+          # Rollback Plan
+
+          - Module: risk_engine
+          - Requested rollback ref: ${{{ inputs.rollback_ref }}}
+          - Runner pool: sre/deploy
+          - Action: validate target ref and prepare manual release reversal evidence.
+          PLAN
+          git rev-parse --verify "${{ inputs.rollback_ref }}^{commit}"
+      - name: Upload rollback evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: rollback-plan-${{ github.run_id }}
+          path: "${{ env.EVIDENCE_DIR }}/rollback-plan.md"
