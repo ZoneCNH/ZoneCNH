@@ -1,0 +1,1 @@
+G0-G11 共 12 个 Gate，每阶段一个把关门禁。G0 Context / G1 Goal / G2 Spec / G3 Design / G4 Plan / G5 Task / G6 Implementation / G7 Test / G8 Evidence / G9 Review / G10 Release / G11 Retrospective。verdict 取值 PASS / PASS_WITH_RISK / FAIL / BLOCKED。canonical Gate 进入控制面时必须给终态裁决。定义见 04-gates.md。

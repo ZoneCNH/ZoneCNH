@@ -1,0 +1,5 @@
+- 状态枚举 SSOT：所有状态值只能引用 03-pipeline.md §2，禁止本地新增。
+- 每阶段推进须对应 Gate PASS：INIT→CONTEXT_READY（G0）→GOAL_READY（G1）→SPEC_READY（G2）→...→DONE（G11）。
+- Matrix 是横切追溯制品，不是独立管线层，不出现在状态流 From/To 中，不得写入 current_phase。
+- 四源评分受 §14 anti-goodhart 约束：rules 维度的评分规则文件是受保护文件，只能走合法 RSI 变更。
+- 证据必须 fresh（当前会话产出），引用历史输出或口头声称无效（C-4 证据优先）。

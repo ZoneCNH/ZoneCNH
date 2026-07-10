@@ -1,0 +1,1 @@
+Spec→Code 开发管线治理。DEVELOPMENT-WORKFLOW.md（32k，完整开发工作流）+ LIFECYCLE.md（Spec 六态 Draft→Review→Approved→Superseded/Deprecated）+ DEFINITION-OF-READY/DONE + 各种 TEMPLATE（SPEC/PR/TASK/ANALYSIS/AGENT-SPEC）。管 SPEC.md 文档从 Draft 到 Deprecated 的状态，与模块态是不同粒度（模块态驱动 Spec 态）。

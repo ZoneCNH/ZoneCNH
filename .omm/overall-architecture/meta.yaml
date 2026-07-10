@@ -1,0 +1,17 @@
+created: 2026-07-10T06:18:04.605Z
+updated: 2026-07-10T06:19:41.557Z
+update_count: 7
+last_field: note
+git_commit: 5cd4c7d5
+git_branch: main
+children:
+  - architecture-docs
+  - ci-cd-plane
+  - constitution
+  - delivery-pipeline
+  - deps-ssot
+  - governance-docs
+  - module-catalog
+  - registry-ssot
+  - release-pipeline
+  - status-ssot

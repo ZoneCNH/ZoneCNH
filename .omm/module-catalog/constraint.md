@@ -1,0 +1,5 @@
+- 三 SSOT 引用而非重复：registry.yaml 的 deps_ref → FOUNDATION-DEPS，maturity_ref → status；后两者不反向引用 registry。
+- spec_version 字段是投影（mirror 自 SPEC.md Metadata），不是版本 SSOT。
+- 模块内单一事实来源：TRACEABILITY.md §1 FR 表是 FR 状态权威，§6 仪表盘须从 §1 派生不得手写。
+- SPEC.md Appendix 若冻结为历史快照必须显式声明弃用 + 新旧编号映射。
+- 每个 GitHub 链接的模块必须有对应公开仓库（CI repo-existence-check.sh 验证 HTTP 200）。

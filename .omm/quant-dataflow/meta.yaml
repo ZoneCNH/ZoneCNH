@@ -1,0 +1,20 @@
+created: 2026-07-10T06:32:21.224Z
+updated: 2026-07-10T06:33:05.653Z
+update_count: 6
+last_field: note
+git_commit: "22459924"
+git_branch: feat/outer_metrics_layout_fix
+children:
+  - backtestx
+  - domain_market
+  - factor_sys
+  - macro_data
+  - macro_regime
+  - market_data
+  - market_regime
+  - orderx
+  - positionx
+  - regime_engine
+  - riskx
+  - settlement
+  - signal_factory

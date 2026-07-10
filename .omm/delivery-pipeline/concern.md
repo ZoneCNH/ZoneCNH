@@ -1,0 +1,4 @@
+- 11 阶段 + 4 轴状态 + 12 Gate + 4 源评分，认知负载高；新贡献者易在状态轴边界（Gate verdict vs phase_status）混淆。
+- NEEDS_INPUT 有 5 个子类型（research/decision/replan/human_approval/rollback），回退路径复杂（03-pipeline.md §2.4 回退规则表）。
+- 四源评分中 rules 维度是机械校验，claude/codex/copilot 是 LLM 评分，二者 composite 可能被 LLM 评分噪声影响；§14 反博弈护栏是否充分是持续关注点。
+- 历史状态名（NEEDS_RESEARCH/NEEDS_DECISION 等）迁移映射增加兼容成本。

@@ -1,0 +1,1 @@
+执行域 execution，7 模块。实盘路径：riskx（trade_permission/position_caps/risk_multiplier/VaR/止损）→ orderx（智能路由 TWAP/VWAP/滑点）→ positionx（多策略资金分配/再平衡）→ settlement（PnL 计算/交易所对账）。引擎层：risk_engine/order_engine/portfolio_engine。fills 回流决策域形成反馈。

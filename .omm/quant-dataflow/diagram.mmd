@@ -1,0 +1,53 @@
+graph LR
+    subgraph data_domain ["数据域"]
+        market_data["market_data (14)<br/>12 交易所 SDK"]
+        macro_data["macro_data (11)<br/>fred/treasury/bea/..."]
+        alt_data["alternative_data<br/>链上/情绪/NLP"]
+    end
+
+    subgraph l25 ["L2.5 领域共享"]
+        domain_market["domain_market<br/>Tick/Bar/OB + 质量门禁"]
+        domain_macro["domain_macro<br/>MacroPoint + MacroState"]
+        decimalx["decimalx<br/>Price/Qty"]
+    end
+
+    subgraph analytics_domain ["分析域 · 三引擎"]
+        market_regime["market_regime<br/>S1-S7 五维评分"]
+        macro_regime["macro_regime<br/>M1-M7 LGIP"]
+        regime_engine["regime_engine<br/>M×S 融合"]
+        factor_sys["factor_engine ⇄ feature_store ⇄ factor_eval<br/>因子计算/版本/评估"]
+    end
+
+    subgraph decision_domain ["决策域"]
+        signal_factory["signal_factory<br/>信号生成/组合"]
+        backtestx["backtestx → optimizer → strategyx<br/>回测→反馈"]
+    end
+
+    subgraph execution_domain ["执行域"]
+        riskx["riskx<br/>permission/caps/VaR"]
+        orderx["orderx<br/>路由 TWAP/VWAP"]
+        positionx["positionx<br/>资金分配"]
+        settlement["settlement<br/>PnL/对账"]
+    end
+
+    market_data --> domain_market
+    macro_data --> domain_macro
+    alt_data --> domain_market
+    domain_market --> market_regime
+    domain_macro --> macro_regime
+    market_regime --> regime_engine
+    macro_regime --> regime_engine
+    regime_engine -->|"DecisionCard"| signal_factory
+    factor_sys --> signal_factory
+    signal_factory --> riskx
+    signal_factory -.->|"回测路径"| backtestx
+    backtestx -.->|"反馈"| factor_sys
+    riskx --> orderx --> positionx --> settlement
+    settlement -.->|"fills/PnL 反馈"| signal_factory
+
+    classDef entry fill:#89b4fa,stroke:#89b4fa,color:#1e1e2e
+    classDef store fill:#a6e3a1,stroke:#a6e3a1,color:#1e1e2e
+    classDef concern fill:#f38ba8,stroke:#f38ba8,color:#1e1e2e
+    class market_data,macro_data,alt_data entry
+    class domain_market,domain_macro,decimalx store
+    class regime_engine,signal_factory concern

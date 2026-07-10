@@ -1,0 +1,1 @@
+基座层 foundation，20 模块。分层：L0 原语 kernel；L1 运行时 configx/observex/resiliencx/schedulex；L1 组装 bootstrap；L1 test-only testkitx；存储扩展 redisx/kafkax/natsx/postgresx/taosx/ossx/clickhousex；契约 contracts/transportx；标准与门禁 xlib_standard（标准源）/xlib_harness（生成器+门禁）/xlib_evidence（证据收集）/xlibgate（机器门禁）。

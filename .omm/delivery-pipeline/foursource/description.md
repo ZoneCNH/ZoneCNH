@@ -1,0 +1,1 @@
+四源评分体系，为 Gate 提供 composite_score 输入。四源：claude（Claude 评分）、codex（Codex 评分）、copilot（Copilot 评分）、rules（机械校验，来自 STRUCTURAL-SCORING + RUBRIC-*，受 §14 保护）。三 LLM 源 + 一机械源融合后由 pipeline-arbiter 输出 verdict.json。评分产物落在控制面的 pipeline 目录下（按 module/stage 组织 scores）。

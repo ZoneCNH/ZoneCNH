@@ -1,0 +1,5 @@
+- 效力层级链：CONSTITUTION > module/*/spec/SPEC.md > governance 文档 > ARCHITECTURE > module 详情 > 其他。
+- §12 修正程序是宪法修订唯一入口：governance 层和 goal 层均不得直接改 CONSTITUTION/docs/constitution/。
+- 模块治理三 SSOT 引用而非重复（registry/FOUNDATION-DEPS/status），各管一面，互不反向引用。
+- governance 层若演进触及 §14 受保护文件清单，须走 §19 CRI 流程；其余走 governance 自身 §5 修订流程。
+- §14 受控递归改进七原则 R1-R7 约束所有为"提分"而做的规则改动。

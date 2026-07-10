@@ -1,0 +1,1 @@
+模块治理三 SSOT 分立（module-governance §3）。各管一面，引用而非重复：registry.yaml（身份+治理状态）、FOUNDATION-DEPS.yaml（依赖矩阵）、.foundationx/status/index.json（成熟度事实）。registry 通过 deps_ref/maturity_ref 单向指向另两者，后两者不反向引用。三 SSOT 覆盖范围不一致是已知现状。

@@ -1,0 +1,1 @@
+Matrix 追溯矩阵，横切追溯制品（不是独立管线层）。把 Goal → Spec → Requirement → AC → Task → Prompt → Code → Test → Evidence 串联为可追溯映射。状态：Unmapped→Mapped→Linked→Verified/Dropped（Drifted/Stale/Blocked/Changed 为元状态）。由 matrix-gen.py 生成，goal-workflow.sh validate 做 check-only。详见 05-layer-standards.md §9。

@@ -1,0 +1,1 @@
+L2.5 领域共享层，5 模块。沉领域语义供各业务域复用：domain_market（Bar/Tick/Quote/OrderBook/MarketEventEnvelope）、domain_macro（MacroPoint/MacroState M0-M7）、domainx（Order/Position/Trade）、decimalx（Price/Qty/Ratio/Money）、domain_exchange（VenueAdapter）。设计原则：领域语义沉到 L2.5，业务域不得各自重新定义。

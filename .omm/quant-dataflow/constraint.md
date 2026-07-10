@@ -1,0 +1,5 @@
+- 数据不跨域：数据域产出只通过 L2.5 共享类型（domain_market/domain_macro）传递，禁止域间直接耦合。
+- 代码依赖单向下行：执行域/决策域/分析域 → L2.5 → contracts → 基座；业务数据流可反向但代码依赖不反向穿透。
+- 策略下单唯一入口 riskx：所有订单必须经 riskx 的 trade_permission/position_caps/risk_multiplier 审计后才能进 orderx。
+- 金额计算禁浮点（C-5 约束先于自由）：Price/Qty/Ratio/Money 必须用 decimalx，禁止 float64。
+- 回测与实盘代码共享：Mock/Fake 须过与生产实现相同的契约测试（§5.5）。

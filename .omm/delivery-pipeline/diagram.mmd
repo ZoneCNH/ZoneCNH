@@ -1,0 +1,40 @@
+graph LR
+    subgraph phases ["11 阶段主流程"]
+        goal["Goal\n为什么做"]
+        spec["Spec\n做什么"]
+        design["Design\n怎么做"]
+        plan["Plan\n顺序"]
+        tasks["Tasks\n原子任务"]
+        code["Code\n实现"]
+        test["Test\n验证"]
+        review["Review\n审查"]
+        release["Release\n发布"]
+        retro["Retrospective\n复盘"]
+        goal --> spec --> design --> plan --> tasks --> code --> test --> review --> release --> retro
+    end
+
+    matrix["Matrix 追溯矩阵\n横切贯穿"]
+    gates["G0-G11 Gate 体系\n每阶段门禁"]
+    foursource["四源评分\nclaude/codex/copilot/rules"]
+    state["四轴状态机\npipeline/phase/status/step"]
+    evidence["证据协议\nEVIDENCE-*"]
+    workflow["goal-workflow.sh\n可执行入口"]
+
+    goal -.->|"追溯"| matrix
+    matrix -.->|"贯穿"| release
+    spec -->|"G2"| gates
+    code -->|"G6"| gates
+    test -->|"G7/G8"| gates
+    review -->|"G9"| gates
+    gates -->|"输入"| foursource
+    foursource -->|"composite_score"| gates
+    gates -->|"裁决写入"| state
+    test -->|"产出"| evidence
+    workflow -->|"preflight/validate/gate/ci/release"| gates
+
+    classDef entry fill:#89b4fa,stroke:#89b4fa,color:#1e1e2e
+    classDef store fill:#a6e3a1,stroke:#a6e3a1,color:#1e1e2e
+    classDef concern fill:#f38ba8,stroke:#f38ba8,color:#1e1e2e
+    class goal,spec,design,plan,tasks,code,test,review,release,retro entry
+    class matrix,gates,foursource,state,evidence store
+    class workflow concern

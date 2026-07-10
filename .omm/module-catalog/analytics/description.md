@@ -1,0 +1,1 @@
+分析域 analytics，8 模块。核心是三引擎 + 因子体系：market_regime（市场状态 S1-S7 五维评分）、macro_regime（宏观状态 M1-M7 LGIP 四因子）、regime_engine（M×S 融合产出 DecisionCard）、factor_engine（alpha 因子计算）、feature_store（特征版本管理）、factor_eval（IC/IR 评估）、flowx（ETL）、ms_brain（多源融合）。

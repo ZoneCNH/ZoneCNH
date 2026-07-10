@@ -1,0 +1,46 @@
+graph TD
+    constitution["CONSTITUTION 宪法\nCONSTITUTION.md + docs/constitution/"]
+    branch["§0 分支纪律\n00-branch-discipline.md"]
+    design["§1 设计原则 P1-P13\n01-design-principles.md"]
+    boundary["§2 模块边界\n02-module-boundaries.md"]
+    dep["§3 依赖方向\n03-dependency-direction.md"]
+    antigh["§14 管线自改约束\n14-anti-goodhart.md"]
+    pipeline["§15 交付管线\n15-delivery-pipeline.md"]
+    epistemic["§20 认识论标准\n20-epistemic-standards.md"]
+    amendment["§12 修正程序\n12-amendment-procedure.md"]
+
+    governance-layer["governance 操作层\ndocs/governance/"]
+    module-gov["模块治理八域\nmodule-governance/01-10"]
+    spec-pipeline["Spec→Code 管线\nDEVELOPMENT-WORKFLOW + LIFECYCLE"]
+    structural["结构评分门禁\nSTRUCTURAL-SCORING + Rubric"]
+
+    goal-os["goal 交付 OS\ndocs/goal/"]
+    goal-pipeline["11 阶段管线\n03-pipeline.md"]
+    goal-gates["G0-G11 Gate\n04-gates.md"]
+    goal-registry["Registry/状态机\n15-registry + 02 状态模型"]
+
+    constitution --> branch
+    constitution --> design
+    constitution --> boundary
+    constitution --> dep
+    constitution --> antigh
+    constitution --> pipeline
+    constitution --> epistemic
+    constitution --> amendment
+    constitution -->|"效力管辖（操作化）"| governance-layer
+    constitution -->|"效力管辖"| goal-os
+    governance-layer --> module-gov
+    governance-layer --> spec-pipeline
+    governance-layer --> structural
+    goal-os --> goal-pipeline
+    goal-os --> goal-gates
+    goal-os --> goal-registry
+    module-gov -.->|"投影关系"| goal-registry
+    structural -.->|"四源输入"| goal-gates
+
+    classDef entry fill:#89b4fa,stroke:#89b4fa,color:#1e1e2e
+    classDef store fill:#a6e3a1,stroke:#a6e3a1,color:#1e1e2e
+    classDef concern fill:#f38ba8,stroke:#f38ba8,color:#1e1e2e
+    class constitution entry
+    class governance-layer,goal-os store
+    class antigh,epistemic,amendment concern

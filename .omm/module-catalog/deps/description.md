@@ -1,0 +1,1 @@
+module/FOUNDATION-DEPS.yaml — 依赖矩阵 SSOT（30k）。管辖：modules.path/layer/stdlib_only、allowed_deps、forbidden_deps、constraints、forbidden_foundation_edges。当前仅覆盖 20 基座+domainx，业务域扩展是后续工作（module-governance 08）。详见 overall-architecture/deps-ssot。

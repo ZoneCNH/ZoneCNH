@@ -1,0 +1,23 @@
+created: 2026-07-10T06:25:50.929Z
+updated: 2026-07-10T06:26:34.096Z
+update_count: 7
+last_field: note
+git_commit: 5cd4c7d5
+git_branch: main
+children:
+  - code
+  - design
+  - evidence
+  - foursource
+  - gates
+  - goal
+  - matrix
+  - plan
+  - release
+  - retro
+  - review
+  - spec
+  - state
+  - tasks
+  - test
+  - workflow

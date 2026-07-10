@@ -1,0 +1,4 @@
+- 业务域依赖矩阵扩展（module-governance 08）：把 ~48 业务域模块纳入 FOUNDATION-DEPS 的 allowed/forbidden/constraints。
+- 季度剪枝审计（module-governance 10-quarterly-pruning-audit）：定期清理过期/占位模块制品。
+- 全量 404 扫描常态化：确保所有 docs 中 github.com/ZoneCNH/* 链接有效。
+- 数据 C/S 模块分级治理（module-governance 09-data-cs-governance-levels）落地。

@@ -1,0 +1,1 @@
+module/registry.yaml — 身份+治理状态 SSOT（module-registry/v1）。管辖：repo、local_path、domain、layer、arch_type、lifecycle、owner、spec_ref、registered。覆盖全域 68 模块。owner 字段当前恒为 ZoneCNH（CODEOWNERS 未按模块细分是已知缺口）。详见 overall-architecture/registry-ssot。
