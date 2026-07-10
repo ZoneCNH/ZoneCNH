@@ -1,0 +1,33 @@
+{
+  "schema_version": "foundation-rollback-manifest/v1",
+  "baseline": "2026.07",
+  "previous_baseline": null,
+  "rollback_tags": {
+    "xlib_standard": true,
+    "xlib_harness": true,
+    "xlib_evidence": true,
+    "xlibgate": true,
+    "kernel": true,
+    "configx": true,
+    "observex": true,
+    "resiliencx": true,
+    "schedulex": true,
+    "bootstrap": true,
+    "testkitx": true,
+    "redisx": true,
+    "kafkax": true,
+    "natsx": true,
+    "postgresx": true,
+    "taosx": true,
+    "ossx": true,
+    "clickhousex": true,
+    "contracts": true,
+    "transportx": true,
+    "decimalx": true,
+    "domainx": true,
+    "domain_market": true,
+    "domain_macro": true,
+    "domain_exchange": true
+  },
+  "replayable": true
+}

@@ -1,0 +1,33 @@
+{
+  "schema_version": "foundation-consumer-matrix/v1",
+  "baseline": "2026.07",
+  "modules": {
+    "decimalx": {
+      "build_workspace": true,
+      "build_standalone": true,
+      "purity_findings": 0
+    },
+    "domainx": {
+      "build_workspace": true,
+      "build_standalone": true,
+      "purity_findings": 19
+    },
+    "domain_market": {
+      "build_workspace": true,
+      "build_standalone": true,
+      "purity_findings": 11
+    },
+    "domain_macro": {
+      "build_workspace": true,
+      "build_standalone": true,
+      "purity_findings": 3
+    },
+    "domain_exchange": {
+      "build_workspace": true,
+      "build_standalone": false,
+      "purity_findings": 22,
+      "standalone_blocker": "decimalx@v1.0.0 go.sum checksum mismatch (publishing/integrity gap)"
+    }
+  },
+  "note": "Cross-repo consumer builds (binance/market_data/macro_data/orderx/riskx) are the 30-day batched gate program; not executed this session."
+}

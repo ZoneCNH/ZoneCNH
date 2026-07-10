@@ -1,0 +1,2181 @@
+{
+  "schema_version": "foundation-catalog/v2-compiled",
+  "catalog": {
+    "schema_version": "foundation-catalog/v2",
+    "modules": {
+      "alertx": {
+        "identity": {
+          "catalog_name": "alertx",
+          "repository": "github.com/ZoneCNH/alertx",
+          "logical_module_path": "/home/workspace/alertx",
+          "package_name": "alertx",
+          "owner": "ZoneCNH"
+        },
+        "classification": {
+          "domain": "crosscut",
+          "layer": "business",
+          "profile": "",
+          "lifecycle": "active"
+        },
+        "dependencies": {
+          "allowed": [
+            "observex",
+            "contracts"
+          ],
+          "forbidden_profiles": null
+        },
+        "release": {
+          "policy": "stable",
+          "minimum_version": ""
+        },
+        "evidence": {
+          "profile": "pre-factory",
+          "max_age_hours": 0
+        }
+      },
+      "alternative_data": {
+        "identity": {
+          "catalog_name": "alternative_data",
+          "repository": "github.com/ZoneCNH/alternative_data",
+          "logical_module_path": "/home/workspace/alternative_data",
+          "package_name": "alternative_data",
+          "owner": "ZoneCNH"
+        },
+        "classification": {
+          "domain": "data",
+          "layer": "business",
+          "profile": "",
+          "lifecycle": "proposed"
+        },
+        "dependencies": {
+          "allowed": null,
+          "forbidden_profiles": null
+        },
+        "release": {
+          "policy": "irregular",
+          "minimum_version": ""
+        },
+        "evidence": {
+          "profile": "pre-factory",
+          "max_age_hours": 0
+        }
+      },
+      "backtest_engine": {
+        "identity": {
+          "catalog_name": "backtest_engine",
+          "repository": "github.com/ZoneCNH/backtest_engine",
+          "logical_module_path": "",
+          "package_name": "backtest_engine",
+          "owner": "ZoneCNH"
+        },
+        "classification": {
+          "domain": "decision",
+          "layer": "business",
+          "profile": "",
+          "lifecycle": "archived"
+        },
+        "dependencies": {
+          "allowed": null,
+          "forbidden_profiles": null
+        },
+        "release": {
+          "policy": "",
+          "minimum_version": ""
+        },
+        "evidence": {
+          "profile": "pre-factory",
+          "max_age_hours": 0
+        }
+      },
+      "backtestx": {
+        "identity": {
+          "catalog_name": "backtestx",
+          "repository": "github.com/ZoneCNH/backtestx",
+          "logical_module_path": "/home/workspace/backtestx",
+          "package_name": "backtestx",
+          "owner": "ZoneCNH"
+        },
+        "classification": {
+          "domain": "decision",
+          "layer": "business",
+          "profile": "",
+          "lifecycle": "proposed"
+        },
+        "dependencies": {
+          "allowed": null,
+          "forbidden_profiles": null
+        },
+        "release": {
+          "policy": "irregular",
+          "minimum_version": ""
+        },
+        "evidence": {
+          "profile": "pre-factory",
+          "max_age_hours": 0
+        }
+      },
+      "bea": {
+        "identity": {
+          "catalog_name": "bea",
+          "repository": "github.com/ZoneCNH/bea",
+          "logical_module_path": "/home/workspace/bea",
+          "package_name": "bea",
+          "owner": "ZoneCNH"
+        },
+        "classification": {
+          "domain": "data",
+          "layer": "business",
+          "profile": "",
+          "lifecycle": "proposed"
+        },
+        "dependencies": {
+          "allowed": null,
+          "forbidden_profiles": null
+        },
+        "release": {
+          "policy": "irregular",
+          "minimum_version": ""
+        },
+        "evidence": {
+          "profile": "pre-factory",
+          "max_age_hours": 0
+        }
+      },
+      "binance": {
+        "identity": {
+          "catalog_name": "binance",
+          "repository": "github.com/ZoneCNH/binance",
+          "logical_module_path": "/home/workspace/binance",
+          "package_name": "binance",
+          "owner": "ZoneCNH"
+        },
+        "classification": {
+          "domain": "data",
+          "layer": "business",
+          "profile": "",
+          "lifecycle": "production"
+        },
+        "dependencies": {
+          "allowed": null,
+          "forbidden_profiles": null
+        },
+        "release": {
+          "policy": "on-demand",
+          "minimum_version": ""
+        },
+        "evidence": {
+          "profile": "pre-factory",
+          "max_age_hours": 0
+        }
+      },
+      "bootstrap": {
+        "identity": {
+          "catalog_name": "bootstrap",
+          "repository": "github.com/xhyperium/bootstrap",
+          "logical_module_path": "github.com/ZoneCNH/bootstrap",
+          "package_name": "bootstrap",
+          "owner": "xhyperium"
+        },
+        "classification": {
+          "domain": "foundation",
+          "layer": "L1",
+          "profile": "primitive",
+          "lifecycle": "active"
+        },
+        "dependencies": {
+          "allowed": [
+            "kernel",
+            "configx",
+            "observex",
+            "resiliencx",
+            "taosx",
+            "postgresx",
+            "redisx",
+            "kafkax",
+            "natsx",
+            "ossx",
+            "clickhousex",
+            "foundationx"
+          ],
+          "forbidden_profiles": null
+        },
+        "release": {
+          "policy": "stable",
+          "minimum_version": ""
+        },
+        "evidence": {
+          "profile": "factory-grade",
+          "max_age_hours": 0
+        }
+      },
+      "clickhousex": {
+        "identity": {
+          "catalog_name": "clickhousex",
+          "repository": "github.com/xhyperium/clickhousex",
+          "logical_module_path": "github.com/ZoneCNH/clickhousex",
+          "package_name": "clickhousex",
+          "owner": "xhyperium"
+        },
+        "classification": {
+          "domain": "foundation",
+          "layer": "storage",
+          "profile": "adapter",
+          "lifecycle": "active"
+        },
+        "dependencies": {
+          "allowed": [
+            "kernel",
+            "observex"
+          ],
+          "forbidden_profiles": [
+            "configx",
+            "resiliencx",
+            "schedulex",
+            "redisx",
+            "kafkax",
+            "natsx",
+            "postgresx",
+            "taosx",
+            "ossx",
+            "contracts",
+            "testkitx",
+            "x.go",
+            "business"
+          ]
+        },
+        "release": {
+          "policy": "stable",
+          "minimum_version": ""
+        },
+        "evidence": {
+          "profile": "factory-grade",
+          "max_age_hours": 0
+        }
+      },
+      "coinglass": {
+        "identity": {
+          "catalog_name": "coinglass",
+          "repository": "github.com/ZoneCNH/coinglass",
+          "logical_module_path": "/home/workspace/coinglass",
+          "package_name": "coinglass",
+          "owner": "ZoneCNH"
+        },
+        "classification": {
+          "domain": "data",
+          "layer": "business",
+          "profile": "",
+          "lifecycle": "proposed"
+        },
+        "dependencies": {
+          "allowed": null,
+          "forbidden_profiles": null
+        },
+        "release": {
+          "policy": "irregular",
+          "minimum_version": ""
+        },
+        "evidence": {
+          "profile": "pre-factory",
+          "max_age_hours": 0
+        }
+      },
+      "composer": {
+        "identity": {
+          "catalog_name": "composer",
+          "repository": "github.com/ZoneCNH/composer",
+          "logical_module_path": "/home/workspace/composer",
+          "package_name": "composer",
+          "owner": "ZoneCNH"
+        },
+        "classification": {
+          "domain": "entry",
+          "layer": "business",
+          "profile": "",
+          "lifecycle": "proposed"
+        },
+        "dependencies": {
+          "allowed": null,
+          "forbidden_profiles": null
+        },
+        "release": {
+          "policy": "irregular",
+          "minimum_version": ""
+        },
+        "evidence": {
+          "profile": "pre-factory",
+          "max_age_hours": 0
+        }
+      },
+      "configx": {
+        "identity": {
+          "catalog_name": "configx",
+          "repository": "github.com/xhyperium/configx",
+          "logical_module_path": "github.com/ZoneCNH/configx",
+          "package_name": "configx",
+          "owner": "xhyperium"
+        },
+        "classification": {
+          "domain": "foundation",
+          "layer": "L1",
+          "profile": "primitive",
+          "lifecycle": "active"
+        },
+        "dependencies": {
+          "allowed": [
+            "kernel"
+          ],
+          "forbidden_profiles": [
+            "observex",
+            "resiliencx",
+            "schedulex",
+            "x.go",
+            "business"
+          ]
+        },
+        "release": {
+          "policy": "stable",
+          "minimum_version": ""
+        },
+        "evidence": {
+          "profile": "factory-grade",
+          "max_age_hours": 0
+        }
+      },
+      "contracts": {
+        "identity": {
+          "catalog_name": "contracts",
+          "repository": "github.com/xhyperium/contracts",
+          "logical_module_path": "github.com/ZoneCNH/contracts",
+          "package_name": "contracts",
+          "owner": "xhyperium"
+        },
+        "classification": {
+          "domain": "foundation",
+          "layer": "contracts",
+          "profile": "contract",
+          "lifecycle": "active"
+        },
+        "dependencies": {
+          "allowed": [],
+          "forbidden_profiles": [
+            "kernel",
+            "configx",
+            "observex",
+            "resiliencx",
+            "schedulex",
+            "testkitx",
+            "redisx",
+            "kafkax",
+            "natsx",
+            "postgresx",
+            "taosx",
+            "ossx",
+            "clickhousex",
+            "x.go",
+            "business"
+          ]
+        },
+        "release": {
+          "policy": "stable",
+          "minimum_version": ""
+        },
+        "evidence": {
+          "profile": "factory-grade",
+          "max_age_hours": 0
+        }
+      },
+      "decimalx": {
+        "identity": {
+          "catalog_name": "decimalx",
+          "repository": "github.com/xhyperium/decimalx",
+          "logical_module_path": "github.com/ZoneCNH/decimalx",
+          "package_name": "decimalx",
+          "owner": "xhyperium"
+        },
+        "classification": {
+          "domain": "l2_5",
+          "layer": "l2_5",
+          "profile": "",
+          "lifecycle": "active"
+        },
+        "dependencies": {
+          "allowed": [],
+          "forbidden_profiles": null
+        },
+        "release": {
+          "policy": "irregular",
+          "minimum_version": ""
+        },
+        "evidence": {
+          "profile": "factory-grade",
+          "max_age_hours": 0
+        }
+      },
+      "domain_exchange": {
+        "identity": {
+          "catalog_name": "domain_exchange",
+          "repository": "github.com/xhyperium/domain_exchange",
+          "logical_module_path": "github.com/ZoneCNH/domain_exchange",
+          "package_name": "domain_exchange",
+          "owner": "xhyperium"
+        },
+        "classification": {
+          "domain": "l2_5",
+          "layer": "l2_5",
+          "profile": "",
+          "lifecycle": "active"
+        },
+        "dependencies": {
+          "allowed": [
+            "decimalx",
+            "domainx",
+            "domain_market"
+          ],
+          "forbidden_profiles": [
+            "configx",
+            "observex",
+            "resiliencx",
+            "schedulex",
+            "redisx",
+            "kafkax",
+            "natsx",
+            "postgresx",
+            "taosx",
+            "ossx",
+            "clickhousex",
+            "contracts",
+            "transportx",
+            "testkitx",
+            "x.go",
+            "business"
+          ]
+        },
+        "release": {
+          "policy": "irregular",
+          "minimum_version": ""
+        },
+        "evidence": {
+          "profile": "factory-grade",
+          "max_age_hours": 0
+        }
+      },
+      "domain_macro": {
+        "identity": {
+          "catalog_name": "domain_macro",
+          "repository": "github.com/xhyperium/domain_macro",
+          "logical_module_path": "github.com/ZoneCNH/domain_macro",
+          "package_name": "domain_macro",
+          "owner": "xhyperium"
+        },
+        "classification": {
+          "domain": "l2_5",
+          "layer": "l2_5",
+          "profile": "",
+          "lifecycle": "active"
+        },
+        "dependencies": {
+          "allowed": [
+            "decimalx",
+            "domainx"
+          ],
+          "forbidden_profiles": [
+            "configx",
+            "observex",
+            "resiliencx",
+            "schedulex",
+            "redisx",
+            "kafkax",
+            "natsx",
+            "postgresx",
+            "taosx",
+            "ossx",
+            "clickhousex",
+            "contracts",
+            "transportx",
+            "testkitx",
+            "x.go",
+            "business"
+          ]
+        },
+        "release": {
+          "policy": "irregular",
+          "minimum_version": ""
+        },
+        "evidence": {
+          "profile": "factory-grade",
+          "max_age_hours": 0
+        }
+      },
+      "domain_market": {
+        "identity": {
+          "catalog_name": "domain_market",
+          "repository": "github.com/xhyperium/domain_market",
+          "logical_module_path": "github.com/ZoneCNH/domain_market",
+          "package_name": "domain_market",
+          "owner": "xhyperium"
+        },
+        "classification": {
+          "domain": "l2_5",
+          "layer": "l2_5",
+          "profile": "",
+          "lifecycle": "active"
+        },
+        "dependencies": {
+          "allowed": [
+            "decimalx",
+            "domainx"
+          ],
+          "forbidden_profiles": [
+            "configx",
+            "observex",
+            "resiliencx",
+            "schedulex",
+            "redisx",
+            "kafkax",
+            "natsx",
+            "postgresx",
+            "taosx",
+            "ossx",
+            "clickhousex",
+            "contracts",
+            "transportx",
+            "testkitx",
+            "x.go",
+            "business"
+          ]
+        },
+        "release": {
+          "policy": "stable",
+          "minimum_version": ""
+        },
+        "evidence": {
+          "profile": "factory-grade",
+          "max_age_hours": 0
+        }
+      },
+      "domainx": {
+        "identity": {
+          "catalog_name": "domainx",
+          "repository": "github.com/xhyperium/domainx",
+          "logical_module_path": "github.com/ZoneCNH/domainx",
+          "package_name": "domainx",
+          "owner": "xhyperium"
+        },
+        "classification": {
+          "domain": "l2_5",
+          "layer": "l2_5",
+          "profile": "",
+          "lifecycle": "active"
+        },
+        "dependencies": {
+          "allowed": [
+            "kernel",
+            "decimalx"
+          ],
+          "forbidden_profiles": null
+        },
+        "release": {
+          "policy": "stable",
+          "minimum_version": ""
+        },
+        "evidence": {
+          "profile": "factory-grade",
+          "max_age_hours": 0
+        }
+      },
+      "eastmoney": {
+        "identity": {
+          "catalog_name": "eastmoney",
+          "repository": "github.com/ZoneCNH/eastmoney",
+          "logical_module_path": "/home/workspace/eastmoney",
+          "package_name": "eastmoney",
+          "owner": "ZoneCNH"
+        },
+        "classification": {
+          "domain": "data",
+          "layer": "business",
+          "profile": "",
+          "lifecycle": "proposed"
+        },
+        "dependencies": {
+          "allowed": null,
+          "forbidden_profiles": null
+        },
+        "release": {
+          "policy": "irregular",
+          "minimum_version": ""
+        },
+        "evidence": {
+          "profile": "pre-factory",
+          "max_age_hours": 0
+        }
+      },
+      "ecb": {
+        "identity": {
+          "catalog_name": "ecb",
+          "repository": "github.com/ZoneCNH/ecb",
+          "logical_module_path": "/home/workspace/ecb",
+          "package_name": "ecb",
+          "owner": "ZoneCNH"
+        },
+        "classification": {
+          "domain": "data",
+          "layer": "business",
+          "profile": "",
+          "lifecycle": "proposed"
+        },
+        "dependencies": {
+          "allowed": null,
+          "forbidden_profiles": null
+        },
+        "release": {
+          "policy": "irregular",
+          "minimum_version": ""
+        },
+        "evidence": {
+          "profile": "pre-factory",
+          "max_age_hours": 0
+        }
+      },
+      "factor_engine": {
+        "identity": {
+          "catalog_name": "factor_engine",
+          "repository": "github.com/ZoneCNH/factor_engine",
+          "logical_module_path": "/home/workspace/factor_engine",
+          "package_name": "factor_engine",
+          "owner": "ZoneCNH"
+        },
+        "classification": {
+          "domain": "analytics",
+          "layer": "business",
+          "profile": "",
+          "lifecycle": "proposed"
+        },
+        "dependencies": {
+          "allowed": null,
+          "forbidden_profiles": null
+        },
+        "release": {
+          "policy": "irregular",
+          "minimum_version": ""
+        },
+        "evidence": {
+          "profile": "pre-factory",
+          "max_age_hours": 0
+        }
+      },
+      "factor_eval": {
+        "identity": {
+          "catalog_name": "factor_eval",
+          "repository": "github.com/ZoneCNH/factor_eval",
+          "logical_module_path": "/home/workspace/factor_eval",
+          "package_name": "factor_eval",
+          "owner": "ZoneCNH"
+        },
+        "classification": {
+          "domain": "analytics",
+          "layer": "business",
+          "profile": "",
+          "lifecycle": "proposed"
+        },
+        "dependencies": {
+          "allowed": null,
+          "forbidden_profiles": null
+        },
+        "release": {
+          "policy": "irregular",
+          "minimum_version": ""
+        },
+        "evidence": {
+          "profile": "pre-factory",
+          "max_age_hours": 0
+        }
+      },
+      "feature_store": {
+        "identity": {
+          "catalog_name": "feature_store",
+          "repository": "github.com/ZoneCNH/feature_store",
+          "logical_module_path": "/home/workspace/feature_store",
+          "package_name": "feature_store",
+          "owner": "ZoneCNH"
+        },
+        "classification": {
+          "domain": "analytics",
+          "layer": "business",
+          "profile": "",
+          "lifecycle": "proposed"
+        },
+        "dependencies": {
+          "allowed": null,
+          "forbidden_profiles": null
+        },
+        "release": {
+          "policy": "irregular",
+          "minimum_version": ""
+        },
+        "evidence": {
+          "profile": "pre-factory",
+          "max_age_hours": 0
+        }
+      },
+      "flowx": {
+        "identity": {
+          "catalog_name": "flowx",
+          "repository": "github.com/ZoneCNH/flowx",
+          "logical_module_path": "/home/workspace/flowx",
+          "package_name": "flowx",
+          "owner": "ZoneCNH"
+        },
+        "classification": {
+          "domain": "analytics",
+          "layer": "business",
+          "profile": "",
+          "lifecycle": "proposed"
+        },
+        "dependencies": {
+          "allowed": null,
+          "forbidden_profiles": null
+        },
+        "release": {
+          "policy": "irregular",
+          "minimum_version": ""
+        },
+        "evidence": {
+          "profile": "pre-factory",
+          "max_age_hours": 0
+        }
+      },
+      "fred": {
+        "identity": {
+          "catalog_name": "fred",
+          "repository": "github.com/ZoneCNH/fred",
+          "logical_module_path": "/home/workspace/fred",
+          "package_name": "fred",
+          "owner": "ZoneCNH"
+        },
+        "classification": {
+          "domain": "data",
+          "layer": "business",
+          "profile": "",
+          "lifecycle": "active"
+        },
+        "dependencies": {
+          "allowed": null,
+          "forbidden_profiles": null
+        },
+        "release": {
+          "policy": "irregular",
+          "minimum_version": ""
+        },
+        "evidence": {
+          "profile": "pre-factory",
+          "max_age_hours": 0
+        }
+      },
+      "frontend": {
+        "identity": {
+          "catalog_name": "frontend",
+          "repository": "github.com/ZoneCNH/frontend",
+          "logical_module_path": "/home/workspace/frontend",
+          "package_name": "frontend",
+          "owner": "ZoneCNH"
+        },
+        "classification": {
+          "domain": "entry",
+          "layer": "business",
+          "profile": "",
+          "lifecycle": "production"
+        },
+        "dependencies": {
+          "allowed": null,
+          "forbidden_profiles": null
+        },
+        "release": {
+          "policy": "on-demand",
+          "minimum_version": ""
+        },
+        "evidence": {
+          "profile": "pre-factory",
+          "max_age_hours": 0
+        }
+      },
+      "hyperliquid": {
+        "identity": {
+          "catalog_name": "hyperliquid",
+          "repository": "github.com/ZoneCNH/hyperliquid",
+          "logical_module_path": "/home/workspace/hyperliquid",
+          "package_name": "hyperliquid",
+          "owner": "ZoneCNH"
+        },
+        "classification": {
+          "domain": "data",
+          "layer": "business",
+          "profile": "",
+          "lifecycle": "proposed"
+        },
+        "dependencies": {
+          "allowed": null,
+          "forbidden_profiles": null
+        },
+        "release": {
+          "policy": "irregular",
+          "minimum_version": ""
+        },
+        "evidence": {
+          "profile": "pre-factory",
+          "max_age_hours": 0
+        }
+      },
+      "japan_cb": {
+        "identity": {
+          "catalog_name": "japan_cb",
+          "repository": "github.com/ZoneCNH/japan_cb",
+          "logical_module_path": "/home/workspace/japan_cb",
+          "package_name": "japan_cb",
+          "owner": "ZoneCNH"
+        },
+        "classification": {
+          "domain": "data",
+          "layer": "business",
+          "profile": "",
+          "lifecycle": "proposed"
+        },
+        "dependencies": {
+          "allowed": null,
+          "forbidden_profiles": null
+        },
+        "release": {
+          "policy": "irregular",
+          "minimum_version": ""
+        },
+        "evidence": {
+          "profile": "pre-factory",
+          "max_age_hours": 0
+        }
+      },
+      "kafkax": {
+        "identity": {
+          "catalog_name": "kafkax",
+          "repository": "github.com/xhyperium/kafkax",
+          "logical_module_path": "github.com/ZoneCNH/kafkax",
+          "package_name": "kafkax",
+          "owner": "xhyperium"
+        },
+        "classification": {
+          "domain": "foundation",
+          "layer": "storage",
+          "profile": "adapter",
+          "lifecycle": "active"
+        },
+        "dependencies": {
+          "allowed": [
+            "kernel",
+            "observex"
+          ],
+          "forbidden_profiles": [
+            "configx",
+            "resiliencx",
+            "schedulex",
+            "redisx",
+            "natsx",
+            "postgresx",
+            "taosx",
+            "ossx",
+            "clickhousex",
+            "contracts",
+            "testkitx",
+            "x.go",
+            "business"
+          ]
+        },
+        "release": {
+          "policy": "stable",
+          "minimum_version": ""
+        },
+        "evidence": {
+          "profile": "factory-grade",
+          "max_age_hours": 0
+        }
+      },
+      "kernel": {
+        "identity": {
+          "catalog_name": "kernel",
+          "repository": "github.com/xhyperium/kernel",
+          "logical_module_path": "github.com/ZoneCNH/kernel",
+          "package_name": "kernel",
+          "owner": "xhyperium"
+        },
+        "classification": {
+          "domain": "foundation",
+          "layer": "L0",
+          "profile": "primitive",
+          "lifecycle": "active"
+        },
+        "dependencies": {
+          "allowed": [],
+          "forbidden_profiles": [
+            "configx",
+            "observex",
+            "resiliencx",
+            "schedulex",
+            "testkitx",
+            "x.go",
+            "business"
+          ]
+        },
+        "release": {
+          "policy": "stable",
+          "minimum_version": ""
+        },
+        "evidence": {
+          "profile": "factory-grade",
+          "max_age_hours": 0
+        }
+      },
+      "macro_data": {
+        "identity": {
+          "catalog_name": "macro_data",
+          "repository": "github.com/ZoneCNH/macro_data",
+          "logical_module_path": "/home/workspace/macro_data",
+          "package_name": "macro_data",
+          "owner": "ZoneCNH"
+        },
+        "classification": {
+          "domain": "data",
+          "layer": "business",
+          "profile": "",
+          "lifecycle": "proposed"
+        },
+        "dependencies": {
+          "allowed": null,
+          "forbidden_profiles": null
+        },
+        "release": {
+          "policy": "irregular",
+          "minimum_version": ""
+        },
+        "evidence": {
+          "profile": "pre-factory",
+          "max_age_hours": 0
+        }
+      },
+      "macro_regime": {
+        "identity": {
+          "catalog_name": "macro_regime",
+          "repository": "github.com/ZoneCNH/macro_regime",
+          "logical_module_path": "/home/workspace/macro_regime",
+          "package_name": "macro_regime",
+          "owner": "ZoneCNH"
+        },
+        "classification": {
+          "domain": "analytics",
+          "layer": "business",
+          "profile": "",
+          "lifecycle": "proposed"
+        },
+        "dependencies": {
+          "allowed": null,
+          "forbidden_profiles": null
+        },
+        "release": {
+          "policy": "irregular",
+          "minimum_version": ""
+        },
+        "evidence": {
+          "profile": "pre-factory",
+          "max_age_hours": 0
+        }
+      },
+      "maestro": {
+        "identity": {
+          "catalog_name": "maestro",
+          "repository": "github.com/ZoneCNH/maestro",
+          "logical_module_path": "/home/workspace/maestro",
+          "package_name": "maestro",
+          "owner": "ZoneCNH"
+        },
+        "classification": {
+          "domain": "decision",
+          "layer": "business",
+          "profile": "",
+          "lifecycle": "proposed"
+        },
+        "dependencies": {
+          "allowed": null,
+          "forbidden_profiles": null
+        },
+        "release": {
+          "policy": "irregular",
+          "minimum_version": ""
+        },
+        "evidence": {
+          "profile": "pre-factory",
+          "max_age_hours": 0
+        }
+      },
+      "market_data": {
+        "identity": {
+          "catalog_name": "market_data",
+          "repository": "github.com/ZoneCNH/market_data",
+          "logical_module_path": "/home/workspace/market_data",
+          "package_name": "market_data",
+          "owner": "ZoneCNH"
+        },
+        "classification": {
+          "domain": "data",
+          "layer": "business",
+          "profile": "",
+          "lifecycle": "proposed"
+        },
+        "dependencies": {
+          "allowed": null,
+          "forbidden_profiles": null
+        },
+        "release": {
+          "policy": "irregular",
+          "minimum_version": ""
+        },
+        "evidence": {
+          "profile": "pre-factory",
+          "max_age_hours": 0
+        }
+      },
+      "market_regime": {
+        "identity": {
+          "catalog_name": "market_regime",
+          "repository": "github.com/ZoneCNH/market_regime",
+          "logical_module_path": "/home/workspace/market_regime",
+          "package_name": "market_regime",
+          "owner": "ZoneCNH"
+        },
+        "classification": {
+          "domain": "analytics",
+          "layer": "business",
+          "profile": "",
+          "lifecycle": "proposed"
+        },
+        "dependencies": {
+          "allowed": null,
+          "forbidden_profiles": null
+        },
+        "release": {
+          "policy": "irregular",
+          "minimum_version": ""
+        },
+        "evidence": {
+          "profile": "pre-factory",
+          "max_age_hours": 0
+        }
+      },
+      "ms_brain": {
+        "identity": {
+          "catalog_name": "ms_brain",
+          "repository": "github.com/ZoneCNH/ms_brain",
+          "logical_module_path": "/home/workspace/ms_brain",
+          "package_name": "ms_brain",
+          "owner": "ZoneCNH"
+        },
+        "classification": {
+          "domain": "analytics",
+          "layer": "business",
+          "profile": "",
+          "lifecycle": "proposed"
+        },
+        "dependencies": {
+          "allowed": null,
+          "forbidden_profiles": null
+        },
+        "release": {
+          "policy": "irregular",
+          "minimum_version": ""
+        },
+        "evidence": {
+          "profile": "pre-factory",
+          "max_age_hours": 0
+        }
+      },
+      "natsx": {
+        "identity": {
+          "catalog_name": "natsx",
+          "repository": "github.com/xhyperium/natsx",
+          "logical_module_path": "github.com/ZoneCNH/natsx",
+          "package_name": "natsx",
+          "owner": "xhyperium"
+        },
+        "classification": {
+          "domain": "foundation",
+          "layer": "storage",
+          "profile": "adapter",
+          "lifecycle": "active"
+        },
+        "dependencies": {
+          "allowed": [
+            "kernel"
+          ],
+          "forbidden_profiles": [
+            "configx",
+            "observex",
+            "resiliencx",
+            "schedulex",
+            "redisx",
+            "kafkax",
+            "postgresx",
+            "taosx",
+            "ossx",
+            "clickhousex",
+            "contracts",
+            "testkitx",
+            "x.go",
+            "business"
+          ]
+        },
+        "release": {
+          "policy": "stable",
+          "minimum_version": ""
+        },
+        "evidence": {
+          "profile": "factory-grade",
+          "max_age_hours": 0
+        }
+      },
+      "observex": {
+        "identity": {
+          "catalog_name": "observex",
+          "repository": "github.com/xhyperium/observex",
+          "logical_module_path": "github.com/ZoneCNH/observex",
+          "package_name": "observex",
+          "owner": "xhyperium"
+        },
+        "classification": {
+          "domain": "foundation",
+          "layer": "L1",
+          "profile": "primitive",
+          "lifecycle": "active"
+        },
+        "dependencies": {
+          "allowed": [
+            "kernel"
+          ],
+          "forbidden_profiles": [
+            "configx",
+            "resiliencx",
+            "schedulex",
+            "x.go",
+            "business"
+          ]
+        },
+        "release": {
+          "policy": "stable",
+          "minimum_version": ""
+        },
+        "evidence": {
+          "profile": "factory-grade",
+          "max_age_hours": 0
+        }
+      },
+      "okx": {
+        "identity": {
+          "catalog_name": "okx",
+          "repository": "github.com/ZoneCNH/okx",
+          "logical_module_path": "/home/workspace/okx",
+          "package_name": "okx",
+          "owner": "ZoneCNH"
+        },
+        "classification": {
+          "domain": "data",
+          "layer": "business",
+          "profile": "",
+          "lifecycle": "proposed"
+        },
+        "dependencies": {
+          "allowed": null,
+          "forbidden_profiles": null
+        },
+        "release": {
+          "policy": "irregular",
+          "minimum_version": ""
+        },
+        "evidence": {
+          "profile": "pre-factory",
+          "max_age_hours": 0
+        }
+      },
+      "optimizer": {
+        "identity": {
+          "catalog_name": "optimizer",
+          "repository": "github.com/ZoneCNH/optimizer",
+          "logical_module_path": "/home/workspace/optimizer",
+          "package_name": "optimizer",
+          "owner": "ZoneCNH"
+        },
+        "classification": {
+          "domain": "decision",
+          "layer": "business",
+          "profile": "",
+          "lifecycle": "proposed"
+        },
+        "dependencies": {
+          "allowed": null,
+          "forbidden_profiles": null
+        },
+        "release": {
+          "policy": "irregular",
+          "minimum_version": ""
+        },
+        "evidence": {
+          "profile": "pre-factory",
+          "max_age_hours": 0
+        }
+      },
+      "order_engine": {
+        "identity": {
+          "catalog_name": "order_engine",
+          "repository": "github.com/ZoneCNH/order_engine",
+          "logical_module_path": "",
+          "package_name": "order_engine",
+          "owner": "ZoneCNH"
+        },
+        "classification": {
+          "domain": "execution",
+          "layer": "business",
+          "profile": "",
+          "lifecycle": "archived"
+        },
+        "dependencies": {
+          "allowed": null,
+          "forbidden_profiles": null
+        },
+        "release": {
+          "policy": "",
+          "minimum_version": ""
+        },
+        "evidence": {
+          "profile": "pre-factory",
+          "max_age_hours": 0
+        }
+      },
+      "orderbook": {
+        "identity": {
+          "catalog_name": "orderbook",
+          "repository": "github.com/ZoneCNH/orderbook",
+          "logical_module_path": "/home/workspace/orderbook",
+          "package_name": "orderbook",
+          "owner": "ZoneCNH"
+        },
+        "classification": {
+          "domain": "data",
+          "layer": "business",
+          "profile": "",
+          "lifecycle": "active"
+        },
+        "dependencies": {
+          "allowed": null,
+          "forbidden_profiles": null
+        },
+        "release": {
+          "policy": "irregular",
+          "minimum_version": ""
+        },
+        "evidence": {
+          "profile": "pre-factory",
+          "max_age_hours": 0
+        }
+      },
+      "orderx": {
+        "identity": {
+          "catalog_name": "orderx",
+          "repository": "github.com/ZoneCNH/orderx",
+          "logical_module_path": "/home/workspace/orderx",
+          "package_name": "orderx",
+          "owner": "ZoneCNH"
+        },
+        "classification": {
+          "domain": "execution",
+          "layer": "business",
+          "profile": "",
+          "lifecycle": "proposed"
+        },
+        "dependencies": {
+          "allowed": null,
+          "forbidden_profiles": null
+        },
+        "release": {
+          "policy": "irregular",
+          "minimum_version": ""
+        },
+        "evidence": {
+          "profile": "pre-factory",
+          "max_age_hours": 0
+        }
+      },
+      "ossx": {
+        "identity": {
+          "catalog_name": "ossx",
+          "repository": "github.com/xhyperium/ossx",
+          "logical_module_path": "github.com/ZoneCNH/ossx",
+          "package_name": "ossx",
+          "owner": "xhyperium"
+        },
+        "classification": {
+          "domain": "foundation",
+          "layer": "storage",
+          "profile": "adapter",
+          "lifecycle": "active"
+        },
+        "dependencies": {
+          "allowed": [
+            "kernel"
+          ],
+          "forbidden_profiles": [
+            "configx",
+            "observex",
+            "resiliencx",
+            "schedulex",
+            "redisx",
+            "kafkax",
+            "natsx",
+            "postgresx",
+            "taosx",
+            "clickhousex",
+            "contracts",
+            "testkitx",
+            "x.go",
+            "business"
+          ]
+        },
+        "release": {
+          "policy": "stable",
+          "minimum_version": ""
+        },
+        "evidence": {
+          "profile": "factory-grade",
+          "max_age_hours": 0
+        }
+      },
+      "pe_data": {
+        "identity": {
+          "catalog_name": "pe_data",
+          "repository": "github.com/ZoneCNH/pe_data",
+          "logical_module_path": "/home/workspace/pe_data",
+          "package_name": "pe_data",
+          "owner": "ZoneCNH"
+        },
+        "classification": {
+          "domain": "data",
+          "layer": "business",
+          "profile": "",
+          "lifecycle": "proposed"
+        },
+        "dependencies": {
+          "allowed": null,
+          "forbidden_profiles": null
+        },
+        "release": {
+          "policy": "irregular",
+          "minimum_version": ""
+        },
+        "evidence": {
+          "profile": "pre-factory",
+          "max_age_hours": 0
+        }
+      },
+      "portfolio_engine": {
+        "identity": {
+          "catalog_name": "portfolio_engine",
+          "repository": "github.com/ZoneCNH/portfolio_engine",
+          "logical_module_path": "",
+          "package_name": "portfolio_engine",
+          "owner": "ZoneCNH"
+        },
+        "classification": {
+          "domain": "execution",
+          "layer": "business",
+          "profile": "",
+          "lifecycle": "archived"
+        },
+        "dependencies": {
+          "allowed": null,
+          "forbidden_profiles": null
+        },
+        "release": {
+          "policy": "",
+          "minimum_version": ""
+        },
+        "evidence": {
+          "profile": "pre-factory",
+          "max_age_hours": 0
+        }
+      },
+      "positionx": {
+        "identity": {
+          "catalog_name": "positionx",
+          "repository": "github.com/ZoneCNH/positionx",
+          "logical_module_path": "/home/workspace/positionx",
+          "package_name": "positionx",
+          "owner": "ZoneCNH"
+        },
+        "classification": {
+          "domain": "execution",
+          "layer": "business",
+          "profile": "",
+          "lifecycle": "proposed"
+        },
+        "dependencies": {
+          "allowed": null,
+          "forbidden_profiles": null
+        },
+        "release": {
+          "policy": "irregular",
+          "minimum_version": ""
+        },
+        "evidence": {
+          "profile": "pre-factory",
+          "max_age_hours": 0
+        }
+      },
+      "postgresx": {
+        "identity": {
+          "catalog_name": "postgresx",
+          "repository": "github.com/xhyperium/postgresx",
+          "logical_module_path": "github.com/ZoneCNH/postgresx",
+          "package_name": "postgresx",
+          "owner": "xhyperium"
+        },
+        "classification": {
+          "domain": "foundation",
+          "layer": "storage",
+          "profile": "adapter",
+          "lifecycle": "active"
+        },
+        "dependencies": {
+          "allowed": [
+            "kernel"
+          ],
+          "forbidden_profiles": [
+            "configx",
+            "observex",
+            "resiliencx",
+            "schedulex",
+            "redisx",
+            "kafkax",
+            "natsx",
+            "taosx",
+            "ossx",
+            "clickhousex",
+            "contracts",
+            "testkitx",
+            "x.go",
+            "business"
+          ]
+        },
+        "release": {
+          "policy": "stable",
+          "minimum_version": ""
+        },
+        "evidence": {
+          "profile": "factory-grade",
+          "max_age_hours": 0
+        }
+      },
+      "redisx": {
+        "identity": {
+          "catalog_name": "redisx",
+          "repository": "github.com/xhyperium/redisx",
+          "logical_module_path": "github.com/ZoneCNH/redisx",
+          "package_name": "redisx",
+          "owner": "xhyperium"
+        },
+        "classification": {
+          "domain": "foundation",
+          "layer": "storage",
+          "profile": "adapter",
+          "lifecycle": "active"
+        },
+        "dependencies": {
+          "allowed": [
+            "kernel",
+            "observex"
+          ],
+          "forbidden_profiles": [
+            "configx",
+            "resiliencx",
+            "schedulex",
+            "kafkax",
+            "natsx",
+            "postgresx",
+            "taosx",
+            "ossx",
+            "clickhousex",
+            "contracts",
+            "testkitx",
+            "x.go",
+            "business"
+          ]
+        },
+        "release": {
+          "policy": "stable",
+          "minimum_version": ""
+        },
+        "evidence": {
+          "profile": "factory-grade",
+          "max_age_hours": 0
+        }
+      },
+      "regime_engine": {
+        "identity": {
+          "catalog_name": "regime_engine",
+          "repository": "github.com/ZoneCNH/regime_engine",
+          "logical_module_path": "/home/workspace/regime_engine",
+          "package_name": "regime_engine",
+          "owner": "ZoneCNH"
+        },
+        "classification": {
+          "domain": "analytics",
+          "layer": "business",
+          "profile": "",
+          "lifecycle": "proposed"
+        },
+        "dependencies": {
+          "allowed": null,
+          "forbidden_profiles": null
+        },
+        "release": {
+          "policy": "irregular",
+          "minimum_version": ""
+        },
+        "evidence": {
+          "profile": "pre-factory",
+          "max_age_hours": 0
+        }
+      },
+      "resiliencx": {
+        "identity": {
+          "catalog_name": "resiliencx",
+          "repository": "github.com/xhyperium/resiliencx",
+          "logical_module_path": "github.com/ZoneCNH/resiliencx",
+          "package_name": "resiliencx",
+          "owner": "xhyperium"
+        },
+        "classification": {
+          "domain": "foundation",
+          "layer": "L1",
+          "profile": "primitive",
+          "lifecycle": "active"
+        },
+        "dependencies": {
+          "allowed": [
+            "kernel"
+          ],
+          "forbidden_profiles": [
+            "configx",
+            "observex",
+            "schedulex",
+            "x.go",
+            "business"
+          ]
+        },
+        "release": {
+          "policy": "stable",
+          "minimum_version": ""
+        },
+        "evidence": {
+          "profile": "factory-grade",
+          "max_age_hours": 0
+        }
+      },
+      "risk_engine": {
+        "identity": {
+          "catalog_name": "risk_engine",
+          "repository": "github.com/ZoneCNH/risk_engine",
+          "logical_module_path": "",
+          "package_name": "risk_engine",
+          "owner": "ZoneCNH"
+        },
+        "classification": {
+          "domain": "execution",
+          "layer": "business",
+          "profile": "",
+          "lifecycle": "archived"
+        },
+        "dependencies": {
+          "allowed": null,
+          "forbidden_profiles": null
+        },
+        "release": {
+          "policy": "",
+          "minimum_version": ""
+        },
+        "evidence": {
+          "profile": "pre-factory",
+          "max_age_hours": 0
+        }
+      },
+      "riskx": {
+        "identity": {
+          "catalog_name": "riskx",
+          "repository": "github.com/ZoneCNH/riskx",
+          "logical_module_path": "/home/workspace/riskx",
+          "package_name": "riskx",
+          "owner": "ZoneCNH"
+        },
+        "classification": {
+          "domain": "execution",
+          "layer": "business",
+          "profile": "",
+          "lifecycle": "proposed"
+        },
+        "dependencies": {
+          "allowed": null,
+          "forbidden_profiles": null
+        },
+        "release": {
+          "policy": "irregular",
+          "minimum_version": ""
+        },
+        "evidence": {
+          "profile": "pre-factory",
+          "max_age_hours": 0
+        }
+      },
+      "schedulex": {
+        "identity": {
+          "catalog_name": "schedulex",
+          "repository": "github.com/xhyperium/schedulex",
+          "logical_module_path": "github.com/ZoneCNH/schedulex",
+          "package_name": "schedulex",
+          "owner": "xhyperium"
+        },
+        "classification": {
+          "domain": "foundation",
+          "layer": "L1",
+          "profile": "primitive",
+          "lifecycle": "active"
+        },
+        "dependencies": {
+          "allowed": [
+            "kernel"
+          ],
+          "forbidden_profiles": [
+            "configx",
+            "observex",
+            "resiliencx",
+            "x.go",
+            "business"
+          ]
+        },
+        "release": {
+          "policy": "stable",
+          "minimum_version": ""
+        },
+        "evidence": {
+          "profile": "factory-grade",
+          "max_age_hours": 0
+        }
+      },
+      "settlement": {
+        "identity": {
+          "catalog_name": "settlement",
+          "repository": "github.com/ZoneCNH/settlement",
+          "logical_module_path": "/home/workspace/settlement",
+          "package_name": "settlement",
+          "owner": "ZoneCNH"
+        },
+        "classification": {
+          "domain": "execution",
+          "layer": "business",
+          "profile": "",
+          "lifecycle": "proposed"
+        },
+        "dependencies": {
+          "allowed": null,
+          "forbidden_profiles": null
+        },
+        "release": {
+          "policy": "irregular",
+          "minimum_version": ""
+        },
+        "evidence": {
+          "profile": "pre-factory",
+          "max_age_hours": 0
+        }
+      },
+      "signal_factory": {
+        "identity": {
+          "catalog_name": "signal_factory",
+          "repository": "github.com/ZoneCNH/signal_factory",
+          "logical_module_path": "/home/workspace/signal_factory",
+          "package_name": "signal_factory",
+          "owner": "ZoneCNH"
+        },
+        "classification": {
+          "domain": "decision",
+          "layer": "business",
+          "profile": "",
+          "lifecycle": "proposed"
+        },
+        "dependencies": {
+          "allowed": null,
+          "forbidden_profiles": null
+        },
+        "release": {
+          "policy": "irregular",
+          "minimum_version": ""
+        },
+        "evidence": {
+          "profile": "pre-factory",
+          "max_age_hours": 0
+        }
+      },
+      "strategyx": {
+        "identity": {
+          "catalog_name": "strategyx",
+          "repository": "github.com/ZoneCNH/strategyx",
+          "logical_module_path": "/home/workspace/strategyx",
+          "package_name": "strategyx",
+          "owner": "ZoneCNH"
+        },
+        "classification": {
+          "domain": "decision",
+          "layer": "business",
+          "profile": "",
+          "lifecycle": "proposed"
+        },
+        "dependencies": {
+          "allowed": null,
+          "forbidden_profiles": null
+        },
+        "release": {
+          "policy": "irregular",
+          "minimum_version": ""
+        },
+        "evidence": {
+          "profile": "pre-factory",
+          "max_age_hours": 0
+        }
+      },
+      "taosx": {
+        "identity": {
+          "catalog_name": "taosx",
+          "repository": "github.com/xhyperium/taosx",
+          "logical_module_path": "github.com/ZoneCNH/taosx",
+          "package_name": "taosx",
+          "owner": "xhyperium"
+        },
+        "classification": {
+          "domain": "foundation",
+          "layer": "storage",
+          "profile": "adapter",
+          "lifecycle": "active"
+        },
+        "dependencies": {
+          "allowed": [
+            "kernel"
+          ],
+          "forbidden_profiles": [
+            "configx",
+            "observex",
+            "resiliencx",
+            "schedulex",
+            "redisx",
+            "kafkax",
+            "natsx",
+            "postgresx",
+            "ossx",
+            "clickhousex",
+            "contracts",
+            "testkitx",
+            "x.go",
+            "business"
+          ]
+        },
+        "release": {
+          "policy": "stable",
+          "minimum_version": ""
+        },
+        "evidence": {
+          "profile": "factory-grade",
+          "max_age_hours": 0
+        }
+      },
+      "testkitx": {
+        "identity": {
+          "catalog_name": "testkitx",
+          "repository": "github.com/xhyperium/testkitx",
+          "logical_module_path": "github.com/ZoneCNH/testkitx",
+          "package_name": "testkitx",
+          "owner": "xhyperium"
+        },
+        "classification": {
+          "domain": "foundation",
+          "layer": "L1",
+          "profile": "primitive",
+          "lifecycle": "active"
+        },
+        "dependencies": {
+          "allowed": [
+            "kernel",
+            "configx",
+            "observex",
+            "resiliencx",
+            "schedulex"
+          ],
+          "forbidden_profiles": null
+        },
+        "release": {
+          "policy": "stable",
+          "minimum_version": ""
+        },
+        "evidence": {
+          "profile": "pre-factory",
+          "max_age_hours": 0
+        }
+      },
+      "transportx": {
+        "identity": {
+          "catalog_name": "transportx",
+          "repository": "github.com/xhyperium/transportx",
+          "logical_module_path": "github.com/ZoneCNH/transportx",
+          "package_name": "transportx",
+          "owner": "xhyperium"
+        },
+        "classification": {
+          "domain": "foundation",
+          "layer": "contracts",
+          "profile": "contract",
+          "lifecycle": "active"
+        },
+        "dependencies": {
+          "allowed": [
+            "contracts",
+            "configx",
+            "observex",
+            "resiliencx",
+            "xlib_standard"
+          ],
+          "forbidden_profiles": [
+            "schedulex",
+            "testkitx",
+            "redisx",
+            "kafkax",
+            "natsx",
+            "postgresx",
+            "taosx",
+            "ossx",
+            "clickhousex",
+            "x.go",
+            "business"
+          ]
+        },
+        "release": {
+          "policy": "stable",
+          "minimum_version": ""
+        },
+        "evidence": {
+          "profile": "factory-grade",
+          "max_age_hours": 0
+        }
+      },
+      "treasury": {
+        "identity": {
+          "catalog_name": "treasury",
+          "repository": "github.com/ZoneCNH/treasury",
+          "logical_module_path": "/home/workspace/treasury",
+          "package_name": "treasury",
+          "owner": "ZoneCNH"
+        },
+        "classification": {
+          "domain": "data",
+          "layer": "business",
+          "profile": "",
+          "lifecycle": "proposed"
+        },
+        "dependencies": {
+          "allowed": null,
+          "forbidden_profiles": null
+        },
+        "release": {
+          "policy": "irregular",
+          "minimum_version": ""
+        },
+        "evidence": {
+          "profile": "pre-factory",
+          "max_age_hours": 0
+        }
+      },
+      "uk_cb": {
+        "identity": {
+          "catalog_name": "uk_cb",
+          "repository": "github.com/ZoneCNH/uk_cb",
+          "logical_module_path": "/home/workspace/uk_cb",
+          "package_name": "uk_cb",
+          "owner": "ZoneCNH"
+        },
+        "classification": {
+          "domain": "data",
+          "layer": "business",
+          "profile": "",
+          "lifecycle": "proposed"
+        },
+        "dependencies": {
+          "allowed": null,
+          "forbidden_profiles": null
+        },
+        "release": {
+          "policy": "irregular",
+          "minimum_version": ""
+        },
+        "evidence": {
+          "profile": "pre-factory",
+          "max_age_hours": 0
+        }
+      },
+      "x.go": {
+        "identity": {
+          "catalog_name": "x.go",
+          "repository": "github.com/ZoneCNH/x.go",
+          "logical_module_path": "/home/workspace/x.go",
+          "package_name": "x.go",
+          "owner": "ZoneCNH"
+        },
+        "classification": {
+          "domain": "crosscut",
+          "layer": "business",
+          "profile": "",
+          "lifecycle": "active"
+        },
+        "dependencies": {
+          "allowed": null,
+          "forbidden_profiles": null
+        },
+        "release": {
+          "policy": "irregular",
+          "minimum_version": ""
+        },
+        "evidence": {
+          "profile": "pre-factory",
+          "max_age_hours": 0
+        }
+      },
+      "xlib_evidence": {
+        "identity": {
+          "catalog_name": "xlib_evidence",
+          "repository": "github.com/xhyperium/xlib_evidence",
+          "logical_module_path": "github.com/ZoneCNH/xlib_evidence",
+          "package_name": "xlib_evidence",
+          "owner": "xhyperium"
+        },
+        "classification": {
+          "domain": "foundation",
+          "layer": "evidence",
+          "profile": "tooling",
+          "lifecycle": "active"
+        },
+        "dependencies": {
+          "allowed": [],
+          "forbidden_profiles": null
+        },
+        "release": {
+          "policy": "stable",
+          "minimum_version": ""
+        },
+        "evidence": {
+          "profile": "factory-grade",
+          "max_age_hours": 0
+        }
+      },
+      "xlib_harness": {
+        "identity": {
+          "catalog_name": "xlib_harness",
+          "repository": "github.com/xhyperium/xlib_harness",
+          "logical_module_path": "github.com/ZoneCNH/xlib_harness",
+          "package_name": "xlib_harness",
+          "owner": "xhyperium"
+        },
+        "classification": {
+          "domain": "foundation",
+          "layer": "harness",
+          "profile": "tooling",
+          "lifecycle": "active"
+        },
+        "dependencies": {
+          "allowed": [],
+          "forbidden_profiles": null
+        },
+        "release": {
+          "policy": "stable",
+          "minimum_version": ""
+        },
+        "evidence": {
+          "profile": "factory-grade",
+          "max_age_hours": 0
+        }
+      },
+      "xlib_standard": {
+        "identity": {
+          "catalog_name": "xlib_standard",
+          "repository": "github.com/xhyperium/xlib_standard",
+          "logical_module_path": "github.com/ZoneCNH/xlib_standard",
+          "package_name": "xlib_standard",
+          "owner": "xhyperium"
+        },
+        "classification": {
+          "domain": "foundation",
+          "layer": "standard_source",
+          "profile": "",
+          "lifecycle": "active"
+        },
+        "dependencies": {
+          "allowed": [],
+          "forbidden_profiles": [
+            "kernel",
+            "configx",
+            "observex",
+            "resiliencx",
+            "schedulex",
+            "testkitx",
+            "redisx",
+            "kafkax",
+            "natsx",
+            "postgresx",
+            "taosx",
+            "ossx",
+            "clickhousex",
+            "contracts",
+            "transportx",
+            "x.go",
+            "business"
+          ]
+        },
+        "release": {
+          "policy": "stable",
+          "minimum_version": ""
+        },
+        "evidence": {
+          "profile": "factory-grade",
+          "max_age_hours": 0
+        }
+      },
+      "xlibgate": {
+        "identity": {
+          "catalog_name": "xlibgate",
+          "repository": "github.com/xhyperium/xlibgate",
+          "logical_module_path": "github.com/ZoneCNH/xlibgate",
+          "package_name": "xlibgate",
+          "owner": "xhyperium"
+        },
+        "classification": {
+          "domain": "foundation",
+          "layer": "gate",
+          "profile": "",
+          "lifecycle": "active"
+        },
+        "dependencies": {
+          "allowed": [],
+          "forbidden_profiles": [
+            "kernel",
+            "configx",
+            "observex",
+            "resiliencx",
+            "schedulex",
+            "testkitx",
+            "redisx",
+            "kafkax",
+            "natsx",
+            "postgresx",
+            "taosx",
+            "ossx",
+            "clickhousex",
+            "contracts",
+            "transportx",
+            "x.go",
+            "business"
+          ]
+        },
+        "release": {
+          "policy": "stable",
+          "minimum_version": ""
+        },
+        "evidence": {
+          "profile": "factory-grade",
+          "max_age_hours": 0
+        }
+      },
+      "yahoo": {
+        "identity": {
+          "catalog_name": "yahoo",
+          "repository": "github.com/ZoneCNH/yahoo",
+          "logical_module_path": "/home/workspace/yahoo",
+          "package_name": "yahoo",
+          "owner": "ZoneCNH"
+        },
+        "classification": {
+          "domain": "data",
+          "layer": "business",
+          "profile": "",
+          "lifecycle": "proposed"
+        },
+        "dependencies": {
+          "allowed": null,
+          "forbidden_profiles": null
+        },
+        "release": {
+          "policy": "irregular",
+          "minimum_version": ""
+        },
+        "evidence": {
+          "profile": "pre-factory",
+          "max_age_hours": 0
+        }
+      },
+      "yield_curve": {
+        "identity": {
+          "catalog_name": "yield_curve",
+          "repository": "github.com/ZoneCNH/yield_curve",
+          "logical_module_path": "/home/workspace/yield_curve",
+          "package_name": "yield_curve",
+          "owner": "ZoneCNH"
+        },
+        "classification": {
+          "domain": "data",
+          "layer": "business",
+          "profile": "",
+          "lifecycle": "proposed"
+        },
+        "dependencies": {
+          "allowed": null,
+          "forbidden_profiles": null
+        },
+        "release": {
+          "policy": "irregular",
+          "minimum_version": ""
+        },
+        "evidence": {
+          "profile": "pre-factory",
+          "max_age_hours": 0
+        }
+      }
+    }
+  },
+  "drift": [
+    {
+      "kind": "release-conflict",
+      "module": "portfolio_engine",
+      "detail": "release policy (cadence) is empty"
+    },
+    {
+      "kind": "release-conflict",
+      "module": "order_engine",
+      "detail": "release policy (cadence) is empty"
+    },
+    {
+      "kind": "release-conflict",
+      "module": "backtest_engine",
+      "detail": "release policy (cadence) is empty"
+    },
+    {
+      "kind": "release-conflict",
+      "module": "risk_engine",
+      "detail": "release policy (cadence) is empty"
+    }
+  ]
+}
