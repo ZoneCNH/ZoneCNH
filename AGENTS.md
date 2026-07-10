@@ -168,6 +168,10 @@ Spec → Matrix → Tasks → Plan → Prompt → Code
 - `[FRAME, HIGH]` 可安全并行时使用 3–5 个 Luna；`--workers` 默认 3、上限 5。`.codex/config.toml` 的 `agents.max_threads` 只约束 Codex 原生 subagent，不替代此外层进程并发上限。
 - `[FRAME, HIGH]` cheap gate 通过后直接推进，不回 Sol。任何明确失败先由 Luna 修复并重跑 gate；只有 `evidence missing`、`evidence conflict`、`scope overlap` 或 `retry exhausted` 才回 Sol。
 - `[FRAME, HIGH]` 自动路由必须保留任务写范围、机械检查输出、重试次数、模型调用日志和证据路径；不得用 agent 名称或返回文本代替模型证据。
+- `[FRAME, HIGH]` `run` 必须提供非空 `--spec-ref`、对应的 canonical `--matrix-ref`、至少一个真实存在的 `--matrix-edge`（例如 `M-001`）和至少一个非空全局 `--check`。SPEC/Matrix 必须解析为 workspace 内真实文件，edge 必须出现在该 Matrix 的 Edge ID 列；经规范化的引用必须进入 Sol plan、每个 Luna task/repair、integration repair 和 Sol escalation Prompt，缺失、空值、越界或引用不一致一律 fail closed。
+- `[FRAME, HIGH]` scope 校验必须拒绝 §14.1 的完整保护集：`docs/governance/scoring/RUBRIC-*.md`、`docs/governance/STRUCTURAL-SCORING.md`、`docs/governance/scoring/ARBITER-PROTOCOL.md`、`.claude/agents/`、`.codex/agents/`、`.copilot/agents/`、`.claude/commands/spec-code-pipeline.md`、`.codex/skills/spec-code-pipeline/`、`.copilot/commands/spec-code-pipeline.md`、`.omc/state/outer-metrics/`、`.omx/state/outer-metrics/`、`.copilot/state/outer-metrics/` 和 `CONSTITUTION.md`；`.git` 及其子路径也属于不可声明的 Git 元数据范围。`.`、这些路径的任一祖先目录、通配符/glob 及其他能够覆盖保护集的宽 scope 同样拒绝；scope 或 check token 的 `option=value` 右值若为绝对路径也必须拒绝。
+- `[FRAME, HIGH]` 全局 check 仅接受安全 argv；`pytest -p/-o/--override-ini`、`go test -exec/-toolexec`、`go vet -vettool`、Node loader/setup 等可加载插件或替换执行器的危险 flag 必须拒绝。所有 cheap checks 必须在 `prlimit + bwrap` 的无网络、clean-env、空根沙箱中执行；当前 worktree 与 `.git`/common-dir 均只读，只有有界 tmpfs 可写，`bwrap`/`prlimit` 不可用时 fail closed。cheap gate 前后必须检测模型新增的 ignored 文件；仅当前 run 自有的 `.omx/state/orchestration/<run_id>/` 制品可豁免，executor worktree 若已有或新增 ignored 文件、检测命令失败或证据不完整都必须停止 gate。
+- `[FRAME, HIGH]` Luna 声明的 `changed_files` 必须与机械 diff 一致；冲突按 `evidence conflict` 回 Sol。Sol escalation 只接收失败/冲突摘要和通过任务的 patch hash receipt；模型调用日志汇总 Sol/Luna token、总 token 与未知计量调用。当前入口不提供跨 run resume，不得声称自动复用上一 run 的通过 patch。
 - `[FRAME, HIGH]` 不注册或新增受保护 custom agent；本节不改变 21=21=21 的 agent 镜像，也不替代 Spec→Code 的四源评分与 arbiter。
 
 [FRAME, HIGH] 最小入口与执行命令如下；参数是否被当前实现接受，以命令退出码和 JSON 输出为准：
@@ -189,10 +193,14 @@ python3 scripts/sol_luna_orchestrator.py run \
   --workspace "$PWD" \
   --workers 3 \
   --request-file /path/to/request.md \
+  --spec-ref docs/governance/improvements/20260710-sol_luna_orchestration/SPEC.md \
+  --matrix-ref docs/governance/improvements/20260710-sol_luna_orchestration/matrix/TRACEABILITY.md \
+  --matrix-edge M-001 \
+  --matrix-edge M-003 \
   --check '["python3", "-m", "pytest", "-q"]'
 ```
 
-[FRAME, HIGH] 明确失败的修复循环保持为：`Sol 规划 → 3–5 Luna 并行 → cheap gate → Luna 修复 → 继续或按四类证据问题回 Sol`。父 worktree 只在 integration worktree 的全局检查通过后一次性接收 combined patch。
+[FRAME, HIGH] 明确失败的修复循环保持为：`Sol 规划 → 3–5 Luna 并行 → cheap gate → Luna 修复 → 继续或按四类证据问题回 Sol`。integration Luna repair 在每轮全局 checks 完成后必须重新抓取 integration worktree 的 status、diff 和 scope；只有重新抓取结果安全且全局 checks 通过时才捕获 combined patch，父 worktree 才一次性接收它。
 
 ### 关键文档
 

@@ -28,12 +28,12 @@
 ## 3. 目标
 
 - `FR-001` `[FRAME, HIGH]` 新 Codex 会话默认使用 `gpt-5.6-sol` 与 `xhigh`。
-- `FR-002` `[FRAME, HIGH]` 可拆为 3–5 个互斥写范围的任务，由 Sol 先生成严格结构化计划，再并行启动同数量 Luna。
-- `FR-003` `[FRAME, HIGH]` 每个 Luna 只能在独立 detached worktree 和声明的写范围内工作，并输出结构化证据。
-- `FR-004` `[FRAME, HIGH]` 明确失败先由 Luna 有界重试；只有证据缺失、证据冲突、范围重叠或重试耗尽才调用 Sol 升级裁决。
+- `FR-002` `[FRAME, HIGH]` 可拆为 3–5 个互斥写范围的任务，由 Sol 先生成严格结构化计划，再并行启动同数量 Luna；每次 run 必须绑定当前 HEAD 跟踪的 SPEC、canonical Matrix 和 Matrix 中真实存在的 M-edge。
+- `FR-003` `[FRAME, HIGH]` 每个 Luna 只能在独立 detached worktree 和声明的写范围内工作，并输出结构化证据；scope 不得折叠真实 POSIX Git 路径、指向 symlink/Git 元数据或越过 workspace。
+- `FR-004` `[FRAME, HIGH]` 明确失败先由 Luna 有界重试；只有证据缺失、证据冲突、范围重叠或重试耗尽才调用 Sol 升级裁决。task 与 integration 的 Luna `changed_files` 声明都必须和机械 diff 一致。
 - `FR-005` `[FRAME, HIGH]` task patch 先在独立 integration worktree 合并并运行全局 cheap checks；通过后才向父 worktree 一次性应用 combined patch。
 - `FR-006` `[FRAME, HIGH]` 运行前与最终应用前都校验父 worktree clean 且 HEAD 未变化。
-- `FR-007` `[FRAME, HIGH]` 模型调用、检查、重试、patch、门禁和清理结果写入 `.omx/state/orchestration/<run_id>/`。
+- `FR-007` `[FRAME, HIGH]` 模型调用、ignored 审计、sandbox 检查、重试、patch、门禁、清理和 token 汇总写入 `.omx/state/orchestration/<run_id>/`；Sol escalation 只接收失败/冲突摘要与通过任务的 patch receipt。
 
 ## 4. 非目标
 
@@ -41,6 +41,7 @@
 - `[FRAME, HIGH]` 不替代 Spec→Code 的四源评分与正式 Gate；本改进只增加前置通用编排与 cheap gate。
 - `[FRAME, HIGH]` 不把 `agents.max_threads` 当作外层 subprocess 并发证明；外层入口由 `--workers` 独立约束为 3–5。
 - `[FRAME, HIGH]` 不声称已经量化节省 token 或生成成本；该收益需要后续真实运行数据。
+- `[FRAME, HIGH]` 当前版本不实现跨 run resume 或自动复用上一 run 的通过 patch；该能力必须以 HEAD/request/spec/matrix/check 指纹约束另行实现。
 
 ## 5. 设计
 
@@ -61,13 +62,15 @@ request
 
 [FRAME, HIGH] 所有 `codex exec` 使用 argv、`shell=False`、`-a never`、`--ephemeral`、显式 model、显式 `xhigh`、JSON Schema 和有界 timeout。
 
+[FRAME, HIGH] 所有 cheap checks 由 `prlimit + bwrap` 执行：空根文件系统只读挂载系统运行时、语言缓存、当前 worktree 和 Git 元数据；worktree/Git 元数据只读、网络 namespace 隔离、环境清空、stdin=`DEVNULL`、tmpfs/CPU/内存/进程/文件/输出均有界。`bwrap` 或 `prlimit` 缺失时 run fail closed；不使用 Docker 或 Kubernetes。
+
 [FRAME, HIGH] runtime registered worktree 统一放在 primary worktree 下的 `.worktree/workspaces/runtime/sol_luna/<run_id>/`，调用 worktree 只承载忽略的 `.omx` 证据。
 
 ## 6. 需求验收
 
 - `AC-001` `[FRAME, HIGH]` `codex --strict-config doctor --json` 能加载 `gpt-5.6-sol`，且没有未知配置键。
 - `AC-002` `[FRAME, HIGH]` `python3 scripts/sol_luna_orchestrator.py probe` 同时确认 Sol、Luna 支持 `xhigh`。
-- `AC-003` `[FRAME, HIGH]` 单元测试覆盖 3–5 边界、safe-check allowlist、结构化 schema、timeout=124、证据门禁和 Luna 重试。
+- `AC-003` `[FRAME, HIGH]` 单元测试覆盖 3–5 边界、safe-check allowlist、真实 Git rename/ignored/path 边界、Matrix 归属、sandbox 隔离与资源限制、结构化 schema、timeout=124、证据门禁和 Luna 重试。
 - `AC-004` `[FRAME, HIGH]` integration 失败路径不写父 worktree；成功路径只调用一次父 patch apply。
 - `AC-005` `[FRAME, HIGH]` task 与 integration 的明确 `fail` 在次数未耗尽时先重试 Luna。
 - `AC-006` `[FRAME, HIGH]` 静态范围检查证明没有修改 §14.1 保护文件。
@@ -81,6 +84,8 @@ request
 | 模型 slug 或 `xhigh` 不可用 | 每次 run 先读取 bundled catalog，失败即停止 | `[COMPUTED, HIGH]` |
 | 并行任务互相覆盖 | 计划阶段拒绝 scope overlap；每 task 独立 worktree | `[FRAME, HIGH]` |
 | 测试失败却升级昂贵模型 | 明确失败先 Luna 重试；仅四类证据问题回 Sol | `[FRAME, HIGH]` |
+| 测试代码逃逸或读取宿主凭据 | 空根 `bwrap` 仅挂载必要运行时；无网络、clean-env、只读 worktree/Git、stdin 关闭 | `[FRAME, HIGH]` |
+| 测试代码耗尽宿主资源或输出 | `prlimit`、有界 tmpfs、16 MiB 文件上限、2 MiB 日志读取上限和 wall timeout | `[FRAME, HIGH]` |
 | 集成失败污染父 workspace | 所有 patch 先进入 integration worktree，父 workspace 最后一次性应用 | `[FRAME, HIGH]` |
 | 用户运行期间修改父 workspace | 最终 apply 前重新验证 clean 与初始 HEAD | `[FRAME, HIGH]` |
 | schema 或命令挂死 | strict JSON Schema；模型 1800 秒、cheap check 900 秒、git 60 秒 timeout | `[FRAME, HIGH]` |
@@ -106,3 +111,5 @@ request
 | 2026-07-10 | 外部 CLI 是 executor 模型硬路由入口 | 当前 collaboration schema 不含 model/effort 字段 `[COMPUTED, HIGH]` |
 | 2026-07-10 | cheap gate 是正式 Gate 前置层 | 避免修改 §14.1 保护评分系统 `[FRAME, HIGH]` |
 | 2026-07-10 | 父 worktree 采用事务式 combined patch | 失败路径必须无部分写入 `[FRAME, HIGH]` |
+| 2026-07-10 | cheap checks 使用空根 `bwrap` + `prlimit` | 模型生成测试属于不可信代码，普通宿主 subprocess 不满足安全边界 `[COMPUTED, HIGH]` |
+| 2026-07-10 | resume 降为后续 P1 | 当前 SPEC 先闭合单 run 路由；不得把人工复用描述为自动恢复 `[COMPUTED, HIGH]` |

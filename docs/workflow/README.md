@@ -114,6 +114,14 @@ executor → [Claude scorer | Codex scorer | Copilot scorer | Rules scorer]
 | 明确失败 | 先路由 Luna 修复 | 修复后重跑 gate |
 | `evidence missing` / `evidence conflict` / `scope overlap` / `retry exhausted` | 回 Sol | Sol 决定补证据、消歧、重划范围或停止 |
 
+[FRAME, HIGH] `run` 的调用契约是：必须提供 workspace 内真实的 `--spec-ref`、对应 canonical `--matrix-ref`、一个或多个确实存在于该 Matrix 的 `--matrix-edge`（例如 `M-001`、`M-003`）以及至少一个非空全局 `--check`。编排器把规范化后的引用写入 Sol plan、每个 Luna task/repair、integration repair 和 Sol escalation Prompt；任何缺失、空值、越界、Matrix 不匹配或 edge 不存在都 fail closed。
+
+[FRAME, HIGH] scope 只能是明确的工作区相对路径。§14.1 完整保护集包括 `docs/governance/scoring/RUBRIC-*.md`、`docs/governance/STRUCTURAL-SCORING.md`、`docs/governance/scoring/ARBITER-PROTOCOL.md`、`.claude/agents/`、`.codex/agents/`、`.copilot/agents/`、`.claude/commands/spec-code-pipeline.md`、`.codex/skills/spec-code-pipeline/`、`.copilot/commands/spec-code-pipeline.md`、`.omc/state/outer-metrics/`、`.omx/state/outer-metrics/`、`.copilot/state/outer-metrics/` 和 `CONSTITUTION.md`；`.git` 及其子路径也不可声明。保护路径本身、`.`、其祖先目录、通配符/glob 或其他能够覆盖保护集的宽 scope 一律拒绝；`option=value` 中的绝对路径右值也按绝对路径拒绝。
+
+[FRAME, HIGH] 全局 check 必须是允许的 argv；pytest 插件/override、Go exec/tool、Node loader/setup 等危险执行 flag 不得通过校验。所有 cheap checks 都在 `prlimit + bwrap` 无网络、clean-env、空根沙箱中执行：当前 worktree、`.git` 与 common-dir 均只读，只有有界 tmpfs 可写，宿主 home/其他 workspace/`/opt` secret/`/run` socket 不可见；沙箱或资源限制器不可用即 fail closed。模型调用前后检测新增 ignored 文件，仅豁免当前 run 自有证据目录；executor baseline ignored、其他 ignored 变化或检测异常均停止 gate。
+
+[FRAME, HIGH] Luna 的 `changed_files` 声明必须和机械 diff 一致；冲突回 Sol。Sol 只接收失败/冲突摘要，通过任务仅传 ID、changed files 和 patch SHA-256 receipt；summary 汇总 Sol/Luna/总 token 与未知 token 调用。当前版本没有跨 run resume，上一 run 的通过 patch 不会自动复用。
+
 最小探测命令：
 
 ```bash
@@ -132,10 +140,14 @@ python3 scripts/sol_luna_orchestrator.py run \
   --workspace "$PWD" \
   --workers 3 \
   --request-file /path/to/request.md \
+  --spec-ref docs/governance/improvements/20260710-sol_luna_orchestration/SPEC.md \
+  --matrix-ref docs/governance/improvements/20260710-sol_luna_orchestration/matrix/TRACEABILITY.md \
+  --matrix-edge M-001 \
+  --matrix-edge M-003 \
   --check '["python3", "-m", "pytest", "-q"]'
 ```
 
-[FRAME, HIGH] 每个 task 先在独立 detached worktree 运行机械检查；全部 task patch 再进入独立 integration worktree。只有全局检查通过时，父 worktree 才一次性应用 combined patch；明确失败先由 Luna 重试，证据缺失、冲突、范围重叠或重试耗尽才升级 Sol。
+[FRAME, HIGH] 每个 task 先在独立 detached worktree 运行机械检查；全部 task patch 再进入独立 integration worktree。integration repair 每轮 checks 后重新读取 status、diff 与 scope，再决定是否捕获 combined patch。只有全局检查和重新抓取的 scope 都通过时，父 worktree 才一次性应用 combined patch；明确失败先由 Luna 重试，证据缺失、冲突、范围重叠或重试耗尽才升级 Sol。
 
 ---
 
