@@ -9,6 +9,7 @@ capacity:
   - 94.72.124.39
   - 84.247.154.45
   - 10.2.2.9
+  - 10.2.2.10
   required_module_registrations: 68
   minimum_runners_needed: 68
   gap: 52
@@ -18,6 +19,7 @@ capacity:
       memory_gb: 7.8
       disk_total_gb: 148
       disk_used_pct: 50
+      ssh_user: claude
       max_runners: 6
       current_runners: 2
       recommended_runners: 4
@@ -29,21 +31,20 @@ capacity:
       memory_gb: 62
       disk_total_gb: 591
       disk_used_pct: 69
+      ssh_user: claude
       max_runners: 24
       current_runners: 9
-      recommended_runners: 20
+      recommended_runners: 13
       pools:
       - sre/deploy
-      - sre/engine
-      - sre/macro
       - sre/market
-      - sre/storage-heavy
       - sre/storage-light
-      notes: 资源最充裕；承载重载、Docker、deploy 隔离池
+      notes: 资源充裕；承载 Docker、deploy 隔离池；释放 engine/macro/storage-heavy 到 xhypers
     10.2.2.9:
       cpu: 12
       memory_gb: 16
       disk_total_gb: 233
+      ssh_user: root
       max_runners: 12
       current_runners: 6
       recommended_runners: 12
@@ -53,6 +54,20 @@ capacity:
       - sre/foundation-l1
       - sre/security
       notes: 内存是瓶颈；建议升级至 32 Gi 再承载 12+ runner
+    10.2.2.10:
+      cpu: 16
+      memory_gb: 126
+      disk_total_gb: 1900
+      disk_used_pct: 12
+      ssh_user: zone
+      max_runners: 40
+      current_runners: 0
+      recommended_runners: 37
+      pools:
+      - sre/engine
+      - sre/macro
+      - sre/storage-heavy
+      notes: xhypers 主力 runner 主机；大内存适合 engine、macro 与 Docker 重载测试
   per_host_demand:
     10.2.2.9:
       modules: 18
@@ -63,20 +78,24 @@ capacity:
       - sre/foundation-l1
       - sre/security
     84.247.154.45:
-      modules: 46
-      runners_needed: 46
+      modules: 13
+      runners_needed: 13
       pools:
       - sre/deploy
-      - sre/engine
-      - sre/macro
       - sre/market
-      - sre/storage-heavy
       - sre/storage-light
     94.72.124.39:
       modules: 4
       runners_needed: 4
       pools:
       - sre/governance
+    10.2.2.10:
+      modules: 33
+      runners_needed: 33
+      pools:
+      - sre/engine
+      - sre/macro
+      - sre/storage-heavy
   expansion_plan:
     phase_a_density:
       target_runners: 30
@@ -93,45 +112,35 @@ capacity:
         - sre/contracts
         - sre/security
       - host: 84.247.154.45
-        add: 8
+        add: 4
         target_pools:
         - sre/market
-        - sre/macro
-        - sre/engine
-    phase_b_new_host:
-      host_spec:
-        cpu: 16
-        memory_gb: 64
-        disk_gb: 500
-      planned_runners: 18
+        - sre/storage-light
+    phase_b_xhypers:
+      host: 10.2.2.10
+      hostname: xhypers
+      cpu: 16
+      memory_gb: 126
+      disk_gb: 1900
+      planned_runners: 37
       target_pools:
       - sre/engine
-      - sre/market
       - sre/macro
-      gap_after: 20
-    phase_c_new_host:
-      host_spec:
-        cpu: 8
-        memory_gb: 32
-        disk_gb: 300
-      planned_runners: 14
-      target_pools:
-      - sre/foundation-l1
-      - sre/contracts
-      - sre/market
-      - sre/macro
-      gap_after: 6
-    phase_d_final_tuning:
-      planned_runners: 6
-      note: 根据实际并发率与队列情况微调，最终达到 68 runner
+      - sre/storage-heavy
+      gap_after: 2
+    phase_c_final_tuning:
+      planned_runners: 2
+      note: 根据实际并发率与队列情况在 xhypers 或 10.2.2.9 上微调，最终达到 68 runner
   constraints:
   - GitHub user account：runner 按 repo 注册，不可 org 共享
   - sre/deploy 必须独立主机/进程，禁止与 PR runner 混池
   - storage-heavy 单 runner 独占 4 vCPU / 8 Gi，max_concurrency=1
   - 10.2.2.9 内存仅 16 Gi，不建议承载超过 12 个并发 runner
+  - xhypers 同时作为工作站，runner 密度上限 40，避免影响交互使用
   risks:
   - 10.2.2.9 内存不足导致 OOM
   - 84.247.154.45 磁盘使用率 69%，Docker 与 _work 目录增长可能占满
+  - xhypers 工作站与 runner 争用资源
   - 用户账号 PAT 权限不足影响批量注册
 pools:
   sre/governance:
@@ -408,7 +417,7 @@ pools:
       - sre/market
   sre/macro:
     label: sre/macro
-    host: 84.247.154.45
+    host: 10.2.2.10
     profile: macro
     docker: optional
     runner_count_per_pool: 1
@@ -542,7 +551,7 @@ pools:
       - sre/storage-light
   sre/storage-heavy:
     label: sre/storage-heavy
-    host: 84.247.154.45
+    host: 10.2.2.10
     profile: heavy
     docker: true
     runner_count_per_pool: 2
@@ -581,7 +590,7 @@ pools:
       - sre/storage-heavy
   sre/engine:
     label: sre/engine
-    host: 84.247.154.45
+    host: 10.2.2.10
     profile: engine
     docker: optional
     runner_count_per_pool: 1
