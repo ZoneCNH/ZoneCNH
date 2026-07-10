@@ -1,11 +1,14 @@
 # Binance Traceability Matrix
 
 - [KNOWN] Matrix-Version: v4.1.0
-- [KNOWN] Last-Updated: 2026-07-08（白名单补齐 GC-0~GC-5 全合入）
+- [KNOWN] Last-Updated: 2026-07-10（runtime implementation/evidence 双口径对齐审计）
 - Source-SPEC: `module/binance/spec/SPEC.md` v4.1.0
 - State-Model: single-state only
 - [KNOWN] Current-State: 65 Done / 0 Partial / 0 Drifted / 0 Pending（FR-052~061 spot/um/cm 已实现；options 待 Phase 2；FR-045~051 白名单补齐 GC-0~GC-5 全合入）
-- [KNOWN] release_closeable: YES（规格口径 65 Done；FR-052~061 spot/um/cm 已实现，options 待 Phase 2）
+- [FRAME] Spec-release-closeable: YES（仅表示 FR/规格投影；options order book 仍待 Phase 2）
+- [COMPUTED, HIGH] Runtime-release-closeable: NO（2026-07-10 audit：外部 durable/fanout/query E2E、正式 tag/release notes 与 rollback evidence 尚未绑定同一最终 commit）
+
+> [COMPUTED, HIGH] Runtime implementation commit：`3f6366728b635c32d73565874965d40c20a92caf`；dated external ledger commit：`660a3701589cc15fa95c7859fae02fad4863e1ad`。上方 `Spec-release-closeable=YES` 仅为规格投影，不提升 runtime release 状态。
 
 ## 1. Rule
 
@@ -102,13 +105,19 @@ This matrix is the compact FR/BR/AC/TC projection. It intentionally does not dup
 
 ## 4. Production Readiness Gates
 
-release_closeable 判定公式：
+规格口径的 `release_closeable_spec` 判定公式：
+
+```
+release_closeable_spec = Code-Done FR / Total FR ≥ 90% AND Drifted FR = 0 AND Pending FR = 0 AND PRG-001~007 gates PASS
+```
+
+CI 门禁投影（`release_closeable_spec` 的等价投影，供 `binance-status-consistency-check.sh` 门禁消费）：`release_closeable: YES`（Code-Done 65/65 = 100% ≥ 90%，Drifted=0，Pending=0，PRG-001~007 全 PASS）。
 
 ```
 release_closeable = Code-Done FR / Total FR ≥ 90% AND Drifted FR = 0 AND Pending FR = 0 AND PRG-001~007 gates PASS
 ```
 
-当前状态：`release_closeable: YES`（65 FR: 65 Done = 100% ≥ 90%，PRG-001~007 全 PASS）。FR-052~061 options depth 待 Phase 2 testnet 实测后激活。2026-07-08 白名单补齐 GC-0~GC-5 全合入（PR #444/#445/#446/#447/#449/#452），G-CF 门禁全 PASS，非规格新增故 FR 计数不变。
+当前规格状态：`release_closeable_spec: YES`（65 FR: 65 Done = 100% ≥ 90%，options depth 待 Phase 2 testnet 实测后激活）。runtime 发布状态必须额外满足 `release_closeable_runtime`：同一最终 commit 的外部 durable/fanout/query E2E、正式 release tag/release notes、部署前检查和 rollback evidence；本轮该值为 `NO`。[COMPUTED, HIGH]
 
 | PRG | Gate | State | Evidence |
 | --- | --- | --- | --- |
@@ -153,8 +162,10 @@ Beads and GitHub issues are the current P10 tracking SSOT. The retired local pro
 | Pending | 0 |
 | GitHub P10 open | 0 |
 | Beads P10 open | 0 |
-| release_closeable | YES |
+| release_closeable | YES（spec projection；runtime 见下行） |
+| release_closeable_spec | YES |
+| release_closeable_runtime | NO |
 
-> **运行时缺口投影**：本矩阵统计规格口径（55 Done）。运行时口径的 58 个缺口（GAP-E1~E58）对应的 28 个 GitHub Issues 已于 2026-07-05 全部关闭；2026-07-06 新增并修复 GAP-E59（数据血缘/版本控制：`internal/server/lineage/` + migration 012）。PRG-006 gated resilience 测试已 CI-runnable。两者正交——规格 Done 表示 FR 功能面已闭合，运行时修复表示 GAP-E 缺口已处理。详见该文件 §7 双口径声明。
+> **运行时缺口投影**：历史 GAP-E 修复记录保留在本文件；本轮不从历史记录自动推导 runtime release Go。当前 runtime `release_closeable_runtime=NO`，外部 durable/fanout/query、正式 tag/release notes、部署前检查与 rollback 由 todo 与 release evidence 单独闭合。两者正交——规格 Done 表示 FR 功能面已闭合，运行时发布仍需当前 commit 的证据。
 >
-> release_closeable = Code-Done FR / Total FR = 65/65 = 100% ≥ 90%，PRG-001~007 全 PASS → release_closeable=YES。FR-052~061 options depth 范围待 Phase 2 testnet 实测后激活（ADR-011 §7.4）。
+> `release_closeable_spec=YES` 仅表示 Code-Done FR / Total FR = 65/65 = 100% ≥ 90%；runtime `release_closeable_runtime=NO`，本轮 external-gates、正式 tag/release notes、部署前检查与 rollback 尚未闭合。options depth capture 已建立，但进入 OrderBookManager 仍 excluded/postponed（ADR-011 §7.4）。

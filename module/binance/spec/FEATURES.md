@@ -5,20 +5,20 @@
 | 字段 | 值 |
 | --- | --- |
 | Status | Generated from current module SSOT |
-| Last-Updated   | 2026-07-08                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| Module-Version | v4.0.1 |
-| Module-State   | v4.0.1 单一状态模型：**65 Done / 0 Partial / 0 Drifted / 0 Pending**（FR-052~061 order book rebuild spot/um/cm 已实现；options depth 协议待 Phase 2 实测激活）。release_closeable=YES（PRG-001~007 全 PASS）。 |
+| Last-Updated   | 2026-07-10                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| Module-Version | v4.1.0 |
+| Module-State   | v4.1.0 规格单一状态模型：**65 Done / 0 Partial / 0 Drifted / 0 Pending**（FR-052~061 order book rebuild spot/um/cm 已实现；options depth 协议仍 excluded/postponed）。`release_closeable_spec=YES`；runtime `release_closeable_runtime=NO`。 |
 | Layer | 数据域 / Binance-specific market_data C/S module |
 | Runtime-Repo | `/home/workspace/binance` |
 | Source | `goal.md`, `SPEC.md`, `TRACEABILITY.md`, `STANDARD.md`, `BOUNDARY-GATES.md`, `RUNTIME-MAPPING.md`, `IMPLEMENTATION-PLAN.md`, `client/`, `server/`, `tasks/` |
 
 本文档是 `module/binance` 当前规格库的实现投影，不是 runtime 代码验收证据。实际完成状态以 `TRACEABILITY.md`、`client/TRACEABILITY.md`、`server/TRACEABILITY.md` 和 `/home/workspace/binance` 的测试证据为准。
 
-> **v4.0.1 当前状态口径（2026-07-08）**：单一状态模型 — `Done` = 代码完整+装配就绪+TC PASS+evidence 归档。当前 Done 65 / Partial 0 / Drifted 0 / Pending 0（FR-052~061 order book rebuild spot/um/cm 已实现；options depth 协议待 Phase 2 实测激活）。release_closeable=YES（PRG-001~007 全 PASS）。
+> **v4.1.0 当前规格状态口径（2026-07-10）**：单一状态模型 — `Done` = 代码完整+装配就绪+TC PASS+evidence 归档。当前 Done 65 / Partial 0 / Drifted 0 / Pending 0（FR-052~061 order book rebuild spot/um/cm 已实现；options depth 协议仍 excluded/postponed）。规格 `release_closeable_spec=YES` 不替代 runtime 发布门禁。
 >
 > **单一状态模型**：FEATURES.md 的「Done」均指单一状态模型的 Done（代码完整+装配就绪+TC PASS+evidence 归档）。Evidence 列的判定见 `ACCEPTANCE.md` §4 闭合矩阵（全部 Done）。
 >
-> [COMPUTED, HIGH] 2026-07-07 状态对齐：历史 7 个外部依赖 live PASS + 4 产品线 mainnet live PASS + 全量门禁 PASS 证据保留；43 个 P10 issue 已全部关闭（10 轮验证 ALL PASS）；白名单系统 FR-045~051 全部 Done；**release_closeable=YES**（PRG-001~007 全 PASS）。
+> [COMPUTED, HIGH] 2026-07-10 对齐：历史外部依赖/live 证据仍保留，但本轮 runtime evidence 需重新绑定最终 commit；在外部 durable/fanout/query E2E、正式 tag/release notes 与 rollback 未闭合前，runtime `release_closeable_runtime=NO`。
 
 ## 1. 模块边界
 
@@ -37,7 +37,7 @@
 
 > 历史编号体系调整：FR-006 拆分为 6a/6b/6c/6d；FR-007a 新增（analytics API）；FR-009 升为 Boundary Enforcement；FR-010 新增（clickhousex OLAP）；FR-011 新增（分布式锁）；FR-012~FR-030 登记 realtime control、historical lifecycle、event governance、release evidence、runtime hot reload、freshness SLA 与 options raw field pass-through。
 
-> 状态口径（v4.0.1）：`Done` / `Partial` / `Drifted` / `Pending` 为四态单一模型；L1 boundary governance 不替代 L2 功能验收。`Drifted` = 无，`Partial` = 无，`Pending` = 0（FR-052~061 order book rebuild）。65 FR Done。release_closeable=YES（PRG-001~007 全 PASS）。
+> 状态口径（v4.1.0）：`Done` / `Partial` / `Drifted` / `Pending` 为四态单一模型；L1 boundary governance 不替代 L2 功能验收。`Drifted` = 无，`Partial` = 无，`Pending` = 0（FR-052~061 order book rebuild）。65 FR Done。`release_closeable_spec=YES`；runtime `release_closeable_runtime=NO`，直到本轮 external-gates、正式 tag/release notes、部署前检查与 rollback 闭合。
 
 | FR | 功能 | 当前状态 | 已有证据 | 剩余实现面 |
 | --- | --- | --- | --- | --- |

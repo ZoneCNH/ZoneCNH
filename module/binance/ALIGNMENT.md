@@ -1,20 +1,23 @@
 # Binance Subscription Governance — 对齐结论
 
-> 基于 `knowledge/streams.md` 13 章设计文档与 Plan 013 历史实施计划。
-> 验证日期：2026-07-09。
+> 基于 `design/DEEP-ANALYSIS-INDEX.md`、`design/EVENT-TYPE-MAPPING.md` 与 Plan 013 历史实施计划。
+> 验证日期：2026-07-10。
 > Plan 013 历史验证：30 次连续 build+test 通过。
-> Release recovery 当前验证：20 轮重复检查通过；见 [`todo.md`](todo.md) 与 [`evidence/2026-07-09/test/runtime-gates-recovery.md`](evidence/2026-07-09/test/runtime-gates-recovery.md)。
+> 本轮 closure audit：runtime implementation commit `3f6366728b635c32d73565874965d40c20a92caf`；针对最终 docs checker 状态的 20/20 轮重复检查 PASS；见 [`todo.md`](todo.md)、[`evidence/2026-07-10/review/todo-closure-20260710.md`](evidence/2026-07-10/review/todo-closure-20260710.md) 与 `/tmp/binance-final-20check-20260710-final2/SUMMARY.tsv`。[COMPUTED, HIGH]
 > **Plan 013 修订（2026-07-09）**：白名单规则统一重构完成——7 套机制收敛为 PG 双表 1 套；tier 词表 `core/standard` → `prime/standard/lite/blocked`；`tierCapabilityMap` 三元组推导 SSOT；DepthLevel 全链路接通。下方 §4/§5/§13 及「配置文件清单」中标 ❌(Plan 013 删) 的项为已删除死代码，不再生效。
 
-## 2026-07-09 发布 gate 对齐增补
+## 2026-07-10 发布 gate 对齐增补
 
 | 项 | 当前对齐结论 |
 | --- | --- |
 | 文档 gate | `bash scripts/check-binance-docs.sh` 已从旧根 `module/binance/SPEC.md` SKIP 修复为扫描 goal-driven 目录，并在 2026-07-09 本仓通过。[COMPUTED, HIGH] |
 | 标准 | `module/binance/gate/STANDARD.md` 已升级为发布与漂移标准，覆盖业务边界、产品线矩阵、canonical event_type、合约身份、options、order book、Foundation 依赖、发布证据和 gate 职责边界。[COMPUTED, HIGH] |
 | 规则 | `module/binance/gate/RULES.md` 已同步 R1/R2/R13：指向 `spec/NAMING.md` 与 `gate/STANDARD.md`，并禁止 docs gate 因旧根 SPEC 缺失而 SKIP。[COMPUTED, HIGH] |
-| runtime 发布口径 | `/home/workspace/binance` 本地已通过 `scripts/run-full-validation.sh --skip-health`、`make readiness-audit`、`make vuln-scan`、`boundary-gates.sh`、`spec-runtime-drift-check.sh` 与 `git diff --check`；本文件的 Plan 013 100% 仍只表示白名单重构历史完成，不自动等同于正式 release Go。[COMPUTED, HIGH] |
-| 待合并证据 | 本地 race、smoke、30s soak、`-tags=soak` server stability、本地 chaos 与 `govulncheck` 可达漏洞 0 已通过；release tag、远端 CI、rollback、live capture、真实 NATS/Kafka/TDengine/Redis/API E2E、`gitleaks` runner 证据与 live chaos 仍需进入最终 release evidence。[INFERRED, HIGH] |
+| runtime implementation | `/home/workspace/binance` feature branch 已落地 canonical `ticker/open_interest/index_reference/contract_info` 链路；implementation commit 为 `3f6366728b635c32d73565874965d40c20a92caf`。[COMPUTED, HIGH] |
+| runtime evidence bundle | dated external ledger 已提交于 `660a3701589cc15fa95c7859fae02fad4863e1ad`，ledger 内 runner commit 绑定 implementation SHA。[COMPUTED, HIGH] |
+| runtime 发布口径 | 当前仅有 last published tag `v0.15.1` @ `fc967053d7d8c21dba3c4e93962effbbbba0a70c`；本轮无新 tag、无部署、无回滚，故 runtime `release_closeable=NO`。[COMPUTED, HIGH] |
+| 已补齐的本地证据 | full test/race/build/vet、boundary 15/15、drift、NATS 本地 JetStream 语义、Options depth fixture + public capture、release scripts 与 packet validator 均已纳入；它们不替代外部 durable/fanout/query E2E。[COMPUTED, HIGH] |
+| 仍需外部 gate | `release/evidence/binance/20260710/external-gates.tsv` 当前记录 NATS/Kafka/TDengine/Redis/API 五项 `BLOCKED/NOT_RUN`；正式 tag/release notes、preflight 与 rollback 仍需人工授权和目标环境。[COMPUTED, HIGH] |
 
 ## Plan 013 修订摘要（2026-07-09）
 
@@ -32,7 +35,7 @@
 ## 总体完成度
 
 ```
-████████████████████ 100%  实施完成（全部 P0-P3 闭合）
+████████████████████ 100%  规格/治理实施投影完成；runtime 发布仍 BLOCKED
 ├── ██████████████████ 100%  访问控制 (Symbol/Stream/Feature/Depth + Hot-Reload)
 ├── ██████████████████ 100%  订阅管理 (SubscriptionPool + FanOut)
 ├── ██████████████████ 100%  连接治理 (ReconnectQueue + AntiBanEngine)

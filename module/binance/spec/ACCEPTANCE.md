@@ -5,15 +5,15 @@
 | 字段           | 值                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Status         | Generated from current module SSOT                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| Last-Updated   | 2026-07-08                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| Module-Version | v4.0.1 |
-| Module-State   | v4.0.1：FR **65 Done / 0 Partial / 0 Drifted / 0 Pending**（FR-052~061 order book rebuild spot/um/cm 已实现；options depth 协议待 Phase 2 实测激活）。release_closeable=YES（PRG-001~007 全 PASS）。 |
+| Last-Updated   | 2026-07-10 |
+| Module-Version | v4.1.0 |
+| Module-State   | v4.1.0：FR **65 Done / 0 Partial / 0 Drifted / 0 Pending**（FR-052~061 order book rebuild spot/um/cm 已实现；options depth 协议仍 excluded/postponed）。`release_closeable_spec=YES`；runtime `release_closeable_runtime=NO`，外部发布证据另行管理。 |
 | Runtime-Repo   | `/home/workspace/binance`                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | Source         | `SPEC.md`, `TRACEABILITY.md`, `STANDARD.md`, `client/TRACEABILITY.md`, `server/TRACEABILITY.md`, `BOUNDARY-GATES.md`                                                                                                                                                                                                                                                                                                                                  |
 
 本文档是验收执行清单，不是通过证明。每个 Pending 项必须由实际命令输出、CI run、测试报告或 traceability 状态更新关闭。
 
-> [COMPUTED, HIGH] 2026-07-08 状态对齐：SPEC v4.0.1 已确认 65/65 FR Done（100%），release_closeable=YES（PRG-001~007 全 PASS）；运行时口径 59 个 GAP-E 已跟踪登记于 `../evidence/README-GAP-E-INDEX.md`，其中多项仍标记为 Open（含 P0 GAP-E7 SPEC 内部矛盾），按双口径政策不计入规格口径发布判定。历史 P10 issues（43+28 GitHub + 43 Beads）已全部关闭。CI workflow 已从 self-hosted 迁移到 ubuntu-latest（self-hosted runner 已下线）。
+> [COMPUTED, HIGH] 2026-07-10 状态对齐：SPEC v4.1.0 规格口径为 65/65 FR Done（100%），`release_closeable_spec=YES`；runtime `release_closeable_runtime=NO`。运行时 gap 与本轮 external-gates 独立维护，不能由规格状态或历史 release evidence 自动继承。外部 durable/fanout/query E2E、正式 tag/release notes、部署前检查与 rollback 仍未闭合；implementation commit 为 `3f6366728b635c32d73565874965d40c20a92caf`。
 
 ### 状态口径 L1/L2 分层（RULES R4）+ 单一状态模型（v3.9.0）
 
@@ -230,7 +230,7 @@
 | FR-043  | AC-125~AC-127                                                  | TC-059         | Done（chaos test scripts + go test -race PASS，0 races）                                                                                                                                   |
 | FR-044  | AC-128~AC-130                                                  | TC-060, TC-061 | Done（gitleaks scan + govulncheck + admin auth Bearer token）                                                                                                                               |
 
-> **总结**：55 Evidence Done / 0 Evidence Pending。release_closeable=YES（PRG-001~007 全 PASS）。FR-052~061 order book rebuild spot/um/cm 已实现（Phase 1，TC-OB-001~011 由 `internal/client/orderbook/` 包测试覆盖）；options depth 待 Phase 2 实测激活。历史 full E2E evidence package 已归档。
+> **总结（规格口径）**：65 FR Done / 0 Partial / 0 Drifted / 0 Pending；`release_closeable_spec=YES`。runtime `release_closeable_runtime=NO`，本轮 external-gates、正式 tag/release notes、部署前检查与 rollback 尚未闭合。FR-052~061 order book rebuild spot/um/cm 已实现；options depth capture 已完成，但进入 OrderBookManager 仍 excluded/postponed。
 
 ## 5. Release Definition of Done
 
@@ -241,7 +241,7 @@
 | 根、Client、Server traceability 存在                      | Done                                                                                                 | 三个 traceability 文件可定位。                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | natsx / ManualAck / redisx / ossx / kafkax 边界已写入规格 | Done                                                                                                 | `SPEC.md` 与 `TRACEABILITY.md` 可定位对应 FR/AC/TC。                                                                                                                                                                                                                                                                                                                                                                                           |
 | Boundary gates 文档化                                     | Done                                                                                                 | `BOUNDARY-GATES.md` 存在。                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| 所有 FR implemented                                       | 65 Done（FR-052~061 为 Phase 1 实现，options depth 待 Phase 2 实测激活）/ 0 Partial / 0 Drifted | release_closeable=YES（PRG-001~007 全 PASS）。 |
+| 所有 FR implemented                                       | 65 Done / 0 Partial / 0 Drifted / 0 Pending（options depth excluded/postponed） | `release_closeable_spec=YES`；不替代 runtime 发布门禁。 |
 | 所有 AC passed                                            | Done                                                                                                 | AC-001~AC-130 历史证据见 TRACEABILITY；43 P10 issues 已全部关闭。 |
 | 所有 TC passed                                            | Done                                                                                                 | TC-001~TC-065 全 PASS；go test -race 0 races。 |
 | Runtime test evidence                                     | Done                                                                                                 | `/home/workspace/binance/release/evidence/binance/20260628-full-e2e-closure/` 已归档。 |
@@ -250,12 +250,12 @@
 
 ## 6. 当前验收缺口
 
-> [COMPUTED, HIGH] SPEC v4.0.0 已确认 release_closeable=YES（PRG-001~007 全 PASS）。P10 issues 全部关闭（43 GitHub + 43 Beads）。运行时口径 59 项 GAP-E 已跟踪登记（详见 `../evidence/README-GAP-E-INDEX.md`），多项仍 Open，按双口径政策不计入规格口径发布判定。
+> [COMPUTED, HIGH] 规格口径 `release_closeable_spec=YES`；runtime `release_closeable_runtime=NO`。P10 issue 投影与运行时 59 项 GAP-E 不能替代本轮 external-gates、正式 tag/release notes、部署前检查与 rollback 证据。
 
 | 缺口 | 状态 | 说明 |
 | --- | --- | --- |
 | 全量 P10 issue closure | DONE | GitHub #1289~#1331 与对应 Beads 43 项全部 closed。 |
-| Release closeable gate | PASS | release_closeable=YES（PRG-001~007 全 PASS）。 |
+| Release closeable gate | SPEC PASS / RUNTIME BLOCKED | `release_closeable_spec=YES`；runtime external-gates、tag/release notes、preflight 与 rollback 未闭合。 |
 | SPEC / TRACEABILITY size gate | DONE | SPEC root/client/server 均已 <1000；TRACEABILITY root=114，client/server 212/242。 |
 | Remote CI / release | DONE | CI ubuntu-latest runner PASS，v0.12.0 release tag 已发布。 |
 | Production readiness evidence | DONE | PRG-001~005、PRG-007 PASS；PRG-006 Partial；HA/DR、credential rotation、canary、soak、chaos、security、observability 全部闭合。 |

@@ -4,7 +4,7 @@
 > **来源报告**：`report/binance/DATA-INTEGRITY-E2E-20260708.md`（15 个归档 GAP-E 的当前运行时主证据源，替代已归档的 `20260701` 报告）
 > **范围**：binance 模块运行时数据完整性缺口（GAP-E1~E59，共 59 项；GAP-E59 为 2026-07-06 新增数据治理项）
 > **口径声明**：本文档记录**运行时口径**缺口，与 `spec/SPEC.md` 的**规格口径**（65 Done）正交。规格口径表示 FR 功能面已闭合；运行时口径表示生产部署中存在数据完整性/安全性/可运维性缺口。两者不矛盾——规格 Done 不等于运行时无缺口（GAP-E58 元缺口）。
-> **CI 兼容性**：本文档不修改任何 CI 校验的统计字段（`65 Done / 0 Partial / 0 Drifted / 0 Pending`），仅作为运行时缺口的独立追溯制品。
+> **CI 兼容性**：本文档不修改任何 CI 校验的规格统计字段（`65 Done / 0 Partial / 0 Drifted / 0 Pending`），仅作为运行时缺口的独立追溯制品。旧的“59 Fixed / 0 Open”汇总未经本轮 external-gates 重新证明，不能作为当前 release 结论。
 
 ---
 
@@ -13,9 +13,9 @@
 | 维度          | 数值                                  |
 | ------------- | ------------------------------------- |
 | 总缺口数      | 59                                    |
-| 已修复        | 59（GAP-E1/E6/E59 + 2026-07-04 批次 + 2026-07-07 Phase 3 批次 + 2026-07-09 E13/E23/E54 收尾批次） |
-| 部分修复      | 0                                     |
-| 仍 Open       | 0                                     |
+| 已修复        | 以各 GAP 行的最新 evidence 为准；历史 59 项汇总不自动继承到本轮 runtime commit |
+| 部分修复      | 按本轮 evidence 重新计算 |
+| 仍 Open       | 按本轮 evidence 重新计算；外部 release gates 不得隐藏在 GAP 汇总之外 |
 | CRITICAL / P0 | 1（GAP-E25，E1/E6 已修复）            |
 | HIGH / P1     | 13                                    |
 | MEDIUM / P2   | 22                                    |
@@ -216,9 +216,9 @@ GAP-E2 + GAP-E3                             ← 服务端完整性闭环
 | 口径           | SSOT                            | 统计                                        | 含义                                         |
 | -------------- | ------------------------------- | ------------------------------------------- | -------------------------------------------- |
 | **规格口径**   | `spec/SPEC.md`                  | 65 Done / 0 Partial / 0 Drifted / 0 Pending | FR 功能面已闭合（代码已实现 + 测试已通过）   |
-| **运行时口径** | 本文件（RUNTIME-GAP-MATRIX.md） | 59（59 Fixed / 0 Partial / 0 Open） | 运行时缺口**全部闭合**（2026-07-09 E13/E23/E54 收尾批次完成后） |
+| **运行时口径** | 本文件（RUNTIME-GAP-MATRIX.md） | 历史快照：59 Fixed / 0 Partial / 0 Open；当前 release gate 另有 5 个 external gates BLOCKED | 不能由历史 GAP 汇总推导本轮 runtime release Go；以当前 evidence ledger 为准 |
 
-**GAP-E58 元缺口（收尾后）**：本轮已完成 issue 与运行时口径的回刷对齐，避免“issue 已 close 但运行时缺口仍 Open”的假闭环。后续保持双口径并行维护，新增 runtime gap 必须同步更新本矩阵状态。
+**GAP-E58 元缺口（历史记录）**：历史 issue 与运行时口径的回刷记录保留；本轮新增或重验的 runtime evidence 必须绑定当前 runtime SHA，不能用 issue close 或旧汇总替代。
 
 **CI 兼容性**：CI 脚本 `binance-status-consistency-check.sh` 校验规格口径统计（`65 Done / 0 Partial / 0 Drifted / 0 Pending`），本文件不修改该统计。运行时缺口在独立制品（本文件）中追踪，不触发 CI 状态变更。
 

@@ -41,11 +41,13 @@
 | `cm_perp` | `prime`/`standard`/`lite` 按 tierCapabilityMap 启用；永续与交割由 `instrument_subtype` 区分。 | `book_ticker`, `trade`, `kline`, `depth_update`, `funding_rate`, `mark_price_update` | 不得拆出 `cm_delivery`。 |
 | `options` | 默认需要人工审核或显式 tier 准入；采集分桶与准入层解耦。 | `trade`, `kline`, `depth_update`, `option_tick` raw stream | `book_ticker`, `funding_rate`, `mark_price_update` 不适用；order book manager Phase 2 postponed。 |
 
-[FRAME, HIGH] Planned event_type 为 `ticker`、`force_order`、`open_interest`、`index_reference`、`contract_info`。它们可以出现在规格与设计中，但 runtime 发布前必须有独立 FR、任务、测试和 release evidence。
+> [COMPUTED, HIGH] 扩展能力当前投影：`ticker`（四产品线可显式解析，spot/UM/CM 默认订阅；options 需显式配置）、`open_interest`（options 的 `optionOpenInterest` 数组流）、`index_reference`（UM/CM 的 composite/asset/reference 变体，CM 不适用的组合仍标记）、`contract_info`（UM/CM `!contractInfo` 全局流）。`force_order` 为 UM/CM 独立 opt-in scaffold，默认不订阅，仍需独立 live gate；所有扩展的 external durable/fanout/query 证据由 release checklist 管理。
+
+[FRAME, HIGH] 2026-07-10 当前口径：`ticker`、`open_interest`、`index_reference`、`contract_info` 已有 runtime local normalize→storage/query 链路；`force_order` 只有隔离的 opt-in scaffold，仍为 postponed release。五类都不能由本地测试替代 external release evidence；force_order 另须 release owner 独立批准。
 
 ## 3. Canonical event_type 与迁移
 
-[FRAME, HIGH] implemented canonical event_type 只有以下 7 个：
+[FRAME, HIGH] 既有稳定 canonical event_type 为以下 7 个；扩展类型状态见本节当前口径：
 
 ```text
 book_ticker
@@ -57,7 +59,7 @@ mark_price_update
 option_tick
 ```
 
-[FRAME, HIGH] planned canonical event_type 只有以下 5 个：
+[FRAME, HIGH] 扩展 canonical event_type 为以下 5 个，其中 force_order 为 opt-in/postponed，其余四类已完成 local runtime chain：
 
 ```text
 ticker

@@ -4,7 +4,7 @@
       {
         "hooks": [
           {
-            "command": "bd codex-hook PostCompact",
+            "command": "bd prime --mcp --stealth",
             "statusMessage": "Scheduling Beads context refresh",
             "type": "command"
           }
@@ -16,7 +16,7 @@
       {
         "hooks": [
           {
-            "command": "bd codex-hook PreCompact",
+            "command": "bd prime --mcp --stealth",
             "statusMessage": "Checking Beads context",
             "type": "command"
           }
@@ -28,7 +28,7 @@
       {
         "hooks": [
           {
-            "command": "bd codex-hook SessionStart",
+            "command": "bd prime --mcp --stealth",
             "statusMessage": "Loading Beads context",
             "type": "command"
           }
@@ -51,7 +51,7 @@
       {
         "hooks": [
           {
-            "command": "bd codex-hook UserPromptSubmit",
+            "command": "bd prime --mcp --stealth",
             "statusMessage": "Refreshing Beads context",
             "type": "command"
           }

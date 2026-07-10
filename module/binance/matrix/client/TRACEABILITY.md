@@ -5,7 +5,7 @@
 > **SC 编号说明**：本文件的 SC-001~SC-015 为子模块本地场景 ID（Scenario），不与 root TRACEABILITY 的 canonical TC-001~TC-083 冲突。正式 TC 编号以 `module/binance/matrix/TRACEABILITY.md` §4 为准。
 
 - Module-Version: v4.1.0（FR/BR 编号统一为 root canonical；与 root SPEC v4.1.0 一致）
-- Last-Updated: 2026-07-08（全局 single state 为 65 Done / 0 Partial / 0 Drifted / 0 Pending，release_closeable=YES）
+- Last-Updated: 2026-07-10（规格投影 65 Done；runtime release_closeable_runtime=NO）
 - Spec-Reference: `module/binance/spec/client/SPEC.md` v4.1.0
 
 ---
@@ -196,7 +196,7 @@
 | AC→验证映射率 | 28 / 28 | 100% |
 | 实现完成率 | 8 / 8 FR | 100%（client 本地 SC 投影 Done；全局发布以 root single state `55 Done / 10 Pending` 与 release_closeable=YES 为准） |
 
-	> **v2.1.3 状态同步更正 (2026-07-07)**：2026-06-28 full E2E 包仅作为历史运行证据，不构成发布关闭结论。当前采用 single state；root 当前为 `55 Done / 10 Pending`，release_closeable=YES（PRG-001~007 全 PASS）。
+	> **v2.1.3 状态同步更正 (2026-07-07，历史快照)**：2026-06-28 full E2E 包仅作为历史运行证据，不构成当前发布关闭结论。当前 runtime 发布以 root matrix 的 `release_closeable_runtime=NO` 与 2026-07-10 dated evidence 为准。
 
 ---
 

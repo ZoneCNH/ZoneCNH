@@ -1,8 +1,8 @@
 # binance 实施计划
 
 - Module-Version: v4.1.0
-- Last-Updated: 2026-07-08
-- Status: execution plan complete; release_closeable=YES（PRG-001~007 全 PASS）
+- Last-Updated: 2026-07-10
+- Status: execution plan complete for the spec scope; `release_closeable_spec=YES`，runtime `release_closeable_runtime=NO` until external evidence/tag/rollback gates close
 - Runtime-Repo: `/home/workspace/binance`
 
 ## 1. 目标
@@ -105,17 +105,17 @@ github.com/ZoneCNH/binance/
 
 ## 8. 当前停止条件
 
-所有停止条件已满足，`module/binance` 当前 release_closeable=YES（PRG-001~007 全 PASS）：
+规格停止条件已满足，`module/binance` 当前 `release_closeable_spec=YES`；runtime `release_closeable_runtime=NO`，因为本轮 external-gates、正式 tag/release notes、部署前检查与 rollback 尚未闭合：
 
-release_closeable 判定公式：
+规格 release 判定公式（不等于 runtime 发布批准）：
 
 ```
 release_closeable = Code-Done FR / Total FR ≥ 90% AND Drifted=0 AND PRG-001~007 gates PASS AND 远程 CI PASS AND release tag 已发布 AND HA/DR 部署文档存在
 ```
 
-当前状态：55 Done + 10 Pending（FR-052~061 order book rebuild），0 Partial，0 Drifted。release_closeable=YES（PRG-001~007 全 PASS）。FR-052~061 为 v4.0.0 新增 Pending，不影响 v3.18.0 release 口径。
+当前规格状态：65 Done / 0 Partial / 0 Drifted / 0 Pending；`release_closeable_spec=YES`。runtime `release_closeable_runtime=NO`，需先完成 external-gates、正式 tag/release notes、部署前检查与 rollback。FR-052~061 的 options depth 仍按 excluded/postponed 口径，不影响规格功能面统计。
 
-停止条件（全部满足，release_closeable=YES）：
+规格停止条件（全部满足，release_closeable_spec=YES）；runtime 发布停止条件另见 release checklist：
 
 - boundary gates 15/15 PASS（已满足）。
 - build/test/race/vet/lint/secret scan 全部 PASS（已满足）。

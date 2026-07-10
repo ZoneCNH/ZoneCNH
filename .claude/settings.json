@@ -96,7 +96,7 @@
       {
         "hooks": [
           {
-            "command": "bd prime --stealth --hook-json",
+            "command": "bd prime --mcp --stealth",
             "type": "command"
           }
         ],
