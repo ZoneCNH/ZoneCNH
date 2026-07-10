@@ -1,0 +1,672 @@
+version: 2026.07.10
+source: docs/sre/RUNNER-POOLS.yaml
+hosts_source: sre/bootstrap/hosts.env
+note: ZoneCNH is a GitHub user account; runners are per-repo, not org-shared. Each module repo must register its own runner(s)
+  with the pool label.
+capacity:
+  current_physical_runners: 16
+  hosts:
+  - 94.72.124.39
+  - 84.247.154.45
+  - 10.2.2.9
+  required_module_registrations: 68
+  minimum_runners_needed: 68
+  gap: 52
+  per_host_demand:
+    10.2.2.9:
+      modules: 18
+      runners_needed: 18
+      pools:
+      - sre/contracts
+      - sre/foundation-l0
+      - sre/foundation-l1
+      - sre/security
+    84.247.154.45:
+      modules: 46
+      runners_needed: 46
+      pools:
+      - sre/deploy
+      - sre/engine
+      - sre/macro
+      - sre/market
+      - sre/storage-heavy
+      - sre/storage-light
+    94.72.124.39:
+      modules: 4
+      runners_needed: 4
+      pools:
+      - sre/governance
+pools:
+  sre/governance:
+    label: ci-governance
+    host: 94.72.124.39
+    profile: governance
+    docker: false
+    runner_count_per_pool: 2
+    modules:
+    - module: xlib_standard
+      repo: ZoneCNH/xlib_standard
+      runner_count: 1
+      labels:
+      - self-hosted
+      - Linux
+      - X64
+      - ci-governance
+    - module: xlib_harness
+      repo: ZoneCNH/xlib_harness
+      runner_count: 1
+      labels:
+      - self-hosted
+      - Linux
+      - X64
+      - ci-governance
+    - module: xlib_evidence
+      repo: ZoneCNH/xlib_evidence
+      runner_count: 1
+      labels:
+      - self-hosted
+      - Linux
+      - X64
+      - ci-governance
+    - module: xlibgate
+      repo: ZoneCNH/xlibgate
+      runner_count: 1
+      labels:
+      - self-hosted
+      - Linux
+      - X64
+      - ci-governance
+  sre/foundation-l0:
+    label: sre/foundation-l0
+    host: 10.2.2.9
+    profile: sre-multi
+    docker: false
+    runner_count_per_pool: 2
+    modules:
+    - module: kernel
+      repo: ZoneCNH/kernel
+      runner_count: 1
+      labels:
+      - self-hosted
+      - Linux
+      - X64
+      - sre/foundation-l0
+  sre/foundation-l1:
+    label: sre/foundation-l1
+    host: 10.2.2.9
+    profile: sre-multi
+    docker: false
+    runner_count_per_pool: 2
+    modules:
+    - module: bootstrap
+      repo: ZoneCNH/bootstrap
+      runner_count: 1
+      labels:
+      - self-hosted
+      - Linux
+      - X64
+      - sre/foundation-l1
+    - module: configx
+      repo: ZoneCNH/configx
+      runner_count: 1
+      labels:
+      - self-hosted
+      - Linux
+      - X64
+      - sre/foundation-l1
+    - module: observex
+      repo: ZoneCNH/observex
+      runner_count: 1
+      labels:
+      - self-hosted
+      - Linux
+      - X64
+      - sre/foundation-l1
+    - module: resiliencx
+      repo: ZoneCNH/resiliencx
+      runner_count: 1
+      labels:
+      - self-hosted
+      - Linux
+      - X64
+      - sre/foundation-l1
+    - module: schedulex
+      repo: ZoneCNH/schedulex
+      runner_count: 1
+      labels:
+      - self-hosted
+      - Linux
+      - X64
+      - sre/foundation-l1
+    - module: testkitx
+      repo: ZoneCNH/testkitx
+      runner_count: 1
+      labels:
+      - self-hosted
+      - Linux
+      - X64
+      - sre/foundation-l1
+    - module: alertx
+      repo: ZoneCNH/alertx
+      runner_count: 1
+      labels:
+      - self-hosted
+      - Linux
+      - X64
+      - sre/foundation-l1
+    - module: composer
+      repo: ZoneCNH/composer
+      runner_count: 1
+      labels:
+      - self-hosted
+      - Linux
+      - X64
+      - sre/foundation-l1
+    - module: frontend
+      repo: ZoneCNH/frontend
+      runner_count: 1
+      labels:
+      - self-hosted
+      - Linux
+      - X64
+      - sre/foundation-l1
+    - module: x.go
+      repo: ZoneCNH/x.go
+      runner_count: 1
+      labels:
+      - self-hosted
+      - Linux
+      - X64
+      - sre/foundation-l1
+  sre/contracts:
+    label: sre/contracts
+    host: 10.2.2.9
+    profile: sre-multi
+    docker: false
+    runner_count_per_pool: 1
+    modules:
+    - module: contracts
+      repo: ZoneCNH/contracts
+      runner_count: 1
+      labels:
+      - self-hosted
+      - Linux
+      - X64
+      - sre/contracts
+    - module: transportx
+      repo: ZoneCNH/transportx
+      runner_count: 1
+      labels:
+      - self-hosted
+      - Linux
+      - X64
+      - sre/contracts
+    - module: decimalx
+      repo: ZoneCNH/decimalx
+      runner_count: 1
+      labels:
+      - self-hosted
+      - Linux
+      - X64
+      - sre/contracts
+    - module: domain_exchange
+      repo: ZoneCNH/domain_exchange
+      runner_count: 1
+      labels:
+      - self-hosted
+      - Linux
+      - X64
+      - sre/contracts
+    - module: domain_macro
+      repo: ZoneCNH/domain_macro
+      runner_count: 1
+      labels:
+      - self-hosted
+      - Linux
+      - X64
+      - sre/contracts
+    - module: domain_market
+      repo: ZoneCNH/domain_market
+      runner_count: 1
+      labels:
+      - self-hosted
+      - Linux
+      - X64
+      - sre/contracts
+    - module: domainx
+      repo: ZoneCNH/domainx
+      runner_count: 1
+      labels:
+      - self-hosted
+      - Linux
+      - X64
+      - sre/contracts
+  sre/security:
+    label: sre/security
+    host: 10.2.2.9
+    profile: sre-multi
+    docker: false
+    runner_count: 1
+    registration_target: ZoneCNH/ZoneCNH
+    modules: []
+    workflows:
+    - gitleaks
+    - govulncheck
+    - sbom
+    - supply-chain-scan
+  sre/market:
+    label: sre/market
+    host: 84.247.154.45
+    profile: market
+    docker: optional
+    runner_count_per_pool: 1
+    modules:
+    - module: binance
+      repo: ZoneCNH/binance
+      runner_count: 1
+      labels:
+      - self-hosted
+      - Linux
+      - X64
+      - sre/market
+    - module: coinglass
+      repo: ZoneCNH/coinglass
+      runner_count: 1
+      labels:
+      - self-hosted
+      - Linux
+      - X64
+      - sre/market
+    - module: hyperliquid
+      repo: ZoneCNH/hyperliquid
+      runner_count: 1
+      labels:
+      - self-hosted
+      - Linux
+      - X64
+      - sre/market
+    - module: market_data
+      repo: ZoneCNH/market_data
+      runner_count: 1
+      labels:
+      - self-hosted
+      - Linux
+      - X64
+      - sre/market
+    - module: okx
+      repo: ZoneCNH/okx
+      runner_count: 1
+      labels:
+      - self-hosted
+      - Linux
+      - X64
+      - sre/market
+    - module: orderbook
+      repo: ZoneCNH/orderbook
+      runner_count: 1
+      labels:
+      - self-hosted
+      - Linux
+      - X64
+      - sre/market
+  sre/macro:
+    label: sre/macro
+    host: 84.247.154.45
+    profile: macro
+    docker: optional
+    runner_count_per_pool: 1
+    modules:
+    - module: alternative_data
+      repo: ZoneCNH/alternative_data
+      runner_count: 1
+      labels:
+      - self-hosted
+      - Linux
+      - X64
+      - sre/macro
+    - module: bea
+      repo: ZoneCNH/bea
+      runner_count: 1
+      labels:
+      - self-hosted
+      - Linux
+      - X64
+      - sre/macro
+    - module: eastmoney
+      repo: ZoneCNH/eastmoney
+      runner_count: 1
+      labels:
+      - self-hosted
+      - Linux
+      - X64
+      - sre/macro
+    - module: ecb
+      repo: ZoneCNH/ecb
+      runner_count: 1
+      labels:
+      - self-hosted
+      - Linux
+      - X64
+      - sre/macro
+    - module: fred
+      repo: ZoneCNH/fred
+      runner_count: 1
+      labels:
+      - self-hosted
+      - Linux
+      - X64
+      - sre/macro
+    - module: japan_cb
+      repo: ZoneCNH/japan_cb
+      runner_count: 1
+      labels:
+      - self-hosted
+      - Linux
+      - X64
+      - sre/macro
+    - module: macro_data
+      repo: ZoneCNH/macro_data
+      runner_count: 1
+      labels:
+      - self-hosted
+      - Linux
+      - X64
+      - sre/macro
+    - module: pe_data
+      repo: ZoneCNH/pe_data
+      runner_count: 1
+      labels:
+      - self-hosted
+      - Linux
+      - X64
+      - sre/macro
+    - module: treasury
+      repo: ZoneCNH/treasury
+      runner_count: 1
+      labels:
+      - self-hosted
+      - Linux
+      - X64
+      - sre/macro
+    - module: uk_cb
+      repo: ZoneCNH/uk_cb
+      runner_count: 1
+      labels:
+      - self-hosted
+      - Linux
+      - X64
+      - sre/macro
+    - module: yahoo
+      repo: ZoneCNH/yahoo
+      runner_count: 1
+      labels:
+      - self-hosted
+      - Linux
+      - X64
+      - sre/macro
+    - module: yield_curve
+      repo: ZoneCNH/yield_curve
+      runner_count: 1
+      labels:
+      - self-hosted
+      - Linux
+      - X64
+      - sre/macro
+  sre/storage-light:
+    label: sre/storage-light
+    host: 84.247.154.45
+    profile: docker
+    docker: true
+    runner_count_per_pool: 1
+    modules:
+    - module: natsx
+      repo: ZoneCNH/natsx
+      runner_count: 1
+      labels:
+      - self-hosted
+      - Linux
+      - X64
+      - sre/storage-light
+    - module: ossx
+      repo: ZoneCNH/ossx
+      runner_count: 1
+      labels:
+      - self-hosted
+      - Linux
+      - X64
+      - sre/storage-light
+    - module: redisx
+      repo: ZoneCNH/redisx
+      runner_count: 1
+      labels:
+      - self-hosted
+      - Linux
+      - X64
+      - sre/storage-light
+  sre/storage-heavy:
+    label: sre/storage-heavy
+    host: 84.247.154.45
+    profile: heavy
+    docker: true
+    runner_count_per_pool: 2
+    modules:
+    - module: clickhousex
+      repo: ZoneCNH/clickhousex
+      runner_count: 1
+      labels:
+      - self-hosted
+      - Linux
+      - X64
+      - sre/storage-heavy
+    - module: kafkax
+      repo: ZoneCNH/kafkax
+      runner_count: 1
+      labels:
+      - self-hosted
+      - Linux
+      - X64
+      - sre/storage-heavy
+    - module: postgresx
+      repo: ZoneCNH/postgresx
+      runner_count: 1
+      labels:
+      - self-hosted
+      - Linux
+      - X64
+      - sre/storage-heavy
+    - module: taosx
+      repo: ZoneCNH/taosx
+      runner_count: 1
+      labels:
+      - self-hosted
+      - Linux
+      - X64
+      - sre/storage-heavy
+  sre/engine:
+    label: sre/engine
+    host: 84.247.154.45
+    profile: engine
+    docker: optional
+    runner_count_per_pool: 1
+    modules:
+    - module: factor_engine
+      repo: ZoneCNH/factor_engine
+      runner_count: 1
+      labels:
+      - self-hosted
+      - Linux
+      - X64
+      - sre/engine
+    - module: factor_eval
+      repo: ZoneCNH/factor_eval
+      runner_count: 1
+      labels:
+      - self-hosted
+      - Linux
+      - X64
+      - sre/engine
+    - module: feature_store
+      repo: ZoneCNH/feature_store
+      runner_count: 1
+      labels:
+      - self-hosted
+      - Linux
+      - X64
+      - sre/engine
+    - module: flowx
+      repo: ZoneCNH/flowx
+      runner_count: 1
+      labels:
+      - self-hosted
+      - Linux
+      - X64
+      - sre/engine
+    - module: macro_regime
+      repo: ZoneCNH/macro_regime
+      runner_count: 1
+      labels:
+      - self-hosted
+      - Linux
+      - X64
+      - sre/engine
+    - module: market_regime
+      repo: ZoneCNH/market_regime
+      runner_count: 1
+      labels:
+      - self-hosted
+      - Linux
+      - X64
+      - sre/engine
+    - module: ms_brain
+      repo: ZoneCNH/ms_brain
+      runner_count: 1
+      labels:
+      - self-hosted
+      - Linux
+      - X64
+      - sre/engine
+    - module: regime_engine
+      repo: ZoneCNH/regime_engine
+      runner_count: 1
+      labels:
+      - self-hosted
+      - Linux
+      - X64
+      - sre/engine
+    - module: signal_factory
+      repo: ZoneCNH/signal_factory
+      runner_count: 1
+      labels:
+      - self-hosted
+      - Linux
+      - X64
+      - sre/engine
+    - module: backtestx
+      repo: ZoneCNH/backtestx
+      runner_count: 1
+      labels:
+      - self-hosted
+      - Linux
+      - X64
+      - sre/engine
+    - module: backtest_engine
+      repo: ZoneCNH/backtest_engine
+      runner_count: 1
+      labels:
+      - self-hosted
+      - Linux
+      - X64
+      - sre/engine
+    - module: optimizer
+      repo: ZoneCNH/optimizer
+      runner_count: 1
+      labels:
+      - self-hosted
+      - Linux
+      - X64
+      - sre/engine
+    - module: strategyx
+      repo: ZoneCNH/strategyx
+      runner_count: 1
+      labels:
+      - self-hosted
+      - Linux
+      - X64
+      - sre/engine
+    - module: maestro
+      repo: ZoneCNH/maestro
+      runner_count: 1
+      labels:
+      - self-hosted
+      - Linux
+      - X64
+      - sre/engine
+    - module: riskx
+      repo: ZoneCNH/riskx
+      runner_count: 1
+      labels:
+      - self-hosted
+      - Linux
+      - X64
+      - sre/engine
+    - module: risk_engine
+      repo: ZoneCNH/risk_engine
+      runner_count: 1
+      labels:
+      - self-hosted
+      - Linux
+      - X64
+      - sre/engine
+    - module: orderx
+      repo: ZoneCNH/orderx
+      runner_count: 1
+      labels:
+      - self-hosted
+      - Linux
+      - X64
+      - sre/engine
+    - module: order_engine
+      repo: ZoneCNH/order_engine
+      runner_count: 1
+      labels:
+      - self-hosted
+      - Linux
+      - X64
+      - sre/engine
+    - module: positionx
+      repo: ZoneCNH/positionx
+      runner_count: 1
+      labels:
+      - self-hosted
+      - Linux
+      - X64
+      - sre/engine
+    - module: portfolio_engine
+      repo: ZoneCNH/portfolio_engine
+      runner_count: 1
+      labels:
+      - self-hosted
+      - Linux
+      - X64
+      - sre/engine
+    - module: settlement
+      repo: ZoneCNH/settlement
+      runner_count: 1
+      labels:
+      - self-hosted
+      - Linux
+      - X64
+      - sre/engine
+  sre/deploy:
+    label: sre/deploy
+    host: 84.247.154.45
+    profile: deploy
+    docker: optional
+    runner_count: 2
+    registration_target: ZoneCNH/ZoneCNH
+    modules: []
+    workflows:
+    - release-preflight
+    - release-publish
+    - post-release-smoke
+    - rollback-drill
