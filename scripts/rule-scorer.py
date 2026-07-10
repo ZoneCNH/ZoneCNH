@@ -98,6 +98,17 @@ def read(path: Path) -> str | None:
         return None
 
 
+def _spec_candidates(module: str) -> list[Path]:
+    return [
+        ROOT / "module" / module / "spec" / "SPEC.md",
+        ROOT / "module" / module / "SPEC.md",
+    ]
+
+
+def _spec_path(module: str) -> Path | None:
+    return next((path for path in _spec_candidates(module) if path.exists()), None)
+
+
 def _strip_number(heading: str) -> str:
     """剥离 "N. " 或 "N " 编号前缀。"""
     return re.sub(r'^\d+[. ]\s*', '', heading).strip()
@@ -194,10 +205,13 @@ SPEC_REQUIRED_SECTIONS = [
 
 def score_spec(module: str) -> Score:
     s = Score()
-    spec_path = ROOT / "module" / module / "SPEC.md"
-    text = read(spec_path)
+    spec_path = _spec_path(module)
+    text = read(spec_path) if spec_path is not None else None
     if text is None:
-        s.flag_redline("spec_missing", f"未找到 {spec_path.relative_to(ROOT)}")
+        s.flag_redline(
+            "spec_missing",
+            f"未找到 {ROOT / 'module' / module / 'spec' / 'SPEC.md'} 或 {ROOT / 'module' / module / 'SPEC.md'}",
+        )
         s.score = 0
         s.confidence = "low"
         return s
@@ -331,7 +345,7 @@ def score_matrix(module: str) -> Score:
         return s
 
     text = read(path) or ""
-    spec_text = read(ROOT / "module" / module / "SPEC.md") or ""
+    spec_text = read(_spec_path(module) or ROOT / "module" / module / "SPEC.md") or ""
 
     fr_in_spec = set(re.findall(r"\bFR-\d{3}\b", spec_text))
     fr_in_matrix = set(re.findall(r"\bFR-\d{3}\b", text))
@@ -393,7 +407,7 @@ def score_tasks(module: str) -> Score:
         s.score = 0
         return s
 
-    spec_text = read(ROOT / "module" / module / "SPEC.md") or ""
+    spec_text = read(_spec_path(module) or ROOT / "module" / module / "SPEC.md") or ""
     fr_in_spec = set(re.findall(r"\bFR-\d{3}\b", spec_text))
     fr_covered_by_tasks: set[str] = set()
 
@@ -610,7 +624,7 @@ def main() -> int:
 
     print(json.dumps(payload, ensure_ascii=False, indent=2))
     print(f"\n✓ 写入 {display_path(out_path)}", file=sys.stderr)
-    return 0
+    return 20 if score.redline else 0
 
 
 if __name__ == "__main__":

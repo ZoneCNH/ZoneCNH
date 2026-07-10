@@ -61,9 +61,14 @@ def _perfect_spec_text() -> str:
     return f"# SPEC\n\n{meta}{'\n'.join(sections)}\n{ac}\n{tc}\n"
 
 
+def _write_nested_spec_layout(mod_dir: Path, text: str) -> None:
+    (mod_dir / "spec").mkdir(parents=True, exist_ok=True)
+    (mod_dir / "spec" / "SPEC.md").write_text(text, encoding="utf-8")
+
+
 def test_spec_perfect_high_score(tmp_module):
     mod_dir, module = tmp_module
-    (mod_dir / "SPEC.md").write_text(_perfect_spec_text(), encoding="utf-8")
+    _write_nested_spec_layout(mod_dir, _perfect_spec_text())
     s = rs.score_spec(module)
     assert s.score >= 80, f"got {s.score}: {s.deductions}"
     # redline 可能由 fixture FR 格式触发 spec_fr_duplicate — 非实际缺陷
@@ -86,7 +91,7 @@ def test_spec_duplicate_fr_redline(tmp_module):
         "- FR-001: WHEN x THEN y",
         "### FR-001: WHEN x THEN y\n\n占位\n\n### FR-001: 重复定义\n\n占位",
     )
-    (mod_dir / "SPEC.md").write_text(text, encoding="utf-8")
+    _write_nested_spec_layout(mod_dir, text)
     s = rs.score_spec(module)
     assert s.redline is True
     assert any("duplicate" in d["rule"] for d in s.deductions)
@@ -102,7 +107,7 @@ def test_spec_traceability_refs_not_flagged_as_duplicate(tmp_module):
     text = _perfect_spec_text()
     # 在 Functional Requirements 节外大量引用 FR-001（模拟 AC/TC 表追溯引用）
     text += "\n| AC-001 | FR-001 | 验收 |\n" * 20
-    (mod_dir / "SPEC.md").write_text(text, encoding="utf-8")
+    _write_nested_spec_layout(mod_dir, text)
     s = rs.score_spec(module)
     assert not any("duplicate" in d["rule"] for d in s.deductions), (
         f"追溯引用被误判为重复: {s.deductions}"
@@ -112,9 +117,9 @@ def test_spec_traceability_refs_not_flagged_as_duplicate(tmp_module):
 def test_spec_no_fr_deducts(tmp_module):
     mod_dir, module = tmp_module
     sections = "\n".join(f"## {s}\n\n占位\n" for s in rs.SPEC_REQUIRED_SECTIONS)
-    (mod_dir / "SPEC.md").write_text(
+    _write_nested_spec_layout(
+        mod_dir,
         f"Status: Draft\nOwner: x\nVersion: 1\nUpdated: 2026\n\n{sections}",
-        encoding="utf-8",
     )
     s = rs.score_spec(module)
     assert any(d["rule"] == "spec_no_fr" for d in s.deductions)
@@ -122,9 +127,7 @@ def test_spec_no_fr_deducts(tmp_module):
 
 def test_spec_skeleton_incomplete_redline(tmp_module):
     mod_dir, module = tmp_module
-    (mod_dir / "SPEC.md").write_text(
-        "## Summary\n占位\n## Problem\n占位\n", encoding="utf-8"
-    )
+    _write_nested_spec_layout(mod_dir, "## Summary\n占位\n## Problem\n占位\n")
     s = rs.score_spec(module)
     assert s.redline is True
 
@@ -134,7 +137,7 @@ def test_spec_skeleton_incomplete_redline(tmp_module):
 
 def test_matrix_missing_redline(tmp_module):
     mod_dir, module = tmp_module
-    (mod_dir / "SPEC.md").write_text("- FR-001\n", encoding="utf-8")
+    _write_nested_spec_layout(mod_dir, "- FR-001\n")
     s = rs.score_matrix(module)
     assert s.redline is True
     assert s.score == 0
@@ -143,7 +146,7 @@ def test_matrix_missing_redline(tmp_module):
 def test_matrix_full_coverage_high(tmp_module):
     mod_dir, module = tmp_module
     spec = "\n".join(f"- FR-{i:03d}: x\n- AC-{i:03d}: x" for i in range(1, 6))
-    (mod_dir / "SPEC.md").write_text(spec, encoding="utf-8")
+    _write_nested_spec_layout(mod_dir, spec)
     matrix = "| FR | AC | TC |\n|----|----|----|\n" + "\n".join(
         f"| FR-{i:03d} | AC-{i:03d} | TC-{i:03d} |" for i in range(1, 11)
     )
@@ -155,7 +158,7 @@ def test_matrix_full_coverage_high(tmp_module):
 def test_matrix_low_coverage_redline(tmp_module):
     mod_dir, module = tmp_module
     spec = "\n".join(f"- FR-{i:03d}" for i in range(1, 11))
-    (mod_dir / "SPEC.md").write_text(spec, encoding="utf-8")
+    _write_nested_spec_layout(mod_dir, spec)
     matrix = "| FR | AC |\n|---|---|\n| FR-001 | AC-001 |\n"
     (mod_dir / "TRACEABILITY.md").write_text(matrix, encoding="utf-8")
     s = rs.score_matrix(module)
@@ -174,7 +177,7 @@ def test_tasks_dir_missing_redline(tmp_module):
 def test_tasks_good_structure(tmp_module):
     mod_dir, module = tmp_module
     spec = "\n".join(f"- FR-{i:03d}" for i in range(1, 4))
-    (mod_dir / "SPEC.md").write_text(spec, encoding="utf-8")
+    _write_nested_spec_layout(mod_dir, spec)
     tasks_dir = mod_dir / "tasks"
     tasks_dir.mkdir()
     for i in range(1, 4):
@@ -188,7 +191,7 @@ def test_tasks_good_structure(tmp_module):
 
 def test_tasks_bad_naming_deducts(tmp_module):
     mod_dir, module = tmp_module
-    (mod_dir / "SPEC.md").write_text("- FR-001", encoding="utf-8")
+    _write_nested_spec_layout(mod_dir, "- FR-001")
     tasks_dir = mod_dir / "tasks"
     tasks_dir.mkdir()
     (tasks_dir / "TASK-bad.md").write_text(
@@ -300,7 +303,7 @@ def test_code_log_fatal_redline(tmp_path, monkeypatch):
 
 def test_to_json_schema(tmp_module):
     mod_dir, module = tmp_module
-    (mod_dir / "SPEC.md").write_text(_perfect_spec_text(), encoding="utf-8")
+    _write_nested_spec_layout(mod_dir, _perfect_spec_text())
     s = rs.score_spec(module)
     payload = s.to_json("spec", module, source="rules")
     for key in (
@@ -323,7 +326,7 @@ def test_to_json_schema(tmp_module):
 
 def test_main_default_runtime_writes_claude_state(tmp_module, monkeypatch):
     mod_dir, module = tmp_module
-    (mod_dir / "SPEC.md").write_text(_perfect_spec_text(), encoding="utf-8")
+    _write_nested_spec_layout(mod_dir, _perfect_spec_text())
     monkeypatch.setattr(sys, "argv", ["rule-scorer.py", "spec", module])
 
     assert rs.main() == 0
@@ -335,7 +338,7 @@ def test_main_default_runtime_writes_claude_state(tmp_module, monkeypatch):
 
 def test_main_codex_runtime_writes_omx_state(tmp_module, monkeypatch):
     mod_dir, module = tmp_module
-    (mod_dir / "SPEC.md").write_text(_perfect_spec_text(), encoding="utf-8")
+    _write_nested_spec_layout(mod_dir, _perfect_spec_text())
     monkeypatch.setattr(sys, "argv", ["rule-scorer.py", "spec", module, "--runtime", "codex"])
 
     assert rs.main() == 0
@@ -347,7 +350,7 @@ def test_main_codex_runtime_writes_omx_state(tmp_module, monkeypatch):
 
 def test_main_copilot_runtime_writes_copilot_state(tmp_module, monkeypatch):
     mod_dir, module = tmp_module
-    (mod_dir / "SPEC.md").write_text(_perfect_spec_text(), encoding="utf-8")
+    _write_nested_spec_layout(mod_dir, _perfect_spec_text())
     monkeypatch.setattr(sys, "argv", ["rule-scorer.py", "spec", module, "--runtime", "copilot"])
 
     assert rs.main() == 0
@@ -359,9 +362,43 @@ def test_main_copilot_runtime_writes_copilot_state(tmp_module, monkeypatch):
 
 def test_main_explicit_out_can_write_outside_runtime_state(tmp_module, monkeypatch):
     mod_dir, module = tmp_module
-    (mod_dir / "SPEC.md").write_text(_perfect_spec_text(), encoding="utf-8")
+    _write_nested_spec_layout(mod_dir, _perfect_spec_text())
     out = rs.ROOT / "custom-scores" / "rules.json"
     monkeypatch.setattr(sys, "argv", ["rule-scorer.py", "spec", module, "--runtime", "codex", "--out", str(out)])
 
     assert rs.main() == 0
     assert out.exists()
+
+
+def test_main_redline_exit_code_reflects_failure(tmp_module, monkeypatch):
+    mod_dir, module = tmp_module
+    _write_nested_spec_layout(mod_dir, "## Summary\n占位\n")
+    monkeypatch.setattr(sys, "argv", ["rule-scorer.py", "spec", module])
+
+    assert rs.main() == 20
+
+
+def test_spec_scoring_prefers_nested_spec_layout_over_root_legacy_file(tmp_module):
+    mod_dir, module = tmp_module
+    (mod_dir / "SPEC.md").write_text("legacy root spec", encoding="utf-8")
+    _write_nested_spec_layout(mod_dir, _perfect_spec_text())
+    (mod_dir / "TRACEABILITY.md").write_text(
+        "| FR | AC | TC |\n|---|---|---|\n"
+        + "\n".join(f"| FR-{i:03d} | AC-{i:03d} | TC-{i:03d} |" for i in range(1, 6))
+        + "\n",
+        encoding="utf-8",
+    )
+
+    spec_score = rs.score_spec(module)
+    matrix_score = rs.score_matrix(module)
+    tasks_dir = mod_dir / "tasks"
+    tasks_dir.mkdir()
+    (tasks_dir / "TASK-FIXTUREMOD-001.md").write_text(
+        "scope: src/task-001.py\nacceptance_criteria: done\n## Non-scope\n无\nFR-001\n",
+        encoding="utf-8",
+    )
+    tasks_score = rs.score_tasks(module)
+
+    assert spec_score.score >= 80
+    assert matrix_score.redline is False
+    assert tasks_score.score > 0

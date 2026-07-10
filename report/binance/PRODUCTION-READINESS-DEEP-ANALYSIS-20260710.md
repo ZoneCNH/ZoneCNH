@@ -10,7 +10,7 @@
 
 **当前裁决：No-Go，不能把 `binance` 当前 `main` 认定为生产可发布。**[INFERRED, HIGH]
 
-最强反证不是“功能还不够多”，而是当前候选无法证明已有功能会在正确的制品、正确的产品连接、正确的订单簿身份和正确的持久化确认边界上运行。[INFERRED, HIGH] 最新 runtime 证据明确记录 `release_closeable=NO`、JetStream ACK 未捕获、外部 durable E2E 失败、当前 commit 的 release tag 未捕获；runtime `main` 自身也仍把订单簿 10 项列为 Pending。[COMPUTED, HIGH] 证据见 [runtime recovery evidence](../../module/binance/evidence/2026-07-09/test/runtime-gates-recovery.md)、[runtime `main` README](https://github.com/ZoneCNH/binance/blob/b2547735e9df6b9bb4bb939baaeb74436260ce50/README.md#L21-L35) 与 [external gates](https://github.com/ZoneCNH/binance/blob/b2547735e9df6b9bb4bb939baaeb74436260ce50/release/evidence/binance/20260709/external-gates.log)。
+最强反证不是“功能还不够多”，而是当前候选无法证明已有功能会在正确的制品、正确的产品连接、正确的订单簿身份和正确的持久化确认边界上运行。[INFERRED, HIGH] 最新 runtime 证据明确记录 `release_closeable=NO`，而 2026-07-10 的本地证据投影也继续显示外部门禁 `BLOCKED/NOT_RUN`、真实外部 E2E 未闭合、正式 tag/release notes/rollback 仍未形成；runtime `main` 自身也仍把订单簿 10 项列为 Pending。[COMPUTED, HIGH] 证据见 [runtime release evidence 2026-07-10](../../module/binance/evidence/2026-07-10/test/runtime-release-evidence.md)、[runtime `main` README](https://github.com/ZoneCNH/binance/blob/b2547735e9df6b9bb4bb939baaeb74436260ce50/README.md#L21-L35) 与 [2026-07-10 runtime evidence bundle](../../module/binance/evidence/2026-07-10/test/runtime-release-evidence.md)。
 
 `module/binance/spec/SPEC.md` 的 `65 Done / release_closeable=YES`、Matrix 的全量 Done、Registry 的 `production/L3` 是治理投影；它们与上述 runtime 发布事实冲突，不能被翻译成“已生产就绪”。[COMPUTED, HIGH] 这是本报告最重要的 `FRAME -> REALITY` 防偷换结论。[INFERRED, HIGH]
 
@@ -371,7 +371,7 @@ stateDiagram-v2
 - [官方能力与生产基线](OFFICIAL-CAPABILITY-BASELINE-20260710.md)。[COMPUTED, HIGH]
 - [模块根 Spec](../../module/binance/spec/SPEC.md)、[Traceability Matrix](../../module/binance/matrix/TRACEABILITY.md)、[RULES](../../module/binance/gate/RULES.md)、[STANDARD](../../module/binance/gate/STANDARD.md)。[COMPUTED, HIGH]
 - [最新 runtime gate recovery evidence](../../module/binance/evidence/2026-07-09/test/runtime-gates-recovery.md)。[COMPUTED, HIGH]
-- [runtime 被审 commit](https://github.com/ZoneCNH/binance/commit/b2547735e9df6b9bb4bb939baaeb74436260ce50)、[最新 release v0.15.1](https://github.com/ZoneCNH/binance/releases/tag/v0.15.1)、[external gates](https://github.com/ZoneCNH/binance/blob/b2547735e9df6b9bb4bb939baaeb74436260ce50/release/evidence/binance/20260709/external-gates.log)。[COMPUTED, HIGH]
+- [runtime 被审 commit](https://github.com/ZoneCNH/binance/commit/b2547735e9df6b9bb4bb939baaeb74436260ce50)、[最新 release v0.15.1](https://github.com/ZoneCNH/binance/releases/tag/v0.15.1)、[2026-07-10 runtime release evidence](../../module/binance/evidence/2026-07-10/test/runtime-release-evidence.md)。[COMPUTED, HIGH]
 - [CICD-001](../../CONSTITUTION.md#cicd-001)、[依赖方向](../../docs/constitution/03-dependency-direction.md)、[Foundation dependency SSOT](../../module/FOUNDATION-DEPS.yaml)、[Module Registry](../../module/registry.yaml)。[COMPUTED, HIGH]
 
 ## 14. 与历史报告的关系

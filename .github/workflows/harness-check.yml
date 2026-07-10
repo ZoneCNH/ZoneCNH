@@ -1,5 +1,5 @@
 name: Harness Check
-# Self-hosted runner recovered 2026-07-09 (knowledge/ci.md Phase 0). Migrated to sre/foundation-l0.
+# Self-hosted runner recovered 2026-07-09 (knowledge/ci.md Phase 0). Migrated to sre/governance.
 # Restored push/pull_request triggers.
 on:
   push:
@@ -15,7 +15,7 @@ jobs:
 
   check:
     needs: runner-gate
-    runs-on: [self-hosted, Linux, X64, sre/foundation-l0]
+    runs-on: [self-hosted, Linux, X64, sre/governance]
     steps:
       - uses: actions/checkout@v4
       - name: Use Node.js
