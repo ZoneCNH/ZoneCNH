@@ -17,7 +17,7 @@
 # 强制级别：本文件字段变更须遵循 01-module-registry.md §4 登记变更规则。
 
 schema_version: module-registry/v1
-updated: 2026-07-09
+updated: 2026-07-10
 
 # ============================================================================
 # 基座层（Foundation）— 20 模块
@@ -29,13 +29,13 @@ updated: 2026-07-09
 # 注：xlib_standard / xlib_harness / xlib_evidence 的 GitHub 仓库和本地路径
 # 统一使用 snake_case，与 AGENTS.md §仓库命名强制规则一致。
 xlib_standard:
-  repo: github.com/ZoneCNH/xlib_standard
+  repo: github.com/xhyperium/xlib_standard
   local_path: /home/workspace/xlib_standard
   domain: foundation
   layer: standard_source
   arch_type: library
   lifecycle: active
-  owner: ZoneCNH
+  owner: xhyperium
   registered: 2026-06-01
   spec_ref: module/xlib_standard/spec/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml
@@ -47,13 +47,13 @@ xlib_standard:
     cadence: stable
 
 xlib_harness:
-  repo: github.com/ZoneCNH/xlib_harness
+  repo: github.com/xhyperium/xlib_harness
   local_path: /home/workspace/xlib_harness
   domain: foundation
   layer: harness
   arch_type: library
   lifecycle: active
-  owner: ZoneCNH
+  owner: xhyperium
   registered: 2026-06-01
   spec_ref: module/xlib_harness/spec/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml
@@ -64,13 +64,13 @@ xlib_harness:
     cadence: stable
 
 xlib_evidence:
-  repo: github.com/ZoneCNH/xlib_evidence
+  repo: github.com/xhyperium/xlib_evidence
   local_path: /home/workspace/xlib_evidence
   domain: foundation
   layer: evidence
   arch_type: library
   lifecycle: active
-  owner: ZoneCNH
+  owner: xhyperium
   registered: 2026-06-01
   spec_ref: module/xlib_evidence/spec/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml
@@ -81,13 +81,13 @@ xlib_evidence:
     cadence: stable
 
 xlibgate:
-  repo: github.com/ZoneCNH/xlibgate
+  repo: github.com/xhyperium/xlibgate
   local_path: /home/workspace/xlibgate
   domain: foundation
   layer: gate
   arch_type: cli
   lifecycle: active
-  owner: ZoneCNH
+  owner: xhyperium
   registered: 2026-06-01
   spec_ref: module/xlibgate/spec/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml
@@ -99,13 +99,13 @@ xlibgate:
 
 # --- L0 原语（1）---
 kernel:
-  repo: github.com/ZoneCNH/kernel
+  repo: github.com/xhyperium/kernel
   local_path: /home/workspace/kernel
   domain: foundation
   layer: L0
   arch_type: library
   lifecycle: active
-  owner: ZoneCNH
+  owner: xhyperium
   registered: 2026-06-01
   spec_ref: module/kernel/spec/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml
@@ -117,13 +117,13 @@ kernel:
 
 # --- L1 primitives（4）---
 configx:
-  repo: github.com/ZoneCNH/configx
+  repo: github.com/xhyperium/configx
   local_path: /home/workspace/configx
   domain: foundation
   layer: L1
   arch_type: library
   lifecycle: active
-  owner: ZoneCNH
+  owner: xhyperium
   registered: 2026-06-01
   spec_ref: module/configx/spec/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml
@@ -134,13 +134,13 @@ configx:
     cadence: stable
 
 observex:
-  repo: github.com/ZoneCNH/observex
+  repo: github.com/xhyperium/observex
   local_path: /home/workspace/observex
   domain: foundation
   layer: L1
   arch_type: library
   lifecycle: active
-  owner: ZoneCNH
+  owner: xhyperium
   registered: 2026-06-01
   spec_ref: module/observex/spec/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml
@@ -151,13 +151,13 @@ observex:
     cadence: stable
 
 resiliencx:
-  repo: github.com/ZoneCNH/resiliencx
+  repo: github.com/xhyperium/resiliencx
   local_path: /home/workspace/resiliencx
   domain: foundation
   layer: L1
   arch_type: library
   lifecycle: active
-  owner: ZoneCNH
+  owner: xhyperium
   registered: 2026-06-01
   spec_ref: module/resiliencx/spec/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml
@@ -168,13 +168,13 @@ resiliencx:
     cadence: stable
 
 schedulex:
-  repo: github.com/ZoneCNH/schedulex
+  repo: github.com/xhyperium/schedulex
   local_path: /home/workspace/schedulex
   domain: foundation
   layer: L1
   arch_type: library
   lifecycle: active
-  owner: ZoneCNH
+  owner: xhyperium
   registered: 2026-06-01
   spec_ref: module/schedulex/spec/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml
@@ -186,13 +186,13 @@ schedulex:
 
 # --- L1 Assembly（1）---
 bootstrap:
-  repo: github.com/ZoneCNH/bootstrap
+  repo: github.com/xhyperium/bootstrap
   local_path: /home/workspace/bootstrap
   domain: foundation
   layer: L1
   arch_type: library
   lifecycle: active
-  owner: ZoneCNH
+  owner: xhyperium
   registered: 2026-06-01
   spec_ref: module/bootstrap/spec/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml
@@ -204,13 +204,13 @@ bootstrap:
 
 # --- L1 测试（1）---
 testkitx:
-  repo: github.com/ZoneCNH/testkitx
+  repo: github.com/xhyperium/testkitx
   local_path: /home/workspace/testkitx
   domain: foundation
   layer: L1
   arch_type: library
   lifecycle: active
-  owner: ZoneCNH
+  owner: xhyperium
   registered: 2026-06-01
   spec_ref: module/testkitx/spec/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml
@@ -222,13 +222,13 @@ testkitx:
 
 # --- 存储扩展（7）---
 redisx:
-  repo: github.com/ZoneCNH/redisx
+  repo: github.com/xhyperium/redisx
   local_path: /home/workspace/redisx
   domain: foundation
   layer: storage
   arch_type: library
   lifecycle: active
-  owner: ZoneCNH
+  owner: xhyperium
   registered: 2026-06-01
   spec_ref: module/redisx/spec/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml
@@ -239,13 +239,13 @@ redisx:
     cadence: stable
 
 kafkax:
-  repo: github.com/ZoneCNH/kafkax
+  repo: github.com/xhyperium/kafkax
   local_path: /home/workspace/kafkax
   domain: foundation
   layer: storage
   arch_type: library
   lifecycle: active
-  owner: ZoneCNH
+  owner: xhyperium
   registered: 2026-06-01
   spec_ref: module/kafkax/spec/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml
@@ -256,13 +256,13 @@ kafkax:
     cadence: stable
 
 natsx:
-  repo: github.com/ZoneCNH/natsx
+  repo: github.com/xhyperium/natsx
   local_path: /home/workspace/natsx
   domain: foundation
   layer: storage
   arch_type: library
   lifecycle: active
-  owner: ZoneCNH
+  owner: xhyperium
   registered: 2026-06-01
   spec_ref: module/natsx/spec/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml
@@ -273,13 +273,13 @@ natsx:
     cadence: stable
 
 postgresx:
-  repo: github.com/ZoneCNH/postgresx
+  repo: github.com/xhyperium/postgresx
   local_path: /home/workspace/postgresx
   domain: foundation
   layer: storage
   arch_type: library
   lifecycle: active
-  owner: ZoneCNH
+  owner: xhyperium
   registered: 2026-06-01
   spec_ref: module/postgresx/spec/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml
@@ -290,13 +290,13 @@ postgresx:
     cadence: stable
 
 taosx:
-  repo: github.com/ZoneCNH/taosx
+  repo: github.com/xhyperium/taosx
   local_path: /home/workspace/taosx
   domain: foundation
   layer: storage
   arch_type: library
   lifecycle: active
-  owner: ZoneCNH
+  owner: xhyperium
   registered: 2026-06-01
   spec_ref: module/taosx/spec/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml
@@ -307,13 +307,13 @@ taosx:
     cadence: stable
 
 ossx:
-  repo: github.com/ZoneCNH/ossx
+  repo: github.com/xhyperium/ossx
   local_path: /home/workspace/ossx
   domain: foundation
   layer: storage
   arch_type: library
   lifecycle: active
-  owner: ZoneCNH
+  owner: xhyperium
   registered: 2026-06-01
   spec_ref: module/ossx/spec/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml
@@ -324,13 +324,13 @@ ossx:
     cadence: stable
 
 clickhousex:
-  repo: github.com/ZoneCNH/clickhousex
+  repo: github.com/xhyperium/clickhousex
   local_path: /home/workspace/clickhousex
   domain: foundation
   layer: storage
   arch_type: library
   lifecycle: active
-  owner: ZoneCNH
+  owner: xhyperium
   registered: 2026-06-01
   spec_ref: module/clickhousex/spec/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml
@@ -342,13 +342,13 @@ clickhousex:
 
 # --- 契约与传输（2）---
 contracts:
-  repo: github.com/ZoneCNH/contracts
+  repo: github.com/xhyperium/contracts
   local_path: /home/workspace/contracts
   domain: foundation
   layer: contracts
   arch_type: contract
   lifecycle: active
-  owner: ZoneCNH
+  owner: xhyperium
   registered: 2026-06-01
   spec_ref: module/contracts/spec/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml
@@ -359,13 +359,13 @@ contracts:
     cadence: stable
 
 transportx:
-  repo: github.com/ZoneCNH/transportx
+  repo: github.com/xhyperium/transportx
   local_path: /home/workspace/transportx
   domain: foundation
   layer: contracts
   arch_type: contract
   lifecycle: active
-  owner: ZoneCNH
+  owner: xhyperium
   registered: 2026-06-01
   spec_ref: module/transportx/spec/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml
@@ -382,13 +382,13 @@ transportx:
 # ============================================================================
 
 domainx:
-  repo: github.com/ZoneCNH/domainx
+  repo: github.com/xhyperium/domainx
   local_path: /home/workspace/domainx
   domain: l2_5
   layer: l2_5
   arch_type: library
   lifecycle: active
-  owner: ZoneCNH
+  owner: xhyperium
   registered: 2026-06-01
   spec_ref: module/domainx/spec/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml
@@ -399,13 +399,13 @@ domainx:
     cadence: stable
 
 decimalx:
-  repo: github.com/ZoneCNH/decimalx
+  repo: github.com/xhyperium/decimalx
   local_path: /home/workspace/decimalx
   domain: l2_5
   layer: l2_5
   arch_type: library
   lifecycle: active
-  owner: ZoneCNH
+  owner: xhyperium
   registered: 2026-06-01
   spec_ref: module/decimalx/spec/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml
@@ -416,13 +416,13 @@ decimalx:
     cadence: irregular
 
 domain_market:
-  repo: github.com/ZoneCNH/domain_market
+  repo: github.com/xhyperium/domain_market
   local_path: /home/workspace/domain_market
   domain: l2_5
   layer: l2_5
   arch_type: library
   lifecycle: active
-  owner: ZoneCNH
+  owner: xhyperium
   registered: 2026-06-01
   spec_ref: module/domain_market/spec/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml
@@ -433,13 +433,13 @@ domain_market:
     cadence: stable
 
 domain_macro:
-  repo: github.com/ZoneCNH/domain_macro
+  repo: github.com/xhyperium/domain_macro
   local_path: /home/workspace/domain_macro
   domain: l2_5
   layer: l2_5
   arch_type: library
   lifecycle: active
-  owner: ZoneCNH
+  owner: xhyperium
   registered: 2026-06-01
   spec_ref: module/domain_macro/spec/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml
@@ -450,13 +450,13 @@ domain_macro:
     cadence: irregular
 
 domain_exchange:
-  repo: github.com/ZoneCNH/domain_exchange
+  repo: github.com/xhyperium/domain_exchange
   local_path: /home/workspace/domain_exchange
   domain: l2_5
   layer: l2_5
   arch_type: library
   lifecycle: active
-  owner: ZoneCNH
+  owner: xhyperium
   registered: 2026-06-01
   spec_ref: module/domain_exchange/spec/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml
