@@ -10,6 +10,16 @@
           }
         ],
         "matcher": "manual|auto"
+      },
+      {
+        "hooks": [
+          {
+            "command": "bd codex-hook PostCompact",
+            "statusMessage": "Scheduling Beads context refresh",
+            "type": "command"
+          }
+        ],
+        "matcher": "manual|auto"
       }
     ],
     "PreCompact": [
@@ -22,6 +32,16 @@
           }
         ],
         "matcher": "manual|auto"
+      },
+      {
+        "hooks": [
+          {
+            "command": "bd codex-hook PreCompact",
+            "statusMessage": "Checking Beads context",
+            "type": "command"
+          }
+        ],
+        "matcher": "manual|auto"
       }
     ],
     "SessionStart": [
@@ -29,6 +49,16 @@
         "hooks": [
           {
             "command": "bd prime --mcp --stealth",
+            "statusMessage": "Loading Beads context",
+            "type": "command"
+          }
+        ],
+        "matcher": "startup|resume|clear"
+      },
+      {
+        "hooks": [
+          {
+            "command": "bd codex-hook SessionStart",
             "statusMessage": "Loading Beads context",
             "type": "command"
           }
@@ -52,6 +82,15 @@
         "hooks": [
           {
             "command": "bd prime --mcp --stealth",
+            "statusMessage": "Refreshing Beads context",
+            "type": "command"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "command": "bd codex-hook UserPromptSubmit",
             "statusMessage": "Refreshing Beads context",
             "type": "command"
           }

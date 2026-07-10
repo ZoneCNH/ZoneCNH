@@ -23,24 +23,24 @@
         "matcher": "Write"
       },
       {
-        "matcher": "Edit|Write",
+        "description": "Link-check after markdown edits",
         "hooks": [
           {
-            "type": "command",
-            "command": "node /home/workspace/ZoneCNH/.claude/hooks/link-check.cjs"
+            "command": "node /home/workspace/ZoneCNH/.claude/hooks/link-check.cjs",
+            "type": "command"
           }
         ],
-        "description": "Link-check after markdown edits"
+        "matcher": "Edit|Write"
       },
       {
-        "matcher": "Bash",
+        "description": "RSI auto-propose after audit FAIL (PostToolUse per script header)",
         "hooks": [
           {
-            "type": "command",
-            "command": "node .claude/hooks/rsi-trigger.mjs"
+            "command": "node .claude/hooks/rsi-trigger.mjs",
+            "type": "command"
           }
         ],
-        "description": "RSI auto-propose after audit FAIL (PostToolUse per script header)"
+        "matcher": "Bash"
       }
     ],
     "PreCompact": [
