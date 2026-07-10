@@ -266,7 +266,7 @@ PRG-001~007 状态如下：
 
 ## 22a. Runtime Gap Matrix Reference
 
-> [COMPUTED, HIGH] **单一状态声明**：当前统计为 13 Done / 52 Partial / 0 Drifted / 0 Pending。`RUNTIME-GAP-MATRIX.md` 是缺口细目，不是第二状态源；未闭合的功能或运行证据必须保持对应 FR 为 Partial。
+> [COMPUTED, HIGH] **单一状态声明**：当前统计为 13 Done / 52 Partial / 0 Drifted / 0 Pending。`module/binance/matrix/RUNTIME-GAP-MATRIX.md` 是缺口细目，不是第二状态源；未闭合的功能或运行证据必须保持对应 FR 为 Partial。
 >
 > 来源报告：`report/binance/DEEP-ANALYSIS-20260704.md`（含 runtime baseline 对齐、发布阻断闭环与版本回刷证据）。
 >

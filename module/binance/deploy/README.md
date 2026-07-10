@@ -1,7 +1,7 @@
 # module/binance 发布执行边界
 
-- [COMPUTED, HIGH] Spec-Version: v4.1.0
-- [COMPUTED, HIGH] Runtime-Version: v0.15.1（last published tag；不是当前 RC）
+- Spec-Version: v4.1.0 [COMPUTED, HIGH]
+- Runtime-Version: v0.15.1（last published tag；不是当前 RC）[COMPUTED, HIGH]
 - [COMPUTED, HIGH] Last-Updated: 2026-07-10
 - [COMPUTED, HIGH] Current-Verdict: `release_closeable_spec=NO`、`release_closeable_runtime=NO`
 

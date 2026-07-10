@@ -1,6 +1,7 @@
 # binance 发布合同
 
-- [COMPUTED, HIGH] Spec-Version: v4.1.0
+- Spec-Version: v4.1.0 [COMPUTED, HIGH]
+- Runtime-Version: v0.15.1（last published tag；不是当前 RC）[COMPUTED, HIGH]
 - [COMPUTED, HIGH] Last-Updated: 2026-07-10
 - [COMPUTED, HIGH] Current-Verdict: No-Go
 

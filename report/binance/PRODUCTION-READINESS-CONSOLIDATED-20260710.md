@@ -1,10 +1,11 @@
 # Binance 四业务线生产就绪综合复审与优化报告
 
-> [COMPUTED, HIGH] 审计日期：2026-07-10（Asia/Shanghai）。
+> [COMPUTED, HIGH] 审计窗口：2026-07-10 至 2026-07-11（Asia/Shanghai）。
 > [COMPUTED, HIGH] ZoneCNH 审计基线：`b870934a940688f057c1391bfcd039e56ca16e76`。
 > [COMPUTED, HIGH] runtime 审计基线：`b20f6d44f8b246149c7a9f9c06a4dc27bc7b49ef`。
+> [COMPUTED, HIGH] runtime 整改提交：`e2c4970896153fd89ead3771eb302d85410643c9`、`bcde5357a25d71c02a7b841612b05eb0b32f1786`。
 > [COMPUTED, HIGH] 修复分支：两个仓库均为 `fix/binance-production-readiness-20260710-v2`，且均位于规范 worktree 路径。
-> [COMPUTED, HIGH] 审计方式：3 个只读审计 agent 并行覆盖规格、runtime、数据完整性/发布证据；3 个实现 agent/主 agent 按互斥写范围完成历史、DLQ、部署文档与集成修复；2 个复核 agent 对 runtime patch 与 ZoneCNH 文档做二次对抗性检查。
+> [COMPUTED, HIGH] 审计方式：Agent Team 多轮并行覆盖规格、runtime、数据完整性与发布证据；实现任务按互斥写范围推进，随后分别执行 Standards、Spec、并发与证据信任链对抗复审。
 > [COMPUTED, HIGH] 范围：公共市场数据 `spot`、`um_perp`、`cm_perp`、`options`；不包含下单、账户、仓位、私有用户流或策略。
 > [COMPUTED, HIGH] 协议复核交叉使用 Binance Developer Catalog 与官方 `binance-connector-js` 提交 `a4a5fb66804c4387d5437c84927a1bc4816391fb`，避免以仓内旧文档反过来证明实现正确。
 
@@ -16,7 +17,7 @@
 
 [COMPUTED, HIGH] 本轮已修复同毫秒 aggTrade 丢失、CM kline 前缀静默丢失、实时/历史 trade 粒度错配、Options/UM/CM 非法流名与路由、历史任务提前完成、白名单版本回滚与 Options fail-open 绕过、client 内存背压/PubAck retry、跨产品订单簿 dispatch、订单簿畸形数据部分写入/旧 generation 覆盖/持久快照假 fresh、consumer DLQ durability、OSS 混分区/失败丢批、发布证据假绿和部署文档越界等高风险问题。
 
-[COMPUTED, HIGH] No-Go 仍由两类独立条件共同构成：一类是 client 可靠投递策略与 canonical spec 的冲突、Options 订单簿 live 对齐/容量证据、订单簿 generation/freshness、Catalog diff、coverage 能力矩阵、funding 独立数据、OSS 归档 durability；另一类是 NATS、Kafka、TDengine、Redis、部署 API 五项外部门禁及 tag/release notes/preflight/rollback 证据均未绑定同一 RC。
+[COMPUTED, HIGH] No-Go 仍由两类独立条件共同构成：一类是 client 可靠投递策略与 canonical spec 的冲突、Options 订单簿 live 对齐/容量证据、订单簿 generation/freshness、Catalog diff、coverage 能力矩阵、funding 独立数据、OSS 归档 durability；另一类是 GitHub `main` 当前未受 branch protection/ruleset 保护、fixed attested signer workflow 仍为强制失败的占位合同，NATS、Kafka、TDengine、Redis、部署 API 五项签名外部门禁及 tag/release notes/preflight/rollback 证据均未绑定同一 RC。
 
 [INFERRED, HIGH] 用户目标明确包含四业务线与订单簿，因此本报告不采用“只存在代码路径、没有 live 证据”来制造 Go 结论；只有负责人显式缩小 release profile，或 Options 订单簿完成容量、snapshot+diff、重连与 checksum 验收，才能改变该项判定。
 
@@ -54,7 +55,7 @@ Binance WS/REST ──► Connector ──► Normalize ──► Reliable clien
                   └──────── replay after root-cause repair
 ```
 
-[COMPUTED, HIGH] `Connector → reliable client handoff` 的进程内路径已接通：四线共用 collector 改为 context-aware blocking send，`LiveDelivery` 使用有界内存 Queue/Relay/Cursor，transport/non-durable ACK 保留重试，只有 durable PubAck 才推进 cursor 并移除事件。operator-facing queue/backoff 配置、queue/retry 指标和 crash recovery 仍未闭合。
+[COMPUTED, HIGH] `Connector → reliable client handoff` 的进程内路径已接通：四线共用 collector 改为 context-aware blocking send，`LiveDelivery` 使用有界内存 Queue/Relay/Cursor；`MaxPublishRetry=N` 现在严格表示首次 publish 后再重试 N 次。单个 retry window 耗尽会触发带 `BNC-CLIENT-4004`/`ErrNATSPubAck` 的结构化告警，在 capped backoff 后继续持有并重试同一队列，而不是让 runtime 解栈；只有 durable PubAck 才移除事件和推进 cursor。operator-facing queue/backoff 配置、专用 queue/retry 指标和 crash recovery 仍未闭合。
 
 [COMPUTED, HIGH] `module/binance/spec/client/SPEC.md` §23 OQ-002 明确禁止本地 spool/checkpoint，并在故障矩阵中接受“进程崩溃时未 PubAck 事件丢失”；因此不能在不修改 Goal/Spec/Matrix 的前提下把磁盘 durable queue 私自接入生产。该规格选择与本次“数据完整性生产级”目标冲突，必须先由负责人裁决允许的丢失窗口，或批准本地 WAL/多实例冗余与可验证补数方案。
 
@@ -95,17 +96,25 @@ Binance WS/REST ──► Connector ──► Normalize ──► Reliable clien
 - [COMPUTED, HIGH] Options 未加载/provider 失败/fail-open 均改为严格 deny-all，非 `OrderbookEnabled` 项不再获得 depth bit；OrderBook reconcile 整轮串行且拒绝旧 generation 回加已撤销 symbol。
 - [COMPUTED, HIGH] 实时默认流已改为 Spot/UM/CM `@aggTrade`、Options `@optionTrade`；Options trade/ticker/depth 路由 `/public`，kline 路由 `/market`，三条衍生品不再混入 Spot-only `1s` kline。
 - [COMPUTED, HIGH] canonical trade side 现按 aggressor 语义映射：`m=true` 表示 buyer maker，因此主动方为 SELL；Options `S` 字段存在时优先使用官方显式方向。
-- [COMPUTED, HIGH] `RunStandalone` 已接入有界内存 `LiveDelivery`；collector 满 channel 时阻塞而不是 drop，transport error/non-durable ACK 指数退避，durable PubAck 前事件不会从 queue 删除。
+- [COMPUTED, HIGH] `RunStandalone` 已接入有界内存 `LiveDelivery`；collector 满 channel 时阻塞而不是 drop，transport error/non-durable ACK 按“首次 + N 次重试”执行指数退避，窗口耗尽告警后仍阻塞重试同一内存队列，durable PubAck 前事件不会被删除或推进 cursor。
 - [COMPUTED, HIGH] 订单簿对每个 snapshot/diff 先整批校验 price/qty；畸形行不再部分修改 book、推进 update ID 或转发增量。持久快照仅作为 BUFFERING candidate，经产品线 bridge 后才 ALIGNED；旧 generation REST 结果不能覆盖新 generation。
-- [COMPUTED, HIGH] Spot 与 UM/CM snapshot bridge 保持独立公式；`rebuild_start/complete` marker 在进程内有序排队，满普通增量 channel 时 marker 本身不再静默丢弃。
+- [COMPUTED, HIGH] Spot 与 UM/CM snapshot bridge 保持独立公式；`rebuild_start/complete` marker 使用 2048-key 有界、按 instrument/type/generation 合并的队列，下游阻塞时对新 key 施加背压。`OrderBookManager.Close()` 现在取消并等待 REST alignment、TopN、persist、checksum、marker dispatcher 与 symbol state machine；单 symbol revoke 也会取消并等待该 symbol alignment。checksum 按稳定 identity 轮转 `ChecksumSampleSize` 子集并受 `ChecksumConcurrency` 限制；`RunStandalone` 退出时先摘除回调可见指针再关闭 manager。
+- [COMPUTED, HIGH] `BUFFERING→ALIGNED` 现在由 `bufferMu` 与单调 `bufferEpoch` 共同提交：REST/持久化恢复在锁内应用完整 tail、清空 buffer 并切换状态；clear/refill ABA 会拒绝旧前缀并在没有下一条事件时自动重拉，已读 BUFFERING 但锁后已 ALIGNED 的事件改走 aligned 路径。AlignReject/Wait 同时比较 epoch 与捕获长度，计算期间 append 不再因 `aligning=true` 吞掉重试。
+- [COMPUTED, HIGH] `snapshot_topn` 任一非法 price/qty 会保留旧 book 作为 last-known state，但立即转为 `BUFFERING/stale`，fresh 查询返回 nil，不部分写入或推进 update ID，并以可取消背压向下游发送保留旧档位/旧 ID 的 `Stale=true` 安全边界；会造成 ABA/跨 symbol 内容错读的全局 Book pool 已移除，last-known snapshot 也有独立并发锁。
+- [COMPUTED, HIGH] orderbook `FilePersistor` 已改为唯一 temp→file fsync→rename→directory fsync，首次目录创建逐级同步父目录；同 symbol 并发保存串行且等待可被 context 取消。该快照仍只作为 untrusted recovery candidate，必须经 sequence bridge 才能 fresh。
+- [COMPUTED, HIGH] orderbook 增量档位、`LastUpdateID` 与 update time 由单次 Book 写锁原子提交；per-symbol mutation gate 将 event apply/forward、checksum、overflow rebuild 与 snapshot replacement 串行到同一 generation，旧读 ALIGNED 的事件在 rebuild 后转入 buffer。checksum 仅在 generation、manager/book identity、ALIGNED 状态及 REST/live update ID 均稳定一致时比较档位；正常实时推进或同 symbol book 换代会跳过，真实同 ID drift 仍触发 rebuild。snapshot rebuild 在清 book 前可靠发送 retained stale TopN，下一完整快照发送 `rebuild_complete`。
+- [COMPUTED, HIGH] 白名单 stream/orderbook policy 现由同一原子 snapshot 读取；refresh 在锁内共同提交 cache 与 degraded 状态、锁外派发可重入 callback，provider 在读取中退化时 Options 仍 deny-all。全量、增量与版本确认区分 stale 与 persistence error：rename 前失败不发布内存版本，rename 已提交但目录同步失败时内存跟随磁盘并让 Client 进入显式 degraded；首次创建缓存目录还会逐级同步父目录项，避免磁盘/内存分叉与误报 stale。
 
 ### 4.3 Server durability 与治理
 
 - [COMPUTED, HIGH] assembly 已将已配置的 `DeadLetterWriter` 显式注入 consumer runner；processor panic 在 writer 存在时先 durable write 再 `Term()`，writer 不存在时保持未 ACK 而不是主动删除消息。
 - [COMPUTED, HIGH] File DLQ 启动时扫描既有 JSONL 恢复 seen IDs；损坏 JSON、空白 ID 或截断尾行均 fail-closed；每条记录 fsync，首次创建同步 parent directory，正常关闭由 `Assembly.Close` 统一负责。
 - [COMPUTED, HIGH] 非 smoke assembly 现在强制持久 DLQ path；缺失或 writer 初始化失败会在启动期 fail-closed，并清理已创建的 storage/dispatcher。
+- [COMPUTED, HIGH] production kafkax 装配已启用 strict dispatch handoff；strict storage 失败即使 DLQ 成功也返回 retryable，strict Kafka 失败即使 primary storage 成功也不 ACK、不标 durable，strict 模式下 nil dispatcher 也在写 storage 前 fail-closed，DLQ 不再替代 strict primary barrier；`FOUNDATIONX_BINANCE_SKIP_KAFKA=1` 仅 smoke 允许，non-smoke 启动期拒绝。
 - [COMPUTED, HIGH] OSS archive 已拆分混合产品/事件/日期批次，上传失败不再先删除内存 batch；同 key 重试、跨实例随机 batch ID、有界 pending/current 与 Close 排空均有 RED→GREEN 测试。
-- [COMPUTED, HIGH] runtime README 的当前裁决已从错误的 `release_closeable=YES` 改为 NO；状态一致性 gate 现在固定要求 10 个本地 check、5 个外部 gate、逐 gate pass marker/command/proof contract、clean worktree，并只允许 tested commit 之后的 evidence-only 提交。
+- [COMPUTED, HIGH] runtime README 的当前裁决已从错误的 `release_closeable=YES` 改为 NO；状态与 release-packet 校验器现在复用同一 external evidence validator。任意 `bash -c`/`BINANCE_EXTERNAL_*_COMMAND` 已失去发放 PASS 的能力，只有绑定固定 repo、signer workflow、signer digest、protected-main source ref 与 source digest 的 GitHub attestation artifact+bundle 才可能关闭五项 gate。
+- [COMPUTED, HIGH] `status.txt` 的本地 PASS 行现仅作审计，不能授权 `release_closeable=YES`；status workflow 要求 `refs/heads/main` 且 `github.ref_protected=true`，用 clean child、fresh HOME、固定工具 PATH 与 `GOENV=off` 执行，并在每项门禁前后绑定当前 `GITHUB_SHA`。只有 YES 才实时重跑不可扩展的 format/boundary/build/test/race/vet/lint/smoke/diff 门禁；`head.log` 可绑定 evidence-only 提交的祖先 source SHA，但其后任何所选 evidence 目录之外的变更都会 fail-closed。
+- [COMPUTED, HIGH] external evidence importer 使用 fresh exclusive output、0600/umask 077、symlink/NUL/CR/size/重复字段/事件 ID/双 SHA-256 校验，并为 root-owned fixed-path `gh attestation verify` 设置 60 秒超时；安全关键脚本固定 helper `PATH=/usr/bin:/bin`、清除 `GIT_*`、校验 canonical checkout 与 verifier 祖先目录，并拒绝异常 `BASH_ENV`/导出函数。所有发布判定入口以 clean environment 调 validator；PASS 只在私有 staging 完成共享复验后发布，最终 ledger 作为最后一个 commit marker。status workflow 只在 main push 时使用 §17 受治理 runner，不执行 pull-request 或 feature-ref 脚本。
 - [COMPUTED, HIGH] 深度复审将 Options/orderbook、当前 RC evidence 与数据完整性假绿项一并降级；canonical 投影为 `13 Done / 52 Partial / 0 Drifted / 0 Pending`，spec/runtime 均为 NO。
 - [COMPUTED, HIGH] docs gate 新增 Matrix 行计数、Summary 与五个活跃入口的一致性检查，原先的 65/0 与 43/22 双真相将直接失败。
 - [COMPUTED, HIGH] 六份核心部署/运维文档（`deploy/` 三份、gate 两份、release 一份）已移除具体基础设施操作、环境地址、账户与敏感路径，统一引用 `docs/sre/DEPLOY-CONTRACT.yaml` 的 `zonecnh.deploy-contract.v1` 和 `sre/deploy` 执行平面。
@@ -114,9 +123,9 @@ Binance WS/REST ──► Connector ──► Normalize ──► Reliable clien
 
 ### 5.1 P0：本地实现
 
-1. [COMPUTED, HIGH] client 有界内存 queue/backpressure/PubAck retry 已接入，但 canonical spec 禁止本地 spool 并接受 crash-window 丢失；queue/backoff 仍无 operator 配置桥接，queue-depth/retry 也无独立指标或告警。因此尚不能证明进程崩溃与长故障场景的数据完整性。
+1. [COMPUTED, HIGH] client 有界内存 queue/backpressure/PubAck retry 与 transport/non-durable retry-window 已接入，窗口耗尽不会再解栈丢掉仍可达的内存队列；但 canonical spec 禁止本地 spool 并接受 crash-window 丢失。queue/backoff/max-retry 仍无 operator 配置桥接，queue-depth/retry-exhaustion 也无专用指标或告警 sink。因此尚不能证明进程崩溃与长故障场景的数据完整性。
 2. [COMPUTED, HIGH] Options 已有显式白名单的 OrderBookManager、REST snapshot 与 sequence alignment 代码路径，但仍缺真实 live snapshot+diff、断线重连、合约过期 churn、容量上限与 checksum 对账证据，不能视为生产闭环。
-3. [COMPUTED, HIGH] Spot/UM/CM 的畸形事件原子性、alignment generation、持久快照 bridge 与 marker 本身不丢已修；但 WS disconnect 尚无可观察的 connector→manager stale/rebuild 接线，普通增量仍为 best-effort，输出 channel 永久阻塞时 marker dispatcher 也会阻塞；canonical 仍未定义 snapshot max-age/强制 checksum 阈值。
+3. [COMPUTED, HIGH] Spot/UM/CM 的畸形事件原子性、alignment generation/revoke 生命周期、buffer/state 原子交接、Reject append 与 clear/refill ABA 重试、mutation/rebuild 跨代隔离、candidate 文件与目录 durability barrier、持久快照 bridge、snapshot stale/complete 边界、非法 top-N reliable fail-stale、同 ID checksum 与 marker 有界/可关闭生命周期已修；但 WS disconnect 尚无可观察的 connector→manager stale/rebuild 接线，普通增量仍为 best-effort，持续阻塞时同 key 中间 generation 会被有界合并；checksum 在高流速下无法取得相同 update ID 时会跳过，尚无断电级 crash test，canonical 也未定义 snapshot max-age/强制 checksum 阈值。
 4. [COMPUTED, HIGH] Catalog discovery 与 admission 仍未彻底分层；现有过滤发生在 `DiffSync` 前，策略移除可被投影为 exchange delisting，新上市候选也无法形成独立 candidate 集。
 5. [COMPUTED, HIGH] Catalog diff 没有真实 Updated 语义，runtime 发布消息也不能可靠表达 Added/Updated/Removed；server delisted checker 未在生产装配中强制启用。
 6. [COMPUTED, HIGH] coverage reporter 仍以历史 backfill coverage 代替实时 WS 观测，server scanner 又对所有产品线统一要求 trade/bookTicker/kline/funding/mark；该能力矩阵在 Spot/Options 上不成立。
@@ -126,12 +135,14 @@ Binance WS/REST ──► Connector ──► Normalize ──► Reliable clien
 10. [COMPUTED, HIGH] history failed-job retry、重启 recovery、初始落盘失败、状态加载 fail-closed、fsync 和 interval 隔离已修；但每个 `(product_line,symbol,data_type,interval)` 仍只保留一个 coverage 区间，“fetch 非空”仍会把整个请求窗口记为 covered，没有 source watermark/count/hash 完整性证明；reconcile 未严格按 `as_of`、产品能力、事件类型与目标窗口逐项验证。
 11. [COMPUTED, HIGH] UM/CM aggTrades 仅允许查询最近 24 小时，而当前 04:00 UTC daily job 回填完整前一 UTC 日，窗口开头届时已超过上游保留期；在引入连续增量 checkpoint 或官方历史归档源之前，该 daily trade 路径只能稳定失败，不能声称历史完整。
 12. [COMPUTED, HIGH] lifecycle 已传递显式 kline interval，但 daily/default cold-start 仍只生成单个 `1m` kline 周期，不能证明规格要求的多周期历史完整；抓取仍先将所有页聚合到内存后串行重放，无页级 durable cursor。
-13. [COMPUTED, HIGH] release evidence 门禁的固定本地/外部清单、proof binding 与父提交 evidence-only 规则已修；但 current packet、真实 live E2E、remote CI、tag/release notes/preflight/rollback 仍未绑定同一 RC。
+13. [COMPUTED, HIGH] release evidence 门禁已改为固定 GitHub attestation 信任链，并由 status/release-packet 共同复验；旧的本地回显、伪造十行 PASS、stale source SHA、`GOFLAGS=-run=^$`、`BASH_ENV` startup、caller-PATH/GIT 环境重定向、最小 ledger+marker、unsigned bundle、symlink 与覆盖重跑 PoC 均 fail-closed，PASS ledger 也不再早于组合复验发布。但 GitHub API 于 2026-07-11 返回 `main protected=false` 且 ruleset 为空，status workflow 会正确拒绝；`.github/workflows/binance-external-gates.yml` 仍固定退出失败且没有 attestation 权限。真实签名正向路径、隔离 runner 上的同 UID/TOCTOU 威胁边界、current packet、live E2E、remote CI、tag/release notes/preflight/rollback 均未绑定同一 RC。
 14. [COMPUTED, HIGH] root、client、server 规格仍复用相同 `FR-*` 标识表达不同语义；当前 docs gate 只能比较 root SPEC/FEATURES/Matrix 的 ID+状态，不能证明子规格语义唯一，追溯链仍存在 ID collision。
 
-### 5.2 P0：外部证据
+### 5.2 P0：外部证据与 GitHub 控制面
 
 [COMPUTED, HIGH] 当前 `release/evidence/binance/20260710/external-gates.tsv` 的五项结果均为 `BLOCKED/NOT_RUN`。
+
+[COMPUTED, HIGH] 2026-07-11 的 GitHub API 读回为 `main protected=false`、repository rulesets `[]`；代码已把 `github.ref_protected=true` 设为 YES 的必要条件，因此在管理员配置保护规则前 status workflow 会 fail-closed。该配置属于外部仓库控制面，本轮未擅自修改。
 
 | Gate | 当前状态 | 必需证明 |
 | --- | --- | --- |
@@ -223,21 +234,26 @@ Binance WS/REST ──► Connector ──► Normalize ──► Reliable clien
 | `go test ./internal/server/... -count=1` | [COMPUTED, HIGH] PASS |
 | consumer/deadletter/assembly race 子集 | [COMPUTED, HIGH] PASS |
 | runtime status consistency gate | [COMPUTED, HIGH] PASS，canonical verdict 为 NO |
-| status gate 对抗 fixtures | [COMPUTED, HIGH] PASS：缺/重复/多余 gate、缺 proof、占位 proof、源码后改和 dirty worktree 均 fail-closed |
+| status / external runner / release-packet 对抗 fixtures | [COMPUTED, HIGH] PASS：unsigned local YES、旧 `printf/.invalid` command PoC、最小 ledger+marker、symlink、NUL、超限文件、覆盖重跑、caller-PATH/GIT 重定向、异常 `BASH_ENV`/导出函数、共享 validator 失败、源码后改和 dirty worktree 均 fail-closed |
 | ZoneCNH binance docs gate | [COMPUTED, HIGH] PASS（新增一致性检查后） |
 | deployment docs 禁词与敏感地址扫描 | [COMPUTED, HIGH] PASS |
-| 变更 Markdown 相对链接 | [COMPUTED, HIGH] PASS（38 个 changed path 扫描） |
+| 变更 Markdown 相对链接 | [COMPUTED, HIGH] PASS（38 个 changed Markdown、98 个相对链接） |
 | `GOWORK=off go build ./...` | [COMPUTED, HIGH] PASS |
 | `GOWORK=off go test ./... -count=1` | [COMPUTED, HIGH] PASS |
 | `GOWORK=off go test ./... -race -count=1` | [COMPUTED, HIGH] PASS，0 data race |
 | `GOWORK=off go vet ./...` | [COMPUTED, HIGH] PASS |
+| `GOWORK=off go test ./... -coverprofile=...` | [COMPUTED, HIGH] PASS，module statement coverage `82.2%`；critical `orderbook` 为 `77.9%`，`cmd/binance-client` 为 `75.7%`、`cmd/binance-server` 为 `50.8%`，未形成逐 package 80% 结论 |
+| repository-wide Actionlint；变更 workflow Yamllint | [COMPUTED, HIGH] PASS；既有 `build.yml` 未引用的 GOROOT 推导已修复 |
+| status clean-env/SHA/protection 对抗 fixtures | [COMPUTED, HIGH] PASS：BASH startup、GOFLAGS no-tests、缺失/漂移 SHA、未保护 ref 均 fail-closed |
 | `golangci-lint run ./...` | [COMPUTED, HIGH] BLOCKED：本机 linter 由 Go 1.25 构建，低于仓库目标 Go 1.26，配置加载前即退出 |
-| `staticcheck ./...` | [COMPUTED, HIGH] FAIL：仓库既有 unused/nil-context 等基线仍存在；本轮新增 `SA4006/U1000` 已修至 0 |
+| `staticcheck ./...` | [COMPUTED, HIGH] FAIL：仓库既有 `U1000`/`SA1012` 等基线仍存在；本轮并发改动集中的 `internal/client/orderbook` 单包检查 PASS |
 | `./scripts/boundary-gates.sh` | [COMPUTED, HIGH] 18/18 PASS |
 | `TestSoak_ServerStability`（`SOAK_DURATION=30s`，测试墙钟 60s） | [COMPUTED, HIGH] PASS：`sent=11996`、`accepted=11996`、`rejected=0`、`dupes=1196`、`sink=10800`，heap growth `0.0%`，mid-final `-18.2%`，goroutine delta `0` |
 | `-tags=chaos` 确定性故障注入 | [COMPUTED, HIGH] PASS：ProcessRestart、StorageFailure、DispatchFailure、IdempotencyUnavailable、ConcurrentFailureInterleaving；需外部环境/特权的 NATS、Redis、TDengine、Kafka 和 stop/kill 用例 SKIP |
 | `gitleaks dir . --redact`（runtime + ZoneCNH） | [COMPUTED, HIGH] PASS，未发现 secret |
+| Agent Team 最终 P0/P1 复审 | [COMPUTED, HIGH] PASS：alignment append/commit、buffer ABA、mutation/rebuild 跨代、snapshot stale/complete、checksum 时序、Book 原子快照、status false-green 均已有确定性回归；当前 scope 未发现剩余实现级 P0/P1 |
 | 外部五项 E2E | [COMPUTED, HIGH] BLOCKED/NOT_RUN |
+| GitHub main protection/ruleset | [COMPUTED, HIGH] BLOCKED：2026-07-11 API 读回 `protected=false`、`rulesets=[]` |
 
 [COMPUTED, HIGH] 默认 `/home/workspace/go.work` 中的 `natsx` 工作区存在独立冲突；binance pinned-module 验证统一使用 `GOWORK=off`。该问题必须作为多仓集成 workspace blocker 单独处理，不能归因于本轮 binance module patch。
 
@@ -246,14 +262,14 @@ Binance WS/REST ──► Connector ──► Normalize ──► Reliable clien
 1. [INFERRED, HIGH] **R0 — 冻结真值**：保持 `release_closeable_spec=NO` 与 runtime NO；选定唯一 RC SHA，旧 evidence 全部标历史快照。
 2. [INFERRED, HIGH] **R1 — 本地 P0**：裁决 client crash-window 与 archive retry 持久化策略；补 connector disconnect→orderbook stale/rebuild；完成 Options live alignment/容量验收；拆分 Catalog candidate/admission；修复 coverage/funding 与 history capability；补齐 client queue 配置/指标。
 3. [INFERRED, HIGH] **R2 — 确定性集成**：增加四线 live fixture、kill/restart replay、同名 symbol、同毫秒 trade、daily window、mixed archive partition、multi-replica idempotency 与 capability-matrix tests。
-4. [INFERRED, HIGH] **R3 — 真实外部门禁**：在受控环境执行 NATS、Kafka、TDengine、Redis、API 五项 E2E，并保存环境身份、harness hash、RC SHA 和原始日志。
+4. [INFERRED, HIGH] **R3 — 真实外部门禁**：先由管理员配置并验证 main branch protection/ruleset，再实现和审查 fixed signer workflow；随后在 protected main 与 §17 受治理 runner 上执行 NATS、Kafka、TDengine、Redis、API 五项 E2E，生成绑定环境身份、event ID、RC SHA、raw artifact 与 attestation bundle 的证据。
 5. [INFERRED, HIGH] **R4 — 发布来源**：为同一 RC 生成 remote CI URL、tag、release notes、artifact digest、SBOM、preflight、canary、rollback 与 post-deploy observation。
 6. [INFERRED, HIGH] **R5 — 重新裁决**：只有 canonical Matrix 无 Partial、所有 PRG 和 runtime packet 同时通过，才把 spec/runtime verdict 一次性提升为 YES。
 
 ## 13. 需要负责人的显式裁决
 
 - [INFERRED, HIGH] Options 订单簿 live alignment、合约 churn 与容量验收是本次四线目标的 P0；若要延期，必须显式定义一个不含 Options 本地订单簿的 release profile，并同步修改 Goal/Spec/AC/Matrix，不能只在实现里跳过。
-- [INFERRED, HIGH] 必须确定 raw durable SSOT 与 server ACK barrier：是 raw SSOT 或 durable DLQ 即可 ACK，还是还要求额外 fanout 同步完成。
+- [COMPUTED, HIGH] 当前 production kafkax 已选择 strict barrier：primary storage 与 Kafka handoff 均成功后才 ACK，DLQ 不替代任一 strict primary；负责人仍须裁决 OSS archive 是否也进入同步 ACK barrier，或作为可恢复异步派生层。
 - [INFERRED, HIGH] 必须解决 client OQ-002：若继续禁止本地 spool，就要明确可接受的 crash-window loss，并用多实例采集或可证明补数闭环；若目标是零静默丢失，则须先变更 Goal/Spec/Matrix，再引入受容量、fsync、加密和恢复测试约束的 WAL。
 - [INFERRED, HIGH] Options provider failure 已固定 fail-closed；负责人仍必须裁决 Spot/UM/CM 在 provider 失败时是继续 availability-first fail-open，还是改为全线 fail-closed，并绑定告警和恢复时限。
 - [COMPUTED, HIGH] persistent DLQ 已设为 production 必填；负责人仍须确认其保留期、加密、容量与 replay 处置 SLO。
