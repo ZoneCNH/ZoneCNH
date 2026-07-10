@@ -1,7 +1,7 @@
 # module/binance 部署文档
 
 - Spec-Version: v4.1.0
-- Runtime-Version: v0.15.0（anchor: `/home/workspace/binance@main`）
+- Runtime-Version: v0.15.1（anchor: `/home/workspace/binance@main`；本轮 audit branch 尚未创建新 release tag）
 - Target: jp1 (84.247.154.45)
 - Last-Updated: 2026-07-08
 

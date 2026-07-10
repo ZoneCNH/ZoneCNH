@@ -2,13 +2,13 @@
 
 > 版本：v2.2.5
 > Module-Version: v4.1.0
-> 更新日期：2026-07-08
+> 更新日期：2026-07-10
 > Runtime 仓库：`/home/workspace/binance`
 > Runtime 契约：`/home/workspace/binance/BOUNDARY-GATES.md`
 > Runtime 脚本：`/home/workspace/binance/scripts/boundary-gates.sh`
-> Runtime 证据：`/home/workspace/binance/release/evidence/binance/20260623/` + `/home/workspace/binance/release/evidence/binance/20260625/`
-> Runtime evidence commit：`71e2a6e8bb5591c43e8a2ebfff8c7645bf030786`（2026-06-23 归档证据）；2026-06-25 Plan007 证据见 `release/evidence/binance/20260625/`（runtime HEAD `e02b190`）
-> Verified source commit：`e02b190`（runtime HEAD，2026-06-25，Plan007 A1~A10 + B1~B8 已执行）
+> Runtime 证据：以 runtime 仓最终 release packet 指向的版本化 bundle 为准；旧 `20260623/20260625` 目录仅作历史证据。
+> Runtime evidence commit：本轮 implementation commit 为 `3f6366728b635c32d73565874965d40c20a92caf`；ledger 已重新执行并绑定该 SHA，但 tag、CI URL、release notes 与 rollback 尚未齐全。[COMPUTED, HIGH]
+> Verified source commit：`3f6366728b635c32d73565874965d40c20a92caf`；不使用旧 HEAD 投影冒充当前事实。[COMPUTED, HIGH]
 
 ## 1. 目的
 
@@ -101,7 +101,7 @@ Runtime `go.mod` 必须保留边界所需 direct dependencies，不得通过依�
 | BR-007 | Done：Gate §9 已由 runtime 13/13 PASS 证明 |
 | BR-008 | Done：Gate §8 已由 runtime 13/13 PASS 证明 |
 | BR-009 | Done：Gate §11 已由 runtime 13/13 PASS 证明 |
-| Release | Done：远端 CI PASS（ubuntu-latest runner）、release tag 已发布、7 个基础设施服务全部在线、PRG-001~007 全 PASS。**G0 存储装配已闭合**：StorageWriter 已设置（非 nil）、buildStorage() 创建真实 Redis/taos/pg/clickhouse/oss 连接，memory idempotency 仅为 fallback。release_closeable=YES（PRG-001~007 全 PASS）。 |
+| Release | 规格投影 Done；runtime `release_closeable_runtime=NO`。本轮 local runtime tests/boundary 已通过，但 external durable/fanout/query、正式 tag/release notes、部署前检查与真实 rollback 仍需外部证据；不得把历史 CI/infra 声明继承为本轮发布 PASS。 |
 
 ---
 

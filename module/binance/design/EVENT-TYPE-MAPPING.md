@@ -43,7 +43,7 @@
 
 > **Migration（implemented 类型 4 个 rename）**：NATS subject `binance.market.{pl}.{event_type}.v1` 中的 `event_type` 需同步改名；TDengine super table（`st_tick`→`book_ticker`、`st_bar`→`kline`、`st_depth`→`depth_update`、`st_mark_price`→`mark_price_update`，同时去掉 `st_` 前缀）；idempotency key 格式变更。属于 runtime MAJOR 版本迁移，由独立 FR + migration plan 承接，不在本文档仓执行。迁移期间 NATS subject 可双发（新旧名同时发布）过渡。
 
-### 2.2 新增类型（planned，设计层定义，runtime 待 FR 驱动）
+### 2.2 扩展类型（4 local implemented + 1 opt-in/postponed）
 
 | canonical (v3.18.0) | 语义分类         | 用途                                          | Binance 原生                                                 | 不能套用现有类型的理由                                                                                                                             |
 | ------------------- | ---------------- | --------------------------------------------- | ------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -52,6 +52,8 @@
 | `open_interest`     | 状态型           | 持仓量（张数+名义价值）                       | `openInterest`                                               | 量纲与价格/成交量不同，混进 ticker 会导致 schema 语义混乱                                                                                          |
 | `index_reference`   | 状态型           | 指数/参考价（多资产换算、强平参考、移动均价） | `compositeIndex`, `assetIndex`, `avgPrice`, `referencePrice` | 不是行情展示数据，用途在风控/保证金计算层。`avgPrice` 是给强平/保证金计算用的移动平均参考价，不是给展示用的行情                                    |
 | `contract_info`     | 事件型（低频）   | 合约元数据变更通知                            | `contractInfo`                                               | 低频事件驱动（上新/结算/分级变更才推），与 FR-031~036 REST ExchangeInfo 互补                                                                       |
+
+> [COMPUTED, HIGH] 当前 override：`ticker`、`open_interest`、`index_reference`、`contract_info` 已由 runtime implementation commit `3f6366728b635c32d73565874965d40c20a92caf` 接入 local normalize/storage/query 链路；`force_order` 保持 opt-in scaffold/postponed，不默认订阅、不映射成 `trade`。§4 的 product-line 表保留原始设计快照中的 `planned` 字样，并由 §4.1 开头的 2026-07-10 override 解释，不作为当前 release 状态。[COMPUTED, HIGH]
 
 ### 2.3 传输层信号（不进业务枚举）
 
@@ -157,7 +159,7 @@
 
 ### 4.1 逐产品线覆盖分析
 
-`[COMPUTED]` 基于 §3 映射 + §4 矩阵，按四产品线汇总 canonical event_type 覆盖情况。已实现 = runtime 已装配；planned = 设计层已定义，待 FR 驱动。
+`[COMPUTED]` 基于 §3 映射 + §4 矩阵，按四产品线汇总 canonical event_type 覆盖情况。历史表中的 `planned` 表示原始设计快照；2026-07-10 当前覆盖以 `SPEC.md §6` 与本审计为准：ticker/open_interest/index_reference/contract_info 已有 local runtime chain，force_order 为 opt-in/postponed scaffold，options depth 仍 excluded/postponed。
 
 #### Spot
 

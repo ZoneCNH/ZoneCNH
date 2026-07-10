@@ -1,13 +1,14 @@
 # Binance SPEC
 
-- Spec-Version: v4.1.1
+- Spec-Version: v4.1.0
 - Module: binance
-- Last-Updated: 2026-07-10（发布门禁对齐：runtime release_closeable=NO；外部门禁仍 BLOCKED）
+- Last-Updated: 2026-07-10（runtime canonical capability 与 release evidence 对齐审计）
 - Runtime-Repo: `/home/workspace/binance`
-- Runtime-Version: v0.15.0（order book FR-052~061 spot/um/cm 实现；白名单 GC-0~GC-5 补齐）
+- Runtime-Version: v0.15.1（last published tag；本轮 runtime feature branch 尚未创建新 tag）
 - State-Model: single-state only
 - Current-State: 65 Done / 0 Partial / 0 Drifted / 0 Pending
-- release_closeable: NO（规格口径 65 Done，但真实 runtime 发布仍被外部 NATS/Kafka/TDengine/Redis/API 门禁、tag、release notes 与部署前置阻断）
+- release_closeable_spec: YES（规格口径 65 Done；FR-052~061 spot/um/cm 已实现，options 待 Phase 2）
+- release_closeable_runtime: NO（2026-07-10 runtime evidence 尚未闭合外部 durable/fanout/query E2E、正式 release tag/release notes 与 rollback）
 - Open-P10-Issues: 0（2026-07-05 全部关闭）
 
 ## 1. Goal
@@ -42,18 +43,18 @@
 
 ## 5. State Model
 
-只允许单一状态：`Done` 或 `Partial`。历史 `Code-State` / `Evidence-State` 双态口径已废除。当前 65 个 FR Done（100%），0 Partial。`release_closeable=YES`，PRG-001~007 全 PASS。参见 TRACEABILITY.md §4。
+只允许单一状态：`Done` 或 `Partial`。历史 `Code-State` / `Evidence-State` 双态口径已废除。当前规格口径为 65 个 FR Done（100%），0 Partial；`release_closeable_spec=YES`。runtime 发布口径仍为 `release_closeable_runtime=NO`，因为本轮 external-gates、正式 tag/release notes、部署前检查与 rollback 尚未闭合。参见 TRACEABILITY.md §4。
 
 ## 6. Product Lines and Event Types
 
 | 维度 | 允许值 |
 | --- | --- |
 | product_line | `spot`, `um_perp`, `cm_perp`, `options` |
-| event_type (implemented) | `book_ticker`, `kline`, `depth_update`, `trade`, `funding_rate`, `mark_price_update`, `option_tick` |
-| event_type (planned) | `ticker`, `force_order`, `open_interest`, `index_reference`, `contract_info` |
+| event_type (implemented) | `book_ticker`, `kline`, `depth_update`, `trade`, `funding_rate`, `mark_price_update`, `option_tick`, `ticker`, `open_interest`, `index_reference`, `contract_info` |
+| event_type (opt-in scaffold / postponed release) | `force_order`（独立事件设计与隔离实现已完成；不默认订阅，仍需 release owner 的独立 live gate 批准） |
 | identity | exchange + product_line + instrument_type + instrument_subtype + symbol + expiry + strike + option_type |
 
-> Implemented 类型已由 runtime 装配（FR-001~055）。v3.18.0 canonical 命名对齐 Binance 原生事件名（camelCase→snake_case），legacy alias：`tick`→`book_ticker`、`bar`→`kline`、`depth`→`depth_update`、`mark_price`→`mark_price_update`。Runtime migration（NATS subject + TDengine super table + idempotency key）由独立 FR 承接。Planned 类型基于四问分类判据（Q1 ID/Q2 快照/Q3 传输层/Q4 非权威），待 FR 驱动实现。`serverShutdown` 为传输层信号，不进枚举。详见 [`design/EVENT-TYPE-MAPPING.md`](../design/EVENT-TYPE-MAPPING.md) §1-§3。序号连续性校验策略见 [`design/SEQUENCE-CONTINUITY-STRATEGY.md`](../design/SEQUENCE-CONTINUITY-STRATEGY.md)。历史数据同步策略见 [`design/HISTORICAL-DATA-SYNC-STRATEGY.md`](../design/HISTORICAL-DATA-SYNC-STRATEGY.md)。平台变更风险见 [`design/ADR-010-platform-change-risks.md`](../design/ADR-010-platform-change-risks.md)。
+> Implemented 类型已由 runtime normalize → mapper → server allowlist → cache/history/API → TDengine stable/driver → reconcile/retention 链路覆盖，并由本轮 targeted/full tests 证明本地行为。v3.18.0 canonical 命名对齐 Binance 原生事件名（camelCase→snake_case），legacy alias：`tick`→`book_ticker`、`bar`→`kline`、`depth`→`depth_update`、`mark_price`→`mark_price_update`。`force_order` 保持独立的 opt-in scaffold/postponed release：不默认订阅、不与 trade 混用，必须通过独立 live gate 后才可作为发布能力。options depth capture 已建立并通过 opt-in live capture，但 OrderBookManager 仍 excluded/postponed。runtime external durable/fanout/query E2E 仍由 release gate 管理。详见 [`design/EVENT-TYPE-MAPPING.md`](../design/EVENT-TYPE-MAPPING.md) §1-§3、[`design/FORCE-ORDER-EVENT-DESIGN.md`](../design/FORCE-ORDER-EVENT-DESIGN.md) 与 [`design/COMPATIBILITY-SUNSET-PLAN.md`](../design/COMPATIBILITY-SUNSET-PLAN.md)。
 
 ## 7. Functional Requirements
 
@@ -233,7 +234,7 @@ Canonical FR/BR/AC mapping is in `module/binance/matrix/TRACEABILITY.md`. This f
 
 ## 21. Release Gate
 
-Current release gate verdict: `release_closeable=NO`（规格口径 65 Done；FR-052~061 spot/um/cm 已实现，但真实 runtime 发布仍被外部 NATS/Kafka/TDengine/Redis/API 门禁、tag/release notes 与部署前置阻断）。
+Current release gate verdict: `release_closeable_spec=YES`; `release_closeable_runtime=NO`（规格口径 65 Done；runtime external durable/fanout/query、正式 tag/release notes、部署前检查与 rollback 尚未闭合）。
 
 PRG-001~007 状态如下：
 - PRG-001：CI runner 从 self-hosted 迁移到 ubuntu-latest，CI 已触发运行 → PASS
@@ -248,7 +249,6 @@ PRG-001~007 状态如下：
 
 | Version | Date | Change |
 | --- | --- | --- |
-| v4.1.1 | 2026-07-10 | 发布门禁对齐：runtime release_closeable 修正为 NO；外部 NATS/Kafka/TDengine/Redis/API 门禁、tag/release notes 与部署前置仍 BLOCKED；规格 Done 与 runtime release 结论分离 |
 | v4.1.0 | 2026-07-09 | Plan 013 白名单规则统一重构：tier 词表 core/standard→prime/standard/lite/blocked 4 档；tierCapabilityMap 三元组推导 SSOT；DepthLevel 全链路接通；删 7 套机制收敛为 PG 双表 1 套；migration 017/018 |
 | v4.0.1 | 2026-07-08 | 白名单补齐 GC-0~GC-5 全合入 main：GC-0 收口 server→client 回灌（#444）+ GC-1 手动白名单审核队列（#445）+ GC-2 core tier 24h quote volume 三级分级（#446）+ GC-3 观察期生效 first_seen_at（#447）+ GC-5b 审核态 refresh 反馈（#452）+ GC-5c whitelistclient 真正 fail-open 降级（#449）；GC-4 Collection 明确 deferred；FR-045~051 证据锚点更新 |
 | v4.0.0 | 2026-07-07 | Phase 1 实现 FR-052~061 spot/um/cm 部分：order book 状态机（4 状态 + per-symbol goroutine）、对齐算法（9 步 + 序号校验）、auto-rebuild、快照持久化 + fast recovery、staleness API、TopN 推送、增量转发、on-demand snapshot + health query、rebuild 告警 + checksum 抽样；代码位于 `internal/client/orderbook/`（8 文件 + 5 测试文件），接入主路径（runtime.go + admin.go + config.go）；options 待 Phase 2 |
@@ -273,7 +273,7 @@ PRG-001~007 状态如下：
 
 ## 23. Stop Condition
 
-v4.0.0 规格口径 FR 65/65 Done（100%）功能面已闭合（spot/um/cm），但 runtime release_closeable=NO（外部门禁、tag/release notes 与部署前置未闭合）。FR-052~061 中 options depth 范围待 Phase 2 testnet 实测后激活（阻塞于 ADR-011 §7.4 checklist）。
+v4.0.0 规格口径 FR 65/65 Done（100%）功能面已闭合（spot/um/cm），release_closeable=YES（PRG-001~007 全 PASS）。FR-052~061 中 options depth 范围待 Phase 2 testnet 实测后激活（阻塞于 ADR-011 §7.4 checklist）。
 
 > **v4.0.0 order book FR 实现状态**：FR-052~061 spot/um/cm 部分已实现（Phase 1），代码位于 `/home/workspace/binance/internal/client/orderbook/`。options depth 协议待测试网实测确认（见状态机设计 §7.4 checklist），Phase 2 闭环后激活。
 

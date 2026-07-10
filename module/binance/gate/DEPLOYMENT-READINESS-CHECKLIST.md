@@ -1,5 +1,7 @@
 # Deployment Readiness Checklist v0.15.0
 
+> [COMPUTED, HIGH] 本文件记录 v0.15.0 的历史 readiness 快照，不是本轮 runtime release 通过证明。2026-07-10 当前 implementation commit `3f6366728b635c32d73565874965d40c20a92caf` 尚未部署；当前 external-gates 5 项 BLOCKED/NOT_RUN，packet validator 11 blockers。
+
 **Status:** 🟡 READY — CI 计费已恢复，Test/Build 远端 PASS；残留 scan failure 待清理  
 **Date:** 2026-07-08  
 **Version:** v4.0.1 (spec) / v0.15.0 (runtime, main HEAD `fc96705`)  

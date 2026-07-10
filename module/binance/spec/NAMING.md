@@ -49,7 +49,7 @@
 | `mark_price_update` | ~~`mark_price`~~ | 状态型 | `markPriceUpdate` |
 | `option_tick` | — | 状态型 | `optionTicker` |
 
-### 2.2 计划类型（设计层已定义，runtime 待 FR 驱动）
+### 2.2 扩展类型（local runtime 已接入；发布证据仍受 gate 约束）
 
 | event_type | 语义分类 | Binance 原生 |
 |---|---|---|
@@ -59,7 +59,7 @@
 | `index_reference` | 状态型 | `compositeIndex` / `assetIndex` / `avgPrice` / `referencePrice` |
 | `contract_info` | 事件型(低频) | `contractInfo` |
 
-> [COMPUTED, HIGH] v4.1.0 起 product_line × event_type 为 **4 × 12** 矩阵（7 implemented + 5 planned）。runtime 可用 capability/status 标识暂不产出的组合。
+> [COMPUTED, HIGH] v4.1.0 起 product_line × event_type 为 **4 × 12** 矩阵（7 baseline + 4 local extended + 1 opt-in/postponed force_order）。runtime 必须用 capability/status 标识不适用、未默认订阅和待 external release evidence 的组合。
 
 ### 2.3 Bar 订阅周期集（FR-014）
 
@@ -74,7 +74,7 @@
 
 格式：`binance.market.{product_line}.{event_type}.v1`
 
-### 3.1 已实现 subjects
+### 3.1 Baseline subjects
 
 | product_line | 已实现 event_types |
 |---|---|
@@ -83,9 +83,9 @@
 | `cm_perp` | `book_ticker`, `trade`, `kline`, `depth_update`, `funding_rate`, `mark_price_update` |
 | `options` | `trade`, `kline`, `depth_update`, `option_tick` |
 
-> [COMPUTED, HIGH] `—`（未列出的组合）表示该产品线不适用此 event_type（详见 [EVENT-TYPE-MAPPING.md](../design/EVENT-TYPE-MAPPING.md) §4.1）。NATS stream 注册 wildcard `binance.market.*.*.v1`，未实现的组合不产生消息。
+> [COMPUTED, HIGH] 上表是 7 个 baseline subject；扩展能力与 opt-in 状态见 §3.2。`—` 表示 baseline 组合不适用，不代表扩展 event_type 的 server/storage/API 路由不存在。
 
-### 3.2 计划 subjects（待 FR 驱动）
+### 3.2 扩展 subjects（4 local implemented + 1 opt-in/postponed）
 
 ```
 binance.market.{product_line}.ticker.v1
@@ -94,6 +94,8 @@ binance.market.{product_line}.open_interest.v1
 binance.market.{product_line}.index_reference.v1
 binance.market.{product_line}.contract_info.v1
 ```
+
+> [COMPUTED, HIGH] `ticker`、`open_interest`、`index_reference`、`contract_info` 已完成 local runtime chain；`force_order` 仅为独立 opt-in scaffold，默认不订阅，仍需 release owner/live gate。NATS wildcard 允许 canonical subject，但 unsupported/postponed product-line 组合不得产生消息。
 
 ### 3.3 Control Subjects（FR-012 / FR-024）
 
@@ -144,7 +146,7 @@ signal_engine  risk_engine  backtestx  market_regime
 
 > [COMPUTED, HIGH] v3.18.0 去掉 `st_` 前缀和 `binance_` 前缀——TDengine 靠 `CREATE STABLE` 语法区分超级表，前缀是实现细节泄漏。Supertable 名 = canonical event_type（1:1），与 NATS subject `event_type` 段、Binance 原生事件名 snake_case 完全一致。迁移通过 `ALTER STABLE ... RENAME TO ...` 执行，详见 [EVENT-TYPE-MAPPING.md](../design/EVENT-TYPE-MAPPING.md) §2.4。
 
-### 5.1 Planned 表（待 FR 驱动创建）
+### 5.1 Extended stable 表（已建立 local schema；发布仍受 external gate 约束）
 
 | supertable | event_type | Binance 原生 |
 |---|---|---|
