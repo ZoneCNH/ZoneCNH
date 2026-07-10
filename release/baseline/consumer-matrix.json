@@ -10,12 +10,12 @@
     "domainx": {
       "build_workspace": true,
       "build_standalone": true,
-      "purity_findings": 19
+      "purity_findings": 4
     },
     "domain_market": {
       "build_workspace": true,
       "build_standalone": true,
-      "purity_findings": 11
+      "purity_findings": 9
     },
     "domain_macro": {
       "build_workspace": true,
