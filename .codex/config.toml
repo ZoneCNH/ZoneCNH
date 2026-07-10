@@ -1,2 +1,5 @@
+service_tier = "fast"
+
 [features]
 hooks = true
+fast_mode = true

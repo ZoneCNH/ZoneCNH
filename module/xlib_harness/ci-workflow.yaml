@@ -31,7 +31,7 @@ env:
 jobs:
   docs-contract:
     name: Docs Contract
-    runs-on: [self-hosted, Linux, X64, ci-governance]
+    runs-on: [self-hosted, Linux, X64, sre/governance]
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -50,7 +50,7 @@ jobs:
 
   go-validation:
     name: Go Validation
-    runs-on: [self-hosted, Linux, X64, ci-governance]
+    runs-on: [self-hosted, Linux, X64, sre/governance]
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -65,7 +65,7 @@ jobs:
 
   trust-alignment:
     name: Trust Alignment
-    runs-on: [self-hosted, Linux, X64, ci-governance]
+    runs-on: [self-hosted, Linux, X64, sre/governance]
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -85,7 +85,7 @@ jobs:
 
   secret-scan:
     name: Secret Scan
-    runs-on: [self-hosted, Linux, X64, ci-governance]
+    runs-on: [self-hosted, Linux, X64, sre/governance]
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -108,70 +108,70 @@ jobs:
   # secret-scan, and the Release document below. These stubs exist for contract compliance.
   ci-preflight:
     name: CI Preflight (stub — see go-validation)
-    runs-on: [self-hosted, Linux, X64, ci-governance]
+    runs-on: [self-hosted, Linux, X64, sre/governance]
     timeout-minutes: 5
     steps:
       - run: echo "ci-preflight satisfied by go-validation in authoritative workflow"
 
   build:
     name: Build (stub — see go-validation)
-    runs-on: [self-hosted, Linux, X64, ci-governance]
+    runs-on: [self-hosted, Linux, X64, sre/governance]
     timeout-minutes: 5
     steps:
       - run: echo "build satisfied by go-validation (make ci) in authoritative workflow"
 
   test:
     name: Test (stub — see go-validation)
-    runs-on: [self-hosted, Linux, X64, ci-governance]
+    runs-on: [self-hosted, Linux, X64, sre/governance]
     timeout-minutes: 5
     steps:
       - run: echo "test satisfied by go-validation (make ci) in authoritative workflow"
 
   lint:
     name: Lint (stub — see go-validation)
-    runs-on: [self-hosted, Linux, X64, ci-governance]
+    runs-on: [self-hosted, Linux, X64, sre/governance]
     timeout-minutes: 5
     steps:
       - run: echo "lint satisfied by go-validation (make ci) in authoritative workflow"
 
   boundary:
     name: Boundary (stub — see trust-alignment)
-    runs-on: [self-hosted, Linux, X64, ci-governance]
+    runs-on: [self-hosted, Linux, X64, sre/governance]
     timeout-minutes: 5
     steps:
       - run: echo "boundary satisfied by trust-alignment (xlibgate) in authoritative workflow"
 
   integration:
     name: Integration (stub — see go-validation)
-    runs-on: [self-hosted, Linux, X64, ci-governance]
+    runs-on: [self-hosted, Linux, X64, sre/governance]
     timeout-minutes: 5
     steps:
       - run: echo "integration satisfied by go-validation (make ci) in authoritative workflow"
 
   evidence:
     name: Evidence (stub)
-    runs-on: [self-hosted, Linux, X64, ci-governance]
+    runs-on: [self-hosted, Linux, X64, sre/governance]
     timeout-minutes: 5
     steps:
       - run: echo "evidence artifacts produced by authoritative release workflow"
 
   release-preflight:
     name: Release Preflight (stub — see Release.release)
-    runs-on: [self-hosted, Linux, X64, ci-governance]
+    runs-on: [self-hosted, Linux, X64, sre/governance]
     timeout-minutes: 5
     steps:
       - run: echo "release-preflight satisfied by Release Validate release contract"
 
   release-publish:
     name: Release Publish (stub — see Release.release)
-    runs-on: [self-hosted, Linux, X64, ci-governance]
+    runs-on: [self-hosted, Linux, X64, sre/governance]
     timeout-minutes: 5
     steps:
       - run: echo "release-publish satisfied by Release Publish GitHub Release"
 
   post-release-smoke:
     name: Post Release Smoke (stub — see Release.release)
-    runs-on: [self-hosted, Linux, X64, ci-governance]
+    runs-on: [self-hosted, Linux, X64, sre/governance]
     timeout-minutes: 5
     steps:
       - run: echo "post-release-smoke satisfied by Release Verify GitHub Release"
@@ -179,7 +179,7 @@ jobs:
   rollback-drill:
     name: Rollback Drill (stub)
     if: github.event_name == 'workflow_dispatch' && inputs.rollback_ref != ''
-    runs-on: [self-hosted, Linux, X64, ci-governance]
+    runs-on: [self-hosted, Linux, X64, sre/governance]
     timeout-minutes: 5
     steps:
       - run: echo "rollback-drill manual reversal evidence for requested ref"
@@ -203,7 +203,7 @@ concurrency:
 jobs:
   release:
     name: Release
-    runs-on: [self-hosted, Linux, X64, ci-governance]
+    runs-on: [self-hosted, Linux, X64, sre/governance]
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2

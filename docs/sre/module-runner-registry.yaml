@@ -12,6 +12,47 @@ capacity:
   required_module_registrations: 68
   minimum_runners_needed: 68
   gap: 52
+  host_density:
+    94.72.124.39:
+      cpu: 4
+      memory_gb: 7.8
+      disk_total_gb: 148
+      disk_used_pct: 50
+      max_runners: 6
+      current_runners: 2
+      recommended_runners: 4
+      pools:
+      - sre/governance
+      notes: 轻量任务专用；禁止重载/存储池
+    84.247.154.45:
+      cpu: 16
+      memory_gb: 62
+      disk_total_gb: 591
+      disk_used_pct: 69
+      max_runners: 24
+      current_runners: 9
+      recommended_runners: 20
+      pools:
+      - sre/deploy
+      - sre/engine
+      - sre/macro
+      - sre/market
+      - sre/storage-heavy
+      - sre/storage-light
+      notes: 资源最充裕；承载重载、Docker、deploy 隔离池
+    10.2.2.9:
+      cpu: 12
+      memory_gb: 16
+      disk_total_gb: 233
+      max_runners: 12
+      current_runners: 6
+      recommended_runners: 12
+      pools:
+      - sre/contracts
+      - sre/foundation-l0
+      - sre/foundation-l1
+      - sre/security
+      notes: 内存是瓶颈；建议升级至 32 Gi 再承载 12+ runner
   per_host_demand:
     10.2.2.9:
       modules: 18
@@ -36,6 +77,62 @@ capacity:
       runners_needed: 4
       pools:
       - sre/governance
+  expansion_plan:
+    phase_a_density:
+      target_runners: 30
+      gap_after: 38
+      actions:
+      - host: 94.72.124.39
+        add: 2
+        target_pools:
+        - sre/governance
+      - host: 10.2.2.9
+        add: 6
+        target_pools:
+        - sre/foundation-l1
+        - sre/contracts
+        - sre/security
+      - host: 84.247.154.45
+        add: 8
+        target_pools:
+        - sre/market
+        - sre/macro
+        - sre/engine
+    phase_b_new_host:
+      host_spec:
+        cpu: 16
+        memory_gb: 64
+        disk_gb: 500
+      planned_runners: 18
+      target_pools:
+      - sre/engine
+      - sre/market
+      - sre/macro
+      gap_after: 20
+    phase_c_new_host:
+      host_spec:
+        cpu: 8
+        memory_gb: 32
+        disk_gb: 300
+      planned_runners: 14
+      target_pools:
+      - sre/foundation-l1
+      - sre/contracts
+      - sre/market
+      - sre/macro
+      gap_after: 6
+    phase_d_final_tuning:
+      planned_runners: 6
+      note: 根据实际并发率与队列情况微调，最终达到 68 runner
+  constraints:
+  - GitHub user account：runner 按 repo 注册，不可 org 共享
+  - sre/deploy 必须独立主机/进程，禁止与 PR runner 混池
+  - storage-heavy 单 runner 独占 4 vCPU / 8 Gi，max_concurrency=1
+  - 10.2.2.9 内存仅 16 Gi，不建议承载超过 12 个并发 runner
+  risks:
+  - 10.2.2.9 内存不足导致 OOM
+  - 84.247.154.45 磁盘使用率 69%，Docker 与 _work 目录增长可能占满
+  - 用户账号 PAT 权限不足影响批量注册
 pools:
   sre/governance:
     label: ci-governance
