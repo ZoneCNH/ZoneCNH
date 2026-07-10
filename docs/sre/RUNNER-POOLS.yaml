@@ -1,7 +1,11 @@
 # RUNNER-POOLS.yaml — ZoneCNH Self-hosted Runner Pool 注册表
 #
 # 权威来源：knowledge/ci.md §6.2, CICD-001
+<<<<<<< HEAD
 # 现状 2026-07-10：全部 11 个 pool online；68 个 repo-level runner 已覆盖 68 个模块仓库；4 台主机
+=======
+# 现状 2026-07-10：全部 11 个 pool online，68 repo-level runners，4 hosts，Go 1.26.5
+>>>>>>> 92087535 (docs: runner consolidation 完成，更新容量规划、pool 与 runner 注册表)
 # 巡检入口：sre/bootstrap/status.sh, sre/bootstrap/health-check.sh
 # 主机注册表 SSOT：sre/bootstrap/hosts.env
 # 模块分配表：sre/module.md（生成器按 module/registry.yaml.lifecycle 区分现役与归档记录）
@@ -45,10 +49,17 @@ pools:
     docker: false
     production_access: false
     max_concurrency: 2
+<<<<<<< HEAD
     host: 84.247.154.45
     status: online
     runner_count: 1
     note: 2026-07-10 kernel 因 10.2.2.9 容量不足临时溢出到 84.247.154.45
+=======
+    host: 10.2.2.10
+    status: online
+    runner_count: 1
+    note: 2026-07-10 consolidation，kernel 迁 xhypers
+>>>>>>> 92087535 (docs: runner consolidation 完成，更新容量规划、pool 与 runner 注册表)
     modules:
       - kernel          # L0 primitives
 
@@ -59,10 +70,14 @@ pools:
     docker: false
     production_access: false
     max_concurrency: 3
-    host: 10.2.2.9
+    host: 10.2.2.10
     status: online
     runner_count: 10
+<<<<<<< HEAD
     note: 2026-07-10 bootstrap/alertx/composer/frontend/x.go 在 10.2.2.9；configx/observex/resiliencx/schedulex/testkitx 因容量临时在 84.247.154.45
+=======
+    note: 2026-07-10 consolidation，10 runners 全部迁 xhypers
+>>>>>>> 92087535 (docs: runner consolidation 完成，更新容量规划、pool 与 runner 注册表)
     modules:
       - bootstrap       # foundation L1
       - configx         # foundation L1
@@ -85,7 +100,11 @@ pools:
     host: 10.2.2.9
     status: online
     runner_count: 7
+<<<<<<< HEAD
     note: 2026-07-10 完成 7 个 contracts 模块 repo-level runner 注册；10.2.2.9 当前 13 runner（含 security）
+=======
+    note: 2026-07-10 consolidation，保留在 10.2.2.9
+>>>>>>> 92087535 (docs: runner consolidation 完成，更新容量规划、pool 与 runner 注册表)
     modules:
       - contracts       # foundation contracts
       - transportx      # foundation contracts
@@ -119,10 +138,14 @@ pools:
     docker: optional
     production_access: false
     max_concurrency: 2
-    host: 84.247.154.45
+    host: 10.2.2.10
     status: online
     runner_count: 6
+<<<<<<< HEAD
     note: 2026-07-10 完成 6 个 market 模块 repo-level runner 注册
+=======
+    note: 2026-07-10 迁移至 xhypers，Go 1.26.5
+>>>>>>> 92087535 (docs: runner consolidation 完成，更新容量规划、pool 与 runner 注册表)
     modules:
       - binance         # exchange adapter
       - coinglass       # market data
@@ -163,10 +186,14 @@ pools:
     docker: true
     production_access: false
     max_concurrency: 2
-    host: 84.247.154.45
+    host: 10.2.2.10
     status: online
     runner_count: 3
+<<<<<<< HEAD
     note: 2026-07-10 完成 3 个 storage-light 模块 repo-level runner 注册
+=======
+    note: 2026-07-10 迁移至 xhypers，Go 1.26.5, Docker
+>>>>>>> 92087535 (docs: runner consolidation 完成，更新容量规划、pool 与 runner 注册表)
     modules:
       - natsx           # NATS client
       - ossx            # OSS client
