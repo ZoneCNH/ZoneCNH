@@ -11,7 +11,7 @@
 
 name: Outer Metrics
 
-# Self-hosted runner recovered 2026-07-09 (knowledge/ci.md Phase 0). Migrated to sre/foundation-l0.
+# Self-hosted runner recovered 2026-07-09 (knowledge/ci.md Phase 0). Migrated to sre/governance.
 # 删除 push/schedule 防止 queued 堆积。重装 runner 后恢复 push/schedule trigger。
 on:
   push:
@@ -33,7 +33,7 @@ jobs:
   collect-and-evaluate:
     needs: runner-gate
     name: Collect & Evaluate
-    runs-on: [self-hosted, Linux, X64, sre/foundation-l0]
+    runs-on: [self-hosted, Linux, X64, sre/governance]
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
@@ -113,7 +113,7 @@ jobs:
 
   validate-write-source:
     name: Validate write source (LLM block)
-    runs-on: [self-hosted, Linux, X64, sre/foundation-l0]
+    runs-on: [self-hosted, Linux, X64, sre/governance]
     timeout-minutes: 10
     if: github.event_name == 'pull_request'
     steps:

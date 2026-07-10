@@ -32,6 +32,18 @@ pools:
     status: online
     runner_count: 4
     note: 2026-07-10 完成 4 个 governance 模块 repo-level runner 注册
+    workflows:
+      - docs-ci
+      - scripts-tests
+      - audit-status
+      - outer-metrics
+      - foundation-integration
+      - foundation-release
+      - release
+      - harness-check
+      - runner-test
+      - self-hosted-test
+      - minimal-test
     modules:
       - xlib_standard   # standard source
       - xlib_harness    # harness

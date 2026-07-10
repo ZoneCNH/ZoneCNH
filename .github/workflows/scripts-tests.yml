@@ -5,7 +5,7 @@
 
 name: Scripts Tests
 
-# Self-hosted runner recovered 2026-07-09 (knowledge/ci.md Phase 0). Migrated to sre/foundation-l0.
+# Self-hosted runner recovered 2026-07-09 (knowledge/ci.md Phase 0). Migrated to sre/governance.
 on:
   push:
     branches: [main]
@@ -24,7 +24,7 @@ jobs:
   rule-scorer-tests:
     needs: runner-gate
     name: rule-scorer pytest
-    runs-on: [self-hosted, Linux, X64, sre/foundation-l0]
+    runs-on: [self-hosted, Linux, X64, sre/governance]
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
@@ -36,7 +36,7 @@ jobs:
 
   shell-smoke:
     name: shell 脚本烟雾测试
-    runs-on: [self-hosted, Linux, X64, sre/foundation-l0]
+    runs-on: [self-hosted, Linux, X64, sre/governance]
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4

@@ -13,6 +13,6 @@ jobs:
 
   test:
     needs: runner-gate
-    runs-on: [self-hosted, Linux, X64, sre/foundation-l0]
+    runs-on: [self-hosted, Linux, X64, sre/governance]
     steps:
       - run: echo "runner works" && hostname && whoami && date
