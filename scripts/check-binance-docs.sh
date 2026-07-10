@@ -205,6 +205,14 @@ expect_rg 'POST /api/v1/admin/symbols/reload' module/binance/gate/STANDARD.md \
 expect_rg 'bash scripts/check-binance-docs\.sh' module/binance/gate/STANDARD.md \
   "STANDARD documents docs gate command"
 
+if rg -n 'evidence (needed|pending)|simulation needed|regression needed' module/binance/matrix/TRACEABILITY.md | rg '\| Done' >/dev/null; then
+  fail "TRACEABILITY marks missing evidence as Done"
+else
+  pass "TRACEABILITY does not mark missing evidence as Done"
+fi
+expect_rg '^\| release_closeable \| NO' module/binance/matrix/TRACEABILITY.md \
+  "TRACEABILITY keeps release_closeable blocked"
+
 if (( failures > 0 )); then
   printf '%s check(s) failed\n' "$failures" >&2
   exit 1

@@ -27,45 +27,45 @@ This matrix is the compact FR/BR/AC/TC projection. It intentionally does not dup
 | FR-006b | BR-002 | AC-001 | server CLI/config example | Done |
 | FR-006c | BR-003 | AC-001 | config schema/examples | Done |
 | FR-006d | BR-002 | AC-004 | smoke-only route gate | Done |
-| FR-007 | BR-001 | AC-001 | query e2e evidence needed | Done |
-| FR-007a | BR-001 | AC-001 | replay evidence needed | Done |
+| FR-007 | BR-001 | AC-001 | query e2e evidence needed | Partial |
+| FR-007a | BR-001 | AC-001 | replay evidence needed | Partial |
 | FR-008 | BR-001 | AC-001 | depth ingestion history | Done |
 | FR-009 | BR-001 | AC-001 | trade ingestion history | Done |
 | FR-010 | BR-001 | AC-001 | bar persistence/query history | Done |
-| FR-011 | BR-002 | AC-001 | failure injection needed | Done |
+| FR-011 | BR-002 | AC-001 | failure injection needed | Partial |
 | FR-012 | BR-004 | AC-001 | ExchangeInfo refresh docs/runtime | Done |
-| FR-013 | BR-004 | AC-001 | hot reload evidence needed | Done |
+| FR-013 | BR-004 | AC-001 | hot reload evidence needed | Partial |
 | FR-014 | BR-002 | AC-001 | graceful shutdown tests/history | Done |
 | FR-015 | BR-003 | AC-001 | stable identity validation | Done |
-| FR-016 | BR-005 | AC-001 | metrics scrape evidence needed | Done |
-| FR-017 | BR-005 | AC-001 | OTel evidence needed | Done |
+| FR-016 | BR-005 | AC-001 | metrics scrape evidence needed | Partial |
+| FR-017 | BR-005 | AC-001 | OTel evidence needed | Partial |
 | FR-018 | BR-001 | AC-001 | bars API runtime evidence | Done |
 | FR-019 | BR-001 | AC-001 | depth API runtime evidence | Done |
 | FR-020 | BR-001 | AC-001 | funding-rate API runtime evidence | Done |
 | FR-021 | BR-001 | AC-001 | mark-price API runtime evidence | Done |
 | FR-022 | BR-003 | AC-001 | instrument identity validation | Done |
-| FR-023 | BR-005 | AC-001 | retention/archive evidence needed | Done |
-| FR-024 | BR-004 | AC-001 | symbol reload evidence needed | Done |
-| FR-025 | BR-005 | AC-001 | soak/load evidence needed | Done |
-| FR-026 | BR-002 | AC-001 | restart recovery evidence needed | Done |
-| FR-027 | BR-001 | AC-001 | full product-line evidence needed | Done |
-| FR-028 | BR-003 | AC-001 | error taxonomy evidence needed | Done |
+| FR-023 | BR-005 | AC-001 | retention/archive evidence needed | Partial |
+| FR-024 | BR-004 | AC-001 | symbol reload evidence needed | Partial |
+| FR-025 | BR-005 | AC-001 | soak/load evidence needed | Partial |
+| FR-026 | BR-002 | AC-001 | restart recovery evidence needed | Partial |
+| FR-027 | BR-001 | AC-001 | full product-line evidence needed | Partial |
+| FR-028 | BR-003 | AC-001 | error taxonomy evidence needed | Partial |
 | FR-029 | BR-003 | AC-001 | data quality SLA migration | Done |
 | FR-030 | BR-002 | AC-001 | health/readiness runtime | Done |
-| FR-031 | BR-004 | AC-001 | full sync evidence needed | Done |
-| FR-032 | BR-004 | AC-001 | diff sync evidence needed | Done |
-| FR-033 | BR-004 | AC-001 | delist simulation needed | Done |
-| FR-034 | BR-003 | AC-001 | key stability regression needed | Done |
-| FR-035 | BR-003 | AC-001 | delivery metadata evidence needed | Done |
-| FR-036 | BR-003 | AC-001 | options metadata evidence needed | Done |
+| FR-031 | BR-004 | AC-001 | full sync evidence needed | Partial |
+| FR-032 | BR-004 | AC-001 | diff sync evidence needed | Partial |
+| FR-033 | BR-004 | AC-001 | delist simulation needed | Partial |
+| FR-034 | BR-003 | AC-001 | key stability regression needed | Partial |
+| FR-035 | BR-003 | AC-001 | delivery metadata evidence needed | Partial |
+| FR-036 | BR-003 | AC-001 | options metadata evidence needed | Partial |
 | FR-037 | BR-002 | AC-004 | production `/ingest` disabled | Done |
-| FR-038 | BR-005 | AC-007 | credential rotation evidence needed | Done |
-| FR-039 | BR-005 | AC-007 | HA/DR doc/evidence needed | Done |
-| FR-040 | BR-005 | AC-007 | canary exercise evidence needed | Done |
-| FR-041 | BR-005 | AC-007 | capacity evidence needed | Done |
-| FR-042 | BR-005 | AC-007 | soak evidence needed | Done（Soak L1+L2 全覆盖：`TestSoak_ServerStability` CI PASS + `TestSoak_BinancePipeline` 全管线 WS→TDengine 已实现） |
-| FR-043 | BR-005 | AC-007 | chaos evidence needed | Done（Chaos L1+L2 全覆盖：4 项故障注入 CI PASS + `TestChaos_{NATSStop,RedisStop,ProcessKill}Recovery` 真实故障注入已实现） |
-| FR-044 | BR-005 | AC-007 | security hardening evidence needed | Done（Security L2 全覆盖：6 项安全测试 CI PASS，gitleaks + govulncheck + admin auth 全 PASS） |
+| FR-038 | BR-005 | AC-007 | credential rotation evidence needed | Partial |
+| FR-039 | BR-005 | AC-007 | HA/DR doc/evidence needed | Partial |
+| FR-040 | BR-005 | AC-007 | canary exercise evidence needed | Partial |
+| FR-041 | BR-005 | AC-007 | capacity evidence needed | Partial |
+| FR-042 | BR-005 | AC-007 | soak evidence archived | Done（Soak L1+L2 全覆盖：`TestSoak_ServerStability` CI PASS + `TestSoak_BinancePipeline` 全管线 WS→TDengine 已实现） |
+| FR-043 | BR-005 | AC-007 | chaos evidence archived | Done（Chaos L1+L2 全覆盖：4 项故障注入 CI PASS + `TestChaos_{NATSStop,RedisStop,ProcessKill}Recovery` 真实故障注入已实现） |
+| FR-044 | BR-005 | AC-007 | security hardening evidence archived | Done（Security L2 全覆盖：6 项安全测试 CI PASS，gitleaks + govulncheck + admin auth 全 PASS） |
 | FR-045 | BR-009 | AC-001 | Whitelist Sync Job（GC-0 server→client 回灌 #444；GC-1 手动审核队列 #445；GC-3 观察期 #447） | Done |
 | FR-046 | BR-009 | AC-001 | whitelist 表 + version SSOT + sync_log + first_seen_at 列（migration 016） | Done |
 | FR-047 | BR-009 | AC-001 | GET /internal/whitelist；POST /internal/whitelist/refresh（GC-5b 审核态反馈 #452） | Done |
@@ -156,16 +156,16 @@ Beads and GitHub issues are the current P10 tracking SSOT. The retired local pro
 | Metric | Value |
 | --- | --- |
 | FR total | 65 |
-| Done | 65 |
-| Partial | 0 |
+| Done | 43 |
+| Partial | 22 |
 | Drifted | 0 |
 | Pending | 0 |
 | GitHub P10 open | 0 |
 | Beads P10 open | 0 |
-| release_closeable | YES（spec projection；runtime 见下行） |
-| release_closeable_spec | YES |
+| release_closeable | NO（当前矩阵含 22 个 Partial） |
+| release_closeable_spec | NO |
 | release_closeable_runtime | NO |
 
-> **运行时缺口投影**：历史 GAP-E 修复记录保留在本文件；本轮不从历史记录自动推导 runtime release Go。当前 runtime `release_closeable_runtime=NO`，外部 durable/fanout/query、正式 tag/release notes、部署前检查与 rollback 由 todo 与 release evidence 单独闭合。两者正交——规格 Done 表示 FR 功能面已闭合，运行时发布仍需当前 commit 的证据。
+> **运行时缺口投影**：历史 GAP-E 修复记录保留在本文件；本轮不从历史记录自动推导 runtime release。当前矩阵含 22 个 Partial，且 runtime `release_closeable_runtime=NO`；外部 durable/fanout/query、正式 tag/release notes、部署前检查和 rollback 仍需独立证据。
 >
-> `release_closeable_spec=YES` 仅表示 Code-Done FR / Total FR = 65/65 = 100% ≥ 90%；runtime `release_closeable_runtime=NO`，本轮 external-gates、正式 tag/release notes、部署前检查与 rollback 尚未闭合。options depth capture 已建立，但进入 OrderBookManager 仍 excluded/postponed（ADR-011 §7.4）。
+> `release_closeable_spec=NO`：当前 Code-Done FR / Total FR = 43/65，22 个 FR 仍缺运行证据；runtime `release_closeable_runtime=NO`，本轮 external-gates、正式 tag/release notes、部署前检查与 rollback 尚未闭合。

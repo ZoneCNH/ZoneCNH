@@ -7,13 +7,13 @@
 | Status         | Generated from current module SSOT                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | Last-Updated   | 2026-07-10 |
 | Module-Version | v4.1.0 |
-| Module-State   | v4.1.0：FR **65 Done / 0 Partial / 0 Drifted / 0 Pending**（FR-052~061 order book rebuild spot/um/cm 已实现；options depth 协议仍 excluded/postponed）。`release_closeable_spec=YES`；runtime `release_closeable_runtime=NO`，外部发布证据另行管理。 |
+| Module-State   | v4.1.0：当前追踪为 **43 Done / 22 Partial / 0 Drifted / 0 Pending**；缺失外部/运行证据的 FR 保持 Partial。`release_closeable_spec=NO`；runtime `release_closeable_runtime=NO`，外部发布证据另行管理。 |
 | Runtime-Repo   | `/home/workspace/binance`                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | Source         | `SPEC.md`, `TRACEABILITY.md`, `STANDARD.md`, `client/TRACEABILITY.md`, `server/TRACEABILITY.md`, `BOUNDARY-GATES.md`                                                                                                                                                                                                                                                                                                                                  |
 
 本文档是验收执行清单，不是通过证明。每个 Pending 项必须由实际命令输出、CI run、测试报告或 traceability 状态更新关闭。
 
-> [COMPUTED, HIGH] 2026-07-10 状态对齐：SPEC v4.1.0 规格口径为 65/65 FR Done（100%），`release_closeable_spec=YES`；runtime `release_closeable_runtime=NO`。运行时 gap 与本轮 external-gates 独立维护，不能由规格状态或历史 release evidence 自动继承。外部 durable/fanout/query E2E、正式 tag/release notes、部署前检查与 rollback 仍未闭合；implementation commit 为 `3f6366728b635c32d73565874965d40c20a92caf`。
+> [COMPUTED, HIGH] 2026-07-10 状态对齐：当前追踪为 43 Done / 22 Partial（100% 已登记但非全部闭合），`release_closeable_spec=NO`；runtime `release_closeable_runtime=NO`。运行时 gap 与本轮 external-gates 独立维护，不能由规格状态或历史 release evidence 自动继承。外部 durable/fanout/query E2E、正式 tag/release notes、部署前检查与 rollback 仍未闭合；implementation commit 为 `462772f6`。
 
 ### 状态口径 L1/L2 分层（RULES R4）+ 单一状态模型（v3.9.0）
 
