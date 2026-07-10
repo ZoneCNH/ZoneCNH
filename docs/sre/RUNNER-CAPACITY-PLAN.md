@@ -66,7 +66,6 @@
 
 | Pool | 当前 runner_count | 当前 host | 目标 host | 模块数 | 建议最低 runner 数 | 密度建议 |
 | --- | ---: | --- | --- | ---: | ---: | --- |
-<<<<<<< HEAD
 | `sre/governance` | 4 | 94.72.124.39 | 94.72.124.39 | 4 | 4 | 每模块 1 runner，可共处 |
 | `sre/foundation-l0` | 1 | 10.2.2.10 | 10.2.2.10 | 1 | 1 | kernel 在 xhypers |
 | `sre/foundation-l1` | 10 | 10.2.2.10 | 10.2.2.10 | 10 | 10 | 全部在 xhypers |
