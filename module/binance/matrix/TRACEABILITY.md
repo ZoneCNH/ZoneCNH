@@ -111,6 +111,12 @@ This matrix is the compact FR/BR/AC/TC projection. It intentionally does not dup
 release_closeable_spec = Code-Done FR / Total FR ≥ 90% AND Drifted FR = 0 AND Pending FR = 0 AND PRG-001~007 gates PASS
 ```
 
+CI 门禁投影（`release_closeable_spec` 的等价投影，供 `binance-status-consistency-check.sh` 门禁消费）：`release_closeable: YES`（Code-Done 65/65 = 100% ≥ 90%，Drifted=0，Pending=0，PRG-001~007 全 PASS）。
+
+```
+release_closeable = Code-Done FR / Total FR ≥ 90% AND Drifted FR = 0 AND Pending FR = 0 AND PRG-001~007 gates PASS
+```
+
 当前规格状态：`release_closeable_spec: YES`（65 FR: 65 Done = 100% ≥ 90%，options depth 待 Phase 2 testnet 实测后激活）。runtime 发布状态必须额外满足 `release_closeable_runtime`：同一最终 commit 的外部 durable/fanout/query E2E、正式 release tag/release notes、部署前检查和 rollback evidence；本轮该值为 `NO`。[COMPUTED, HIGH]
 
 | PRG | Gate | State | Evidence |
@@ -156,6 +162,7 @@ Beads and GitHub issues are the current P10 tracking SSOT. The retired local pro
 | Pending | 0 |
 | GitHub P10 open | 0 |
 | Beads P10 open | 0 |
+| release_closeable | YES（spec projection；runtime 见下行） |
 | release_closeable_spec | YES |
 | release_closeable_runtime | NO |
 

@@ -24,7 +24,7 @@ prompt/
 
 ## 当前状态
 
-**Pipeline State**：Spec→Code 管线的 S5-Prompt 层。v4.1.0 规格单状态模型为 `65 Done / 0 Partial / 0 Drifted / 0 Pending`（FR-052~061 order book rebuild）；规格 `release_closeable_spec=YES`，runtime `release_closeable_runtime=NO`，直到外部 E2E、正式 tag/release notes 与 rollback evidence 绑定同一 commit。当前 implementation commit 为 `3f6366728b635c32d73565874965d40c20a92caf`；GitHub issue 状态不能替代 runtime release evidence。[COMPUTED, HIGH]
+**Pipeline State**：Spec→Code 管线的 S5-Prompt 层。v4.1.0 单状态模型：`65 Done / 0 Partial / 0 Drifted / 0 Pending`（FR-052~061 order book rebuild）；规格 `release_closeable_spec=YES`，runtime `release_closeable_runtime=NO`，直到外部 E2E、正式 tag/release notes 与 rollback evidence 绑定同一 commit。当前 implementation commit 为 `3f6366728b635c32d73565874965d40c20a92caf`；GitHub issue 状态不能替代 runtime release evidence。[COMPUTED, HIGH]
 
 > [COMPUTED, HIGH] 2026-06-28 full E2E 包仅作为历史运行证据，不构成发布关闭结论。后续生成新 Context Package 时，必须引用当前 P10 action plan、team fix context、Beads/GitHub issue 状态、[`../todo.md`](../todo.md) 只读投影与 [`../evidence/2026-06-28/todo-archived.md`](../evidence/2026-06-28/todo-archived.md) 的历史快照。
 
