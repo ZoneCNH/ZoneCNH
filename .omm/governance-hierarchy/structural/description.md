@@ -1,0 +1,1 @@
+结构评分门禁体系。STRUCTURAL-SCORING.md（评分总纲）+ docs/governance/scoring/RUBRIC-{spec,matrix,plan,prompt,code,tasks}.md（各阶段评分细则）。受 §14 anti-goodhart 保护，是四源评分中 rules 维度的机械校验输入。对应 scripts/ 下 spec-structural-score、matrix-structural-score 等 agent。

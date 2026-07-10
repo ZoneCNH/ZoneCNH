@@ -1,0 +1,1 @@
+goal 交付操作系统，docs/goal/ 下 26 篇文档。回答"In what order to deliver"（按什么顺序交付）。核心：11 阶段统一管线（03-pipeline.md）、G0-G11 Gate 体系（04-gates.md）、四轴状态模型 + Registry（15-registry + 02）。可执行入口 docs/goal/tools/goal-workflow.sh。独立展开见 delivery-pipeline perspective。

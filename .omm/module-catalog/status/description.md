@@ -1,0 +1,1 @@
+.foundationx/status/index.json — 成熟度事实 SSOT。管辖：version、spec、impl、release、live、ci、adopt、soak、factory、note。由 xlibgate fleet-status 机器生成，覆盖 21 基座+L2.5。是 L0-L5 评级的事实来源。详见 overall-architecture/status-ssot。

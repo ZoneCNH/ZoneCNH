@@ -1,0 +1,4 @@
+- 效力层级：CONSTITUTION > module/*/spec/SPEC.md > governance 文档 > ARCHITECTURE > module 详情 > 其他。下游不得违背上游。
+- 三 SSOT 引用而非重复：registry.yaml（身份）/ FOUNDATION-DEPS.yaml（依赖）/ .foundationx/status/index.json（成熟度）各管一面，互不反向引用。
+- README/ARCHITECTURE/STATUS 三文档描述同一套系统，模块归属/版本/组件增删必须三文档同步。
+- 文档同步检查表自身计数也必须与实际一致；图中组件数量必须与表格行数一致。

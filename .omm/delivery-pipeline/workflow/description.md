@@ -1,0 +1,1 @@
+goal-workflow.sh（5.7k），可执行入口。把规则、控制面、Matrix、Gate 和 CI 自测串成固定剖面，避免直接调用下层脚本漏掉横切检查。5 种剖面：preflight（自检）/ validate（+控制面+Matrix）/ gate（+Gate 就绪）/ ci（+工具链自测，PR 默认）/ release（+hard blocker）。上层包装 goal-delivery.sh（67k）和 goal-validate.py（55k）。

@@ -1,0 +1,53 @@
+created: 2026-07-10T06:28:43.365Z
+updated: 2026-07-10T06:31:48.240Z
+update_count: 8
+last_field: diagram
+git_commit: "22459924"
+git_branch: feat/outer_metrics_layout_fix
+children:
+  - analytics
+  - crosscut
+  - data
+  - decision
+  - deps
+  - entry
+  - execution
+  - foundation
+  - l25
+  - registry
+  - ssot-trio
+  - status
+prev_diagram: >
+  graph TD
+      ssot-trio["三 SSOT 分立<br/>registry / FOUNDATION-DEPS / status"]
+      registry["registry.yaml<br/>身份+治理状态 (68)"]
+      deps["FOUNDATION-DEPS.yaml<br/>依赖矩阵 (基座20+domainx)"]
+      status["status/index.json<br/>成熟度事实 (基座21+L2.5)"]
+
+      foundation["基座层 foundation<br/>20 模块"]
+      l25["L2.5 领域共享<br/>5 模块"]
+      data["数据域 data<br/>18 采集器"]
+      analytics["分析域 analytics<br/>8 模块"]
+      decision["决策域 decision<br/>6 模块"]
+      execution["执行域 execution<br/>7 模块"]
+      entry["入口 entry<br/>2 (x.go/composer)"]
+      crosscut["横切 crosscut<br/>2 (alertx/observex)"]
+
+      ssot-trio --> registry
+      ssot-trio --> deps
+      ssot-trio --> status
+
+      foundation -->|"L0 kernel + L1 configx/observex/resiliencx/schedulex + 存储扩展 + 契约 + 标准/门禁"| foundation
+      l25 -->|"domain_market/domain_macro/domainx/decimalx/domain_exchange"| l25
+      data -->|"market_data/macro_data/binance/fred/okx/...18"| data
+      analytics -->|"factor_engine/feature_store/regime_engine/...8"| analytics
+      decision -->|"signal_factory/optimizer/strategyx/...6"| decision
+      execution -->|"riskx/orderx/positionx/settlement/...7"| execution
+
+      registry -->|"deps_ref"| deps
+      registry -->|"maturity_ref"| status
+
+      classDef store fill:#a6e3a1,stroke:#a6e3a1,color:#1e1e2e
+      classDef entry fill:#89b4fa,stroke:#89b4fa,color:#1e1e2e
+      class registry,deps,status store
+      class data,analytics,decision,execution,foundation,l25 entry

@@ -1,0 +1,4 @@
+- 三层治理栈存在职责重叠风险：governance 的 LIFECYCLE（Spec 六态）与 goal 的状态机（11 阶段 phase_status）、module-governance 的模块态（proposed→active→...）是三个不同粒度状态机，映射关系复杂，易混淆。
+- §14 anti-goodhart 与交付效率存在张力：受保护评分规则改动需走 RSI，可能拖慢治理演进。
+- 三 SSOT 覆盖范围不一致（见 overall-architecture concern），业务域模块在 governance 层的治理是缺口。
+- ARCHITECTURE.md 作为向后兼容存根与 docs/architecture/ 并存，效力层级中文档归属需读者自行判断。

@@ -1,0 +1,21 @@
+created: 2026-07-10T06:21:57.753Z
+updated: 2026-07-10T06:22:40.315Z
+update_count: 6
+last_field: note
+git_commit: 5cd4c7d5
+git_branch: main
+children:
+  - amendment
+  - antigh
+  - boundary
+  - branch
+  - constitution
+  - dep
+  - design
+  - epistemic
+  - goal-os
+  - governance-layer
+  - module-gov
+  - pipeline
+  - spec-pipeline
+  - structural

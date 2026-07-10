@@ -1,0 +1,3 @@
+- 业务域依赖矩阵扩展（module-governance §3.2、08-business-domain-deps.md）：将 ~50 业务域模块纳入 FOUNDATION-DEPS 的 allowed/forbidden/constraints 体系。
+- 定期全量 404 扫描：grep 所有 docs 中的 github.com/ZoneCNH/* 链接，确保无 404（CI repo-existence-check.sh 已部分覆盖）。
+- 历史投影文档（06/07）的弃用声明收敛或合并入活跃文档。

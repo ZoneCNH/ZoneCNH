@@ -1,0 +1,1 @@
+§20 认识论标准。强制证据标签（KNOWN 已知 / COMPUTED 计算 / INFERRED 推断 / COMMON 常识 / FRAME 框架假设 / GUESS 猜测）和置信度显式标注（HIGH ≥80% / MED 50-80% / LOW 20-50% / VERY LOW <20% / UNKNOWN）。FRAME 和 GUESS 置信度上限 LOW。禁止 FRAME→REALITY（管线评分/治理状态 ≠ 代码正确或生产稳定）。不知道时第一行必须写"我不知道。"。

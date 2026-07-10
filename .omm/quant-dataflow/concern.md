@@ -1,0 +1,5 @@
+- PIT（point-in-time）防泄露：macro_data 经 PIT 过滤后供 macro_regime，任何回测若绕过此过滤会导致前视偏差。
+- 质量门禁是数据可信的关键：MarketEventEnvelope 信封若被绕过，脏数据会污染 regime 评分。
+- M×S 冲突门：regime_engine 融合 market/macro 状态时若触发冲突（conflict=true），DecisionCard 须降级处理，否则可能放大风险。
+- fills/PnL 反馈回路延迟：实盘 fills 异步回流决策域，若 positionx 与 signal_factory 状态不同步会重复下单。
+- 06-dataflow.md / 07-three-engines.md 自述历史投影非事实源，读者误用风险。

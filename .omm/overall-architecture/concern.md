@@ -1,0 +1,4 @@
+- 三 SSOT 覆盖范围不一致：FOUNDATION-DEPS 仅覆盖 20 基座+domainx；.foundationx/status 覆盖 21 基座+L2.5；registry.yaml 覆盖全域（含 ~50 业务域模块）。业务域模块在 DEPS/status 中的扩展是已知缺口。
+- ARCHITECTURE.md 是向后兼容重定向存根，真实架构内容已拆分至 docs/architecture/01-08，存在新旧路径并存风险。
+- 06-dataflow.md 与 07-three-engines.md 自述为"历史投影/兼容层，不作事实源"，活跃链路在 01-overview/08-contracts，读者易误用历史文档。
+- §14 受控递归改进（RSI）保护 Rubric/STRUCTURAL-SCORING/ARBITER-PROTOCOL 等评分规则文件，改动受严格约束。

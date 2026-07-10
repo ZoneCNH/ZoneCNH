@@ -1,0 +1,1 @@
+governance 操作层，docs/governance/ 约 30 篇文档。把宪法原则操作化为可执行门禁和模板。三大子域：模块治理八域（module-governance/01-10）、Spec→Code 管线（DEVELOPMENT-WORKFLOW + LIFECYCLE）、结构评分门禁（STRUCTURAL-SCORING + scoring/Rubric-*）。位于宪法效力管辖之下，不修改宪法本身。

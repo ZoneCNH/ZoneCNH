@@ -1,0 +1,1 @@
+数据域 data，18 采集器。市场数据：market_data（聚合 12 交易所）、binance/okx/hyperliquid/orderbook/coinglass。宏观数据：macro_data（聚合）、fred/treasury/bea/ecb/uk_cb/japan_cb/eastmoney/yahoo/yield_curve/pe_data。另类数据：alternative_data（链上/社交情绪/新闻 NLP）。产出经 L2.5 质量门禁信封后供分析域。

@@ -1,0 +1,30 @@
+graph LR
+    constitution["CONSTITUTION 治理\nCONSTITUTION.md + docs/constitution/"]
+    module-catalog["模块规格目录\nmodule/ (69 模块)"]
+    delivery-pipeline["交付管线\ndocs/goal/ (11 阶段)"]
+    governance-docs["治理文档\ndocs/governance/"]
+    architecture-docs["架构文档\ndocs/architecture/"]
+    registry-ssot["模块身份 SSOT\nmodule/registry.yaml"]
+    deps-ssot["依赖矩阵 SSOT\nmodule/FOUNDATION-DEPS.yaml"]
+    status-ssot["成熟度事实 SSOT\n.foundationx/status/index.json"]
+    release-pipeline["发布管线\nrelease/ + scripts/"]
+    ci-cd-plane["CI/CD 执行平面\n.github/ + BASELINE.yaml + docs/sre/"]
+
+    constitution -->|"效力管辖"| governance-docs
+    constitution -->|"效力管辖"| architecture-docs
+    constitution -->|"效力管辖"| delivery-pipeline
+    constitution -->|"效力管辖"| module-catalog
+    module-catalog -->|"身份登记"| registry-ssot
+    module-catalog -->|"依赖声明"| deps-ssot
+    module-catalog -->|"成熟度投影"| status-ssot
+    delivery-pipeline -->|"门禁产出"| release-pipeline
+    module-catalog -->|"Spec→Code"| delivery-pipeline
+    ci-cd-plane -->|"机器强制"| delivery-pipeline
+    release-pipeline -->|"部署契约"| ci-cd-plane
+
+    classDef entry fill:#89b4fa,stroke:#89b4fa,color:#1e1e2e
+    classDef store fill:#a6e3a1,stroke:#a6e3a1,color:#1e1e2e
+    classDef external fill:#585b70,stroke:#585b70,color:#cdd6f4
+    class constitution,governance-docs,architecture-docs,delivery-pipeline,module-catalog entry
+    class registry-ssot,deps-ssot,status-ssot store
+    class ci-cd-plane external

@@ -1,0 +1,3 @@
+- O5 CI diff 感知：job 增加 if: steps.filter.outputs.module == 'true'，避免无关模块触发全量 Gate。
+- O8 CI 死锁：docs-only PR reduce 到 3 个必须 job。
+- O6 自动影响分析：git diff --name-only → 需同步的对齐文档列表。

@@ -1,0 +1,4 @@
+- 三 SSOT 覆盖范围不一致：FOUNDATION-DEPS 仅 20 基座+domainx，status 仅 21 基座+L2.5，registry 全域 68。~48 业务域模块在 DEPS/status 中是缺口。
+- 模块内跨文件矛盾风险（CLAUDE.md §5 复盘）：binance 审计曾发现 13 项跨文件矛盾（TRACEABILITY §1 vs §6、SPEC Appendix 过期、DoD 与 ACCEPTANCE 不一致）。
+- 部分 module 目录含过期制品（如 binance/todo.md、evidence 历史快照），需定期剪枝。
+- 数据域采集器数量多（18），命名与边界一致性需持续治理。
