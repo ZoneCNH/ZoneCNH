@@ -37,6 +37,10 @@ if [[ ! -d "$MODULE_DIR" ]]; then
   echo "✗ 模块目录不存在: $MODULE_DIR" >&2
   exit 1
 fi
+SPEC_PATH="$MODULE_DIR/spec/SPEC.md"
+if [[ ! -f "$SPEC_PATH" ]]; then
+  SPEC_PATH="$MODULE_DIR/SPEC.md"
+fi
 
 # 1. rework_commit_count: SINCE 以来涉及该模块路径的 commit 数
 rework_commit_count=$(git log "$SINCE..HEAD" --oneline -- "$MODULE_DIR" "module/${MODULE}/" 2>/dev/null | wc -l | tr -d ' ')
@@ -47,7 +51,7 @@ loc_stats=$(git log "$SINCE..HEAD" --numstat --pretty=format: -- "$MODULE_DIR" "
 rework_loc_ratio="${loc_stats:-0}"
 
 # 3. spec_sha
-spec_sha=$(git log -1 --format='%H' -- "$MODULE_DIR/SPEC.md" 2>/dev/null || echo "")
+spec_sha=$(git log -1 --format='%H' -- "$SPEC_PATH" 2>/dev/null || echo "")
 
 # 4. developer_override_count: commit 中含 "override" / "bypass scoring" 的数量
 developer_override_count=$(git log "$SINCE..HEAD" --grep='override\|bypass.scoring\|verdict-override' --oneline 2>/dev/null | wc -l | tr -d ' ')
