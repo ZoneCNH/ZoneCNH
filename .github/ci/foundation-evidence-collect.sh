@@ -222,7 +222,7 @@ body = {
         "arch": os.environ.get("RUNNER_ARCH"),
         "temp": os.environ.get("RUNNER_TEMP"),
         "tool_cache": os.environ.get("RUNNER_TOOL_CACHE"),
-        "expected_labels": ["self-hosted", "Linux", "X64", "ci-governance"],
+        "expected_labels": ["self-hosted", "Linux", "X64", "sre/foundation-l1"],
     },
     "toolchain": {
         "go": run(["go", "version"])["output"],

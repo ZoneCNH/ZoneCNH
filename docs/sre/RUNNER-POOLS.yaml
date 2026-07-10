@@ -4,7 +4,7 @@
 # 现状 2026-07-10：全部 11 个 pool online，16 runners，3 hosts，Go 1.26.5
 # 巡检入口：sre/bootstrap/status.sh, sre/bootstrap/health-check.sh
 # 主机注册表 SSOT：sre/bootstrap/hosts.env
-# 模块分配表：sre/module.md
+# 模块分配表：sre/module.md（生成器按 module/registry.yaml.lifecycle 区分现役与归档记录）
 
 version: "2026.07.10"
 owner: ZoneCNH
@@ -22,7 +22,7 @@ global:
 pools:
   sre/governance:
     purpose: governance, docs, baseline, dependency matrix, policy check
-    label: ci-governance
+    label: sre/governance  # ci-governance 为历史兼容标签
     allowed_events: [pull_request, push, workflow_dispatch, schedule]
     secrets: none
     docker: false
@@ -216,17 +216,17 @@ pools:
       # decision
       - signal_factory
       - backtestx
-      - backtest_engine
+      - backtest_engine  # archived；仅保留历史映射，不计入现役 CI
       - optimizer
       - strategyx
       - maestro
       # execution
       - riskx
-      - risk_engine
+      - risk_engine      # archived；仅保留历史映射，不计入现役 CI
       - orderx
-      - order_engine
+      - order_engine     # archived；仅保留历史映射，不计入现役 CI
       - positionx
-      - portfolio_engine
+      - portfolio_engine # archived；仅保留历史映射，不计入现役 CI
       - settlement
 
   sre/deploy:

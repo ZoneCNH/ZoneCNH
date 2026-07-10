@@ -5,6 +5,8 @@
 > 状态：Draft
 > 最后更新：2026-06-14
 > 负责人：ZoneCNH
+>
+> 历史规划快照：runner 数量、标签和 SRE 状态以当前 `docs/sre/RUNNER-POOLS.yaml`、`module/registry.yaml` 及 `ZoneCNH/sre` 契约为准。
 
 ---
 
@@ -112,7 +114,7 @@ x.go ——→ 基座运行时 / L2.5 / 数据域 / 分析域 / 决策域 / 执�
 |------|:----:|------|
 | GitHub Actions workflows | 11 个 | deps-matrix, docs-ci, foundation-integration, foundation-release, goal-ci, release 等 |
 | CI shell scripts | 17 个 | spec-lint, traceability-check, foundation-boundary-check 等 |
-| Self-hosted runner | 1 台 | 标签 [self-hosted, Linux, X64, ci-governance] |
+| Self-hosted runner | 1 台（历史快照） | 历史标签 [self-hosted, Linux, X64, ci-governance]；当前以 `sre/*` pool 为准 |
 | 依赖矩阵(机器可读) | v1.1 | module/FOUNDATION-DEPS.yaml |
 | SRE 部署入口 | 已有 | ZoneCNH/sre reusable workflow |
 | Release manifest | 已有 | generate-release-manifest.sh + deploy-contract-preflight.sh |
