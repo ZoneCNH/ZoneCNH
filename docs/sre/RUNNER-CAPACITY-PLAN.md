@@ -9,11 +9,11 @@
 
 ## 1. 执行摘要
 
-- **当前物理 runner 进程**：53 个（4 台主机）
+- **当前物理 runner 进程**：79 个（4 台主机，含 68 个模块 repo-level runner 与 11 个 profile-based runner）
 - **模块/仓库数**：68 个
 - **按 repo-level runner 最低需求**：68 个 runner 注册
-- **容量缺口**：**15 个 runner 进程**
-- **关键发现**：`xhypers`（`10.2.2.10`）规格为 16c / 126g / 1.9T，已成功注册并上线 37 个 repo-level runner，覆盖 `sre/engine` / `sre/macro` / `sre/storage-heavy`。
+- **容量缺口**：**0**
+- **关键发现**：`xhypers`（`10.2.2.10`）规格为 16c / 126g / 1.9T，已成功注册并上线 37 个 repo-level runner；其余 31 个模块 repo-level runner 已分布在 94.72.124.39 / 10.2.2.9 / 84.247.154.45。
 - **关键约束**：GitHub user account 无法共享 runner；每个模块仓库必须独立注册至少一个 runner。
 - **结论**：现有 3 台主机 + 新纳入的 `10.2.2.10` 可显著缓解缺口；优先把高密度池（`sre/engine`、`sre/macro`）迁移到 `10.2.2.10`。
 
@@ -23,11 +23,11 @@
 
 | 主机地址 | 角色 | CPU | 内存 | 磁盘 | 系统 | SSH 用户 | 当前承载 runner 数 |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| `94.72.124.39` | CICD 控制面 + 轻量 runner | 4 vCPU | 7.8 Gi | 148 GB / 50% | Debian 13 / 6.12.74 | claude | 2 |
-| `84.247.154.45` | 生产机 / WireGuard hub / 重载 runner | 16 vCPU | 62 Gi | 591 GB / 69% | Debian 13 / 6.12.88+ | claude | 9 |
-| `10.2.2.9` | WireGuard 内网 CI runner | 12 vCPU | 16 Gi | 233 GB | Debian 12 | root | 6 |
+| `94.72.124.39` | CICD 控制面 + 轻量 runner | 4 vCPU | 7.8 Gi | 148 GB / 50% | Debian 13 / 6.12.74 | claude | 6 |
+| `84.247.154.45` | 生产机 / WireGuard hub / 重载 runner | 16 vCPU | 62 Gi | 591 GB / 69% | Debian 13 / 6.12.88+ | claude | 23 |
+| `10.2.2.9` | WireGuard 内网 CI runner | 12 vCPU | 16 Gi | 233 GB | Debian 12 | root | 13 |
 | `10.2.2.10` | **xhypers / 主力 runner 主机** | **16 vCPU** | **126 Gi** | **1.9 TB / 12%** | **Ubuntu 26.04** | **zone** | **37** |
-| **合计** | | **48 vCPU** | **211.8 Gi** | | | | **53** |
+| **合计** | | **48 vCPU** | **211.8 Gi** | | | | **79** |
 
 > 来源：`sre/AGENTS.md` §基础设施主机清单；`sre/bootstrap/hosts.env`；xhypers 实测。
 
@@ -63,16 +63,16 @@
 
 | Pool | 当前 runner_count | 当前 host | 目标 host | 模块数 | 建议最低 runner 数 | 密度建议 |
 | --- | ---: | --- | --- | ---: | ---: | --- |
-| `sre/governance` | 2 | 94.72.124.39 | 94.72.124.39 | 4 | 4 | 每模块 1 runner，可共处 |
-| `sre/foundation-l0` | 2 | 10.2.2.9 | 10.2.2.9 | 1 | 1 | 1 个 runner 服务 kernel 即可 |
-| `sre/foundation-l1` | 2 | 10.2.2.9 | 10.2.2.9 | 10 | 10 | 10.2.2.9 内存紧张，可溢出部分到 10.2.2.10 |
-| `sre/contracts` | 1 | 10.2.2.9 | 10.2.2.9 | 7 | 7 | 同上 |
+| `sre/governance` | 4 | 94.72.124.39 | 94.72.124.39 | 4 | 4 | 每模块 1 runner，已满足 |
+| `sre/foundation-l0` | 1 | 84.247.154.45 | 10.2.2.9 | 1 | 1 | kernel 因 10.2.2.9 容量不足临时在 84.247.154.45 |
+| `sre/foundation-l1` | 10 | 10.2.2.9 / 84.247.154.45 | 10.2.2.9 | 10 | 10 | 5 个在 10.2.2.9，5 个在 84.247.154.45 |
+| `sre/contracts` | 7 | 10.2.2.9 | 10.2.2.9 | 7 | 7 | 已满足；10.2.2.9 当前 13 runner 超载 1 个 |
 | `sre/security` | 1 | 10.2.2.9 | 10.2.2.9 | 0 | 1 | 服务 ZoneCNH 主仓安全扫描 |
-| `sre/market` | 1 | 84.247.154.45 | 84.247.154.45 | 6 | 6 | 中载，可保留在原主机 |
-| `sre/macro` | 1 | 84.247.154.45 | **10.2.2.10** | 12 | 12 | 迁移到 xhypers，释放 84.247.154.45 资源 |
-| `sre/storage-light` | 1 | 84.247.154.45 | 84.247.154.45 | 3 | 3 | Docker 已就绪 |
-| `sre/storage-heavy` | 2 | 84.247.154.45 | **10.2.2.10** | 4 | 4 | 大内存 Docker 测试适合 xhypers |
-| `sre/engine` | 1 | 84.247.154.45 | **10.2.2.10** | 21 | 21 | 最大池，需要 xhypers 大内存 |
+| `sre/market` | 6 | 84.247.154.45 | 84.247.154.45 | 6 | 6 | 已满足 |
+| `sre/macro` | 12 | 10.2.2.10 | 10.2.2.10 | 12 | 12 | 已迁移至 xhypers |
+| `sre/storage-light` | 3 | 84.247.154.45 | 84.247.154.45 | 3 | 3 | 已满足 |
+| `sre/storage-heavy` | 4 | 10.2.2.10 | 10.2.2.10 | 4 | 4 | 已迁移至 xhypers |
+| `sre/engine` | 21 | 10.2.2.10 | 10.2.2.10 | 21 | 21 | 已满足 |
 | `sre/deploy` | 2 | 84.247.154.45 | 84.247.154.45 | 0 | 2 | 已满足，独立隔离 |
 
 > 注：建议最低 runner 数 = 模块数（每个模块仓库独立注册 1 个）。
@@ -83,13 +83,13 @@
 
 ```text
 总需求：    68  repo-level runner 注册
-当前在线：  53  runner 进程
-缺口：      15  runner 进程
+当前在线：  68  repo-level runner 进程
+缺口：      0
 
-按主机分布缺口（xhypers 已上线）：
-- 94.72.124.39:  当前 2  → 目标 4   → 缺口 2
-- 84.247.154.45: 当前 9  → 目标 13  → 缺口 4
-- 10.2.2.9:      当前 6  → 目标 18  → 缺口 12
+按主机分布（仅 repo-level runner）：
+- 94.72.124.39:  当前 4  → 目标 4   → 缺口 0
+- 84.247.154.45: 当前 15 → 目标 15  → 缺口 0
+- 10.2.2.9:      当前 12 → 目标 12  → 缺口 0（含 1 个 security，实际超载 1 个）
 - 10.2.2.10:     当前 37 → 目标 37  → 缺口 0（已满足）
 ```
 
@@ -97,18 +97,18 @@
 
 ## 6. 分阶段扩容路线
 
-### Phase A：当前主机密度优化（立即）
+### Phase A：当前主机密度优化（已完成）
 
-目标：在 3 台现有主机上从 16 个 runner 提升到 30 个 runner。
+目标：在 3 台现有主机上从 17 个模块 repo-level runner 提升到 31 个。
 
 | 主机 | 动作 | 新增 runner 数 | 说明 |
 | --- | --- | --- | --- |
-| `94.72.124.39` | 为 4 个 governance 模块各注册 1 个 runner | +2 | 当前 2，扩展至 4 |
-| `10.2.2.9` | 在 foundation-l1 / contracts 上增加 runner 密度 | +6 | 当前 6，扩展至 12 |
-| `84.247.154.45` | 在 market / storage 增加 runner 密度 | +4 | 当前 9，扩展至 13 |
+| `94.72.124.39` | 为 4 个 governance 模块各注册 1 个 runner | +2 | 当前 4，扩展完成 |
+| `10.2.2.9` | 清理 5 个 legacy profile-based runner，为 6 个 foundation-l1 / contracts 模块注册 runner | +6 net | 当前 12 repo-level + 1 security |
+| `84.247.154.45` | 为 4 个 market / storage-light 模块注册 runner | +4 | 当前 15 module repo-level（含 kernel 溢出） |
 
 风险：
-- `10.2.2.9` 内存仅 16 Gi，承载 12 个 runner 并发时可能 OOM。
+- `10.2.2.9` 当前 13 个 runner（含 security），超出原建议 12，需监控内存。
 - `84.247.154.45` 磁盘使用率 69%，需监控 Docker 镜像与 `_work` 目录增长。
 
 ### Phase B：xhypers 上线（已完成）
@@ -137,20 +137,24 @@ xhypers:
 - GitHub API 验证全部 `online`
 - xhypers 内存使用约 47 GB / 126 GB，负载正常
 
-当前分布：
+当前分布（repo-level runner）：
 
 ```text
-94.72.124.39:    2  governance
-10.2.2.9:        6  foundation-l0/l1, contracts, security
-84.247.154.45:   9  market, storage-light, deploy
+94.72.124.39:    4  governance
+10.2.2.9:       12  foundation-l1, contracts (+ 1 security)
+84.247.154.45:  15  market, storage-light, foundation-l0/l1 溢出
 10.2.2.10:      37  engine, macro, storage-heavy
 -------------------------------------------
-合计：           53  runner 进程
+合计：           68  repo-level runner
 ```
 
-### Phase C：最终调优（2 周内）
+### Phase C：最终调优（已完成）
 
-按 Phase A 完成后再补充 **3 个 runner**，达到 68 个。推荐在 xhypers 上再注册 1 个（如 overflow）和在 10.2.2.9 上补充 2 个，或根据实际队列分布调整。
+所有 68 个模块 repo-level runner 已在线。剩余运维重点：
+
+1. 监控 `10.2.2.9` 13 个 runner 的内存与并发情况；如 OOM，将 1 个 contracts 或 foundation-l1 runner 迁移到 `84.247.154.45`。
+2. 清理 84.247.154.45 上旧的 `ci-*` 标签 runner（已完成 xlib 4 个）。
+3. 待 `10.2.2.9` 扩容至 32 Gi 内存后，将 kernel 与剩余 foundation-l1 模块回迁到 10.2.2.9。
 
 ---
 

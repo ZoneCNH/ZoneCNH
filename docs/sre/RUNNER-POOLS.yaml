@@ -1,7 +1,7 @@
 # RUNNER-POOLS.yaml — ZoneCNH Self-hosted Runner Pool 注册表
 #
 # 权威来源：knowledge/ci.md §6.2, CICD-001
-# 现状 2026-07-10：全部 11 个 pool online，16 runners，3 hosts，Go 1.26.5
+# 现状 2026-07-10：全部 11 个 pool online；68 个 repo-level runner 已覆盖 68 个模块仓库；4 台主机
 # 巡检入口：sre/bootstrap/status.sh, sre/bootstrap/health-check.sh
 # 主机注册表 SSOT：sre/bootstrap/hosts.env
 # 模块分配表：sre/module.md（生成器按 module/registry.yaml.lifecycle 区分现役与归档记录）
@@ -30,8 +30,8 @@ pools:
     max_concurrency: 2
     host: 94.72.124.39
     status: online
-    runner_count: 2
-    note: 2026-07-09 恢复，Go 1.26.5
+    runner_count: 4
+    note: 2026-07-10 完成 4 个 governance 模块 repo-level runner 注册
     modules:
       - xlib_standard   # standard source
       - xlib_harness    # harness
@@ -45,10 +45,10 @@ pools:
     docker: false
     production_access: false
     max_concurrency: 2
-    host: 10.2.2.9
+    host: 84.247.154.45
     status: online
-    runner_count: 2
-    note: 2026-07-09 恢复，Go 1.26.5
+    runner_count: 1
+    note: 2026-07-10 kernel 因 10.2.2.9 容量不足临时溢出到 84.247.154.45
     modules:
       - kernel          # L0 primitives
 
@@ -61,8 +61,8 @@ pools:
     max_concurrency: 3
     host: 10.2.2.9
     status: online
-    runner_count: 2
-    note: 2026-07-09 恢复，Go 1.26.5
+    runner_count: 10
+    note: 2026-07-10 bootstrap/alertx/composer/frontend/x.go 在 10.2.2.9；configx/observex/resiliencx/schedulex/testkitx 因容量临时在 84.247.154.45
     modules:
       - bootstrap       # foundation L1
       - configx         # foundation L1
@@ -84,8 +84,8 @@ pools:
     max_concurrency: 2
     host: 10.2.2.9
     status: online
-    runner_count: 1
-    note: 2026-07-09 恢复，Go 1.26.5
+    runner_count: 7
+    note: 2026-07-10 完成 7 个 contracts 模块 repo-level runner 注册；10.2.2.9 当前 13 runner（含 security）
     modules:
       - contracts       # foundation contracts
       - transportx      # foundation contracts
@@ -121,8 +121,8 @@ pools:
     max_concurrency: 2
     host: 84.247.154.45
     status: online
-    runner_count: 1
-    note: 2026-07-09 恢复，Go 1.26.5
+    runner_count: 6
+    note: 2026-07-10 完成 6 个 market 模块 repo-level runner 注册
     modules:
       - binance         # exchange adapter
       - coinglass       # market data
@@ -165,8 +165,8 @@ pools:
     max_concurrency: 2
     host: 84.247.154.45
     status: online
-    runner_count: 1
-    note: 2026-07-09 恢复，Go 1.26.5, Docker
+    runner_count: 3
+    note: 2026-07-10 完成 3 个 storage-light 模块 repo-level runner 注册
     modules:
       - natsx           # NATS client
       - ossx            # OSS client
