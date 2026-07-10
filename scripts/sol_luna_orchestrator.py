@@ -2368,6 +2368,193 @@ def _patch_sha256(path_value: Any) -> str | None:
     return digest.hexdigest()
 
 
+def _run_fingerprint(
+    head: str,
+    request: str,
+    spec_ref: str,
+    matrix_ref: str,
+    matrix_edges: Sequence[str],
+    checks: Sequence[Sequence[str]],
+    workers: int,
+    max_luna_attempts: int,
+) -> dict[str, Any]:
+    spec_ref, normalized_edges = _traceability_fields(spec_ref, matrix_edges)
+    return {
+        "head": head,
+        "request": request.strip(),
+        "spec_ref": spec_ref,
+        "matrix_ref": matrix_ref,
+        "matrix_edges": list(normalized_edges),
+        "checks": [list(check) for check in checks],
+        "workers": workers,
+        "max_luna_attempts": max_luna_attempts,
+        "models": {"orchestrator": SOL_MODEL, "executors": LUNA_MODEL},
+        "effort": REASONING_EFFORT,
+    }
+
+
+def _fingerprint_sha256(value: Mapping[str, Any]) -> str:
+    payload = json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
+def _summary_fingerprint(summary: Mapping[str, Any]) -> dict[str, Any] | None:
+    fingerprint = summary.get("fingerprint")
+    if isinstance(fingerprint, dict):
+        return fingerprint
+    required = (
+        "head",
+        "request",
+        "spec_ref",
+        "matrix_ref",
+        "matrix_edges",
+        "checks",
+        "workers",
+        "max_luna_attempts",
+    )
+    if not all(key in summary for key in required):
+        return None
+    checks = summary.get("checks")
+    if not isinstance(checks, list):
+        return None
+    if not all(isinstance(check, list) for check in checks):
+        return None
+    matrix_edges = summary.get("matrix_edges")
+    if not isinstance(matrix_edges, list):
+        return None
+    return _run_fingerprint(
+        str(summary["head"]),
+        str(summary["request"]),
+        str(summary["spec_ref"]),
+        str(summary["matrix_ref"]),
+        [str(edge) for edge in matrix_edges],
+        [[str(item) for item in check] for check in checks],
+        int(summary["workers"]),
+        int(summary["max_luna_attempts"]),
+    )
+
+
+def _resolve_resume_run(workspace: Path, resume_run: str) -> Path:
+    candidate = Path(resume_run).expanduser()
+    choices: list[Path] = []
+    if candidate.is_absolute():
+        choices.append(candidate)
+    else:
+        choices.append((workspace / candidate).expanduser())
+        choices.append(
+            workspace
+            / ".omx"
+            / "state"
+            / "orchestration"
+            / candidate
+        )
+    for path in choices:
+        try:
+            resolved = path.resolve(strict=True)
+        except OSError:
+            continue
+        if resolved.is_dir():
+            summary = resolved / "summary.json"
+            task_results = resolved / "task-results.json"
+            if summary.is_file() and task_results.is_file():
+                return resolved
+    raise BlockedError(f"无法解析可恢复的 run 目录: {resume_run}")
+
+
+def _load_resume_state(workspace: Path, resume_run: str) -> dict[str, Any]:
+    run_dir = _resolve_resume_run(workspace, resume_run)
+    summary_path = run_dir / "summary.json"
+    task_results_path = run_dir / "task-results.json"
+    try:
+        summary = json.loads(summary_path.read_text(encoding="utf-8"))
+        task_results = json.loads(task_results_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as error:
+        raise BlockedError(f"无法读取 resume run 状态: {error}") from error
+    if not isinstance(summary, dict):
+        raise BlockedError("resume run summary 格式无效")
+    if not isinstance(task_results, list):
+        raise BlockedError("resume run task-results 格式无效")
+    plan = summary.get("plan")
+    if not isinstance(plan, dict) or not isinstance(plan.get("tasks"), list):
+        raise BlockedError("resume run 缺少可复用的 plan")
+    previous_fingerprint = summary.get("fingerprint")
+    if previous_fingerprint is not None and not isinstance(previous_fingerprint, dict):
+        raise BlockedError("resume run fingerprint 格式无效")
+    return {
+        "run_dir": run_dir,
+        "summary": summary,
+        "plan": plan,
+        "task_results": task_results,
+        "call_log": run_dir / "model-calls.jsonl",
+        "fingerprint": previous_fingerprint,
+    }
+
+
+def _task_is_reusable(previous_task: Mapping[str, Any], resume_run: Path) -> tuple[bool, str, str | None]:
+    status = previous_task.get("status")
+    if status not in {"pass", "passed", "accepted"}:
+        return False, "任务未通过，必须重跑", None
+    if previous_task.get("evidence_complete") is not True:
+        return False, "任务证据不完整，必须重跑", None
+    if previous_task.get("scope_ok") is not True:
+        return False, "任务写范围未通过校验，必须重跑", None
+    if previous_task.get("checks_ok") is not True:
+        return False, "任务机械检查未通过，必须重跑", None
+    if previous_task.get("conflict"):
+        return False, "任务证据冲突，必须重跑", None
+    patch_file = previous_task.get("patch_file")
+    if not isinstance(patch_file, str) or not patch_file:
+        return False, "任务缺少 patch 文件，无法复用", None
+    try:
+        resolved_patch = Path(patch_file).expanduser().resolve(strict=True)
+    except OSError:
+        return False, "任务 patch 文件不存在，无法复用", None
+    try:
+        resolved_patch.relative_to(resume_run.resolve())
+    except ValueError:
+        return False, "任务 patch 不在 resume run 目录内，拒绝复用", None
+    patch_hash = _patch_sha256(str(resolved_patch))
+    if not patch_hash:
+        return False, "任务 patch SHA-256 无法计算，拒绝复用", None
+    recorded_hash = previous_task.get("patch_sha256")
+    if isinstance(recorded_hash, str) and recorded_hash and recorded_hash != patch_hash:
+        return False, "任务 patch SHA-256 与记录不一致，拒绝复用", None
+    return True, "任务通过并且 patch 已验证，可复用", patch_hash
+
+
+def _resume_token_savings(call_log: Path, reused_task_ids: Sequence[str]) -> dict[str, Any]:
+    savings = {
+        "known_calls": 0,
+        "known_tokens": 0,
+        "unknown_calls": 0,
+        "skipped_kinds": [],
+    }
+    if not call_log.exists():
+        return savings
+    reused_prefixes = tuple(f"luna-{task_id}-" for task_id in reused_task_ids)
+    for line in call_log.read_text(encoding="utf-8", errors="replace").splitlines():
+        try:
+            record = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if not isinstance(record, dict):
+            continue
+        kind = record.get("kind")
+        if kind != "sol-plan" and not (
+            isinstance(kind, str) and any(kind.startswith(prefix) for prefix in reused_prefixes)
+        ):
+            continue
+        tokens = record.get("tokens")
+        if isinstance(tokens, int) and not isinstance(tokens, bool) and tokens >= 0:
+            savings["known_calls"] += 1
+            savings["known_tokens"] += tokens
+        else:
+            savings["unknown_calls"] += 1
+        if isinstance(kind, str):
+            savings["skipped_kinds"].append(kind)
+    return savings
+
+
 def _task_escalation_digest(task_results: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
     """Keep Sol context focused on failures; passing tasks become small receipts."""
     failed: list[dict[str, Any]] = []
@@ -2655,7 +2842,51 @@ def _run_orchestration(args: argparse.Namespace) -> tuple[int, dict[str, Any]]:
         "matrix_edges": matrix_edges,
         "check_sandbox": check_sandbox,
         "artifacts": str(run_dir),
+        "request": request,
+        "checks": checks,
     }
+    fingerprint = _run_fingerprint(
+        head,
+        request,
+        spec_ref,
+        matrix_ref,
+        matrix_edges,
+        checks,
+        args.workers,
+        args.max_luna_attempts,
+    )
+    summary["fingerprint"] = fingerprint
+    summary["fingerprint_sha256"] = _fingerprint_sha256(fingerprint)
+    resume_state = None
+    if getattr(args, "resume_run", None):
+        resume_state = _load_resume_state(workspace, args.resume_run)
+        previous_summary = resume_state["summary"]
+        previous_fingerprint = _summary_fingerprint(previous_summary)
+        summary["resume"] = {
+            "enabled": True,
+            "source_run_id": previous_summary.get("run_id"),
+            "source_run_dir": str(resume_state["run_dir"]),
+            "source_fingerprint_sha256": _fingerprint_sha256(previous_fingerprint)
+            if previous_fingerprint
+            else None,
+            "requested_run_id": args.resume_run,
+        }
+        if previous_fingerprint is None:
+            summary.update(
+                {
+                    "verdict": "blocked",
+                    "reason": "resume run 缺少 fingerprint，无法验证不可变输入",
+                }
+            )
+            return 20, summary
+        if previous_fingerprint != fingerprint:
+            summary.update(
+                {
+                    "verdict": "blocked",
+                    "reason": "resume run fingerprint 不匹配，拒绝复用",
+                }
+            )
+            return 20, summary
 
     try:
         probe_process, catalog = _probe_catalog()
@@ -2672,11 +2903,11 @@ def _run_orchestration(args: argparse.Namespace) -> tuple[int, dict[str, Any]]:
                 }
             )
             return 20, summary
-
-        schema = _sol_plan_output_schema()
-        schema_path = run_dir / "plan-schema.json"
-        _write_json(schema_path, schema)
-        plan_prompt = f"""你是 Sol Orchestrator。不要写代码，不要创建或委派子 Agent。
+        if resume_state is None:
+            schema = _sol_plan_output_schema()
+            schema_path = run_dir / "plan-schema.json"
+            _write_json(schema_path, schema)
+            plan_prompt = f"""你是 Sol Orchestrator。不要写代码，不要创建或委派子 Agent。
 用户请求：{request}
 spec-ref: {spec_ref}
 matrix-ref: {matrix_ref}
@@ -2684,93 +2915,201 @@ matrix-edge: {json.dumps(matrix_edges, ensure_ascii=False)}
 请规划恰好 {args.workers} 个可并行、互不重叠的任务。每个 task 必须且只能包含 id、instructions、write_scope、acceptance、checks；acceptance 必须是字符串。
 write_scope 必须是工作区相对路径数组，任务之间不得重叠。checks 只能使用 git diff/status、python3 -m pytest、pytest、go test/vet、node --test、npm test 或 npm run test/lint/typecheck/check/build、cargo test/check/clippy、make test/check/lint。
 只输出符合 JSON schema 的计划。
-        """
-        prompt_path = run_dir / "sol-plan.prompt.md"
-        prompt_path.write_text(plan_prompt, encoding="utf-8")
-        plan_output_path = run_dir / "sol-plan.json"
-        try:
-            plan_process, plan_raw, new_ignored = _guarded_model_call(
-                SOL_MODEL,
-                plan_prompt,
-                workspace,
-                run_dir,
-                call_log,
-                "sol-plan",
-                output_schema=schema_path,
-                output_last_message=plan_output_path,
-                sandbox="read-only",
-            )
-        except Exception as error:
-            summary.update({"reason": f"Sol 规划或 ignored 状态检测失败: {error}"})
-            return 20, summary
-        if new_ignored:
-            summary.update(
-                {
-                    "reason": "Sol 规划新增 ignored 文件，拒绝继续执行",
-                    "ignored_files": new_ignored,
-                }
-            )
-            return 20, summary
-        if plan_process.returncode != 0:
-            failure_class = _model_failure_class(plan_process.stderr)
-            summary.update(
-                {
-                    "verdict": "blocked",
-                    "reason": f"Sol 规划调用失败: {failure_class}",
-                    "model_failure_class": failure_class,
-                    "sol_returncode": plan_process.returncode,
-                }
-            )
-            return 20, summary
-        try:
-            plan = validate_plan(_parse_json(plan_raw), args.workers)
-            plan = _validate_plan_scope_targets(workspace, plan)
-        except ValueError as error:
-            summary.update(
-                {
-                    "verdict": "blocked",
-                    "reason": f"Sol 计划证据缺失或无效: {error}",
-                    "model_failure_class": "invalid_plan",
-                }
-            )
-            return 20, summary
-        _write_json(run_dir / "plan.normalized.json", plan)
-        summary["plan"] = plan
-
-        task_paths: dict[str, Path] = {}
-        for task in plan["tasks"]:
-            task_path = _runtime_worktree_path(primary_root, run_id, task["id"])
-            if not _create_worktree(workspace, task_path):
+            """
+            prompt_path = run_dir / "sol-plan.prompt.md"
+            prompt_path.write_text(plan_prompt, encoding="utf-8")
+            plan_output_path = run_dir / "sol-plan.json"
+            try:
+                plan_process, plan_raw, new_ignored = _guarded_model_call(
+                    SOL_MODEL,
+                    plan_prompt,
+                    workspace,
+                    run_dir,
+                    call_log,
+                    "sol-plan",
+                    output_schema=schema_path,
+                    output_last_message=plan_output_path,
+                    sandbox="read-only",
+                )
+            except Exception as error:
+                summary.update({"reason": f"Sol 规划或 ignored 状态检测失败: {error}"})
+                return 20, summary
+            if new_ignored:
                 summary.update(
                     {
-                        "verdict": "blocked",
-                        "reason": f"无法创建 task worktree: {task['id']}",
+                        "reason": "Sol 规划新增 ignored 文件，拒绝继续执行",
+                        "ignored_files": new_ignored,
                     }
                 )
                 return 20, summary
-            created_worktrees.append(task_path)
-            task_paths[task["id"]] = task_path
+            if plan_process.returncode != 0:
+                failure_class = _model_failure_class(plan_process.stderr)
+                summary.update(
+                    {
+                        "verdict": "blocked",
+                        "reason": f"Sol 规划调用失败: {failure_class}",
+                        "model_failure_class": failure_class,
+                        "sol_returncode": plan_process.returncode,
+                    }
+                )
+                return 20, summary
+            try:
+                plan = validate_plan(_parse_json(plan_raw), args.workers)
+                plan = _validate_plan_scope_targets(workspace, plan)
+            except ValueError as error:
+                summary.update(
+                    {
+                        "verdict": "blocked",
+                        "reason": f"Sol 计划证据缺失或无效: {error}",
+                        "model_failure_class": "invalid_plan",
+                    }
+                )
+                return 20, summary
+            _write_json(run_dir / "plan.normalized.json", plan)
+            summary["plan"] = plan
 
-        task_results: list[dict[str, Any]] = []
-        with ThreadPoolExecutor(max_workers=args.workers) as executor:
-            futures = {
-                executor.submit(
-                    _run_task,
-                    request,
-                    task,
-                    workspace,
-                    task_paths[task["id"]],
-                    run_dir,
-                    call_log,
-                    args.max_luna_attempts,
-                    spec_ref,
-                    matrix_edges,
-                ): task["id"]
-                for task in plan["tasks"]
+            task_results: list[dict[str, Any]] = []
+            task_paths: dict[str, Path] = {}
+            for task in plan["tasks"]:
+                task_path = _runtime_worktree_path(primary_root, run_id, task["id"])
+                if not _create_worktree(workspace, task_path):
+                    summary.update(
+                        {
+                            "verdict": "blocked",
+                            "reason": f"无法创建 task worktree: {task['id']}",
+                        }
+                    )
+                    return 20, summary
+                created_worktrees.append(task_path)
+                task_paths[task["id"]] = task_path
+            with ThreadPoolExecutor(max_workers=args.workers) as executor:
+                futures = {
+                    executor.submit(
+                        _run_task,
+                        request,
+                        task,
+                        workspace,
+                        task_paths[task["id"]],
+                        run_dir,
+                        call_log,
+                        args.max_luna_attempts,
+                        spec_ref,
+                        matrix_edges,
+                    ): task["id"]
+                    for task in plan["tasks"]
+                }
+                for future in as_completed(futures):
+                    task_results.append(future.result())
+            task_results.sort(key=lambda item: item["task_id"])
+        else:
+            plan = resume_state["plan"]
+            summary["plan"] = plan
+            previous_tasks = {
+                item.get("task_id"): item
+                for item in resume_state["task_results"]
+                if isinstance(item, dict) and item.get("task_id")
             }
-            for future in as_completed(futures):
-                task_results.append(future.result())
-        task_results.sort(key=lambda item: item["task_id"])
+            task_results = []
+            rerun_tasks: list[Mapping[str, Any]] = []
+            resumed_task_ids: list[str] = []
+            resume_task_report: list[dict[str, Any]] = []
+            for task in plan["tasks"]:
+                task_id = task["id"]
+                previous_task = previous_tasks.get(task_id)
+                if previous_task is None:
+                    summary.update(
+                        {
+                            "verdict": "blocked",
+                            "reason": f"resume run 缺少 task 记录: {task_id}",
+                        }
+                    )
+                    return 20, summary
+                reusable, reuse_reason, patch_hash = _task_is_reusable(
+                    previous_task, resume_state["run_dir"]
+                )
+                if reusable:
+                    reused_task = dict(previous_task)
+                    reused_task.update(
+                        {
+                            "reused": True,
+                            "resumed_from_run_id": resume_state["summary"].get("run_id"),
+                            "reuse_reason": reuse_reason,
+                            "patch_sha256": patch_hash,
+                        }
+                    )
+                    if "attempts_remaining" not in reused_task:
+                        reused_task["attempts_remaining"] = False
+                    task_results.append(reused_task)
+                    resumed_task_ids.append(task_id)
+                    resume_task_report.append(
+                        {
+                            "task_id": task_id,
+                            "reused": True,
+                            "patch_sha256": patch_hash,
+                            "reason": reuse_reason,
+                        }
+                    )
+                    continue
+                if previous_task.get("status") in {"pass", "passed", "accepted"}:
+                    summary.update(
+                        {
+                            "verdict": "blocked",
+                            "reason": f"resume run 通过 patch 校验失败: {reuse_reason}",
+                        }
+                    )
+                    return 20, summary
+                rerun_tasks.append(task)
+                resume_task_report.append(
+                    {
+                        "task_id": task_id,
+                        "reused": False,
+                        "reason": reuse_reason,
+                    }
+                )
+            task_paths: dict[str, Path] = {}
+            for task in rerun_tasks:
+                task_path = _runtime_worktree_path(primary_root, run_id, task["id"])
+                if not _create_worktree(workspace, task_path):
+                    summary.update(
+                        {
+                            "verdict": "blocked",
+                            "reason": f"无法创建 task worktree: {task['id']}",
+                        }
+                    )
+                    return 20, summary
+                created_worktrees.append(task_path)
+                task_paths[task["id"]] = task_path
+            with ThreadPoolExecutor(max_workers=max(1, len(rerun_tasks))) as executor:
+                futures = {
+                    executor.submit(
+                        _run_task,
+                        request,
+                        task,
+                        workspace,
+                        task_paths[task["id"]],
+                        run_dir,
+                        call_log,
+                        args.max_luna_attempts,
+                        spec_ref,
+                        matrix_edges,
+                    ): task["id"]
+                    for task in rerun_tasks
+                }
+                for future in as_completed(futures):
+                    task_results.append(future.result())
+            task_results.sort(key=lambda item: item["task_id"])
+            summary["resume"] = {
+                **summary.get("resume", {}),
+                "enabled": True,
+                "source_run_id": resume_state["summary"].get("run_id"),
+                "source_run_dir": str(resume_state["run_dir"]),
+                "reused_task_ids": resumed_task_ids,
+                "rerun_task_ids": [task["id"] for task in rerun_tasks],
+                "task_report": resume_task_report,
+                "known_token_savings": _resume_token_savings(
+                    resume_state["call_log"], resumed_task_ids
+                ),
+            }
         _write_json(run_dir / "task-results.json", task_results)
         gate_verdict, gate_reasons, _ = _batch_details(plan, task_results)
         summary["task_results"] = task_results
@@ -2926,6 +3265,10 @@ def _parser() -> argparse.ArgumentParser:
         default=[],
         metavar="JSON_ARGV",
         help='重复指定 JSON argv 数组，例如 --check \'["pytest", "-q"]\'',
+    )
+    run.add_argument(
+        "--resume-run",
+        help="复用既有 run 的通过 patch，并在新 run 中重新验证 fingerprint",
     )
     run.add_argument(
         "--max-luna-attempts",

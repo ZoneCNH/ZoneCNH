@@ -34,6 +34,7 @@
 - `FR-005` `[FRAME, HIGH]` task patch 先在独立 integration worktree 合并并运行全局 cheap checks；通过后才向父 worktree 一次性应用 combined patch。
 - `FR-006` `[FRAME, HIGH]` 运行前与最终应用前都校验父 worktree clean 且 HEAD 未变化。
 - `FR-007` `[FRAME, HIGH]` 模型调用、ignored 审计、sandbox 检查、重试、patch、门禁、清理和 token 汇总写入 `.omx/state/orchestration/<run_id>/`；Sol escalation 只接收失败/冲突摘要与通过任务的 patch receipt。
+- `FR-008` `[FRAME, HIGH]` `--resume-run` 只能在 HEAD/request/SPEC/Matrix/check/model/effort 指纹完全一致时复用既有 run 的已验证 pass patch；tampered patch、过期 HEAD 或变化的 checks 必须 fail closed。
 
 ## 4. 非目标
 
@@ -41,7 +42,7 @@
 - `[FRAME, HIGH]` 不替代 Spec→Code 的四源评分与正式 Gate；本改进只增加前置通用编排与 cheap gate。
 - `[FRAME, HIGH]` 不把 `agents.max_threads` 当作外层 subprocess 并发证明；外层入口由 `--workers` 独立约束为 3–5。
 - `[FRAME, HIGH]` 不声称已经量化节省 token 或生成成本；该收益需要后续真实运行数据。
-- `[FRAME, HIGH]` 当前版本不实现跨 run resume 或自动复用上一 run 的通过 patch；该能力必须以 HEAD/request/spec/matrix/check 指纹约束另行实现。
+- `[FRAME, HIGH]` 不自动绕过 fingerprint 校验或复用未验证 patch；`--resume-run` 只允许复用经过 SHA-256 验证的既有 pass patch。
 
 ## 5. 设计
 
@@ -76,6 +77,7 @@ request
 - `AC-006` `[FRAME, HIGH]` 静态范围检查证明没有修改 §14.1 保护文件。
 - `AC-007` `[FRAME, HIGH]` 一个隔离的端到端 smoke 能观测到 Sol 规划、3 个 Luna 并行、cheap checks、integration 和 combined patch。
 - `AC-008` `[FRAME, HIGH]` `AGENTS.md` 与 `docs/workflow/README.md` 说明入口、失败路由、证据位置及与正式 Gate 的边界。
+- `AC-009` `[FRAME, HIGH]` `--resume-run` 对 tampered patch、过期 HEAD、checks 变化和 budget exhaustion 都能 fail closed，并在 summary 中记录 reused/rerun task 与已知 token savings。
 
 ## 7. 风险与控制
 
@@ -112,4 +114,4 @@ request
 | 2026-07-10 | cheap gate 是正式 Gate 前置层 | 避免修改 §14.1 保护评分系统 `[FRAME, HIGH]` |
 | 2026-07-10 | 父 worktree 采用事务式 combined patch | 失败路径必须无部分写入 `[FRAME, HIGH]` |
 | 2026-07-10 | cheap checks 使用空根 `bwrap` + `prlimit` | 模型生成测试属于不可信代码，普通宿主 subprocess 不满足安全边界 `[COMPUTED, HIGH]` |
-| 2026-07-10 | resume 降为后续 P1 | 当前 SPEC 先闭合单 run 路由；不得把人工复用描述为自动恢复 `[COMPUTED, HIGH]` |
+| 2026-07-10 | `--resume-run` 落地为跨 run 安全恢复 | 恢复必须通过 HEAD/request/spec/matrix/check/model/effort 指纹和 pass patch SHA-256 校验 `[COMPUTED, HIGH]` |

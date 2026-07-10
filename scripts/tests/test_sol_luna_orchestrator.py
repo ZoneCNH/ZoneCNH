@@ -1873,6 +1873,7 @@ def _orchestration_args(workspace: Path):
     return SimpleNamespace(
         request="请求",
         request_file=None,
+        resume_run=None,
         workspace=str(workspace),
         workers=3,
         max_luna_attempts=1,
@@ -1913,6 +1914,30 @@ def test_run_parser_requires_spec_matrix_refs_and_matrix_edge():
     assert parsed.spec_ref == "SPEC.md"
     assert parsed.matrix_ref == "matrix/TRACEABILITY.md"
     assert parsed.matrix_edge == ["M-001", "M-002"]
+    assert parsed.resume_run is None
+
+
+def test_run_parser_accepts_resume_run_without_relaxing_request_requirements():
+    parser = orchestrator._parser()
+    parsed = parser.parse_args(
+        [
+            "run",
+            "--request",
+            "请求",
+            "--spec-ref",
+            "SPEC.md",
+            "--matrix-ref",
+            "matrix/TRACEABILITY.md",
+            "--matrix-edge",
+            "M-001",
+            "--check",
+            '["git", "status", "--short"]',
+            "--resume-run",
+            "run-1",
+        ]
+    )
+
+    assert parsed.resume_run == "run-1"
 
 
 def _patch_orchestration_dependencies(monkeypatch, workspace, integration_result, apply_calls):
@@ -2064,3 +2089,452 @@ def test_invalid_sol_plan_blocks_without_second_sol_call(tmp_path, monkeypatch):
     assert summary["model_failure_class"] == "invalid_plan"
     assert escalation_calls == []
     assert apply_calls == []
+
+
+def test_resume_run_reuses_passed_tasks_and_skips_sol_plan(tmp_path, monkeypatch):
+    workspace = tmp_path / "workspace"
+    primary = workspace / "primary"
+    primary.mkdir(parents=True)
+    spec = (
+        workspace
+        / "docs"
+        / "governance"
+        / "improvements"
+        / "20260710-sol_luna_orchestration"
+        / "SPEC.md"
+    )
+    spec.parent.mkdir(parents=True, exist_ok=True)
+    spec.write_text("# Spec\n\n- FR-001\n", encoding="utf-8")
+    matrix = spec.parent / "matrix" / "TRACEABILITY.md"
+    matrix.parent.mkdir(parents=True, exist_ok=True)
+    matrix.write_text("| Edge ID | FR |\n|---|---|\n| M-001 | FR-001 |\n", encoding="utf-8")
+    resume_dir = workspace / ".omx" / "state" / "orchestration" / "run-1"
+    (resume_dir / "tasks" / "task-1").mkdir(parents=True, exist_ok=True)
+    (resume_dir / "tasks" / "task-2").mkdir(parents=True, exist_ok=True)
+    pass_patch = resume_dir / "tasks" / "task-1" / "attempt-1.patch"
+    pass_patch.write_text("diff --git a/src/task-1.py b/src/task-1.py\n", encoding="utf-8")
+    fail_patch = resume_dir / "tasks" / "task-2" / "attempt-1.patch"
+    fail_patch.write_text("diff --git a/src/task-2.py b/src/task-2.py\n", encoding="utf-8")
+    call_log = resume_dir / "model-calls.jsonl"
+    call_log.write_text(
+        "\n".join(
+            [
+                json.dumps(
+                    {
+                        "kind": "sol-plan",
+                        "model": orchestrator.SOL_MODEL,
+                        "effort": orchestrator.REASONING_EFFORT,
+                        "tokens": 11,
+                    },
+                    ensure_ascii=False,
+                    sort_keys=True,
+                ),
+                json.dumps(
+                    {
+                        "kind": "luna-task-1-attempt-1",
+                        "model": orchestrator.LUNA_MODEL,
+                        "effort": orchestrator.REASONING_EFFORT,
+                        "tokens": 13,
+                    },
+                    ensure_ascii=False,
+                    sort_keys=True,
+                ),
+                json.dumps(
+                    {
+                        "kind": "luna-task-2-attempt-1",
+                        "model": orchestrator.LUNA_MODEL,
+                        "effort": orchestrator.REASONING_EFFORT,
+                        "tokens": 17,
+                    },
+                    ensure_ascii=False,
+                    sort_keys=True,
+                ),
+            ]
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    plan = {
+        "tasks": [
+            {
+                "id": "task-1",
+                "instructions": "实现任务 1",
+                "write_scope": ["src/task-1.py"],
+                "acceptance": "检查通过",
+                "checks": [["git", "status", "--short"]],
+            },
+            {
+                "id": "task-2",
+                "instructions": "实现任务 2",
+                "write_scope": ["src/task-2.py"],
+                "acceptance": "检查通过",
+                "checks": [["git", "status", "--short"]],
+            },
+            {
+                "id": "task-3",
+                "instructions": "实现任务 3",
+                "write_scope": ["src/task-3.py"],
+                "acceptance": "检查通过",
+                "checks": [["git", "status", "--short"]],
+            },
+        ],
+        "workers": 3,
+        "max_retries": 1,
+    }
+    fingerprint = orchestrator._run_fingerprint(
+        "head-1",
+        "请求",
+        spec.relative_to(workspace).as_posix(),
+        matrix.relative_to(workspace).as_posix(),
+        ["M-001"],
+        [["git", "status", "--short"]],
+        3,
+        1,
+    )
+    previous_task_results = [
+        {
+            "task_id": "task-1",
+            "status": "pass",
+            "scope_ok": True,
+            "evidence_complete": True,
+            "checks_ok": True,
+            "conflict": False,
+            "changed_files": ["src/task-1.py"],
+            "patch_file": str(pass_patch),
+            "patch_sha256": orchestrator._patch_sha256(str(pass_patch)),
+        },
+        {
+            "task_id": "task-2",
+            "status": "test_failure",
+            "scope_ok": True,
+            "evidence_complete": False,
+            "checks_ok": False,
+            "conflict": False,
+            "changed_files": ["src/task-2.py"],
+            "patch_file": str(fail_patch),
+        },
+        {
+            "task_id": "task-3",
+            "status": "evidence_missing",
+            "scope_ok": False,
+            "evidence_complete": False,
+            "checks_ok": False,
+            "conflict": True,
+            "changed_files": [],
+            "patch_file": str(resume_dir / "tasks" / "task-3" / "attempt-1.patch"),
+        },
+    ]
+    previous_summary = {
+        "command": "run",
+        "run_id": "run-1",
+        "verdict": "escalate_sol",
+        "branch": "feat/test",
+        "head": "head-1",
+        "workspace": str(workspace),
+        "request": "请求",
+        "checks": [["git", "status", "--short"]],
+        "spec_ref": spec.relative_to(workspace).as_posix(),
+        "matrix_ref": matrix.relative_to(workspace).as_posix(),
+        "matrix_edges": ["M-001"],
+        "workers": 3,
+        "max_luna_attempts": 1,
+        "models": {"orchestrator": orchestrator.SOL_MODEL, "executors": orchestrator.LUNA_MODEL},
+        "effort": orchestrator.REASONING_EFFORT,
+        "plan": plan,
+        "task_results": previous_task_results,
+        "fingerprint": fingerprint,
+        "fingerprint_sha256": orchestrator._fingerprint_sha256(fingerprint),
+    }
+    (resume_dir / "summary.json").write_text(
+        json.dumps(previous_summary, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    (resume_dir / "task-results.json").write_text(
+        json.dumps(previous_task_results, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+
+    created_worktrees = []
+    rerun_tasks = []
+    apply_calls = []
+    monkeypatch.setattr(orchestrator, "_workspace_info", lambda _: (workspace, "feat/test", "head-1"))
+    monkeypatch.setattr(
+        orchestrator,
+        "_validate_traceability_references",
+        lambda _workspace, spec_ref, matrix_ref, matrix_edges: (spec_ref, matrix_ref, matrix_edges),
+    )
+    monkeypatch.setattr(orchestrator, "_primary_worktree_root", lambda _: primary)
+    monkeypatch.setattr(
+        orchestrator,
+        "_probe_catalog",
+        lambda: (subprocess.CompletedProcess(["codex"], 0, stdout="", stderr=""), _catalog()),
+    )
+    monkeypatch.setattr(
+        orchestrator,
+        "_call_codex",
+        lambda *args, **kwargs: (_ for _ in ()).throw(AssertionError("Sol 规划不应在 resume 路径中调用")),
+    )
+    monkeypatch.setattr(
+        orchestrator,
+        "_create_worktree",
+        lambda _workspace, path: created_worktrees.append(path) or True,
+    )
+    monkeypatch.setattr(orchestrator, "_assert_parent_unchanged", lambda *_args, **_kwargs: None)
+    monkeypatch.setattr(
+        orchestrator,
+        "_run_task",
+        lambda request, task, *_args, **_kwargs: rerun_tasks.append(task["id"]) or {
+            "task_id": task["id"],
+            "status": "pass",
+            "scope_ok": True,
+            "evidence_complete": True,
+            "checks_ok": True,
+            "conflict": False,
+            "changed_files": [task["write_scope"][0]],
+            "patch_file": str(workspace / f"{task['id']}.patch"),
+        },
+    )
+    monkeypatch.setattr(
+        orchestrator,
+        "_integration_repair",
+        lambda *args, **kwargs: {
+            "status": "pass",
+            "patch_file": str(workspace / "combined.patch"),
+            "initial_checks": [],
+            "final_check_results": [],
+            "checks_ok": True,
+        },
+    )
+    monkeypatch.setattr(
+        orchestrator,
+        "_apply_patch",
+        lambda target, patch: (apply_calls.append((target, patch)) or (True, "")),
+    )
+    monkeypatch.setattr(
+        orchestrator,
+        "_run",
+        lambda argv, **kwargs: subprocess.CompletedProcess(argv, 0, stdout="", stderr=""),
+    )
+
+    args = _orchestration_args(workspace)
+    args.resume_run = str(resume_dir)
+
+    code, summary = orchestrator._run_orchestration(args)
+
+    assert code == 0
+    assert summary["verdict"] == "accept"
+    assert summary["resume"]["reused_task_ids"] == ["task-1"]
+    assert summary["resume"]["rerun_task_ids"] == ["task-2", "task-3"]
+    assert summary["resume"]["known_token_savings"]["known_tokens"] == 24
+    assert "sol-plan" in summary["resume"]["known_token_savings"]["skipped_kinds"]
+    assert rerun_tasks == ["task-2", "task-3"]
+    assert all(path.name != "task-1" for path in created_worktrees)
+    assert len(apply_calls) == 1
+
+
+def test_resume_run_rejects_tampered_patch_hash(tmp_path, monkeypatch):
+    workspace = tmp_path / "workspace"
+    primary = workspace / "primary"
+    primary.mkdir(parents=True)
+    spec = (
+        workspace
+        / "docs"
+        / "governance"
+        / "improvements"
+        / "20260710-sol_luna_orchestration"
+        / "SPEC.md"
+    )
+    spec.parent.mkdir(parents=True, exist_ok=True)
+    spec.write_text("# Spec\n\n- FR-001\n", encoding="utf-8")
+    matrix = spec.parent / "matrix" / "TRACEABILITY.md"
+    matrix.parent.mkdir(parents=True, exist_ok=True)
+    matrix.write_text("| Edge ID | FR |\n|---|---|\n| M-001 | FR-001 |\n", encoding="utf-8")
+    resume_dir = workspace / ".omx" / "state" / "orchestration" / "run-1"
+    (resume_dir / "tasks" / "task-1").mkdir(parents=True, exist_ok=True)
+    patch = resume_dir / "tasks" / "task-1" / "attempt-1.patch"
+    patch.write_text("diff --git a/src/task-1.py b/src/task-1.py\n", encoding="utf-8")
+    fingerprint = orchestrator._run_fingerprint(
+        "head-1",
+        "请求",
+        spec.relative_to(workspace).as_posix(),
+        matrix.relative_to(workspace).as_posix(),
+        ["M-001"],
+        [["git", "status", "--short"]],
+        3,
+        1,
+    )
+    previous_summary = {
+        "command": "run",
+        "run_id": "run-1",
+        "verdict": "accept",
+        "branch": "feat/test",
+        "head": "head-1",
+        "workspace": str(workspace),
+        "request": "请求",
+        "checks": [["git", "status", "--short"]],
+        "spec_ref": spec.relative_to(workspace).as_posix(),
+        "matrix_ref": matrix.relative_to(workspace).as_posix(),
+        "matrix_edges": ["M-001"],
+        "workers": 3,
+        "max_luna_attempts": 1,
+        "models": {"orchestrator": orchestrator.SOL_MODEL, "executors": orchestrator.LUNA_MODEL},
+        "effort": orchestrator.REASONING_EFFORT,
+        "plan": {
+            "tasks": [
+                {
+                    "id": "task-1",
+                    "instructions": "实现任务 1",
+                    "write_scope": ["src/task-1.py"],
+                    "acceptance": "检查通过",
+                    "checks": [["git", "status", "--short"]],
+                }
+            ],
+            "workers": 3,
+            "max_retries": 1,
+        },
+        "task_results": [
+            {
+                "task_id": "task-1",
+                "status": "pass",
+                "scope_ok": True,
+                "evidence_complete": True,
+                "checks_ok": True,
+                "conflict": False,
+                "changed_files": ["src/task-1.py"],
+                "patch_file": str(patch),
+                "patch_sha256": orchestrator._patch_sha256(str(patch)),
+            }
+        ],
+        "fingerprint": fingerprint,
+        "fingerprint_sha256": orchestrator._fingerprint_sha256(fingerprint),
+    }
+    (resume_dir / "summary.json").write_text(
+        json.dumps(previous_summary, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    (resume_dir / "task-results.json").write_text(
+        json.dumps(previous_summary["task_results"], ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    patch.write_text("tampered patch\n", encoding="utf-8")
+
+    monkeypatch.setattr(orchestrator, "_workspace_info", lambda _: (workspace, "feat/test", "head-1"))
+    monkeypatch.setattr(
+        orchestrator,
+        "_validate_traceability_references",
+        lambda _workspace, spec_ref, matrix_ref, matrix_edges: (spec_ref, matrix_ref, matrix_edges),
+    )
+    monkeypatch.setattr(orchestrator, "_primary_worktree_root", lambda _: primary)
+    monkeypatch.setattr(
+        orchestrator,
+        "_probe_catalog",
+        lambda: (subprocess.CompletedProcess(["codex"], 0, stdout="", stderr=""), _catalog()),
+    )
+    monkeypatch.setattr(
+        orchestrator,
+        "_call_codex",
+        lambda *args, **kwargs: (_ for _ in ()).throw(AssertionError("不应调用 Sol")),
+    )
+    monkeypatch.setattr(
+        orchestrator,
+        "_run",
+        lambda argv, **kwargs: subprocess.CompletedProcess(argv, 0, stdout="", stderr=""),
+    )
+
+    args = _orchestration_args(workspace)
+    args.resume_run = str(resume_dir)
+
+    code, resumed = orchestrator._run_orchestration(args)
+
+    assert code == 20
+    assert resumed["verdict"] == "blocked"
+    assert "patch SHA-256" in resumed["reason"]
+
+
+def test_resume_run_rejects_fingerprint_head_changes(tmp_path, monkeypatch):
+    workspace = tmp_path / "workspace"
+    primary = workspace / "primary"
+    primary.mkdir(parents=True)
+    spec = (
+        workspace
+        / "docs"
+        / "governance"
+        / "improvements"
+        / "20260710-sol_luna_orchestration"
+        / "SPEC.md"
+    )
+    spec.parent.mkdir(parents=True, exist_ok=True)
+    spec.write_text("# Spec\n\n- FR-001\n", encoding="utf-8")
+    matrix = spec.parent / "matrix" / "TRACEABILITY.md"
+    matrix.parent.mkdir(parents=True, exist_ok=True)
+    matrix.write_text("| Edge ID | FR |\n|---|---|\n| M-001 | FR-001 |\n", encoding="utf-8")
+    resume_dir = workspace / ".omx" / "state" / "orchestration" / "run-1"
+    resume_dir.mkdir(parents=True, exist_ok=True)
+    fingerprint = orchestrator._run_fingerprint(
+        "head-1",
+        "请求",
+        spec.relative_to(workspace).as_posix(),
+        matrix.relative_to(workspace).as_posix(),
+        ["M-001"],
+        [["git", "status", "--short"]],
+        3,
+        1,
+    )
+    previous_summary = {
+        "command": "run",
+        "run_id": "run-1",
+        "verdict": "accept",
+        "branch": "feat/test",
+        "head": "head-1",
+        "workspace": str(workspace),
+        "request": "请求",
+        "checks": [["git", "status", "--short"]],
+        "spec_ref": spec.relative_to(workspace).as_posix(),
+        "matrix_ref": matrix.relative_to(workspace).as_posix(),
+        "matrix_edges": ["M-001"],
+        "workers": 3,
+        "max_luna_attempts": 1,
+        "models": {"orchestrator": orchestrator.SOL_MODEL, "executors": orchestrator.LUNA_MODEL},
+        "effort": orchestrator.REASONING_EFFORT,
+        "plan": {"tasks": [], "workers": 3, "max_retries": 1},
+        "task_results": [],
+        "fingerprint": fingerprint,
+        "fingerprint_sha256": orchestrator._fingerprint_sha256(fingerprint),
+    }
+    (resume_dir / "summary.json").write_text(
+        json.dumps(previous_summary, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    (resume_dir / "task-results.json").write_text("[]\n", encoding="utf-8")
+
+    monkeypatch.setattr(orchestrator, "_workspace_info", lambda _: (workspace, "feat/test", "head-2"))
+    monkeypatch.setattr(
+        orchestrator,
+        "_validate_traceability_references",
+        lambda _workspace, spec_ref, matrix_ref, matrix_edges: (spec_ref, matrix_ref, matrix_edges),
+    )
+    monkeypatch.setattr(orchestrator, "_primary_worktree_root", lambda _: primary)
+    monkeypatch.setattr(
+        orchestrator,
+        "_probe_catalog",
+        lambda: (subprocess.CompletedProcess(["codex"], 0, stdout="", stderr=""), _catalog()),
+    )
+    monkeypatch.setattr(
+        orchestrator,
+        "_call_codex",
+        lambda *args, **kwargs: (_ for _ in ()).throw(AssertionError("不应调用 Sol")),
+    )
+    monkeypatch.setattr(
+        orchestrator,
+        "_run",
+        lambda argv, **kwargs: subprocess.CompletedProcess(argv, 0, stdout="", stderr=""),
+    )
+
+    args = _orchestration_args(workspace)
+    args.resume_run = str(resume_dir)
+
+    code, resumed = orchestrator._run_orchestration(args)
+
+    assert code == 20
+    assert resumed["verdict"] == "blocked"
+    assert "fingerprint" in resumed["reason"]
