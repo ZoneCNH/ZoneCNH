@@ -135,7 +135,7 @@ capacity:
   - 用户账号 PAT 权限不足影响批量注册
 pools:
   sre/governance:
-    label: ci-governance
+    label: sre/governance
     host: 94.72.124.39
     profile: governance
     docker: false
@@ -148,7 +148,7 @@ pools:
       - self-hosted
       - Linux
       - X64
-      - ci-governance
+      - sre/governance
     - module: xlib_harness
       repo: ZoneCNH/xlib_harness
       runner_count: 1
@@ -156,7 +156,7 @@ pools:
       - self-hosted
       - Linux
       - X64
-      - ci-governance
+      - sre/governance
     - module: xlib_evidence
       repo: ZoneCNH/xlib_evidence
       runner_count: 1
@@ -164,7 +164,7 @@ pools:
       - self-hosted
       - Linux
       - X64
-      - ci-governance
+      - sre/governance
     - module: xlibgate
       repo: ZoneCNH/xlibgate
       runner_count: 1
@@ -172,7 +172,7 @@ pools:
       - self-hosted
       - Linux
       - X64
-      - ci-governance
+      - sre/governance
   sre/foundation-l0:
     label: sre/foundation-l0
     host: 10.2.2.9
