@@ -34,6 +34,7 @@ capacity:
       ssh_user: claude
       max_runners: 24
       current_runners: 15
+<<<<<<< HEAD
       recommended_runners: 15
       pools:
       - sre/deploy
@@ -42,11 +43,19 @@ capacity:
       - sre/foundation-l0
       - sre/foundation-l1
       notes: 资源充裕；承载 market、storage-light；因 10.2.2.9 容量不足，kernel 与部分 foundation-l1 模块临时溢出到此主机
+=======
+      recommended_runners: 0
+      pools:
+      - sre/deploy
+      notes: 生产/deploy 隔离主机；模块 runner 全部迁出
+>>>>>>> 92087535 (docs: runner consolidation 完成，更新容量规划、pool 与 runner 注册表)
     10.2.2.9:
       cpu: 12
       memory_gb: 16
       disk_total_gb: 233
+      disk_used_pct: 31
       ssh_user: root
+<<<<<<< HEAD
       max_runners: 13
       current_runners: 12
       recommended_runners: 12
@@ -55,19 +64,29 @@ capacity:
       - sre/foundation-l1
       - sre/security
       notes: 内存是瓶颈；当前承载 12 个 repo-level runner + 1 个 security profile-based runner；已清理冗余 legacy runner 并超载 1 个 contracts runner
+=======
+      max_runners: 12
+      current_runners: 7
+      recommended_runners: 7
+      pools:
+      - sre/contracts
+      - sre/security
+      notes: 仅保留 contracts + security；foundation 已全部迁出以缓解内存压力
+>>>>>>> 92087535 (docs: runner consolidation 完成，更新容量规划、pool 与 runner 注册表)
     10.2.2.10:
       cpu: 16
       memory_gb: 126
       disk_total_gb: 1900
-      disk_used_pct: 12
+      disk_used_pct: 15
       ssh_user: zone
-      max_runners: 40
-      current_runners: 37
-      recommended_runners: 37
+      max_runners: 60
+      current_runners: 57
+      recommended_runners: 57
       pools:
       - sre/engine
       - sre/macro
       - sre/storage-heavy
+<<<<<<< HEAD
       notes: xhypers 主力 runner 主机；大内存适合 engine、macro 与 Docker 重载测试
   per_host_demand:
     10.2.2.9:
@@ -82,23 +101,49 @@ capacity:
       runners_needed: 15
       pools:
       - sre/deploy
+=======
+>>>>>>> 92087535 (docs: runner consolidation 完成，更新容量规划、pool 与 runner 注册表)
       - sre/market
       - sre/storage-light
       - sre/foundation-l0
       - sre/foundation-l1
+<<<<<<< HEAD
+=======
+      notes: xhypers 主力 runner 主机；承载全部 module runner 除 contracts/security 外
+  per_host_demand:
+    10.2.2.9:
+      modules: 7
+      runners_needed: 7
+      pools:
+      - sre/contracts
+    84.247.154.45:
+      modules: 0
+      runners_needed: 0
+      pools: []
+>>>>>>> 92087535 (docs: runner consolidation 完成，更新容量规划、pool 与 runner 注册表)
     94.72.124.39:
       modules: 4
       runners_needed: 4
       pools:
       - sre/governance
     10.2.2.10:
+<<<<<<< HEAD
       modules: 37
       runners_needed: 37
+=======
+      modules: 57
+      runners_needed: 57
+>>>>>>> 92087535 (docs: runner consolidation 完成，更新容量规划、pool 与 runner 注册表)
       pools:
       - sre/engine
       - sre/macro
       - sre/storage-heavy
+      - sre/market
+      - sre/storage-light
+      - sre/foundation-l0
+      - sre/foundation-l1
   expansion_plan:
+<<<<<<< HEAD
     phase_a_density:
       status: completed
       target_runners: 30
@@ -135,6 +180,42 @@ capacity:
       status: completed
       planned_runners: 0
       note: 所有 68 个模块 repo-level runner 已 online；10.2.2.9 实际承载 13 个 runner（含 1 个 security），超出原建议 12，需监控内存
+=======
+    status: completed
+    note: 68 个模块 runner 已全部注册并 online；consolidation 完成
+    phase_0_baseline:
+      date: 2026-07-10
+      current_distribution:
+        94.72.124.39: 4
+        10.2.2.9: 12
+        84.247.154.45: 15
+        10.2.2.10: 37
+    phase_1_consolidation:
+      target_distribution:
+        94.72.124.39: 4
+        10.2.2.9: 7
+        84.247.154.45: 0
+        10.2.2.10: 57
+      migrations:
+      - from: 84.247.154.45
+        to: 10.2.2.10
+        pools:
+        - sre/market
+        - sre/storage-light
+        - sre/foundation-l0
+        - sre/foundation-l1
+      - from: 10.2.2.9
+        to: 10.2.2.10
+        pools:
+        - sre/foundation-l1
+      keep_on_source:
+      - host: 84.247.154.45
+        pool: sre/deploy
+        reason: 生产 secrets 隔离
+      - host: 10.2.2.9
+        pool: sre/security
+        reason: 轻量安全扫描
+>>>>>>> 92087535 (docs: runner consolidation 完成，更新容量规划、pool 与 runner 注册表)
   constraints:
   - GitHub user account：runner 按 repo 注册，不可 org 共享
   - sre/deploy 必须独立主机/进程，禁止与 PR runner 混池
@@ -188,7 +269,11 @@ pools:
       - sre/governance
   sre/foundation-l0:
     label: sre/foundation-l0
+<<<<<<< HEAD
     host: 84.247.154.45
+=======
+    host: 10.2.2.10
+>>>>>>> 92087535 (docs: runner consolidation 完成，更新容量规划、pool 与 runner 注册表)
     profile: sre-multi
     docker: false
     runner_count_per_pool: 1
@@ -203,7 +288,7 @@ pools:
       - sre/foundation-l0
   sre/foundation-l1:
     label: sre/foundation-l1
-    host: 10.2.2.9
+    host: 10.2.2.10
     profile: sre-multi
     docker: false
     runner_count_per_pool: 10
@@ -366,7 +451,7 @@ pools:
     - supply-chain-scan
   sre/market:
     label: sre/market
-    host: 84.247.154.45
+    host: 10.2.2.10
     profile: market
     docker: optional
     runner_count_per_pool: 6
@@ -424,7 +509,7 @@ pools:
     host: 10.2.2.10
     profile: macro
     docker: optional
-    runner_count_per_pool: 1
+    runner_count_per_pool: 12
     modules:
     - module: alternative_data
       repo: ZoneCNH/alternative_data
@@ -524,7 +609,7 @@ pools:
       - sre/macro
   sre/storage-light:
     label: sre/storage-light
-    host: 84.247.154.45
+    host: 10.2.2.10
     profile: docker
     docker: true
     runner_count_per_pool: 3
@@ -558,7 +643,7 @@ pools:
     host: 10.2.2.10
     profile: heavy
     docker: true
-    runner_count_per_pool: 2
+    runner_count_per_pool: 4
     modules:
     - module: clickhousex
       repo: ZoneCNH/clickhousex
@@ -597,7 +682,7 @@ pools:
     host: 10.2.2.10
     profile: engine
     docker: optional
-    runner_count_per_pool: 1
+    runner_count_per_pool: 21
     modules:
     - module: factor_engine
       repo: ZoneCNH/factor_engine
