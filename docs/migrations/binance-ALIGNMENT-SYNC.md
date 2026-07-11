@@ -223,3 +223,11 @@
 ### 9.3 已知预期残留（非本次迁移遗漏）
 
 [KNOWN] 运行时仓 `/home/workspace/binance` 代码内 1153 处 Go import 仍使用原 ZoneCNH 组织模块路径——**repo 转移不改变代码 import 路径**，GitHub 重定向保证可下载，属预期行为；如需统一可后续作为独立任务重写 import 路径（不在本迁移范围）。
+
+### 9.4 2026-07-11 二次 20 轮 agent team 复核（重跑确认）
+
+[COMPUTED, HIGH] 应"重复检查 20 次，不得有遗漏"要求，二次启动 20 个并行 `general-purpose` agent（R1–R20），每轮独立执行全树扫描（`rg --hidden -g '!.git'` + `git grep -I`）、`module/registry.yaml` binance 块、`module/FOUNDATION-DEPS.yaml` 三项交叉核对：
+
+- **R1–R20 全部 PASS**（20/20），逐轮输出均报告 `TREE: NONE` 与 `TRACKED: NONE`，registry `repo/owner: xhyperium` 与 DEPS `xhyperium/binance` 一致。
+- **零遗漏**：全树（含隐藏、排除 `.git`）对旧仓库路径模式扫描返回 **NONE**；无新增或残留 `ZoneCNH/binance` 引用。
+- 此轮复核未产生任何文件变更——状态与 §9.1–§9.3 记录一致，确认迁移闭环稳定无回归。
