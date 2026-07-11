@@ -1,0 +1,137 @@
+# W4 Storage Adapter Pools — light/heavy classification
+# Reference: plans/07-11/README.md §2.3 Phase 3, 07-11-analysis.md §P0-9
+# Date: 2026-07-11
+
+pools:
+  light:
+    description: >
+      PR 和基础 nightly integration 测试。
+      使用 mock/fixture 或单节点轻量实例。
+      不运行高负载 soak。
+    max_concurrent_jobs: 3
+    runner_class: [self-hosted, ephemeral, storage-light]
+    runner_spec:
+      cpu: 4
+      memory: 8G
+      disk: 50G
+      os: linux
+    modules:
+      - kafkax       # KRaft mode, single node
+      - natsx        # Core NATS, single node
+      - ossx         # minio single instance
+    constraints:
+      - max 2 concurrent PR jobs per module
+      - no heavy soak simultaneously
+      - service lifecycle managed via systemd units
+
+  heavy:
+    description: >
+      高负载 soak 测试和 fault injection。
+      每个真实服务一次只跑一个重载测试。
+      fault injection 在独立 network namespace 中运行。
+    max_concurrent_jobs: 1
+    runner_class: [self-hosted, ephemeral, storage-heavy]
+    runner_spec:
+      cpu: 8
+      memory: 16G
+      disk: 100G
+      os: linux
+    modules:
+      - redisx         # cluster mode + persistence/fault (RDX-007)
+      - postgresx      # primary/replica + TLS + auth + fault (PGX-006)
+      - taosx          # WebSocket driver + production gate (TAO-002)
+      - clickhousex    # heavy OLAP queries + merge tree stress
+    soak_rotation:
+      strategy: serial
+      schedule: "nightly 02:00 UTC"
+      order:
+        - redisx
+        - kafkax
+        - natsx
+        - postgresx
+        - taosx
+        - ossx
+        - clickhousex
+      per_adapter_duration: 3h
+    constraints:
+      - fault injection MUST use isolated network namespace (per P0-4 scheme)
+      - no light pool jobs during heavy soak
+      - CI runner must have passwordless sudo for netns/iptables/tc
+
+service_requirements:
+  redisx:
+    binary: redis-server
+    version: "7.4"
+    config: /etc/ci-redis.conf
+    mode: cluster
+    start: systemctl start ci-redis
+    stop: systemctl stop ci-redis
+    health: redis-cli PING
+
+  kafkax:
+    binary: kafka-server-start
+    version: "4.1"
+    mode: KRaft
+    config: /etc/ci-kafka.properties
+    start: systemctl start ci-kafka
+    stop: systemctl stop ci-kafka
+    health: kafka-topics.sh --list --bootstrap-server localhost:9092
+
+  natsx:
+    binary: nats-server
+    version: "2.11"
+    config: /etc/ci-nats.conf
+    start: systemctl start ci-nats
+    stop: systemctl stop ci-nats
+    health: nats-ping -s nats://localhost:4222
+
+  postgresx:
+    binary: postgres
+    version: "17"
+    config: /etc/ci-postgresql.conf
+    start: systemctl start ci-postgresql
+    stop: systemctl stop ci-postgresql
+    health: pg_isready -h localhost
+
+  taosx:
+    binary: taosd
+    version: "3.3"
+    config: /etc/ci-taos.cfg
+    start: systemctl start ci-taos
+    stop: systemctl stop ci-taos
+    health: taos -s "SELECT 1"
+
+  ossx:
+    binary: minio
+    version: "RELEASE.2025-06"
+    config: /etc/ci-minio
+    start: systemctl start ci-minio
+    stop: systemctl stop ci-minio
+    health: curl -sf http://localhost:9000/minio/health/live
+
+  clickhousex:
+    binary: clickhouse-server
+    version: "25.6"
+    config: /etc/ci-clickhouse.xml
+    start: systemctl start ci-clickhouse
+    stop: systemctl stop ci-clickhouse
+    health: clickhouse-client -q "SELECT 1"
+
+fault_injection:
+  scheme: network_namespace + systemd + iptables/tc
+  reference: 07-11-analysis.md §P0-4 (three-layer: Bash → Go-native netns → eBPF)
+  provider: xlib_standard/fixture/fault/ (planned)
+  eBPF:
+    kernel_minimum: "5.15"
+    btf_required: true
+    features:
+      - packet drop (packdrop.c + TC hook)
+      - TCP RST injection (connrst.c + sockops)
+      - I/O error injection (ioerr.c + tracepoint)
+      - precision latency (latency.c + kprobe)
+
+# JSON Schema for validation
+schema:
+  $schema: "https://json-schema.org/draft/2020-12/schema"
+  title: "W4 Storage Pool Configuration"
+  validate_with: "xlibgate storage-pool-schema"
