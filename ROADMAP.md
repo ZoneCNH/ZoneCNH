@@ -39,7 +39,7 @@ Status: Provisional
 Priority: High
 Owner: ZoneCNH
 Tags: planning, architecture, foundation
-Reference: [`knowledge/xx/ZoneCNH_Foundation_L2_5_Claude_Execution_Plan_20260711_v2_10x_checked.md`](./knowledge/xx/ZoneCNH_Foundation_L2_5_Claude_Execution_Plan_20260711_v2_10x_checked.md)（含 `Optimization_Report` 与 `SYNC-ALIGNMENT`）
+Reference: `knowledge/xx/ZoneCNH_Foundation_L2_5_Claude_Execution_Plan_20260711_v2_10x_checked.md`（本地 gitignored 路径，CI 不检出；含 `Optimization_Report` 与 `SYNC-ALIGNMENT`，此处仅作名称引用而非可点击链接）
 
 Description:
 
