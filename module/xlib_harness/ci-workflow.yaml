@@ -1,6 +1,6 @@
 # Reference CI/CD projection for xlib_harness.
 # The authoritative workflow files live in /home/workspace/xlib_harness/.github/workflows/.
-# Workflow target: github.com/ZoneCNH/xlib_harness/.github/workflows/ci.yml
+# Workflow target: github.com/xhyperium/xlib_harness/.github/workflows/ci.yml
 
 name: CI/CD
 

@@ -13,16 +13,17 @@
 
 set -euo pipefail
 
-FAIL=0
-WARN=0
-REGISTRY_PATH="${REGISTRY_PATH:-module/registry.yaml}"
 REPO_ROOT="$(git rev-parse --show-toplevel)"
+REGISTRY_PATH="${REGISTRY_PATH:-module/registry.yaml}"
+if [[ "$REGISTRY_PATH" != /* ]]; then
+  REGISTRY_PATH="$REPO_ROOT/$REGISTRY_PATH"
+fi
 
 echo "=== Registry Lint ==="
 echo ""
 
 # YAML 解析与全部校验在 Python 内完成（pyyaml safe_load）
-python3 - "$REPO_ROOT/$REGISTRY_PATH" "$REPO_ROOT" <<'PYEOF'
+python3 - "$REGISTRY_PATH" "$REPO_ROOT" <<'PYEOF'
 import os
 import re
 import sys
@@ -136,9 +137,14 @@ for name, mod in modules.items():
 print("")
 
 # --- 规则 4：格式校验 ---
-REPO_RE = re.compile(r"^github\.com/ZoneCNH/[a-z0-9_.-]+$")
+GITHUB_OWNER_RE = re.compile(
+    r"^[A-Za-z0-9](?:[A-Za-z0-9-]{0,37}[A-Za-z0-9])?$"
+)
+SNAKE_CASE_REPO_RE = re.compile(r"^[a-z0-9]+(?:_[a-z0-9]+)*$")
+REPO_NAME_EXCEPTIONS = {"x.go", "binance.rs"}
 PATH_RE = re.compile(r"^/home/workspace/[a-z0-9_.-]+$")
 VERSION_RE = re.compile(r"^v\d+\.\d+\.\d+")
+DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
 print("--- 规则 4: 格式校验 ---")
 for name, mod in modules.items():
@@ -149,12 +155,27 @@ for name, mod in modules.items():
 
     repo = mod.get("repo")
     if isinstance(repo, str) and repo != "~":
-        # GitHub repo name may use hyphens while module name uses underscores (e.g. xlib_standard → xlib-standard)
-        expected_repo = f"github.com/ZoneCNH/{name.replace('_', '-')}"
-        if repo != expected_repo and repo != f"github.com/ZoneCNH/{name}":
-            err(f"{name}: repo={repo!r} 应为 {expected_repo!r}")
-        elif not REPO_RE.match(repo):
-            err(f"{name}: repo={repo!r} 格式不合规")
+        parts = repo.split("/")
+        if len(parts) != 3 or parts[0] != "github.com":
+            err(f"{name}: repo={repo!r} 应为 github.com/<owner>/<repo>")
+        else:
+            github_owner, repo_name = parts[1], parts[2]
+            if (
+                not GITHUB_OWNER_RE.fullmatch(github_owner)
+                or "--" in github_owner
+            ):
+                err(f"{name}: repo owner={github_owner!r} 不是合法 GitHub owner")
+            if len(repo_name) > 100:
+                err(f"{name}: repo name 长度超过 100: {repo_name!r}")
+            if (
+                repo_name not in REPO_NAME_EXCEPTIONS
+                and not SNAKE_CASE_REPO_RE.fullmatch(repo_name)
+            ):
+                err(f"{name}: repo name={repo_name!r} 必须使用 snake_case")
+            if repo_name != name:
+                err(f"{name}: repo name={repo_name!r} 必须与模块名一致")
+    elif repo != "~":
+        err(f"{name}: repo 应为字符串，实际={repo!r}")
 
     lp = mod.get("local_path")
     if isinstance(lp, str) and lp != "~":

@@ -1,7 +1,7 @@
 # 01 模块统一注册表 — Module Registry
 
-- Module-Version: v1.0.0
-- Last-Updated: 2026-06-25
+- Module-Version: v1.1.0
+- Last-Updated: 2026-07-10
 - 上级：[MODULE-GOVERNANCE.md](../MODULE-GOVERNANCE.md)
 - 产物：[`module/registry.yaml`](../../../module/registry.yaml)
 
@@ -27,13 +27,13 @@ updated: YYYY-MM-DD
 modules:
   <module_name>:
     # 身份字段（治理事实）
-    repo: github.com/ZoneCNH/<module_name>
+    repo: github.com/<hosting_owner>/<module_name>
     local_path: /home/workspace/<module_name>
     domain: <foundation | l2_5 | data | analytics | decision | execution | entry | crosscut>
     layer: <L0 | L1 | storage | contracts | l2_5 | standard_source | harness | evidence | gate | business>
     arch_type: <library | cs_module | independent_process | cli | contract>
     lifecycle: <proposed | active | maintained | deprecated | archived>
-    owner: ZoneCNH  # 或团队/个人；过渡期默认 ZoneCNH
+    owner: <governance_owner>  # 治理负责方，不从 repo owner 自动推导
     registered: YYYY-MM-DD
 
     # 引用字段（指向其他 SSOT）
@@ -45,17 +45,28 @@ modules:
     spec_version: vX.Y.Z  # mirror from SPEC.md Metadata Spec-Version
 ```
 
+### §2.1.1 托管、Go module 与治理身份分离【硬】
+
+| 身份 | SSOT | 用途 | 迁移规则 |
+| --- | --- | --- | --- |
+| 仓库托管身份 | `registry.yaml` 的 `repo` | clone、CI 投影、release/tag 路由 | 可随 GitHub transfer 更新 |
+| Go module identity | `FOUNDATION-DEPS.yaml` 的 `modules.*.path` 与 runtime `go.mod` | Go import、MVS 与依赖边识别 | 不得因仓库 transfer 自动改写；单独走 breaking-change 治理 |
+| 治理 owner | `registry.yaml` 的 `owner` | SPEC 批准、依赖审查、release 响应与交接 | 通过 owner 交接流程更新，不从 `repo` 的 GitHub owner 推导 |
+| 审查委托 | `.github/CODEOWNERS` | GitHub 请求审查与分支保护 | 可在治理 owner 没有可用 GitHub team 时委托给可用审查人；不改写 `owner` |
+
+`repo` 必须使用 `github.com/<owner>/<repo>` 形式；GitHub owner 须满足 GitHub login 命名约束，仓库名必须与模块名一致并使用 snake_case（宪法例外 `x.go`、`binance.rs` 保留）。托管 owner 可为 `xhyperium`、`ZoneCNH` 或后续经治理批准的 GitHub owner，CI 不得硬编码单一组织。
+
 ### §2.2 字段定义
 
 | 字段 | 类型 | 必填 | 语义 | 性质 |
 | --- | --- | --- | --- | --- |
-| `repo` | string | 是 | GitHub 仓库全名 | 治理事实 |
+| `repo` | string | 是 | GitHub 托管仓库全名；不是 Go module path | 治理事实 |
 | `local_path` | string | 是 | 本地工作目录（`/home/workspace/{module}`） | 治理事实 |
 | `domain` | enum | 是 | 所属域（见 §2.3） | 治理事实 |
 | `layer` | enum | 是 | 架构层（见 §2.4） | 治理事实 |
 | `arch_type` | enum | 是 | 架构类型（见 §2.5） | 治理事实 |
 | `lifecycle` | enum | 是 | 模块生命周期状态（见 [02](02-module-lifecycle.md)） | 治理事实 |
-| `owner` | string | 是 | 负责人（见 [03](03-module-ownership.md)） | 治理事实 |
+| `owner` | string | 是 | 治理负责方（见 [03](03-module-ownership.md)）；不是 repo owner 或 CODEOWNERS 委托 | 治理事实 |
 | `registered` | date | 是 | 登记日期 | 治理事实 |
 | `spec_ref` | path | 是 | SPEC.md 相对路径 | 引用 |
 | `deps_ref` | path | 否 | FOUNDATION-DEPS.yaml（若登记） | 引用 |
@@ -122,6 +133,7 @@ modules:
 - registry 不重复登记依赖边 → 查依赖去 FOUNDATION-DEPS
 - registry 不重复登记 version/release/factory → 查成熟度去 .foundationx/status
 - registry 的 `spec_version` 是投影，版本 SSOT 在 SPEC.md
+- registry 的 `repo` 只提供托管路由；Go module identity 必须从 FOUNDATION-DEPS/runtime `go.mod` 读取
 
 ---
 
@@ -153,6 +165,8 @@ modules:
 `domain` / `layer` / `arch_type` 变更（如模块重命名、域迁移）须：
 1. 提 ADR（退役/重命名类，见 [07](07-module-decommission.md)）
 2. 同 PR 更新 registry.yaml + SPEC.md Metadata + module/README.md 投影
+
+`repo` 变更只同步 clone/CI/release 托管路由，不得顺手改写 FOUNDATION-DEPS/runtime `go.mod` 的 Go module identity。`owner` 变更须按 [03](03-module-ownership.md) 同步 SPEC Metadata 和 CODEOWNERS 审查委托。
 
 ---
 
@@ -220,4 +234,5 @@ registry.yaml 是**身份与治理状态 SSOT**；以下文档是其投影，须
 
 | 日期 | 版本 | 变更内容 | 作者 |
 | --- | --- | --- | --- |
+| 2026-07-10 | v1.1.0 | 分离仓库托管身份、Go module identity、治理 owner 与 CODEOWNERS 审查委托 | ZoneCNH |
 | 2026-06-25 | v1.0.0 | 首次定义 registry.yaml schema、三 SSOT 引用、登记规则、计数口径与 domainx 裁定 | ZoneCNH |

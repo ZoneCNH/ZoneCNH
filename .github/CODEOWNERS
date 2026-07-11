@@ -1,6 +1,36 @@
-# 规格文件变更需要维护者 review
-module/*/SPEC.md        @ZoneCNH
-docs/governance/**      @ZoneCNH
-CONSTITUTION.md        @ZoneCNH
-ARCHITECTURE.md        @ZoneCNH
-GLOSSARY.md            @ZoneCNH
+# 规格文件变更需要维护者 review。
+# registry owner=xhyperium 的模块在组织建立可用 team 前，
+# 显式委托 @ZoneCNH 执行审查；委托不改写 registry owner。
+module/*/spec/SPEC.md                    @ZoneCNH
+module/xlib_standard/spec/SPEC.md        @ZoneCNH
+module/xlib_harness/spec/SPEC.md         @ZoneCNH
+module/xlib_evidence/spec/SPEC.md        @ZoneCNH
+module/xlibgate/spec/SPEC.md             @ZoneCNH
+module/kernel/spec/SPEC.md               @ZoneCNH
+module/configx/spec/SPEC.md              @ZoneCNH
+module/observex/spec/SPEC.md             @ZoneCNH
+module/resiliencx/spec/SPEC.md           @ZoneCNH
+module/schedulex/spec/SPEC.md             @ZoneCNH
+module/bootstrap/spec/SPEC.md            @ZoneCNH
+module/testkitx/spec/SPEC.md              @ZoneCNH
+module/redisx/spec/SPEC.md                @ZoneCNH
+module/kafkax/spec/SPEC.md                @ZoneCNH
+module/natsx/spec/SPEC.md                 @ZoneCNH
+module/postgresx/spec/SPEC.md             @ZoneCNH
+module/taosx/spec/SPEC.md                 @ZoneCNH
+module/ossx/spec/SPEC.md                  @ZoneCNH
+module/clickhousex/spec/SPEC.md           @ZoneCNH
+module/contracts/spec/SPEC.md             @ZoneCNH
+module/transportx/spec/SPEC.md            @ZoneCNH
+module/domainx/spec/SPEC.md               @ZoneCNH
+module/decimalx/spec/SPEC.md              @ZoneCNH
+module/domain_market/spec/SPEC.md         @ZoneCNH
+module/domain_macro/spec/SPEC.md          @ZoneCNH
+module/domain_exchange/spec/SPEC.md       @ZoneCNH
+
+module/registry.yaml                      @ZoneCNH
+docs/governance/module-governance/**      @ZoneCNH
+docs/governance/**                        @ZoneCNH
+CONSTITUTION.md                           @ZoneCNH
+ARCHITECTURE.md                           @ZoneCNH
+GLOSSARY.md                               @ZoneCNH

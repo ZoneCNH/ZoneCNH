@@ -35,6 +35,8 @@ jobs:
     timeout-minutes: 10
     needs: quality-gate
     if: github.event_name == 'workflow_dispatch'
+    outputs:
+      release_matrix: ${{ steps.release-matrix.outputs.release_matrix }}
     steps:
       - uses: actions/checkout@v4
       - name: Validate release inputs
@@ -47,28 +49,9 @@ jobs:
             exit 1
           fi
 
-          if [ "$RELEASE_MODULES" != "all" ]; then
-            selected_count=0
-            IFS=',' read -ra modules <<< "$RELEASE_MODULES"
-            for raw_module in "${modules[@]}"; do
-              module="$(printf '%s' "$raw_module" | tr -d '[:space:]')"
-              case "$module" in
-                kernel|configx|observex|resiliencx|schedulex|testkitx|xlib_standard|xlib_harness|xlib_evidence|xlibgate|redisx|kafkax|natsx|postgresx|taosx|ossx|clickhousex|contracts|transportx|domainx)
-                  selected_count=$((selected_count + 1))
-                  ;;
-                "")
-                  ;;
-                *)
-                  echo "ERROR: Unknown Foundation module '$module'"
-                  exit 1
-                  ;;
-              esac
-            done
-
-            if [ "$selected_count" -eq 0 ]; then
-              echo "ERROR: No Foundation modules selected."
-              exit 1
-            fi
+          if [ -z "$(printf '%s' "$RELEASE_MODULES" | tr -d '[:space:]')" ]; then
+            echo "ERROR: No Foundation modules selected."
+            exit 1
           fi
       - name: Validate FOUNDATION-DEPS.yaml pre-release
         run: |
@@ -81,6 +64,71 @@ jobs:
           print(f'Allowed dependency entries: {len(matrix[\"allowed_deps\"])}')
           print('Pre-flight OK')
           "
+      - name: Resolve release repositories from registry
+        id: release-matrix
+        env:
+          RELEASE_MODULES: ${{ inputs.modules }}
+        run: |
+          python3 <<'PYEOF'
+          import json
+          import os
+
+          import yaml
+
+          with open("module/FOUNDATION-DEPS.yaml", encoding="utf-8") as deps_file:
+              deps = yaml.safe_load(deps_file)
+          release_modules = list(deps.get("modules", {}))
+          if not release_modules:
+              raise SystemExit("ERROR: FOUNDATION-DEPS release module set is empty")
+
+          requested = os.environ["RELEASE_MODULES"]
+          if requested == "all":
+              selected = set(release_modules)
+          else:
+              selected = {
+                  item.strip()
+                  for item in requested.split(",")
+                  if item.strip()
+              }
+
+          unknown_modules = selected.difference(release_modules)
+          if unknown_modules:
+              raise SystemExit(
+                  "ERROR: Unknown Foundation module(s): "
+                  + ", ".join(sorted(unknown_modules))
+              )
+
+          with open("module/registry.yaml", encoding="utf-8") as registry_file:
+              registry = yaml.safe_load(registry_file)
+
+          release_matrix = []
+          for module in release_modules:
+              if module not in selected:
+                  continue
+              entry = registry.get(module, {})
+              repo_target = entry.get("repo") if isinstance(entry, dict) else None
+              expected_suffix = f"/{module}"
+              if (
+                  not isinstance(repo_target, str)
+                  or not repo_target.startswith("github.com/")
+                  or not repo_target.endswith(expected_suffix)
+                  or repo_target.count("/") != 2
+              ):
+                  raise SystemExit(
+                      f"ERROR: invalid registry.repo for {module}: {repo_target!r}"
+                  )
+              release_matrix.append({
+                  "module": module,
+                  "repository": repo_target.removeprefix("github.com/"),
+              })
+
+          if not release_matrix:
+              raise SystemExit("ERROR: release repository matrix is empty")
+
+          output = json.dumps(release_matrix, separators=(",", ":"))
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as output_file:
+              output_file.write(f"release_matrix={output}\n")
+          PYEOF
 
   release-modules:
     name: Release ${{ matrix.module }}
@@ -91,54 +139,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        module:
-          - kernel
-          - configx
-          - observex
-          - resiliencx
-          - schedulex
-          - testkitx
-          - xlib_standard
-          - xlib_harness
-          - xlib_evidence
-          - xlibgate
-          - redisx
-          - kafkax
-          - natsx
-          - postgresx
-          - taosx
-          - ossx
-          - clickhousex
-          - contracts
-          - transportx
-          - domainx
+        include: ${{ fromJSON(needs.release-prep.outputs.release_matrix) }}
     steps:
-      - name: Check module selection
-        id: selection
-        run: |
-          if [ "${{ inputs.modules }}" = "all" ]; then
-            echo "release_module=true" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          release_module=false
-          IFS=',' read -ra selected <<< "${{ inputs.modules }}"
-          for raw_module in "${selected[@]}"; do
-            module="$(printf '%s' "$raw_module" | tr -d '[:space:]')"
-            if [ "$module" = "${{ matrix.module }}" ]; then
-              release_module=true
-              break
-            fi
-          done
-          echo "release_module=$release_module" >> "$GITHUB_OUTPUT"
       - uses: actions/checkout@v4
-        if: steps.selection.outputs.release_module == 'true'
         with:
-          repository: ZoneCNH/${{ matrix.module }}
+          repository: ${{ matrix.repository }}
           token: ${{ secrets.FOUNDATION_RELEASE_TOKEN }}
           fetch-depth: 0
       - name: Tag and push ${{ matrix.module }}
-        if: steps.selection.outputs.release_module == 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -153,49 +161,47 @@ jobs:
     name: Aggregate Release Manifest
     runs-on: [self-hosted, Linux, X64, sre/governance]
     timeout-minutes: 10
-    needs: release-modules
-    if: always() && needs.release-modules.result != 'failure' && needs.release-modules.result != 'cancelled' && github.event_name == 'workflow_dispatch'
+    needs: [release-prep, release-modules]
+    if: needs.release-modules.result == 'success' && github.event_name == 'workflow_dispatch'
     steps:
       - uses: actions/checkout@v4
       - name: Generate aggregated foundation release manifest
+        env:
+          RELEASE_MATRIX: ${{ needs.release-prep.outputs.release_matrix }}
+          RELEASE_VERSION: ${{ inputs.release_version }}
         run: |
-          mkdir -p release/foundation
-          cat > release/foundation/release-${{ inputs.release_version }}.json << EOF
-          {
-            "version": "${{ inputs.release_version }}",
-            "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
-            "go_baseline": "1.23",
-            "modules": [
-              "kernel",
-              "configx",
-              "observex",
-              "resiliencx",
-              "schedulex",
-              "testkitx",
+          python3 <<'PYEOF'
+          import json
+          import os
+          from datetime import datetime, timezone
+          from pathlib import Path
+
+          import yaml
+
+          release_matrix = json.loads(os.environ["RELEASE_MATRIX"])
+          selected_modules = [entry["module"] for entry in release_matrix]
+          gate_module_set = {
               "xlib_standard",
               "xlib_harness",
               "xlib_evidence",
               "xlibgate",
-              "redisx",
-              "kafkax",
-              "natsx",
-              "postgresx",
-              "taosx",
-              "ossx",
-              "clickhousex",
-              "contracts",
-              "transportx",
-              "domainx"
-            ],
-            "gate_modules": [
-              "xlib_standard",
-              "xlib_harness",
-              "xlib_evidence",
-              "xlibgate"
-            ],
-            "trust_contract": ".foundationx/repo-contract.json"
           }
-          EOF
+          with open("module/FOUNDATION-DEPS.yaml", encoding="utf-8") as deps_file:
+              deps = yaml.safe_load(deps_file)
+          manifest = {
+              "version": os.environ["RELEASE_VERSION"],
+              "timestamp": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+              "go_baseline": deps["go_baseline"],
+              "modules": selected_modules,
+              "gate_modules": [
+                  module for module in selected_modules if module in gate_module_set
+              ],
+              "trust_contract": ".foundationx/repo-contract.json",
+          }
+          output = Path("release/foundation") / f"release-{os.environ['RELEASE_VERSION']}.json"
+          output.parent.mkdir(parents=True, exist_ok=True)
+          output.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+          PYEOF
       - name: Commit and push manifest
         if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
         run: |

@@ -3,9 +3,9 @@
 ## 1. Metadata
 
 - Status: Approved
-- Owner: ZoneCNH
+- Owner: xhyperium
 - Spec-Version: v1.1.0
-- Last-Updated: 2026-06-30
+- Last-Updated: 2026-07-10
 - Updated: 2026-06-18
 - Layer: 基座 · 标准事实源
 - Version: v1.0.0

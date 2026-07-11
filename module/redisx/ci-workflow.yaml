@@ -1,6 +1,6 @@
 # CI/CD Workflow 参考模板 — redisx
 #
-# 将此文件复制到 github.com/ZoneCNH/redisx/.github/workflows/ci.yml。
+# 将此文件复制到 github.com/xhyperium/redisx/.github/workflows/ci.yml。
 # 所有 CI 与 CD job 必须使用 sre/ 机器池；禁止回退 GitHub-hosted runner。
 # CI 机器池: sre/storage-light；CD 机器池: sre/deploy。
 

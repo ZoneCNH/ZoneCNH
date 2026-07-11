@@ -6,6 +6,32 @@ cd "$root"
 
 failures=0
 
+registry_rows="$(python3 - "$root/module/registry.yaml" <<'PYEOF'
+import sys
+
+import yaml
+
+with open(sys.argv[1], encoding="utf-8") as registry_file:
+    registry = yaml.safe_load(registry_file)
+
+if not isinstance(registry, dict):
+    raise SystemExit("module-cicd-check: registry root must be a mapping")
+
+for name, module in registry.items():
+    if not isinstance(module, dict):
+        continue
+    repo = module.get("repo")
+    if isinstance(repo, str) and repo != "~":
+        print(f"{name}\t{repo}")
+PYEOF
+)"
+
+declare -A repo_targets=()
+while IFS=$'\t' read -r module_name repo_target; do
+  [[ -n "$module_name" && -n "$repo_target" ]] || continue
+  repo_targets["$module_name"]="$repo_target"
+done <<< "$registry_rows"
+
 required_jobs=(
   "ci-preflight"
   "build"
@@ -57,8 +83,11 @@ while IFS= read -r -d '' module_dir; do
     continue
   fi
 
-  if ! grep -Fq "github.com/ZoneCNH/${module}/.github/workflows/ci.yml" "$file"; then
-    report_failure "$module" "missing module repository workflow target"
+  repo_target="${repo_targets[$module]:-}"
+  if [[ -z "$repo_target" ]]; then
+    report_failure "$module" "missing repository target in module/registry.yaml"
+  elif ! grep -Fq "${repo_target}/.github/workflows/ci.yml" "$file"; then
+    report_failure "$module" "missing registry repository workflow target: ${repo_target}"
   fi
 
   for token in "${required_tokens[@]}"; do

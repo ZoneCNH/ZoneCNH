@@ -2,8 +2,8 @@
 
 - Status: Approved (Docs Baseline Synced / Runtime Truth Verified)
 - Spec-Version: v1.2.0
-- Last-Updated: 2026-07-05
-- Owner: ZoneCNH
+- Last-Updated: 2026-07-10
+- Owner: xhyperium
 - Layer: 基座 · 跨域接口契约
 - Fast-Track: true
 - Source-of-Truth: `/home/workspace/contracts/pkg/contracts`
