@@ -9,7 +9,7 @@
 | 仓库 | <https://github.com/ZoneCNH/binance> |
 | 当前版本 | v0.15.1（last published tag；本轮 audit branch 未创建新 tag） |
 | Spec 版本 | v4.1.0 |
-| 状态 | L3 Production（规格投影：65/65 FR Done、`release_closeable_spec=YES`）；runtime 发布门禁 `release_closeable_runtime=NO`，外部 E2E/tag/rollback 仍需证据 |
+| 状态 | [COMPUTED, HIGH] 历史已发布版本的成熟度投影为 L3；当前 RC 为 13 Done / 52 Partial / 0 Drifted / 0 Pending，`release_closeable_spec=NO`且 `release_closeable_runtime=NO` |
 
 ## Purpose
 

@@ -40,7 +40,7 @@
 - 验证：`internal/server/api/` 中间件校验 `Authorization: Bearer <token>`
 - 未设置 token 时：API 端点返回 401（fail-closed，非 fail-open）
 
-[FRAME, HIGH] 健康检查端点（`/healthz`、`/readyz`、`/metrics`）豁免认证（Prometheus scrape 与 k8s probe 需要）。
+[FRAME, HIGH] 健康检查端点（`/healthz`、`/readyz`、`/metrics`）仅为受控观测采集与就绪探针豁免认证；不得因此扩大管理面暴露范围。
 
 ## 4. 限流
 

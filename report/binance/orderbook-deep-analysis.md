@@ -1,5 +1,7 @@
 # OrderBook 深度分析 — knowledge/OrderBook.md vs binance 模块
 
+> [COMPUTED, HIGH] **Superseded / 历史分析**：下述百分比是 2026-07-09 静态印象分，不是可发布证据。2026-07-10 复审已识别 freshness、generation、feature-bit、Options live alignment/checksum 与持久快照验证缺口；当前裁决见 `PRODUCTION-READINESS-CONSOLIDATED-20260710.md`。
+
 > 基于 `knowledge/OrderBook.md` (v2) 与 binance 模块实际实现对比。
 > 日期: 2026-07-09
 

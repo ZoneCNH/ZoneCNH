@@ -223,7 +223,7 @@ binance_symbols 表加列（Tier/SymbolPriority/Collection/QuoteVolumeUSD），�
 
 ### 8.5 双口径不变
 
-本 ADR 属**运行时口径**（runtime catalog 数据结构演进），不动 SPEC 规格口径——SPEC §FR 表的 55 Done 计数不受影响。运行时分级是采集层的实现细节，不改变规格定义的功能边界。
+本 ADR 属**运行时口径**（runtime catalog 数据结构演进），不独立改写 SPEC 规格状态。[COMPUTED, HIGH] 当前 root canonical 投影为 13 Done / 52 Partial / 0 Drifted / 0 Pending，运行时分级实现不得自行把 Partial 提升为 Done。
 
 ---
 

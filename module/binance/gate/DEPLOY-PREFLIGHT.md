@@ -1,172 +1,107 @@
-# Binance 部署预检清单与执行手册
+# Binance 发布预检契约
 
-> [COMPUTED, HIGH] 本文件 §6 的 v0.15.0 jp1 实测是历史部署快照；2026-07-10 当前 last published tag 为 v0.15.1，implementation commit `3f6366728b635c32d73565874965d40c20a92caf` 尚未部署。本轮 release packet、external ledger 与 rollback 状态以 `todo.md` 和 `gate/RELEASE-CHECKLIST.md` 为准。
+> [FRAME, HIGH] 本文件只定义 binance runtime 向 SRE 执行平面提交发布请求前的门禁、输入和证据回执，不包含可执行的生产操作。
 
-> **职责**：本文件只负责发布执行前预检，列出阻塞条件与执行路径，不定义功能验收。
-
-> **版本**：v1.1.0
-> **生成日期**：2026-07-08（含 2026-07-08 实际部署执行记录，见 §6）
-> **适用范围**：binance runtime（`github.com/ZoneCNH/binance`）生产部署到 `jp1 (84.247.154.45)`
-> **关联文档**：`gate/RELEASE-CHECKLIST.md`、`gate/DEPLOYMENT-READINESS-CHECKLIST.md`、`release/DEPLOYMENT-ORCHESTRATION.md`
-> **性质**：本文件为**预检 + 手册**，不触发任何部署动作。
-
----
-
-## §0 当前状态快照（生成时实测）
-
-| 项 | 值 | 来源 |
-| --- | --- | --- |
-| main HEAD | `fc96705`（#462 fix ci coverage artifact） | `git log` |
-| 最新 tag | `v0.15.0` @ `52d9144` | `git ls-remote` |
-| tag 与 HEAD 关系 | v0.15.0 落后 HEAD **1 提交**（#462） | `git rev-list --count` |
-| 本地验证 | build/vet/race PASS、boundary 15/15、B4/B5 PASS；lint **8 warning / 0 error** | 本仓本地执行 |
-| CI 远端 | 账户计费锁定（`account locked due to billing issue`），Actions 无法执行 | PR #1734 检查 |
-| 技术负责人签字 | **空白** | DEPLOYMENT-READINESS Sign-Off |
-| PR #1734（版本回刷） | 开放，CI 因计费锁失败 | gh |
-| canary drill 脚本 | **不存在**（`scripts/` 无 canary 脚本） | `ls scripts/ \| grep canary` |
-| 部署目标 | `jp1` `84.247.154.45`，SSH user `claude`，systemd + `healthz:8080` | `deploy/deploy.sh` |
-
----
-
-## §1 部署前门禁预检（必须全绿方可执行）
-
-| # | 检查项 | 当前状态 | 阻塞说明 |
-| --- | --- | --- | --- |
-| G1 | 技术负责人签字（DEPLOYMENT-READINESS Sign-Off） | ❌ 空白 | **硬门禁**，agent 不代签 |
-| G2 | 账户 Actions 计费已恢复 | ❌ 锁定 | 否则 release-cd 与 `docker push ghcr.io` 均失败 |
-| G3 | tag 在 main HEAD（B3） | ❌ 落后 1 提交 | 决定维持 v0.15.0@52d9144 或打新 tag 覆盖 #462 |
-| G4 | 版本口径已合入 main（PR #1734） | ❌ 未合 | registry/SSOT 仍陈旧 |
-| G5 | 本地 build/vet/race/boundary | ✅ PASS | 已验证 |
-| G6 | B4 版本一致性 / B5 引用完整性 | ✅ PASS | 已验证（PR 合入后需复跑） |
-| G7 | C7 lint 严格 0 warning | ⚠️ 8 warning | 预存，0 error；是否阻断由评审定 |
-| G8 | canary drill 脚本存在（D1/D2） | ❌ 不存在 | RELEASE-CHECKLIST §5 验证项无脚本可跑 |
-| G9 | `prod.env` 凭据已就位（jp1 `/opt/binance/secrets/prod.env`） | ⚠️ 需人工确认 | 不含明文凭据，部署前人工核对 |
-| G10 | AGENTS.md「禁止 Docker」规则澄清 | ✅ 已规避 | 实测 jp1 运行单元为**二进制直跑**（`ExecStart=/opt/binance/bin/binance-server`，无 `docker.service`），符合禁止 Docker 规则；`docker-compose.prod.yml`/`deploy.sh` 为未部署模板 |
-
-> **结论**：G1–G4、G8 仍为治理开放项（未经签字/合入），但 **2026-07-08 用户显式授权直接二进制部署**，实测 jp1 已运行 v0.15.0 二进制（checksum 一致）、双服务 active、healthz 200，部署目标已达成（详见 §6）。G2 计费锁仅阻断 `release-cd`/GitHub Release 路径，不影响已完成的二进制直跑部署。
-
----
-
-## §2 执行路径（两条，择一）
-
-### 路径 A — 治理闭环（推荐）：release-cd 工作流
-触发：`v*` tag 推送` 或 `gh workflow run release-cd.yml --ref main -f tag=vX.Y.Z`
-流程（来自 `release-cd.yml`）：
-1. `build-all`：self-hosted runner 交叉编译 linux/amd64 + linux/arm64（`make build-all`）
-2. `docker`：build & push `ghcr.io/zonecnh/binance:vX.Y.Z`（需 G2 解除）
-3. `github-release`：基于 tag 生成 GitHub Release + 上传二进制
-4. `canary deploy`：灰度部署（需 G8 脚本/步骤具备）
-
-### 路径 B — 直连生产：`deploy/deploy.sh`
-用法：`./deploy.sh --env prod --tag vX.Y.Z [--dry-run]`
-流程（来自 `deploy/deploy.sh`）：
-1. `preflight`：校验 SSH key、SSH 连通 `jp1`、建目录
-2. `build_and_push`：`docker build -t ghcr.io/zonecnh/binance:$TAG .` + `docker push`（需 G2）
-3. `deploy`：scp `docker-compose.prod.yml` + systemd unit + `health-check.sh`；`systemctl stop` 旧服务；备份 current；`docker pull`；安装 systemd；`ln -sfn` current；`systemctl enable/start`
-4. `health_check`：`curl http://127.0.0.1:8080/healthz` 轮询 12 次（HTTP 200 通过）
-5. 成功 → `cleanup`（保留最近 5 个 release，prune 镜像）；失败 → `rollback`（回退到最新备份）
-
-> ⚠️ `deploy.sh` 在 `--env prod` 且无 `--dry-run` 时会交互式 `read -p "Confirm? (yes/no):"`，**不会静默部署**。
-
----
-
-## §3 分步执行手册（在 G1–G4 解除后）
-
-### 步骤 0：解除预检阻塞
-- [ ] G1：技术负责人在 `DEPLOYMENT-READINESS-CHECKLIST.md` Sign-Off 签字
-- [ ] G2：账户管理者恢复 GitHub Actions 配额/结清账单
-- [ ] G3：决定版本——(a) 接受 v0.15.0@52d9144（#462 视为 out-of-scope）；或 (b) 在 HEAD `fc96705` 打新 tag `v0.15.1`/`v0.16.0`
-- [ ] G4：合入 PR #1734，复跑 B4/B5
-- [ ] G8：补 canary drill 脚本或明确 canary 步骤；G10：治理层澄清 Docker 规则
-
-### 步骤 1：本地复验（CI 仍不可用时的最低保障）
-```bash
-cd /home/workspace/binance
-export GOWORK=off
-go build ./... && go vet ./... && go test ./... -race
-bash scripts/boundary-gates.sh
-bash /home/workspace/ZoneCNH/.github/ci/binance-version-consistency-check.sh
-bash /home/workspace/ZoneCNH/.github/ci/binance-reference-integrity-check.sh
-```
-
-### 步骤 2：打 tag（若选 G3-b）
-```bash
-cd /home/workspace/binance && git checkout main && git pull
-git tag -a v0.15.1 -m "Release v0.15.1"
-git push origin v0.15.1        # 触发 release-cd（路径 A）
-```
-
-### 步骤 3：触发 CD（路径 A）
-- 观察 `release-cd.yml` 运行：`gh run list --branch main`；确认 build-all / docker / github-release / canary 全绿。
-- 若走路径 B 直连：
-```bash
-cd /home/workspace/binance
-./deploy.sh --env prod --tag v0.15.1 --dry-run   # 先 dry-run 校验
-./deploy.sh --env prod --tag v0.15.1             # 交互确认后真实部署
-```
-
-### 步骤 4：部署后验证
-- [ ] `curl -s http://84.247.154.45:8080/healthz` → 200
-- [ ] `curl -s http://84.247.154.45:8080/metrics` 可采
-- [ ] 观察 `binance-server` / `binance-client` systemd 状态（`systemctl status`）
-- [ ] 检查告警/consumer-lag/error-rate（DEPLOYMENT-READINESS D2 项）
-
-### 步骤 5：回滚（异常时）
-- 自动：health_check 失败 → `deploy.sh rollback()` 回退到最新备份
-- 手动：`ssh claude@84.247.154.45` → `systemctl stop binance-client binance-server` → 切换 `current` 软链到 `$BACKUP/<ts>` → `systemctl start`
-
----
-
-## §4 风险与注意事项
-
-- **计费锁（G2）是整条链路的总开关**：未解除前，路径 A 的 docker push 与路径 B 的 `docker push ghcr.io` 都会失败；路径 B 的 `docker pull` 在 jp1 侧同样依赖镜像已推送成功。
-- **tag 与 HEAD 一致性（G3）**：若维持 v0.15.0@52d9144，则 #462（coverage artifact 非阻断）不进本次发布；若需含入则必须打新 tag。
-- **凭据（G9）**：`prod.env` 含 PG/TDengine/Redis/NATS/OSS 密码，绝不入 git；仅人工 scp 到 jp1 `/opt/binance/secrets/prod.env` 并 `chmod 600`。
-- **Docker 规则冲突（G10）**：AGENTS.md 明令「禁止 Docker」，而部署机制依赖 Docker；执行前需治理层书面澄清，否则 agent 不应执行 `docker` 相关命令。
-- **canary 缺口（G8）**：RELEASE-CHECKLIST §5 D1/D2 无脚本支撑，灰度验证需补步骤后方可声称 canary PASS。
-
----
-
-## §5 本文件不执行的动作（红线）
-
-- 不代签技术负责人签字（G1）
-- 不绕过账户计费锁（G2）
-- 不打 tag / 不推送 / 不触发 release-cd
-- 不运行 `deploy.sh` 真实部署（`--env prod` 无 `--dry-run`）
-- 不触碰 `prod.env` 或任何生产凭据
-- 不执行 `docker` 命令（除非 G10 澄清且 G2 解除）
-
-> **授权例外（2026-07-08）**：用户显式授权「全部由我授权决定，直接执行」+「禁止使用 Docker，直接使用二进制部署」，故本节中"不运行 deploy.sh 真实部署""不执行 docker 命令"在本会话范围内被覆盖——实际仅执行了校验、确认 v0.15.0 已运行、及启动 client，未运行 `deploy.sh`、未打 tag/推送、未触碰 `prod.env`、未用 Docker。详见 §6。
-
----
-
-## §6 实际部署执行记录（2026-07-08，用户显式授权）
-
-> 用户于 2026-07-08 明确指示「全部由我授权决定，直接执行」+「禁止使用 Docker，直接使用二进制部署」，故 §5 红线在本节范围内被显式授权覆盖。执行动作严格限定为：校验、确认、启动，未含 tag/push/docker/签字。
-
-### 6.1 执行前实测（关键修正）
-- jp1 已安装的 `binance-server.service` / `binance-client.service` 为**二进制直跑单元**（`ExecStart=/opt/binance/bin/binance-server`，`User=claude`，依赖本地 `nats/redis/postgresql/taosd` 服务），**不含任何 Docker 依赖**。此前"运行单元为 Docker"的假设不成立。
-- 运行态 server 二进制 `/opt/binance/bin/binance-server` 与暂存 v0.15.0 二进制 `sha256` **完全一致**（`fa1be9bd…7816c7f`），即生产已实际运行 v0.15.0，无需替换。
-- `:8080/healthz → 200`，`/opt/binance/secrets/prod.env` 存在（64 行）。
-
-### 6.2 执行动作
-1. 备份当前运行单元至 `/opt/binance/backup/binance-{server,client}.service.live.20260708-220320`（真实回滚工件）。
-2. 校验 v0.15.0 二进制 checksum 一致 → **未重启 server**（已是 v0.15.0，避免无谓生产中断）。
-3. `binance-client` 此前 inactive（自 2026-07-05 起）；执行 `sudo systemctl start binance-client` 后 active，日志恢复 catalog diff-sync（spot/um_perp/cm_perp/options）。
-
-### 6.3 执行后验证（2026-07-08）
-| 项 | 结果 |
+| 字段 | 值 |
 | --- | --- |
-| `binance-server` | active，uptime 3d+，`/healthz :8080 → 200` |
-| `binance-client` | active，diff-sync 正常 |
-| 运行二进制 == v0.15.0 暂存 | ✅ checksum `fa1be9bd…7816c7f` 一致 |
-| 后端依赖 nats/redis/postgresql/taosd | active |
-| server-error.log | 仅 benign WARN：`permission denied for table coverage_heartbeat`（DB 授权问题，非版本相关） |
+| Status | Active — Contract Only |
+| Version | v2.0.0 |
+| Last-Updated | 2026-07-10 |
+| Scope | binance runtime 发布预检与证据交接 |
+| Execution Owner | `sre/deploy` |
+| Canonical Contract | [`docs/sre/DEPLOY-CONTRACT.yaml`](../../../docs/sre/DEPLOY-CONTRACT.yaml)（`zonecnh.deploy-contract.v1`） |
+| Related | [`RELEASE-CHECKLIST.md`](RELEASE-CHECKLIST.md)、[`DEPLOYMENT-READINESS-CHECKLIST.md`](DEPLOYMENT-READINESS-CHECKLIST.md)、[`../release/DEPLOYMENT-ORCHESTRATION.md`](../release/DEPLOYMENT-ORCHESTRATION.md) |
 
-### 6.4 仍开放的治理项（不阻断已完成的二进制部署）
-- G1 技术负责人签字、G4 PR #1734 合入：版本口径 SSOT 仍待治理闭环。
-- G2 计费锁：仅影响 `release-cd`/GitHub Release，不影响本次二进制直跑。
-- G3 tag 落后 1 提交（#462）：生产已运行等价二进制；是否补 tag 由评审定。
-- G8 canary 脚本：未执行灰度（无脚本），本次为直接全量二进制直跑。
+## 1. 权责边界
 
-[RULES I BROKE]：本文件 §5 红线（"不运行 deploy.sh 真实部署""不执行 docker 命令"）在 2026-07-08 经用户显式授权「直接执行 + 二进制部署」后被覆盖；实际仅执行校验、确认 v0.15.0 已运行、启动 client 三项，未运行 deploy.sh、未打 tag/推送、未触碰 prod.env、未用 Docker。现状数据来自本会话 jp1 实测并标注来源。
+[KNOWN, HIGH] `CONSTITUTION.md` 的 CICD-001 要求发布执行只能进入隔离的 `sre/deploy` self-hosted runner pool；业务模块及其文档不得内联远程访问、主机进程控制、容器编排或直接部署步骤。
+
+[FRAME, HIGH] binance 模块负责人只负责提交经过签名的发布请求、验证策略和回滚意图；SRE 控制面负责解释目标环境别名、访问生产基础设施、执行变更并返回不可变回执。
+
+[FRAME, HIGH] 本文出现的环境、工件和回执均使用逻辑标识符。生产地址、账户名、凭据位置和私有服务地址不得写入仓库。
+
+## 2. 发布前硬门禁
+
+| Gate | 必须提供的证据 | 失败行为 |
+| --- | --- | --- |
+| G1 — 人工授权 | 技术负责人和 SRE 值班负责人签字，含变更单 ID | fail closed，agent 不代签 |
+| G2 — 版本身份 | immutable commit、release tag、artifact digest 三者可追溯且一致 | 拒绝发布请求 |
+| G3 — 本地质量 | build、vet、race、全量测试、boundary gates 的原始日志和退出码 | 任一失败即停止 |
+| G4 — 规格治理 | Goal/Spec/Matrix/Acceptance/Release Checklist 对同一版本给出一致判定 | 冲突即停止 |
+| G5 — 外部证据 | live、持久化、消息系统和历史回补证据均绑定同一 commit | 缺失或陈旧即停止 |
+| G6 — 配置与密钥 | SRE 返回“引用存在且访问策略有效”的证明；业务仓不接收明文或物理路径 | 未确认即停止 |
+| G7 — 灰度与观测 | 已批准的流量阶梯、SLO 查询、观察窗口和中止阈值 | 缺一不可执行 |
+| G8 — 回滚能力 | 前一稳定工件 digest、兼容性判断、回滚演练回执和负责人 | 未验证即停止 |
+| G9 — 执行隔离 | 目标 runner pool 精确为 `sre/deploy`，请求有唯一 run ID | pool 不匹配即停止 |
+
+[FRAME, HIGH] “本地门禁通过”只证明该 commit 的本地验证结果，不等价于外部依赖可用、生产配置正确或模块可发布。
+
+## 3. Canonical SRE 部署合同
+
+[FRAME, HIGH] 发布请求必须直接使用 [`docs/sre/DEPLOY-CONTRACT.yaml`](../../../docs/sre/DEPLOY-CONTRACT.yaml) 的 `zonecnh.deploy-contract.v1`；本文件不创建模块私有 schema。字段缺失、为空或引用不一致时，接收方必须 fail closed。
+
+```json
+{
+  "contract_version": "zonecnh.deploy-contract.v1",
+  "release_ref": "<tag-or-full-commit-sha>",
+  "environment": "<staging-or-production>",
+  "target": "binance",
+  "target_pool": "sre/deploy",
+  "action": "deploy",
+  "dry_run": false,
+  "manifest_path": "release/manifest/release-manifest.json",
+  "evidence_path": "release/evidence/runner-evidence.json",
+  "execution_plane": {
+    "repository": "ZoneCNH/sre",
+    "workflow": "ZoneCNH/sre/.github/workflows/deploy-contract.yml@main",
+    "runner_pool": "sre/deploy",
+    "remote_execution_allowed_in_this_repo": false
+  }
+}
+```
+
+[FRAME, HIGH] `environment` 只能是 canonical contract 允许的逻辑环境名；人工批准、工件摘要、灰度、回滚与 evidence bundle 必须由 `manifest_path`/`evidence_path` 指向的同一 RC 制品承载，不得扩展第二套顶层字段。
+
+## 4. 预检与交接流程
+
+1. [FRAME, HIGH] 模块负责人冻结 commit，并生成与该 commit 绑定的本地和外部证据包。
+2. [FRAME, HIGH] 治理审查者核对版本身份、追溯链、未决阻塞和人工签字。
+3. [FRAME, HIGH] 模块负责人把 §3 canonical contract 提交至 SRE 控制面；提交动作本身不构成发布批准。
+4. [FRAME, HIGH] SRE 控制面校验 runner pool、变更窗口、配置引用、灰度策略和回滚工件。
+5. [FRAME, HIGH] SRE 控制面执行变更，并返回 §5 定义的签名回执；业务仓只消费回执，不复述执行命令。
+6. [FRAME, HIGH] 任何证据冲突、观测异常或回执缺失均保持 `release_closeable=NO`。
+
+## 5. 必须回传的发布回执
+
+| 字段 | 说明 |
+| --- | --- |
+| run_id | SRE 执行的唯一身份 |
+| contract_digest | §3 canonical contract 的内容摘要 |
+| artifact_digest | 实际执行工件的不可变摘要 |
+| environment_alias | 已脱敏的逻辑环境名 |
+| started_at / finished_at | UTC 时间窗口 |
+| rollout_result | 每个流量阶梯的结果及观测证据引用 |
+| health_result | 已批准健康策略的结果，不记录私有地址 |
+| rollback_result | 未触发、成功或失败，附证据引用 |
+| approver_receipts | 技术负责人和 SRE 负责人签名引用 |
+| final_state | `SUCCEEDED`、`ROLLED_BACK` 或 `FAILED` |
+
+[FRAME, HIGH] 回执必须写入 canonical contract 的 `evidence_path`，并与 `release_ref` 和 manifest 同时绑定；单独的文字结论不能替代机器回执。
+
+## 6. 历史快照（2026-07-08，已脱敏）
+
+[COMPUTED, MED] 旧版本文曾记录：当时运行工件与 v0.15.0 暂存工件摘要一致、模块健康检查返回成功，且采集进程恢复了四条产品线的 catalog 同步。该陈述仅是 2026-07-08 文档中保存的事后记录，本次修改未重新访问生产环境验证。
+
+[COMPUTED, HIGH] 历史记录中的生产网络位置、主机账户、凭据物理路径、服务控制细节和可复用操作步骤已从公开治理文档删除。
+
+[INFERRED, HIGH] 该历史快照不能证明当前 commit 已部署、当前外部依赖健康或当前版本满足发布门禁；当前判定必须重新完成 §2，并以同一 commit 的 SRE 回执为准。
+
+## 7. 安全红线
+
+- [FRAME, HIGH] 不代签、不绕过门禁、不把用户口头授权解释为永久发布授权。
+- [FRAME, HIGH] 不在业务仓保存生产地址、账户名、私有服务地址、凭据内容或凭据物理路径。
+- [FRAME, HIGH] 不在业务仓记录可直接作用于生产环境的命令、脚本参数或主机操作序列。
+- [FRAME, HIGH] 不把历史运行事实提升为当前 release approval。
+- [FRAME, HIGH] 不在缺失签名回执时将发布状态标记为成功。
+
+[RULES I BROKE]：无。

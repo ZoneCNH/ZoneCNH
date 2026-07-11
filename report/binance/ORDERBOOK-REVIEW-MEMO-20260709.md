@@ -1,5 +1,7 @@
 # OrderBook 深度分析评审备忘
 
+> [COMPUTED, HIGH] **历史快照 / 已取代**：本文评审的是 2026-07-09 实现与旧分析；当前订单簿缺口、四产品线边界和 No-Go 裁决以 [2026-07-10 综合复审](PRODUCTION-READINESS-CONSOLIDATED-20260710.md) 为准。
+>
 > **日期**：2026-07-09
 > **性质**：对 [`orderbook-deep-analysis.md`](orderbook-deep-analysis.md)（PR #1739）的补充与异议
 > **作者**：Claude（Lead 视角独立评审）

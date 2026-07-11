@@ -63,7 +63,7 @@
 | 装配存在 | `grep storageFromEnv cmd/binance-server/main.go` 命中 |
 | Fail-fast | `storage_env_test.go` 覆盖 nil ctx / nil cfg / 缺密码 / 缺 bucket |
 | 单测 | `go test ./cmd/binance-server/` 全绿 |
-| 端到端落盘 | docker-compose 起 5 infra + 验证消息落 taosx（PENDING-LIVE-RUN，需真实 infra） |
+| 端到端落盘 | 由受控 SRE live harness 提供 5 项依赖并验证消息持久化（PENDING-LIVE-RUN） |
 
 ## 6. 已知缺口（P2 跟踪）
 

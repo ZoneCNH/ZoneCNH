@@ -6,8 +6,8 @@
 - Runtime-Repo: `/home/workspace/binance`
 - Runtime-Version: v0.15.1（last published tag；本轮 runtime feature branch 尚未创建新 tag）
 - State-Model: single-state only
-- Current-State: 65 Done / 0 Partial / 0 Drifted / 0 Pending
-- release_closeable_spec: YES（规格口径 65 Done；FR-052~061 spot/um/cm 已实现，options 待 Phase 2）
+- Current-State: 13 Done / 52 Partial / 0 Drifted / 0 Pending
+- release_closeable_spec: NO（深度复审后 52 个 FR 仍缺功能或当前 RC 证据）
 - release_closeable_runtime: NO（2026-07-10 runtime evidence 尚未闭合外部 durable/fanout/query E2E、正式 release tag/release notes 与 rollback）
 - Open-P10-Issues: 0（2026-07-05 全部关闭）
 
@@ -43,18 +43,19 @@
 
 ## 5. State Model
 
-只允许单一状态：`Done` 或 `Partial`。历史 `Code-State` / `Evidence-State` 双态口径已废除。当前规格口径为 65 个 FR Done（100%），0 Partial；`release_closeable_spec=YES`。runtime 发布口径仍为 `release_closeable_runtime=NO`，因为本轮 external-gates、正式 tag/release notes、部署前检查与 rollback 尚未闭合。参见 TRACEABILITY.md §4。
+只允许单一状态：`Done` 或 `Partial`。历史 `Code-State` / `Evidence-State` 双态口径已废除。[COMPUTED, HIGH] 当前追溯矩阵为 13 个 FR Done、52 个 Partial，因此 `release_closeable_spec=NO`；同一候选提交的 external-gates、正式 tag/release notes、部署前检查与 rollback 也未闭合，因此 `release_closeable_runtime=NO`。
 
 ## 6. Product Lines and Event Types
 
 | 维度 | 允许值 |
 | --- | --- |
 | product_line | `spot`, `um_perp`, `cm_perp`, `options` |
-| event_type (implemented) | `book_ticker`, `kline`, `depth_update`, `trade`, `funding_rate`, `mark_price_update`, `option_tick`, `ticker`, `open_interest`, `index_reference`, `contract_info` |
+| event_type (local contract/path implemented) | `book_ticker`, `kline`, `depth_update`, `trade`, `funding_rate`, `mark_price_update`, `option_tick`, `ticker`, `open_interest`, `index_reference`, `contract_info` |
 | event_type (opt-in scaffold / postponed release) | `force_order`（独立事件设计与隔离实现已完成；不默认订阅，仍需 release owner 的独立 live gate 批准） |
+| current release limitations | `funding_rate` 尚无独立实时/历史生产路径；Options 订单簿仅有显式白名单的本地代码路径，live/capacity/checksum 未验收；client 有界内存 backpressure/PubAck retry 已接入，但 client spec OQ-002 接受 crash-window 丢失，且配置/指标未闭合，与零静默丢失目标冲突 |
 | identity | exchange + product_line + instrument_type + instrument_subtype + symbol + expiry + strike + option_type |
 
-> Implemented 类型已由 runtime normalize → mapper → server allowlist → cache/history/API → TDengine stable/driver → reconcile/retention 链路覆盖，并由本轮 targeted/full tests 证明本地行为。v3.18.0 canonical 命名对齐 Binance 原生事件名（camelCase→snake_case），legacy alias：`tick`→`book_ticker`、`bar`→`kline`、`depth`→`depth_update`、`mark_price`→`mark_price_update`。`force_order` 保持独立的 opt-in scaffold/postponed release：不默认订阅、不与 trade 混用，必须通过独立 live gate 后才可作为发布能力。options depth capture 已建立并通过 opt-in live capture，但 OrderBookManager 仍 excluded/postponed。runtime external durable/fanout/query E2E 仍由 release gate 管理。详见 [`design/EVENT-TYPE-MAPPING.md`](../design/EVENT-TYPE-MAPPING.md) §1-§3、[`design/FORCE-ORDER-EVENT-DESIGN.md`](../design/FORCE-ORDER-EVENT-DESIGN.md) 与 [`design/COMPATIBILITY-SUNSET-PLAN.md`](../design/COMPATIBILITY-SUNSET-PLAN.md)。
+> [COMPUTED, HIGH] “local contract/path implemented”只表示对应 parser/mapper/allowlist/storage schema 中存在本地代码与测试锚点，不表示每个类型都已完成 Binance live capture、独立历史源、外部 durable fanout 或查询 readback。v3.18.0 canonical 命名对齐 Binance 原生事件名（camelCase→snake_case），legacy alias：`tick`→`book_ticker`、`bar`→`kline`、`depth`→`depth_update`、`mark_price`→`mark_price_update`。`force_order` 保持 opt-in/postponed；Options depth 的本地 snapshot+diff 路径已接入，但没有绑定当前 RC 的 live alignment/容量证据；`funding_rate` 独立数据流也未闭合。详见 [`design/EVENT-TYPE-MAPPING.md`](../design/EVENT-TYPE-MAPPING.md) §1-§3、[`design/FORCE-ORDER-EVENT-DESIGN.md`](../design/FORCE-ORDER-EVENT-DESIGN.md) 与 [`design/COMPATIBILITY-SUNSET-PLAN.md`](../design/COMPATIBILITY-SUNSET-PLAN.md)。
 
 ## 7. Functional Requirements
 
@@ -62,69 +63,69 @@
 | --- | --- | --- | --- | --- |
 | FR-001 | client | ingest public tick/trade-like stream and normalize envelope | Done | local runtime + E2E history |
 | FR-002 | client | ingest kline/bar stream and normalize envelope | Done | local runtime + E2E history |
-| FR-003 | contract | publish to NATS subject `binance.market.{product_line}.{event_type}.v1` | Done | drift-check 22/22 PASS + publisher `.v1` fix (`4f740e5`) |
-| FR-004 | server | consume JetStream independently from client process | Done | local runtime + boundary docs |
-| FR-005 | server | persist ticks to ClickHouse schema | Done | local runtime evidence |
+| FR-003 | contract | publish to NATS subject `binance.market.{product_line}.{event_type}.v1` | Partial | current RC NATS external gate blocked |
+| FR-004 | server | consume JetStream independently from client process | Partial | ManualAck/redelivery current-RC evidence needed |
+| FR-005 | server | persist ticks to ClickHouse schema | Partial | durable persistence/readback evidence needed |
 | FR-006a | client | provide client CLI/config loading | Done | runtime config examples |
 | FR-006b | server | provide server CLI/config loading | Done | runtime config examples |
 | FR-006c | config | shared env validation and deterministic defaults | Done | config schema + examples |
 | FR-006d | smoke | local-only smoke path remains non-production | Done | `/ingest` smoke-only gate |
-| FR-007 | API | query tick data through REST | Done | REST API + analytics tests PASS (80.3% coverage) |
-| FR-007a | replay | historical replay/import path | Done | analytics tests PASS + history_lifecycle.go (737 lines) |
+| FR-007 | API | query tick data through REST | Partial | current RC query E2E evidence needed |
+| FR-007a | replay | historical replay/import path | Partial | durable replay/external readback evidence needed |
 | FR-008 | client | ingest depth stream | Done | local runtime + E2E history |
 | FR-009 | client | ingest aggregate trade stream | Done | local runtime + E2E history |
-| FR-010 | server | persist/query bar aggregates | Done | local runtime evidence |
-| FR-011 | reliability | delayed retry, parking, dead-letter behavior | Done | deadletter tests PASS (86.6% coverage) + DLQ consumer |
-| FR-012 | catalog | ExchangeInfo catalog refresh | Done | local runtime/docs |
-| FR-013 | control | whitelist/blacklist hot reload | Done | throttle.go (+110 lines) + stream_control.go reload |
-| FR-014 | ops | graceful shutdown and drain | Done | local tests/history |
-| FR-015 | identity | stable idempotency/event keys | Done | shared DTO validation |
-| FR-016 | observability | metrics exporter coverage | Done | metrics/cost.go (+101 lines) + /metrics endpoint |
-| FR-017 | observability | trace propagation and OTel visibility | Done | binancex.InitTracer + tracing.go + logging.go |
-| FR-018 | API | query bars through REST | Done | local runtime evidence |
-| FR-019 | API | query depth through REST | Done | local runtime evidence |
-| FR-020 | API | query funding-rate data | Done | local runtime/docs |
-| FR-021 | API | query mark-price data | Done | local runtime/docs |
-| FR-022 | identity | distinguish spot/perp/delivery/options instruments | Done | DTO/schema evidence |
-| FR-023 | lifecycle | retention, TTL, archival policy | Done | taos_retention.go (+121 lines) + oss_archiver.go |
-| FR-024 | control | symbol-change control subject and reload | Done | controlplane/lifecycle.go + assembly reload |
-| FR-025 | reliability | backpressure and reconnect limits | Done | throttle.go AIMD + 418 circuit breaker + stream limits |
-| FR-026 | recovery | checkpoint recovery after restart | Done | cron_reconcile.go + cursor recovery + history lifecyle |
-| FR-027 | client | multi-product websocket lifecycle | Done | history_lifecycle.go (737 lines) multi-line backfill |
-| FR-028 | errors | normalized error taxonomy | Done | quality.go (+152 lines) + error taxonomy + alerts |
-| FR-029 | data quality | anomaly/SLA tags and quality rules | Done | migrated from deprecated quality doc |
+| FR-010 | server | persist/query bar aggregates | Partial | current RC persistence/query readback needed |
+| FR-011 | reliability | delayed retry, parking, dead-letter behavior | Partial | local DLQ durability repaired; production mandatory-path and failure injection evidence needed |
+| FR-012 | catalog | ExchangeInfo catalog refresh | Partial | Candidate Catalog/Admission separation needed |
+| FR-013 | control | whitelist/blacklist hot reload | Partial | product-line refresh code exists; current RC hot-reload E2E needed |
+| FR-014 | ops | graceful shutdown and drain | Partial | active history/drain recovery is not closed |
+| FR-015 | identity | stable idempotency/event keys | Partial | request/payload/instrument identity validation incomplete |
+| FR-016 | observability | metrics exporter coverage | Partial | current RC metrics scrape/capability-matrix evidence needed |
+| FR-017 | observability | trace propagation and OTel visibility | Partial | current RC end-to-end OTel evidence needed |
+| FR-018 | API | query bars through REST | Partial | current RC external readback needed |
+| FR-019 | API | query depth through REST | Partial | orderbook and current RC depth evidence incomplete |
+| FR-020 | API | query funding-rate data | Partial | independent funding realtime/history path absent |
+| FR-021 | API | query mark-price data | Partial | current RC storage/query evidence needed |
+| FR-022 | identity | distinguish spot/perp/delivery/options instruments | Partial | strong identity wire validation incomplete |
+| FR-023 | lifecycle | retention, TTL, archival policy | Partial | OSS partition/durable retry/rehydrate evidence needed |
+| FR-024 | control | symbol-change control subject and reload | Partial | current RC no-restart reload evidence needed |
+| FR-025 | reliability | backpressure and reconnect limits | Partial | bounded in-memory queue/backpressure/PubAck retry is wired; crash-window loss policy and operator config/metrics require closure |
+| FR-026 | recovery | checkpoint recovery after restart | Partial | retry/restart paths fixed; interval-set reconciliation and state-load fail-closed evidence needed |
+| FR-027 | client | multi-product websocket lifecycle | Partial | Options capacity and four-line lifecycle evidence needed |
+| FR-028 | errors | normalized error taxonomy | Partial | normalization/error classification coverage remains incomplete |
+| FR-029 | data quality | anomaly/SLA tags and quality rules | Partial | coverage/gap/reconcile capability matrix incomplete |
 | FR-030 | admin | health/readiness/admin status | Done | local runtime evidence |
-| FR-031 | catalog | full ExchangeInfo sync | Done | exchangeinfo.go (247 lines) + refresh_test.go |
-| FR-032 | catalog | diff ExchangeInfo sync | Done | exchangeinfo_refresh.go (+36 lines) + catalog.go (+136 lines) |
-| FR-033 | catalog | delist handling | Done | exchangeinfo.go symbols BREAK/HALT/DELISTED lifecycle（**澄清**：本 FR 承载 delist 交易状态生命周期，非 GAP-E24 采集分级；symbol 采集 Tier/Collection 见 [ADR-005](../design/ADR-005-symbol-tier-classification.md)） |
-| FR-034 | identity | InstrumentKey stability | Done | product_line.go (+27 lines) + DTO validation |
-| FR-035 | identity | delivery expiry metadata | Done | exchangeinfo_option.go delivery metadata + catalog |
-| FR-036 | identity | options metadata | Done | exchangeinfo_option.go (111 lines) options metadata |
+| FR-031 | catalog | full ExchangeInfo sync | Partial | Candidate Catalog 与 Admission 尚未结构性分离 |
+| FR-032 | catalog | diff ExchangeInfo sync | Partial | true Added/Updated/Removed propagation evidence needed |
+| FR-033 | catalog | delist handling | Partial | strategy removal 与 exchange delisting 仍可能混淆 |
+| FR-034 | identity | InstrumentKey stability | Partial | wire/payload identity consistency validation needed |
+| FR-035 | identity | delivery expiry metadata | Partial | perpetual/delivery contract discovery separation needed |
+| FR-036 | identity | options metadata | Partial | Options status filter and strong-key wire roundtrip needed |
 | FR-037 | smoke | `/ingest` returns 404 in production, enabled only for local smoke | Done | boundary gate + runtime route |
-| FR-038 | security | credential rotation runbook and implementation | Done | credential rotation runbook (508 lines) + oss_archiver |
-| FR-039 | deployment | HA/DR deployment documentation | Done | binancex/tracing.go + HA/DR docs (7 docs) + InitTracer |
-| FR-040 | release | canary deployment exercise | Done | canary drill script + deploy-canary-gate.sh |
-| FR-041 | capacity | capacity planning and load model | Done | capacity planning doc + resource limits in stream_control |
-| FR-042 | quality | soak test | Done | soak test scripts + test/e2e suite PASS |
-| FR-043 | quality | chaos test | Done | chaos test scripts + go test -race PASS (0 races) |
-| FR-044 | security | admin auth, mTLS, scan gates, pentest readiness | Done | gitleaks scan + govulncheck + admin auth Bearer token |
-| FR-045 | whitelist | Whitelist Sync Job（事件驱动 + 定时兜底 + PG advisory lock 单写者；GC-0 server→client 回灌；GC-1 手动写入路径 `source='manual'`；GC-3 观察期生效 `first_seen_at` + `InObservationPeriod`）；manual 白名单审核队列（`whitelist_review` 表 + approve/reject API） | Done | whitelist/sync_job.go + rules.go + review_store.go |
+| FR-038 | security | credential rotation runbook and implementation | Partial | current RC rotation receipt and exposed-literal incident closure needed |
+| FR-039 | deployment | HA/DR deployment documentation | Partial | canonical SRE contract exists; current RC HA/DR exercise needed |
+| FR-040 | release | canary deployment exercise | Partial | same-RC canary and rollback evidence needed |
+| FR-041 | capacity | capacity planning and load model | Partial | Options shard and four-line load capacity evidence needed |
+| FR-042 | quality | soak test | Partial | historical soak is not bound to current RC |
+| FR-043 | quality | chaos test | Partial | historical chaos evidence is not bound to current RC |
+| FR-044 | security | admin auth, mTLS, scan gates, pentest readiness | Partial | current security/pentest and credential-incident closure needed |
+| FR-045 | whitelist | Whitelist Sync Job（事件驱动 + 定时兜底 + PG advisory lock 单写者；GC-0 server→client 回灌；GC-1 手动写入路径 `source='manual'`；GC-3 观察期生效 `first_seen_at` + `InObservationPeriod`）；manual 白名单审核队列（`whitelist_review` 表 + approve/reject API） | Partial | fail-open/update/reconnect E2E needed |
 | FR-046 | whitelist | whitelist 表 + whitelist_meta version SSOT + whitelist_sync_log 审计 + `first_seen_at` 观察期列（migration 016） | Done | pg_whitelist.go + migrations/011_whitelist.sql + 016_whitelist_observation.sql |
 | FR-047 | API | GET /internal/whitelist（全量 + 增量，200 统一响应）；POST /internal/whitelist/refresh（GC-5b 审核态反馈 `needs_review` / `status`） | Done | whitelist/service.go + api/whitelist_handler.go |
-| FR-048 | notify | NATS subject `binance.whitelist.version` 推送（core NATS fire-and-forget，publisher 使用独立 NATS 连接，不依赖 ingest transport；publish 失败非致命） | Done | whitelist/publisher.go + assembly 独立 NATS 连接注入 |
+| FR-048 | notify | NATS subject `binance.whitelist.version` 推送（core NATS fire-and-forget，publisher 使用独立 NATS 连接，不依赖 ingest transport；publish 失败非致命） | Partial | current RC NATS version-push evidence needed |
 | FR-049 | consumer | 下游消费方 SDK（缓存 3h TTL + NATS 订阅 + 增量刷新 + GC-5c 真正的 fail-open 降级：`degraded` 态 + `OnDegraded` 回调 + `IsFailOpen()` 信号；Bearer token 鉴权） | Done | pkg/whitelistclient/cache.go + client.go + failopen_test.go |
-| FR-050 | catalog | catalog_symbols 扩展字段（exchange_status/last_seen_at/tier/collection/raw_extra）；ApplyDiff upsert 用 COALESCE 保留手动分配的 tier/collection；contract_type=TRADIFI_PERPETUAL 区分币股 | Done | migrations/011_whitelist.sql + pg_catalog.go ApplyDiff |
-| FR-051 | tier | Tier 分配策略：4 档词表 prime/standard/lite/blocked（禁止向后兼容，无 core 档）；spot / um_perp(PERPETUAL) / um_perp(TRADIFI_PERPETUAL) / cm_perp / options 各取 24h quoteVolume 流动性 top 20；tierCapabilityMap（pkg/whitelistclient/tier_capability.go）作为 tier → (Streams, Features, Depth) 三元组静态映射 SSOT，PG 只存 tier 单列，三元组由代码推导（决策 5）；DepthLevel 全链路接通（ObEntry → OrderbookWhitelist → obWantEntry → SubscribeWithFeatures → SyncSubscriptionsWithCapabilities）；服务端准入 autoAdmitTiers={prime,standard,lite}，blocked 走审核队列；options 准入层与采集分桶层解耦（ADR-008） | Done | whitelist/rules.go + ticker_volume.go + catalog.go + pkg/whitelistclient/tier_capability.go + migrations 017/018 |
-| FR-052 | orderbook | Order Book Manager — `full_incremental` 模式：per-symbol 本地 book 状态机（UNINITIALIZED→BUFFERING→ALIGNED→REBUILDING），per-symbol 独立 goroutine 无全局锁 | Done | `internal/client/orderbook/manager.go` + `state.go` + `runtime.go` 接入主路径；options 待 Phase 2 |
-| FR-053 | orderbook | Order Book Manager — `snapshot_topn` 模式：无状态转发限档快照流（5/10/20档），不需序号校验，不进 REBUILDING | Done | `internal/client/orderbook/manager.go` handleSnapshotTopN + `rest.go` DepthMode；options 待 Phase 2 |
-| FR-054 | orderbook | Order Book Initial Alignment + Sequence Validation：REST 快照对齐（9步算法）+ spot U/u 连续性 + futures U/u/pu 连续性 + qty=="0" 删除价位 + 定点数价格对齐 | Done | `internal/client/orderbook/align.go` alignAlgorithm + validateSequence + `book.go` ApplyLevel qty=="0" 删除；options 待 Phase 2 |
-| FR-055 | orderbook | Order Book Auto-Rebuild：gap 检测失败 → 丢弃 book → BUFFERING 重新对齐，全程无人工介入；buffer with cap 10000 | Done | `internal/client/orderbook/manager.go` triggerRebuild + buffer cap 10000；options 待 Phase 2 |
-| FR-056 | orderbook | Order Book Snapshot Persistence + Fast Recovery：定期（5min）book→storage 持久化；冷启动 fast path 加载快照+验证序列连续性，命中→ALIGNED O(1)，不命中→降级完整重建 | Done | `internal/client/orderbook/persist.go` FilePersistor + restoreBookFromSnapshot + StartPersistLoop；options 待 Phase 2 |
-| FR-057 | orderbook | Order Book Staleness API：`stale = (state != ALIGNED)` 派生标志 + last_update_time + last_rebuild_time 暴露给下游；做市/风控 stale=true 时必须暂停决策 | Done | `internal/client/orderbook/manager.go` GetState + AllHealth + `admin.go` orderbookHealthAll；options 待 Phase 2 |
-| FR-058 | orderbook | Order Book TopN Subscription：固定频率（默认 100ms）推送 TopN，非 ALIGNED 时继续推送 stale=true + 最后已知值 | Done | `internal/client/orderbook/manager.go` StartTopNPusher + pushTopN + `topn.go` TopNUpdate；options 待 Phase 2 |
-| FR-059 | orderbook | Order Book Incremental Forwarding：full_incremental 模式下原样转发已校验增量，附加 rebuild_start/rebuild_complete 标记事件 | Done | `internal/client/orderbook/manager.go` forwardIncremental + forwardRebuildMarker + `topn.go` IncrementalEvent；options 待 Phase 2 |
-| FR-060 | orderbook | Order Book On-Demand Snapshot + Health Query：下游可拉取当前全量 book 校准 + per-symbol 状态查询（state/stale/last_update/last_rebuild） | Done | `internal/client/orderbook/manager.go` GetBook + `admin.go` orderbookHandler；options 待 Phase 2 |
-| FR-061 | orderbook | Order Book Rebuild Alerting + Checksum Sampling：5min 内 >3 次重建告警 + 定期（1min）REST 快照 vs 内存 book diff 隐性漂移检测 | Done | `internal/client/orderbook/health.go` HealthMonitor + StartChecksumSampler + driftDetected；options 待 Phase 2 |
+| FR-050 | catalog | catalog_symbols 扩展字段（exchange_status/last_seen_at/tier/collection/raw_extra）；ApplyDiff upsert 用 COALESCE 保留手动分配的 tier/collection；contract_type=TRADIFI_PERPETUAL 区分币股 | Partial | true Catalog Added/Updated/Removed propagation incomplete |
+| FR-051 | tier | Tier 分配策略：4 档词表 prime/standard/lite/blocked；Options 准入层独立 | Partial | Options 独立 capability 与热更新已修；真实准入/容量证据仍缺失 |
+| FR-052 | orderbook | Order Book Manager — `full_incremental` 模式 | Partial | Options path 已接入；四线 live generation/freshness 证据仍缺失 |
+| FR-053 | orderbook | Order Book Manager — `snapshot_topn` 模式 | Partial | four-line snapshot evidence incomplete |
+| FR-054 | orderbook | Initial Alignment + Sequence Validation | Partial | alignment/apply-error/Options evidence incomplete |
+| FR-055 | orderbook | Auto-Rebuild | Partial | generation and disconnect trigger incomplete |
+| FR-056 | orderbook | Snapshot Persistence + Fast Recovery | Partial | age/bridge/checksum validation absent |
+| FR-057 | orderbook | Staleness API | Partial | disconnect freshness cannot be proven |
+| FR-058 | orderbook | TopN Subscription | Partial | stale/pool lifecycle evidence incomplete |
+| FR-059 | orderbook | Incremental Forwarding | Partial | rebuild markers can be dropped |
+| FR-060 | orderbook | On-Demand Snapshot + Health Query | Partial | four-line evidence incomplete |
+| FR-061 | orderbook | Rebuild Alerting + Checksum Sampling | Partial | config/concurrency/Options coverage incomplete |
 
 ## 8. Business Requirements
 
@@ -234,16 +235,16 @@ Canonical FR/BR/AC mapping is in `module/binance/matrix/TRACEABILITY.md`. This f
 
 ## 21. Release Gate
 
-Current release gate verdict: `release_closeable_spec=YES`; `release_closeable_runtime=NO`（规格口径 65 Done；runtime external durable/fanout/query、正式 tag/release notes、部署前检查与 rollback 尚未闭合）。
+Current release gate verdict: `release_closeable_spec=NO`; `release_closeable_runtime=NO`。[COMPUTED, HIGH]
 
 PRG-001~007 状态如下：
-- PRG-001：CI runner 从 self-hosted 迁移到 ubuntu-latest，CI 已触发运行 → PASS
-- PRG-002：v0.13.0 tag + GitHub Release 已存在（2026-07-05 创建） → PASS
-- PRG-003：PRG-001~007 全 PASS → PASS
-- PRG-004：Jaeger/Grafana/Loki/AlertManager 全在线 → PASS
-- PRG-005：OpenTelemetry SDK v1.44.0，govulncheck 清洁 → PASS
-- PRG-006：gated resilience 测试 CI-runnable（soak Level 2 PASS + chaos Level 2 5 PASS/8 SKIP/0 FAIL），make test-gated 可手动触发 → PASS
-- PRG-007：0 个 GitHub open issue（2026-07-05 全部关闭） → PASS
+- PRG-001：当前 RC 的远程 CI 成功证据未归档 → BLOCKED。[COMPUTED, HIGH]
+- PRG-002：当前 RC 未创建 tag、release notes 与制品摘要 → BLOCKED。[COMPUTED, HIGH]
+- PRG-003：PRG-001~007 未全部通过 → BLOCKED。[COMPUTED, HIGH]
+- PRG-004：可观测外部环境未绑定当前 RC 重验 → BLOCKED。[COMPUTED, HIGH]
+- PRG-005：当前 RC 的完整 security/lint 证据未闭合 → BLOCKED。[COMPUTED, HIGH]
+- PRG-006：当前 RC 的外部耐久性、故障注入与回滚演练未绑定同一 commit → BLOCKED。[COMPUTED, HIGH]
+- PRG-007：Beads 生产就绪 epic `ZoneCNH-7i1p` 仍为 in_progress，外部证据子项未闭合 → BLOCKED。[COMPUTED, HIGH]
 
 ## 22. Change History
 
@@ -265,7 +266,7 @@ PRG-001~007 状态如下：
 
 ## 22a. Runtime Gap Matrix Reference
 
-> **双口径声明**：本 SPEC 的统计口径（65 Done / 0 Partial / 0 Drifted / 0 Pending）表示 **规格口径**——FR 功能面已闭合。运行时口径的 58 个数据完整性/安全性/可运维性缺口记录在独立制品 `module/binance/matrix/RUNTIME-GAP-MATRIX.md` 中。两者正交，不矛盾。详见该文件 §7 双口径声明。
+> [COMPUTED, HIGH] **单一状态声明**：当前统计为 13 Done / 52 Partial / 0 Drifted / 0 Pending。`module/binance/matrix/RUNTIME-GAP-MATRIX.md` 是缺口细目，不是第二状态源；未闭合的功能或运行证据必须保持对应 FR 为 Partial。
 >
 > 来源报告：`report/binance/DEEP-ANALYSIS-20260704.md`（含 runtime baseline 对齐、发布阻断闭环与版本回刷证据）。
 >
@@ -273,8 +274,8 @@ PRG-001~007 状态如下：
 
 ## 23. Stop Condition
 
-v4.0.0 规格口径 FR 65/65 Done（100%）功能面已闭合（spot/um/cm），release_closeable=YES（PRG-001~007 全 PASS）。FR-052~061 中 options depth 范围待 Phase 2 testnet 实测后激活（阻塞于 ADR-011 §7.4 checklist）。
+[COMPUTED, HIGH] Stop condition 尚未达成：当前 13/65 Done、52 Partial，且 Options 订单簿 live alignment/容量、当前 RC 外部 E2E、tag/release notes、preflight 与 rollback 证据未闭合。
 
-> **v4.0.0 order book FR 实现状态**：FR-052~061 spot/um/cm 部分已实现（Phase 1），代码位于 `/home/workspace/binance/internal/client/orderbook/`。options depth 协议待测试网实测确认（见状态机设计 §7.4 checklist），Phase 2 闭环后激活。
+> **v4.1.0 order book FR 实现状态**：FR-052~061 四线均保持 Partial。代码位于 `/home/workspace/binance/internal/client/orderbook/`；Options 已有显式白名单的 REST snapshot + full-incremental 路径，但仍须完成 live alignment、重连、容量与 checksum checklist 后才可发布。
 
 > **运行时缺口说明**：58 个运行时缺口（GAP-E1~E58）对应的 28 个 GitHub Issues 已于 2026-07-05 全部关闭。2026-07-06 新增并修复 GAP-E59（数据血缘/版本控制：新增 `internal/server/lineage/` 包 + migration 012 `data_lineage` append-only 表 + ingest 三阶段接线）。PRG-006 gated resilience 测试已 CI-runnable（Level 2 测试默认 CI 通过/跳过，Level 1 测试可通过 `make test-gated` 或 CI `run_gated` 手动触发）。详见 `module/binance/matrix/RUNTIME-GAP-MATRIX.md` §7 双口径声明。

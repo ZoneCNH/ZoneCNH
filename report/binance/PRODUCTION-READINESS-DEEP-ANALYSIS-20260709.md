@@ -1,8 +1,10 @@
 # Binance 模块生产级可发布深度分析
 
+> [COMPUTED, HIGH] **历史快照 / 已取代**：本文的“本地 P0 已闭合”和条件式 Go 判断已被 [2026-07-10 综合复审](PRODUCTION-READINESS-CONSOLIDATED-20260710.md) 推翻；当前唯一裁决为 No-Go。本文仅保留为 2026-07-09 时点记录，不得用于当前 RC 发布。
+>
 > 日期：2026-07-09  
 > 分析对象：`module/binance/` 与运行时仓 `/home/workspace/binance`  
-> 当前结论：本地 runtime P0 gate 已闭合；最终 release Go 仍需远端 CI、tag、live capture 和部署证据。[COMPUTED, HIGH]  
+> 历史结论：当时曾判定本地 runtime P0 gate 已闭合；该判断不再有效。[COMPUTED, HIGH]
 > 证据边界：本报告基于当前本地工作区和本地命令输出，不等同于 GitHub Release 或生产部署裁决。[COMPUTED, HIGH]
 > runtime merged fix commit：`cc51916b9c7686128433465844cf436330260f8c`（PR #486）。[COMPUTED, HIGH]
 

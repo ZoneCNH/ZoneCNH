@@ -7,13 +7,13 @@
 | Status         | Generated from current module SSOT                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | Last-Updated   | 2026-07-10 |
 | Module-Version | v4.1.0 |
-| Module-State   | v4.1.0：当前追踪为 **43 Done / 22 Partial / 0 Drifted / 0 Pending**；缺失外部/运行证据的 FR 保持 Partial。`release_closeable_spec=NO`；runtime `release_closeable_runtime=NO`，外部发布证据另行管理。 |
+| Module-State   | [COMPUTED, HIGH] v4.1.0：**13 Done / 52 Partial / 0 Drifted / 0 Pending**；`release_closeable_spec=NO`且 `release_closeable_runtime=NO`。 |
 | Runtime-Repo   | `/home/workspace/binance`                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | Source         | `SPEC.md`, `TRACEABILITY.md`, `STANDARD.md`, `client/TRACEABILITY.md`, `server/TRACEABILITY.md`, `BOUNDARY-GATES.md`                                                                                                                                                                                                                                                                                                                                  |
 
-本文档是验收执行清单，不是通过证明。每个 Pending 项必须由实际命令输出、CI run、测试报告或 traceability 状态更新关闭。
+本文档同时保留历史 AC/TC 登记与当前 RC 验收入口，不是通过证明。历史表中的 `Done/PASS` 不得投影为当前状态；当前状态只读 canonical Matrix，并必须由同一 RC 的命令输出、CI run、测试报告和 evidence bundle 关闭。
 
-> [COMPUTED, HIGH] 2026-07-10 状态对齐：当前追踪为 43 Done / 22 Partial（100% 已登记但非全部闭合），`release_closeable_spec=NO`；runtime `release_closeable_runtime=NO`。运行时 gap 与本轮 external-gates 独立维护，不能由规格状态或历史 release evidence 自动继承。外部 durable/fanout/query E2E、正式 tag/release notes、部署前检查与 rollback 仍未闭合；implementation commit 为 `462772f6`。
+> [COMPUTED, HIGH] 2026-07-10 深度复审后当前追踪为 13 Done / 52 Partial，`release_closeable_spec=NO`且 `release_closeable_runtime=NO`。runtime 审计基线为 `b20f6d44f8b246149c7a9f9c06a4dc27bc7b49ef`；历史 evidence 不能自动继承到当前 RC。
 
 ### 状态口径 L1/L2 分层（RULES R4）+ 单一状态模型（v3.9.0）
 
@@ -21,7 +21,7 @@
 
 #### 代码+验收统一层（Done / Partial / Drifted / Pending）
 
-定义：FR 实现状态综合代码存在性、装配就绪、TC PASS 和 evidence 归档。当前 65 Done + 0 Pending（FR-052~061 order book rebuild）。
+定义：FR 实现状态综合代码存在性、装配就绪、TC PASS 和 evidence 归档。[COMPUTED, HIGH] 当前为 13 Done + 52 Partial + 0 Pending。
 
 | 状态      | 含义                                                                    | 证据要求                                      |
 | --------- | ----------------------------------------------------------------------- | --------------------------------------------- |
@@ -30,7 +30,7 @@
 | `Drifted` | 代码存在但 spec 已变更导致 runtime 不符合当前 spec 行为模型              | ⚠️ 标注 "runtime 待对齐" + 对应 spec 变更说明 |
 | `Pending` | 仅规格登记，runtime 仓未推送对应代码实现                                 | 仅有 spec 登记                                |
 
-> FEATURES.md 和 TRACEABILITY.md 的「Done」状态均指上述单一状态模型的 Done。ACCEPTANCE.md §4 闭合矩阵使用 Evidence 列标注 evidence 归档状态（全部 Done）。
+> [COMPUTED, HIGH] FEATURES.md 和 TRACEABILITY.md 的「Done」状态均指上述单一状态模型的 Done。本文 §4 的逐 FR 表是历史 evidence 投影，不是当前状态源；当前状态只读 canonical Matrix。
 
 #### 原 L1/L2 分层（保留）
 
@@ -71,17 +71,19 @@
 
 | Gate    | 来源              | 标准                                        | 当前状态 | Evidence                         |
 | ------- | ----------------- | ------------------------------------------- | -------- | ------------------------------------- |
-| PRG-001 | TRACEABILITY §4   | remote CI current run（ubuntu-latest runner） | PASS     | CI workflow 已从 self-hosted 迁移到 ubuntu-latest；注意：GitHub Actions 分钟配额需确认可用 |
-| PRG-002 | TRACEABILITY §4   | release promotion（release tag + notes）    | PASS     | v0.13.0 tag + GitHub Release 均存在（2026-07-05） |
-| PRG-003 | TRACEABILITY §4   | production readiness（PRG 7/7 proof）       | PASS     | PRG-001~007 全 PASS |
-| PRG-004 | TRACEABILITY §4   | observability（metrics/OTel/dashboard）     | PASS     | Jaeger/Grafana/Loki/AlertManager 全在线 |
-| PRG-005 | TRACEABILITY §4   | security（scan/mTLS/pentest）               | PASS     | govulncheck 清洁（2026-07-06 验证） |
-| PRG-006 | TRACEABILITY §4   | resilience（soak/chaos/canary）             | PASS     | Soak Level 2 PASS + Chaos Level 2 5 PASS/8 SKIP/0 FAIL（CI-runnable）；make test-gated 手动触发 Level 1 |
-| PRG-007 | TRACEABILITY §4   | issue sync（GitHub + Beads closures）       | PASS     | 0 个 GitHub open issue（2026-07-05 全部关闭，28+43 issues resolved） |
+| PRG-001 | TRACEABILITY §4   | remote CI current run | BLOCKED | [COMPUTED, HIGH] 当前 RC 无归档的远程 CI 成功证据 |
+| PRG-002 | TRACEABILITY §4   | release promotion（release tag + notes） | BLOCKED | [COMPUTED, HIGH] 当前 RC 无 tag/release notes/artifact digest |
+| PRG-003 | TRACEABILITY §4   | production readiness（PRG 7/7 proof） | BLOCKED | [COMPUTED, HIGH] PRG-001~007 未全通过 |
+| PRG-004 | TRACEABILITY §4   | observability（metrics/OTel/dashboard） | BLOCKED | [COMPUTED, HIGH] 外部可观测证据未绑定当前 RC |
+| PRG-005 | TRACEABILITY §4   | security（scan/mTLS/pentest） | BLOCKED | [COMPUTED, HIGH] 当前 RC security/lint 证据未闭合 |
+| PRG-006 | TRACEABILITY §4   | resilience（soak/chaos/canary） | BLOCKED | [COMPUTED, HIGH] 外部耐久性、故障注入与 rollback 未绑定当前 RC |
+| PRG-007 | TRACEABILITY §4   | issue sync（GitHub + Beads closures） | BLOCKED | [COMPUTED, HIGH] Beads epic `ZoneCNH-7i1p` 仍为 in_progress |
 
-## 2. Acceptance Criteria 登记
+## 2. 历史 Acceptance Criteria 登记（非当前状态源）
 
-| AC            | 所属 FR                       | 验收说明                                                                                                                                         | 关联 TC        | 当前状态                                                                                                 |
+> [COMPUTED, HIGH] 本表保留旧 release 的逐 AC 登记，列名中的 `Done/PASS` 仅描述历史记录。它与当前 `13 Done / 52 Partial` 投影不等价，尤其不能关闭当前仍缺外部 PubAck/ManualAck/MaxDeliver、存储、归档、funding、Options 和 release evidence 的 AC。
+
+| AC            | 所属 FR                       | 验收说明                                                                                                                                         | 关联 TC        | 历史登记状态                                                                                             |
 | ------------- | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | -------------- | -------------------------------------------------------------------------------------------------------- |
 | AC-001        | FR-001                        | Spot market line 可接入、映射、发布、消费；Client 在 product-line 已启用时建立 WebSocket 连接并开始采集。                                        | TC-001         | Done                                                                                                     |
 | AC-002        | FR-001                        | USDM、COINM、Options product lines 纳入同一 contract；连接断开后自动重连，JetStream durable consumer 自动恢复消费位置。                          | TC-001         | Done                                                                                                     |
@@ -118,17 +120,17 @@
 | AC-033        | FR-009                        | CI 禁止 `binance-server` 导入 client internals；任何代码 reintroduce `binance-market` 引用时 CI no-legacy gate 失败。                            | TC-021         | PASS                                                                                                     |
 | AC-034        | FR-009                        | CI 禁止 `binance-market` 与运行时共享包回流；go.mod 中 natsx/redisx/postgresx/taosx/clickhousex/kafkax/ossx/gin 均保持 direct 依赖。             | TC-022         | PASS                                                                                                     |
 | AC-035        | FR-009                        | `BOUNDARY-GATES` 全量检查通过，且 client/server 边界、进程边界、运行时共享包禁止与依赖边界均保持可审计。                                         | TC-020, TC-022 | PASS                                                                                                     |
-| AC-036~AC-047 | FR-006c/FR-007a/FR-010/FR-011 | redisx hot cache、analytics API、clickhousex ETL 与 distributed coordinator lock。                                                               | TC-023~TC-028  | Done                                                                                                     |
-| AC-048~AC-059 | FR-012~FR-015                 | stream session lifecycle、reliability controls、observability、pause/resume/drain。                                                              | TC-029~TC-032  | Done                                                                                                     |
-| AC-060~AC-071 | FR-016~FR-019                 | historical backfill planner、gap replay、archive manifest/restore、resource governance。                                                         | TC-033~TC-036  | Done                                                                                                     |
+| AC-036~AC-047 | FR-006c/FR-007a/FR-010/FR-011 | redisx hot cache、analytics API、clickhousex ETL 与 distributed coordinator lock。                                                               | TC-023~TC-028  | Partial（FR-007a/011 尚缺当前 RC 证据） |
+| AC-048~AC-059 | FR-012~FR-015                 | stream session lifecycle、reliability controls、observability、pause/resume/drain。                                                              | TC-029~TC-032  | Partial（FR-013 热更新 E2E 未闭合） |
+| AC-060~AC-071 | FR-016~FR-019                 | historical backfill planner、gap replay、archive manifest/restore、resource governance。                                                         | TC-033~TC-036  | Partial（FR-016/017 当前 RC 证据未闭合） |
 | AC-072~AC-080 | FR-020~FR-022                 | funding rate、mark/index price 与 event-type governance matrix。                                                                                 | TC-037~TC-039  | Done                                                                                                     |
-| AC-081~AC-086 | FR-023~FR-024                 | release evidence bundle 与 runtime config hot reload。                                                                                           | TC-040~TC-042  | Done                                                                                                     |
-| AC-087~AC-098 | FR-025~FR-028                 | backfill throttle/priority、daily reconciliation、cold data rehydration、progress API。                                                          | TC-043~TC-046  | Done                                                                                                     |
+| AC-081~AC-086 | FR-023~FR-024                 | release evidence bundle 与 runtime config hot reload。                                                                                           | TC-040~TC-042  | Partial（archive/reload 证据未闭合） |
+| AC-087~AC-098 | FR-025~FR-028                 | backfill throttle/priority、daily reconciliation、cold data rehydration、progress API。                                                          | TC-043~TC-046  | Partial（durable queue/restart/Options 证据未闭合） |
 | AC-099~AC-104 | FR-029~FR-030                 | freshness SLA、Options raw field pass-through。                                                                                                  | TC-047~TC-049  | Done                                                                                                     |
 
-### 2.1 运行时口径 AC（不计入规格口径 55 Done 统计）
+### 2.1 运行时细化 AC（纳入 canonical FR 判定）
 
-> **双口径声明**：下表为运行时口径验收标准，承接 `../matrix/RUNTIME-GAP-MATRIX.md` 中 GAP-E24 等运行时缺口的 AC 映射。**不纳入上方规格口径 `55 Done` 统计**（规格口径与运行时口径正交，见 SPEC §22a）。编号使用 `AC-TIER-*` 前缀以与规格口径数字编号（AC-001~AC-104）区分。
+> [COMPUTED, HIGH] 下表是 GAP-E 的细化验收标准，不是第二套状态源。任一细化 AC 为 Open/Partial 时，canonical Matrix 中对应 FR 必须保持 Partial；编号前缀只用于避免与 AC-001~AC-104 碰撞。
 
 | AC（运行时）   | 关联 GAP / ADR                          | 验证内容                                                                                                          | 对应 task              | 状态（运行时） |
 | -------------- | --------------------------------------- | ----------------------------------------------------------------------------------------------------------------- | ---------------------- | -------------- |
@@ -141,7 +143,9 @@
 
 > **GAP-E25 / CLIENT-018 暂不建 AC-TIER**：CLIENT-018 为可选任务（ADR-005 §6.2 / TIER-DESIGN-DETAILS §9 勘误降为可选扩容，非 GAP-E24 下游依赖），当前 deferred。待负载评估触发启用时补 `AC-TIER-007`（多副本分片无重复采集）+ `AC-TIER-008`（副本缩容 30s 内接管）。在此之前 CLIENT-018 的 `AC-018-001/002` 为 task-local 验收，不进本 §2.1 运行时口径表（故本表止于 AC-TIER-006，不加行）。
 
-## 3. Test Case 登记
+## 3. 历史 Test Case 登记（非当前状态源）
+
+> [COMPUTED, HIGH] 本节保留旧 release 的 TC 结果描述，用于追溯测试设计；其 `Done/PASS` 不自动继承到当前 RC。当前验收只由 canonical Matrix、同一 RC 的 evidence bundle 与 §5 Release Definition of Done 联合判定。
 
 | TC            | 覆盖                          | 类型 / 验证口径                                                                                  | 当前状态                                                | 关闭证据                                                                                                                                                                            |
 | ------------- | ----------------------------- | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -175,9 +179,9 @@
 | TC-043~TC-046 | FR-025~FR-028                 | backfill throttle/reconciliation/rehydration/progress。                                          | Done                                                 | 对应 runtime tests、metrics、contract tests 与 release evidence。                                                                                                                   |
 | TC-047~TC-049 | FR-029~FR-030                 | freshness SLA、Options raw field pass-through。                                                  | Done                                                 | 对应 runtime tests、metrics、contract tests 与 release evidence。                                                                                                                   |
 
-## 4. 覆盖闭合矩阵（Evidence 视角）
+## 4. 历史覆盖闭合矩阵（非当前状态源）
 
-> **v3.9.0 单一状态模型**：此矩阵 Evidence 列标注各 FR 的 evidence 归档状态。`Done` = TC 全部 PASS + AC 全部满足 + runtime evidence 归档。**55 个 FR Evidence 全部 Done（100%）**。release_closeable=**YES**（PRG-001~007 全 PASS）。FR-052~061 order book rebuild spot/um/cm 已实现（Phase 1，TC-OB-001~011 由 `internal/client/orderbook/` 包测试覆盖）；options depth 待 Phase 2 实测激活。
+> [COMPUTED, HIGH] **历史 v3.9.0 投影**：下表保留当时的 Evidence 描述，不得用于当前裁决。当前唯一结论为 13 Done / 52 Partial / 0 Drifted / 0 Pending，spec/runtime 均为 NO。
 
 | FR      | AC 覆盖                                                        | TC 覆盖        | Evidence 闭合状态                                                                                                                                                                                                                         |
 | ------- | -------------------------------------------------------------- | -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
@@ -230,7 +234,7 @@
 | FR-043  | AC-125~AC-127                                                  | TC-059         | Done（chaos test scripts + go test -race PASS，0 races）                                                                                                                                   |
 | FR-044  | AC-128~AC-130                                                  | TC-060, TC-061 | Done（gitleaks scan + govulncheck + admin auth Bearer token）                                                                                                                               |
 
-> **总结（规格口径）**：65 FR Done / 0 Partial / 0 Drifted / 0 Pending；`release_closeable_spec=YES`。runtime `release_closeable_runtime=NO`，本轮 external-gates、正式 tag/release notes、部署前检查与 rollback 尚未闭合。FR-052~061 order book rebuild spot/um/cm 已实现；options depth capture 已完成，但进入 OrderBookManager 仍 excluded/postponed。
+> [COMPUTED, HIGH] **当前总结**：13 FR Done / 52 Partial / 0 Drifted / 0 Pending；`release_closeable_spec=NO`且 `release_closeable_runtime=NO`。
 
 ## 5. Release Definition of Done
 
@@ -241,31 +245,31 @@
 | 根、Client、Server traceability 存在                      | Done                                                                                                 | 三个 traceability 文件可定位。                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | natsx / ManualAck / redisx / ossx / kafkax 边界已写入规格 | Done                                                                                                 | `SPEC.md` 与 `TRACEABILITY.md` 可定位对应 FR/AC/TC。                                                                                                                                                                                                                                                                                                                                                                                           |
 | Boundary gates 文档化                                     | Done                                                                                                 | `BOUNDARY-GATES.md` 存在。                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| 所有 FR implemented                                       | 65 Done / 0 Partial / 0 Drifted / 0 Pending（options depth excluded/postponed） | `release_closeable_spec=YES`；不替代 runtime 发布门禁。 |
-| 所有 AC passed                                            | Done                                                                                                 | AC-001~AC-130 历史证据见 TRACEABILITY；43 P10 issues 已全部关闭。 |
-| 所有 TC passed                                            | Done                                                                                                 | TC-001~TC-065 全 PASS；go test -race 0 races。 |
-| Runtime test evidence                                     | Done                                                                                                 | `/home/workspace/binance/release/evidence/binance/20260628-full-e2e-closure/` 已归档。 |
-| Coverage and performance evidence                         | Done                                                                                                 | 覆盖率 99.9%；soak test 2min PASS，chaos test 5/5 PASS。 |
-| CI pass                                                   | Done                                                                                                 | 本地 + 远程 CI（ubuntu-latest runner）全 PASS。 |
+| 所有 FR implemented | 13 Done / 52 Partial / 0 Drifted / 0 Pending | [COMPUTED, HIGH] `release_closeable_spec=NO` |
+| 所有 AC passed | Not Done | [COMPUTED, HIGH] Partial FR 对应 AC 仍缺当前 RC 证据 |
+| 所有 TC passed | Not Done | [COMPUTED, HIGH] 当前 RC 尚无完整 TC 证据包 |
+| Runtime test evidence | Partial | [COMPUTED, HIGH] 历史 evidence 存在，但与当前 runtime 基线不同 commit |
+| Coverage and performance evidence | Not Done | [COMPUTED, HIGH] 当前 RC 无绑定的 coverage/soak/chaos 证据 |
+| CI pass | Not Done | [COMPUTED, HIGH] 当前 RC 无归档的远程 CI 成功证据 |
 
 ## 6. 当前验收缺口
 
-> [COMPUTED, HIGH] 规格口径 `release_closeable_spec=YES`；runtime `release_closeable_runtime=NO`。P10 issue 投影与运行时 59 项 GAP-E 不能替代本轮 external-gates、正式 tag/release notes、部署前检查与 rollback 证据。
+> [COMPUTED, HIGH] 当前 `release_closeable_spec=NO`且 `release_closeable_runtime=NO`。历史 issue 闭环与 GAP-E 投影不能替代当前 RC 的 external-gates、正式 tag/release notes、部署前检查与 rollback 证据。
 
 | 缺口 | 状态 | 说明 |
 | --- | --- | --- |
 | 全量 P10 issue closure | DONE | GitHub #1289~#1331 与对应 Beads 43 项全部 closed。 |
-| Release closeable gate | SPEC PASS / RUNTIME BLOCKED | `release_closeable_spec=YES`；runtime external-gates、tag/release notes、preflight 与 rollback 未闭合。 |
+| Release closeable gate | SPEC BLOCKED / RUNTIME BLOCKED | [COMPUTED, HIGH] 52 Partial，external-gates、tag/release notes、preflight 与 rollback 未闭合。 |
 | SPEC / TRACEABILITY size gate | DONE | SPEC root/client/server 均已 <1000；TRACEABILITY root=114，client/server 212/242。 |
-| Remote CI / release | DONE | CI ubuntu-latest runner PASS，v0.12.0 release tag 已发布。 |
-| Production readiness evidence | DONE | PRG-001~005、PRG-007 PASS；PRG-006 Partial；HA/DR、credential rotation、canary、soak、chaos、security、observability 全部闭合。 |
+| Remote CI / release | BLOCKED | [COMPUTED, HIGH] 历史 release 不是当前 RC 证据。 |
+| Production readiness evidence | BLOCKED | [COMPUTED, HIGH] PRG-001~007 当前均未绑定同一 RC 闭合。 |
 | 10x 对齐检查 | PASS | 10 轮检查验证 tracker/doc alignment。 |
 
 ## 7. GitHub Issue Closure Ledger（2026-06-23）
 
-> [COMPUTED, HIGH] 历史 closure ledger：#923~#931 已全部 CLOSED。完整账本见 [`report/binance/github-issues-923-931-closure-ledger-20260623.md`](../../report/binance/github-issues-923-931-closure-ledger-20260623.md)。
+> [COMPUTED, HIGH] 历史 closure 投影曾记录 #923~#931 全部 CLOSED；原 `report/binance/github-issues-923-931-closure-ledger-20260623.md` 已不在当前 checkout，只保留 [`report/INDEX.md`](../../../report/INDEX.md) 的历史索引记录，因此不得将其当作当前 RC 证据。
 >
-> [COMPUTED, HIGH] SPEC v4.0.0 确认 release_closeable=YES（PRG-001~007 全 PASS）。2026-06-28 full E2E 包已归档。GitHub open issue = 0。
+> [COMPUTED, HIGH] 历史 SPEC v4.0.0 曾记录 `release_closeable=YES`（PRG-001~007 全 PASS）。2026-06-28 full E2E 包保留为历史归档，不改变当前 RC 的 NO。
 
 | Issue | GitHub 状态 | 已有证据                                                                                                                   | Runtime/release 边界                                                                                                                                                       |
 | ----- | ----------- | -------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -281,7 +285,7 @@
 
 ## 8. GitHub/Beads Issue Blocker Ledger（2026-06-29 全部 CLOSED）
 
-> [COMPUTED, HIGH] P10 blocker ledger（GitHub #1289-#1331 与 Beads ZoneCNH-* 43 项）已全部 CLOSED。10x 对齐检查 ALL PASS。release_closeable=YES（PRG-001~007 全 PASS）。以下保留历史闭园账本。
+> [COMPUTED, HIGH] 以下保留历史 P10 闭园账本：当时 GitHub #1289-#1331 与 Beads ZoneCNH-* 43 项均记录为 CLOSED，历史投影曾写 `release_closeable=YES`。该结论不绑定当前 RC，不改变当前 NO。
 
 | P10 | GitHub | Beads | State | 关闭证据摘要 |
 | --- | --- | --- | --- | --- |
@@ -329,11 +333,11 @@
 | P10-J7 | #1307 | `ZoneCNH-ckpf` | CLOSED | 合规销毁演练（PRG-005 跟踪）。 |
 | P10-J8 | #1330 | `ZoneCNH-dvf9` | CLOSED | API 渗透测试（PRG-005 跟踪）。 |
 
-> [COMPUTED, HIGH] 全部 43 P10 issues（GitHub #1289-#1331 / Beads ZoneCNH-*）已 CLOSED。release_closeable=YES（PRG-001~007 全 PASS）。PRG-001~007 的跟踪在 TRACEABILITY.md §4。
+> [COMPUTED, HIGH] 历史账本记录全部 43 P10 issues CLOSED 并曾投影 `release_closeable=YES`；当前 PRG-001~007 以 TRACEABILITY.md §4 为准，状态均为 BLOCKED。
 
 ---
 
-## Order Book FR-052~061 验收标准（spot/um/cm 已实现；options 待 Phase 2）
+## Order Book FR-052~061 验收标准（四线均为 Partial；Options live checklist 待闭合）
 
 > 来源：[ADR-011](../design/ADR-011-order-book-rebuild-inclusion.md) + [ORDER-BOOK-STATE-MACHINE.md](../design/ORDER-BOOK-STATE-MACHINE.md)
 

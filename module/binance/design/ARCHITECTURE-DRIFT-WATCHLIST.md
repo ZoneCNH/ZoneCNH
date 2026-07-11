@@ -149,7 +149,7 @@ rg "2\s*\*\s*interval|2\s*\*\s*expected" /home/workspace/binance/internal/ -l --
 ## D11. 状态模型回归（禁止代码/证据双状态）
 
 **风险级别**：HIGH
-**历史**：v3.8.0 及之前 FEATURES.md/ACCEPTANCE.md/TRACEABILITY.md 三份文档对同一 FR 的「Done」状态定义互相矛盾，导致无法从单一文档判断真实完成状态。v3.9.0 曾引入代码完成/证据完成分层；P10 D-1 已撤销该结论，当前只能使用单一 Done/Partial/Drifted/Pending 状态。当前 root 状态为 55 Done / 0 Partial / 0 Drifted / 10 Pending，release_closeable=YES（PRG-001~007 全 PASS）。
+**历史**：v3.8.0 及之前 FEATURES.md/ACCEPTANCE.md/TRACEABILITY.md 三份文档对同一 FR 的「Done」状态定义互相矛盾，导致无法从单一文档判断真实完成状态。v3.9.0 曾引入代码完成/证据完成分层；P10 D-1 已撤销该结论，当前只能使用单一 Done/Partial/Drifted/Pending 状态。[COMPUTED, HIGH] 2026-07-10 root 当前状态为 13 Done / 52 Partial / 0 Drifted / 0 Pending，`release_closeable_spec=NO`、`release_closeable_runtime=NO`；旧 55/10 与 YES 只能出现在明确历史上下文。
 **违反规则**：R4
 **检测命令**：
 ```bash

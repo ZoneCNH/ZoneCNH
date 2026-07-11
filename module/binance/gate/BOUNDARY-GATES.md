@@ -8,7 +8,7 @@
 > Runtime 脚本：`/home/workspace/binance/scripts/boundary-gates.sh`
 > Runtime 证据：以 runtime 仓最终 release packet 指向的版本化 bundle 为准；旧 `20260623/20260625` 目录仅作历史证据。
 > Runtime evidence commit：本轮 implementation commit 为 `3f6366728b635c32d73565874965d40c20a92caf`；ledger 已重新执行并绑定该 SHA，但 tag、CI URL、release notes 与 rollback 尚未齐全。[COMPUTED, HIGH]
-> Verified source commit：`3f6366728b635c32d73565874965d40c20a92caf`；不使用旧 HEAD 投影冒充当前事实。[COMPUTED, HIGH]
+> Historical verified source commit：`3f6366728b635c32d73565874965d40c20a92caf`；[COMPUTED, HIGH] 当前审计基线为 `b20f6d44f8b246149c7a9f9c06a4dc27bc7b49ef`，旧 gate evidence 不自动继承到当前 RC。
 
 ## 1. 目的
 
