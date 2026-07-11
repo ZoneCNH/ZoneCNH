@@ -39,7 +39,14 @@ Goal → Spec → Design → Plan → Tasks → Prompt → Code → Test → Rev
 
 ### 15.5 CI/CD 执行平面
 
-管线所有 CI/CD 阶段（Build / Test / Lint / Security Scan / Release / Deploy）必须运行在 self-hosted runners 上（CICD-001）。执行平面规则详见：
+私有模块的所有 CI/CD 阶段（Build / Test / Lint / Security Scan / Release / Deploy）必须运行在 self-hosted runners 上（CICD-001）。公开（public）模块不受此限制，可使用 GitHub-hosted runners（如 `ubuntu-latest`），通过 `secrets.GITHUB_TOKEN` 访问私有依赖即可。
+
+| 模块可见性 | 执行平面 | 约束 |
+|-----------|----------|------|
+| 私有 (`private`) | self-hosted (`sre/*` pool) | 强制 |
+| 公开 (`public`) | GitHub-hosted 或 self-hosted | 允许，推荐 `ubuntu-latest` |
+
+执行平面规则详见：
 
 | 文档 | 用途 |
 | ---- | ---- |
