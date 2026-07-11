@@ -2,7 +2,7 @@
 
 {一句话描述本仓库是什么——L2 适配层？Python 采集客户端？治理文档枢纽？}
 
-{如继承 xlib_standard 规范，写：本仓库遵循 [xlib_standard](https://github.com/ZoneCNH/xlib_standard) 治理协议。}
+{如继承 xlib_standard 规范，写：本仓库遵循 [xlib_standard](https://github.com/xhyperium/xlib_standard) 治理协议。}
 
 ## 项目概述 [必需]
 

@@ -85,17 +85,17 @@ L2.5: domainx / decimalx / domain_market / domain_macro / domain_exchange (5/5 �
 ## 📦 核心项目
 
 ### 基座 · 基础设施
-- [xlib_standard](https://github.com/ZoneCNH/xlib_standard) — 标准事实源、Go Reference Template（Generator/Harness/Evidence 已拆分至 xlib_harness / xlib_evidence）；v1.0.1 GitHub Release 已发布，CI/Docker/Worktree/adoption 与本地 release-preflight 通过；不作为运行时 import 依赖 `公开`
-- [xlib_harness](https://github.com/ZoneCNH/xlib_harness) — 模块生成器与门禁执行器：generate/scaffold、spec-lint、boundary-check、traceability-gate、format-check；✅ v0.1.6 GitHub Release 已发布，Release run 27855366871 与 main CI run 27855396013 通过，覆盖率 100.0%，pinned gitleaks CLI secret scan 已对齐 `公开`
-- [xlib_evidence](https://github.com/ZoneCNH/xlib_evidence) — 证据收集与发布运行时：collect-coverage、generate-manifest、validate-manifest、remote-evidence、report；✅ v0.2.4 GitHub Release 已发布，release evidence assets 已归档，本地 Go runtime 验收通过（go test/race/vet/build/coverage 100.0%） `公开`
-- [kernel](https://github.com/ZoneCNH/kernel) — L0 标准库扩展原语（error/time/context/lifecycle/health/sync） `公开`
-- [configx](https://github.com/ZoneCNH/configx) — 显式配置加载、多源合并（File/Env/Map/Args）、StrictDecode、SecretString 脱敏、Provenance 追踪、EffectiveConfigHash、Bind() 强类型绑定、ConfigSnapshot 热更新与回滚、RemoteSource SPI、配置文档自动生成 `公开`
-- [observex](https://github.com/ZoneCNH/observex) — vendor-neutral 日志、指标、追踪、健康与脱敏契约 `公开`
-- [resiliencx](https://github.com/ZoneCNH/resiliencx) — 运行时弹性策略（timeout/retry/circuit/bulkhead/rate/fallback、Compose、InstrumentStrategy、panic recovery）；v1.0.2 GitHub Release 已发布，Release Check 27777166525 通过 `公开`
-- [schedulex](https://github.com/ZoneCNH/schedulex) — 任务调度运行时（cron/interval/delay、Overlap/Misfire 策略、Locker 扩展点、Clock 注入、v1.0.0 已发布，98.2% 覆盖） `公开`
-- [bootstrap](https://github.com/ZoneCNH/bootstrap) — L1 Assembly 通用进程组装层（位于 L1 primitives 之上、composer 入口之下）：configx/observex/resiliencx + lifecycx 统一组装 + 7 存储 adapter 可选构造（StoreSet 位掩码）；不承载业务语义 / service listener / domain contracts；✅ v0.1.0 GitHub Release 已发布，规格 v0.1.7 `公开`
-- [testkitx](https://github.com/ZoneCNH/testkitx) — 测试专用 evidence/golden/fixture/boundary 工具包 `公开`
-- [xlibgate](https://github.com/ZoneCNH/xlibgate) — import 边界、go.mod、Go baseline、release evidence、Trust Alignment 门禁 `公开`
+- [xlib_standard](https://github.com/xhyperium/xlib_standard) — 标准事实源、Go Reference Template（Generator/Harness/Evidence 已拆分至 xlib_harness / xlib_evidence）；v1.0.1 GitHub Release 已发布，CI/Docker/Worktree/adoption 与本地 release-preflight 通过；不作为运行时 import 依赖 `公开`
+- [xlib_harness](https://github.com/xhyperium/xlib_harness) — 模块生成器与门禁执行器：generate/scaffold、spec-lint、boundary-check、traceability-gate、format-check；✅ v0.1.6 GitHub Release 已发布，Release run 27855366871 与 main CI run 27855396013 通过，覆盖率 100.0%，pinned gitleaks CLI secret scan 已对齐 `公开`
+- [xlib_evidence](https://github.com/xhyperium/xlib_evidence) — 证据收集与发布运行时：collect-coverage、generate-manifest、validate-manifest、remote-evidence、report；✅ v0.2.4 GitHub Release 已发布，release evidence assets 已归档，本地 Go runtime 验收通过（go test/race/vet/build/coverage 100.0%） `公开`
+- [kernel](https://github.com/xhyperium/kernel) — L0 标准库扩展原语（error/time/context/lifecycle/health/sync） `公开`
+- [configx](https://github.com/xhyperium/configx) — 显式配置加载、多源合并（File/Env/Map/Args）、StrictDecode、SecretString 脱敏、Provenance 追踪、EffectiveConfigHash、Bind() 强类型绑定、ConfigSnapshot 热更新与回滚、RemoteSource SPI、配置文档自动生成 `公开`
+- [observex](https://github.com/xhyperium/observex) — vendor-neutral 日志、指标、追踪、健康与脱敏契约 `公开`
+- [resiliencx](https://github.com/xhyperium/resiliencx) — 运行时弹性策略（timeout/retry/circuit/bulkhead/rate/fallback、Compose、InstrumentStrategy、panic recovery）；v1.0.2 GitHub Release 已发布，Release Check 27777166525 通过 `公开`
+- [schedulex](https://github.com/xhyperium/schedulex) — 任务调度运行时（cron/interval/delay、Overlap/Misfire 策略、Locker 扩展点、Clock 注入、v1.0.0 已发布，98.2% 覆盖） `公开`
+- [bootstrap](https://github.com/xhyperium/bootstrap) — L1 Assembly 通用进程组装层（位于 L1 primitives 之上、composer 入口之下）：configx/observex/resiliencx + lifecycx 统一组装 + 7 存储 adapter 可选构造（StoreSet 位掩码）；不承载业务语义 / service listener / domain contracts；✅ v0.1.0 GitHub Release 已发布，规格 v0.1.7 `公开`
+- [testkitx](https://github.com/xhyperium/testkitx) — 测试专用 evidence/golden/fixture/boundary 工具包 `公开`
+- [xlibgate](https://github.com/xhyperium/xlibgate) — import 边界、go.mod、Go baseline、release evidence、Trust Alignment 门禁 `公开`
 
 > **公开投影口径**：版本 / release / factory 状态以 `.foundationx/status/index.json` + `.foundationx/blockers.json` 和 GitHub Release 实际证据为准；2026-06-24 核查确认 `natsx` GitHub Release `v1.0.2` 已发布；`v1.0.3` 仍为 tag-only；release 证据按 `v1.0.2` 计入，不从 tag-only `v1.0.3` 推断。
 >
@@ -103,26 +103,26 @@ L2.5: domainx / decimalx / domain_market / domain_macro / domain_exchange (5/5 �
 
 ### 基座 · 存储与中间件
 
-- [postgresx](https://github.com/ZoneCNH/postgresx) — PostgreSQL — 关系型存储、事务、迁移（v1.0.0 已发布；live integration 通过；factory_grade_allowed=false；单元测试 52.4% + Docker integration skip，BLK-006 open） `公开`
-- [redisx](https://github.com/ZoneCNH/redisx) — Redis L2 adapter（v1.1.0 已发布；KV/TTL、Hash/List、Pipeline、Cache-aside、Lock/RateLimit、Pool、Persistence restart recovery；PR #19、release-preflight、GitHub Release 与 dev Redis 集成验证通过） `公开`
-- [clickhousex](https://github.com/ZoneCNH/clickhousex) — ClickHouse — OLAP 查询、批量写入（v1.0.10 本地 release evidence 已闭合；Exec/Query/Rows/InsertBatch、metrics/tracing/logger/retry/error mapping 与 100.0% 覆盖率门禁已对齐；真实 ClickHouse live 集成与 60s soak 已验证；远端 push / GitHub Release / Actions 待触发；BLK-003 resolved；非 factory） `公开`
-- [taosx](https://github.com/ZoneCNH/taosx) — TDengine L2 adapter contract（pkg/taosx v1.0.5 本地发布候选；CI/release 已加入 taosx-coverage-check，pkg/taosx 100.0% 覆盖；TDengine dev live gate 已通过且保持显式 opt-in；未执行外部 tag/GitHub Release；非 factory） `公开`
-- [kafkax](https://github.com/ZoneCNH/kafkax) — Kafka — 消息队列、事件流（v1.1.0 已发布；真实 broker gates 已验证） `公开`
-- [natsx](https://github.com/ZoneCNH/natsx) — NATS 内部通信模块（v1.0.2 GitHub Release 已发布；v1.0.3 remote tag 已存在但不作为 release 证据；Spec v1.2.0；Core NATS / JetStream、Drain/reconnect/degraded health、canonical `FOUNDATIONX_NATS_*` 配置和真实 dev auth live gate 已验证；FR-009/010 runtime adapter PR #17 已合并，JetStream IngestAdapter 域适配契约 pkg/natsx/ingest 解耦 binance PR-007c/d；BLK-001/BLK-002 resolved；factory-ready） `公开`
-- [ossx](https://github.com/ZoneCNH/ossx) — Aliyun OSS 对象存储 L2 adapter（v1.2.1；真实 adapters/aliyun + 流式 SPI + multipart + presign + retry/circuit + observex hooks；pkg/ossx 100% 覆盖；BLK-010 resolved ✅；PR #8 merged） `公开`
+- [postgresx](https://github.com/xhyperium/postgresx) — PostgreSQL — 关系型存储、事务、迁移（v1.0.0 已发布；live integration 通过；factory_grade_allowed=false；单元测试 52.4% + Docker integration skip，BLK-006 open） `公开`
+- [redisx](https://github.com/xhyperium/redisx) — Redis L2 adapter（v1.1.0 已发布；KV/TTL、Hash/List、Pipeline、Cache-aside、Lock/RateLimit、Pool、Persistence restart recovery；PR #19、release-preflight、GitHub Release 与 dev Redis 集成验证通过） `公开`
+- [clickhousex](https://github.com/xhyperium/clickhousex) — ClickHouse — OLAP 查询、批量写入（v1.0.10 本地 release evidence 已闭合；Exec/Query/Rows/InsertBatch、metrics/tracing/logger/retry/error mapping 与 100.0% 覆盖率门禁已对齐；真实 ClickHouse live 集成与 60s soak 已验证；远端 push / GitHub Release / Actions 待触发；BLK-003 resolved；非 factory） `公开`
+- [taosx](https://github.com/xhyperium/taosx) — TDengine L2 adapter contract（pkg/taosx v1.0.5 本地发布候选；CI/release 已加入 taosx-coverage-check，pkg/taosx 100.0% 覆盖；TDengine dev live gate 已通过且保持显式 opt-in；未执行外部 tag/GitHub Release；非 factory） `公开`
+- [kafkax](https://github.com/xhyperium/kafkax) — Kafka — 消息队列、事件流（v1.1.0 已发布；真实 broker gates 已验证） `公开`
+- [natsx](https://github.com/xhyperium/natsx) — NATS 内部通信模块（v1.0.2 GitHub Release 已发布；v1.0.3 remote tag 已存在但不作为 release 证据；Spec v1.2.0；Core NATS / JetStream、Drain/reconnect/degraded health、canonical `FOUNDATIONX_NATS_*` 配置和真实 dev auth live gate 已验证；FR-009/010 runtime adapter PR #17 已合并，JetStream IngestAdapter 域适配契约 pkg/natsx/ingest 解耦 binance PR-007c/d；BLK-001/BLK-002 resolved；factory-ready） `公开`
+- [ossx](https://github.com/xhyperium/ossx) — Aliyun OSS 对象存储 L2 adapter（v1.2.1；真实 adapters/aliyun + 流式 SPI + multipart + presign + retry/circuit + observex hooks；pkg/ossx 100% 覆盖；BLK-010 resolved ✅；PR #8 merged） `公开`
 
 ### 基座 · 契约与传输
 
-- [contracts](https://github.com/ZoneCNH/contracts) — 跨域稳定端口、事件协议与 DTO 契约（含 §8.4 Binance C/S ingestion contract）；✅ v1.5.0 GitHub Release 已发布（P0 RegimeSnapshot/RegimeCard/DecisionCard；P1 SignalIntent DTO） `公开`
-- [transportx](https://github.com/ZoneCNH/transportx) — 应用通信底座规格基线（Envelope/Endpoint、ServiceIdentity、QoS、Codec、RPC、EventBus、Stream、Outbox/Inbox、Audit Plane、Data Classification、SchemaRegistry 与 conformance gates）；✅ v1.1.1-spec GitHub Release 已发布 `公开`
+- [contracts](https://github.com/xhyperium/contracts) — 跨域稳定端口、事件协议与 DTO 契约（含 §8.4 Binance C/S ingestion contract）；✅ v1.5.0 GitHub Release 已发布（P0 RegimeSnapshot/RegimeCard/DecisionCard；P1 SignalIntent DTO） `公开`
+- [transportx](https://github.com/xhyperium/transportx) — 应用通信底座规格基线（Envelope/Endpoint、ServiceIdentity、QoS、Codec、RPC、EventBus、Stream、Outbox/Inbox、Audit Plane、Data Classification、SchemaRegistry 与 conformance gates）；✅ v1.1.1-spec GitHub Release 已发布 `公开`
 
 ### L2.5 · 领域共享层
 
-- [decimalx](https://github.com/ZoneCNH/decimalx) — 高精度十进制类型（Decimal/Price/Qty/Ratio/Money）；v1.0.0 GitHub Release 已发布 `公开`
-- [domainx](https://github.com/ZoneCNH/domainx) — 领域共享值对象：Order/Position/Trade/Portfolio/ExecutionReport 枚举与类型；L2.5 design baseline；公开 v1.0.1 GitHub Release/tag 已观测并已对账为 release=true；factory grade；live/soak N/A（纯值对象库） `公开`
-- [domain_market](https://github.com/ZoneCNH/domain_market) — 市场数据域模型（Tick/Quote/Bar/OrderBook）+ canonical 类型（ProductLine/InstrumentKey/MarketFactEnvelope）+ Binance C/S ingestion 语义；v1.1.0 `公开`
-- [domain_macro](https://github.com/ZoneCNH/domain_macro) — 宏观经济领域共享模型：国家/地区/指标/发布日历、MacroPoint/MacroState；v1.0.0 GitHub Release 已发布 `公开`
-- [domain_exchange](https://github.com/ZoneCNH/domain_exchange) — 交易域模型（VenueAdapter 13 方法接口）；v1.0.0 GitHub Release 已发布 `公开`
+- [decimalx](https://github.com/xhyperium/decimalx) — 高精度十进制类型（Decimal/Price/Qty/Ratio/Money）；v1.0.0 GitHub Release 已发布 `公开`
+- [domainx](https://github.com/xhyperium/domainx) — 领域共享值对象：Order/Position/Trade/Portfolio/ExecutionReport 枚举与类型；L2.5 design baseline；公开 v1.0.1 GitHub Release/tag 已观测并已对账为 release=true；factory grade；live/soak N/A（纯值对象库） `公开`
+- [domain_market](https://github.com/xhyperium/domain_market) — 市场数据域模型（Tick/Quote/Bar/OrderBook）+ canonical 类型（ProductLine/InstrumentKey/MarketFactEnvelope）+ Binance C/S ingestion 语义；v1.1.0 `公开`
+- [domain_macro](https://github.com/xhyperium/domain_macro) — 宏观经济领域共享模型：国家/地区/指标/发布日历、MacroPoint/MacroState；v1.0.0 GitHub Release 已发布 `公开`
+- [domain_exchange](https://github.com/xhyperium/domain_exchange) — 交易域模型（VenueAdapter 13 方法接口）；v1.0.0 GitHub Release 已发布 `公开`
 
 ### 数据域 · market_data（14: 1 dispatch + 12 SDK + 1 C/S Module）
 
