@@ -31,7 +31,7 @@ Tag `v0.8.0` 存在于本地仓库。
   "name": "v0.8.0 — Production Release",
   "publishedAt": "2026-06-29T11:08:00Z",
   "tagName": "v0.8.0",
-  "url": "https://github.com/ZoneCNH/binance/releases/tag/v0.8.0"
+  "url": "https://github.com/xhyperium/binance/releases/tag/v0.8.0"
 }
 ```
 
@@ -40,7 +40,7 @@ Tag `v0.8.0` 存在于本地仓库。
 | Tag | v0.8.0 |
 | Release Name | v0.8.0 — Production Release |
 | 发布时间 | 2026-06-29T11:08:00Z |
-| URL | https://github.com/ZoneCNH/binance/releases/tag/v0.8.0 |
+| URL | https://github.com/xhyperium/binance/releases/tag/v0.8.0 |
 
 ## 结论
 

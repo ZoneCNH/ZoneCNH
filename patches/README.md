@@ -8,11 +8,11 @@
 1. domain_market    → github.com/ZoneCNH/domain_market
 2. contracts        → github.com/ZoneCNH/contracts
 3. market_data      → github.com/ZoneCNH/market_data (空仓库，从零初始化)
-4. binance          → github.com/ZoneCNH/binance (老 SDK 升级)
-5. binancecfg       → github.com/ZoneCNH/binance (配置层: FOUNDATIONX_* env → typed config)
-6. binancex         → github.com/ZoneCNH/binance (SDK 接口抽象层)
-7. assembly         → github.com/ZoneCNH/binance (中间件注入与装配层)
-8. cmd              → github.com/ZoneCNH/binance (组合根入口，可测试 main)
+4. binance          → github.com/xhyperium/binance (老 SDK 升级)
+5. binancecfg       → github.com/xhyperium/binance (配置层: FOUNDATIONX_* env → typed config)
+6. binancex         → github.com/xhyperium/binance (SDK 接口抽象层)
+7. assembly         → github.com/xhyperium/binance (中间件注入与装配层)
+8. cmd              → github.com/xhyperium/binance (组合根入口，可测试 main)
 ```
 
 ## 各仓库应用方法

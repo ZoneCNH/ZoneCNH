@@ -44,7 +44,7 @@ SOAK_DURATION=2m go test -tags soak -race -v -count=1 -timeout 5m ./test/soak/..
     soak_test.go:125: Soak complete: 1200 messages over 2m0s, heap growth 0.5%, goroutine delta 0
 --- PASS: TestSoak_NATSPublish (120.03s)
 PASS
-ok  	github.com/ZoneCNH/binance/test/soak	121.039s
+ok  	github.com/xhyperium/binance/test/soak	121.039s
 ```
 
 ### Chaos 测试
@@ -81,7 +81,7 @@ ok  	github.com/ZoneCNH/binance/test/soak	121.039s
     Process restarted OK: responding 200
 --- PASS: TestChaos_ProcessRestart (0.40s)
 PASS
-ok  	github.com/ZoneCNH/binance/test/chaos	2.394s
+ok  	github.com/xhyperium/binance/test/chaos	2.394s
 ```
 
 ### 基础设施连接确认

@@ -26,7 +26,7 @@
 > **Pull Requests**：
 >
 > - Spec Hub: [ZoneCNH/ZoneCNH#1463](https://github.com/ZoneCNH/ZoneCNH/pull/1463) — 42 文件 (+952 -972)
-> - Runtime: [ZoneCNH/binance#357](https://github.com/ZoneCNH/binance/pull/357) — 25 文件 (+542 -704)
+> - Runtime: [xhyperium/binance#357](https://github.com/xhyperium/binance/pull/357) — 25 文件 (+542 -704)
 >
 > **对齐文档**：`module/binance/evidence/2026-06-30/release/alignment-summary.md`
 
@@ -1069,7 +1069,7 @@ PGPASSWORD="$PG_PASS" psql -h 127.0.0.1 -U market_binance -d market_binance -c "
 | 仓库 | PR | 文件 | 分支 |
 |------|-----|------|------|
 | ZoneCNH (Spec Hub) | [#1463](https://github.com/ZoneCNH/ZoneCNH/pull/1463) | 42 (+952 -972) | `fix/binance-l3-production-admission` |
-| binance (Runtime) | [#357](https://github.com/ZoneCNH/binance/pull/357) | 25 (+542 -704) | `fix/lint-and-ci-runner` |
+| binance (Runtime) | [#357](https://github.com/xhyperium/binance/pull/357) | 25 (+542 -704) | `fix/lint-and-ci-runner` |
 
 ### Issues 同步
 

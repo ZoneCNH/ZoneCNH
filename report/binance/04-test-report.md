@@ -109,7 +109,7 @@ server 在 `CheckAndSet` 之前会用 `req.Payload` 重算 PayloadHash，覆盖�
 
 ```
 goroutine 20 [select]: TestSoak_ServerStability.func1 ... soak_test.go:581
-FAIL    github.com/ZoneCNH/binance/test/soak    60.023s
+FAIL    github.com/xhyperium/binance/test/soak    60.023s
 ```
 
 **根因**：`TestSoak_ServerStability` 是设计为长时间运行的服务器稳定性压测，持续并发请求直到外部停止，**没有 `t.Skip` 守卫**。60s 超时是测试环境限制。

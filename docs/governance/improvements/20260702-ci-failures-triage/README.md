@@ -48,7 +48,7 @@ Workflow Policy Guard failed:
 
 **错误日志样本**:
 ```
-[404] https://github.com/ZoneCNH/binance | Error (cached)
+[404] https://github.com/xhyperium/binance | Error (cached)
 [404] https://github.com/ZoneCNH/regime_engine | Error (cached)
 [404] https://github.com/ZoneCNH/coinglass | Error (cached)
 ... (共 14+ 个内部仓库)

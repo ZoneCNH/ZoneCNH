@@ -4,7 +4,7 @@
 > Goal: GOAL-20260709-001
 > Date: 2026-07-09
 > Evidence Type: Downstream adapter wrapper
-> Binance PR: `https://github.com/ZoneCNH/binance/pull/479`
+> Binance PR: `https://github.com/xhyperium/binance/pull/479`
 > Binance Branch: `feat/orderbook-contract-adapter`
 > Binance Head Commit: `f46c17fd8297779c9f0c0931cc94b6f5ff1ed150`
 > Binance Merge Commit: `b2547735e9df6b9bb4bb939baaeb74436260ce50`
@@ -52,7 +52,7 @@ The same PR later closed pre-existing Binance CI baseline failures in workflows,
 
 ## 4. Remote PR Status
 
-PR #479 was opened against `ZoneCNH/binance:main` from `feat/orderbook-contract-adapter`.[COMPUTED, HIGH]
+PR #479 was opened against `xhyperium/binance:main` from `feat/orderbook-contract-adapter`.[COMPUTED, HIGH]
 
 After head commit `f46c17fd8297779c9f0c0931cc94b6f5ff1ed150`, GitHub reported PR #479 as `MERGEABLE`; the PR was merged at `2026-07-09T15:40:48Z` with merge commit `b2547735e9df6b9bb4bb939baaeb74436260ce50`.[COMPUTED, HIGH]
 

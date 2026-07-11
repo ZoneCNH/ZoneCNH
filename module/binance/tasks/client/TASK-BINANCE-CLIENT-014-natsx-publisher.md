@@ -69,7 +69,7 @@ subj := fmt.Sprintf("binance.market.%s.%s.v1",
 | subject 格式正确 | 单测验证 `spot + tick → binance.market.spot.tick.v1` |
 | JetStream 不可达时返回 error | mock 注入 timeout，验证返回 err 且不 panic |
 | 无 server 依赖 | `go list -deps ./internal/client/...` 不含 internal/server |
-| 无 cs 包导入 | `grep -r '"github.com/ZoneCNH/binance/internal/cs"' internal/client/` 无结果 |
+| 无 cs 包导入 | `grep -r '"github.com/xhyperium/binance/internal/cs"' internal/client/` 无结果 |
 
 ## Dependencies
 

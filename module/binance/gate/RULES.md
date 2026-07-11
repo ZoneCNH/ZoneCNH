@@ -2,7 +2,7 @@
 
 - Module-Version: v4.1.0
 - Last-Updated: 2026-07-10
-- 适用范围：`module/binance/` 全部规格文档 + `github.com/ZoneCNH/binance` runtime 仓
+- 适用范围：`module/binance/` 全部规格文档 + `github.com/xhyperium/binance` runtime 仓
 - 优先级：本文 > 子规格 > task；与 `CONSTITUTION.md` §0-§20 冲突时以 `CONSTITUTION.md` 为准
 - 强制级别：每条规则标注【硬】（违反即治理违规）/【软】（推荐）/【开】（仅验证存在性）
 

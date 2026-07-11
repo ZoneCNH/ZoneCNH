@@ -144,7 +144,7 @@
       "binance": {
         "identity": {
           "catalog_name": "binance",
-          "repository": "github.com/ZoneCNH/binance",
+          "repository": "github.com/xhyperium/binance",
           "logical_module_path": "/home/workspace/binance",
           "package_name": "binance",
           "owner": "ZoneCNH"

@@ -397,7 +397,7 @@ GAP-E2 + GAP-E3                             ← 服务端完整性闭环
 ## §11 2026-07-04 20 轮审查修复记录
 
 > 来源：`report/binance/REVIEW-20260704-20ROUND-CONSENSUS.md`（20 轮独立复现）+ `plans/binance/FIX-PLAN-20260704.md`
-> PR：runtime https://github.com/ZoneCNH/binance/pull/425（commit `edd7805`）；docs https://github.com/ZoneCNH/ZoneCNH/pull/1668（commit `59907845`）
+> PR：runtime https://github.com/xhyperium/binance/pull/425（commit `edd7805`）；docs https://github.com/ZoneCNH/ZoneCNH/pull/1668（commit `59907845`）
 
 ### 已修复缺口
 

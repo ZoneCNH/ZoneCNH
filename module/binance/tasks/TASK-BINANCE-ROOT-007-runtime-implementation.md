@@ -13,7 +13,7 @@ This task covers the complete runtime implementation: `domain_market` mapping, c
 Runtime layout:
 
 ```text
-github.com/ZoneCNH/binance/
+github.com/xhyperium/binance/
   cmd/
     binance-client/
     binance-server/

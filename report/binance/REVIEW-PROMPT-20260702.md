@@ -81,7 +81,7 @@ go version
 
 > **审查者注意**：截至 v2.0 生成时，SPEC.md/README.md 写 v0.8.0，DEPLOY.md 写 v0.11.0（f53303f），实际 HEAD 为 f53303f。runtime 为 shallow clone，本地无任何 tag（含 v0.8.0）。审查时需确认此分裂是否已修复，并用 `gh release view` 验证 GitHub Release。
 >
-> **2026-07-04 核验结论（已沉淀）**：`gh release view -R ZoneCNH/binance v0.8.0` 与 `v0.11.0` 均返回已发布 release（非 draft / 非 prerelease），Runtime version/tag 可按“历史 tag + 当前 tag 共存”口径解释，不再视为阻断项。
+> **2026-07-04 核验结论（已沉淀）**：`gh release view -R xhyperium/binance v0.8.0` 与 `v0.11.0` 均返回已发布 release（非 draft / 非 prerelease），Runtime version/tag 可按“历史 tag + 当前 tag 共存”口径解释，不再视为阻断项。
 
 ### 0.2 文件清单扫描
 
@@ -598,11 +598,11 @@ echo "=== DEPLOY.md 声明的版本 ==="
 grep -m3 'Runtime-Version\|anchor' /home/workspace/ZoneCNH/module/binance/deploy/DEPLOY.md | head -3
 echo ""
 echo "=== GitHub Releases ==="
-gh release list -R ZoneCNH/binance 2>/dev/null | head -5 || echo "gh not available or no access"
+gh release list -R xhyperium/binance 2>/dev/null | head -5 || echo "gh not available or no access"
 ```
 
 - 确认 runtime 仓 tag 状态：截至 v2.0 生成时，runtime 为 **shallow clone**（`git rev-parse --is-shallow-repository` = true），`git tag -l 'v*'` 返回**空**——本地无任何 tag（含 v0.8.0）
-- 须用 `gh release view v0.8.0 -R ZoneCNH/binance` 验证 GitHub Release 是否真实存在（PRG-002 声称 PASS 的依据）
+- 须用 `gh release view v0.8.0 -R xhyperium/binance` 验证 GitHub Release 是否真实存在（PRG-002 声称 PASS 的依据）
 - 若 DEPLOY.md 声称 v0.11.0 但无对应 GitHub Release → PRG-002 实际不满足该版本
 
 ### 7.5 双口径发布判定【v2.0 新增】

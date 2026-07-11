@@ -63,7 +63,7 @@
 
 | 门禁                 | 含义                                      | 代码实证                                                 | 判定         |
 | -------------------- | ----------------------------------------- | -------------------------------------------------------- | ------------ |
-| 反向依赖 binance = 0 | 基座/领域/infra 无任何 import binance     | 全局 `rg "ZoneCNH/binance"` → 0 命中                     | ✅ PASS      |
+| 反向依赖 binance = 0 | 基座/领域/infra 无任何 import binance     | 全局 `rg "xhyperium/binance"` → 0 命中                     | ✅ PASS      |
 | 领域纯度 = 0         | L2.5 无任何 import infra/provider/binance | 5 模块全局 `rg` → 0 命中（仅测试字符串字面量 "binance"） | ✅ PASS      |
 | infra 同层互耦 = 0   | 7 个 infra 模块无真实互相 import          | 逐模块 `rg "^\"github.com/ZoneCNH/<sibling>\""` → 0 命中 | ✅ PASS      |
 | 禁止多层实现         | 16 项能力各有唯一 production owner        | 12 项 PASS，4 项部分 PASS（均有已知缺口）                | ⚠️ 主体 PASS |
@@ -74,7 +74,7 @@
 ```text
 【反向依赖扫描】基座/领域/shared 层对 binance 的依赖 = 0
 
-rg "github.com/ZoneCNH/binance" --type go /home/{kernel,configx,observex,resiliencx,schedulex,bootstrap,redisx,kafkax,natsx,postgresx,taosx,ossx,clickhousex,contracts,transportx,decimalx,domainx,domain-market,domain-macro,domain-exchange}/
+rg "github.com/xhyperium/binance" --type go /home/{kernel,configx,observex,resiliencx,schedulex,bootstrap,redisx,kafkax,natsx,postgresx,taosx,ossx,clickhousex,contracts,transportx,decimalx,domainx,domain-market,domain-macro,domain-exchange}/
 → 0 命中
 
 【领域纯度扫描】L2.5 对 infra/provider 的依赖 = 0

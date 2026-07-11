@@ -30,7 +30,7 @@
 | Server 职责 | 订阅 `natsx` JetStream，校验与去重事实，写入 Binance 专属存储，提供 Gin REST API，并通过 `kafkax` 广播。 |
 | 允许依赖 | `domain_market`, `natsx`, `redisx`, `postgresx`, `taosx`, `ossx`, `kafkax`, `gin`, `observability` 等按规格边界使用。 |
 | 禁止归属 | 不拥有 canonical market domain，不定义跨交易所通用 `market_data` 语义，不实现策略、下单、撮合或风控。 |
-| 禁止路径 | 禁止恢复 `module/binance-market`、`github.com/ZoneCNH/binance-market` 或运行时共享包回流。 |
+| 禁止路径 | 禁止恢复 `module/binance-market`、`github.com/xhyperium/binance-market` 或运行时共享包回流。 |
 | Wire Contract | Client -> Server 的 wire contract 必须是 `natsx` subject 加 `domain_market` envelope JSON，不能新增本地 proto/gRPC ingest schema。 |
 
 ## 2. 功能实现投影

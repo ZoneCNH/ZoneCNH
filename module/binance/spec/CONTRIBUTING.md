@@ -53,7 +53,7 @@ module/binance/scripts/runtime-gap-close-check.sh <主仓issue号> <binance-pr�
 
 约束：
 
-1. `ZoneCNH/binance#<pr>` 必须是 `MERGED`。
+1. `xhyperium/binance#<pr>` 必须是 `MERGED`。
 2. `ZoneCNH/ZoneCNH#<issue>` 必须仍为 `OPEN`（先过门禁，再关单）。
 3. 关单后必须同步 `module/binance/todo.md` 与 `plans/binance/010/011` 快照。
 

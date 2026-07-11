@@ -50,7 +50,7 @@
 
 `internal/cs` 曾代表同进程 C/S 桥接；当前 runtime 禁止任何 client/server/cmd 运行时代码导入该包。合法共享 C/S contract 是 `contracts` canonical（`pkg/contracts/ingestion.go`，ADR-007），binance 经 `internal/ingestcodec` boundary 引用。
 
-关闭规则：runtime gate 必须证明没有 `github.com/ZoneCNH/binance/internal/cs` import。
+关闭规则：runtime gate 必须证明没有 `github.com/xhyperium/binance/internal/cs` import。
 
 ## 6. Gate: No Same-Process C/S Communication
 

@@ -647,7 +647,7 @@ imports:
   forbidden:
     - source: "github.com/ZoneCNH/testkitx"
       targets: ["*"]
-    - source: "github.com/ZoneCNH/binance"
+    - source: "github.com/xhyperium/binance"
       targets: ["github.com/ZoneCNH/kernel", "github.com/ZoneCNH/configx"]
 
 release:

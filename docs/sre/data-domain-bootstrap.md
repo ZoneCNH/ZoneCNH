@@ -231,7 +231,7 @@ bootstrap.Build 内部完成（adapter 无需自写 config 加载）。所有 `*
 
 > §8、§9 是相对 binance 现版的新增门禁（报告 §十三/§十五 修正后的要求）。
 
-**适配方法**：`cp binance/scripts/boundary-gates.sh`，把脚本内 `binance` / `binance-market` / `ZoneCNH/binance` 全局替换为 `{module}` / `{module}-market`（如适用）/ `ZoneCNH/{module}`。
+**适配方法**：`cp binance/scripts/boundary-gates.sh`，把脚本内 `binance` / `binance-market` / `xhyperium/binance` 全局替换为 `{module}` / `{module}-market`（如适用）/ `ZoneCNH/{module}`。
 
 ---
 

@@ -1,7 +1,9 @@
 # module/binance 对齐同步文档（Runtime ↔ Spec）
 
-> 本文档追踪运行时仓 `github.com/ZoneCNH/binance` 与规格仓 `module/binance` 之间的状态对齐与同步记录。
+> 本文档追踪运行时仓 `github.com/xhyperium/binance` 与规格仓 `module/binance` 之间的状态对齐与同步记录。
 > 每次跨仓深度检查/修复后更新，确保规格口径与运行时实现一致、无漂移。
+>
+> **仓库迁移记录**：binance 运行时仓已从 `github.com/ZoneCNH/binance` 迁移至 `github.com/xhyperium/binance`（与 ZoneCNH→xhyperium 组织迁移一致；registry.yaml `repo`/`owner` 同步更新为 `xhyperium`）。本仓库历史提交/引用中仍可见旧路径，属历史快照，不影响当前路由。
 
 - **Last-Updated**: 2026-07-10
 - **Spec-Version**: v4.1.0

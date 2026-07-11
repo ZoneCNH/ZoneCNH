@@ -53,7 +53,7 @@ New Binance market_data ingestion work must not target:
 
 ```text
 module/binance-market
-github.com/ZoneCNH/binance-market
+github.com/xhyperium/binance-market
 ```
 
 ## Runtime Shape
@@ -61,7 +61,7 @@ github.com/ZoneCNH/binance-market
 Recommended runtime repository shape:
 
 ```text
-github.com/ZoneCNH/binance/
+github.com/xhyperium/binance/
   cmd/
     binance-client/
     binance-server/

@@ -10,8 +10,8 @@
 - Owner: ZoneCNH
 - Layer: 数据域 · Binance 交易所接入
 - Runtime-Version: v0.15.1
-- Repository: [github.com/ZoneCNH/binance](https://github.com/ZoneCNH/binance)（client 端通过 `cmd/binance-client` + `internal/client` 提供）
-- Go Module Path: `github.com/ZoneCNH/binance`（monorepo，client 端通过 `cmd/binance-client` + `internal/client` 提供）
+- Repository: [github.com/xhyperium/binance](https://github.com/xhyperium/binance)（client 端通过 `cmd/binance-client` + `internal/client` 提供）
+- Go Module Path: `github.com/xhyperium/binance`（monorepo，client 端通过 `cmd/binance-client` + `internal/client` 提供）
 - Related: [CONSTITUTION.md](../../../../CONSTITUTION.md), [ARCHITECTURE.md](../../../../ARCHITECTURE.md), [module/binance/spec/SPEC.md](../SPEC.md), [module/domain_market](../../../domain_market/), [module/natsx](../../../natsx/)
 
 ---

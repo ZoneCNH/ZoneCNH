@@ -11,7 +11,7 @@ if [[ "${1:-}" != "--legacy-force" && "${1:-}" != "--dry-run" ]]; then
 fi
 
 DRY_RUN="${1:-}"
-REPO="ZoneCNH/binance"
+REPO="xhyperium/binance"
 
 # 校验 gh 认证
 if ! gh auth status >/dev/null 2>&1; then
@@ -52,7 +52,7 @@ gh_create "[P0][Phase-1] T0-1/T8-1: Runtime-Version 三处统一为 v0.11.0" "$(
 ## 验收
 - [ ] `git -C /home/workspace/binance tag -l 'v*'` 含 v0.11.0
 - [ ] SPEC/README/DEPLOY 三处版本一致
-- [ ] gh release view v0.11.0 -R ZoneCNH/binance 成功
+- [ ] gh release view v0.11.0 -R xhyperium/binance 成功
 
 ## Plan Ref
 plans/binance/010-runtime-gap-fix-execution-plan-20260702.md §Phase 1
@@ -89,7 +89,7 @@ gh_create "[P0][Phase-1] T7-2: 补 v0.11.0 GitHub Release（PRG-002）" "$(cat <
 3. release notes: PR #364 gap repair runtime bugs（NATS timeout, kline storage, Kafka topic, stale gate, gap-fill guard）
 
 ## 验收
-- [ ] `gh release view v0.11.0 -R ZoneCNH/binance` 成功
+- [ ] `gh release view v0.11.0 -R xhyperium/binance` 成功
 - [ ] release notes 含 PR #364 描述
 
 ## Plan Ref
@@ -438,6 +438,6 @@ echo "=== GitHub 同步完成 ==="
 echo "总计：~30 个 issue（Phase 1: 7 + Phase 2: 1 + Phase 4: 1 + Phase 5: 5 + Phase 6: 4 + Phase 7: 7 + Phase 8: 10）"
 echo ""
 echo "下一步："
-echo "  1. gh issue list -R ZoneCNH/binance --state open  验证"
+echo "  1. gh issue list -R xhyperium/binance --state open  验证"
 echo "  2. 在每个 issue 内补充 acceptance criteria + evidence 路径"
 echo "  3. 配置 GitHub Projects 看板（可选）"

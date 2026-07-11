@@ -466,9 +466,9 @@
 ### PR
 
 - natsx: https://github.com/ZoneCNH/natsx/pull/22（UpdateStream + DeleteConsumer）
-- Runtime: https://github.com/ZoneCNH/binance/pull/429（独立 NATS 连接 + SDK auth token）
-- Runtime: https://github.com/ZoneCNH/binance/pull/430（catalog 全量数据同步 + tier 保留 + NATS stream 冲突）
-- Runtime: https://github.com/ZoneCNH/binance/pull/431（NULL tier + publish context timeout）
+- Runtime: https://github.com/xhyperium/binance/pull/429（独立 NATS 连接 + SDK auth token）
+- Runtime: https://github.com/xhyperium/binance/pull/430（catalog 全量数据同步 + tier 保留 + NATS stream 冲突）
+- Runtime: https://github.com/xhyperium/binance/pull/431（NULL tier + publish context timeout）
 - ZoneCNH: 本 PR（文档对齐）
 
 ### 变更
@@ -502,7 +502,7 @@
 
 ### PR
 
-- Runtime: https://github.com/ZoneCNH/binance/pull/425（commit `edd7805`，9 文件，+371/-40）
+- Runtime: https://github.com/xhyperium/binance/pull/425（commit `edd7805`，9 文件，+371/-40）
 - ZoneCNH: https://github.com/ZoneCNH/ZoneCNH/pull/1668（commit `59907845`，21 文件，+551/-79）
 
 ### 来源
@@ -989,7 +989,7 @@ binance v0.8.0 部署到 prod（`84.247.154.45`），通过 systemd 二进制直
 
 ### Changed
 - 记录 `/home/workspace/binance` 本地 runtime boundary evidence：SHA `71e2a6e8bb5591c43e8a2ebfff8c7645bf030786`，`scripts/boundary-gates.sh` 10/10 PASS，`go build/test/race/vet`、`golangci-lint`、本地 smoke self-test PASS。
-- 记录 runtime PR `ZoneCNH/binance#11`：merge commit `5a57a19aed3be5420135b8e05016da15faf094ed`，source commit `7873b795b13fc4b5a0fc4310300b6f196cca7532`，远端 `Boundary Gates (10 gates)` PASS；独立 `cmd/binance-client` + HTTP `/ingest` client/server 边界已证明。
+- 记录 runtime PR `xhyperium/binance#11`：merge commit `5a57a19aed3be5420135b8e05016da15faf094ed`，source commit `7873b795b13fc4b5a0fc4310300b6f196cca7532`，远端 `Boundary Gates (10 gates)` PASS；独立 `cmd/binance-client` + HTTP `/ingest` client/server 边界已证明。
 - 将 `RUNTIME-MAPPING.md` 标为目标运行时映射而非完成声明，并补充 JetStream PubAck/ManualAck、durable natsx/storage/fanout/query 等未证明项；`cmd/binance-client` 只关闭 HTTP boundary 证据，不关闭 FR-003 publish/consume。
 ### Fixed
 - 2026-06-23 round 2 证据刷新：重新运行 `/home/workspace/binance/scripts/boundary-gates.sh` 10/10 PASS；`go build`/`go vet`/`go test` 全部 PASS 于 SHA `71e2a6e8bb5591c43e8a2ebfff8c7645bf030786`；全部 9 个 issue 分支已合并至 origin/main。
@@ -1097,7 +1097,7 @@ binance v0.8.0 部署到 prod（`84.247.154.45`），通过 systemd 二进制直
 ### Changed
 - Stage0–Stage2 文档治理基线收敛：ACCEPTANCE、FEATURES、IMPLEMENTATION-PLAN、TRACEABILITY 与 root SPEC v2.2.3 对齐
 - Kafka topic 文档从旧式 `binance.market.{product_line}.{event_type}` 收敛到 `binance.{product_line}.{event_type}.v1`，保留 natsx subject 为 `binance.market.*`
-- TRACEABILITY FR-009 状态附 runtime SHA `bae80d6` + CI workflow URL（runtime PR ZoneCNH/binance#9 合并）
+- TRACEABILITY FR-009 状态附 runtime SHA `bae80d6` + CI workflow URL（runtime PR xhyperium/binance#9 合并）
 - ARCHITECTURE-DRIFT-WATCHLIST D8 风险级别 MEDIUM → LOW（CI 已自动化）
 - 业务报告 §Runtime 核对结果 第 4 项证据升级为 runtime commit + CI workflow URL
 

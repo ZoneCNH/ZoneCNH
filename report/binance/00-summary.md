@@ -1,7 +1,7 @@
 # Binance 模块分析报告 — 执行摘要
 
 > **分析日期**：2026-07-05
-> **代码仓库**：`/home/workspace/binance`（`github.com/ZoneCNH/binance`）
+> **代码仓库**：`/home/workspace/binance`（`github.com/xhyperium/binance`）
 > **规格仓库**：`/home/workspace/ZoneCNH/module/binance/`
 > **分析方法**：4 agent team 并行分析 + 交叉验证（关键发现已逐条人工验证）
 > **报告目录**：`report/binance/`
