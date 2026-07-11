@@ -2,9 +2,19 @@
 
 > **工作流快速导航**：`docs/workflow/README.md` — 统一管线入口、阶段总览、四源评分速览、快速通道。
 
+## 快速开始
+
+- 本仓库是 **Markdown 文档枢纽 / 治理主仓**，不含可运行代码，也没有传统 build/test。
+- 模块实现位于独立的 `/home/workspace/{module}` 仓库；本仓库只维护 spec、架构、治理与状态投影。
+- 工作前必读：`CONSTITUTION.md` > `AGENTS.md` / `CLAUDE.md` > `docs/governance/`。
+- 默认回复语言：中文（保留英文仓库名、模块名、命令）。
+- 本文件是面向所有 AI 代理的通用仓库指南；`CLAUDE.md` 是 Claude Code 专用约定；`.github/copilot-instructions.md` 是 GitHub Copilot 最小上下文。
+
 ## 最高指令源
 
 当本文件与 `CONSTITUTION.md` 冲突时，以 `CONSTITUTION.md` 为准。`CONSTITUTION.md` 是系统级最高治理文件（§0-§19），定义了分支纪律、设计原则、模块边界、交付管线和受控递归改进。本文件是代理编排与管线操作的参考文档。
+
+> 代理规则文件关系：`AGENTS.md` 为通用代理指南；`CLAUDE.md` 补充 Claude Code 专用约定（分支 GC、Harness、成本纪律等）；`.github/copilot-instructions.md` 为 GitHub Copilot 最小上下文。冲突时统一以 `CONSTITUTION.md` 为准。
 
 ## 项目结构与模块组织
 
@@ -21,25 +31,36 @@
 
 各类制品有明确的仓归属，避免 spec 制品错放到 runtime 仓。runtime 仓通过自身 `boundary-gates.sh` §15 gate 机器强制；主仓通过下表约定与 `ADR-TEMPLATE.md` 归属字段约束。
 
-| 制品类型 | 归属仓 | 路径 |
-| -------- | ------ | ---- |
-| ADR（架构决策记录） | ZoneCNH 主仓 | `module/{模块}/ADR-NNN-*.md`（模块专属）或 `module/ADR-NNN-*.md`（跨模块治理类） |
-| SPEC / TRACEABILITY / goal.md | ZoneCNH 主仓 | `module/{模块}/` |
-| FEATURES / ACCEPTANCE / IMPLEMENTATION-PLAN / CHANGELOG / RULES / STANDARD | ZoneCNH 主仓 | `module/{模块}/` |
-| README / BOUNDARY-GATES / AGENTS | 各 runtime 仓 | 仓根 |
-| 代码 / 测试 | 各 runtime 仓 | `internal/` `cmd/` `pkg/` 等 |
+| 制品类型                                                                   | 归属仓        | 路径                                                                             |
+| -------------------------------------------------------------------------- | ------------- | -------------------------------------------------------------------------------- |
+| ADR（架构决策记录）                                                        | ZoneCNH 主仓  | `module/{模块}/ADR-NNN-*.md`（模块专属）或 `module/ADR-NNN-*.md`（跨模块治理类） |
+| SPEC / TRACEABILITY / goal.md                                              | ZoneCNH 主仓  | `module/{模块}/`                                                                 |
+| FEATURES / ACCEPTANCE / IMPLEMENTATION-PLAN / CHANGELOG / RULES / STANDARD | ZoneCNH 主仓  | `module/{模块}/`                                                                 |
+| README / BOUNDARY-GATES / AGENTS                                           | 各 runtime 仓 | 仓根                                                                             |
+| 代码 / 测试                                                                | 各 runtime 仓 | `internal/` `cmd/` `pkg/` 等                                                     |
 
 **规则**：runtime 仓的 `module/` 目录只承载运行时文档与代码，不得承载 ADR/SPEC 等任何 spec 制品。binance runtime 仓的 `scripts/boundary-gates.sh` §15 gate 扫描 `module/` 下禁止文件名（`ADR-*.md`、`SPEC*.md`、`TRACEABILITY.md`、`goal.md`、`FEATURES.md`、`ACCEPTANCE.md` 等），命中即 CI FAIL。
 
 ## 构建、测试与开发命令
 
-本仓库仅包含文档，没有本地构建系统。提交前使用轻量检查：
+本仓库仅包含文档，没有本地构建系统。常用校验与治理命令如下：
 
-- 开发规则：禁止 Kubernetes 与 Docker（含 `docker`、`docker compose`、`k8s` 相关配置与命令）。
-- `rg "market_data|riskx" README.md docs/architecture/01-overview.md docs/architecture/05-foundation.md` 查找受影响的架构引用。
-- `git diff --check` 检查尾随空格和补丁格式问题。
-- `git status --short` 确认只修改了预期文档文件。
-- `git log -5 --pretty=format:%s` 查看最近提交标题风格。
+| 命令 | 用途 |
+|------|------|
+| `git diff --check` | 检查尾随空格和补丁格式问题 |
+| `git status --short` | 确认只修改了预期文档文件 |
+| `git log -5 --pretty=format:%s` | 查看最近提交标题风格 |
+| `rg -e "market_data" -e "riskx" README.md docs/architecture/01-overview.md docs/architecture/05-foundation.md` | 查找受影响的架构引用 |
+| `python3 scripts/audit-status.py --network` | 状态跨维度审计（闭合前必须运行） |
+| `node scripts/check.mjs` | 仓库健康检查 |
+| `node scripts/gc-scan.mjs [--json]` | 8 维健康状态扫描 |
+| `python3 scripts/scan-traceability.py` | 追溯矩阵扫描 |
+| `python3 scripts/sync-agents.py` | 三平台 agent 镜像对齐检测 |
+| `python3 scripts/projection-sync.py` | 状态投影同步 |
+| `./scripts/version-bump.sh [--level minor/major] [--dry-run]` | 仓库 release manifest 版本递增 |
+| `docs/goal/tools/lint-goal.sh && docs/goal/tools/lint-goal.sh --spec` | Goal 文档 lint |
+
+开发规则：禁止 Kubernetes 与 Docker（含 `docker`、`docker compose`、`k8s` 相关配置与命令）。
 
 如本地已有 Markdown linter，可对 `README.md`、`docs/architecture/` 下文档和 `AGENTS.md` 运行检查；不要仅为 lint 引入包管理器或新依赖。
 
@@ -77,6 +98,9 @@
 
 大规模表格修改后，使用 `git diff -- README.md docs/architecture/` 对比前后内容。
 
+- 涉及 `STATUS.md` / `README.md` / `ARCHITECTURE.md` 中数量、百分比、合计、版本计数的变更，必须实际统计，禁止凭记忆编造；声称“无残余问题”前必须运行 `python3 scripts/audit-status.py --network` 并全部 PASS。
+- 每个列出 GitHub 链接的模块必须有对应公开仓库；文档链接禁止指向 404。
+
 ## 提交与合并请求规范
 
 近期提交使用简洁的约定式标题，尤其是 `docs: ...`。沿用该模式，例如 `docs: 更新宏观数据提供者状态`。每个提交只聚焦一个文档主题。
@@ -107,23 +131,23 @@ Spec 编写完成后，不是直接写代码，而是按管线推进：Spec → 
 | Codex       | `.codex/agents/`   | GPT-5.5 + reasoning effort | TOML                 | 21       |
 | Copilot CLI | `.copilot/agents/` | Copilot/Claude 模型        | Markdown prompt      | 21       |
 
-三平台 agent 镜像对齐（21=21=21，零漂移），由 scripts/sync-agents.py 在 goal-workflow.sh preflight 阶段自动检测漂移。5 个 governance executor agent（spec/matrix/task-split/task-planner/prompt-builder）在 .claude/.copilot 中为 symlink→goal-*。.codex/agents/ 全部 21 个文件为 thin wrapper（引用 .claude canonical 定义），sync-agents.py 按 name 去重后三平台均为 21。
+三平台 agent 镜像对齐（21=21=21，零漂移），由 scripts/sync-agents.py 在 goal-workflow.sh preflight 阶段自动检测漂移。5 个 governance executor agent（spec/matrix/task-split/task-planner/prompt-builder）在 .claude/.copilot 中为 symlink→goal-\*。.codex/agents/ 全部 21 个文件为 thin wrapper（引用 .claude canonical 定义），sync-agents.py 按 name 去重后三平台均为 21。
 
 运行时状态目录按平台隔离：Claude 使用 `.omc/state/pipeline/`，Codex 使用 `.omx/state/pipeline/`，Copilot 使用 `.copilot/state/pipeline/`。
 
-| Agent                | 流水线阶段  | 用途                                                                                                    | 可改文件           | 可写代码 | Claude 模型 | Codex reasoning |
-| -------------------- | ----------- | ------------------------------------------------------------------------------------------------------- | ------------------ | -------- | ----------- | --------------- |
-| `spec → 见 goal-spec`               | S1-Spec     | 编写或修订项目 spec，补齐 23 节结构与追溯链（已合并到 goal-spec）                                                             | Spec 文档          | 否       | Opus        | high            |
-| `spec-review`        | S1-Review   | 对抗性审查 spec，作为结构评分证据与参考                                                                 | 无                 | 否       | Opus        | high            |
-| `matrix → 见 goal-matrix`             | S2-Matrix   | 生成或校验需求追溯矩阵，闭合 FR/BR/AC/TC 链条（已合并到 goal-matrix）                                                           | Traceability 文档  | 否       | Sonnet      | high            |
-| `task-split → 见 goal-planner`         | S3-Tasks    | 将 Approved Spec 和 Matrix 拆成可执行 Task Spec（已合并到 goal-planner）                                                         | Task / Matrix 文档 | 否       | Sonnet      | high            |
-| `task-planner → 见 goal-planner`       | S4-Plan     | 生成实现顺序、依赖、验证命令和风险计划（已合并到 goal-planner）                                                                  | Plan 文档          | 否       | Opus        | high            |
-| `prompt-builder → 见 goal-prompt-builder`     | S5-Prompt   | 为单个 Task 生成 Context Packet 与开发 Prompt（已合并到 goal-prompt-builder）                                                           | Prompt 文档        | 否       | Sonnet      | medium          |
-| `task-executor`      | S6-Code     | 按单个 Task 和 Prompt 编写代码与测试，验证后回填证据                                                    | Task 指定源码/测试 | 是       | Sonnet      | high            |
-| `*-structural-score` | S1-S6 Score | 每阶段结构性问题分析，Claude / Codex / Copilot + rules 四源输出评分、红线和扣分账本                     | 无                 | 否       | Opus        | high            |
-| `pipeline-arbiter`   | S1-S6 Gate  | 汇总四源评分（`claude/codex/copilot/rules`），计算 `composite_score = min(...)`，判定是否达到 98 分门禁 | Verdict / Attempts | 否       | Opus        | high            |
-| `code-reviewer`      | —           | 代码审查                                                                                                | 无                 | 否       | —           | —               |
-| `tdd-guide`          | —           | 测试驱动开发                                                                                            | 测试 / 必要实现    | 是       | —           | —               |
+| Agent                                     | 流水线阶段  | 用途                                                                                                    | 可改文件           | 可写代码 | Claude 模型 | Codex reasoning |
+| ----------------------------------------- | ----------- | ------------------------------------------------------------------------------------------------------- | ------------------ | -------- | ----------- | --------------- |
+| `spec → 见 goal-spec`                     | S1-Spec     | 编写或修订项目 spec，补齐 23 节结构与追溯链（已合并到 goal-spec）                                       | Spec 文档          | 否       | Opus        | high            |
+| `spec-review`                             | S1-Review   | 对抗性审查 spec，作为结构评分证据与参考                                                                 | 无                 | 否       | Opus        | high            |
+| `matrix → 见 goal-matrix`                 | S2-Matrix   | 生成或校验需求追溯矩阵，闭合 FR/BR/AC/TC 链条（已合并到 goal-matrix）                                   | Traceability 文档  | 否       | Sonnet      | high            |
+| `task-split → 见 goal-planner`            | S3-Tasks    | 将 Approved Spec 和 Matrix 拆成可执行 Task Spec（已合并到 goal-planner）                                | Task / Matrix 文档 | 否       | Sonnet      | high            |
+| `task-planner → 见 goal-planner`          | S4-Plan     | 生成实现顺序、依赖、验证命令和风险计划（已合并到 goal-planner）                                         | Plan 文档          | 否       | Opus        | high            |
+| `prompt-builder → 见 goal-prompt-builder` | S5-Prompt   | 为单个 Task 生成 Context Packet 与开发 Prompt（已合并到 goal-prompt-builder）                           | Prompt 文档        | 否       | Sonnet      | medium          |
+| `task-executor`                           | S6-Code     | 按单个 Task 和 Prompt 编写代码与测试，验证后回填证据                                                    | Task 指定源码/测试 | 是       | Sonnet      | high            |
+| `*-structural-score`                      | S1-S6 Score | 每阶段结构性问题分析，Claude / Codex / Copilot + rules 四源输出评分、红线和扣分账本                     | 无                 | 否       | Opus        | high            |
+| `pipeline-arbiter`                        | S1-S6 Gate  | 汇总四源评分（`claude/codex/copilot/rules`），计算 `composite_score = min(...)`，判定是否达到 98 分门禁 | Verdict / Attempts | 否       | Opus        | high            |
+| `code-reviewer`                           | —           | 代码审查                                                                                                | 无                 | 否       | —           | —               |
+| `tdd-guide`                               | —           | 测试驱动开发                                                                                            | 测试 / 必要实现    | 是       | —           | —               |
 
 管线的完整流程、门禁算法、失败路由、有界递归规则等详见 **`docs/governance/DEVELOPMENT-WORKFLOW.md`**（管线定义 SSOT）。评分方法论见 `docs/governance/STRUCTURAL-SCORING.md`，仲裁协议见 `docs/governance/scoring/ARBITER-PROTOCOL.md`。
 
@@ -204,22 +228,22 @@ python3 scripts/sol_luna_orchestrator.py run \
 
 ### 关键文档
 
-| 文档                                      | 用途                                                             |
-| ----------------------------------------- | ---------------------------------------------------------------- |
-| `module/README.md`                        | 规格库索引                                                       |
-| `docs/governance/DEVELOPMENT-WORKFLOW.md` | Spec → Ship 完整管线                                             |
-| `docs/governance/SPEC-TEMPLATE.md`        | 23 节 spec 模板                                                  |
-| `docs/governance/TASK-TEMPLATE.md`        | Task spec 模板                                                   |
-| `docs/governance/LIFECYCLE.md`            | Spec 状态流转规则                                                |
-| `docs/governance/TRACEABILITY.md`         | 需求追踪矩阵规范；具体矩阵位于 `module/{module}/matrix/TRACEABILITY.md` |
-| `docs/governance/DEFINITION-OF-READY.md`  | 进入开发的前置条件                                               |
-| `docs/governance/DEFINITION-OF-DONE.md`   | 完成验收条件                                                     |
-| `CONSTITUTION.md`                         | 最高治理权威（§0-§19，向后兼容存根；完整条款见 `docs/constitution/`） |
-| `docs/constitution/`                      | 宪法章节视图（按条款拆分，含导航链接；[README](docs/constitution/README.md)） |
-| `module/FOUNDATION-DEPS.yaml`             | Foundation 依赖矩阵（机器可读，规定允许/禁止的依赖边与特殊约束） |
-| `module/registry.yaml`                   | 统一模块注册表（身份+治理状态 SSOT：lifecycle/owner/domain/arch_type） |
-| `docs/governance/MODULE-GOVERNANCE.md`   | 模块治理总纲 — 八域总览、三 SSOT 边界、效力层级 |
-| `docs/governance/module-governance/`     | 模块治理八专题（注册/生命周期/负责人/发布/健康度/准入/退役/业务域依赖）+ ADR 模板 |
+| 文档                                      | 用途                                                                              |
+| ----------------------------------------- | --------------------------------------------------------------------------------- |
+| `module/README.md`                        | 规格库索引                                                                        |
+| `docs/governance/DEVELOPMENT-WORKFLOW.md` | Spec → Ship 完整管线                                                              |
+| `docs/governance/SPEC-TEMPLATE.md`        | 23 节 spec 模板                                                                   |
+| `docs/governance/TASK-TEMPLATE.md`        | Task spec 模板                                                                    |
+| `docs/governance/LIFECYCLE.md`            | Spec 状态流转规则                                                                 |
+| `docs/governance/TRACEABILITY.md`         | 需求追踪矩阵规范；具体矩阵位于 `module/{module}/matrix/TRACEABILITY.md`           |
+| `docs/governance/DEFINITION-OF-READY.md`  | 进入开发的前置条件                                                                |
+| `docs/governance/DEFINITION-OF-DONE.md`   | 完成验收条件                                                                      |
+| `CONSTITUTION.md`                         | 最高治理权威（§0-§19，向后兼容存根；完整条款见 `docs/constitution/`）             |
+| `docs/constitution/`                      | 宪法章节视图（按条款拆分，含导航链接；[README](docs/constitution/README.md)）     |
+| `module/FOUNDATION-DEPS.yaml`             | Foundation 依赖矩阵（机器可读，规定允许/禁止的依赖边与特殊约束）                  |
+| `module/registry.yaml`                    | 统一模块注册表（身份+治理状态 SSOT：lifecycle/owner/domain/arch_type）            |
+| `docs/governance/MODULE-GOVERNANCE.md`    | 模块治理总纲 — 八域总览、三 SSOT 边界、效力层级                                   |
+| `docs/governance/module-governance/`      | 模块治理八专题（注册/生命周期/负责人/发布/健康度/准入/退役/业务域依赖）+ ADR 模板 |
 
 ## Goal 驱动交付体系
 
@@ -237,17 +261,17 @@ Goal 驱动交付体系确保每一行代码都能追溯到一个可验证的业
 
 #### Goal Agent 与 Governance Agent 路由规则
 
-| 职能       | Goal agent（module/{m}/ 制品） | Governance agent（docs/ 制品）             | 路由规则                                                      |
-| -------- | ----------------------------- | ------------------------------------------- | ------------------------------------------------------------- |
-| Spec 编写 | goal-spec                     | spec, spec-author                           | 模块 spec 用 goal-spec；跨模块/工具级 spec 用 spec-author      |
-| Spec 审查 | goal-reviewer                 | spec-review, spec-structural-score          | Goal Gate 审查用 goal-reviewer；四源评分用 *-structural-score |
-| Design   | goal-architect                | —                                           | 统一用 goal-architect                                         |
-| Plan/Tasks | goal-planner                | task-planner, task-split                    | 模块计划用 goal-planner；governance 管线用 task-planner       |
-| Matrix   | goal-matrix                   | matrix, matrix-structural-score             | 模块追溯用 goal-matrix；评分用 matrix-structural-score       |
-| Prompt   | goal-prompt-builder           | prompt-builder, prompt-structural-score     | 模块 prompt 用 goal-prompt-builder；评分用 prompt-structural-score |
-| Code     | —                             | task-executor, code-structural-score        | 代码实现统一用 governance 的 task-executor                     |
-| Evidence | goal-evidence                 | —                                           | 统一用 goal-evidence                                          |
-| Governance | goal-governance             | pipeline-arbiter, meta-arbiter              | 一致性审计用 goal-governance；评分仲裁用 arbiter              |
+| 职能       | Goal agent（module/{m}/ 制品） | Governance agent（docs/ 制品）          | 路由规则                                                           |
+| ---------- | ------------------------------ | --------------------------------------- | ------------------------------------------------------------------ |
+| Spec 编写  | goal-spec                      | spec, spec-author                       | 模块 spec 用 goal-spec；跨模块/工具级 spec 用 spec-author          |
+| Spec 审查  | goal-reviewer                  | spec-review, spec-structural-score      | Goal Gate 审查用 goal-reviewer；四源评分用 \*-structural-score     |
+| Design     | goal-architect                 | —                                       | 统一用 goal-architect                                              |
+| Plan/Tasks | goal-planner                   | task-planner, task-split                | 模块计划用 goal-planner；governance 管线用 task-planner            |
+| Matrix     | goal-matrix                    | matrix, matrix-structural-score         | 模块追溯用 goal-matrix；评分用 matrix-structural-score             |
+| Prompt     | goal-prompt-builder            | prompt-builder, prompt-structural-score | 模块 prompt 用 goal-prompt-builder；评分用 prompt-structural-score |
+| Code       | —                              | task-executor, code-structural-score    | 代码实现统一用 governance 的 task-executor                         |
+| Evidence   | goal-evidence                  | —                                       | 统一用 goal-evidence                                               |
+| Governance | goal-governance                | pipeline-arbiter, meta-arbiter          | 一致性审计用 goal-governance；评分仲裁用 arbiter                   |
 
 路由规则说明：Goal→Retro 是唯一管线（G0-G11），Spec→Code（S1-S6）是 G2-G6 的快速通道子集。Goal Gate 为权威裁决（见 `docs/goal/00-authority-map.md` §管线优先级）。Goal agent 负责制品创建与 Gate 审查；governance agent 负责四源评分与仲裁。
 
@@ -324,6 +348,7 @@ module/{module}/
 | `.config/goal/README.md`        | 配置中心索引                           |
 
 <!-- BEGIN BEADS CODEX SETUP: generated by bd setup codex -->
+
 ## Beads Issue Tracker
 
 Use Beads (`bd`) for durable task tracking in repositories that include it. Use the `beads` skill at `.agents/skills/beads/SKILL.md` (project install) or `~/.agents/skills/beads/SKILL.md` (global install) for Beads workflow guidance, then use the `bd` CLI for issue operations.
@@ -345,9 +370,11 @@ bd prime                # Refresh Beads context
 - Keep persistent project memory in Beads via `bd remember`; do not create ad hoc memory files.
 
 **Architecture in one line:** issues live in a local Dolt DB; sync uses `refs/dolt/data` on your git remote; `.beads/issues.jsonl` is a passive export. See https://github.com/gastownhall/beads/blob/main/docs/SYNC_CONCEPTS.md for details and anti-patterns.
+
 <!-- END BEADS CODEX SETUP -->
 
 <!-- BEGIN BEADS REPO OVERRIDE — 本仓库覆盖声明（非 bd 生成，勿自动覆盖） -->
+
 ## Beads 与本仓库治理的优先级（覆盖 beads prime 注入）
 
 `bd prime` / codex hook 注入的 beads 指令含通用规则，部分与本仓库定位冲突，以下条款**覆盖** beads 注入内容：
@@ -359,8 +386,8 @@ bd prime                # Refresh Beads context
 5. **冲突时优先级**：`CONSTITUTION.md` > 本仓库 `CLAUDE.md`/`AGENTS.md` 治理条款 > beads prime 注入。
 <!-- END BEADS REPO OVERRIDE -->
 
-
 <!-- BEGIN BEADS INTEGRATION v:1 profile:full hash:f65d5d33 -->
+
 ## Issue Tracking with bd (beads)
 
 **IMPORTANT**: This project uses **bd (beads)** for ALL issue tracking. Do NOT use markdown TODOs, task lists, or other tracking methods.
@@ -426,10 +453,12 @@ bd close bd-42 --reason "Completed" --json
 5. **Complete**: `bd close <id> --reason "Done"`
 
 ### Quality
+
 - Use `--acceptance` and `--design` fields when creating issues
 - Use `--validate` to check description completeness
 
 ### Lifecycle
+
 - `bd defer <id>` / `bd supersede <id>` for issue management
 - `bd stale` / `bd orphans` / `bd lint` for hygiene
 - `bd human <id>` to flag for human decisions
@@ -476,6 +505,7 @@ For more details, see README.md and docs/QUICKSTART.md.
 7. **Hand off** - Provide context for next session
 
 **CRITICAL RULES:**
+
 - Work is NOT complete until `git push` succeeds
 - NEVER stop before pushing - that leaves work stranded locally
 - NEVER say "ready to push when you are" - YOU must push
