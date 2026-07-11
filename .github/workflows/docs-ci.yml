@@ -71,6 +71,7 @@ jobs:
             install -D -m 0755 "${tmpdir}/lychee-x86_64-unknown-linux-gnu/lychee" "$LYCHEE_BIN_DIR/lychee"
             rm -rf "$tmpdir"
             echo "$LYCHEE_BIN_DIR" >> "$GITHUB_PATH"
+            export PATH="$LYCHEE_BIN_DIR:$PATH"
             echo "已安装 lychee $LYCHEE_VERSION 到 $LYCHEE_BIN_DIR"
           fi
           lychee --version
