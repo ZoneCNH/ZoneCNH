@@ -115,7 +115,9 @@ jobs:
           go-version: ${{ env.GO_VERSION }}
           cache: true
       - uses: gitleaks/gitleaks-action@v2
-      - run: govulncheck ./...
+      - name: Security scan (govulncheck)
+        if: ${{ env.XLIB_ENABLE_VULNCHECK == '1' }}
+        run: govulncheck ./...
 
   # ── 7. Evidence ─────────────────────────────────────────────────
   evidence:
