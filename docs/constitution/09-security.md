@@ -33,7 +33,7 @@
 ### 9.4 依赖安全
 
 - 所有第三方依赖必须在 `go.sum` 中有校验和
-- 定期运行 `govulncheck` 扫描已知漏洞
+- `govulncheck` 漏洞扫描默认关闭；需启用时在 CI 环境变量中设置 `XLIB_ENABLE_VULNCHECK=1`
 - 新增依赖必须在 PR 中说明必要性
 
 ---
