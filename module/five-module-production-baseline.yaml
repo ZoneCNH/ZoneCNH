@@ -1,0 +1,86 @@
+schema_version: five-module-production-baseline/v1
+status: no_go
+updated_at: "2026-07-11T00:00:00Z"
+control_plane:
+  repository: github.com/ZoneCNH/ZoneCNH
+  baseline_commit: 681b8c9c139c8313f1ca38043817b4ae82b135fe
+decision:
+  adr: module/ADR-five-module-production-pipeline-v1.md
+  synchronous_protocol: http
+  server_framework: gin
+  authoritative_ingest_owner: market_data
+  authoritative_ingest_fact: capture_log
+modules:
+  contracts:
+    repository: github.com/xhyperium/contracts
+    kind: library
+    layer: L3
+    observed_head: 27322038e71eb2c0f9955f0dc0adf87c431fbdf8
+    release_ready: false
+    blockers:
+      - repository_and_go_module_identity_drift
+      - grpc_specific_ingest_contract
+      - missing_http_market_pipeline_v1
+      - market_regime_and_decision_contract_overlap
+  domain_market:
+    repository: github.com/xhyperium/domain_market
+    kind: library
+    layer: L2.5
+    observed_head: a7ae6992e025f9c05c9f7e5e0603617e531b0438
+    release_ready: false
+    blockers:
+      - ambiguous_bool_bar_finality
+      - duplicate_market_envelopes
+      - infrastructure_and_execution_semantics_in_domain
+      - go_baseline_drift
+  binance:
+    repository: github.com/xhyperium/binance
+    kind: service
+    layer: data
+    observed_head: d2f50daf9b808c442bce870b7ca87c4d240ead42
+    release_ready: false
+    blockers:
+      - release_closeable_no
+      - nats_cs_path_conflicts_with_http_handoff
+      - binance_server_and_market_data_ownership_overlap
+      - local_outbox_crash_window
+  market_data:
+    repository: github.com/xhyperium/market_data
+    kind: service
+    layer: data
+    observed_head: 58d5ce7beb8c855bd7f59005ace3ca641245e2e3
+    release_ready: false
+    blockers:
+      - idempotency_committed_before_sink
+      - false_durable_ack
+      - synchronous_dual_write
+      - missing_cmd_gin_capture_log_and_operations
+  market_regime:
+    repository: github.com/xhyperium/market_regime
+    kind: service
+    layer: analytics
+    release_ready: false
+    blockers:
+      - repository_readback_not_closed
+      - missing_production_runtime
+      - non_deterministic_clock_and_uuid
+      - no_event_time_watermark
+      - incomplete_real_features
+      - decision_semantics_in_regime_output
+required_gates:
+  - repository-identity-consistency
+  - contract-compatibility
+  - domain-purity
+  - false-durable-ack
+  - same-key-different-hash
+  - sequence-gap
+  - capture-crash-recovery
+  - projection-reconcile
+  - replay-determinism
+  - no-lookahead
+  - final-bar-only
+  - consumer-adoption
+external_write_status:
+  ZoneCNH_control_plane: branch_created
+  xhyperium_contracts: blocked_by_github_app_403
+  xhyperium_domain_market: blocked_by_github_app_403
