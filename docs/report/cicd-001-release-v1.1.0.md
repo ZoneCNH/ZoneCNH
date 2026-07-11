@@ -2,7 +2,7 @@
 
 > Date: 2026-07-09  
 > Release: https://github.com/ZoneCNH/ZoneCNH/releases/tag/v1.1.0  
-> xlibgate: https://github.com/ZoneCNH/xlibgate/releases/tag/v1.2.0
+> xlibgate: https://github.com/xhyperium/xlibgate/releases/tag/v1.2.0
 
 ## Summary
 

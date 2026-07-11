@@ -74,26 +74,26 @@ Foundation（20 模块）与 L2.5 领域共享层（5 模块）为 FoundationX �
 
 ## 4. 文档引用状态
 
-### 4.1 `docs/architecture/05-foundation.md`
+### 4.1 治理文档超链接（已修复）
 
-[COMPUTED, HIGH] 该文件为 FoundationX 架构总览的核心文档，表格中全部 25 模块的 URL 仍指向 `github.com/ZoneCNH/{module}`。共计 ~25 行表格链接。
+[COMPUTED, HIGH] 2026-07-11 对以下 6 个治理文档中 Foundation + L2.5 25 模块的 74 处 `https://github.com/ZoneCNH/{module}` 超链接执行了靶向替换（`ZoneCNH` → `xhyperium`）：
 
-| 状态 | 说明 |
-|------|------|
-| 链接 URL | 指向 `ZoneCNH/{module}` — **需更新** |
-| 链接可达性 | 可点击（GitHub 301 重定向至 xhyperium），用户体验可接受但非最佳 |
-| 优先级 | 中 — 非阻断，但属于治理文档与事实不一致 |
+| 文件 | 替换数 |
+|------|--------|
+| `docs/architecture/05-foundation.md` | 26 |
+| `README.md` | 25 |
+| `docs/constitution/appendix.md` | 20 |
+| `docs/evidence/three-doc-audit-20260615-evidence.md` | 1 |
+| `docs/report/cicd-001-release-v1.1.0.md` | 1 |
+| `docs/templates/CLAUDE.md.template` | 1 |
 
-### 4.2 其他架构文档与标准
+替换策略：仅替换模块名的 URL 超链接（`[module](https://github.com/ZoneCNH/{module})`），不触碰 Go import 路径（`github.com/ZoneCNH/{module}` 无 `https://` 前缀），不触碰 `ZoneCNH/ZoneCNH` 文档枢纽自引用。
 
-[COMPUTED, HIGH] 以下文件含 Foundation/L2.5 模块的 `ZoneCNH` URL 引用，与 4.1 属同一类型（文档内超链接）：
+验证结果：治理文档中 Foundation + L2.5 25 模块的 ZoneCNH URL 超链接 **零残留**。
 
-- `docs/standards/go-coding-standards.md`
-- 若干 `docs/standards/*-impl-guide.md` 文件
-- `docs/governance/` 下部分治理文件
-- `module/{foundation_modules}/` 下各模块 README、goal、spec、plan 制品
+### 4.2 模块级 Spec/Plan 制品
 
-以上文件共计约 300+ 处超链接引用。批量替换或保留为两可决策——详见 §7（推荐方案）。
+[COMPUTED, HIGH] `module/{foundation_modules}/` 下各模块的 README、goal、spec、plan、prompt、evidence 制品含 Go import 路径引用（`github.com/ZoneCNH/{module}`），不包含 `https://` URL 超链接。这些 import 路径属 §5 讨论的预期残留范畴，无需替换。
 
 ### 4.3 CI/CD Workflow 引用
 
@@ -149,12 +149,11 @@ xhyperium/domain_macro xhyperium/domain_exchange
 
 ## 7. 推荐后续事项
 
-| 事项 | 优先级 | 说明 |
-|------|--------|------|
-| 更新 `docs/architecture/05-foundation.md` 超链接 | 中 | 表格中 ~25 行 URL 从 `ZoneCNH` 替换为 `xhyperium`，与 registry/facts 对齐 |
-| 评估批量替换治理文档中的模块链接 | 低 | ~300+ Markdown 文件中的 URL 引用；GitHub 301 重定向使其可访问，非阻断 |
-| 本地 remote 批量验证 | 低 | 确认 25 模块 `/home/workspace/{module}` 的 `origin` remote 正确指向 `xhyperium` |
-| Go import 路径重写评估 | 低 | 如需统一 import 路径为 `xhyperium`，需修改 25 模块的 `go.mod` `module` 声明及全量内部 import，属独立工程任务 |
+| 事项 | 优先级 | 状态 | 说明 |
+|------|--------|------|------|
+| 治理文档 URL 对齐（`05-foundation.md` 等） | — | **已完成** | 2026-07-11 靶向替换 6 个治理文档 74 处超链接 `ZoneCNH` → `xhyperium` |
+| 本地 remote 批量验证 | 低 | 待办 | 确认 25 模块 `/home/workspace/{module}` 的 `origin` remote 正确指向 `xhyperium` |
+| Go import 路径重写评估 | 低 | 待评估 | 如需统一 import 路径为 `xhyperium`，需修改 25 模块的 `go.mod` `module` 声明及全量内部 import，属独立工程任务 |
 
 ---
 

@@ -7,7 +7,7 @@
 **命令**: `grep -n domainx STATUS.md | grep 'github.com'`
 
 ```
-39:| [domainx](https://github.com/ZoneCNH/domainx) | v0.1.0 | █████ 100% | 100% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | 执行域共享值对象：Order/Position/Trade/Portfolio/ExecutionReport 枚举与类型；v0.1.0 CI 已部署 |
+39:| [domainx](https://github.com/xhyperium/domainx) | v0.1.0 | █████ 100% | 100% | spec=100 mat=100 tsk=100 pln=100 prm=100 cod=100 | 执行域共享值对象：Order/Position/Trade/Portfolio/ExecutionReport 枚举与类型；v0.1.0 CI 已部署 |
 ```
 
 domainx 位于 STATUS.md 基座组件表（第 39 行，transportx 之后），非 L2.5 表。README L88 在基座契约段。ARCH L24（领域共享: domainx）和 L130（各域说明表基座行末尾）。
