@@ -199,3 +199,27 @@
 [COMPUTED, HIGH] 本轮 implementation commit 为 `3f6366728b635c32d73565874965d40c20a92caf`，dated evidence commit 为 `660a3701589cc15fa95c7859fae02fad4863e1ad`；执行 `scripts/binance-final-20-check.sh` 后 `round=01..20 PASS`，脚本 exit 0。日志：`/tmp/binance-final-20check-20260710-final2/SUMMARY.tsv`。
 
 [COMPUTED, HIGH] 每轮覆盖完整 `go test ./... -count=1`、build/vet、boundary、drift、e2e fixture、release ledger/packet、Zone docs/version/reference/diff；external ledger 的 5 项 BLOCKED/NOT_RUN 是预期的真实环境阻断，不是漏检。
+
+---
+
+## 9. 2026-07-11 仓库实际转移完成 + 20 轮 agent team 复核
+
+> 本节记录 binance 运行时仓从 ZoneCNH→xhyperium 的**真实 GitHub 转移**及其后**20 轮独立 agent team 复核**结果（与第 8 节 runtime 代码质量 20 轮 closure 区分）。
+
+### 9.1 实际仓库转移（GitHub Transfer）
+
+[COMPUTED, HIGH] 2026-07-11 通过 GitHub Transfer API 将 `ZoneCNH/binance` 迁移至 `xhyperium/binance`：
+- `xhyperium/binance` **真实存在**（default_branch=main，pushed_at=2026-07-11T03:03:42Z，代码历史完整保留）。
+- `ZoneCNH/binance` 旧路径**自动 301 重定向**到新位置，不再作为独立仓库存在。
+- 本地 `/home/workspace/binance` 的 `origin` remote 已更新为 `git@github.com:xhyperium/binance.git`，`git ls-remote` 验证可联通。
+
+### 9.2 20 轮 agent team 复核结论
+
+[COMPUTED, HIGH] 2026-07-11 启动 20 个并行 agent，从 20 个独立视角（全树多方法扫描 / registry / FOUNDATION-DEPS / GitHub 真实状态 / 本地 remote / 运行时仓 import / 对齐文档内容）交叉核对：
+- **18 轮直接 PASS**；初查标记的 2 处（R6/R13）命中位于 `sre/.worktree/workspaces/feat/fix-sre-module-registry/module.md`——属 sre 模块已 detach 的过期 feature worktree 内 stale 副本，已修复并与主仓 `sre/module.md` 对齐。
+- R10 上下文关联命中的 2 处经判定为**误报**：`README.md:111` 为 `[natsx](ZoneCNH/natsx)` 行提及 binance PR 编号（组织名是 natsx）；`patches/coverage.out` 路径为 `github.com/ZoneCNH/runtime-patches/binance/server.go`（属 runtime-patches 另一仓库，非 binance 模块仓）。
+- **最终结果**：全树（排除 `.git`）`rg --hidden -g '!.git' 'ZoneCNH/binance'` 返回 **NONE**；`module/registry.yaml`（`repo`/`owner: xhyperium`）、`module/FOUNDATION-DEPS.yaml`、`docs/migrations/binance-ALIGNMENT-SYNC.md` 均指向 `xhyperium/binance`。**20 轮零遗漏。**
+
+### 9.3 已知预期残留（非本次迁移遗漏）
+
+[KNOWN] 运行时仓 `/home/workspace/binance` 代码内 1153 处 Go import 仍使用 `github.com/ZoneCNH/binance` 模块路径——**repo 转移不改变代码 import 路径**，GitHub 重定向保证可下载，属预期行为；如需统一可后续作为独立任务重写 import 路径（不在本迁移范围）。
