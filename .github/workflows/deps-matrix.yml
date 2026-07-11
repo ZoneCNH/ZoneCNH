@@ -69,15 +69,77 @@ jobs:
           with open("module/FOUNDATION-DEPS.yaml") as f:
               matrix = yaml.safe_load(f)
 
+          with open("module/registry.yaml") as f:
+              registry = yaml.safe_load(f)
+
           go_baseline = matrix.get("go_baseline", "1.23")
           modules = matrix.get("modules", {})
           allowed = matrix.get("allowed_deps", {})
           forbidden = matrix.get("forbidden_deps", [])
+          # Hosting identity comes from registry.repo. Go module identity stays in
+          # FOUNDATION-DEPS modules.*.path and is intentionally not rewritten by
+          # a GitHub repository transfer.
+          module_by_path = {}
+          for name, definition in modules.items():
+              if not isinstance(definition, dict) or not definition.get("path"):
+                  continue
+              module_path = definition["path"]
+              path_prefix, _, path_name = module_path.rpartition("/")
+              # A repository transfer must not force a breaking Go import-path
+              # migration. Keep canonical matrix paths authoritative while also
+              # recognizing the legacy kebab-case identities still published by
+              # several modules.
+              for path_alias_name in {
+                  path_name,
+                  path_name.replace("_", "-"),
+                  path_name.replace("-", "_"),
+              }:
+                  path_alias = f"{path_prefix}/{path_alias_name}"
+                  existing = module_by_path.get(path_alias)
+                  if existing is not None and existing != name:
+                      raise RuntimeError(
+                          f"Go module alias collision: {path_alias} maps to "
+                          f"both {existing} and {name}"
+                      )
+                  module_by_path[path_alias] = name
+          module_paths_longest_first = sorted(
+              module_by_path,
+              key=len,
+              reverse=True,
+          )
+
+          def resolve_module(import_path):
+              """Resolve a module path or package subpath to its matrix module."""
+              for module_path in module_paths_longest_first:
+                  if import_path == module_path or import_path.startswith(f"{module_path}/"):
+                      return module_by_path[module_path]
+              return None
+
+          legacy_resolution_examples = {
+              "github.com/ZoneCNH/xlib-standard/pkg/templatex": "xlib_standard",
+              "github.com/ZoneCNH/domain-market/pkg/domain_market": "domain_market",
+          }
+          for legacy_path, expected_module in legacy_resolution_examples.items():
+              resolved_module = resolve_module(legacy_path)
+              if resolved_module != expected_module:
+                  raise RuntimeError(
+                      f"Legacy Go module resolution failed for {legacy_path}: "
+                      f"got {resolved_module!r}, want {expected_module!r}"
+                  )
 
           violations = []
 
           for mod_name, mod_def in modules.items():
-              repo_url = f"https://github.com/ZoneCNH/{mod_name}.git"
+              registry_entry = registry.get(mod_name, {})
+              repo_target = registry_entry.get("repo") if isinstance(registry_entry, dict) else None
+              if not isinstance(repo_target, str) or not repo_target.startswith("github.com/"):
+                  violations.append({
+                      "module": mod_name,
+                      "type": "REPOSITORY_IDENTITY_MISSING",
+                      "detail": "No valid registry.repo hosting target"
+                  })
+                  continue
+              repo_url = f"https://{repo_target}.git"
               clone_dir = f"/tmp/check-{mod_name}"
 
               # Clone
@@ -95,6 +157,15 @@ jobs:
                   # SKIP: module has no go.mod (e.g. doc-only or worktree-only repos) — not a violation
                   print(f"  ⚠ [SKIP] {mod_name}: go.mod not found (not a violation)")
                   continue
+
+              # Read the actual Go module identity before dependency checks. This
+              # identity may intentionally differ from the hosting repository.
+              actual_module = ""
+              with open(gomod) as f:
+                  for line in f:
+                      if line.startswith("module "):
+                          actual_module = line.strip().split()[1]
+                          break
 
               # Check Go version (semantic compare: 1.25 == 1.25.0; warning only, not blocking)
               def go_major_minor(v):
@@ -117,9 +188,10 @@ jobs:
                   if ret.returncode == 0:
                       for dep_line in ret.stdout.strip().split("\n"):
                           dep = dep_line.split()[0] if dep_line.strip() else ""
-                          if dep and "/" in dep and not dep.startswith("github.com/ZoneCNH/"):
+                          dep_module = resolve_module(dep)
+                          if dep and "/" in dep and dep_module is None:
                               pass  # stdlib packages have no /
-                          elif dep and not dep.startswith(f"github.com/ZoneCNH/{mod_name}") and "/" in dep:
+                          elif dep and dep_module not in (None, mod_name) and dep != actual_module:
                               violations.append({
                                   "module": mod_name,
                                   "type": "STDLIB_VIOLATION",
@@ -130,14 +202,6 @@ jobs:
               mod_allowed = set(allowed.get(mod_name, []))
               # Normalize: treat - and _ as equivalent (kebab-case go.mod vs snake_case DEPS)
               mod_allowed_norm = {a.replace('-', '_') for a in mod_allowed}
-              # Read actual module path from go.mod for robust self-detection
-              # (handles shared modules like transportx→xlib_standard and kebab-case paths)
-              actual_module = ""
-              with open(gomod) as f:
-                  for line in f:
-                      if line.startswith("module "):
-                          actual_module = line.strip().split()[1]
-                          break
               if mod_allowed:
                   ret = subprocess.run(
                       ["go", "list", "-m", "all"],
@@ -146,18 +210,18 @@ jobs:
                   if ret.returncode == 0:
                       for dep_line in ret.stdout.strip().split("\n"):
                           dep = dep_line.split()[0] if dep_line.strip() else ""
-                          if not dep.startswith("github.com/ZoneCNH/"):
+                          dep_module = resolve_module(dep)
+                          if dep_module is None:
                               continue
-                          # Skip self (account for kebab-case go.mod path and shared modules)
-                          if dep == actual_module or dep == f"github.com/ZoneCNH/{mod_name}":
+                          # Skip self (including a legacy/shared actual module path).
+                          if dep == actual_module or dep_module == mod_name:
                               continue
-                          dep_short = dep.replace("github.com/ZoneCNH/", "")
                           # Normalize: - and _ are equivalent for comparison
-                          if dep_short.replace('-', '_') not in mod_allowed_norm:
+                          if dep_module.replace('-', '_') not in mod_allowed_norm:
                               violations.append({
                                   "module": mod_name,
                                   "type": "UNAUTHORIZED_DEP",
-                                  "detail": f"Depends on {dep_short} (not in allowed list)"
+                                  "detail": f"Depends on {dep_module} (not in allowed list)"
                               })
 
               # Check forbidden deps

@@ -1,8 +1,9 @@
 # decimalx 规格
 
 - Status: Approved
+- Owner: xhyperium
 - Spec-Version: v1.0.0
-- Last-Updated: 2026-06-30
+- Last-Updated: 2026-07-10
 - Layer: L2.5 领域共享
 - Version: v1.0.0
 - Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `kernel`

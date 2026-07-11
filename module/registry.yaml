@@ -2,8 +2,10 @@
 #
 # 这是模块身份与治理状态的单一 SSOT（Single Source of Truth）。
 # 管辖：repo / local_path / domain / layer / arch_type / lifecycle / owner / spec_ref / registered
+#   - repo 是托管身份（GitHub owner/repository），用于 clone/release 路由。
+#   - owner 是治理负责人，不从 repo owner 自动推导，也不等于 CODEOWNERS 审查委托。
 # 不管辖（引用其他 SSOT）：
-#   - 依赖矩阵 → module/FOUNDATION-DEPS.yaml（deps_ref）
+#   - Go module identity / 依赖矩阵 → module/FOUNDATION-DEPS.yaml（deps_ref）
 #   - 成熟度事实（version/release/factory）→ .foundationx/status/index.json（maturity_ref）
 #
 # Schema 定义：docs/governance/module-governance/01-module-registry.md

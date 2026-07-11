@@ -1,8 +1,9 @@
 # redisx 规格
 
 - Status: Approved
+- Owner: xhyperium
 - Spec-Version: v1.3.0
-- Last-Updated: 2026-06-30
+- Last-Updated: 2026-07-10
 - Layer: 基座 · 存储扩展
 - Version: v1.1.0
 - Related: `CONSTITUTION.md`, `ARCHITECTURE.md`, `module/FOUNDATION-DEPS.yaml`, `kernel`

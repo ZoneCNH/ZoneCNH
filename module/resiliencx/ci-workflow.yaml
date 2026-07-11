@@ -1,8 +1,8 @@
 # CI/CD Workflow 参考模板 — resiliencx
 #
-# v1.0.2 投影自 github.com/ZoneCNH/resiliencx/.github/workflows/ci.yml 与 release.yml。
+# v1.0.2 投影自 github.com/xhyperium/resiliencx/.github/workflows/ci.yml 与 release.yml。
 # 所有 CI 与 CD job 使用 self-hosted sre/* runner（sre/foundation-l1），与已发布 release check 一致。
-# Workflow target: github.com/ZoneCNH/resiliencx/.github/workflows/ci.yml
+# Workflow target: github.com/xhyperium/resiliencx/.github/workflows/ci.yml
 
 name: CI/CD
 

@@ -167,6 +167,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: 测试 registry repo 身份校验
+        run: bash .github/ci/registry-lint-test.sh
+
       - name: 校验 module/registry.yaml 完整性
         run: bash .github/ci/registry-lint.sh
 
