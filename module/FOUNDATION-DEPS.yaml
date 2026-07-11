@@ -240,7 +240,7 @@ forbidden_deps:
   - github.com/ZoneCNH/factor_engine
   - github.com/ZoneCNH/feature_store
   - github.com/ZoneCNH/factor_eval
-  - github.com/ZoneCNH/market_regime
+  - github.com/xhyperium/market_regime
   - github.com/ZoneCNH/macro_regime
   - github.com/ZoneCNH/regime_engine
   - github.com/ZoneCNH/ms_brain
@@ -449,7 +449,7 @@ business_domain_modules:
   coinglass:         { domain: data, repo: github.com/ZoneCNH/coinglass, description: "Coinglass 衍生品数据采集" }
   fred:              { domain: data, repo: github.com/ZoneCNH/fred, description: "FRED 宏观经济数据采集" }
   treasury:          { domain: data, repo: github.com/ZoneCNH/treasury, description: "美国国债/财政数据采集" }
-  market_data:       { domain: data, repo: github.com/ZoneCNH/market_data, description: "行情摄取与分发聚合层" }
+  market_data:       { domain: data, repo: github.com/xhyperium/market_data, description: "行情摄取与分发聚合层" }
   macro_data:        { domain: data, repo: github.com/ZoneCNH/macro_data, description: "宏观摄取与分发聚合层" }
   pe_data:           { domain: data, repo: github.com/ZoneCNH/pe_data, description: "另类数据摄取" }
   alternative_data:  { domain: data, repo: github.com/ZoneCNH/alternative_data, description: "链上数据、社交情绪、新闻 NLP" }
@@ -458,7 +458,7 @@ business_domain_modules:
   factor_engine:     { domain: analytics, repo: github.com/ZoneCNH/factor_engine, description: "因子计算引擎" }
   feature_store:     { domain: analytics, repo: github.com/ZoneCNH/feature_store, description: "特征存储" }
   factor_eval:       { domain: analytics, repo: github.com/ZoneCNH/factor_eval, description: "因子评估" }
-  market_regime:     { domain: analytics, repo: github.com/ZoneCNH/market_regime, description: "市场状态（S 引擎）" }
+  market_regime:     { domain: analytics, repo: github.com/xhyperium/market_regime, description: "市场状态（S 引擎）" }
   macro_regime:      { domain: analytics, repo: github.com/ZoneCNH/macro_regime, description: "宏观体制（M 引擎）" }
   regime_engine:     { domain: analytics, repo: github.com/ZoneCNH/regime_engine, description: "M×S 联合决策引擎" }
   ms_brain:          { domain: analytics, repo: github.com/ZoneCNH/ms_brain, description: "M×S 架构分析" }

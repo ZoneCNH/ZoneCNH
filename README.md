@@ -128,7 +128,7 @@ L2.5: domainx / decimalx / domain_market / domain_macro / domain_exchange (5/5 �
 
 **行情接收与分发：**
 
-- [market_data](https://github.com/ZoneCNH/market_data) — Downstream Dispatch Port 接收侧模块；接收 adapter 归一化事件，执行校验、幂等、排序和分发 `公开`
+- [market_data](https://github.com/xhyperium/market_data) — Downstream Dispatch Port 接收侧模块；接收 adapter 归一化事件，执行校验、幂等、排序和分发 `公开`
 
 **交易所 SDK / C/S Module：**
 
@@ -170,7 +170,7 @@ L2.5: domainx / decimalx / domain_market / domain_macro / domain_exchange (5/5 �
 - [factor_engine](https://github.com/ZoneCNH/factor_engine) — 因子计算引擎 `公开`
 - [feature_store](https://github.com/ZoneCNH/feature_store) — 特征存储与版本管理 `公开`
 - [factor_eval](https://github.com/ZoneCNH/factor_eval) — 因子评估 `公开`
-- [market_regime](https://github.com/ZoneCNH/market_regime) — 市场状态识别（S1-S7：多头趋势/挤空/空头/踩踏/震荡/低波/压缩） `私有`
+- [market_regime](https://github.com/xhyperium/market_regime) — 市场状态识别（S1-S7：多头趋势/挤空/空头/踩踏/震荡/低波/压缩） `私有`
 - [macro_regime](https://github.com/ZoneCNH/macro_regime) — 宏观经济体制识别（M1-M7：流动牛市/再通复苏/软着繁荣/鹰派通胀/衰退降息/信用去杠/滞胀冲击） `私有`
 - [regime_engine](https://github.com/ZoneCNH/regime_engine) — M×S 联合决策引擎（M state + S state → action A-E / risk_tier / position_caps / trade_permission） `私有`
 - [ms_brain](https://github.com/ZoneCNH/ms_brain) — M×S 系统架构分析体系 `私有`
