@@ -15,8 +15,8 @@
 | Port Interface | natsx JetStream subscription filter `binance.market.>`；实际消息 subject `binance.market.*.*.v1`；Gin REST HTTP `:8080` (提供给 market_data) |
 | Language | Go |
 | Runtime-Version | v0.15.1 |
-| Repository | [github.com/ZoneCNH/binance](https://github.com/ZoneCNH/binance)（server/ 子目录） |
-| Go Module Path | `github.com/ZoneCNH/binance`（monorepo，server 端通过 `cmd/binance-server` + `internal/server` 提供） |
+| Repository | [github.com/xhyperium/binance](https://github.com/xhyperium/binance)（server/ 子目录） |
+| Go Module Path | `github.com/xhyperium/binance`（monorepo，server 端通过 `cmd/binance-server` + `internal/server` 提供） |
 | Related | [CONSTITUTION.md](../../../../CONSTITUTION.md), [ARCHITECTURE.md](../../../../ARCHITECTURE.md), [module/binance/spec/SPEC.md](../SPEC.md), [module/domain_market](../../../domain_market/), [module/natsx](../../../natsx/), [module/redisx](../../../redisx/), [module/taosx](../../../taosx/), [module/clickhousex](../../../clickhousex/), [module/kafkax](../../../kafkax/), [module/ossx](../../../ossx/), [module/postgresx](../../../postgresx/) |
 
 ---
@@ -423,10 +423,10 @@ module/binance/server/
 └── tasks/                   # Server task spec（9 个）
 ```
 
-### Runtime（monorepo `github.com/ZoneCNH/binance/`，server 端目录）
+### Runtime（monorepo `github.com/xhyperium/binance/`，server 端目录）
 
 ```text
-github.com/ZoneCNH/binance/
+github.com/xhyperium/binance/
 ├── go.mod
 ├── go.sum
 ├── cmd/
@@ -708,4 +708,4 @@ server 必须通过 consumer contract tests：
 | 日期 | 版本 | 变更内容 | 作者 |
 |------|------|----------|------|
 | 2026-06-16 | v1.0.0 | 从 12 节格式迁移至 23 节标准格式 | ZoneCNH |
-| 2026-06-17 | v1.0.1 | **Repository 字段 monorepo 对齐**：(1) 删除文档头部重复的简版 metadata 区块，全部字段并入 §1 Metadata 表格（消除 Status `Review` vs `Draft` 字段冲突）；(2) Repository 从 `github.com/ZoneCNH/binance-server`（不存在仓库，违反 CLAUDE.md 模块-仓库强制对应）改为 `github.com/ZoneCNH/binance`（server/ 子目录），与 root SPEC + RUNTIME-MAPPING + IMPLEMENTATION-PLAN 描述的 monorepo 路线一致；(3) Go Module Path 同步改为 `github.com/ZoneCNH/binance`（monorepo，server 端通过 `cmd/binance-server` + `internal/server` 提供）；(4) §14 Directory Structure 由独立 `binance-server/` 仓库布局重写为 monorepo `internal/server/` 子目录布局，与 RUNTIME-MAPPING §5 一致 | ZoneCNH |
+| 2026-06-17 | v1.0.1 | **Repository 字段 monorepo 对齐**：(1) 删除文档头部重复的简版 metadata 区块，全部字段并入 §1 Metadata 表格（消除 Status `Review` vs `Draft` 字段冲突）；(2) Repository 从 `github.com/xhyperium/binance-server`（不存在仓库，违反 CLAUDE.md 模块-仓库强制对应）改为 `github.com/xhyperium/binance`（server/ 子目录），与 root SPEC + RUNTIME-MAPPING + IMPLEMENTATION-PLAN 描述的 monorepo 路线一致；(3) Go Module Path 同步改为 `github.com/xhyperium/binance`（monorepo，server 端通过 `cmd/binance-server` + `internal/server` 提供）；(4) §14 Directory Structure 由独立 `binance-server/` 仓库布局重写为 monorepo `internal/server/` 子目录布局，与 RUNTIME-MAPPING §5 一致 | ZoneCNH |

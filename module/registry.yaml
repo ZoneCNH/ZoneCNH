@@ -478,14 +478,14 @@ domain_exchange:
 
 # --- C/S 采集器（4 交易所 + 2 宏观）---
 binance:
-  repo: github.com/ZoneCNH/binance
+  repo: github.com/xhyperium/binance
   local_path: /home/workspace/binance
   domain: data
   layer: business
   arch_type: cs_module
   lifecycle: production
   maturity: L3
-  owner: ZoneCNH
+  owner: xhyperium
   registered: 2026-06-01
   spec_ref: module/binance/spec/SPEC.md
   deps_ref: module/FOUNDATION-DEPS.yaml  # forbidden_deps 黑名单成员

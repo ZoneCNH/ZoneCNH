@@ -34,7 +34,7 @@
 | **T2-1**        | evidence 无 GAP-E 引用（GAP-E57）      | ✅ **确认**：`grep -rl "GAP-E" evidence/` = 0 文件                                                                          | P1（证据链）               |
 | **T4-1** ✨v2.1  | Task 计数矛盾（实际 39 vs README 47/47） | ✅ **确认**：`find tasks/ -name 'TASK-*.md' \| wc -l` = **39**，README 声明 **"47/47 tasks"**（**差 8 个**）              | P1（治理制品一致性）       |
 | **T7-1**        | PRG-006 "全 PASS" vs todo.md "Partial" | ✅ **确认**：TRACEABILITY §4 标 PRG-006 PASS，todo.md L23 标 Partial（含详细 gated 测试说明）                               | P0（状态分裂核心）         |
-| **T7-2**        | v0.11.0 声明无对应 tag + shallow clone | ✅ **已闭合**：`gh release view -R ZoneCNH/binance v0.11.0` 可用，tag/release 已发布（2026-07-02） | P0（已清零）   |
+| **T7-2**        | v0.11.0 声明无对应 tag + shallow clone | ✅ **已闭合**：`gh release view -R xhyperium/binance v0.11.0` 可用，tag/release 已发布（2026-07-02） | P0（已清零）   |
 | **T8-2**        | SECURITY.md / CONTRIBUTING.md 缺失（GAP-E44/E45） | ✅ **确认**：模块根两者均 MISSING                                                                            | P1（治理）                 |
 | **T8-3** 🔧v2.1 修正 | BR 数量缩减（历史 9 → 现 5，GAP-E53） | ✅ **修正确认**：CHANGELOG line 566 声明 "BR-001/002/003/005/006/007/008/009 → Implemented"（8 个），当前 SPEC 仅 BR-001~BR-005（5 个），BR-006~009 静默删除 4 个。**之前 plan 误写为"缺 BR-008"已修正**。 | P3（spec 完整性 + 治理信任） |
 | **T9-1**        | TEST-ANALYSIS 报告描述与代码不符       | ✅ **已在 todo.md L26-32 显式声明**（soak/chaos/security 复核修正），属于已自爆但 SPEC 未同步降级                           | P1（评分需下调）           |
@@ -485,14 +485,14 @@ TASK(P3 GAP-E25 评估) ──blocks──> TASK(P8.7 优雅运行)  # 仅条件
 
 - `gh auth status` 当前通过（GH_TOKEN 有效）
 - 维持当前认证态即可执行同步
-- runtime 仓 = `ZoneCNH/binance`，主仓 = `ZoneCNH/ZoneCNH`
+- runtime 仓 = `xhyperium/binance`，主仓 = `ZoneCNH/ZoneCNH`
 
 **同步策略**（3 选 1）：
 
 | 方案                              | 说明                                                                 | 适用            |
 | --------------------------------- | -------------------------------------------------------------------- | --------------- |
 | **A. 本地 beads only**            | bd 创建所有 issue + 依赖，记录到 `008-issues-sync-report.md`         | gh 不可用时兜底 |
-| **B. gh 批量同步**                | `gh issue create -R ZoneCNH/binance --title ... --body ...` 批量创建 | gh 修复后首选   |
+| **B. gh 批量同步**                | `gh issue create -R xhyperium/binance --title ... --body ...` 批量创建 | gh 修复后首选   |
 | **C. GitHub Projects automation** | 用 `gh project item-add` 加到 Project Board 看板                     | 长期治理        |
 
 **推荐执行序**：

@@ -6,7 +6,7 @@
 | --- | --- |
 | 模块 | `binance` |
 | 层级 | 数据域 · 行情（C/S Module 参考实现） |
-| 仓库 | <https://github.com/ZoneCNH/binance> |
+| 仓库 | <https://github.com/xhyperium/binance> |
 | 当前版本 | v0.15.1（last published tag；本轮 audit branch 未创建新 tag） |
 | Spec 版本 | v4.1.0 |
 | 状态 | [COMPUTED, HIGH] 历史已发布版本的成熟度投影为 L3；当前 RC 为 13 Done / 52 Partial / 0 Drifted / 0 Pending，`release_closeable_spec=NO`且 `release_closeable_runtime=NO` |

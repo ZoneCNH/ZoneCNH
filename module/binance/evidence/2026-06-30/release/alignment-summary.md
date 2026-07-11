@@ -11,7 +11,7 @@
 | 仓库 | PR | 分支 | 状态 |
 |------|-----|------|------|
 | ZoneCNH (Spec Hub) | [#1463](https://github.com/ZoneCNH/ZoneCNH/pull/1463) | `fix/binance-l3-production-admission` | OPEN |
-| binance (Runtime) | [#357](https://github.com/ZoneCNH/binance/pull/357) | `fix/lint-and-ci-runner` | OPEN |
+| binance (Runtime) | [#357](https://github.com/xhyperium/binance/pull/357) | `fix/lint-and-ci-runner` | OPEN |
 
 ## PRG 状态（2026-06-30 复核确认）
 
@@ -83,7 +83,7 @@
 - ZoneCNH-3mxw（执行基座模块迁移 Phase 1 CI 路径兼容）：✅ CLOSED
 
 ### GitHub Issues
-- ZoneCNH/binance: 0 open / 153 closed
+- xhyperium/binance: 0 open / 153 closed
 
 ## 修改文件统计
 

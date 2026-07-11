@@ -10,7 +10,7 @@
 
 ## 1. 目的
 
-本文件将 `module/binance` 规格映射到 `github.com/ZoneCNH/binance` 运行时仓库的目录结构。
+本文件将 `module/binance` 规格映射到 `github.com/xhyperium/binance` 运行时仓库的目录结构。
 
 ### 架构版本对比
 
@@ -24,7 +24,7 @@
 
 ### 当前证据口径（2026-06-24）
 
-- [COMPUTED, HIGH] 当前远端 runtime 基线：`ZoneCNH/binance` `origin/main` merge commit `5a57a19aed3be5420135b8e05016da15faf094ed`（runtime PR #11），source commit `7873b795b13fc4b5a0fc4310300b6f196cca7532`。
+- [COMPUTED, HIGH] 当前远端 runtime 基线：`xhyperium/binance` `origin/main` merge commit `5a57a19aed3be5420135b8e05016da15faf094ed`（runtime PR #11），source commit `7873b795b13fc4b5a0fc4310300b6f196cca7532`。
 - [COMPUTED, HIGH] 已归档本地证据：`/home/workspace/binance/release/evidence/binance/20260623/`；本地 evidence commit `71e2a6e8bb5591c43e8a2ebfff8c7645bf030786`（round 2 2026-06-23）。
 - [COMPUTED, HIGH] 已证明范围：独立 `cmd/binance-client` 可启动 admin `:8081` self-test，并通过 `contracts` canonical 契约（经 `internal/ingestcodec` boundary）发送 HTTP JSON `/ingest` 到 `cmd/binance-server` handler；C/S 共享契约由 `contracts` canonical 承载（ADR-007）；runtime 不含 `internal/cs`；`scripts/boundary-gates.sh` 15/15 PASS；`go build/test/race/vet`、`golangci-lint` 与本地 smoke self-test PASS。
 - [COMPUTED, HIGH] 2026-06-24 gated `natsx` integration 增量：真实本地 NATS JetStream 上已验证 accepted publish 非 duplicate PubAck、重复 publish duplicate PubAck、成功处理 Ack 后不重投、retryable reject immediate Nak 重投至 `MaxDeliver=5` 后停止；验证命令含 100 次重复 gated live-local loop。
@@ -38,7 +38,7 @@
 本节描述目标运行时形态；当前完成状态以“当前证据口径”与 `TRACEABILITY.md` 状态为准。
 
 ```text
-github.com/ZoneCNH/binance/
+github.com/xhyperium/binance/
   go.mod         (需升级: gin + ossx 新增; 5 infra 模块 indirect→direct)
   go.sum
 

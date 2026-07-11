@@ -213,7 +213,7 @@ allowed_deps:
 # ============================================================
 forbidden_deps:
   # 业务域实现
-  - github.com/ZoneCNH/binance
+  - github.com/xhyperium/binance
   - github.com/ZoneCNH/okx
   - github.com/ZoneCNH/bybit
   - github.com/ZoneCNH/bitget
@@ -442,7 +442,7 @@ forbidden_foundation_edges:
 # ============================================================
 business_domain_modules:
   # 数据域（12）
-  binance:           { domain: data, repo: github.com/ZoneCNH/binance, description: "币安行情采集" }
+  binance:           { domain: data, repo: github.com/xhyperium/binance, description: "币安行情采集" }
   orderbook:         { domain: data, repo: github.com/ZoneCNH/orderbook, description: "跨 venue 订单簿事实链 contract 与 replay runtime" }
   okx:               { domain: data, repo: github.com/ZoneCNH/okx, description: "OKX 行情采集" }
   hyperliquid:       { domain: data, repo: github.com/ZoneCNH/hyperliquid, description: "Hyperliquid 行情采集" }

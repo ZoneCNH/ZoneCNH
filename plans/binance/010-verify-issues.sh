@@ -16,7 +16,7 @@ echo "=== [2] 验证 GitHub issue 同步（需 gh auth） ==="
 if ! gh auth status >/dev/null 2>&1; then
   echo "⚠️  gh CLI 未认证，跳过 GitHub 验证"
 else
-  gh issue list -R ZoneCNH/binance --state open --limit 50 2>&1 | head -40
+  gh issue list -R xhyperium/binance --state open --limit 50 2>&1 | head -40
 fi
 
 echo ""

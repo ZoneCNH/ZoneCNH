@@ -6,7 +6,7 @@
 - Prior-Art: `report/binance/DEEP-ANALYSIS-20260704.md`（N1-N7 原始发现）、10 轮自审（PR #1649）
 - Execution: 20 个完全独立、互不知情的 general-purpose background agent，分 4 批（每批 5 个）派发
 - Data-Source: 会话 SQL 表 `reviewer_reports`（20 行）、`reviewer_findings`；本报告作者对全部核心结论进行了独立三重复核（见 §3.1）
-- Scope: `module/binance/`（ZoneCNH 主仓规格）+ `github.com/ZoneCNH/binance`（runtime 仓，clean worktree `main@14a30b9c`）
+- Scope: `module/binance/`（ZoneCNH 主仓规格）+ `github.com/xhyperium/binance`（runtime 仓，clean worktree `main@14a30b9c`）
 
 ---
 
@@ -77,7 +77,7 @@
 | #   | 判定项                                        | 捕获数                                     | 本报告作者独立复核                                                                                                                                                                                                                                                                                           |
 | --- | --------------------------------------------- | ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | 4   | GAP-MATRIX 权威文件路径断链                   | ≥18/20                                     | ✅ 已复现：`module/binance/RUNTIME-GAP-MATRIX.md` 不存在；实际权威文件在 `plans/binance/RUNTIME-GAP-MATRIX.md`                                                                                                                                                                                               |
-| 5   | PRG-007（issue sync）声称失真                 | 8/20 显式记录                              | ✅ 已复现：`gh issue list -R ZoneCNH/binance --state open` 返回 **38** 条 open issue，与 TRACEABILITY.md 表格声称的 "GitHub P10 open: 0" / "43 GitHub 全关闭" 矛盾                                                                                                                                           |
+| 5   | PRG-007（issue sync）声称失真                 | 8/20 显式记录                              | ✅ 已复现：`gh issue list -R xhyperium/binance --state open` 返回 **38** 条 open issue，与 TRACEABILITY.md 表格声称的 "GitHub P10 open: 0" / "43 GitHub 全关闭" 矛盾                                                                                                                                           |
 | 6   | 仅 Spot Connector 在主运行时路径中被启动      | 5/20 显式记录（R4/R8/R14/R16/R17）         | ✅ 已复现：`internal/client/runtime.go:314-316` 仅实例化并 `Start()` 了 `NewSpotConnector`；`internal/client/connectors/{um_perp,cm_perp,options}.go` 代码存在但未在该路径中被调用                                                                                                                           |
 | 7   | 订单薄（depth）事件在存储层退化为 top-of-book | 2/20 显式记录（R14/R16），本人独立复核确认 | ✅ 已复现：`internal/client/normalize.go` 将 depth 事件的 `EventType` 硬编码为 `"tick"`；`internal/server/storage/taos_writer.go` 的 `tickPoint()`（line 285-299）仅写入 `bid_price/bid_qty/ask_price/ask_qty/update_id` 五个标量字段到 `st_tick` 表，**完整档位数据（20 档或 diff）未被持久化到任何存储表** |
 | 8   | ACK-before-persist 时序设计                   | 12/20 显式记录                             | ✅ 已复现：`internal/server/ingest.go:129-172` 步骤顺序为 MarkDurable(3) → Dispatch(4) → Persist(5)；默认 `StrictStorageWrite=false` 时，落库失败仅记 dead-letter，ACK 已 durable——代码注释承认此为设计权衡（"默认容错：落库失败记 dead-letter 不阻塞 ACK"），非缺陷但需在 SLA 文档中显式声明                |
@@ -158,7 +158,7 @@
 
 ## 8. 优先修复路线图
 
-> **2026-07-04 修复状态更新**：本路线图 P0-P3 全部 13 项已执行修复。Runtime 修复 PR [#425](https://github.com/ZoneCNH/binance/pull/425)（`edd7805`）；文档对齐 PR [#1668](https://github.com/ZoneCNH/ZoneCNH/pull/1668)（`517af3a5`）。修复计划见 `plans/binance/FIX-PLAN-20260704.md`。
+> **2026-07-04 修复状态更新**：本路线图 P0-P3 全部 13 项已执行修复。Runtime 修复 PR [#425](https://github.com/xhyperium/binance/pull/425)（`edd7805`）；文档对齐 PR [#1668](https://github.com/ZoneCNH/ZoneCNH/pull/1668)（`517af3a5`）。修复计划见 `plans/binance/FIX-PLAN-20260704.md`。
 
 ### P0（阻断发布，且技术方案明确）
 

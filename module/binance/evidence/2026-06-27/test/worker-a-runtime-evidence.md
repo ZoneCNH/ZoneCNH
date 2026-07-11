@@ -18,11 +18,11 @@ All commands were run from `/home/workspace/binance`.
 
 | Area | Command | Result |
 | --- | --- | --- |
-| FR-025 throttle, ExchangeInfo, backfill restart persistence | `go test ./internal/client -run 'Test(ThrottleManager|DecodeSpotExchangeInfo|FetchSpotExchangeInfo|ExchangeInfoRefresher|CatalogReloadProductLine|AdminHistory|HistoryRuntime)' -count=1` | PASS: `ok github.com/ZoneCNH/binance/internal/client 0.016s` |
-| Client runtime config wiring | `go test ./cmd/binance-client -run 'TestStandaloneConfigFromCfg' -count=1` | PASS: `ok github.com/ZoneCNH/binance/cmd/binance-client 0.011s` |
-| FR-013 stream/control-plane reliability | `go test ./internal/server/controlplane -run 'Test(RetryBudget|ActiveStreamRegistry|StreamRegistry|WeightGate|ClockSkew|HTTPBackoff)' -count=1` | PASS: `ok github.com/ZoneCNH/binance/internal/server/controlplane 0.017s` |
-| FR-017 quality counters and #1118 DLQ snapshot/replay | `go test ./internal/server -run 'Test(AdminStreamsIncludesQualityCounters|AdminDeadLetterReplayEndpointReplaysOnce|AdminDeadLetterFileBackedSnapshotAndReplayAfterRestart|Process_ReportsQualityGapRepairAndSLA|QualityTracker|Process_DispatchFailureDeadLetters|DeadLetter)' -count=1` | PASS: `ok github.com/ZoneCNH/binance/internal/server 0.023s` |
-| Server DLQ/config wiring | `go test ./cmd/binance-server -run 'Test.*DeadLetter|TestServerConfig|TestConfig' -count=1` | PASS: `ok github.com/ZoneCNH/binance/cmd/binance-server 0.022s` |
+| FR-025 throttle, ExchangeInfo, backfill restart persistence | `go test ./internal/client -run 'Test(ThrottleManager|DecodeSpotExchangeInfo|FetchSpotExchangeInfo|ExchangeInfoRefresher|CatalogReloadProductLine|AdminHistory|HistoryRuntime)' -count=1` | PASS: `ok github.com/xhyperium/binance/internal/client 0.016s` |
+| Client runtime config wiring | `go test ./cmd/binance-client -run 'TestStandaloneConfigFromCfg' -count=1` | PASS: `ok github.com/xhyperium/binance/cmd/binance-client 0.011s` |
+| FR-013 stream/control-plane reliability | `go test ./internal/server/controlplane -run 'Test(RetryBudget|ActiveStreamRegistry|StreamRegistry|WeightGate|ClockSkew|HTTPBackoff)' -count=1` | PASS: `ok github.com/xhyperium/binance/internal/server/controlplane 0.017s` |
+| FR-017 quality counters and #1118 DLQ snapshot/replay | `go test ./internal/server -run 'Test(AdminStreamsIncludesQualityCounters|AdminDeadLetterReplayEndpointReplaysOnce|AdminDeadLetterFileBackedSnapshotAndReplayAfterRestart|Process_ReportsQualityGapRepairAndSLA|QualityTracker|Process_DispatchFailureDeadLetters|DeadLetter)' -count=1` | PASS: `ok github.com/xhyperium/binance/internal/server 0.023s` |
+| Server DLQ/config wiring | `go test ./cmd/binance-server -run 'Test.*DeadLetter|TestServerConfig|TestConfig' -count=1` | PASS: `ok github.com/xhyperium/binance/cmd/binance-server 0.022s` |
 | FR-037 canary gate self-test | `bash scripts/deploy-canary-gate.sh --self-test` | PASS: error-rate/consumer-lag checks passed; negative inputs rejected; `deploy-canary-gate self-test PASS` |
 | Release readiness smoke audit | `bash scripts/readiness-audit.sh` | PASS: canary self-test passed; `readiness-audit PASS` |
 

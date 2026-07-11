@@ -3,7 +3,7 @@
 > [COMPUTED, HIGH] **历史快照 / 已取代**：本文绑定 2026-07-09 代码状态；其中“生效链”“已修复”与 line-number 结论不得外推到当前 RC。当前白名单、Catalog 与发布裁决以 [2026-07-10 综合复审](PRODUCTION-READINESS-CONSOLIDATED-20260710.md) 为准。
 >
 > **分析日期**：2026-07-09
-> **代码仓库**：`/home/workspace/binance`（`github.com/ZoneCNH/binance`，Go 项目）
+> **代码仓库**：`/home/workspace/binance`（`github.com/xhyperium/binance`，Go 项目）
 > **分析范围**：行情流（market data / WS stream）白名单 + 订单簿（orderbook / depth）白名单 + Tier 分级 + exchangeInfo 过滤的完整逻辑链
 > **方法论**：Explore agent 全量 grep 追踪 + 主会话抽样核验关键断言（5 项核验全部通过）
 > **置信度**：HIGH —— 死代码 / 断链类强结论均经主会话 `grep` 直接验证 `[COMPUTED]`

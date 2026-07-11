@@ -59,7 +59,7 @@
 
 ## 6. Constraints
 
-- 不 import `github.com/ZoneCNH/binance/internal` 或任何 venue internal 包。[FRAME, HIGH]
+- 不 import `github.com/xhyperium/binance/internal` 或任何 venue internal 包。[FRAME, HIGH]
 - 不在首版 public API 中使用 float price/qty。[FRAME, HIGH]
 - 不声称 Binance runtime 已迁移到 `orderbook`。[COMPUTED, HIGH]
 

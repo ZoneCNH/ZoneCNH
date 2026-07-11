@@ -1,6 +1,6 @@
 # 代码结构分析
 
-> **仓库**：`/home/workspace/binance`（`github.com/ZoneCNH/binance`）
+> **仓库**：`/home/workspace/binance`（`github.com/xhyperium/binance`）
 > **Go 版本**：1.25.0 / toolchain go1.26.4
 
 ## 1. 模块划分

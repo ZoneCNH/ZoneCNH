@@ -53,7 +53,7 @@ ROOT_BODY="$(cat <<'EOF'
 
 ## 同步策略变更
 
-**之前**（5 轮分析时）：同步到 `ZoneCNH/binance` 子仓（#365~#402）
+**之前**（5 轮分析时）：同步到 `xhyperium/binance` 子仓（#365~#402）
 **现在**（10 轮分析后）：全部同步到 **主仓 ZoneCNH/ZoneCNH**
 
 子仓历史 issue 保留不删，本主仓 issue 通过 cross-reference 引用。

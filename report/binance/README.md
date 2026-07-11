@@ -1,7 +1,7 @@
 # Binance 模块分析报告
 
 > **分析日期**：2026-07-05；生产可发布综合复核更新：2026-07-10
-> **代码仓库**：`/home/workspace/binance`（`github.com/ZoneCNH/binance`）
+> **代码仓库**：`/home/workspace/binance`（`github.com/xhyperium/binance`）
 > **执行方式**：agent team 分阶段并行审计、实现与交叉验证。[COMPUTED, HIGH]
 
 ## 报告索引

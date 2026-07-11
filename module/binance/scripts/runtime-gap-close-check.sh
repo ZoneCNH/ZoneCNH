@@ -11,9 +11,9 @@ fi
 
 echo "== runtime-gap close gate =="
 echo "issue: ZoneCNH/ZoneCNH#$ISSUE"
-echo "pr:    ZoneCNH/binance#$PR"
+echo "pr:    xhyperium/binance#$PR"
 
-PR_STATE="$(gh pr view "$PR" -R ZoneCNH/binance --json state --jq .state)"
+PR_STATE="$(gh pr view "$PR" -R xhyperium/binance --json state --jq .state)"
 if [[ "$PR_STATE" != "MERGED" ]]; then
   echo "FAIL: runtime PR is not merged (state=$PR_STATE)"
   exit 1

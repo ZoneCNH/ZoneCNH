@@ -49,7 +49,7 @@
 | `domain_market`   | `/home/workspace/domain-market`   | `github.com/ZoneCNH/domain_market`    | require decimalx                                        |
 | `domain_macro`    | `/home/workspace/domain-macro`    | `github.com/ZoneCNH/domain_macro`     | require decimalx                                        |
 | `domain_exchange` | `/home/workspace/domain-exchange` | `github.com/ZoneCNH/domain_exchange`  | require decimalx + domain_market (+domainx in worktree) |
-| `binance`         | `/home/workspace/binance`         | `github.com/ZoneCNH/binance`          | require 13 个 ZoneCNH 模块                              |
+| `binance`         | `/home/workspace/binance`         | `github.com/xhyperium/binance`          | require 13 个 ZoneCNH 模块                              |
 
 ## 2. 模块边界定义（代码证据版）
 

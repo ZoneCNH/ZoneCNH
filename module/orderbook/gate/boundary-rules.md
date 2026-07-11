@@ -4,7 +4,7 @@
 
 禁止 import：
 
-- `github.com/ZoneCNH/binance/internal`
+- `github.com/xhyperium/binance/internal`
 - `github.com/ZoneCNH/okx/internal`
 - `github.com/ZoneCNH/bybit/internal`
 - `github.com/ZoneCNH/*/internal/client`

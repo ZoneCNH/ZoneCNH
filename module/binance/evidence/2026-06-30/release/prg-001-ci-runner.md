@@ -9,7 +9,7 @@
 ## 验证命令
 
 ```bash
-gh api /repos/ZoneCNH/binance/actions/runners
+gh api /repos/xhyperium/binance/actions/runners
 gh run list --limit 20 --json status,conclusion,name,createdAt
 gh run view 28406821903 --json jobs
 ```
@@ -18,9 +18,9 @@ gh run view 28406821903 --json jobs
 
 ### 方案 A：注册 self-hosted runner（部分成功，已回退）
 
-1. 通过 `gh api repos/ZoneCNH/binance/actions/runners/registration-token -X POST` 获取 registration token（需 repo admin 权限，确认可用）。
+1. 通过 `gh api repos/xhyperium/binance/actions/runners/registration-token -X POST` 获取 registration token（需 repo admin 权限，确认可用）。
 2. 下载 GitHub Actions runner v2.335.1 (linux-x64) 到 `/home/workspace/zone/actions-runner/`。
-3. 配置 runner：`./config.sh --url https://github.com/ZoneCNH/binance --token "$TOKEN" --labels "Linux,X64,ci-go,ci-integration" --unattended`。
+3. 配置 runner：`./config.sh --url https://github.com/xhyperium/binance --token "$TOKEN" --labels "Linux,X64,ci-go,ci-integration" --unattended`。
 4. Runner "xhypers" (id: 21) 注册成功，状态 online。
 5. 安装缺失工具：gitleaks v8.30.1（`go install github.com/zricethezav/gitleaks/v8@latest`），链接到 `/usr/local/bin/gitleaks`。
 
@@ -56,7 +56,7 @@ gh run view 28406821903 --json jobs
 
 ## CI Run 结果
 
-**Run URL**: https://github.com/ZoneCNH/binance/actions/runs/28406821903
+**Run URL**: https://github.com/xhyperium/binance/actions/runs/28406821903
 
 **Run ID**: 28406821903
 

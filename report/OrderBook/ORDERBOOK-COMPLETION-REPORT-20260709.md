@@ -61,7 +61,7 @@ Evidence: `module/orderbook/evidence/2026-07-09/test/EVID-ORDERBOOK-VALIDATION-2
 
 ## 4. Not Done / Residual Risk
 
-Binance adapter wrapper PR #479 已合并：`https://github.com/ZoneCNH/binance/pull/479`；该 PR 只映射 `orderbook v0.1.0` contract，尚未替换 `/home/workspace/binance` 的生产 OrderBook runtime。[COMPUTED, HIGH]
+Binance adapter wrapper PR #479 已合并：`https://github.com/xhyperium/binance/pull/479`；该 PR 只映射 `orderbook v0.1.0` contract，尚未替换 `/home/workspace/binance` 的生产 OrderBook runtime。[COMPUTED, HIGH]
 
 Binance PR #479 最终 head 为 `f46c17fd8297779c9f0c0931cc94b6f5ff1ed150`，merge commit 为 `b2547735e9df6b9bb4bb939baaeb74436260ce50`，合并时间为 `2026-07-09T15:40:48Z`。[COMPUTED, HIGH]
 

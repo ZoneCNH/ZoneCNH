@@ -9,7 +9,7 @@
 > **认识论声明**：本报告所有事实性声明均标注证据标签与置信度
 > **更新快照**：2026-07-04 15:08+08（runtime `main@721c4a2`（PR #421 合入后）；主仓 PR #1651-#1661 全部合入；C1-C3 depth 深化完成；54/54 test PASS）
 >
-> **⚠️ 2026-07-04 20 轮审查修正**：本报告声称"P0 × 6 + P1 × 6 全部闭环"被 20 轮独立复现审查（`REVIEW-20260704-20ROUND-CONSENSUS.md`）推翻——N2（NATS subject 不匹配）、T0（TRACEABILITY 矛盾）、N4（仅 Spot 启动）、N6/N7/ORDBK 等 7 项在审查时仍为 Open。20 轮审查加权综合分 52/100（No-Go）。修复已执行：PR [#425](https://github.com/ZoneCNH/binance/pull/425)（runtime）+ [#1668](https://github.com/ZoneCNH/ZoneCNH/pull/1668)（docs），修复计划见 `plans/binance/FIX-PLAN-20260704.md`。本报告 §1/§4/§10 中"已闭环"/"APPROVED FOR PRODUCTION"等表述在审查前不成立，保留原文作为历史快照。
+> **⚠️ 2026-07-04 20 轮审查修正**：本报告声称"P0 × 6 + P1 × 6 全部闭环"被 20 轮独立复现审查（`REVIEW-20260704-20ROUND-CONSENSUS.md`）推翻——N2（NATS subject 不匹配）、T0（TRACEABILITY 矛盾）、N4（仅 Spot 启动）、N6/N7/ORDBK 等 7 项在审查时仍为 Open。20 轮审查加权综合分 52/100（No-Go）。修复已执行：PR [#425](https://github.com/xhyperium/binance/pull/425)（runtime）+ [#1668](https://github.com/ZoneCNH/ZoneCNH/pull/1668)（docs），修复计划见 `plans/binance/FIX-PLAN-20260704.md`。本报告 §1/§4/§10 中"已闭环"/"APPROVED FOR PRODUCTION"等表述在审查前不成立，保留原文作为历史快照。
 
 ---
 
@@ -409,7 +409,7 @@
 | 主仓修复 PR 合并           | `https://github.com/ZoneCNH/ZoneCNH/pull/1651`（P0）            | `[COMPUTED]` |
 | 主仓 P1 CI gate PR 合并    | `https://github.com/ZoneCNH/ZoneCNH/pull/1652`                  | `[COMPUTED]` |
 | 主仓对齐同步 PR 合并       | `https://github.com/ZoneCNH/ZoneCNH/pull/1653`                  | `[COMPUTED]` |
-| binance P1 runtime PR 合并 | `https://github.com/ZoneCNH/binance/pull/415`                   | `[COMPUTED]` |
+| binance P1 runtime PR 合并 | `https://github.com/xhyperium/binance/pull/415`                   | `[COMPUTED]` |
 | canary drill PASS          | `release/evidence/binance/20260704/canary-drill.log`（3/3 gate checks PASS） | `[COMPUTED]` |
 | canary drill 去除 kubectl  | `scripts/deploy-canary.sh` drill/local/manual 三模式，无 kubectl 依赖        | `[COMPUTED]` |
 | kafka staging 入口就绪     | `release/evidence/binance/20260704/kafka-staging-verify.log`（producer ACK 正常，consumer ACL pending） | `[COMPUTED]` |
@@ -419,11 +419,11 @@
 | 文档引用完整性 gate        | `.github/ci/binance-reference-integrity-check.sh` PASS                       | `[COMPUTED]` |
 | RELEASE-CHECKLIST 新建     | `module/binance/gate/RELEASE-CHECKLIST.md`（v1.0.0，7 节 C/B/S/I/D）        | `[COMPUTED]` |
 | ADR-005 Accepted           | `module/binance/design/ADR-005-symbol-tier-classification.md` Status: Accepted；`catalog.go:44-366` 实现证据 | `[COMPUTED]` |
-| binance PR #416 合入       | `https://github.com/ZoneCNH/binance/pull/416`（e2e build tag 分层）          | `[COMPUTED]` |
-| binance PR #418 合入       | `https://github.com/ZoneCNH/binance/pull/418`（C1 depth 深化：FR-011/013/027/028/031/032）| `[COMPUTED]` |
-| binance PR #419 合入       | `https://github.com/ZoneCNH/binance/pull/419`（C1 继续：FR-038/FR-039 完整 5D 覆盖）| `[COMPUTED]` |
-| binance PR #420 合入       | `https://github.com/ZoneCNH/binance/pull/420`（C2 REST fallback：FR-012 retry/timeout/fallback）| `[COMPUTED]` |
-| binance PR #421 合入       | `https://github.com/ZoneCNH/binance/pull/421`（C3 深化：FR-040/041/042/043/044 framework）| `[COMPUTED]` |
+| binance PR #416 合入       | `https://github.com/xhyperium/binance/pull/416`（e2e build tag 分层）          | `[COMPUTED]` |
+| binance PR #418 合入       | `https://github.com/xhyperium/binance/pull/418`（C1 depth 深化：FR-011/013/027/028/031/032）| `[COMPUTED]` |
+| binance PR #419 合入       | `https://github.com/xhyperium/binance/pull/419`（C1 继续：FR-038/FR-039 完整 5D 覆盖）| `[COMPUTED]` |
+| binance PR #420 合入       | `https://github.com/xhyperium/binance/pull/420`（C2 REST fallback：FR-012 retry/timeout/fallback）| `[COMPUTED]` |
+| binance PR #421 合入       | `https://github.com/xhyperium/binance/pull/421`（C3 深化：FR-040/041/042/043/044 framework）| `[COMPUTED]` |
 | depth scaffold 进度        | scaffold 71 → 57 → 49 → 49（C1/C2/C3 完成，剩余 49 为 P2-P3 量级）      | `[COMPUTED]` |
 | make test-unit 全绿        | `make test-unit` 54/54 tests PASS，exit 0（含 depth 54, C1+C2+C3）          | `[COMPUTED]` |
 | C3 depth tests           | `test/depth/depth_test.go` 3179 行；16 PASS + 8 SKIP（FR-040/041/043/044 happy/edge；FR-042/044 edge pending） | `[COMPUTED]` |

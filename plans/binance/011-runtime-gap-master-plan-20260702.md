@@ -41,7 +41,7 @@
 | **T2-1**        | evidence 无 GAP-E 引用（GAP-E57）      | ✅ **确认**：`grep -rl "GAP-E" evidence/` = 0 文件                                                                          | P1（证据链）               |
 | **T4-1**        | Task 计数矛盾（实际 39 vs README 47/47） | ✅ **确认**：`find tasks/ -name 'TASK-*.md' \| wc -l` = **39**，README 声明 **"47/47 tasks"**（**差 8 个**）              | P1（治理制品一致性）       |
 | **T7-1**        | PRG-006 "全 PASS" vs todo.md "Partial"（历史） | ✅ **确认**：TRACEABILITY §4 标 PRG-006 PASS，原 todo.md L23 曾标 Partial（含 gated 测试说明），现 todo.md 已空                       | P0（状态分裂核心）         |
-| **T7-2**        | v0.11.0 声明无对应 tag + shallow clone | ✅ **已闭合**：`gh release view -R ZoneCNH/binance v0.11.0` 可用，tag/release 已发布（2026-07-02） | P0（已清零）   |
+| **T7-2**        | v0.11.0 声明无对应 tag + shallow clone | ✅ **已闭合**：`gh release view -R xhyperium/binance v0.11.0` 可用，tag/release 已发布（2026-07-02） | P0（已清零）   |
 | **T8-2**        | SECURITY.md / CONTRIBUTING.md 缺失（GAP-E44/E45） | ✅ **确认**：模块根两者均 MISSING                                                                            | P1（治理）                 |
 | **T8-3**        | BR 数量缩减（历史 9 → 现 5，GAP-E53） | ✅ **确认**：CHANGELOG line 566 声明 "BR-001/002/003/005/006/007/008/009 → Implemented"（8 个），当前 SPEC 仅 BR-001~BR-005（5 个），BR-006~009 静默删除 4 个 | P3（spec 完整性 + 治理信任） |
 | **T9-1**        | TEST-ANALYSIS 报告描述与代码不符       | ✅ **已收口**：报告已补免责声明且关键结论已回刷（System E2E 对齐为已闭合） | P1（已清零）           |
@@ -199,7 +199,7 @@ Phase 8 [P2+P3·治理与长尾]  32d  ─→ 剩余 38 项缺口 + 顶层文档
 
 **用户指示（10 轮分析后确认）**：所有 issue 同步到 **`ZoneCNH/ZoneCNH` 主仓**（即本仓库）。
 
-**历史背景**：之前已将 35 个 issue 同步到 `ZoneCNH/binance` 子仓（#365~#402），10 轮分析后改为全部在主仓新建（编号 #1463 起）。binance 仓的 #365~#402 保留不删（避免破坏历史），新 issue 通过 cross-reference 引用。
+**历史背景**：之前已将 35 个 issue 同步到 `xhyperium/binance` 子仓（#365~#402），10 轮分析后改为全部在主仓新建（编号 #1463 起）。binance 仓的 #365~#402 保留不删（避免破坏历史），新 issue 通过 cross-reference 引用。
 
 ### 2.2 主仓 labels（已就绪）
 

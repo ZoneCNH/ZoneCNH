@@ -36,7 +36,7 @@
 | `domain_market`   | `/home/workspace/domain-market`   | `github.com/ZoneCNH/domain_market`    | require decimalx                 |
 | `domain_macro`    | `/home/workspace/domain-macro`    | `github.com/ZoneCNH/domain_macro`     | require decimalx                 |
 | `domain_exchange` | `/home/workspace/domain-exchange` | `github.com/ZoneCNH/domain_exchange`  | require decimalx + domain_market |
-| `binance`         | `/home/workspace/binance`         | `github.com/ZoneCNH/binance`          | require 13 个 ZoneCNH 模块       |
+| `binance`         | `/home/workspace/binance`         | `github.com/xhyperium/binance`          | require 13 个 ZoneCNH 模块       |
 
 ## 2. 依赖规则（不可违反）
 
@@ -268,7 +268,7 @@ flowchart TB
 
 | #   | Gate               | 规则                                                 | 检查命令                                                                                  | 状态         |
 | --- | ------------------ | ---------------------------------------------------- | ----------------------------------------------------------------------------------------- | ------------ |
-| G1  | Foundation reverse | 基座/领域/infra 禁止 import binance                  | `rg "ZoneCNH/binance" /home/{kernel,configx,...} --type go`                               | ✅ PASS      |
+| G1  | Foundation reverse | 基座/领域/infra 禁止 import binance                  | `rg "xhyperium/binance" /home/{kernel,configx,...} --type go`                               | ✅ PASS      |
 | G2  | Domain purity      | domain\_\* 禁止 import binance/provider/infra        | `rg "binance\|redisx\|natsx\|..." /home/{decimalx,domain*} --type go`                     | ✅ PASS      |
 | G3  | Infra isolation    | 7 infra 模块禁止互相 import                          | `for d in redisx kafkax natsx postgresx taosx ossx clickhousex; do ...`                   | ✅ PASS      |
 | G4  | Core purity        | binance core 禁止 import concrete infra constructors | `rg "\.New\(" --type go /home/workspace/binance/internal/{client,server}`                           | ✅ PASS      |

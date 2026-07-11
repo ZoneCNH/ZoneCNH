@@ -40,7 +40,7 @@
 ## 4. Runtime 目标布局
 
 ```text
-github.com/ZoneCNH/binance/
+github.com/xhyperium/binance/
   cmd/
     binance-client/       # 独立进程，可不同机器部署
     binance-server/       # 独立进程，可不同机器部署

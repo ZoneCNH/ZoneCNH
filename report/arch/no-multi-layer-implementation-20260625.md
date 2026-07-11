@@ -147,13 +147,13 @@
 
 ```bash
 # Foundation reverse dependency
-rg '"github.com/ZoneCNH/binance"' /home/workspace/kernel /home/workspace/configx /home/workspace/observex \
+rg '"github.com/xhyperium/binance"' /home/workspace/kernel /home/workspace/configx /home/workspace/observex \
    /home/workspace/resiliencx /home/workspace/schedulex /home/workspace/redisx /home/workspace/kafkax /home/workspace/natsx \
    /home/workspace/postgresx /home/workspace/taosx /home/workspace/ossx /home/workspace/clickhousex /home/workspace/contracts \
    --type go | grep -v '_test.go' | grep -v '//' && exit 1 || true
 
 # Domain shared purity
-rg '"github.com/ZoneCNH/binance"|redisx|kafkax|natsx|postgresx|taosx|ossx|clickhousex' \
+rg '"github.com/xhyperium/binance"|redisx|kafkax|natsx|postgresx|taosx|ossx|clickhousex' \
    /home/workspace/decimalx /home/workspace/domainx /home/workspace/domain-market /home/workspace/domain-macro /home/workspace/domain-exchange \
    --type go | grep -v '_test.go' && exit 1 || true
 

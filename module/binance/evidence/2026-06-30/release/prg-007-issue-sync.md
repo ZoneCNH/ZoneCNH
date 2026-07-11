@@ -9,7 +9,7 @@
 ## 验证命令
 
 ```bash
-gh issue list --repo ZoneCNH/binance --state open --limit 10
+gh issue list --repo xhyperium/binance --state open --limit 10
 ```
 
 ## 证据
@@ -17,7 +17,7 @@ gh issue list --repo ZoneCNH/binance --state open --limit 10
 ### GitHub Open Issues
 
 ```
-$ gh issue list --repo ZoneCNH/binance --state open --limit 10
+$ gh issue list --repo xhyperium/binance --state open --limit 10
 (no output)
 ```
 
