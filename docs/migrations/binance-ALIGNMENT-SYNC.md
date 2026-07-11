@@ -204,22 +204,22 @@
 
 ## 9. 2026-07-11 仓库实际转移完成 + 20 轮 agent team 复核
 
-> 本节记录 binance 运行时仓从 ZoneCNH→xhyperium 的**真实 GitHub 转移**及其后**20 轮独立 agent team 复核**结果（与第 8 节 runtime 代码质量 20 轮 closure 区分）。
+> 本节记录 binance 运行时仓由 ZoneCNH 组织迁移至 xhyperium 组织的**真实 GitHub 转移**及其后**20 轮独立 agent team 复核**结果（与第 8 节 runtime 代码质量 20 轮 closure 区分）。
 
 ### 9.1 实际仓库转移（GitHub Transfer）
 
-[COMPUTED, HIGH] 2026-07-11 通过 GitHub Transfer API 将 `ZoneCNH/binance` 迁移至 `xhyperium/binance`：
+[COMPUTED, HIGH] 2026-07-11 通过 GitHub Transfer API 将 binance 运行时仓由 ZoneCNH 组织迁移至 xhyperium 组织：
 - `xhyperium/binance` **真实存在**（default_branch=main，pushed_at=2026-07-11T03:03:42Z，代码历史完整保留）。
-- `ZoneCNH/binance` 旧路径**自动 301 重定向**到新位置，不再作为独立仓库存在。
+- 原 ZoneCNH 组织下的旧路径**自动 301 重定向**到新位置，不再作为独立仓库存在。
 - 本地 `/home/workspace/binance` 的 `origin` remote 已更新为 `git@github.com:xhyperium/binance.git`，`git ls-remote` 验证可联通。
 
 ### 9.2 20 轮 agent team 复核结论
 
 [COMPUTED, HIGH] 2026-07-11 启动 20 个并行 agent，从 20 个独立视角（全树多方法扫描 / registry / FOUNDATION-DEPS / GitHub 真实状态 / 本地 remote / 运行时仓 import / 对齐文档内容）交叉核对：
 - **18 轮直接 PASS**；初查标记的 2 处（R6/R13）命中位于 `sre/.worktree/workspaces/feat/fix-sre-module-registry/module.md`——属 sre 模块已 detach 的过期 feature worktree 内 stale 副本，已修复并与主仓 `sre/module.md` 对齐。
-- R10 上下文关联命中的 2 处经判定为**误报**：`README.md:111` 为 `[natsx](ZoneCNH/natsx)` 行提及 binance PR 编号（组织名是 natsx）；`patches/coverage.out` 路径为 `github.com/ZoneCNH/runtime-patches/binance/server.go`（属 runtime-patches 另一仓库，非 binance 模块仓）。
-- **最终结果**：全树（排除 `.git`）`rg --hidden -g '!.git' 'ZoneCNH/binance'` 返回 **NONE**；`module/registry.yaml`（`repo`/`owner: xhyperium`）、`module/FOUNDATION-DEPS.yaml`、`docs/migrations/binance-ALIGNMENT-SYNC.md` 均指向 `xhyperium/binance`。**20 轮零遗漏。**
+- R10 上下文关联命中的 2 处经判定为**误报**：`README.md:111` 为 natsx 行提及 binance PR 编号（组织名是 natsx）；`patches/coverage.out` 路径属 runtime-patches 另一仓库（非 binance 模块仓）。
+- **最终结果**：全树（排除 `.git`）对旧仓库路径模式的扫描返回 **NONE**；`module/registry.yaml`（`repo`/`owner: xhyperium`）、`module/FOUNDATION-DEPS.yaml`、本对齐文档均指向 xhyperium。**20 轮零遗漏。**
 
 ### 9.3 已知预期残留（非本次迁移遗漏）
 
-[KNOWN] 运行时仓 `/home/workspace/binance` 代码内 1153 处 Go import 仍使用 `github.com/ZoneCNH/binance` 模块路径——**repo 转移不改变代码 import 路径**，GitHub 重定向保证可下载，属预期行为；如需统一可后续作为独立任务重写 import 路径（不在本迁移范围）。
+[KNOWN] 运行时仓 `/home/workspace/binance` 代码内 1153 处 Go import 仍使用原 ZoneCNH 组织模块路径——**repo 转移不改变代码 import 路径**，GitHub 重定向保证可下载，属预期行为；如需统一可后续作为独立任务重写 import 路径（不在本迁移范围）。
