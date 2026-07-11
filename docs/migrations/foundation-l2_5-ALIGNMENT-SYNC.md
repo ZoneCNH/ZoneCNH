@@ -164,10 +164,18 @@ xhyperium/domain_macro xhyperium/domain_exchange
 | 模块数 | 1 | 25 |
 | 迁移性质 | 首例业务域模块迁移 | 组织级首批批量迁移 |
 | 对齐文档 | `binance-ALIGNMENT-SYNC.md` | 本文档 |
-| 全树 URL 替换 | 已完成（69 跟踪文件 + 2 未跟踪 + 1 stale tmp） | 待评估（300+ 文件含超链接引用） |
+| 全树 URL 替换 | 已完成（69 跟踪文件 + 2 未跟踪 + 1 stale tmp） | 已完成（6 治理文档 74 处 URL 超链接，Go import 路径保留） |
 | GitHub Transfer | 手动执行（gh api） | 前期批量完成（具体日期与方法待回溯） |
-| 20 轮 agent 验证 | 已执行（2 次，40 轮） | 未针对此 25 模块单独执行 |
+| 20 轮 agent 验证 | 已执行（2 次，40 轮） | 已执行（1 次，20/20 PASS，详见 §9） |
 
 ---
 
-*本文档初始版本于 2026-07-11，记录 Foundation + L2.5 25 模块迁移至 xhyperium 后的当前对齐状态。*
+## 9. 2026-07-11 20 轮 agent team 复核（URL 对齐后验证）
+
+[COMPUTED, HIGH] 治理文档 URL 对齐完成后，启动 20 个并行 `general-purpose` agent（R1–R20）进行独立交叉验证。每轮执行全量 25 模块扫描：`docs/` + `README.md` 中 `https://github.com/ZoneCNH/{module}` 残留检测 + registry `owner: xhyperium` 计数核对。
+
+**结果**：R1–R20 全部 PASS（20/20）。零残留 `ZoneCNH` URL 超链接。Registry 确认 28 处 `owner: xhyperium`（25 模块 + binance + 2 其他）。零遗漏，零误报。
+
+---
+
+*本文档初始版本于 2026-07-11，记录 Foundation + L2.5 25 模块迁移至 xhyperium 后的对齐状态。§9 记录 URL 对齐后的 20 轮复核。*
