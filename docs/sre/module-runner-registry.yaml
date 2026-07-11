@@ -391,7 +391,7 @@ pools:
       - X64
       - sre/market
     - module: market_data
-      repo: ZoneCNH/market_data
+      repo: xhyperium/market_data
       runner_count: 1
       labels:
       - self-hosted
@@ -635,7 +635,7 @@ pools:
       - X64
       - sre/engine
     - module: market_regime
-      repo: ZoneCNH/market_regime
+      repo: xhyperium/market_regime
       runner_count: 1
       labels:
       - self-hosted

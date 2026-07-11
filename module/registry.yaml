@@ -682,13 +682,13 @@ yield_curve:
 
 # --- 独立进程聚合层 ---
 market_data:
-  repo: github.com/ZoneCNH/market_data
+  repo: github.com/xhyperium/market_data
   local_path: /home/workspace/market_data
   domain: data
   layer: business
   arch_type: independent_process
   lifecycle: proposed
-  owner: ZoneCNH
+  owner: xhyperium
   registered: 2026-06-10
   spec_ref: module/market_data/spec/SPEC.md
   spec_version: v0.1.0-draft
@@ -784,13 +784,13 @@ factor_eval:
     cadence: irregular
 
 market_regime:
-  repo: github.com/ZoneCNH/market_regime
+  repo: github.com/xhyperium/market_regime
   local_path: /home/workspace/market_regime
   domain: analytics
   layer: business
   arch_type: independent_process
   lifecycle: proposed
-  owner: ZoneCNH
+  owner: xhyperium
   registered: 2026-06-10
   spec_ref: module/market_regime/spec/SPEC.md
   spec_version: v0.1.0-draft

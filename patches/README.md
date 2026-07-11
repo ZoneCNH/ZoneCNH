@@ -7,7 +7,7 @@
 ```
 1. domain_market    → github.com/ZoneCNH/domain_market
 2. contracts        → github.com/ZoneCNH/contracts
-3. market_data      → github.com/ZoneCNH/market_data (空仓库，从零初始化)
+3. market_data      → github.com/xhyperium/market_data (空仓库，从零初始化)
 4. binance          → github.com/xhyperium/binance (老 SDK 升级)
 5. binancecfg       → github.com/xhyperium/binance (配置层: FOUNDATIONX_* env → typed config)
 6. binancex         → github.com/xhyperium/binance (SDK 接口抽象层)
@@ -44,7 +44,7 @@ go test ./... -race -count=1
 
 ```bash
 cd market_data
-go mod init github.com/ZoneCNH/market_data
+go mod init github.com/xhyperium/market_data
 mkdir -p pkg/dispatch
 cp ../patches/market_data/dispatch.go pkg/dispatch/
 go mod tidy

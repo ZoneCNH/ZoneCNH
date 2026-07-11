@@ -1016,7 +1016,7 @@
       "market_data": {
         "identity": {
           "catalog_name": "market_data",
-          "repository": "github.com/ZoneCNH/market_data",
+          "repository": "github.com/xhyperium/market_data",
           "logical_module_path": "/home/workspace/market_data",
           "package_name": "market_data",
           "owner": "ZoneCNH"
@@ -1043,7 +1043,7 @@
       "market_regime": {
         "identity": {
           "catalog_name": "market_regime",
-          "repository": "github.com/ZoneCNH/market_regime",
+          "repository": "github.com/xhyperium/market_regime",
           "logical_module_path": "/home/workspace/market_regime",
           "package_name": "market_regime",
           "owner": "ZoneCNH"
