@@ -2179,7 +2179,7 @@ int latency_tcp_recv(struct pt_regs *ctx) {
 char LICENSE[] SEC("license") = "GPL";
 ```
 
-**latency.go — Go loader**��
+**latency.go — Go loader**：
 
 ```go
 // /home/workspace/xlib_standard/fixture/fault/ebpf/latency.go

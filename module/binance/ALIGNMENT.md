@@ -71,7 +71,7 @@
 | CircuitBreakerClient | 熔断器防 etcd 阻塞 | 12 tests |
 | MarketFusion | 行情融合器 + TTL dedup | 10 tests |
 | UMFuturesClient | USDS-M Futures REST SDK | 14 endpoints + HMAC |
-| UMFuturesErrors | 限流/无效 symbol ���误处理 | 9 tests |
+| UMFuturesErrors | 限流/无效 symbol 错误处理 | 9 tests |
 
 ## 测试覆盖
 

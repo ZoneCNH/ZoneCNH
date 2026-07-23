@@ -41,6 +41,16 @@
           }
         ],
         "matcher": "Bash"
+      },
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "nice -n 19 timeout 15 node .claude/hooks/encoding-batch-check.mjs"
+          }
+        ],
+        "description": "批量编码巡检"
       }
     ],
     "PreCompact": [
@@ -81,6 +91,15 @@
           }
         ],
         "matcher": "Write|Edit"
+      },
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "nice -n 19 timeout 30 node .claude/hooks/encoding-check.mjs || exit 2"
+          }
+        ]
       }
     ],
     "SessionStart": [
