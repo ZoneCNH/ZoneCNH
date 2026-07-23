@@ -20,7 +20,7 @@ TRN-001 工作包要求修复 module identity，但未裁定迁移后是否需�
 ```
 go.mod 当前是 github.com/xhyperium/xlib-standard?
 ├── YES → 这是 module identity change (breaking)
-���   ├── 现有消费者存在吗？
+    ├── 现有消费者存在吗？
 │   │   ├── NO (production_import_allowed=false) → /v1 可接受
 │   │   │   └── 裁决: go.mod → github.com/xhyperium/transportx (无 /v2)
 │   │   │       理由: 没有生产消费者需要迁移 import path

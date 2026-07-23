@@ -106,7 +106,7 @@ done
 
 ## 受影响的制品
 
-| 制品路径 | 变更类型 | 说�� |
+| 制品路径 | 变更类型 | 说明 |
 |---------|---------|------|
 | `/home/workspace/contracts/go.mod` | v0.5.3 | 根据裁决更新版本 |
 | `/home/workspace/contracts/VERSION` | v0.5.3 | 根据裁决写入版本号 |

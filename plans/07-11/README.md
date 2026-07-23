@@ -80,7 +80,7 @@
 
 ## 第一章：修复全景
 
-<!-- 意图：给出全 25 模块的当前状态和修复波次总览，让读者在深入细节前建��全局认知 -->
+<!-- 意图：给出全 25 模块的当前状态和修复波次总览，让读者在深入细节前建立全局认知 -->
 
 ### 1.1 当前状态评估
 
@@ -183,7 +183,7 @@ configx / observex / resiliencx / schedulex / postgresx / decimalx / domainx
 3. 受影响的 API/schema/config/error/metric
 4. 新增或更新的 AC/TC
 5. 机器结果：format、mod、build、vet、lint、test、race、coverage、boundary、security
-6. 模块特有��果：property/fuzz/model/integration/live/fault/soak/conformance
+6. 模块特有结果：property/fuzz/model/integration/live/fault/soak/conformance
 7. Evidence：commit、tree、run、toolchain、service/image digest、artifact hash
 8. SemVer 裁决与迁移说明
 9. 回滚方案
@@ -224,7 +224,7 @@ configx / observex / resiliencx / schedulex / postgresx / decimalx / domainx
 15. `go get @tag` 成功
 16. downstream adoption 通过
 17. live/fault/soak 满足适用 profile
-18. Fleet qualification 由��据推导
+18. Fleet qualification 由数据推导
 19. rollback/quarantine/revoke 路径可执行
 
 [source: 07-11.md §12 L1160-1183]
@@ -260,7 +260,7 @@ configx / observex / resiliencx / schedulex / postgresx / decimalx / domainx
 | P0-3   | contracts lineage 审计             | 执行 git tag lineage 审计，确定性版本裁决              | 07-11-analysis.md §P0-3  |
 | P0-5   | 全仓 status projection 审计        | audit-status-projection.py 全仓事实审计                | 07-11-analysis.md §P0-5  |
 | P0-7   | BASE-003 批量工作包定义            | 为 10+ 模块创建 BASE-003 专用工作包                    | 07-11-analysis.md §P0-7  |
-| P0-8   | 时间线修��                         | 30 天 → 60-75 天                                       | 07-11-analysis.md §P0-8  |
+| P0-8   | 时间线修正                         | 30 天 → 60-75 天                                       | 07-11-analysis.md §P0-8  |
 | P0-9   | light/heavy pool 分类表            | 定义 W4 存储适配器分类与资源约束                       | 07-11-analysis.md §P0-9  |
 | P0-10  | 回滚策略 + BASE Runbook            | 新增完整回滚决策树和 BASE 推广流程                     | 07-11-analysis.md §P0-10 |
 
@@ -313,7 +313,7 @@ configx / observex / resiliencx / schedulex / postgresx / decimalx / domainx
 
 | ID | 任务 | Target Phase | Source |
 |----|------|-------------|--------|
-| PHANTOM-FIX | 12 phantom 模���逐模块修复 | Phase 1-2 | audit-results.md |
+| PHANTOM-FIX | 12 phantom 模块逐模块修复 | Phase 1-2 | audit-results.md |
 | IDENTITY-DRIFT | 19 模块 identity 不一致修复 (8 DRIFT + 11 UNDEFINED) | Phase 1 | identity-inventory.md §六源 |
 | GO-DRIFT | 7 模块 Go 版本漂移升级 (1.23→1.26.5) | Phase 1 | identity-inventory.md §Go |
 | GO-PEOPLE-003 | 人员分工与并行窗口定义 | Phase 0→1 | §3.3 L847 |
@@ -346,7 +346,7 @@ configx / observex / resiliencx / schedulex / postgresx / decimalx / domainx
 
 **子阶段 1A — xlib_standard MVC 冻结（Day 3-7）**
 
-MVC（最小可行合约）解耦是 Phase 1 最关键的优化：只需要在 standard 内部区���两个交付里程碑——冻结可消费的合约字段（schema/policy/reason-code）与交付完整可重现 bundle——就将下游等待时间从 14-21 天缩短到 5 天。
+MVC（最小可行合约）解耦是 Phase 1 最关键的优化：只需要在 standard 内部区分两个交付里程碑——冻结可消费的合约字段（schema/policy/reason-code）与交付完整可重现 bundle——就将下游等待时间从 14-21 天缩短到 5 天。
 
 [source: 07-11-analysis.md §八 "xlib_standard MVC 解耦"]
 
@@ -419,7 +419,7 @@ MVC freeze(schema/policy/reason-code) 完成后，gate/evidence/harness 三仓�
 
 **子阶段 1C — 三 Canary 验证（Day 15-21）**
 
-三类 canary 并行执行，采用加权通���策略：2/3 + RCA（Root Cause Analysis），不必全绿。
+三类 canary 并行执行，采用加权通过策略：2/3 + RCA（Root Cause Analysis），不必全绿。
 
 [source: 07-11-analysis.md §八 "canary 加权通过", 07-11.md §4.1 §5.1 §6.3]
 
@@ -463,7 +463,7 @@ MVC freeze(schema/policy/reason-code) 完成后，gate/evidence/harness 三仓�
 
 #### 2.2.1 目标
 
-修复 L0/L1/Assembly/Test 模块的 P0 实现错误、版本一致性和 CI；使近生产模块重新达到可认��状态。
+修复 L0/L1/Assembly/Test 模块的 P0 实现错误、版本一致性和 CI；使近生产模块重新达到可认证状态。
 
 [source: plan-structure.md §2.2.1, 07-11.md §4]
 
@@ -691,7 +691,7 @@ MVC freeze(schema/policy/reason-code) 完成后，gate/evidence/harness 三仓�
 | -------------------------------------- | ------------------------------------- | --------------- | ------------------------------------------- | ------------------------ |
 | domain_macro 审批延迟                  | MAC-003 仓库创建需治理审批 + 人工授权 | 全局延迟        | 在审批前完成 SPEC/ADR/设计                  | plan-structure.md §2.3.6 |
 | domain_exchange 13→8 接口拆分          | 所有下游 adapter 逐一迁移             | 12 人天可能不足 | 先 3 个重点 adapter，其余分批复用           | plan-structure.md §2.3.6 |
-| domain_market Payload interface{} 替换 | 影响全部消费���                       | 迁移风险高      | 类型化 union + v1 compatibility mapper      | 07-11-analysis.md §三    |
+| domain_market Payload interface{} 替换 | 影响全部消费者                       | 迁移风险高      | 类型化 union + v1 compatibility mapper      | 07-11-analysis.md §三    |
 | storage heavy pool soak 冲突           | 4 个重型服务互斥 soak 时间争夺        | 串行瓶颈        | 定时 windows + eBPF 替代 netns 减少设置时间 | plan-structure.md §2.3.6 |
 
 ---
@@ -712,8 +712,8 @@ MVC freeze(schema/policy/reason-code) 完成后，gate/evidence/harness 三仓�
 #### 2.4.3 活动清单
 
 1. 按 release train 顺序：控制面 → L0 → L1 → domain → storage → exchange → assembly
-2. 每个模块执行 §1.3.4 release tuple 全�� 19 项
-3. 联合验证矩阵��项通过（详见第七章）
+2. 每个模块执行 §1.3.4 release tuple 全部 19 项
+3. 联合验证矩阵各项通过（详见第七章）
 
 [source: 07-11.md §7.2, cross-analysis.md §W6]
 
@@ -875,7 +875,7 @@ MVC freeze(schema/policy/reason-code) 完成后，gate/evidence/harness 三仓�
 | ---------------------- | ---------------------------------------- | --------------- | ------- |
 | GO-ROLLBACK-001        | 全局回滚策略定义                         | Phase 0 (P0-10) | RESOLVED (by P0-10 §10.1-10.3) |
 | GO-BASE-002            | BASE 推广 Runbook                        | Phase 0 (P0-10) | RESOLVED (by P0-10 §10.1-10.3) |
-| GO-PEOPLE-003          | 人员分工与并��窗口定义                   | Phase 0         | PENDING |
+| GO-PEOPLE-003          | 人员分工与并发窗口定义                   | Phase 0         | PENDING |
 | GO-DASH-004            | Fleet Status Dashboard 搭建              | Phase 1         | PENDING |
 | JV-CONFIGX-INTEGRATION | configx + bootstrap 联合验证矩阵补充     | Phase 2         | PENDING |
 | JV-RESILIENCX-KERNEL   | resiliencx + kernel 边界验证联合矩阵补充 | Phase 2         | PENDING |
@@ -920,7 +920,7 @@ MVC freeze(schema/policy/reason-code) 完成后，gate/evidence/harness 三仓�
 | 风险      | xlib_harness 当前 v0.3.0，goalcli 需要成熟 CLI 框架                                                                                                                      |
 | 实施细节  | 07-11-analysis.md §P0-1 L284-372                                                                                                                                         |
 | 状态      | PENDING                                                                                                                                                                  |
-| 最后���新 | 2026-07-11                                                                                                                                                               |
+| 最后更新 | 2026-07-11                                                                                                                                                               |
 
 #### P0-2: transportx module major path 裁决
 

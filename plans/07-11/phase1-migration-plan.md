@@ -819,7 +819,7 @@ transportx (identity fix, 同步修改对 xlib_standard 的 import)
                                     ┌────────────┴────────┐
                                     │     transportx      │
                                     │     (Batch 6)       │
-                                    └────��────────────────┘
+                                    └────────────────────────┘
 ```
 
 并行组：

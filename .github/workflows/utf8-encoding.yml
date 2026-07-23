@@ -1,0 +1,75 @@
+name: UTF-8 编码门禁
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  utf8-encoding:
+    name: UTF-8 编码门禁
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: 非 UTF-8 与 U+FFFD 扫描（阻断）
+        run: |
+          set -euo pipefail
+          bad=0
+          while IFS= read -r -d '' f; do
+            enc=$(file -b --mime-encoding "$f" || true)
+            case "$enc" in
+              *utf-8*|*ascii*|*us-ascii*|*binary*) ;;
+              *)
+                echo "❌ $f → $enc"
+                bad=$((bad+1))
+                ;;
+            esac
+          done < <(find . -type f \
+            -not -path './.git/*' -not -path './node_modules/*' \
+            -not -path './.cargo/*' -not -path './target/*' -not -path './.worktrees/*' \
+            -not -path './.worktree/*' -not -path './.agent/draft/*' \
+            -not -name '*.png' -not -name '*.jpg' -not -name '*.ico' -not -name '*.svg' \
+            -not -name '*.woff*' -not -name '*.lock' -not -name '*.bin' -not -name '*.db' \
+            \( -name '*.md' -o -name '*.rs' -o -name '*.toml' -o -name '*.yml' -o -name '*.yaml' \
+               -o -name '*.mjs' -o -name '*.js' -o -name '*.cjs' -o -name '*.json' -o -name '*.sh' \
+               -o -name '*.txt' -o -name '*.go' \) -print0)
+          if [ "$bad" -gt 0 ]; then
+            echo "❌ $bad 个非 UTF-8 文件"
+            exit 1
+          fi
+          echo "✅ UTF-8 / ASCII"
+
+          fffd=0
+          while IFS= read -r -d '' f; do
+            if grep -aFq $'\xef\xbf\xbd' "$f"; then
+              echo "❌ $f → 含 U+FFFD 替换字符（编码损坏）"
+              fffd=$((fffd+1))
+            fi
+          done < <(find . -type f \
+            -not -path './.git/*' -not -path './node_modules/*' \
+            -not -path './.cargo/*' -not -path './target/*' -not -path './.worktrees/*' \
+            -not -path './.worktree/*' -not -path './.agent/draft/*' \
+            -not -name '*.png' -not -name '*.jpg' -not -name '*.ico' -not -name '*.svg' \
+            -not -name '*.woff*' -not -name '*.lock' -not -name '*.bin' -not -name '*.db' \
+            \( -name '*.md' -o -name '*.rs' -o -name '*.toml' -o -name '*.yml' -o -name '*.yaml' \
+               -o -name '*.mjs' -o -name '*.js' -o -name '*.cjs' -o -name '*.json' -o -name '*.sh' \
+               -o -name '*.txt' -o -name '*.go' \) -print0)
+          if [ "$fffd" -gt 0 ]; then
+            echo "❌ $fffd 个文件含 U+FFFD；请修复后重提 PR"
+            echo "   扫描: node scripts/fix-encoding.mjs --check"
+            exit 1
+          fi
+          echo "✅ 无 U+FFFD 替换字符"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: fix-encoding --check
+        run: node scripts/fix-encoding.mjs --check

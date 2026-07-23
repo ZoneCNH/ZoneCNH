@@ -50,7 +50,7 @@
 | ID | P | 任务描述 | 验收条件 | 行号 |
 |----|---|---------|---------|------|
 | XLE-001 | P0 | 裁决 canonical module path | go.mod/repo-contract/docs/consumer 统一 | L214 |
-| XLE-002 | P0 | evidence schema v1 | commit/tree/run/ref/tool/result/service/assets 字���冻结 | L215 |
+| XLE-002 | P0 | evidence schema v1 | commit/tree/run/ref/tool/result/service/assets 字段冻结 | L215 |
 | XLE-003 | P0 | 结果语义 | pass/fail/skipped/error/N-A 严格区分 | L216 |
 | XLE-004 | P0 | 跨 Job artifact 聚合 | 缺 artifact hard fail | L217 |
 | XLE-005 | P1 | canonical JSON + sidecar | 同输入 bit-for-bit | L218 |
@@ -288,7 +288,7 @@
 | CTR-004 | P1 | wire golden | JSON/schema canonical/optional/required | L766 |
 | CTR-005 | P1 | SemVer arbiter | breaking 自动要求 MAJOR + ADR + migration | L767 |
 | CTR-006 | P1 | PR consumer fixtures | 固定两个 consumer fixtures | L768 |
-| CTR-007 | P1 | nightly/release consumers | 至少两个真实��游 compile/contract | L769 |
+| CTR-007 | P1 | nightly/release consumers | 至少两个真实下游 compile/contract | L769 |
 | CTR-008 | P1 | Evidence/assets | API snapshot/schema bundle/SBOM | L770 |
 
 #### transportx (§6.2, L783-818)
@@ -399,7 +399,7 @@ W6 不含模块级工作包，由下列统一流程覆盖：
 | # | 发现 | 行号 | 发现者 | 严重度 |
 |----|------|------|--------|--------|
 | C1 | 时间线严重低估：1天→1.5-2天、7天→10-14天、30天→45-60天 | L49-63 | risk-feasibility | **CRITICAL** |
-| C2 | goalcli 归属真空：三方同时声明删除，无��认领 | L70-74 | gap-optimizer | **CRITICAL** |
+| C2 | goalcli 归属真空：三方同时声明删除，无人认领 | L70-74 | gap-optimizer | **CRITICAL** |
 | C3 | transportx module path 未裁决：go.mod 仍是 xlib-standard，未裁定 /v2 | L77-80 | gap-optimizer | **CRITICAL** |
 | C4 | contracts 版本不确定性：v1.5.0 祖先关系未审计，发布边界模糊 | L83-86 | gap-optimizer | **CRITICAL** |
 | C5 | Docker/K8s 禁令与 fault/soak 矛盾：7 个 storage adapter 需要容器编排 | L90-101 | risk-feasibility | **CRITICAL** |
@@ -465,7 +465,7 @@ W6 不含模块级工作包，由下列统一流程覆盖：
 | 6 | transportx go.mod 是 xlib-standard vs repo-contract 称 transportx | 07-11.md L787 vs L801 | HIGH |
 | 7 | domain_macro 不存在标为 factory grade | 07-11.md L927 vs L937 | HIGH |
 | 8 | xlib_harness v0.3.0 产出 compound loop 但尚未 stable | 07-11.md L187 vs L1102/L1124 | LOW |
-| 9 | contracts 在依赖链中的位��未裁决 | 07-11.md L1008-1016 | MED |
+| 9 | contracts 在依赖链中的位置未裁决 | 07-11.md L1008-1016 | MED |
 
 ### B.6 P0 修复建议（10 条）及实施方案
 
